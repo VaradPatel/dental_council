@@ -1,6 +1,6 @@
 # abdm-nmr
 
-NMR(national medical registry) - council software. Microservice for backend operations.
+NMR(National Medical Registry) - Council Software. Micro-service for backend operations.
 
 ## Getting started
 
