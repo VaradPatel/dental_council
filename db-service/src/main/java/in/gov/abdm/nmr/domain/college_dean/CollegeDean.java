@@ -3,7 +3,7 @@ package in.gov.abdm.nmr.domain.college_dean;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import in.gov.abdm.nmr.domain.common.AuditEntity;
+import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class CollegeDean extends AuditEntity {
+public class CollegeDean extends CommonAuditEntity {
 
     @Id
     private Long id;
