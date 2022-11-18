@@ -4,7 +4,7 @@ package in.gov.abdm.nmr.domain.professional;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import in.gov.abdm.nmr.domain.common.AuditEntity;
+import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Professional extends AuditEntity {
+public class Professional extends CommonAuditEntity {
 
     @Id
     private Integer id;

@@ -3,7 +3,7 @@ package in.gov.abdm.nmr.domain.file_history;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import in.gov.abdm.nmr.domain.common.AuditEntity;
+import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class FileHistory extends AuditEntity {
+public class FileHistory extends CommonAuditEntity {
 
     @Id
     private Long id;

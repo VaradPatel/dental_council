@@ -6,7 +6,7 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import in.gov.abdm.nmr.domain.common.AuditEntity;
+import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +17,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class RegistrationDetail extends AuditEntity {
+public class RegistrationDetail extends CommonAuditEntity {
 
     @Id
     private Long id;

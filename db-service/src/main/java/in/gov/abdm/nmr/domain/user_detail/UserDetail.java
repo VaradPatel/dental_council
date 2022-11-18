@@ -1,14 +1,13 @@
 package in.gov.abdm.nmr.domain.user_detail;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
-import in.gov.abdm.nmr.domain.common.AuditEntity;
-import in.gov.abdm.nmr.domain.password.Password;
+import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.domain.user_sub_type.UserSubType;
 import in.gov.abdm.nmr.domain.user_type.UserType;
 import lombok.AllArgsConstructor;
@@ -20,22 +19,21 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-public class UserDetail extends AuditEntity {
+@Entity(name = "userDetail")
+public class UserDetail extends CommonAuditEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String userName;
+    private String username;
+    private String password;
+    private String refreshTokenId;
 
-    @OneToOne
-    @JoinColumn(name = "password")
-    private Password password;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_type")
     private UserType userType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_sub_type")
     private UserSubType userSubType;
 }

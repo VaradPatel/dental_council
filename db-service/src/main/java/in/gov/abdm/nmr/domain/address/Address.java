@@ -7,7 +7,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import in.gov.abdm.nmr.domain.address_type.AddressType;
-import in.gov.abdm.nmr.domain.common.AuditEntity;
+import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +18,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Address extends AuditEntity {
+public class Address extends CommonAuditEntity {
 
     @Id
     private Long id;
