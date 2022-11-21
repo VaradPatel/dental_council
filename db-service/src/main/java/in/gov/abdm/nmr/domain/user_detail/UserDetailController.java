@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController()
 @RequestMapping("/userDetails")
-public class UserDetailController implements IUserDetailController {
+public class UserDetailController {
 
     private IUserDetailService userDetailService;
 
@@ -17,19 +17,16 @@ public class UserDetailController implements IUserDetailController {
         this.userDetailService = userDetailService;
     }
 
-    @Override
     @GetMapping(path = "/queryBy/username", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDetailTO findByUsername(@RequestBody String username) {
         return userDetailService.findByUsername(username);
     }
 
-    @Override
     @GetMapping(path = "/refreshTokenId", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public String findRefreshTokenIdByUsername(@RequestBody String username) {
         return userDetailService.findRefreshTokenIdByUsername(username);
     }
 
-    @Override
     @PutMapping(path = "/refreshTokenId", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Integer updateRefreshTokenId(@RequestBody UpdateRefreshTokenIdRequestTO refreshTokenRequestTO) {
         return userDetailService.updateRefreshTokenId(refreshTokenRequestTO);

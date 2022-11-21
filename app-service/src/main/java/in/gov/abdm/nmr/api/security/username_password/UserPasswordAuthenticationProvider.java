@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserPasswordAuthenticationProvider extends DaoAuthenticationProvider {
-    
+
     private static final Logger LOGGER = LogManager.getLogger();
 
     public UserPasswordAuthenticationProvider(UserPasswordDetailsService userPasswordDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
