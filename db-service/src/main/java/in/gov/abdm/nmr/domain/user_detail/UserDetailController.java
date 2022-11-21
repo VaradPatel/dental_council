@@ -2,7 +2,6 @@ package in.gov.abdm.nmr.domain.user_detail;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,20 +18,20 @@ public class UserDetailController implements IUserDetailController {
     }
 
     @Override
-    @GetMapping(path = "/username", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/queryBy/username", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDetailTO findByUsername(@RequestBody String username) {
         return userDetailService.findByUsername(username);
     }
 
     @Override
-    @GetMapping(path = "/{id}/refreshTokenId", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String findRefreshTokenIdByIdAndRefreshTokenId(@PathVariable Long id, @RequestBody String refreshTokenId) {
-        return userDetailService.findRefreshTokenIdByIdAndRefreshTokenId(id, refreshTokenId);
+    @GetMapping(path = "/refreshTokenId", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String findRefreshTokenIdByUsername(@RequestBody String username) {
+        return userDetailService.findRefreshTokenIdByUsername(username);
     }
 
     @Override
-    @PutMapping(path = "/{id}/refreshTokenId", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Integer updateRefreshTokenId(@PathVariable Long id, @RequestBody String refreshTokenId) {
-        return userDetailService.updateRefreshTokenId(id, refreshTokenId);
+    @PutMapping(path = "/refreshTokenId", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Integer updateRefreshTokenId(@RequestBody UpdateRefreshTokenIdRequestTO refreshTokenRequestTO) {
+        return userDetailService.updateRefreshTokenId(refreshTokenRequestTO);
     }
 }

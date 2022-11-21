@@ -7,4 +7,5 @@ public class LoginRequestTO {
 
     private String username;
     private String password;
+    private Long userType;
 }

@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface IAuthService {
 
-    void login(HttpServletResponse response);
+    String login(HttpServletResponse response);
 
-    void refreshToken(HttpServletResponse response);
+    String refreshToken(HttpServletResponse response);
 }

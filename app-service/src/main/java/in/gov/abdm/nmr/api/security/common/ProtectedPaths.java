@@ -1,28 +1,28 @@
 package in.gov.abdm.nmr.api.security.common;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import in.gov.abdm.nmr.api.security.controller.AuthController;
 
 public class ProtectedPaths {
 
     private ProtectedPaths() {
     }
 
-    private static final List<String> protectedPathList = Arrays.asList(AuthController.PATH_REFRESH_TOKEN, AuthController.PATH_TEST);
-
-    public static List<String> getProtectedPaths() {
-        return protectedPathList;
-    }
+    public static final String PATH_LOGIN = "/login";
+    public static final String PATH_REFRESH_TOKEN = "/refreshToken";
+    public static final String PATH_TEST = "/test";
 
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
-        return protectedPathList.stream().map(AntPathRequestMatcher::new).toArray(AntPathRequestMatcher[]::new);
+        List<String> protectedPaths = new ArrayList<>();
+        protectedPaths.add(PATH_REFRESH_TOKEN);
+        protectedPaths.add(PATH_TEST);
+
+        return protectedPaths.stream().map(AntPathRequestMatcher::new).toArray(AntPathRequestMatcher[]::new);
     }
 
     public static AntPathRequestMatcher getLoginPathMatcher() {
-        return new AntPathRequestMatcher(AuthController.PATH_LOGIN);
+        return new AntPathRequestMatcher(PATH_LOGIN);
     }
 }

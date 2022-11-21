@@ -1,5 +1,9 @@
 package in.gov.abdm.nmr.api.security.controller;
 
+import static in.gov.abdm.nmr.api.security.common.ProtectedPaths.PATH_LOGIN;
+import static in.gov.abdm.nmr.api.security.common.ProtectedPaths.PATH_REFRESH_TOKEN;
+import static in.gov.abdm.nmr.api.security.common.ProtectedPaths.PATH_TEST;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.MediaType;
@@ -12,29 +16,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthController implements IAuthController {
 
-    public static final String PATH_LOGIN = "/login";
-    public static final String PATH_REFRESH_TOKEN = "/refreshToken";
-    public static final String PATH_TEST = "/test";
-
     private IAuthService authService;
 
     public AuthController(IAuthService authService) {
-        super();
         this.authService = authService;
     }
 
     @Override
     @PostMapping(path = PATH_LOGIN, produces = MediaType.APPLICATION_JSON_VALUE)
     public String login(@RequestBody(required = false) LoginRequestTO loginRequestTO, HttpServletResponse response) {
-        authService.login(response);
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+        return authService.login(response);
     }
 
     @Override
     @PostMapping(path = PATH_REFRESH_TOKEN, produces = MediaType.APPLICATION_JSON_VALUE)
     public String refreshToken(HttpServletResponse response) {
-        authService.refreshToken(response);
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+        return authService.refreshToken(response);
     }
 
     @GetMapping(path = PATH_TEST)

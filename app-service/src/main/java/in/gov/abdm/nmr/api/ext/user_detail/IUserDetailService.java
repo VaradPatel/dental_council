@@ -1,10 +1,10 @@
-package in.gov.abdm.nmr.domain.user_detail;
+package in.gov.abdm.nmr.api.ext.user_detail;
 
 public interface IUserDetailService {
 
     UserDetailTO findByUsername(String username);
-    
+
     String findRefreshTokenIdByUsername(String username);
-    
-    Integer updateRefreshTokenId(UpdateRefreshTokenIdRequestTO refreshTokenRequestTO);
+
+    Integer updateRefreshTokenId(String username, String refreshTokenId);
 }

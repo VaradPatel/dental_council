@@ -24,12 +24,12 @@ public class UserDetailService implements IUserDetailService {
     }
 
     @Override
-    public String findRefreshTokenIdByIdAndRefreshTokenId(Long id, String refreshTokenId) {
-        return userDetailRepository.findRefreshTokenIdByIdAndRefreshTokenId(id, refreshTokenId).orElse("");
+    public String findRefreshTokenIdByUsername(String username) {
+        return userDetailRepository.findRefreshTokenIdByUsername(username).orElse("");
     }
 
     @Override
-    public Integer updateRefreshTokenId(Long id, String refreshTokenId) {
-        return userDetailRepository.updateRefreshTokenId(id, refreshTokenId).orElse(0);
+    public Integer updateRefreshTokenId(UpdateRefreshTokenIdRequestTO refreshTokenRequestTO) {
+        return userDetailRepository.updateRefreshTokenId(refreshTokenRequestTO.getUsername(), refreshTokenRequestTO.getRefreshTokenId()).orElse(0);
     }
 }

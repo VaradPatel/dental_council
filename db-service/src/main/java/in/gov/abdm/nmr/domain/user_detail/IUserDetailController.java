@@ -4,7 +4,7 @@ public interface IUserDetailController {
 
     UserDetailTO findByUsername(String username);
     
-    String findRefreshTokenIdByIdAndRefreshTokenId(Long id, String refreshTokenId);
+    String findRefreshTokenIdByUsername(String username);
     
-    Integer updateRefreshTokenId(Long id, String refreshTokenId);
+    Integer updateRefreshTokenId(UpdateRefreshTokenIdRequestTO refreshTokenRequestTO);
 }
