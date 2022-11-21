@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.api.ext.dto;
+package in.gov.abdm.nmr.api.ext.user_detail;
 
 import lombok.Data;
 

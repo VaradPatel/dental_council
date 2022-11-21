@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -18,10 +20,11 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.stereotype.Component;
 
 import in.gov.abdm.nmr.api.security.common.ProtectedPaths;
-import in.gov.abdm.nmr.api.security.controller.AuthController;
 
 @Component
 public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     protected JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
         super(new OrRequestMatcher(ProtectedPaths.getProtectedPathsMatchers()), authenticationManager);
@@ -31,17 +34,21 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
-        if (StringUtils.isNotBlank(request.getHeader(HttpHeaders.AUTHORIZATION))) {
-            String accessToken = extractBearerToken(request);
+        try {
+            if (StringUtils.isNotBlank(request.getHeader(HttpHeaders.AUTHORIZATION))) {
+                String accessToken = extractBearerToken(request);
 
-            String tokenType = JwtUtil.TOKEN_ACCESS_CLAIM_VALUE;
-            if (AuthController.PATH_REFRESH_TOKEN.equals(request.getServletPath())) {
-                tokenType = JwtUtil.TOKEN_REFRESH_CLAIM_VALUE;
+                JwtTypeEnum tokenType = JwtTypeEnum.ACCESS_TOKEN;
+                if (ProtectedPaths.PATH_REFRESH_TOKEN.equals(request.getServletPath())) {
+                    tokenType = JwtTypeEnum.REFRESH_TOKEN;
+                }
+
+                JwtAuthenticationToken authRequest = new JwtAuthenticationToken(accessToken, tokenType);
+                authRequest.setDetails(this.authenticationDetailsSource.buildDetails(request));
+                return this.getAuthenticationManager().authenticate(authRequest);
             }
-
-            JwtAuthenticationToken authRequest = new JwtAuthenticationToken(accessToken, tokenType);
-            authRequest.setDetails(this.authenticationDetailsSource.buildDetails(request));
-            return this.getAuthenticationManager().authenticate(authRequest);
+        } catch (Exception e) {
+            LOGGER.error("Exception occured while parsing bearer token", e);
         }
         throw new AuthenticationServiceException("Unable to parse bearer");
     }
@@ -56,7 +63,8 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) //
+            throws IOException, ServletException {
         super.successfulAuthentication(request, response, chain, authResult);
         chain.doFilter(request, response);
     }

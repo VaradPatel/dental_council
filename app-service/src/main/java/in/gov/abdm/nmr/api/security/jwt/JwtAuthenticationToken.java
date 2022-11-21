@@ -2,13 +2,11 @@ package in.gov.abdm.nmr.api.security.jwt;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
-import lombok.EqualsAndHashCode;
-
-@EqualsAndHashCode(callSuper = true)
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
     private static final long serialVersionUID = 4233846131436646907L;
@@ -17,9 +15,9 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
     private final String token;
 
-    private final String type;
+    private final JwtTypeEnum type;
 
-    public JwtAuthenticationToken(String token, String type) {
+    public JwtAuthenticationToken(String token, JwtTypeEnum type) {
         super(Collections.emptyList());
         this.principal = "";
         this.token = token;
@@ -30,7 +28,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
         super(authorities);
         this.principal = principal;
         this.token = "";
-        this.type = "";
+        this.type = null;
     }
 
 
@@ -44,7 +42,24 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
         return this.principal;
     }
 
-    public String getType() {
+    public JwtTypeEnum getType() {
         return type;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + Objects.hash(principal, token, type);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!super.equals(obj)) return false;
+        if (getClass() != obj.getClass()) return false;
+        JwtAuthenticationToken other = (JwtAuthenticationToken) obj;
+        return Objects.equals(principal, other.principal) && Objects.equals(token, other.token) && type == other.type;
     }
 }
