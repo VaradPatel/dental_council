@@ -1,11 +1,21 @@
 package in.gov.abdm.nmr.domain.qualification_detail;
 
+import java.math.BigInteger;
 import java.sql.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
+import in.gov.abdm.nmr.domain.college.College;
 import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
+import in.gov.abdm.nmr.domain.country.Country;
+import in.gov.abdm.nmr.domain.district.District;
+import in.gov.abdm.nmr.domain.hp_profile.HpProfile;
+import in.gov.abdm.nmr.domain.registration_detail.RegistrationDetail;
+import in.gov.abdm.nmr.domain.state.State;
+import in.gov.abdm.nmr.domain.university.University;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,12 +28,47 @@ import lombok.Setter;
 @Entity
 public class QualificationDetail extends CommonAuditEntity {
 
-    @Id
-    private Long id;
-    private Long hpProfileId;
-    private String certificate;
-    private Date qualificationYear;
-    private Date qualificationMonth;
-    private Long universityId;
-    private String qualificationName;
+	@Id
+	private Long id;
+	private String certificate;
+	private Date endDate;
+	private Integer isNameChange;
+	private String name;
+	private String nameChangeProofAttach;
+	private Date qualificationMonth;
+	private Date qualificationYear;
+	private Date startDate;
+	private String systemOfMedicine;
+
+	@OneToOne
+	@JoinColumn(name = "district")
+	private District district;
+
+	@OneToOne
+	@JoinColumn(name = "college")
+	private College college;
+
+	@OneToOne
+	@JoinColumn(name = "country")
+	private Country country;
+
+	private BigInteger courseId;
+
+	@OneToOne
+	@JoinColumn(name = "state")
+	private State state;
+
+	@OneToOne
+	@JoinColumn(name = "university")
+	private University university;
+
+	@OneToOne
+	@JoinColumn(name = "registrationDetail")
+	private RegistrationDetail registrationDetail;
+
+	@OneToOne
+	@JoinColumn(name = "hpProfile")
+	private HpProfile hpProfile;
+
+	private Integer is_verified;
 }

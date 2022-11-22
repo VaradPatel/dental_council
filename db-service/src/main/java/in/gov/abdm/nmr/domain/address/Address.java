@@ -5,9 +5,15 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.domain.address_type.AddressType;
+import in.gov.abdm.nmr.domain.city.City;
 import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
+import in.gov.abdm.nmr.domain.country.Country;
+import in.gov.abdm.nmr.domain.district.District;
+import in.gov.abdm.nmr.domain.hp_profile.HpProfile;
+import in.gov.abdm.nmr.domain.state.State;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,17 +26,34 @@ import lombok.Setter;
 @Entity
 public class Address extends CommonAuditEntity {
 
-    @Id
-    private Long id;
-    private String country;
-    private String state;
-    private String district;
-    private String city;
-    private String subDistrict;
-    private String pincode;
-    private String addressLine1;
+	@Id
+	private Long id;
+	
+	@OneToOne
+	@JoinColumn(name = "country")
+	private Country country;
+	
+	@OneToOne
+	@JoinColumn(name = "state")
+	private State state;
+	
+	@OneToOne
+	@JoinColumn(name = "district")
+	private District district;
+	
+	@OneToOne
+	@JoinColumn(name = "city")
+	private City city;
+	
+	private String subDistrict;
+	private String pincode;
+	private String addressLine1;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_type")
-    private AddressType addressType;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "address_type")
+	private AddressType addressType;
+
+	@OneToOne
+	@JoinColumn(name = "hpProfile")
+	private HpProfile hpProfile;
 }

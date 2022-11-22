@@ -19,7 +19,7 @@ public class NmcCouncilToStateMapping extends CommonAuditEntity {
 
     @Id
     private Long id;
-    private String code;
+    private Integer code;
     private String name;
-    private String mappedWith;
+//    private String mappedWith;
 }

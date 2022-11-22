@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.domain.hp_profile;
 
+import java.math.BigInteger;
 import java.sql.Date;
 
 import javax.persistence.Entity;
@@ -18,28 +19,49 @@ import lombok.Setter;
 @Entity
 public class HpProfile extends CommonAuditEntity {
 
-    @Id
-    private Long id;
-    private String nmrId;
-    private String salutation;
-    private String fullName;
-    private String emailOfficial;
-    private String panNumber;
-    private String panName;
-    private String primaryContactNo;
-    private Integer mobileNumber;
-    private Date dateOfBirth;
-    private String profilePhoto;
-    private String gender;
-    private String middleName;
-    private String lastName;
-    private String maritalStatus;
-    private String spouseName;
-    private String changedName;
-    private String professionalType;
-    private String language;
-    private String picName;
-    private String signatureName;
-    private String systemOfMedicine;
-    private Long addressId;
+	@Id
+	private Long id;
+	private String aadharNumber;
+	private String categoryName;
+	private String changedName;
+	private String createdBy;
+	private Date dateOfBirth;
+	private String email;
+	private String emptyMandatoryFields;
+	private String fatherName;
+	private String firstName;
+	private String fullName;
+	private String gender;
+	private String identifiedStateName;
+	private Boolean is_manually;
+	private String lastName;
+	private String maritalStatus;
+	private String middleName;
+	private String mobileNumber;
+	private String motherName;
+	private String nationality;
+	private BigInteger nmrId;
+	private String official_telephone;
+	private String other_category;
+	private String panNumber;
+	private String picName;
+	private String primaryContactNo;
+	private String professionalType;
+	private String profilePhoto;
+	private String salutation;
+	private String signature;
+	private String spouseName;
+	private String systemOfMedicine;
+	private String updatedBy;
+	private Integer workExperienceInYear;
+	private Integer yearOfInfo;
+	
+	
+	
+//	private List<String> languages;
+//	
+//	@OneToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name = "address")
+//	private Address address;
+
 }

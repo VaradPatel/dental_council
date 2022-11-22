@@ -1,5 +1,4 @@
 package in.gov.abdm.nmr.domain.user_detail;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

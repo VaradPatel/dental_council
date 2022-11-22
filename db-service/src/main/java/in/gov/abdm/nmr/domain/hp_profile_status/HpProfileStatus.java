@@ -20,5 +20,5 @@ public class HpProfileStatus extends CommonAuditEntity {
     private Long id;
     private String nmrId;
     private String status;
-    private Long verifiedBy;
+    private String verifiedBy;
 }

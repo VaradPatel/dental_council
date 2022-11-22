@@ -1,9 +1,8 @@
-package in.gov.abdm.nmr.domain.address_type;
+package in.gov.abdm.nmr.domain.action;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,9 +13,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class AddressType extends CommonAuditEntity {
+public class Action {
 
-    @Id
-    private Long id;
-    private String addressType;
+	@Id
+	private Long id;
+	private String name;
 }
