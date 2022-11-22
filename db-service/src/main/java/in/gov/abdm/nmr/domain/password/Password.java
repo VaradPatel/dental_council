@@ -29,4 +29,5 @@ public class Password extends CommonAuditEntity {
     @ManyToOne
     @JoinColumn(name = "user_detail")
     private UserDetail userDetail;
+
 }

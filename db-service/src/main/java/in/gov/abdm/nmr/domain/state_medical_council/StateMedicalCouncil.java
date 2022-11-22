@@ -1,9 +1,8 @@
-package in.gov.abdm.nmr.domain.address_type;
+package in.gov.abdm.nmr.domain.state_medical_council;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,9 +13,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class AddressType extends CommonAuditEntity {
+public class StateMedicalCouncil {
 
     @Id
     private Long id;
-    private String addressType;
+    private String code;
+    private String name;
 }

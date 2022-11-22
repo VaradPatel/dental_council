@@ -22,9 +22,10 @@ import lombok.Setter;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class CommonAuditEntity {
 
-    @CreatedDate
-    private Timestamp createdAt;
+	@CreatedDate
+	private Timestamp createdAt;
 
-    @LastModifiedDate
-    private Timestamp updatedAt;
+	@LastModifiedDate
+	private Timestamp updatedAt;
+
 }

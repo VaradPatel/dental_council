@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.domain.university;
+package in.gov.abdm.nmr.domain.country;
 
 import java.util.List;
 
@@ -7,8 +7,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import in.gov.abdm.nmr.domain.college.College;
-import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
+import in.gov.abdm.nmr.domain.state.State;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,13 +18,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class University extends CommonAuditEntity {
+public class Country {
 
 	@Id
 	private Long id;
-	private String university_name;
-	private String university_code;
+	private String name;
+	private String enShortName;
 
-	@OneToMany(mappedBy = "university", fetch = FetchType.LAZY)
-	private List<College> colleges;
+	@OneToMany(mappedBy = "country", fetch = FetchType.LAZY)
+	private List<State> states;
 }
