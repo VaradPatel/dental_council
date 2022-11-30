@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.domain.action;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Action {
+public class Action extends CommonAuditEntity {
 
 	@Id
 	private Long id;

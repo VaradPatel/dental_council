@@ -32,7 +32,4 @@ public class UserDetail extends CommonAuditEntity {
     @JoinColumn(name = "user_type")
     private UserType userType;
 
-    @ManyToOne
-    @JoinColumn(name = "user_sub_type")
-    private UserSubType userSubType;
 }

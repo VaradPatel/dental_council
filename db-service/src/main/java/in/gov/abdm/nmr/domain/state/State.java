@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.domain.country.Country;
 import in.gov.abdm.nmr.domain.district.District;
 import lombok.AllArgsConstructor;
@@ -21,12 +22,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class State {
+public class State extends CommonAuditEntity {
 
 	@Id
 	private Long id;
 	private String name;
-	private String ios_code;
+	private String isoCode;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "country")

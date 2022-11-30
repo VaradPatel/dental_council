@@ -23,8 +23,8 @@ public class University extends CommonAuditEntity {
 
 	@Id
 	private Long id;
-	private String university_name;
-	private String university_code;
+	private String universityName;
+	private String universityCode;
 
 	@OneToMany(mappedBy = "university", fetch = FetchType.LAZY)
 	private List<College> colleges;

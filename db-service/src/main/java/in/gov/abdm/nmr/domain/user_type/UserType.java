@@ -1,11 +1,17 @@
 package in.gov.abdm.nmr.domain.user_type;
 
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
+import in.gov.abdm.nmr.domain.college.College;
 import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
+import in.gov.abdm.nmr.domain.user_sub_type.UserSubType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,4 +29,7 @@ public class UserType extends CommonAuditEntity {
     private Long id;
     private String code;
     private String name;
+    
+	@OneToMany(mappedBy = "usertype", fetch = FetchType.LAZY)
+	private List<UserSubType> userSubTypes;
 }

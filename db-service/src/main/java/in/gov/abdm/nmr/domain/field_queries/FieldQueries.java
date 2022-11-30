@@ -22,7 +22,7 @@ import lombok.Setter;
 public class FieldQueries extends CommonAuditEntity {
 
 	@Id
-	private String id;
+	private Long id;
 	
 	@OneToOne
 	@JoinColumn(name = "hpProfile")
@@ -31,13 +31,13 @@ public class FieldQueries extends CommonAuditEntity {
 	@ManyToOne
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	private Login login;
-	
-	private String field_name;
-	private String query_comment;
-	private String query_by;
-	private String query_status;
-	private String field_label;
-	private Integer query_type;
-	private String section_name;
+
+	private String fieldName;
+	private String queryComment;
+	private String queryBy;
+	private String queryStatus;
+	private String fieldLabel;
+	private Integer queryType;
+	private String sectionName;
 
 }

@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.domain.notification;
 
-import java.math.BigInteger;
 import java.sql.Timestamp;
 
 import javax.persistence.Entity;
@@ -8,6 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.domain.login.Login;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,10 +19,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Notification {
+public class Notification extends CommonAuditEntity  {
 
 	@Id
-	private BigInteger id;
+	private Long id;
 	
 	@ManyToOne
 	@JoinColumn(name = "sender_user_id", referencedColumnName = "id")
@@ -33,23 +33,23 @@ public class Notification {
 	private String type;
 	private String status;
 	private Timestamp created;
-	private Integer is_read;
-	private String doctor_profile_description;
+	private Integer isRead;
+	private String doctorProfileDescription;
 	
 	@ManyToOne
 	@JoinColumn(name = "from_user_id", referencedColumnName = "id")
-	private Login from_user_id;
+	private Login fromUserId;
 	
 	@ManyToOne
 	@JoinColumn(name = "to_user_id", referencedColumnName = "id")
-	private Login to_user_id;
+	private Login toUserId;
 	
 	
-	private String from_role_id;
-	private String to_role_id;
-	private String from_state_id;
-	private String to_state_id;
-	private String from_system_of_medicine_id;
-	private String to_system_of_medicine_id;
+	private String fromRoleId;
+	private String toRoleId;
+	private String fromStateId;
+	private String toStateId;
+	private String fromSystemOfMedicineId;
+	private String toSystemOfMedicineId;
 
 }
