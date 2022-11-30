@@ -12,6 +12,7 @@ import javax.persistence.OneToOne;
 import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.domain.hp_profile.HpProfile;
 import in.gov.abdm.nmr.domain.state.State;
+import in.gov.abdm.nmr.domain.state_medical_council.StateMedicalCouncil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +28,10 @@ public class RegistrationDetail extends CommonAuditEntity {
     @Id
     private Long id;
     private String certificate;
-    private String councilName;
+    
+    @OneToOne
+    private StateMedicalCouncil councilName;
+    
     private String councilStatus;
     private String createdBy;
     private Date dueDate;

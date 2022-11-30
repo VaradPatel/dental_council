@@ -1,10 +1,14 @@
 package in.gov.abdm.nmr.domain.country;
 
+import java.math.BigInteger;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 import in.gov.abdm.nmr.domain.state.State;
@@ -17,14 +21,17 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "country")
 public class Country {
 
 	@Id
-	private Long id;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private BigInteger id;
+	
 	private String name;
-	private String enShortName;
-
-	@OneToMany(mappedBy = "country", fetch = FetchType.LAZY)
-	private List<State> states;
+	private String nationality;
+	
+//	@OneToMany(cascade = CascadeType.ALL)
+//	@JoinColumn(name = "country", referencedColumnName = "id")
+//	private List<State> state;
 }
