@@ -2,7 +2,7 @@ package in.gov.abdm.nmr.api.config;
 
 import static in.gov.abdm.nmr.common.CustomHeaders.ACCESS_TOKEN;
 import static in.gov.abdm.nmr.common.CustomHeaders.REFRESH_TOKEN;
-import static in.gov.abdm.nmr.common.CustomHeaders.TRACE_ID;
+import static in.gov.abdm.nmr.common.CustomHeaders.CORRELATION_ID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,7 +27,7 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins(allowedUrls).allowedMethods("*").allowCredentials(true).exposedHeaders(ACCESS_TOKEN, REFRESH_TOKEN, TRACE_ID);
+                registry.addMapping("/**").allowedOrigins(allowedUrls).allowedMethods("*").allowCredentials(true).exposedHeaders(ACCESS_TOKEN, REFRESH_TOKEN, CORRELATION_ID);
             }
         };
     }
