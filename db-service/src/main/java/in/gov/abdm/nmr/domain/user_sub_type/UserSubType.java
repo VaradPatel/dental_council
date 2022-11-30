@@ -28,6 +28,6 @@ public class UserSubType extends CommonAuditEntity {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "user_type")
-    private UserType userType;
+    @JoinColumn(name = "usertype")
+    private UserType usertype;
 }

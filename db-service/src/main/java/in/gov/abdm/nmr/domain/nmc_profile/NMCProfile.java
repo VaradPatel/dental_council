@@ -5,6 +5,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
+import in.gov.abdm.nmr.domain.state_medical_council.StateMedicalCouncil;
 import in.gov.abdm.nmr.domain.user_detail.UserDetail;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,10 +18,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class NMCProfile {
+public class NMCProfile extends CommonAuditEntity  {
 
 	@Id
-	private Integer id;
+	private Long id;
 	
 	@OneToOne
 	@JoinColumn(name = "userDetail")
@@ -29,7 +31,10 @@ public class NMCProfile {
 	private String firstName;
 	private String lastName;
 	private String middleName;
-	private Integer councilId;
+	
+	@OneToOne
+	private StateMedicalCouncil stateMedicalCouncil;
+	
 	private Integer ndhmEnrollment;
 	private Integer enrolledNumber;
 	private String displayName;

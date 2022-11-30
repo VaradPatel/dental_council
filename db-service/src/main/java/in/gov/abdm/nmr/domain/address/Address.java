@@ -14,6 +14,7 @@ import in.gov.abdm.nmr.domain.country.Country;
 import in.gov.abdm.nmr.domain.district.District;
 import in.gov.abdm.nmr.domain.hp_profile.HpProfile;
 import in.gov.abdm.nmr.domain.state.State;
+import in.gov.abdm.nmr.domain.sub_district.SubDistrict;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,15 +46,18 @@ public class Address extends CommonAuditEntity {
 	@JoinColumn(name = "city")
 	private City city;
 	
-	private String subDistrict;
+	@OneToOne
+	@JoinColumn(name = "subDistrict")
+	private SubDistrict subDistrict;
+	
 	private String pincode;
 	private String addressLine1;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "address_type")
 	private AddressType addressType;
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "hpProfile")
 	private HpProfile hpProfile;
 }

@@ -6,7 +6,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.domain.district.District;
+import in.gov.abdm.nmr.domain.sub_district.SubDistrict;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,15 +19,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class City {
+public class City extends CommonAuditEntity {
 
 	@Id
 	private Long id;
 	private String name;
-	private String enShortName;
+	private String isoCode;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "district")
-	private District district;
+	@JoinColumn(name = "subdistrict")
+	private SubDistrict subdistrict;
 
 }

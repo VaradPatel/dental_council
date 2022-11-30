@@ -2,15 +2,20 @@ package in.gov.abdm.nmr.domain.registration_detail;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.domain.hp_profile.HpProfile;
+import in.gov.abdm.nmr.domain.qualification_detail.QualificationDetail;
 import in.gov.abdm.nmr.domain.state.State;
 import in.gov.abdm.nmr.domain.state_medical_council.StateMedicalCouncil;
 import lombok.AllArgsConstructor;
@@ -25,8 +30,10 @@ import lombok.Setter;
 @Entity
 public class RegistrationDetail extends CommonAuditEntity {
 
-    @Id
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
     private String certificate;
     
     @OneToOne
@@ -68,5 +75,9 @@ public class RegistrationDetail extends CommonAuditEntity {
 	@OneToOne
 	@JoinColumn(name = "hp_profile")
     private HpProfile hpProfile;
-       
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "registration_details_id", referencedColumnName = "id")
+    private List<QualificationDetail> qualificationDetails;
+  
 }

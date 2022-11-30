@@ -18,6 +18,6 @@ import lombok.Setter;
 public class Professional extends CommonAuditEntity {
 
     @Id
-    private Integer id;
+    private Long id;
     private Long registrationNo;
 }

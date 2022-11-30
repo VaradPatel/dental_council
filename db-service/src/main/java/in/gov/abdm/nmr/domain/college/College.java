@@ -22,8 +22,8 @@ public class College extends CommonAuditEntity {
 
     @Id
     private Long id;
-    private String college_name;
-    private String college_code;
+    private String collegeName;
+    private String collegeCode;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "university")

@@ -20,6 +20,6 @@ public class CollegeRegistrar extends CommonAuditEntity {
     private Long id;
     private String registrarName;
     private String phoneNo;
-
+    private String email;
     // user table link
 }

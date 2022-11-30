@@ -8,7 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-
+import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.domain.login.Login;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,11 +20,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class AuditTrail {
+public class AuditTrail extends CommonAuditEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private BigInteger id;
+	private Long id;
 	
 	@OneToOne
 	@JoinColumn(name = "user_id", referencedColumnName = "id")

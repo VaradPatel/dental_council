@@ -7,6 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import in.gov.abdm.nmr.domain.application_status_type.ApplicationStatusType;
 import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.domain.hp_profile.HpProfile;
 import lombok.AllArgsConstructor;
@@ -22,13 +23,15 @@ import lombok.Setter;
 public class ApplicationStatus extends CommonAuditEntity {
 
 	@Id
-	private BigInteger id;
+	private Long id;
 	
 	@OneToOne
 	@JoinColumn(name = "hpProfile")
 	private HpProfile hpProfile;
 	
-	private String applicationStatus;
+	@OneToOne
+	private ApplicationStatusType applicationStatus;
+	
 	private String createdBy;
 	private String updatedBy;
 }

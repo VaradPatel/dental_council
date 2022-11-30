@@ -1,16 +1,21 @@
 package in.gov.abdm.nmr.domain.qualification_detail;
 
-import java.math.BigInteger;
 import java.sql.Date;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.domain.college.College;
 import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.domain.country.Country;
+import in.gov.abdm.nmr.domain.course.Course;
 import in.gov.abdm.nmr.domain.district.District;
 import in.gov.abdm.nmr.domain.hp_profile.HpProfile;
 import in.gov.abdm.nmr.domain.registration_detail.RegistrationDetail;
@@ -27,8 +32,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 public class QualificationDetail extends CommonAuditEntity {
-
+	
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	private Long id;
 	private String certificate;
 	private Date endDate;
@@ -52,7 +59,9 @@ public class QualificationDetail extends CommonAuditEntity {
 	@JoinColumn(name = "country")
 	private Country country;
 
-	private BigInteger courseId;
+	@OneToOne
+    @JoinColumn(name = "course")
+	private Course course;
 
 	@OneToOne
 	@JoinColumn(name = "state")
@@ -66,9 +75,10 @@ public class QualificationDetail extends CommonAuditEntity {
 	@JoinColumn(name = "registrationDetail")
 	private RegistrationDetail registrationDetail;
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "hpProfile")
 	private HpProfile hpProfile;
 
-	private Integer is_verified;
+	private Integer isVerified;
+
 }

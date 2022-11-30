@@ -1,12 +1,11 @@
 package in.gov.abdm.nmr.domain.login;
 
-import java.math.BigInteger;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,11 +16,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Login {
+public class Login extends CommonAuditEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private BigInteger id;
+	private Long id;
 
 	private String userName;
 	private String password;

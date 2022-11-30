@@ -8,6 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.domain.action.Action;
+import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.domain.registration_detail.RegistrationDetail;
 import in.gov.abdm.nmr.domain.verifier.Verifier;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class VerificationWorkflow {
+public class VerificationWorkflow extends CommonAuditEntity {
 
     @Id
     private Long id;

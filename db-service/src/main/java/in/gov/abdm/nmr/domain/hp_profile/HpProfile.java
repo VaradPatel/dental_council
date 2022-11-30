@@ -1,12 +1,20 @@
 package in.gov.abdm.nmr.domain.hp_profile;
 
-import java.math.BigInteger;
 import java.sql.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 
+import in.gov.abdm.nmr.domain.address.Address;
 import in.gov.abdm.nmr.domain.common.CommonAuditEntity;
+import in.gov.abdm.nmr.domain.registration_detail.RegistrationDetail;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +28,10 @@ import lombok.Setter;
 public class HpProfile extends CommonAuditEntity {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	private Long id;
+
 	private String aadharNumber;
 	private String categoryName;
 	private String changedName;
@@ -33,16 +44,16 @@ public class HpProfile extends CommonAuditEntity {
 	private String fullName;
 	private String gender;
 	private String identifiedStateName;
-	private Boolean is_manually;
+	private Boolean isManually;
 	private String lastName;
 	private String maritalStatus;
 	private String middleName;
 	private String mobileNumber;
 	private String motherName;
 	private String nationality;
-	private BigInteger nmrId;
-	private String official_telephone;
-	private String other_category;
+	private String nmrId;
+	private String officialTelephone;
+	private String otherCategory;
 	private String panNumber;
 	private String picName;
 	private String primaryContactNo;
@@ -56,12 +67,20 @@ public class HpProfile extends CommonAuditEntity {
 	private Integer workExperienceInYear;
 	private Integer yearOfInfo;
 	
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "hp_profile_id", referencedColumnName = "id")
+	private List<Address> address;
 	
-	
-//	private List<String> languages;
-//	
-//	@OneToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "address")
-//	private Address address;
+       
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "hp_profile_id", referencedColumnName = "id")
+    private List<RegistrationDetail> registrationDetails;
+   
+   // private List<Speciality> specialities;
+   // private WorkDetails work_details;
+        
+   //	private List<String> languages;
+
 
 }
