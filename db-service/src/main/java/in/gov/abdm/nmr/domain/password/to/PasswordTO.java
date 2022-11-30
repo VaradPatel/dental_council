@@ -1,6 +1,6 @@
-package in.gov.abdm.nmr.domain.password;
+package in.gov.abdm.nmr.domain.password.to;
 
-import in.gov.abdm.nmr.domain.user_detail.UserDetailTO;
+import in.gov.abdm.nmr.domain.user_detail.to.UserDetailTO;
 import lombok.Data;
 
 @Data

@@ -1,7 +1,7 @@
-package in.gov.abdm.nmr.domain.user_detail;
+package in.gov.abdm.nmr.domain.user_detail.to;
 
-import in.gov.abdm.nmr.domain.user_sub_type.UserSubTypeTO;
-import in.gov.abdm.nmr.domain.user_type.UserTypeTO;
+import in.gov.abdm.nmr.domain.user_sub_type.to.UserSubTypeTO;
+import in.gov.abdm.nmr.domain.user_type.to.UserTypeTO;
 import lombok.Data;
 
 @Data

@@ -62,7 +62,7 @@ public class RegistrationDetail extends CommonAuditEntity {
     private Integer whetherRegisteredWithOthers;
 
 	@OneToOne
-	@JoinColumn(name = "hpProfile")
+	@JoinColumn(name = "hp_profile")
     private HpProfile hpProfile;
        
 }

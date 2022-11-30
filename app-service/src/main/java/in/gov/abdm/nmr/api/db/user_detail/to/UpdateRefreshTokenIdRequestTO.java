@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.api.ext.user_detail;
+package in.gov.abdm.nmr.api.db.user_detail.to;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

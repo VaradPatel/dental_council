@@ -2,12 +2,16 @@ package in.gov.abdm.nmr.domain.user_detail;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController()
+import in.gov.abdm.nmr.domain.user_detail.to.UpdateRefreshTokenIdRequestTO;
+import in.gov.abdm.nmr.domain.user_detail.to.UserDetailSearchTO;
+import in.gov.abdm.nmr.domain.user_detail.to.UserDetailTO;
+
+@RestController
 @RequestMapping("/userDetails")
 public class UserDetailController {
 
@@ -17,17 +21,17 @@ public class UserDetailController {
         this.userDetailService = userDetailService;
     }
 
-    @GetMapping(path = "/queryBy/username", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDetailTO findByUsername(@RequestBody String username) {
-        return userDetailService.findByUsername(username);
+    @GetMapping(path = "/search", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserDetailTO searchUserDetail(@RequestBody UserDetailSearchTO userDetailSearchTO) {
+        return userDetailService.searchUserDetail(userDetailSearchTO);
     }
 
     @GetMapping(path = "/refreshTokenId", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String findRefreshTokenIdByUsername(@RequestBody String username) {
-        return userDetailService.findRefreshTokenIdByUsername(username);
+    public String findRefreshTokenId(@RequestBody UserDetailSearchTO userDetailSearchTO) {
+        return userDetailService.findRefreshTokenId(userDetailSearchTO);
     }
 
-    @PutMapping(path = "/refreshTokenId", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(path = "/refreshTokenId", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Integer updateRefreshTokenId(@RequestBody UpdateRefreshTokenIdRequestTO refreshTokenRequestTO) {
         return userDetailService.updateRefreshTokenId(refreshTokenRequestTO);
     }

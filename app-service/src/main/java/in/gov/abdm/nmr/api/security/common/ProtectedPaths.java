@@ -12,12 +12,10 @@ public class ProtectedPaths {
 
     public static final String PATH_LOGIN = "/login";
     public static final String PATH_REFRESH_TOKEN = "/refreshToken";
-    public static final String PATH_TEST = "/test";
 
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<String> protectedPaths = new ArrayList<>();
         protectedPaths.add(PATH_REFRESH_TOKEN);
-        protectedPaths.add(PATH_TEST);
 
         return protectedPaths.stream().map(AntPathRequestMatcher::new).toArray(AntPathRequestMatcher[]::new);
     }

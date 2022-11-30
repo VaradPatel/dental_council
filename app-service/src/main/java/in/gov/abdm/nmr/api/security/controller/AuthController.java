@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import in.gov.abdm.nmr.api.security.controller.to.LoginRequestTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
@@ -21,7 +22,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping(path = PATH_LOGIN, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = PATH_LOGIN, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public String login(@RequestBody(required = false) LoginRequestTO loginRequestTO, HttpServletResponse response) {
         return authService.login(response);
     }
