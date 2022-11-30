@@ -7,8 +7,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import in.gov.abdm.nmr.api.ext.user_detail.IUserDetailService;
-import in.gov.abdm.nmr.api.ext.user_detail.UserDetailTO;
+import in.gov.abdm.nmr.api.db.user_detail.IUserDetailService;
+import in.gov.abdm.nmr.api.db.user_detail.to.UserDetailSearchTO;
+import in.gov.abdm.nmr.api.db.user_detail.to.UserDetailTO;
 
 @Component
 public class UserPasswordDetailsService implements UserDetailsService {
@@ -21,11 +22,14 @@ public class UserPasswordDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDetailTO userDetail = userDetailService.findByUsername(username);
+        UserDetailSearchTO userDetailSearchTO = new UserDetailSearchTO();
+        userDetailSearchTO.setUsername(username);
+
+        UserDetailTO userDetail = userDetailService.searchUserDetail(userDetailSearchTO);
         if (userDetail == null) {
             throw new UsernameNotFoundException("Invalid username");
         }
 
-        return new UserPassDetail(userDetail.getUsername(), userDetail.getPassword(), Collections.emptyList(), userDetail.getUserType().getId());
+        return new UserPassDetail(userDetail.getUsername(), userDetail.getPassword(), Collections.emptyList(), userDetail.getUserType().getCode());
     }
 }

@@ -10,19 +10,19 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
-public class DBWebclientConfig {
+public class WebclientConfig {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private String baseUrl;
+    private String dbBaseUrl;
 
-    public DBWebclientConfig(@Value("${nmr.db.api.base.url}") String baseUrl) {
-        this.baseUrl = baseUrl;
+    public WebclientConfig(@Value("${nmr.db.api.base.url}") String baseUrl) {
+        this.dbBaseUrl = baseUrl;
     }
 
     @Bean
     public WebClient dbWebClient(WebClient.Builder webClientBuilder) {
         LOGGER.info("Configuring WebClient for DB API");
-        return webClientBuilder.baseUrl(baseUrl).defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).build();
+        return webClientBuilder.baseUrl(dbBaseUrl).defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).build();
     }
 }

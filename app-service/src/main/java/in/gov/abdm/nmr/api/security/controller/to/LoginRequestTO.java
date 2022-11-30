@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.api.security.controller;
+package in.gov.abdm.nmr.api.security.controller.to;
 
 import lombok.Data;
 
@@ -7,5 +7,5 @@ public class LoginRequestTO {
 
     private String username;
     private String password;
-    private Long userType;
+    private String userType;
 }

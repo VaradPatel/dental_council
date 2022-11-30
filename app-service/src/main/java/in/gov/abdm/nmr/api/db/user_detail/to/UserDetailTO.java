@@ -1,8 +1,10 @@
-package in.gov.abdm.nmr.api.ext.user_detail;
+package in.gov.abdm.nmr.api.db.user_detail.to;
 
-import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 
-@Data
+@Value
+@NoArgsConstructor(force = true)
 public class UserDetailTO {
 
     private Long id;

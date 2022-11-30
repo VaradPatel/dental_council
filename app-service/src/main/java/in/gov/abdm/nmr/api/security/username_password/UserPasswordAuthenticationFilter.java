@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import in.gov.abdm.nmr.api.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.api.security.common.RsaUtil;
-import in.gov.abdm.nmr.api.security.controller.LoginRequestTO;
+import in.gov.abdm.nmr.api.security.controller.to.LoginRequestTO;
 
 @Component
 public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {

@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.api.security.username_password;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -32,7 +33,7 @@ public class UserPasswordAuthenticationProvider extends DaoAuthenticationProvide
         if (userPassAuthToken.getUserType() == null || !userDetail.getUserType().equals(userPassAuthToken.getUserType())) {
             LOGGER.error("Usertype and credentials do not match");
             userPassAuthToken.eraseCredentials();
-            throw new UsernameNotFoundException("Invalid username");
+            throw new AuthenticationServiceException("Invalid username");
         }
 
         return super.authenticate(userPassAuthToken);

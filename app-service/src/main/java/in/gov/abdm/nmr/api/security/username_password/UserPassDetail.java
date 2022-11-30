@@ -10,14 +10,14 @@ public class UserPassDetail extends User {
 
     private static final long serialVersionUID = 3325160730962409090L;
 
-    private final Long userType;
+    private final String userType;
 
-    public UserPassDetail(String username, String password, Collection<? extends GrantedAuthority> authorities, Long userType) {
+    public UserPassDetail(String username, String password, Collection<? extends GrantedAuthority> authorities, String userType) {
         super(username, password, authorities);
         this.userType = userType;
     }
 
-    public Long getUserType() {
+    public String getUserType() {
         return userType;
     }
 

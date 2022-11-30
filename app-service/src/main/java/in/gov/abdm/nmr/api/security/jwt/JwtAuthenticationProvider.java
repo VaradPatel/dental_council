@@ -13,7 +13,8 @@ import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 
-import in.gov.abdm.nmr.api.ext.user_detail.IUserDetailService;
+import in.gov.abdm.nmr.api.db.user_detail.IUserDetailService;
+import in.gov.abdm.nmr.api.db.user_detail.to.UserDetailSearchTO;
 
 @Component
 public class JwtAuthenticationProvider implements AuthenticationProvider {
@@ -42,7 +43,10 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             if (JwtTypeEnum.REFRESH_TOKEN.equals(jwtAuthtoken.getType())) {
                 DecodedJWT verifiedToken = jwtUtil.verifyToken(jwtAuthtoken.getCredentials(), JwtTypeEnum.REFRESH_TOKEN);
 
-                String refreshTokenId = userDetailService.findRefreshTokenIdByUsername(verifiedToken.getSubject());
+                UserDetailSearchTO userDetailSearchTO = new UserDetailSearchTO();
+                userDetailSearchTO.setUsername(verifiedToken.getSubject());
+                String refreshTokenId = userDetailService.findRefreshTokenId(userDetailSearchTO);
+
                 if (StringUtils.isBlank(verifiedToken.getId()) || StringUtils.isBlank(refreshTokenId) || !refreshTokenId.equals(verifiedToken.getId())) {
                     throw new AuthenticationServiceException("Unable to authenticate token");
                 }
