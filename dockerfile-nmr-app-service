@@ -1,0 +1,8 @@
+FROM  harbor.pmjaydevmgmt.tatacommunications.com/abdm/openjdk:17.0-jdk
+ENV TZ=Asia/Calcutta
+RUN mkdir /APP
+WORKDIR /APP
+COPY target/nmr-abdm-nmr-1.0.0.jar  /APP/nmr-abdm-nmr-1.0.0.jar
+EXPOSE 9110
+RUN chmod -R 777 /APP
+ENTRYPOINT ["java","-jar","/APP/nmr-abdm-nmr-1.0.0.jar"]
