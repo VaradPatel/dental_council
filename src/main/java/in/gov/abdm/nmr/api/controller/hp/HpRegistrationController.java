@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import in.gov.abdm.nmr.api.controller.hp.to.HpProfileDetailResponseTO;
 import in.gov.abdm.nmr.api.controller.hp.to.HpProfileUpdateRequestTO;
+import in.gov.abdm.nmr.api.controller.hp.to.HpProfileUpdateResponseTO;
 import in.gov.abdm.nmr.api.controller.hp.to.SmcRegistrationDetailRequestTO;
 import in.gov.abdm.nmr.api.controller.hp.to.SmcRegistrationDetailResponseTO;
 import in.gov.abdm.nmr.api.exception.InvalidRequestException;
@@ -38,7 +39,7 @@ public class HpRegistrationController {
     }
 
 	@PutMapping(path = "/hpProfileDetail/{hp_profile_id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public SmcRegistrationDetailResponseTO updateHpProfileDetail(@RequestBody HpProfileUpdateRequestTO hpProfileUpdateRequest, @PathVariable(name = "hp_profile_id") BigInteger hpProfileId) throws InvalidRequestException {
+    public HpProfileUpdateResponseTO updateHpProfileDetail(@RequestBody HpProfileUpdateRequestTO hpProfileUpdateRequest, @PathVariable(name = "hp_profile_id") BigInteger hpProfileId) throws InvalidRequestException {
     	return hpService.updateHpProfileDetail(hpProfileId, hpProfileUpdateRequest);
     }
 
