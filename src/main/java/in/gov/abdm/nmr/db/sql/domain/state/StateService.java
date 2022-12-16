@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.db.sql.domain.state;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -20,7 +21,7 @@ public class StateService implements IStateService {
     }
 
     @Override
-    public List<StateTO> getStateData(Long countryId) {
+    public List<StateTO> getStateData(BigInteger countryId) {
 //        List<Tuple> stateList = stateRepository.getState(countryId);
 //        List<StateTO> stateTOList = new ArrayList<StateTO>();
 //        for (Tuple state : stateList) {

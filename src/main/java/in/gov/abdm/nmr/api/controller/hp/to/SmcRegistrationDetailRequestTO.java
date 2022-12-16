@@ -5,6 +5,6 @@ import lombok.Value;
 @Value
 public class SmcRegistrationDetailRequestTO {
 
-    private String smcCode;
+    private Integer councilId;
     private String registrationNumber;
 }

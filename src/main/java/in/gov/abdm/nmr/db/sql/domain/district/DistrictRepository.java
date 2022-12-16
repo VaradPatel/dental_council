@@ -9,6 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface DistrictRepository extends JpaRepository<District, BigInteger> {
 
     @Query(value = "SELECT id, name, code, state FROM district where state=:state", nativeQuery = true)
-    List<District> getDistrict(Long state);
+    List<District> getDistrict(BigInteger state);
 
 }

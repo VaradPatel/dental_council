@@ -1,5 +1,7 @@
 package in.gov.abdm.nmr.db.sql.domain.city;
 
+import java.math.BigInteger;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -20,7 +22,7 @@ import lombok.Setter;
 @Entity
 public class City {
     @Id
-    private Long id;
+    private BigInteger id;
     private String name;
     private String code;
 

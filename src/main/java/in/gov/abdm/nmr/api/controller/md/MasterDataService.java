@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.api.controller.md;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import org.apache.commons.codec.language.bm.Languages;
@@ -7,12 +8,12 @@ import org.springframework.stereotype.Service;
 
 import in.gov.abdm.nmr.api.controller.md.to.IMasterDataMapper;
 import in.gov.abdm.nmr.api.controller.md.to.MasterDataTO;
+import in.gov.abdm.nmr.db.sql.domain.broad_speciality.BroadSpecialityService;
 import in.gov.abdm.nmr.db.sql.domain.city.CityService;
 import in.gov.abdm.nmr.db.sql.domain.college.CollegeService;
 import in.gov.abdm.nmr.db.sql.domain.country.CountryService;
 import in.gov.abdm.nmr.db.sql.domain.district.DistrictService;
 import in.gov.abdm.nmr.db.sql.domain.language.LanguageService;
-import in.gov.abdm.nmr.db.sql.domain.speciality.SpecialityService;
 import in.gov.abdm.nmr.db.sql.domain.state.StateService;
 import in.gov.abdm.nmr.db.sql.domain.state_medical_council.StateMedicalCouncilService;
 import in.gov.abdm.nmr.db.sql.domain.sub_district.SubDistrictService;
@@ -33,7 +34,7 @@ public class MasterDataService implements IMasterDataService {
 	
 	private CityService cityService;
 	
-	private SpecialityService specialityService;
+	private BroadSpecialityService broadSpecialityService;
 	
 	private UniversityService universityService;
 	
@@ -45,7 +46,7 @@ public class MasterDataService implements IMasterDataService {
 
 	public MasterDataService(StateMedicalCouncilService stateMedicalCouncilService, IMasterDataMapper masterDataMapper,
 			CountryService countryService, StateService stateService, DistrictService districtService, SubDistrictService subDistrictService,
-			CityService cityService, SpecialityService specialityService, UniversityService universityService, CollegeService collegeService,
+			CityService cityService, BroadSpecialityService broadSpecialityService, UniversityService universityService, CollegeService collegeService,
 			LanguageService languageService) {
 		super();
 		this.stateMedicalCouncilService = stateMedicalCouncilService;
@@ -55,7 +56,7 @@ public class MasterDataService implements IMasterDataService {
 		this.districtService = districtService;
 		this.subDistrictService = subDistrictService;
 		this.cityService = cityService;
-		this.specialityService = specialityService;
+		this.broadSpecialityService = broadSpecialityService;
 		this.universityService = universityService;
 		this.collegeService = collegeService;
 		this.languageService = languageService;
@@ -68,7 +69,7 @@ public class MasterDataService implements IMasterDataService {
 	
 	@Override
 	public List<MasterDataTO> specialities() {
-		return masterDataMapper.specialitiesToMasterDataTOs(specialityService.getSpecialityData());
+		return masterDataMapper.specialitiesToMasterDataTOs(broadSpecialityService.getSpecialityData());
 	}
 
 	@Override
@@ -77,22 +78,22 @@ public class MasterDataService implements IMasterDataService {
 	}
 
 	@Override
-	public List<MasterDataTO> states(Long countryId) {
+	public List<MasterDataTO> states(BigInteger countryId) {
 		return masterDataMapper.statesToMasterDataTOs(stateService.getStateData(countryId));
 	}
 
 	@Override
-	public List<MasterDataTO> districts(Long stateId) {
+	public List<MasterDataTO> districts(BigInteger stateId) {
 		return masterDataMapper.districtsToMasterDataTOs(districtService.getDistrictData(stateId));
 	}
 	
 	@Override
-	public List<MasterDataTO> subDistricts(Long districtId) {
+	public List<MasterDataTO> subDistricts(BigInteger districtId) {
 		return masterDataMapper.subDistrictsToMasterDataTOs(subDistrictService.getSubDistrictData(districtId));
 	}
 
     @Override
-    public List<MasterDataTO> cities(Long subDistrictId) {
+    public List<MasterDataTO> cities(BigInteger subDistrictId) {
         return masterDataMapper.citiesToMasterDataTOs(cityService.getCityData(subDistrictId));
     }
     
@@ -102,7 +103,7 @@ public class MasterDataService implements IMasterDataService {
 	}
 	
 	@Override
-	public List<MasterDataTO> colleges(Long universityId) {
+	public List<MasterDataTO> colleges(BigInteger universityId) {
 		return masterDataMapper.collegesToMasterDataTOs(collegeService.getCollegeData(universityId));
 	}
 	

@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.db.sql.domain.hp_profile;
 
+import java.math.BigInteger;
 import java.sql.Date;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import javax.persistence.OneToMany;
 
 import in.gov.abdm.nmr.db.sql.domain.address.Address;
 import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
-import in.gov.abdm.nmr.db.sql.domain.registration_detail.RegistrationDetail;
+import in.gov.abdm.nmr.db.sql.domain.registration_detail.RegistrationDetails;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,13 +25,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class HpProfile extends CommonAuditEntity {
+public class HpProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private BigInteger id;
 
     private String aadharNumber;
+    private String schedule;
     private String categoryName;
     private String changedName;
     private String createdBy;
@@ -63,7 +65,7 @@ public class HpProfile extends CommonAuditEntity {
     private String systemOfMedicine;
     private String updatedBy;
     private Integer workExperienceInYear;
-    private Integer yearOfInfo;
+    private String yearOfInfo;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "hp_profile_id", referencedColumnName = "id")
@@ -71,7 +73,7 @@ public class HpProfile extends CommonAuditEntity {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "hp_profile_id", referencedColumnName = "id")
-    private List<RegistrationDetail> registrationDetails;
+    private List<RegistrationDetails> registrationDetails;
     // private List<Speciality> specialities;
     // private WorkDetails work_details;
     //	private List<String> languages;

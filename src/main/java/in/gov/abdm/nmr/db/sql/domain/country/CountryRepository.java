@@ -12,5 +12,6 @@ public interface CountryRepository extends JpaRepository<Country, BigInteger> {
 
     @Query(value = "SELECT name, id, nationality FROM country", nativeQuery = true)
     List<Country> getCountry();
+    
 
 }

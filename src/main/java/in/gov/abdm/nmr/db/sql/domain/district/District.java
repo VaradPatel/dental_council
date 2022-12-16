@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.db.sql.domain.district;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -25,7 +26,7 @@ import lombok.Setter;
 public class District {
 
     @Id
-    private Long id;
+    private BigInteger id;
     private String name;
     private String code;
 

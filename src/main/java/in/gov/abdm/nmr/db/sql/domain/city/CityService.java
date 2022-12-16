@@ -23,7 +23,7 @@ public class CityService implements ICityService {
     }
 
     @Override
-    public List<CityTO> getCityData(Long subdistrictId) {
+    public List<CityTO> getCityData(BigInteger subdistrictId) {
     	return cityDtoMapper.cityDataToDto(cityRepository.getCity(subdistrictId));
     }
 }

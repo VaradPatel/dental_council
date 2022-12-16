@@ -9,7 +9,7 @@ import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.action.Action;
 import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
-import in.gov.abdm.nmr.db.sql.domain.registration_detail.RegistrationDetail;
+import in.gov.abdm.nmr.db.sql.domain.registration_detail.RegistrationDetails;
 import in.gov.abdm.nmr.db.sql.domain.verifier.Verifier;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +28,7 @@ public class VerificationWorkflow extends CommonAuditEntity {
 
     @OneToOne
     @JoinColumn(name = "registration")
-    private RegistrationDetail registration;
+    private RegistrationDetails registration;
 
     @OneToOne
     @JoinColumn(name = "verifier")

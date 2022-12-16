@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.api.controller.md;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import in.gov.abdm.nmr.api.controller.md.to.MasterDataTO;
@@ -12,17 +13,17 @@ public interface IMasterDataService {
     
     List<MasterDataTO> countries();
     
-    List<MasterDataTO> states(Long countryId);
+    List<MasterDataTO> states(BigInteger countryId);
 
-    List<MasterDataTO> districts(Long stateId);
+    List<MasterDataTO> districts(BigInteger stateId);
     
-    List<MasterDataTO> subDistricts(Long districtId);
+    List<MasterDataTO> subDistricts(BigInteger districtId);
 
-    List<MasterDataTO> cities(Long subDistrictId);
+    List<MasterDataTO> cities(BigInteger subDistrictId);
     
     List<MasterDataTO> universities();
     
-    List<MasterDataTO> colleges(Long universityId);
+    List<MasterDataTO> colleges(BigInteger universityId);
     
     List<MasterDataTO> languages();
 

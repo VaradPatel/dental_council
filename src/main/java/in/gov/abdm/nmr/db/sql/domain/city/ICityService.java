@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface ICityService {
 
-    List<CityTO> getCityData(Long subDistrictId);
+    List<CityTO> getCityData(BigInteger subDistrictId);
 }

@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.api.controller.md;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import org.springframework.http.MediaType;
@@ -37,22 +38,22 @@ public class MasterDataController {
     }
     
     @GetMapping(path = "country/{country_id}/states", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<MasterDataTO> states(@PathVariable(name = "country_id") Long countryId) {
+    public List<MasterDataTO> states(@PathVariable(name = "country_id") BigInteger countryId) {
         return masterDataService.states(countryId);
     }
     
     @GetMapping(path = "state/{state_id}/districts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<MasterDataTO> districts(@PathVariable(name = "state_id") Long stateId) {
+    public List<MasterDataTO> districts(@PathVariable(name = "state_id") BigInteger stateId) {
         return masterDataService.districts(stateId);
     }
     
     @GetMapping(path = "district/{district_id}/sub_districts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<MasterDataTO> subDistricts(@PathVariable(name = "district_id") Long districtId) {
+    public List<MasterDataTO> subDistricts(@PathVariable(name = "district_id") BigInteger districtId) {
         return masterDataService.subDistricts(districtId);
     }
     
     @GetMapping(path = "sub_district/{sub_district_id}/cities", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<MasterDataTO> cities(@PathVariable(name = "sub_district_id") Long subDistrictId) {
+    public List<MasterDataTO> cities(@PathVariable(name = "sub_district_id") BigInteger subDistrictId) {
         return masterDataService.cities(subDistrictId);
     }
     
@@ -62,7 +63,7 @@ public class MasterDataController {
     }
     
     @GetMapping(path = "university/{university_id}/colleges", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<MasterDataTO> colleges(@PathVariable(name = "university_id") Long universityId) {
+    public List<MasterDataTO> colleges(@PathVariable(name = "university_id") BigInteger universityId) {
         return masterDataService.colleges(universityId);
     }
     

@@ -14,7 +14,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
-import in.gov.abdm.nmr.db.sql.domain.qualification_detail.QualificationDetail;
+import in.gov.abdm.nmr.db.sql.domain.qualification_detail.QualificationDetails;
 import in.gov.abdm.nmr.db.sql.domain.state.State;
 import in.gov.abdm.nmr.db.sql.domain.state_medical_council.StateMedicalCouncil;
 import lombok.AllArgsConstructor;
@@ -27,26 +27,26 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class RegistrationDetail extends CommonAuditEntity {
+public class RegistrationDetails extends CommonAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     private String certificate;
 
-    @OneToOne
-    private StateMedicalCouncil stateMedicalCouncil;
+//    @OneToOne
+    private Integer councilName;
     private String councilStatus;
     private String createdBy;
-    private Date dueDate;
-    private Date fromDate;
-    private Integer isNameChange;
+    private String dueDate;
+    private String fromDate;
+    private String isNameChange;
     private Integer isNuid;
-    private Integer isRenewable;
+    private String isRenewable;
     private Integer isRenewableRegistration;
     private String nameChangeProofAttachment;
     private String nuidNumber;
-    private Date nuidValidTill;
+    private String nuidValidTill;
     private String parentCouncil;
     private String reciprocalRegistrationDone;
     private String registeredAs;
@@ -61,14 +61,14 @@ public class RegistrationDetail extends CommonAuditEntity {
     private State state;
     private String status;
     private String systemOfMedicine;
-    private Date toDate;
+    private String toDate;
     private String type;
     private String updatedBy;
-    private String verifyBy;
-    private Timestamp verifiedTime;
+    private String verifiedBy;
+    private String verifiedTime;
     private Integer whetherRegisteredWithOthers;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "registration_details_id", referencedColumnName = "id")
-    private List<QualificationDetail> qualificationDetails;
+    private List<QualificationDetails> qualificationDetails;
 }

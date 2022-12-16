@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.db.sql.domain.university;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -22,7 +23,7 @@ import lombok.Setter;
 public class University {
 
     @Id
-    private Long id;
+    private BigInteger id;
     private String name;
     private String location;
 

@@ -5,6 +5,6 @@ import java.util.List;
 
 public interface IDistrictService {
 
-    List<DistrictTO> getDistrictData(Long stateId);
+    List<DistrictTO> getDistrictData(BigInteger stateId);
 
 }
