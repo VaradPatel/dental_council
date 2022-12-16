@@ -11,6 +11,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface CityRepository extends JpaRepository<City, BigInteger> {
 
     @Query(value = "SELECT * FROM city where subdistrict=:sub_district", nativeQuery = true)
-    List<City> getCity(Long sub_district);
+    List<City> getCity(BigInteger sub_district);
 
 }

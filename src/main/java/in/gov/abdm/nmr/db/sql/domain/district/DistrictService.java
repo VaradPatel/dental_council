@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.db.sql.domain.district;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -20,7 +21,7 @@ public class DistrictService implements IDistrictService {
     }
 
     @Override
-    public List<DistrictTO> getDistrictData(Long stateId) {
+    public List<DistrictTO> getDistrictData(BigInteger stateId) {
     	System.out.println("==========================================");
     	System.out.println("districtRepository :: " + districtRepository.getDistrict(stateId).get(0).getCode());
     	System.out.println("==========================================");

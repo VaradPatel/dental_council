@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.db.sql.domain.sub_district;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -12,7 +13,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import in.gov.abdm.nmr.db.sql.domain.city.City;
-import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.db.sql.domain.district.District;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +28,7 @@ public class SubDistrict {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private BigInteger id;
     private String name;
     private String code;
 

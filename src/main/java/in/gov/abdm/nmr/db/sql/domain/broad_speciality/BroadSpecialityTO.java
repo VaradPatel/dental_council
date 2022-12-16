@@ -1,13 +1,12 @@
-package in.gov.abdm.nmr.db.sql.domain.speciality;
+package in.gov.abdm.nmr.db.sql.domain.broad_speciality;
 
 import java.math.BigInteger;
 
 import lombok.Data;
 
 @Data
-public class SpecialityTO {
+public class BroadSpecialityTO {
 
     private BigInteger id;
     private String name;
-    private String nationality;
 }

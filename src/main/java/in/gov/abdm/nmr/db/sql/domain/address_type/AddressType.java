@@ -1,5 +1,7 @@
 package in.gov.abdm.nmr.db.sql.domain.address_type;
 
+import java.math.BigInteger;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -14,9 +16,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class AddressType extends CommonAuditEntity {
+public class AddressType {
 
     @Id
-    private String id;
+    private Integer id;
     private String addressType;
 }

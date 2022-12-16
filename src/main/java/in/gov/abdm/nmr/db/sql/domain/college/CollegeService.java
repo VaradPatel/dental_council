@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.db.sql.domain.college;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -20,7 +21,7 @@ public class CollegeService implements ICollegeService {
     }
 
     @Override
-    public List<CollegeTO> getCollegeData(Long universityId) {
+    public List<CollegeTO> getCollegeData(BigInteger universityId) {
     	return collegeDtoMapper.collegeDataToDto(collegeRepository.getCollege(universityId));
     }
 

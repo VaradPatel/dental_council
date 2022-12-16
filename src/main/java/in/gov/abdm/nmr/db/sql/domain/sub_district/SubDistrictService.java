@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.db.sql.domain.sub_district;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -20,7 +21,7 @@ public class SubDistrictService implements ISubDistrictService {
     }
 
     @Override
-    public List<SubDistrictTO> getSubDistrictData(Long districtId) {
+    public List<SubDistrictTO> getSubDistrictData(BigInteger districtId) {
 //        List<Tuple> districtList = subDistrictRepository.getSubDistrict(districtId);
 //        List<SubDistrictTO> subDistrictTOList = new ArrayList<SubDistrictTO>();
 //        for (Tuple district : districtList) {

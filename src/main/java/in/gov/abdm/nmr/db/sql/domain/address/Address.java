@@ -1,7 +1,11 @@
 package in.gov.abdm.nmr.db.sql.domain.address;
 
+import java.math.BigInteger;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -15,6 +19,7 @@ import in.gov.abdm.nmr.db.sql.domain.district.District;
 import in.gov.abdm.nmr.db.sql.domain.hp_profile.HpProfile;
 import in.gov.abdm.nmr.db.sql.domain.state.State;
 import in.gov.abdm.nmr.db.sql.domain.sub_district.SubDistrict;
+import in.gov.abdm.nmr.db.sql.domain.work_profile.WorkProfile;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,10 +30,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Address extends CommonAuditEntity {
+public class Address {
 
     @Id
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private BigInteger id;
 
     @OneToOne
     @JoinColumn(name = "country")
@@ -52,12 +58,23 @@ public class Address extends CommonAuditEntity {
 
     private String pincode;
     private String addressLine1;
+    private String email;
+    private String mobile;
 
+    
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_type")
     private AddressType addressType;
 
-    @ManyToOne
-    @JoinColumn(name = "hpProfile")
-    private HpProfile hpProfile;
+//    @ManyToOne
+//    @JoinColumn(name = "hpProfile")
+//    private HpProfile hpProfile;
+    
+    private BigInteger hpProfile;
+    
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "workProfile")
+//    private WorkProfile workProfile;
+    
+    private BigInteger workProfile;
 }
