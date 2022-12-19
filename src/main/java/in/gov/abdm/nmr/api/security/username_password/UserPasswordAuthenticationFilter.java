@@ -23,7 +23,6 @@ import in.gov.abdm.nmr.api.security.common.RsaUtil;
 import in.gov.abdm.nmr.api.security.controller.to.LoginRequestTO;
 
 @Component
-@Deprecated
 public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -50,7 +49,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
         try {
             LoginRequestTO requestBodyTO = readRequestBody(request);
             UserPasswordAuthenticationToken authRequest = UserPasswordAuthenticationToken.unauthenticated(requestBodyTO.getUsername(), //
-                    requestBodyTO.getPassword(), requestBodyTO.getUserType());
+                    rsaUtil.decrypt(requestBodyTO.getPassword()), requestBodyTO.getUserType());
 
             setDetails(request, authRequest);
             return this.getAuthenticationManager().authenticate(authRequest);

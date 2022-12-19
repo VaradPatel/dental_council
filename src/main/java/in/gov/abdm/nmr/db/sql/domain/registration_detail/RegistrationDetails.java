@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.db.sql.domain.registration_detail;
 
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +15,6 @@ import javax.persistence.OneToOne;
 import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.db.sql.domain.qualification_detail.QualificationDetails;
 import in.gov.abdm.nmr.db.sql.domain.state.State;
-import in.gov.abdm.nmr.db.sql.domain.state_medical_council.StateMedicalCouncil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

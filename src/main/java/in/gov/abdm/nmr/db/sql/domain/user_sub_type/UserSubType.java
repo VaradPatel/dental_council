@@ -23,8 +23,7 @@ public class UserSubType extends CommonAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
-    private String code;
+    private Long id;
     private String name;
 
     @ManyToOne

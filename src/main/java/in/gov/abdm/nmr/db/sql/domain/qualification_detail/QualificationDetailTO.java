@@ -1,7 +1,5 @@
 package in.gov.abdm.nmr.db.sql.domain.qualification_detail;
 
-import java.math.BigInteger;
-
 import in.gov.abdm.nmr.db.sql.domain.college.CollegeTO;
 import in.gov.abdm.nmr.db.sql.domain.country.CountryTO;
 import in.gov.abdm.nmr.db.sql.domain.course.CourseTO;

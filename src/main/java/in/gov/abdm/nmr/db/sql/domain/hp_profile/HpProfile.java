@@ -13,7 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 import in.gov.abdm.nmr.db.sql.domain.address.Address;
-import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.db.sql.domain.registration_detail.RegistrationDetails;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

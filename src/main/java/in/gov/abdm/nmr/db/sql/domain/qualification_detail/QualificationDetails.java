@@ -3,25 +3,16 @@ package in.gov.abdm.nmr.db.sql.domain.qualification_detail;
 import java.math.BigInteger;
 import java.sql.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
-import in.gov.abdm.nmr.db.sql.domain.college.College;
-import in.gov.abdm.nmr.db.sql.domain.country.Country;
-import in.gov.abdm.nmr.db.sql.domain.course.Course;
-import in.gov.abdm.nmr.db.sql.domain.district.District;
 import in.gov.abdm.nmr.db.sql.domain.hp_profile.HpProfile;
 import in.gov.abdm.nmr.db.sql.domain.registration_detail.RegistrationDetails;
-import in.gov.abdm.nmr.db.sql.domain.state.State;
-import in.gov.abdm.nmr.db.sql.domain.university.University;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

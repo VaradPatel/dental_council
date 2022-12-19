@@ -3,14 +3,13 @@ package in.gov.abdm.nmr.api.controller.md;
 import java.math.BigInteger;
 import java.util.List;
 
-import org.apache.commons.codec.language.bm.Languages;
 import org.springframework.stereotype.Service;
 
 import in.gov.abdm.nmr.api.controller.md.to.IMasterDataMapper;
 import in.gov.abdm.nmr.api.controller.md.to.MasterDataTO;
 import in.gov.abdm.nmr.db.sql.domain.broad_speciality.BroadSpecialityService;
 import in.gov.abdm.nmr.db.sql.domain.city.CityService;
-import in.gov.abdm.nmr.db.sql.domain.college.CollegeService;
+import in.gov.abdm.nmr.db.sql.domain.college.ICollegeDaoService;
 import in.gov.abdm.nmr.db.sql.domain.country.CountryService;
 import in.gov.abdm.nmr.db.sql.domain.district.DistrictService;
 import in.gov.abdm.nmr.db.sql.domain.language.LanguageService;
@@ -40,13 +39,13 @@ public class MasterDataService implements IMasterDataService {
 	
 	private LanguageService languageService;
 
-	private CollegeService collegeService;
+	private ICollegeDaoService collegeService;
 
 	private IMasterDataMapper masterDataMapper;
 
 	public MasterDataService(StateMedicalCouncilService stateMedicalCouncilService, IMasterDataMapper masterDataMapper,
 			CountryService countryService, StateService stateService, DistrictService districtService, SubDistrictService subDistrictService,
-			CityService cityService, BroadSpecialityService broadSpecialityService, UniversityService universityService, CollegeService collegeService,
+			CityService cityService, BroadSpecialityService broadSpecialityService, UniversityService universityService, ICollegeDaoService collegeService,
 			LanguageService languageService) {
 		super();
 		this.stateMedicalCouncilService = stateMedicalCouncilService;
