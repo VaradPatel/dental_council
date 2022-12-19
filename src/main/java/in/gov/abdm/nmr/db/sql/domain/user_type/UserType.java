@@ -25,8 +25,7 @@ public class UserType extends CommonAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
-    private String code;
+    private Long id;
     private String name;
 
     @OneToMany(mappedBy = "usertype", fetch = FetchType.LAZY)

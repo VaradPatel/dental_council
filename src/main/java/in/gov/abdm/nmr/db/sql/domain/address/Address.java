@@ -8,18 +8,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.address_type.AddressType;
 import in.gov.abdm.nmr.db.sql.domain.city.City;
-import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.db.sql.domain.country.Country;
 import in.gov.abdm.nmr.db.sql.domain.district.District;
-import in.gov.abdm.nmr.db.sql.domain.hp_profile.HpProfile;
 import in.gov.abdm.nmr.db.sql.domain.state.State;
 import in.gov.abdm.nmr.db.sql.domain.sub_district.SubDistrict;
-import in.gov.abdm.nmr.db.sql.domain.work_profile.WorkProfile;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

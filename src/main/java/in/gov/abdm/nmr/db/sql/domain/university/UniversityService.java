@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class UniversityService implements IUniversityService {
 
-    public UniversityRepository universityRepository;
+    public IUniversityRepository universityRepository;
 
     private UniversityDtoMapper universityDtoMapper;
 
-    public UniversityService(UniversityRepository universityRepository, UniversityDtoMapper universityDtoMapper) {
+    public UniversityService(IUniversityRepository universityRepository, UniversityDtoMapper universityDtoMapper) {
         this.universityRepository = universityRepository;
         this.universityDtoMapper = universityDtoMapper;
     }

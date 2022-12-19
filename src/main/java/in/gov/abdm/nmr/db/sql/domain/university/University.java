@@ -1,15 +1,11 @@
 package in.gov.abdm.nmr.db.sql.domain.university;
 
 import java.math.BigInteger;
-import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
-import in.gov.abdm.nmr.db.sql.domain.college.College;
-import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,13 +16,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "universities")
 public class University {
 
     @Id
     private BigInteger id;
     private String name;
     private String location;
-
-    @OneToMany(mappedBy = "university", fetch = FetchType.LAZY)
-    private List<College> colleges;
 }

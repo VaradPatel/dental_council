@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class UserTypeTO {
 
-    private String code;
+    private String id;
     private String name;
 }

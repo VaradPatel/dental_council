@@ -56,8 +56,8 @@ import in.gov.abdm.nmr.db.sql.domain.qualification_detail.QualificationDetails;
 import in.gov.abdm.nmr.db.sql.domain.registration_detail.RegistrationDetailRepository;
 import in.gov.abdm.nmr.db.sql.domain.registration_detail.RegistrationDetailTO;
 import in.gov.abdm.nmr.db.sql.domain.registration_detail.RegistrationDetails;
+import in.gov.abdm.nmr.db.sql.domain.state.IStateRepository;
 import in.gov.abdm.nmr.db.sql.domain.state.State;
-import in.gov.abdm.nmr.db.sql.domain.state.StateRepository;
 import in.gov.abdm.nmr.db.sql.domain.state.StateTO;
 import in.gov.abdm.nmr.db.sql.domain.sub_district.SubDistrict;
 import in.gov.abdm.nmr.db.sql.domain.sub_district.SubDistrictTO;
@@ -89,7 +89,7 @@ public class HpProfileService implements IHpProfileService {
 
 	private DistrictRepository districtRepository;
 
-	private StateRepository stateRepository;
+	private IStateRepository stateRepository;
 
 	private IAddressTypeRepository iAddressTypeRepository;
 
@@ -99,7 +99,7 @@ public class HpProfileService implements IHpProfileService {
 			IAddressRepository iAddressRepository, QualificationDetailRepository qualificationDetailRepository,
 			RegistrationDetailRepository registrationDetailRepository, WorkProfileRepository workProfileRepository,
 			SuperSpecialityRepository superSpecialityRepository, DistrictRepository districtRepository,
-			StateRepository stateRepository) {
+			IStateRepository stateRepository) {
 		super();
 		this.ihHpProfileMapper = ihHpProfileMapper;
 		this.iHpProfileRepository = iHpProfileRepository;

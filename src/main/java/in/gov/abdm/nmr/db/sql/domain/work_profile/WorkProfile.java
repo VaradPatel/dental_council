@@ -10,10 +10,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.address.Address;
-import in.gov.abdm.nmr.db.sql.domain.organization_type.OrganizationType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

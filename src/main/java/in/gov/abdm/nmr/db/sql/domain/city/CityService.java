@@ -1,10 +1,8 @@
 package in.gov.abdm.nmr.db.sql.domain.city;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Tuple;
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;

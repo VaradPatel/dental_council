@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class StateService implements IStateService {
 
-    public StateRepository stateRepository;
+    public IStateRepository stateRepository;
 
     private StateDtoMapper stateDtoMapper;
 
-    public StateService(StateRepository stateRepository, StateDtoMapper stateDtoMapper) {
+    public StateService(IStateRepository stateRepository, StateDtoMapper stateDtoMapper) {
         this.stateRepository = stateRepository;
         this.stateDtoMapper = stateDtoMapper;
     }

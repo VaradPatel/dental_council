@@ -30,6 +30,6 @@ public class UserPasswordDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("Invalid username");
         }
 
-        return new UserPassDetail(userDetail.getUsername(), userDetail.getPassword(), Collections.emptyList(), userDetail.getUserType().getCode());
+        return new UserPassDetail(userDetail.getUsername(), userDetail.getPassword(), Collections.emptyList(), userDetail.getUserType().getId());
     }
 }
