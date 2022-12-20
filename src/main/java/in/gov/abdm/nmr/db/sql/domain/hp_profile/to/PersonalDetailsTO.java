@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.List;
 
 import in.gov.abdm.nmr.db.sql.domain.language.LanguageTO;
+import in.gov.abdm.nmr.db.sql.domain.nationality.NationalityTO;
 import lombok.Data;
 
 @Data
@@ -16,7 +17,7 @@ public class PersonalDetailsTO {
 	private String fatherName;
     private String motherName;
     private String spouseName;
-    private String nationality;
+    private NationalityTO nationality;
     private List<LanguageTO> language;
     private Date dateOfBirth;
     private String gender;

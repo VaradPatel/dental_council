@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.db.sql.domain.state.State;
 import in.gov.abdm.nmr.db.sql.domain.sub_district.SubDistrict;
 import lombok.AllArgsConstructor;
@@ -22,17 +23,17 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class District {
+public class District extends CommonAuditEntity {
 
-    @Id
-    private BigInteger id;
-    private String name;
-    private String code;
+	@Id
+	private BigInteger id;
+	private String name;
+	private String code;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "state")
-    private State state;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "state")
+	private State state;
 
-    @OneToMany(mappedBy = "district", fetch = FetchType.LAZY)
-    private List<SubDistrict> subDistricts;
+	@OneToMany(mappedBy = "district", fetch = FetchType.LAZY)
+	private List<SubDistrict> subDistricts;
 }

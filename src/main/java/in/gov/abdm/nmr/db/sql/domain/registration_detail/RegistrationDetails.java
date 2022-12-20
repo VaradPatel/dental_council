@@ -15,6 +15,7 @@ import javax.persistence.OneToOne;
 import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.db.sql.domain.qualification_detail.QualificationDetails;
 import in.gov.abdm.nmr.db.sql.domain.state.State;
+import in.gov.abdm.nmr.db.sql.domain.state_medical_council_status.StateMedicalCouncilStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,7 +35,7 @@ public class RegistrationDetails extends CommonAuditEntity {
 
 //    @OneToOne
     private Integer councilName;
-    private String councilStatus;
+    
     private String createdBy;
     private String dueDate;
     private String fromDate;
@@ -57,7 +58,7 @@ public class RegistrationDetails extends CommonAuditEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "state")
     private State state;
-    private String status;
+//    private String status;
     private String systemOfMedicine;
     private String toDate;
     private String type;
@@ -69,4 +70,8 @@ public class RegistrationDetails extends CommonAuditEntity {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "registration_details_id", referencedColumnName = "id")
     private List<QualificationDetails> qualificationDetails;
+    
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "councilStatus", referencedColumnName = "id")
+    private StateMedicalCouncilStatus councilStatus;
 }
