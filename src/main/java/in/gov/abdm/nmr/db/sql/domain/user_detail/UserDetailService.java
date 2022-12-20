@@ -93,4 +93,9 @@ public class UserDetailService implements IUserDetailService {
     public UserDetail saveUserDetail(UserDetail userDetail) {
         return userDetailRepository.saveAndFlush(userDetail);
     }
+    
+    @Override
+    public UserDetail findUserDetailByUsername(String username) {
+        return userDetailRepository.findByUsername(username);
+    }
 }

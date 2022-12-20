@@ -19,4 +19,6 @@ public interface IUserDetailService {
     UserDetail saveUserDetail(UserDetail userDetail);
 
     UserDetail searchUserDetailInternal(UserDetailSearchTO userDetailSearchTO);
+
+    UserDetail findUserDetailByUsername(String username);
 }
