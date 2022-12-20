@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.db.sql.domain.country;
+package in.gov.abdm.nmr.db.sql.domain.state_medical_council_status;
 
 import java.math.BigInteger;
 
@@ -17,17 +17,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "country")
-public class Country extends CommonAuditEntity {
+@Entity
+public class StateMedicalCouncilStatus extends CommonAuditEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private BigInteger id;
-
-	private String name;
-	private String nationality;
-
-//	@OneToMany(cascade = CascadeType.ALL)
-//	@JoinColumn(name = "country", referencedColumnName = "id")
-//	private List<State> state;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private BigInteger id;
+    private String name;
+    
 }

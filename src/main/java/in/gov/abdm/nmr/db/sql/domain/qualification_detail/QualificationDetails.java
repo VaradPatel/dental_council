@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.db.sql.domain.qualification_detail;
 import java.math.BigInteger;
 import java.sql.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,8 +11,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.hp_profile.HpProfile;
+import in.gov.abdm.nmr.db.sql.domain.qualification_status.QualificationStatus;
 import in.gov.abdm.nmr.db.sql.domain.registration_detail.RegistrationDetails;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -81,6 +84,9 @@ public class QualificationDetails {
     @JoinColumn(name = "hpProfile")
     private HpProfile hpProfile;
 
-    private Integer isVerified;
+    
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "qualificationStatus", referencedColumnName = "id")
+    private QualificationStatus qualificationStatus;
 
 }
