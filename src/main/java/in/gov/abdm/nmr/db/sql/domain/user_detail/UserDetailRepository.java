@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserDetailRepository extends JpaRepository<UserDetail, BigInteger> {
 
+    UserDetail findByUsername(String username);
 }
