@@ -12,6 +12,7 @@ import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.address_type.AddressType;
 import in.gov.abdm.nmr.db.sql.domain.city.City;
+import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.db.sql.domain.country.Country;
 import in.gov.abdm.nmr.db.sql.domain.district.District;
 import in.gov.abdm.nmr.db.sql.domain.state.State;
@@ -26,51 +27,50 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Address {
+public class Address extends CommonAuditEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private BigInteger id;
 
-    @OneToOne
-    @JoinColumn(name = "country")
-    private Country country;
+	@OneToOne
+	@JoinColumn(name = "country")
+	private Country country;
 
-    @OneToOne
-    @JoinColumn(name = "state")
-    private State state;
+	@OneToOne
+	@JoinColumn(name = "state")
+	private State state;
 
-    @OneToOne
-    @JoinColumn(name = "district")
-    private District district;
+	@OneToOne
+	@JoinColumn(name = "district")
+	private District district;
 
-    @OneToOne
-    @JoinColumn(name = "city")
-    private City city;
+	@OneToOne
+	@JoinColumn(name = "city")
+	private City city;
 
-    @OneToOne
-    @JoinColumn(name = "subDistrict")
-    private SubDistrict subDistrict;
+	@OneToOne
+	@JoinColumn(name = "subDistrict")
+	private SubDistrict subDistrict;
 
-    private String pincode;
-    private String addressLine1;
-    private String email;
-    private String mobile;
+	private String pincode;
+	private String addressLine1;
+	private String email;
+	private String mobile;
 
-    
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_type")
-    private AddressType addressType;
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "address_type")
+	private AddressType addressType;
 
 //    @ManyToOne
 //    @JoinColumn(name = "hpProfile")
 //    private HpProfile hpProfile;
-    
-    private BigInteger hpProfile;
-    
+
+	private BigInteger hpProfile;
+
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "workProfile")
 //    private WorkProfile workProfile;
-    
-    private BigInteger workProfile;
+
+	private BigInteger workProfile;
 }

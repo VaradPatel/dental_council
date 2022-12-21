@@ -11,8 +11,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.address.Address;
+import in.gov.abdm.nmr.db.sql.domain.nationality.Nationality;
 import in.gov.abdm.nmr.db.sql.domain.registration_detail.RegistrationDetails;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,54 +28,57 @@ import lombok.Setter;
 @Entity
 public class HpProfile {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private BigInteger id;
 
-    private String aadharNumber;
-    private String schedule;
-    private String categoryName;
-    private String changedName;
-    private String createdBy;
-    private Date dateOfBirth;
-    private String email;
-    private String emptyMandatoryFields;
-    private String fatherName;
-    private String firstName;
-    private String fullName;
-    private String gender;
-    private String identifiedStateName;
-    private Boolean isManually;
-    private String lastName;
-    private String maritalStatus;
-    private String middleName;
-    private String mobileNumber;
-    private String motherName;
-    private String nationality;
-    private String nmrId;
-    private String officialTelephone;
-    private String otherCategory;
-    private String panNumber;
-    private String picName;
-    private String primaryContactNo;
-    private String professionalType;
-    private String profilePhoto;
-    private String salutation;
-    private String signature;
-    private String spouseName;
-    private String systemOfMedicine;
-    private String updatedBy;
-    private Integer workExperienceInYear;
-    private String yearOfInfo;
+	private String aadharNumber;
+	private String schedule;
+	private String categoryName;
+	private String changedName;
+	private String createdBy;
+	private Date dateOfBirth;
+	private String email;
+	private String emptyMandatoryFields;
+	private String fatherName;
+	private String firstName;
+	private String fullName;
+	private String gender;
+	private String identifiedStateName;
+	private Boolean isManually;
+	private String lastName;
+	private String maritalStatus;
+	private String middleName;
+	private String mobileNumber;
+	private String motherName;
+	private String nmrId;
+	private String officialTelephone;
+	private String otherCategory;
+	private String panNumber;
+	private String picName;
+	private String primaryContactNo;
+	private String professionalType;
+	private String profilePhoto;
+	private String salutation;
+	private String signature;
+	private String spouseName;
+	private String systemOfMedicine;
+	private String updatedBy;
+	private Integer workExperienceInYear;
+	private String yearOfInfo;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "hp_profile_id", referencedColumnName = "id")
-    private List<Address> address;
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "hp_profile_id", referencedColumnName = "id")
+	private List<Address> address;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "hp_profile_id", referencedColumnName = "id")
-    private List<RegistrationDetails> registrationDetails;
-    // private List<Speciality> specialities;
-    // private WorkDetails work_details;
-    //	private List<String> languages;
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "hp_profile_id", referencedColumnName = "id")
+	private List<RegistrationDetails> registrationDetails;
+	// private List<Speciality> specialities;
+	// private WorkDetails work_details;
+	// private List<String> languages;
+
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "nationality", referencedColumnName = "id")
+	private Nationality nationality;
 }
