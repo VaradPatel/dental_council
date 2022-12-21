@@ -9,6 +9,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigInteger;
+import java.sql.Timestamp;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -17,6 +20,8 @@ import lombok.Setter;
 public class ApplicationStatusType extends CommonAuditEntity {
 
     @Id
-    private String id;
+    private BigInteger id;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
     private String name;
 }
