@@ -27,15 +27,15 @@ public class CollegeDean extends CommonAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger id;
-    private String name;
+    private String deanName;
     private String phoneNumber;
     private String emailId;
 
-    @OneToOne
-    @JoinColumn(name = "college")
-    private College college;
+//    @OneToOne
+//    @JoinColumn(name = "college")
+//    private College college;
 
     @OneToOne
-    @JoinColumn(name = "user_detail")
+    @JoinColumn(name = "userId")
     private UserDetail userDetail;
 }
