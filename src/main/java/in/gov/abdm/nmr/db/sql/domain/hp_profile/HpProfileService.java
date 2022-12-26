@@ -10,12 +10,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -140,10 +135,10 @@ public class HpProfileService implements IHpProfileService {
 	private EntityManager entityManager;
 
 	public HpSmcDetailTO fetchSmcRegistrationDetail(SmcRegistrationDetailRequestTO smcRegistrationDetailRequestTO) {
-		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-		CriteriaQuery<HpProfile> criteria = builder.createQuery(HpProfile.class);
-		Root<HpProfile> root = criteria.from(HpProfile.class);
-		Join<Object, Object> registrationDetails = root.join(HpProfile_.REGISTRATION_DETAILS, JoinType.INNER);
+//		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+//		CriteriaQuery<HpProfile> criteria = builder.createQuery(HpProfile.class);
+//		Root<HpProfile> root = criteria.from(HpProfile.class);
+//		Join<Object, Object> registrationDetails = root.join(HpProfile_.REGISTRATION_DETAILS, JoinType.INNER);
 
 		List<Predicate> predicates = new ArrayList<>();
 		HpSmcDetailTO hpSmcDetailTO = new HpSmcDetailTO();
@@ -288,7 +283,7 @@ public class HpProfileService implements IHpProfileService {
 			AddressTypeTO addressTypeTO = new AddressTypeTO();
 			addressTypeTO.setId(communicationAddress.get("address_type_id", Integer.class));
 			addressTypeTO.setName(communicationAddress.get("address_type_name", String.class));
-			commAddressTO.setAddressType(addressTypeTO);
+			commAddressTO.setAddressTypeId(addressTypeTO);
 
 			CountryTO countryTO = new CountryTO();
 			countryTO.setName(communicationAddress.get("country_name", String.class));
@@ -392,7 +387,7 @@ public class HpProfileService implements IHpProfileService {
 			AddressTypeTO currentAddressTypeTO = new AddressTypeTO();
 			currentAddressTypeTO.setId(currentAddress.get("address_type_id", Integer.class));
 			currentAddressTypeTO.setName(currentAddress.get("address_type_name", String.class));
-			currentAddressTO.setAddressType(currentAddressTypeTO);
+			currentAddressTO.setAddressTypeId(currentAddressTypeTO);
 
 			CountryTO currentCountryTO = new CountryTO();
 			currentCountryTO.setName(currentAddress.get("country_name", String.class));
@@ -569,8 +564,8 @@ public class HpProfileService implements IHpProfileService {
 
 							AddressType addressType = new AddressType();
 							addressType
-									.setId(hpProfileUpdateRequest.getCommunicationAddress().getAddressType().getId());
-							addressData.setAddressType(addressType);
+									.setId(hpProfileUpdateRequest.getCommunicationAddress().getAddressTypeId().getId());
+							addressData.setAddressTypeId(addressType);
 
 							addressData.setHpProfileId(hpProfileId);
 
@@ -611,8 +606,8 @@ public class HpProfileService implements IHpProfileService {
 
 							AddressType addressType = new AddressType();
 							addressType
-									.setId(hpProfileUpdateRequest.getCommunicationAddress().getAddressType().getId());
-							addAddressData.setAddressType(addressType);
+									.setId(hpProfileUpdateRequest.getCommunicationAddress().getAddressTypeId().getId());
+							addAddressData.setAddressTypeId(addressType);
 
 							addAddressData.setHpProfileId(hpProfileId);
 
@@ -922,7 +917,7 @@ public class HpProfileService implements IHpProfileService {
 											: newAddress.getAddressLine1());
 
 							AddressType addressType = iAddressTypeRepository.findByAddressTypeId(BigInteger.TWO);
-							addWorkAddress.setAddressType(addressType);
+							addWorkAddress.setAddressTypeId(addressType);
 
 							iAddressRepository.save(addWorkAddress);
 						} else {
