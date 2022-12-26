@@ -28,12 +28,12 @@ public class District extends CommonAuditEntity {
 	@Id
 	private BigInteger id;
 	private String name;
-	private String code;
+	private String isoCode;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "state")
+	@JoinColumn(name = "stateId", referencedColumnName = "id")
 	private State state;
 
-	@OneToMany(mappedBy = "district", fetch = FetchType.LAZY)
-	private List<SubDistrict> subDistricts;
+//	@OneToMany(mappedBy = "district", fetch = FetchType.LAZY)
+//	private List<SubDistrict> subDistricts;
 }

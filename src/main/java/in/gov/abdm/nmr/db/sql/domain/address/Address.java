@@ -11,12 +11,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.address_type.AddressType;
-import in.gov.abdm.nmr.db.sql.domain.city.City;
 import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.db.sql.domain.country.Country;
 import in.gov.abdm.nmr.db.sql.domain.district.District;
 import in.gov.abdm.nmr.db.sql.domain.state.State;
 import in.gov.abdm.nmr.db.sql.domain.sub_district.SubDistrict;
+import in.gov.abdm.nmr.db.sql.domain.villages.Villages;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,7 +47,7 @@ public class Address extends CommonAuditEntity {
 
 	@OneToOne
 	@JoinColumn(name = "city")
-	private City city;
+	private Villages village;
 
 	@OneToOne
 	@JoinColumn(name = "subDistrict")
@@ -66,7 +66,7 @@ public class Address extends CommonAuditEntity {
 //    @JoinColumn(name = "hpProfile")
 //    private HpProfile hpProfile;
 
-	private BigInteger hpProfile;
+	private BigInteger hpProfileId;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "workProfile")

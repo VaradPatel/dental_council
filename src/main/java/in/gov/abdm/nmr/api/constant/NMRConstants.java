@@ -1,15 +1,14 @@
 package in.gov.abdm.nmr.api.constant;
 
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.experimental.UtilityClass;
 
 /**
  * This class holds all the constants associated with NMR application
  */
-//@UtilityClass
-//@NoArgsConstructor(access= AccessLevel.PRIVATE)
+
+
+@UtilityClass
 public class NMRConstants {
 
     public static final String FETCH_COUNT_ON_CARD_URL = "/college/dashboard/cardCount";

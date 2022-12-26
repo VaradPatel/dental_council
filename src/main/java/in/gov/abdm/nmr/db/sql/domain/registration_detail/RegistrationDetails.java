@@ -34,7 +34,7 @@ public class RegistrationDetails extends CommonAuditEntity {
     private String certificate;
 
 //    @OneToOne
-    private Integer councilName;
+    private Integer stateMedicalCouncilId;
     
     private String createdBy;
     private String dueDate;

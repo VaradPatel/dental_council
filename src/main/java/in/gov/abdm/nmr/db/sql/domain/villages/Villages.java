@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.db.sql.domain.city;
+package in.gov.abdm.nmr.db.sql.domain.villages;
 
 import java.math.BigInteger;
 
@@ -20,14 +20,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class City extends CommonAuditEntity {
+public class Villages extends CommonAuditEntity {
 	@Id
 	private BigInteger id;
 	private String name;
-	private String code;
+	private String isoCode;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "subdistrict")
+	@JoinColumn(name = "subDistrictsCode")
 	private SubDistrict subdistrict;
 
 }

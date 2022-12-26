@@ -18,27 +18,29 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
 
 	@Query(value = "select registration_details.id as registration_id, registration_details.hp_profile_id, full_name, nmr_id, year_of_info, registration_no, registration_date,"
 			+ " state_medical_council.name, state_medical_council.id, state_medical_council_status.id as state_medical_council_status_id, state_medical_council_status.name as state_medical_council_status_name, first_name, father_name,"
-			+ " salutation, gender, aadhar_number, middle_name, mother_name, last_name, spouse_name, date_of_birth, "
-			+ " is_renewable, renewable_registration_date, is_name_change, country.id as nationality_id, country.nationality as nationality_name  "
+			+ " salutation, gender, aadhaar_token, middle_name, mother_name, last_name, spouse_name, date_of_birth, "
+			+ " is_renewable, renewable_registration_date, is_name_change, country.id as nationality_id, country.nationality as nationality_name, "
+			+ " schedule.id as schedule_id, schedule.name as schedule_name "
 			+ " from hp_profile"
 			+ " LEFT JOIN registration_details on hp_profile_id = hp_profile.id"
-			+ " LEFT JOIN state_medical_council ON state_medical_council.id = council_name"
+			+ " LEFT JOIN state_medical_council ON state_medical_council.id = state_medical_council_id"
 			+ " LEFT JOIN state_medical_council_status ON state_medical_council_status.id = registration_details.council_status"
-			+ " LEFT JOIN country ON country.id = hp_profile.nationality"
+			+ " LEFT JOIN country ON country.id = hp_profile.country_nationality_id"
+			+ " LEFT JOIN schedule ON schedule.id = hp_profile.schedule_id"
 			+ " where registration_details.hp_profile_id = :hpProfileId", nativeQuery = true)
 	Tuple fetchHpProfileDetail(BigInteger hpProfileId);
 	
 	@Query(value = "select course_name, course.id as course_id, country.name as country_name, country.id as country_id, state.id as state_id, state.name as state_name, "
 			+ " colleges.name as college_name, colleges.id as college_id, universities.name as university_name, "
-			+ " universities.id as university_id, qualification_month, qualification_year, is_name_change, qualification_details.id as qualification_details_id, "
-			+ " qualification_status.id as qualification_status_id, qualification_status.name as qualification_status_name "
+			+ " universities.id as university_id, qualification_month, qualification_year, is_name_change, is_verified, qualification_details.id as qualification_details_id "
+//			+ " qualification_status.id as qualification_status_id, qualification_status.name as qualification_status_name "
 			+ " from qualification_details "
 			+ " LEFT JOIN country on country.id = country "
 			+ " LEFT JOIN state on state.id = state "
 			+ " LEFT JOIN colleges on colleges.id = qualification_details.college "
 			+ " LEFT JOIN universities on universities.id = qualification_details.university "
 			+ " LEFT JOIN course on course.id = course "
-			+ " LEFT JOIN qualification_status on qualification_status.id = qualification_status "
+//			+ " LEFT JOIN qualification_status on qualification_status.id = qualification_status "
 			+ " where qualification_details.registration_details_id = :registrationId", nativeQuery = true)
 	List<Tuple> fetchQualificationDetail(Integer registrationId);
 	
@@ -58,17 +60,17 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
 	Tuple fetchWorkProfileDetails(BigInteger hpProfileId);
 	
 	@Query(value = "select address_line1, country.name as country_name, country.id as country_id, state.id as state_id, state.name as state_name, "
-			+ " city.name as city_name, city.id as city_id, district.name as district_name, district.id as district_id,  "
+			+ " villages.name as city_name, villages.id as city_id, district.name as district_name, district.id as district_id,  "
 			+ " sub_district.id as sub_district_id, sub_district.name as sub_district_name, pincode, address_type.id as address_type_id,"
 			+ " address_type.address_type as address_type_name, email, mobile  "
 			+ " from address "
 			+ " LEFT JOIN address_type on address_type.id = address.address_type "
 			+ " LEFT JOIN country on country.id = country "
-			+ " LEFT JOIN state on state.id = state "
+			+ " LEFT JOIN state on state.id = state"
 			+ " LEFT JOIN district on district.id = district "
 			+ " LEFT JOIN sub_district on sub_district.id = sub_district "
-			+ " LEFT JOIN city on city.id = city "
-			+ " where address.hp_profile = :hpProfileId and address_type.id = :addressType", nativeQuery = true)
+			+ " LEFT JOIN villages on villages.id = city "
+			+ " where address.hp_profile_id = :hpProfileId and address_type.id = :addressType", nativeQuery = true)
 	Tuple fetchCommunicationAddress(BigInteger hpProfileId, Integer addressType);
 	
 	@Query(value = "select address_line1, country.name as country_name, country.id as country_id, state.id as state_id, state.name as state_name, "

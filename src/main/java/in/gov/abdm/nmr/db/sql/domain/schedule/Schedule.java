@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.db.sql.domain.qualification_status;
+package in.gov.abdm.nmr.db.sql.domain.schedule;
 
 import java.math.BigInteger;
 
@@ -17,12 +17,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-public class QualificationStatus extends CommonAuditEntity {
+@Entity(name = "schedule")
+public class Schedule extends CommonAuditEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private String name;
-    
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private BigInteger id;
+	private String name;
+
 }

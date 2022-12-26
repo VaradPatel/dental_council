@@ -31,9 +31,9 @@ import in.gov.abdm.nmr.db.sql.domain.address_type.AddressType;
 import in.gov.abdm.nmr.db.sql.domain.address_type.AddressTypeTO;
 import in.gov.abdm.nmr.db.sql.domain.address_type.IAddressTypeRepository;
 import in.gov.abdm.nmr.db.sql.domain.broad_speciality.BroadSpecialityTO;
-import in.gov.abdm.nmr.db.sql.domain.city.City;
 import in.gov.abdm.nmr.db.sql.domain.college.CollegeTO;
 import in.gov.abdm.nmr.db.sql.domain.country.Country;
+import in.gov.abdm.nmr.db.sql.domain.country.CountryRepository;
 import in.gov.abdm.nmr.db.sql.domain.country.CountryTO;
 import in.gov.abdm.nmr.db.sql.domain.course.CourseTO;
 import in.gov.abdm.nmr.db.sql.domain.district.District;
@@ -49,19 +49,18 @@ import in.gov.abdm.nmr.db.sql.domain.hp_profile.to.SpecialityDetailsTO;
 import in.gov.abdm.nmr.db.sql.domain.hp_profile.to.WorkDetailsTO;
 import in.gov.abdm.nmr.db.sql.domain.language.LanguageTO;
 import in.gov.abdm.nmr.db.sql.domain.nationality.INationalityRepository;
-import in.gov.abdm.nmr.db.sql.domain.nationality.Nationality;
 import in.gov.abdm.nmr.db.sql.domain.nationality.NationalityTO;
 import in.gov.abdm.nmr.db.sql.domain.organization_type.OrganizationTypeRepository;
 import in.gov.abdm.nmr.db.sql.domain.qualification_detail.QualificationDetailRepository;
 import in.gov.abdm.nmr.db.sql.domain.qualification_detail.QualificationDetailRequestTO;
 import in.gov.abdm.nmr.db.sql.domain.qualification_detail.QualificationDetailTO;
 import in.gov.abdm.nmr.db.sql.domain.qualification_detail.QualificationDetails;
-import in.gov.abdm.nmr.db.sql.domain.qualification_status.IQualificationStatusRepository;
-import in.gov.abdm.nmr.db.sql.domain.qualification_status.QualificationStatus;
-import in.gov.abdm.nmr.db.sql.domain.qualification_status.QualificationStatusTO;
 import in.gov.abdm.nmr.db.sql.domain.registration_detail.RegistrationDetailRepository;
 import in.gov.abdm.nmr.db.sql.domain.registration_detail.RegistrationDetailTO;
 import in.gov.abdm.nmr.db.sql.domain.registration_detail.RegistrationDetails;
+import in.gov.abdm.nmr.db.sql.domain.schedule.IScheduleRepository;
+import in.gov.abdm.nmr.db.sql.domain.schedule.Schedule;
+import in.gov.abdm.nmr.db.sql.domain.schedule.ScheduleTO;
 import in.gov.abdm.nmr.db.sql.domain.state.IStateRepository;
 import in.gov.abdm.nmr.db.sql.domain.state.State;
 import in.gov.abdm.nmr.db.sql.domain.state.StateTO;
@@ -73,6 +72,7 @@ import in.gov.abdm.nmr.db.sql.domain.super_speciality.SuperSpeciality;
 import in.gov.abdm.nmr.db.sql.domain.super_speciality.SuperSpecialityRepository;
 import in.gov.abdm.nmr.db.sql.domain.super_speciality.SuperSpecialityTO;
 import in.gov.abdm.nmr.db.sql.domain.university.UniversityTO;
+import in.gov.abdm.nmr.db.sql.domain.villages.Villages;
 import in.gov.abdm.nmr.db.sql.domain.work_nature.WorkNatureTO;
 import in.gov.abdm.nmr.db.sql.domain.work_profile.WorkProfile;
 import in.gov.abdm.nmr.db.sql.domain.work_profile.WorkProfileRepository;
@@ -105,9 +105,11 @@ public class HpProfileService implements IHpProfileService {
 
 	private IStateMedicalCouncilStatusRepository iStateMedicalCouncilStatusRepository;
 
-	private IQualificationStatusRepository iQualificationStatusRepository;
-
 	private INationalityRepository iNationalityRepository;
+
+	private IScheduleRepository iScheduleRepository;
+
+	private CountryRepository countryRepository;
 
 	public HpProfileService(IHpProfileMapper ihHpProfileMapper, IHpProfileRepository iHpProfileRepository,
 			IAddressRepository iAddressRepository, QualificationDetailRepository qualificationDetailRepository,
@@ -115,8 +117,8 @@ public class HpProfileService implements IHpProfileService {
 			SuperSpecialityRepository superSpecialityRepository, DistrictRepository districtRepository,
 
 			IStateRepository stateRepository, INationalityRepository iNationalityRepository,
-			IQualificationStatusRepository iQualificationStatusRepository,
-			IStateMedicalCouncilStatusRepository iStateMedicalCouncilStatusRepository) {
+			IStateMedicalCouncilStatusRepository iStateMedicalCouncilStatusRepository,
+			IScheduleRepository iScheduleRepository, CountryRepository countryRepository) {
 
 		super();
 		this.ihHpProfileMapper = ihHpProfileMapper;
@@ -129,8 +131,9 @@ public class HpProfileService implements IHpProfileService {
 		this.districtRepository = districtRepository;
 		this.stateRepository = stateRepository;
 		this.iNationalityRepository = iNationalityRepository;
-		this.iQualificationStatusRepository = iQualificationStatusRepository;
 		this.iStateMedicalCouncilStatusRepository = iStateMedicalCouncilStatusRepository;
+		this.iScheduleRepository = iScheduleRepository;
+		this.countryRepository = countryRepository;
 	}
 
 	@PersistenceContext
@@ -160,18 +163,18 @@ public class HpProfileService implements IHpProfileService {
 	}
 
 	public HpProfileDetailTO fetchHpProfileDetail(BigInteger hpProfileId) {
-		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-		CriteriaQuery<HpProfile> criteria = builder.createQuery(HpProfile.class);
-		Root<HpProfile> root = criteria.from(HpProfile.class);
-		Join<Object, Object> registrationDetails = root.join(HpProfile_.REGISTRATION_DETAILS, JoinType.INNER);
-
-		List<Predicate> predicates = new ArrayList<>();
+//		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+//		CriteriaQuery<HpProfile> criteria = builder.createQuery(HpProfile.class);
+//		Root<HpProfile> root = criteria.from(HpProfile.class);
+//		Join<Object, Object> registrationDetails = root.join(HpProfile_.REGISTRATION_DETAILS, JoinType.INNER);
+//
+//		List<Predicate> predicates = new ArrayList<>();
 		HpProfileDetailTO hpSmcDetailTO = new HpProfileDetailTO();
 		RegistrationDetailTO registrationDetailTO = new RegistrationDetailTO();
 
 		//////////// Registration Details Start/////////////////
 		Tuple hpProfile = iHpProfileRepository.fetchHpProfileDetail(hpProfileId);
-		System.out.println("---------------- hpProfile :: ------------" + hpProfile);
+
 		if (hpProfile == null) {
 			return new HpProfileDetailTO();
 		}
@@ -223,17 +226,12 @@ public class HpProfileService implements IHpProfileService {
 			universityTO.setName(appl.get("university_name", String.class));
 			qualificationDetailTO.setUniversity(universityTO);
 
-			QualificationStatusTO qualificationStatusTO = new QualificationStatusTO();
-			qualificationStatusTO.setId(appl.get("qualification_status_id", BigInteger.class));
-			qualificationStatusTO.setName(appl.get("qualification_status_name", String.class));
-			qualificationDetailTO.setQualificationStatus(qualificationStatusTO);
+			qualificationDetailTO.setIsVerified(appl.get("is_verified", Integer.class));
 
 			qualificationDetailTO.setQualificationMonth(appl.get("qualification_month", String.class));
 			qualificationDetailTO.setQualificationYear(appl.get("qualification_year", String.class));
 			qualificationDetailTO.setIsNameChange(appl.get("is_name_change", Integer.class));
 			qualificationDetailTO.setId(appl.get("qualification_details_id", Integer.class));
-
-			qualificationDetailTO.setQualificationStatus(qualificationStatusTO);
 
 			qualificationDetailTOList.add(qualificationDetailTO);
 		}
@@ -245,7 +243,7 @@ public class HpProfileService implements IHpProfileService {
 		//////////// Personal Details Start/////////////////////
 		PersonalDetailsTO personaldetailsTO = new PersonalDetailsTO();
 		personaldetailsTO.setSalutation(hpProfile.get("salutation", String.class));
-		personaldetailsTO.setAadharNumber(hpProfile.get("aadhar_number", String.class));
+		personaldetailsTO.setAadhaarToken(hpProfile.get("aadhaar_token", String.class));
 		personaldetailsTO.setFirstName(hpProfile.get("first_name", String.class));
 		personaldetailsTO.setMiddleName(hpProfile.get("middle_name", String.class));
 		personaldetailsTO.setLastName(hpProfile.get("last_name", String.class));
@@ -257,7 +255,7 @@ public class HpProfileService implements IHpProfileService {
 		nationalityTO.setId(hpProfile.get("nationality_id", BigInteger.class));
 		nationalityTO.setName(hpProfile.get("nationality_name", String.class));
 
-		personaldetailsTO.setNationality(nationalityTO);
+		personaldetailsTO.setCountryNationality(nationalityTO);
 
 		List<LanguageTO> languageTOs = new ArrayList<LanguageTO>();
 		for (LanguageTO language : languageTOs) {
@@ -270,7 +268,13 @@ public class HpProfileService implements IHpProfileService {
 
 		personaldetailsTO.setDateOfBirth(hpProfile.get("date_of_birth", Date.class));
 		personaldetailsTO.setGender(hpProfile.get("gender", String.class));
-		personaldetailsTO.setSchedule("");
+
+		ScheduleTO scheduleTO = new ScheduleTO();
+		scheduleTO.setId(hpProfile.get("schedule_id", BigInteger.class));
+		scheduleTO.setName(hpProfile.get("schedule_name", String.class));
+
+		personaldetailsTO.setSchedule(scheduleTO);
+
 		hpSmcDetailTO.setPersonalDetails(personaldetailsTO);
 		//////////// Personal Details Start/////////////////////
 
@@ -431,18 +435,16 @@ public class HpProfileService implements IHpProfileService {
 
 		if ((hpProfileUpdateRequest.getPersonalDetails().getSalutation() != null
 				&& hpProfileUpdateRequest.getPersonalDetails().getSalutation() != "")
-				&& (hpProfileUpdateRequest.getPersonalDetails().getAadharNumber() != null
-						&& hpProfileUpdateRequest.getPersonalDetails().getAadharNumber() != "")
+				&& (hpProfileUpdateRequest.getPersonalDetails().getAadhaarToken() != null
+						&& hpProfileUpdateRequest.getPersonalDetails().getAadhaarToken() != "")
 				&& (hpProfileUpdateRequest.getPersonalDetails().getFirstName() != null
 						&& hpProfileUpdateRequest.getPersonalDetails().getFirstName() != "")
-				&& (hpProfileUpdateRequest.getPersonalDetails().getNationality() != null)
-				&& (hpProfileUpdateRequest.getPersonalDetails().getNationality() != null)
+				&& (hpProfileUpdateRequest.getPersonalDetails().getCountryNationality() != null)
+				&& (hpProfileUpdateRequest.getPersonalDetails().getCountryNationality() != null)
 				&& (hpProfileUpdateRequest.getPersonalDetails().getDateOfBirth() != null)
 				&& (hpProfileUpdateRequest.getPersonalDetails().getGender() != null
 						&& hpProfileUpdateRequest.getPersonalDetails().getGender() != "")
-				&& (hpProfileUpdateRequest.getPersonalDetails().getSchedule() != null
-						&& hpProfileUpdateRequest.getPersonalDetails().getSchedule() != "")
-
+				&& (hpProfileUpdateRequest.getPersonalDetails().getSchedule() != null)
 				&& (hpProfileUpdateRequest.getCommunicationAddress().getFullName() != null
 						&& hpProfileUpdateRequest.getCommunicationAddress().getFullName() != "")
 				&& (hpProfileUpdateRequest.getCommunicationAddress().getAddressLine1() != null
@@ -478,12 +480,13 @@ public class HpProfileService implements IHpProfileService {
 						&& hpProfileUpdateRequest.getCurrentWorkDetails().getUrl() != "")) {
 
 			if (hpProfileUpdateRequest.getPersonalDetails().getLanguage().size() > 0) {
+
 				String hpId = hpProfileId.toString();
 				if (iHpProfileRepository.existsById(hpProfileId) == true) {
 					HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
 
 					hpProfile.setSalutation(hpProfileUpdateRequest.getPersonalDetails().getSalutation());
-					hpProfile.setAadharNumber(hpProfileUpdateRequest.getPersonalDetails().getAadharNumber());
+					hpProfile.setAadhaarToken(hpProfileUpdateRequest.getPersonalDetails().getAadhaarToken());
 					hpProfile.setFirstName(hpProfileUpdateRequest.getPersonalDetails().getFirstName());
 					hpProfile.setMiddleName(hpProfileUpdateRequest.getPersonalDetails().getMiddleName());
 					hpProfile.setLastName(hpProfileUpdateRequest.getPersonalDetails().getLastName());
@@ -491,13 +494,23 @@ public class HpProfileService implements IHpProfileService {
 					hpProfile.setMotherName(hpProfileUpdateRequest.getPersonalDetails().getMotherName());
 					hpProfile.setSpouseName(hpProfileUpdateRequest.getPersonalDetails().getSpouseName());
 					hpProfile.setGender(hpProfileUpdateRequest.getPersonalDetails().getGender());
-					hpProfile.setSchedule(hpProfileUpdateRequest.getPersonalDetails().getSchedule());
+					Schedule schedule = iScheduleRepository
+							.findById(hpProfileUpdateRequest.getPersonalDetails().getSchedule().getId()).orElse(null);
 
-					Nationality nationality = iNationalityRepository
-							.findById(hpProfileUpdateRequest.getPersonalDetails().getNationality().getId())
+					hpProfile.setScheduleId(schedule.getId());
+
+//					Nationality nationality = iNationalityRepository
+//							.findById(hpProfileUpdateRequest.getPersonalDetails().getCountryNationality().getId())
+//							.orElse(null);
+
+					Country countryNationality = countryRepository
+							.findById(hpProfileUpdateRequest.getPersonalDetails().getCountryNationality().getId())
 							.orElse(null);
-					if (nationality != null) {
-						hpProfile.setNationality(nationality);
+					Country setNationalityData = new Country();
+					setNationalityData.setId(countryNationality.getId());
+					setNationalityData.setName(countryNationality.getNationality());
+					if (countryNationality != null) {
+						hpProfile.setCountryNationalityId(setNationalityData);
 					}
 
 //					hpProfile.setNationality(hpProfileUpdateRequest.getPersonalDetails().getNationality());
@@ -550,16 +563,16 @@ public class HpProfileService implements IHpProfileService {
 									.setId(hpProfileUpdateRequest.getCommunicationAddress().getSubDistrict().getId());
 							addressData.setSubDistrict(communicationSubDistrict);
 
-							City communicationCity = new City();
+							Villages communicationCity = new Villages();
 							communicationCity.setId(hpProfileUpdateRequest.getCommunicationAddress().getCity().getId());
-							addressData.setCity(communicationCity);
+							addressData.setVillage(communicationCity);
 
 							AddressType addressType = new AddressType();
 							addressType
 									.setId(hpProfileUpdateRequest.getCommunicationAddress().getAddressType().getId());
 							addressData.setAddressType(addressType);
 
-							addressData.setHpProfile(hpProfileId);
+							addressData.setHpProfileId(hpProfileId);
 
 							iAddressRepository.save(addressData);
 
@@ -592,16 +605,16 @@ public class HpProfileService implements IHpProfileService {
 									.setId(hpProfileUpdateRequest.getCommunicationAddress().getSubDistrict().getId());
 							addAddressData.setSubDistrict(communicationSubDistrict);
 
-							City communicationCity = new City();
+							Villages communicationCity = new Villages();
 							communicationCity.setId(hpProfileUpdateRequest.getCommunicationAddress().getCity().getId());
-							addAddressData.setCity(communicationCity);
+							addAddressData.setVillage(communicationCity);
 
 							AddressType addressType = new AddressType();
 							addressType
 									.setId(hpProfileUpdateRequest.getCommunicationAddress().getAddressType().getId());
 							addAddressData.setAddressType(addressType);
 
-							addAddressData.setHpProfile(hpProfileId);
+							addAddressData.setHpProfileId(hpProfileId);
 
 							iAddressRepository.save(addAddressData);
 
@@ -754,19 +767,20 @@ public class HpProfileService implements IHpProfileService {
 //							course.setId(newQualification.getCourse().getId());
 							qualification.setCourse(newQualification.getCourse().getId());
 
-							QualificationStatus qualificationStatus = iQualificationStatusRepository
-									.findById(newQualification.getQualificationStatus().getId()).orElse(null);
-							if (qualificationStatus != null) {
-								qualification.setQualificationStatus(qualificationStatus);
-							}
+//							QualificationStatus qualificationStatus = iQualificationStatusRepository
+//									.findById(newQualification.getQualificationStatus().getId()).orElse(null);
+//							if (qualificationStatus != null) {
+//								qualification.setQualificationStatus(qualificationStatus);
+//							}
 
+							qualification.setIsVerified(newQualification.getIsVerified());
 							qualification.setQualificationYear(newQualification.getQualificationYear());
 							qualification.setQualificationMonth(newQualification.getQualificationMonth());
-							qualification.setIsNameChange(newQualification.getIs_name_change());
+							qualification.setIsNameChange(newQualification.getIsNameChange());
 							qualification.setRegistrationDetails(registrationDetails);
 							qualification.setHpProfile(hpProfile);
 
-//							qualification.setIsVerified(0);
+							qualification.setIsVerified(newQualification.getIsVerified());
 							qualification.setEndDate(null);
 							qualification.setCertificate(null);
 							qualification.setName(null);
@@ -842,7 +856,7 @@ public class HpProfileService implements IHpProfileService {
 									hpProfileUpdateRequest.getQualificationDetail().get(cnt).getQualificationMonth());
 //							qualification.setId(hpProfileUpdateRequest.getQualificationDetail().get(cnt).getId());
 							qualification.setIsNameChange(
-									hpProfileUpdateRequest.getQualificationDetail().get(cnt).getIs_name_change());
+									hpProfileUpdateRequest.getQualificationDetail().get(cnt).getIsNameChange());
 
 							cnt += 1;
 							qualificationDetails.add(qualification);
