@@ -26,9 +26,11 @@ public class NMRConstants {
     public static final String SMS_BODY_PART_ONE = "OTP for creating your ABHA is ";
     public static final String SMS_BODY_PART_TWO = " This One Time Password will be valid for 10 mins ABDM National Health Authority";
     public static final String OTP_CONTENT_TYPE = "otp";
+    public static final String CONTACT_NOT_NULL = "Contact cannot be null or empty";
+    public static final String TYPE_NOT_NULL = "Type cannot be null or empty";
+    public static final String OTP_NOT_NULL = "OTP cannot be null or empty";
     public static final String SMS_TEMPLATE_ID = "1007164181681962323";
     public static final String EMAIL_TEMPLATE_ID = "1007164181681962323";
-
     public static final String SUCCESS_RESPONSE = "Success";
     public static final String OTP_INVALID = "Invalid OTP";
     public static final String OTP_NOT_FOUND = "OTP Not Found";

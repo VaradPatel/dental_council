@@ -1,4 +1,5 @@
 package in.gov.abdm.nmr.api.controller.notification.otp.to;
+import in.gov.abdm.nmr.api.constant.NMRConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,10 +10,10 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class OtpGenerateRequestTo{
 
-    @NotBlank(message = "Contact cannot be null or empty")
+    @NotBlank(message = NMRConstants.CONTACT_NOT_NULL)
     String contact;
 
-    @NotBlank(message = "Type cannot be null or empty")
+    @NotBlank(message = NMRConstants.TYPE_NOT_NULL)
     String type;
 
 }
