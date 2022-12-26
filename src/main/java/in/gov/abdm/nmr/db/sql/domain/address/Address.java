@@ -59,8 +59,8 @@ public class Address extends CommonAuditEntity {
 	private String mobile;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "address_type")
-	private AddressType addressType;
+	@JoinColumn(name = "address_type_id")
+	private AddressType addressTypeId;
 
 //    @ManyToOne
 //    @JoinColumn(name = "hpProfile")

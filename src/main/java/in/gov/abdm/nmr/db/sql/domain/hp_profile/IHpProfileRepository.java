@@ -64,12 +64,12 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
 			+ " sub_district.id as sub_district_id, sub_district.name as sub_district_name, pincode, address_type.id as address_type_id,"
 			+ " address_type.address_type as address_type_name, email, mobile  "
 			+ " from address "
-			+ " LEFT JOIN address_type on address_type.id = address.address_type "
-			+ " LEFT JOIN country on country.id = country "
-			+ " LEFT JOIN state on state.id = state"
-			+ " LEFT JOIN district on district.id = district "
-			+ " LEFT JOIN sub_district on sub_district.id = sub_district "
-			+ " LEFT JOIN villages on villages.id = city "
+			+ " LEFT JOIN address_type on address_type.id = address.address_type_id "
+			+ " LEFT JOIN country on country.id = address.country_id "
+			+ " LEFT JOIN state on state.id = address.state_id"
+			+ " LEFT JOIN district on district.id = address.district_id "
+			+ " LEFT JOIN sub_district on sub_district.id = address.sub_district_id "
+			+ " LEFT JOIN villages on villages.id = address.village_id "
 			+ " where address.hp_profile_id = :hpProfileId and address_type.id = :addressType", nativeQuery = true)
 	Tuple fetchCommunicationAddress(BigInteger hpProfileId, Integer addressType);
 	
@@ -78,12 +78,12 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
 			+ " sub_district.id as sub_district_id, sub_district.name as sub_district_name, pincode, address_type.id as address_type_id,"
 			+ " address_type.address_type as address_type_name, created_date, updated_date, email, mobile  "
 			+ " from address "
-			+ " LEFT JOIN country on country.id = country "
-			+ " LEFT JOIN state on state.id = state "
-			+ " LEFT JOIN district on district.id = district "
-			+ " LEFT JOIN sub_district on sub_district.id = sub_districts "
-			+ " LEFT JOIN city on city.id = city "
-			+ " LEFT JOIN address_type on address_type.id = address.address_type "
+			+ " LEFT JOIN country on country.id = address.country_id "
+			+ " LEFT JOIN state on state.id = address.state_id "
+			+ " LEFT JOIN district on district.id = address.district_id "
+			+ " LEFT JOIN sub_district on sub_district.id = address.sub_district_id "
+			+ " LEFT JOIN city on city.id = address.city_id "
+			+ " LEFT JOIN address_type on address_type.id = address.address_type_id "
 			+ " where address.hp_profile = :hpProfileId and address_type.id = :addressType", nativeQuery = true)
 	Tuple fetchCurrentAddress(BigInteger hpProfileId, Integer addressType);
 	

@@ -23,7 +23,7 @@ public class AddressTO {
     private String addressLine1;
     private String email;
     private String mobile;
-    private AddressTypeTO addressType;
+    private AddressTypeTO addressTypeId;
     private String createdDate;
     private String updatedDate;
     private String fullName;
