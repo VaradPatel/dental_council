@@ -2,7 +2,6 @@ package in.gov.abdm.nmr.db.sql.domain.hp_profile;
 
 import java.math.BigInteger;
 import java.sql.Date;
-import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -10,12 +9,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import in.gov.abdm.nmr.db.sql.domain.address.Address;
-import in.gov.abdm.nmr.db.sql.domain.nationality.Nationality;
-import in.gov.abdm.nmr.db.sql.domain.registration_detail.RegistrationDetails;
+import in.gov.abdm.nmr.db.sql.domain.country.Country;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,13 +28,13 @@ public class HpProfile {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private BigInteger id;
 
-	private String aadharNumber;
-	private String schedule;
+	private String aadhaarToken;
+	private BigInteger scheduleId;
 	private String categoryName;
 	private String changedName;
 	private String createdBy;
 	private Date dateOfBirth;
-	private String email;
+	private String emailId;
 	private String emptyMandatoryFields;
 	private String fatherName;
 	private String firstName;
@@ -67,18 +63,18 @@ public class HpProfile {
 	private Integer workExperienceInYear;
 	private String yearOfInfo;
 
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "hp_profile_id", referencedColumnName = "id")
-	private List<Address> address;
-
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "hp_profile_id", referencedColumnName = "id")
-	private List<RegistrationDetails> registrationDetails;
-	// private List<Speciality> specialities;
-	// private WorkDetails work_details;
-	// private List<String> languages;
+//	@OneToMany(cascade = CascadeType.ALL)
+//	@JoinColumn(name = "hp_profile_id", referencedColumnName = "id")
+//	private List<Address> address;
+//
+//	@OneToMany(cascade = CascadeType.ALL)
+//	@JoinColumn(name = "hp_profile_id", referencedColumnName = "id")
+//	private List<RegistrationDetails> registrationDetails;
+//	// private List<Speciality> specialities;
+//	// private WorkDetails work_details;
+//	// private List<String> languages;
 
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "nationality", referencedColumnName = "id")
-	private Nationality nationality;
+	@JoinColumn(name = "countryNationalityId", referencedColumnName = "id")
+	private Country countryNationalityId;
 }

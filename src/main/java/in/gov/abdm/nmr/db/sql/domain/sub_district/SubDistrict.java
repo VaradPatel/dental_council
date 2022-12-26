@@ -12,9 +12,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import in.gov.abdm.nmr.db.sql.domain.city.City;
 import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.db.sql.domain.district.District;
+import in.gov.abdm.nmr.db.sql.domain.villages.Villages;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,12 +31,12 @@ public class SubDistrict extends CommonAuditEntity{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private BigInteger id;
     private String name;
-    private String code;
+    private String isoCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "district", referencedColumnName = "id")
-    private District district;
+    @JoinColumn(name = "districtCode", referencedColumnName = "id")
+    private District districtCode;
 
-    @OneToMany(mappedBy = "subdistrict", fetch = FetchType.LAZY)
-    private List<City> cities;
+//    @OneToMany(mappedBy = "subdistrict", fetch = FetchType.LAZY)
+//    private List<Villages> villages;
 }

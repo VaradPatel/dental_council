@@ -22,10 +22,6 @@ public class DistrictService implements IDistrictService {
 
     @Override
     public List<DistrictTO> getDistrictData(BigInteger stateId) {
-    	System.out.println("==========================================");
-    	System.out.println("districtRepository :: " + districtRepository.getDistrict(stateId).get(0).getCode());
-    	System.out.println("==========================================");
-
     	return districtDtoMapper.districtDataToDto(districtRepository.getDistrict(stateId));
     }
 }

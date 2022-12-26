@@ -9,5 +9,5 @@ public class SubDistrictTO {
 
     private BigInteger id;
     private String name;
-    private String code;
+    private String isoCode;
 }

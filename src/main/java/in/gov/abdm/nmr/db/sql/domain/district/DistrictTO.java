@@ -8,6 +8,6 @@ import lombok.Data;
 public class DistrictTO {
 
     private BigInteger id;
-    private String code;
+    private String isoCode;
     private String name;
 }

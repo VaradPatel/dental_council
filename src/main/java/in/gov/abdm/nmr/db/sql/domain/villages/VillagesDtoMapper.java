@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.db.sql.domain.city;
+package in.gov.abdm.nmr.db.sql.domain.villages;
 
 import java.util.List;
 
@@ -9,8 +9,8 @@ import org.mapstruct.MappingConstants.ComponentModel;
 @Mapper(componentModel = ComponentModel.SPRING, uses = {}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 
 //@Mapper(componentModel = ComponentModel.SPRING, uses = {UserTypeDtoMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
-public interface CityDtoMapper {
+public interface VillagesDtoMapper {
 
-    List<CityTO> cityDataToDto(List<City> city);
+    List<VillagesTO> villageDataToDto(List<Villages> village);
 
 }

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import in.gov.abdm.nmr.api.controller.md.to.IMasterDataMapper;
 import in.gov.abdm.nmr.api.controller.md.to.MasterDataTO;
 import in.gov.abdm.nmr.db.sql.domain.broad_speciality.BroadSpecialityService;
-import in.gov.abdm.nmr.db.sql.domain.city.CityService;
 import in.gov.abdm.nmr.db.sql.domain.college.ICollegeDaoService;
 import in.gov.abdm.nmr.db.sql.domain.country.CountryService;
 import in.gov.abdm.nmr.db.sql.domain.district.DistrictService;
@@ -17,6 +16,7 @@ import in.gov.abdm.nmr.db.sql.domain.state.StateService;
 import in.gov.abdm.nmr.db.sql.domain.state_medical_council.StateMedicalCouncilService;
 import in.gov.abdm.nmr.db.sql.domain.sub_district.SubDistrictService;
 import in.gov.abdm.nmr.db.sql.domain.university.UniversityService;
+import in.gov.abdm.nmr.db.sql.domain.villages.VillagesService;
 
 @Service
 public class MasterDataService implements IMasterDataService {
@@ -31,7 +31,7 @@ public class MasterDataService implements IMasterDataService {
 	
 	private SubDistrictService subDistrictService;
 	
-	private CityService cityService;
+	private VillagesService villagesService;
 	
 	private BroadSpecialityService broadSpecialityService;
 	
@@ -45,7 +45,7 @@ public class MasterDataService implements IMasterDataService {
 
 	public MasterDataService(StateMedicalCouncilService stateMedicalCouncilService, IMasterDataMapper masterDataMapper,
 			CountryService countryService, StateService stateService, DistrictService districtService, SubDistrictService subDistrictService,
-			CityService cityService, BroadSpecialityService broadSpecialityService, UniversityService universityService, ICollegeDaoService collegeService,
+			VillagesService villagesService, BroadSpecialityService broadSpecialityService, UniversityService universityService, ICollegeDaoService collegeService,
 			LanguageService languageService) {
 		super();
 		this.stateMedicalCouncilService = stateMedicalCouncilService;
@@ -54,7 +54,7 @@ public class MasterDataService implements IMasterDataService {
 		this.stateService = stateService;
 		this.districtService = districtService;
 		this.subDistrictService = subDistrictService;
-		this.cityService = cityService;
+		this.villagesService = villagesService;
 		this.broadSpecialityService = broadSpecialityService;
 		this.universityService = universityService;
 		this.collegeService = collegeService;
@@ -93,7 +93,7 @@ public class MasterDataService implements IMasterDataService {
 
     @Override
     public List<MasterDataTO> cities(BigInteger subDistrictId) {
-        return masterDataMapper.citiesToMasterDataTOs(cityService.getCityData(subDistrictId));
+        return masterDataMapper.citiesToMasterDataTOs(villagesService.getCityData(subDistrictId));
     }
     
 	@Override

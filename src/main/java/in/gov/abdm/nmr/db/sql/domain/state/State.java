@@ -34,7 +34,4 @@ public class State extends CommonAuditEntity {
     @JoinColumn(name = "country")
     private Country country;
 
-    @OneToMany(mappedBy = "state", fetch = FetchType.LAZY)
-    private List<District> districts;
-
 }

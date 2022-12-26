@@ -6,7 +6,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
 
 import in.gov.abdm.nmr.db.sql.domain.broad_speciality.BroadSpecialityTO;
-import in.gov.abdm.nmr.db.sql.domain.city.CityTO;
 import in.gov.abdm.nmr.db.sql.domain.college.CollegeTO;
 import in.gov.abdm.nmr.db.sql.domain.country.CountryTO;
 import in.gov.abdm.nmr.db.sql.domain.district.DistrictTO;
@@ -15,6 +14,7 @@ import in.gov.abdm.nmr.db.sql.domain.state.StateTO;
 import in.gov.abdm.nmr.db.sql.domain.state_medical_council.to.StateMedicalCouncilTO;
 import in.gov.abdm.nmr.db.sql.domain.sub_district.SubDistrictTO;
 import in.gov.abdm.nmr.db.sql.domain.university.UniversityTO;
+import in.gov.abdm.nmr.db.sql.domain.villages.VillagesTO;
 
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface IMasterDataMapper {
@@ -29,7 +29,7 @@ public interface IMasterDataMapper {
 
     List<MasterDataTO> subDistrictsToMasterDataTOs(List<SubDistrictTO> subDistricts);
     
-    List<MasterDataTO> citiesToMasterDataTOs(List<CityTO> cities);
+    List<MasterDataTO> citiesToMasterDataTOs(List<VillagesTO> cities);
 
     List<MasterDataTO> specialitiesToMasterDataTOs(List<BroadSpecialityTO> specialities);
     
