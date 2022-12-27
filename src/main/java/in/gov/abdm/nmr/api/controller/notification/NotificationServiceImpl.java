@@ -6,6 +6,7 @@ import in.gov.abdm.nmr.api.constant.NMRConstants;
 import in.gov.abdm.nmr.api.controller.notification.to.KeyValue;
 import in.gov.abdm.nmr.api.controller.notification.to.NotificationDataTo;
 import in.gov.abdm.nmr.api.controller.notification.to.NotificationRequestTo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,7 +25,11 @@ import java.util.List;
 @Transactional
 public class NotificationServiceImpl implements NotificationService {
 
-    RestTemplate restTemplateDisableSSL = new RestTemplate();
+    @Autowired(required = true)
+    RestTemplate restTemplateDisableSSL;
+
+    @Autowired
+    ObjectMapper mapper;
 
     @Value("${global.notification.endpoint}")
     private String notificationEndpoint;
@@ -101,13 +106,12 @@ public class NotificationServiceImpl implements NotificationService {
      */
     private String sendNotification(NotificationRequestTo notificationRequestTo) throws JsonProcessingException {
 
-        ObjectMapper mapper = new ObjectMapper();
         String jsonString = mapper.writeValueAsString(notificationRequestTo);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add(NMRConstants.TIMESTAMP, Timestamp.valueOf(LocalDateTime.now()).toString());
         HttpEntity<String> dscRequest = new HttpEntity<String>(jsonString.toString(), headers);
-        restTemplateDisableSSL.postForEntity(notificationEndpoint, dscRequest, NotificationRequestTo.class);
+        restTemplateDisableSSL.postForEntity(notificationEndpoint+NMRConstants.NOTIFICATION_SERVICE_SEND_MESSAGE, dscRequest, NotificationRequestTo.class);
         return NMRConstants.SUCCESS_RESPONSE;
     }
 }
