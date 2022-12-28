@@ -4,6 +4,8 @@ import java.math.BigInteger;
 
 import org.springframework.stereotype.Service;
 
+import in.gov.abdm.nmr.api.controller.hp.to.HpProfileAddRequestTO;
+import in.gov.abdm.nmr.api.controller.hp.to.HpProfileAddResponseTO;
 import in.gov.abdm.nmr.api.controller.hp.to.HpProfileDetailResponseTO;
 import in.gov.abdm.nmr.api.controller.hp.to.HpProfileUpdateRequestTO;
 import in.gov.abdm.nmr.api.controller.hp.to.HpProfileUpdateResponseTO;
@@ -43,5 +45,13 @@ public class HpRegistrationService implements IHpRegistrationService {
 			HpProfileUpdateRequestTO hpProfileUpdateRequest) throws InvalidRequestException {
 		return iHpProfileMapper
 				.HpProfileUpdateToDto(hpProfileService.updateHpProfile(hpProfileId, hpProfileUpdateRequest));
+	}
+
+	@Override
+	public HpProfileAddResponseTO addHpProfileDetail(HpProfileAddRequestTO hpProfileUpdateRequest)
+			throws InvalidRequestException {
+		
+		return iHpProfileMapper
+				.HpProfileAddToDto(hpProfileService.addHpProfile(hpProfileUpdateRequest));
 	}
 }

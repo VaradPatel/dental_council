@@ -15,6 +15,8 @@ import javax.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import in.gov.abdm.nmr.api.controller.hp.to.HpProfileAddRequestTO;
+import in.gov.abdm.nmr.api.controller.hp.to.HpProfileAddResponseTO;
 import in.gov.abdm.nmr.api.controller.hp.to.HpProfileUpdateRequestTO;
 import in.gov.abdm.nmr.api.controller.hp.to.HpProfileUpdateResponseTO;
 import in.gov.abdm.nmr.api.controller.hp.to.SmcRegistrationDetailRequestTO;
@@ -42,10 +44,15 @@ import in.gov.abdm.nmr.db.sql.domain.hp_profile.to.IMRDetailsTO;
 import in.gov.abdm.nmr.db.sql.domain.hp_profile.to.PersonalDetailsTO;
 import in.gov.abdm.nmr.db.sql.domain.hp_profile.to.SpecialityDetailsTO;
 import in.gov.abdm.nmr.db.sql.domain.hp_profile.to.WorkDetailsTO;
+import in.gov.abdm.nmr.db.sql.domain.language.LanguageRepository;
 import in.gov.abdm.nmr.db.sql.domain.language.LanguageTO;
+import in.gov.abdm.nmr.db.sql.domain.languages_known.LanguagesKnown;
+import in.gov.abdm.nmr.db.sql.domain.languages_known.LanguagesKnownRepository;
 import in.gov.abdm.nmr.db.sql.domain.nationality.INationalityRepository;
 import in.gov.abdm.nmr.db.sql.domain.nationality.NationalityTO;
+import in.gov.abdm.nmr.db.sql.domain.organization_type.OrganizationType;
 import in.gov.abdm.nmr.db.sql.domain.organization_type.OrganizationTypeRepository;
+import in.gov.abdm.nmr.db.sql.domain.organization_type.OrganizationTypeTO;
 import in.gov.abdm.nmr.db.sql.domain.qualification_detail.QualificationDetailRepository;
 import in.gov.abdm.nmr.db.sql.domain.qualification_detail.QualificationDetailRequestTO;
 import in.gov.abdm.nmr.db.sql.domain.qualification_detail.QualificationDetailTO;
@@ -59,18 +66,26 @@ import in.gov.abdm.nmr.db.sql.domain.schedule.ScheduleTO;
 import in.gov.abdm.nmr.db.sql.domain.state.IStateRepository;
 import in.gov.abdm.nmr.db.sql.domain.state.State;
 import in.gov.abdm.nmr.db.sql.domain.state.StateTO;
+import in.gov.abdm.nmr.db.sql.domain.state_medical_council.IStateMedicalCouncilRepository;
+import in.gov.abdm.nmr.db.sql.domain.state_medical_council.StateMedicalCouncil;
 import in.gov.abdm.nmr.db.sql.domain.state_medical_council_status.IStateMedicalCouncilStatusRepository;
 import in.gov.abdm.nmr.db.sql.domain.state_medical_council_status.StateMedicalCouncilStatus;
 import in.gov.abdm.nmr.db.sql.domain.sub_district.SubDistrict;
+import in.gov.abdm.nmr.db.sql.domain.sub_district.SubDistrictRepository;
 import in.gov.abdm.nmr.db.sql.domain.sub_district.SubDistrictTO;
 import in.gov.abdm.nmr.db.sql.domain.super_speciality.SuperSpeciality;
 import in.gov.abdm.nmr.db.sql.domain.super_speciality.SuperSpecialityRepository;
 import in.gov.abdm.nmr.db.sql.domain.super_speciality.SuperSpecialityTO;
 import in.gov.abdm.nmr.db.sql.domain.university.UniversityTO;
 import in.gov.abdm.nmr.db.sql.domain.villages.Villages;
+import in.gov.abdm.nmr.db.sql.domain.villages.VillagesRepository;
+import in.gov.abdm.nmr.db.sql.domain.work_nature.WorkNature;
+import in.gov.abdm.nmr.db.sql.domain.work_nature.WorkNatureRepository;
 import in.gov.abdm.nmr.db.sql.domain.work_nature.WorkNatureTO;
 import in.gov.abdm.nmr.db.sql.domain.work_profile.WorkProfile;
 import in.gov.abdm.nmr.db.sql.domain.work_profile.WorkProfileRepository;
+import in.gov.abdm.nmr.db.sql.domain.work_status.WorkStatus;
+import in.gov.abdm.nmr.db.sql.domain.work_status.WorkStatusRepository;
 import in.gov.abdm.nmr.db.sql.domain.work_status.WorkStatusTO;
 
 @Service
@@ -106,6 +121,20 @@ public class HpProfileService implements IHpProfileService {
 
 	private CountryRepository countryRepository;
 
+	private LanguageRepository languageRepository;
+
+	private LanguagesKnownRepository languagesKnownRepository;
+
+	private IStateMedicalCouncilRepository iStateMedicalCouncilRepository;
+
+	private WorkNatureRepository workNatureRepository;
+	
+	private WorkStatusRepository workStatusRepository;
+	
+	private SubDistrictRepository subDistrictRepository;
+	
+	private VillagesRepository villagesRepository;
+
 	public HpProfileService(IHpProfileMapper ihHpProfileMapper, IHpProfileRepository iHpProfileRepository,
 			IAddressRepository iAddressRepository, QualificationDetailRepository qualificationDetailRepository,
 			RegistrationDetailRepository registrationDetailRepository, WorkProfileRepository workProfileRepository,
@@ -113,7 +142,10 @@ public class HpProfileService implements IHpProfileService {
 
 			IStateRepository stateRepository, INationalityRepository iNationalityRepository,
 			IStateMedicalCouncilStatusRepository iStateMedicalCouncilStatusRepository,
-			IScheduleRepository iScheduleRepository, CountryRepository countryRepository) {
+			IScheduleRepository iScheduleRepository, CountryRepository countryRepository,
+			LanguageRepository languageRepository, LanguagesKnownRepository languagesKnownRepository,
+			IStateMedicalCouncilRepository iStateMedicalCouncilRepository, WorkNatureRepository workNatureRepository, WorkStatusRepository workStatusRepository,
+			SubDistrictRepository subDistrictRepository, VillagesRepository villagesRepository) {
 
 		super();
 		this.ihHpProfileMapper = ihHpProfileMapper;
@@ -129,6 +161,13 @@ public class HpProfileService implements IHpProfileService {
 		this.iStateMedicalCouncilStatusRepository = iStateMedicalCouncilStatusRepository;
 		this.iScheduleRepository = iScheduleRepository;
 		this.countryRepository = countryRepository;
+		this.languageRepository = languageRepository;
+		this.languagesKnownRepository = languagesKnownRepository;
+		this.iStateMedicalCouncilRepository = iStateMedicalCouncilRepository;
+		this.workNatureRepository = workNatureRepository;
+		this.workStatusRepository = workStatusRepository;
+		this.subDistrictRepository = subDistrictRepository;
+		this.villagesRepository = villagesRepository;
 	}
 
 	@PersistenceContext
@@ -173,11 +212,15 @@ public class HpProfileService implements IHpProfileService {
 		if (hpProfile == null) {
 			return new HpProfileDetailTO();
 		}
-		registrationDetailTO.setCouncilName(hpProfile.get("name", String.class));
 
-		StateMedicalCouncilStatus stateMedicalCouncilStatus = iStateMedicalCouncilStatusRepository
-				.findById(hpProfile.get("state_medical_council_status_id", BigInteger.class)).orElse(null);
-		registrationDetailTO.setCouncilStatus(stateMedicalCouncilStatus);
+		StateMedicalCouncil stateMedicalCouncil = iStateMedicalCouncilRepository
+				.findById(hpProfile.get("state_medical_council_id", BigInteger.class)).orElse(null);
+
+		registrationDetailTO.setStateMedicalCouncil(stateMedicalCouncil);
+
+//		StateMedicalCouncilStatus stateMedicalCouncilStatus = iStateMedicalCouncilStatusRepository
+//				.findById(hpProfile.get("state_medical_council_status_id", BigInteger.class)).orElse(null);
+//		registrationDetailTO.setCouncilStatus(stateMedicalCouncilStatus);
 
 		registrationDetailTO.setRegistrationNumber(hpProfile.get("registration_no", String.class));
 		registrationDetailTO.setRegistrationDate(hpProfile.get("registration_date", Date.class));
@@ -273,7 +316,7 @@ public class HpProfileService implements IHpProfileService {
 		hpSmcDetailTO.setPersonalDetails(personaldetailsTO);
 		//////////// Personal Details Start/////////////////////
 
-		//////////// Communication Address Details Start/////////////////////
+		//////////// Communication LanguagesKnown Details Start/////////////////////
 		Tuple communicationAddress = iHpProfileRepository.fetchCommunicationAddress(hpProfileId, 4);
 		if (communicationAddress != null) {
 			AddressTO commAddressTO = new AddressTO();
@@ -283,7 +326,7 @@ public class HpProfileService implements IHpProfileService {
 			AddressTypeTO addressTypeTO = new AddressTypeTO();
 			addressTypeTO.setId(communicationAddress.get("address_type_id", Integer.class));
 			addressTypeTO.setName(communicationAddress.get("address_type_name", String.class));
-			commAddressTO.setAddressTypeId(addressTypeTO);
+			commAddressTO.setAddressType(addressTypeTO);
 
 			CountryTO countryTO = new CountryTO();
 			countryTO.setName(communicationAddress.get("country_name", String.class));
@@ -314,7 +357,7 @@ public class HpProfileService implements IHpProfileService {
 			hpSmcDetailTO.setCommunicationAddress(commAddressTO);
 		}
 
-		//////////// Communication Address Details end/////////////////////
+		//////////// Communication LanguagesKnown Details end/////////////////////
 
 		//////////// IMR Details start/////////////////////
 
@@ -353,8 +396,8 @@ public class HpProfileService implements IHpProfileService {
 			WorkDetailsTO workDetailsTO = new WorkDetailsTO();
 
 			WorkNatureTO workNatureTO = new WorkNatureTO();
-			workNatureTO.setId(workProfileDetails.get("work_nature_id", BigInteger.class) == null ? BigInteger.ZERO
-					: hpProfile.get("work_nature_id", BigInteger.class));
+//			workNatureTO.setId(workProfileDetails.get("work_nature_id", BigInteger.class) == null ? BigInteger.ZERO
+//					: hpProfile.get("work_nature_id", BigInteger.class));
 			workNatureTO.setName(workProfileDetails.get("work_nature_name", String.class));
 
 			WorkStatusTO workStatusTO = new WorkStatusTO();
@@ -387,7 +430,7 @@ public class HpProfileService implements IHpProfileService {
 			AddressTypeTO currentAddressTypeTO = new AddressTypeTO();
 			currentAddressTypeTO.setId(currentAddress.get("address_type_id", Integer.class));
 			currentAddressTypeTO.setName(currentAddress.get("address_type_name", String.class));
-			currentAddressTO.setAddressTypeId(currentAddressTypeTO);
+			currentAddressTO.setAddressType(currentAddressTypeTO);
 
 			CountryTO currentCountryTO = new CountryTO();
 			currentCountryTO.setName(currentAddress.get("country_name", String.class));
@@ -444,7 +487,7 @@ public class HpProfileService implements IHpProfileService {
 						&& hpProfileUpdateRequest.getCommunicationAddress().getFullName() != "")
 				&& (hpProfileUpdateRequest.getCommunicationAddress().getAddressLine1() != null
 						&& hpProfileUpdateRequest.getCommunicationAddress().getAddressLine1() != "")
-				&& (hpProfileUpdateRequest.getCommunicationAddress().getCity().getId() != null)
+				&& (hpProfileUpdateRequest.getCommunicationAddress().getVillage().getId() != null)
 				&& (hpProfileUpdateRequest.getCommunicationAddress().getDistrict().getId() != null)
 				&& (hpProfileUpdateRequest.getCommunicationAddress().getCountry().getId() != null)
 				&& (hpProfileUpdateRequest.getCommunicationAddress().getState().getId() != null)
@@ -459,7 +502,7 @@ public class HpProfileService implements IHpProfileService {
 				&& (hpProfileUpdateRequest.getImrDetails().getYearOfInfo() != null
 						&& hpProfileUpdateRequest.getImrDetails().getYearOfInfo() != "")
 
-				&& (hpProfileUpdateRequest.getRegistrationDetail().getCouncilName() != null)
+				&& (hpProfileUpdateRequest.getRegistrationDetail().getStateMedicalCouncil() != null)
 				&& (hpProfileUpdateRequest.getRegistrationDetail().getRegistrationNumber() != null
 						&& hpProfileUpdateRequest.getRegistrationDetail().getRegistrationNumber() != "")
 				&& (hpProfileUpdateRequest.getRegistrationDetail().getRegistrationDate() != null)
@@ -559,12 +602,12 @@ public class HpProfileService implements IHpProfileService {
 							addressData.setSubDistrict(communicationSubDistrict);
 
 							Villages communicationCity = new Villages();
-							communicationCity.setId(hpProfileUpdateRequest.getCommunicationAddress().getCity().getId());
+							communicationCity.setId(hpProfileUpdateRequest.getCommunicationAddress().getVillage().getId());
 							addressData.setVillage(communicationCity);
 
 							AddressType addressType = new AddressType();
 							addressType
-									.setId(hpProfileUpdateRequest.getCommunicationAddress().getAddressTypeId().getId());
+									.setId(hpProfileUpdateRequest.getCommunicationAddress().getAddressType().getId());
 							addressData.setAddressTypeId(addressType);
 
 							addressData.setHpProfileId(hpProfileId);
@@ -601,12 +644,12 @@ public class HpProfileService implements IHpProfileService {
 							addAddressData.setSubDistrict(communicationSubDistrict);
 
 							Villages communicationCity = new Villages();
-							communicationCity.setId(hpProfileUpdateRequest.getCommunicationAddress().getCity().getId());
+							communicationCity.setId(hpProfileUpdateRequest.getCommunicationAddress().getVillage().getId());
 							addAddressData.setVillage(communicationCity);
 
 							AddressType addressType = new AddressType();
 							addressType
-									.setId(hpProfileUpdateRequest.getCommunicationAddress().getAddressTypeId().getId());
+									.setId(hpProfileUpdateRequest.getCommunicationAddress().getAddressType().getId());
 							addAddressData.setAddressTypeId(addressType);
 
 							addAddressData.setHpProfileId(hpProfileId);
@@ -744,23 +787,23 @@ public class HpProfileService implements IHpProfileService {
 
 //							Country country = new Country();
 //							country.setId(newQualification.getCountry().getId());
-							qualification.setCountry(newQualification.getCountry().getId());
+							qualification.setCountryId(newQualification.getCountry().getId());
 
 //							State state = new State();
 //							state.setId(newQualification.getState().getId());
-							qualification.setState(newQualification.getState().getId());
+							qualification.setStateId(newQualification.getState().getId());
 
 //							College college = new College();
 //							college.setId(newQualification.getCollege().getId());
-							qualification.setCollege(newQualification.getCollege().getId());
+							qualification.setCollegeId(newQualification.getCollege().getId());
 
 //							University university = new University();
 //							university.setId(newQualification.getUniversity().getId());
-							qualification.setUniversity(newQualification.getUniversity().getId());
+							qualification.setUniversityId(newQualification.getUniversity().getId());
 
 //							Course course = new Course();
 //							course.setId(newQualification.getCourse().getId());
-							qualification.setCourse(newQualification.getCourse().getId());
+							qualification.setCourseId(newQualification.getCourse().getId());
 
 //							QualificationStatus qualificationStatus = iQualificationStatusRepository
 //									.findById(newQualification.getQualificationStatus().getId()).orElse(null);
@@ -796,7 +839,7 @@ public class HpProfileService implements IHpProfileService {
 //									.getId() == null ? null
 //											: hpProfileUpdateRequest.getQualificationDetail().get(cnt).getCountry()
 ////													.getId());
-							qualification.setCountry(hpProfileUpdateRequest.getQualificationDetail().get(cnt)
+							qualification.setCountryId(hpProfileUpdateRequest.getQualificationDetail().get(cnt)
 									.getCountry().getId() == null ? null
 											: hpProfileUpdateRequest.getQualificationDetail().get(cnt).getCountry()
 													.getId());
@@ -807,7 +850,7 @@ public class HpProfileService implements IHpProfileService {
 //											? null
 //											: hpProfileUpdateRequest.getQualificationDetail().get(cnt).getState()
 //													.getId());
-							qualification.setState(
+							qualification.setStateId(
 									hpProfileUpdateRequest.getQualificationDetail().get(cnt).getState().getId() == null
 											? null
 											: hpProfileUpdateRequest.getQualificationDetail().get(cnt).getState()
@@ -818,7 +861,7 @@ public class HpProfileService implements IHpProfileService {
 //									.getId() == null ? null
 //											: hpProfileUpdateRequest.getQualificationDetail().get(cnt).getCollege()
 //													.getId());
-							qualification.setCollege(hpProfileUpdateRequest.getQualificationDetail().get(cnt)
+							qualification.setCollegeId(hpProfileUpdateRequest.getQualificationDetail().get(cnt)
 									.getCollege().getId() == null ? null
 											: hpProfileUpdateRequest.getQualificationDetail().get(cnt).getCollege()
 													.getId());
@@ -828,7 +871,7 @@ public class HpProfileService implements IHpProfileService {
 //									.getId() == null ? null
 //											: hpProfileUpdateRequest.getQualificationDetail().get(cnt).getUniversity()
 //													.getId());
-							qualification.setUniversity(hpProfileUpdateRequest.getQualificationDetail().get(cnt)
+							qualification.setUniversityId(hpProfileUpdateRequest.getQualificationDetail().get(cnt)
 									.getUniversity().getId() == null ? null
 											: hpProfileUpdateRequest.getQualificationDetail().get(cnt).getUniversity()
 													.getId());
@@ -839,7 +882,7 @@ public class HpProfileService implements IHpProfileService {
 //											? null
 //											: hpProfileUpdateRequest.getQualificationDetail().get(cnt).getCourse()
 //													.getId());
-							qualification.setCourse(
+							qualification.setCourseId(
 									hpProfileUpdateRequest.getQualificationDetail().get(cnt).getCourse().getId() == null
 											? null
 											: hpProfileUpdateRequest.getQualificationDetail().get(cnt).getCourse()
@@ -955,5 +998,361 @@ public class HpProfileService implements IHpProfileService {
 			throw new InvalidRequestException("Incomplete Data!");
 		}
 
+	}
+
+	public HpProfileAddResponseTO addHpProfile(HpProfileAddRequestTO hpProfileAddRequest)
+			throws InvalidRequestException {
+		HpSmcDetailTO hpSmcDetailTO = new HpSmcDetailTO();
+
+		if ((hpProfileAddRequest.getPersonalDetails().getSalutation() != null
+				&& hpProfileAddRequest.getPersonalDetails().getSalutation() != "")
+				&& (hpProfileAddRequest.getPersonalDetails().getAadhaarToken() != null
+						&& hpProfileAddRequest.getPersonalDetails().getAadhaarToken() != "")
+				&& (hpProfileAddRequest.getPersonalDetails().getFirstName() != null
+						&& hpProfileAddRequest.getPersonalDetails().getFirstName() != "")
+				&& (hpProfileAddRequest.getPersonalDetails().getCountryNationality() != null)
+				&& (hpProfileAddRequest.getPersonalDetails().getCountryNationality() != null)
+				&& (hpProfileAddRequest.getPersonalDetails().getDateOfBirth() != null)
+				&& (hpProfileAddRequest.getPersonalDetails().getGender() != null
+						&& hpProfileAddRequest.getPersonalDetails().getGender() != "")
+				&& (hpProfileAddRequest.getPersonalDetails().getSchedule() != null)
+				&& (hpProfileAddRequest.getCommunicationAddress().getFullName() != null
+						&& hpProfileAddRequest.getCommunicationAddress().getFullName() != "")
+				&& (hpProfileAddRequest.getCommunicationAddress().getAddressLine1() != null
+						&& hpProfileAddRequest.getCommunicationAddress().getAddressLine1() != "")
+				&& (hpProfileAddRequest.getCommunicationAddress().getVillage().getId() != null)
+				&& (hpProfileAddRequest.getCommunicationAddress().getDistrict().getId() != null)
+				&& (hpProfileAddRequest.getCommunicationAddress().getCountry().getId() != null)
+				&& (hpProfileAddRequest.getCommunicationAddress().getState().getId() != null)
+				&& (hpProfileAddRequest.getCommunicationAddress().getPincode() != null)
+				&& (hpProfileAddRequest.getCommunicationAddress().getEmail() != null)
+				&& (hpProfileAddRequest.getCommunicationAddress().getMobile() != null)
+
+				&& (hpProfileAddRequest.getImrDetails().getNmrId() != null
+						&& hpProfileAddRequest.getImrDetails().getNmrId() != "")
+				&& (hpProfileAddRequest.getImrDetails().getRegistrationNumber() != null
+						&& hpProfileAddRequest.getImrDetails().getRegistrationNumber() != "")
+				&& (hpProfileAddRequest.getImrDetails().getYearOfInfo() != null
+						&& hpProfileAddRequest.getImrDetails().getYearOfInfo() != "")
+
+				&& (hpProfileAddRequest.getRegistrationDetail().getStateMedicalCouncil() != null)
+				&& (hpProfileAddRequest.getRegistrationDetail().getRegistrationNumber() != null
+						&& hpProfileAddRequest.getRegistrationDetail().getRegistrationNumber() != "")
+				&& (hpProfileAddRequest.getRegistrationDetail().getRegistrationDate() != null)
+				&& (hpProfileAddRequest.getRegistrationDetail().getIsRenewable() != null)
+				&& (hpProfileAddRequest.getRegistrationDetail().getIsNameChange() != null)
+
+				&& (hpProfileAddRequest.getSpecialityDetails().getBroadSpeciality() != null)
+
+				&& (hpProfileAddRequest.getWorkDetails().getIsUserCurrentlyWorking() != null)
+				&& (hpProfileAddRequest.getWorkDetails().getWorkNature().getId() != null)
+				&& (hpProfileAddRequest.getWorkDetails().getWorkStatus().getId() != null)
+				&& (hpProfileAddRequest.getCurrentWorkDetails().getUrl() != null
+						&& hpProfileAddRequest.getCurrentWorkDetails().getUrl() != "")) {
+			
+			
+			///////////////////////// Personal Details end /////////////////////////////////
+			
+			HpProfile hpProfile = new HpProfile();
+
+			hpProfile.setSalutation(hpProfileAddRequest.getPersonalDetails().getSalutation());
+			hpProfile.setAadhaarToken(hpProfileAddRequest.getPersonalDetails().getAadhaarToken());
+			hpProfile.setFirstName(hpProfileAddRequest.getPersonalDetails().getFirstName());
+			hpProfile.setMiddleName(hpProfileAddRequest.getPersonalDetails().getMiddleName());
+			hpProfile.setLastName(hpProfileAddRequest.getPersonalDetails().getLastName());
+			hpProfile.setFatherName(hpProfileAddRequest.getPersonalDetails().getFatherName());
+			hpProfile.setMotherName(hpProfileAddRequest.getPersonalDetails().getMotherName());
+			hpProfile.setSpouseName(hpProfileAddRequest.getPersonalDetails().getSpouseName());
+			
+			Country countryNationality = countryRepository
+					.findById(hpProfileAddRequest.getPersonalDetails().getCountryNationality().getId())
+					.orElse(null);
+			if (countryNationality == null) {
+				throw new InvalidRequestException("Incorrect Nationality!");
+			}
+			else {
+				hpProfile.setCountryNationalityId(countryNationality);
+			}
+			
+			
+			Schedule schedule = iScheduleRepository
+					.findById(hpProfileAddRequest.getPersonalDetails().getSchedule().getId()).orElse(null);
+			if (schedule == null) {
+				throw new InvalidRequestException("Incorrect Schedule!");
+			}
+			else {
+				hpProfile.setScheduleId(schedule.getId());
+			}
+			
+			
+			hpProfile.setGender(hpProfileAddRequest.getPersonalDetails().getGender());
+			hpProfile.setDateOfBirth(hpProfileAddRequest.getPersonalDetails().getDateOfBirth());
+			
+			hpProfile.setFullName(hpProfileAddRequest.getCommunicationAddress().getFullName());
+			hpProfile.setYearOfInfo(hpProfileAddRequest.getImrDetails().getYearOfInfo());
+			hpProfile.setNmrId(hpProfileAddRequest.getImrDetails().getNmrId());
+			
+			
+			HpProfile hProfile = iHpProfileRepository.save(hpProfile);
+
+			BigInteger hProfileId = hpProfile.getId();
+			
+			List<LanguageTO> newLanguages = hpProfileAddRequest.getPersonalDetails().getLanguage();
+			List<LanguagesKnown> languagesKnown = new ArrayList<LanguagesKnown>();
+			if (newLanguages.size() > 0) {
+				for (LanguageTO languageTo : newLanguages) {
+					LanguagesKnown language = new LanguagesKnown();
+					language.setId(languageTo.getId());
+			 		language.setHpProfileId(hProfileId);
+					languagesKnown.add(language);
+				}
+				languagesKnownRepository.saveAll(languagesKnown);
+			}
+			
+			
+			/////////////////////////// Personal Details end /////////////////////////////////
+			
+			/////////////////////////// Communication Details start /////////////////////////////////
+
+			Address addAddressData = new Address();
+			addAddressData.setAddressLine1(hpProfileAddRequest.getCommunicationAddress().getAddressLine1());
+			
+
+			Villages communicationVillage = villagesRepository.findById(hpProfileAddRequest.getCommunicationAddress().getVillage().getId()).orElse(null);
+			if (communicationVillage != null) {
+				addAddressData.setVillage(communicationVillage);
+			}
+			
+			
+			District communicationDistrict = districtRepository.findById(hpProfileAddRequest.getCommunicationAddress().getDistrict().getId()).orElse(null);
+			if (communicationDistrict != null) {
+				addAddressData.setDistrict(communicationDistrict);
+			}
+
+			SubDistrict communicationSubDistrict = subDistrictRepository.findById(hpProfileAddRequest.getCommunicationAddress().getSubDistrict().getId()).orElse(null);
+			if (communicationSubDistrict != null) {
+				addAddressData.setSubDistrict(communicationSubDistrict);
+			}
+			
+			
+			State communicationState = stateRepository.findById(hpProfileAddRequest.getCommunicationAddress().getState().getId()).orElse(null);
+			if (communicationState != null) {
+				addAddressData.setState(communicationState);
+			}
+				
+//			Country communicationCountry = countryRepository.findById(hpProfileAddRequest.getCommunicationAddress().getCountry().getId()).orElse(null);
+//			if (communicationCountry != null) {
+//				addAddressData.setCountry(communicationCountry);
+//			}
+			
+			
+			addAddressData.setPincode(hpProfileAddRequest.getCommunicationAddress().getPincode());
+			addAddressData.setEmail(hpProfileAddRequest.getCommunicationAddress().getEmail());
+			addAddressData.setMobile(hpProfileAddRequest.getCommunicationAddress().getMobile());
+
+			addAddressData.setHpProfileId(hProfileId);
+
+			AddressType addressType = new AddressType();
+			addressType.setId(hpProfileAddRequest.getCommunicationAddress().getAddressType().getId());
+			addAddressData.setAddressTypeId(addressType);
+			
+			
+
+			iAddressRepository.save(addAddressData);
+			/////////////////////////// Communication Details end /////////////////////////////////
+
+			/////////////////////////// Registration Number start /////////////////////////////////		
+
+			RegistrationDetails addRegistrationDetail = new RegistrationDetails();
+			addRegistrationDetail.setRegistrationDate(hpProfileAddRequest.getRegistrationDetail().getRegistrationDate());
+			addRegistrationDetail.setRegistrationNo(hpProfileAddRequest.getImrDetails().getRegistrationNumber());
+			
+			StateMedicalCouncil stateMedicalCouncil = iStateMedicalCouncilRepository.findById(hpProfileAddRequest.getRegistrationDetail().getStateMedicalCouncil().getId()).orElse(null);
+			if (stateMedicalCouncil != null) {
+				addRegistrationDetail.setStateMedicalCouncilId(stateMedicalCouncil.getId());
+			}
+
+//			StateMedicalCouncilStatus stateMedicalCouncilStatus = iStateMedicalCouncilStatusRepository
+//					.findById(hpProfileAddRequest.getRegistrationDetail().getCouncilStatus().getId())
+//					.orElse(null);
+//			if (stateMedicalCouncilStatus != null) {
+//				addRegistrationDetail.setCouncilStatus(stateMedicalCouncilStatus);
+//			}
+
+			addRegistrationDetail
+					.setIsRenewable(hpProfileAddRequest.getRegistrationDetail().getIsRenewable());
+			
+			addRegistrationDetail.setRenewableRegistrationDate(hpProfileAddRequest.getRegistrationDetail().getRenewableRegistrationDate());
+			
+			addRegistrationDetail.setIsNameChange(hpProfileAddRequest.getRegistrationDetail().getIsNameChange());
+			
+			addRegistrationDetail.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
+			addRegistrationDetail.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+			addRegistrationDetail.setHpProfileId(hProfile);
+
+			RegistrationDetails newRegistrationDetails = registrationDetailRepository.save(addRegistrationDetail);
+			
+			
+			/////////////////////////// Registration Number end /////////////////////////////////
+
+			////////////////////////// Qualification Data start ////////////////////////////////
+			List<QualificationDetailRequestTO> newqualificationDetailTOList = hpProfileAddRequest
+					.getQualificationDetail();
+
+			if (newqualificationDetailTOList.size() > 0) {
+				List<QualificationDetails> qualificationDetails = new ArrayList<QualificationDetails>();
+				for (QualificationDetailRequestTO newQualification : newqualificationDetailTOList) {
+
+					QualificationDetails qualification = new QualificationDetails();
+
+//					Country country = new Country();
+//					country.setId(newQualification.getCountry().getId());
+					qualification.setCountryId(newQualification.getCountry().getId());
+
+//					State state = new State();
+//					state.setId(newQualification.getState().getId());
+					qualification.setStateId(newQualification.getState().getId());
+
+//					College college = new College();
+//					college.setId(newQualification.getCollege().getId());
+					qualification.setCollegeId(newQualification.getCollege().getId());
+
+//					University university = new University();
+//					university.setId(newQualification.getUniversity().getId());
+					qualification.setUniversityId(newQualification.getUniversity().getId());
+
+//					Course course = new Course();
+//					course.setId(newQualification.getCourse().getId());
+					qualification.setCourseId(newQualification.getCourse().getId());
+
+//					QualificationStatus qualificationStatus = iQualificationStatusRepository
+//							.findById(newQualification.getQualificationStatus().getId()).orElse(null);
+//					if (qualificationStatus != null) {
+//						qualification.setQualificationStatus(qualificationStatus);
+//					}
+
+					qualification.setIsVerified(newQualification.getIsVerified());
+					qualification.setQualificationYear(newQualification.getQualificationYear());
+					qualification.setQualificationMonth(newQualification.getQualificationMonth());
+					qualification.setIsNameChange(newQualification.getIsNameChange());
+					qualification.setRegistrationDetails(newRegistrationDetails);
+					qualification.setHpProfile(hpProfile);
+
+					qualification.setIsVerified(newQualification.getIsVerified());
+					qualification.setEndDate(null);
+					qualification.setCertificate(null);
+					qualification.setName(null);
+					qualification.setStartDate(null);
+					qualification.setSystemOfMedicine(null);
+					qualificationDetails.add(qualification);
+
+				}
+
+				qualificationDetailRepository.saveAll(qualificationDetails);
+
+			} else {
+				
+			}
+			////////////////////////// Qualifictaion Data end //////////////////////////////////
+			//////////////////////////Super Speciality start///////////////////////////////////
+			List<SuperSpecialityTO> newSuperSpecialities = hpProfileAddRequest.getSpecialityDetails()
+					.getSuperSpeciality();
+
+			List<SuperSpeciality> superSpecialityList = new ArrayList<SuperSpeciality>();
+			for (SuperSpecialityTO speciality : newSuperSpecialities) {
+
+				SuperSpeciality superSpeciality = new SuperSpeciality();
+				superSpeciality.setName(speciality.getName());
+				superSpeciality.setHpProfileId(hProfileId);
+
+				superSpecialityList.add(superSpeciality);
+			}
+			superSpecialityRepository.saveAll(superSpecialityList);
+			/////////////////////////Super Speciality ends/////////////////////////////////////
+			
+			/////////////////////////  Work Details start ///////////////////////////////////
+
+			WorkProfile newworkProfile = new WorkProfile();
+
+			WorkNature newWorkNature = workNatureRepository.findById(hpProfileAddRequest.getWorkDetails().getWorkNature().getId()).orElse(null);
+			
+			if (newWorkNature != null) {
+				newworkProfile.setWorkNatureId(newWorkNature.getId());
+			}
+			newworkProfile.setIsUserCurrentlyWorking(hpProfileAddRequest.getWorkDetails().getIsUserCurrentlyWorking());
+			
+			WorkStatus newWorkStatus = workStatusRepository.findById(hpProfileAddRequest.getWorkDetails().getWorkStatus().getId()).orElse(null);
+
+			if (newWorkStatus != null) {
+				newworkProfile.setWorkStatusId(newWorkStatus.getId());
+			}
+			
+			newworkProfile.setHpProfileId(hProfileId);
+			
+			/////////////////////////  Current Work Details start ///////////////////////////////////
+			
+			AddressTO currentWorkAddress = hpProfileAddRequest.getCurrentWorkDetails().getAddress();
+			
+			Address newCurrentWorkAddress = new Address();
+			
+			State currentWorkState = stateRepository.findById(currentWorkAddress.getState().getId()).orElse(null);
+				
+			if (currentWorkState != null) {
+				newCurrentWorkAddress.setState(currentWorkState);
+				
+			}
+			
+			District currentWorkDistrict = districtRepository.findById(currentWorkAddress.getDistrict().getId()).orElse(null);
+			if (currentWorkDistrict != null) {
+				newCurrentWorkAddress.setDistrict(currentWorkDistrict);
+				
+			}
+			if (currentWorkAddress.getAddressLine1() != null && currentWorkAddress.getAddressLine1() != "" ) {
+				newCurrentWorkAddress.setAddressLine1(currentWorkAddress.getAddressLine1());
+			}
+			
+			if (currentWorkAddress.getPincode() != null && currentWorkAddress.getPincode() != "" ) {
+				newCurrentWorkAddress.setPincode(currentWorkAddress.getPincode());
+			}
+			
+			AddressType addressType2 = new AddressType();
+			addressType2.setId(2);
+			
+			newCurrentWorkAddress.setAddressTypeId(addressType2);
+			newCurrentWorkAddress.setHpProfileId(hProfileId);
+			
+			iAddressRepository.save(newCurrentWorkAddress);
+			
+			newworkProfile.setAddress(newCurrentWorkAddress);
+			
+			
+			if (hpProfileAddRequest.getCurrentWorkDetails().getWorkOrganization() != null && hpProfileAddRequest.getCurrentWorkDetails().getWorkOrganization() != "") {
+				newworkProfile.setWorkOrganization(hpProfileAddRequest.getCurrentWorkDetails().getWorkOrganization());
+			}
+			
+			OrganizationTypeTO newOrganizationType = hpProfileAddRequest.getCurrentWorkDetails().getOrganizationType();
+			
+			if (newOrganizationType != null) {
+				newworkProfile.setOrganizationType(newOrganizationType.getId());
+			}
+			
+			if (hpProfileAddRequest.getCurrentWorkDetails().getUrl() != null && hpProfileAddRequest.getCurrentWorkDetails().getUrl() != "") {
+				newworkProfile.setUrl(hpProfileAddRequest.getCurrentWorkDetails().getUrl());
+			}
+			
+			newworkProfile.setHpProfileId(hProfileId);
+			/////////////////////////  Current Work Details end ///////////////////////////////////
+			
+			workProfileRepository.save(newworkProfile);
+			
+			//////////////////////// Work Details end //////////////////////////////////////
+			HpProfileAddResponseTO hpProfileAddResponseTO = new HpProfileAddResponseTO(201, "Record Created!", hProfileId);
+			return hpProfileAddResponseTO;
+
+		}
+		else {
+			throw new InvalidRequestException("Incomplete Data!");
+		}
+		
 	}
 }

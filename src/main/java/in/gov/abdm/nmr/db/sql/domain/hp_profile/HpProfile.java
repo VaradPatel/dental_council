@@ -65,7 +65,7 @@ public class HpProfile {
 
 //	@OneToMany(cascade = CascadeType.ALL)
 //	@JoinColumn(name = "hp_profile_id", referencedColumnName = "id")
-//	private List<Address> address;
+//	private List<LanguagesKnown> address;
 //
 //	@OneToMany(cascade = CascadeType.ALL)
 //	@JoinColumn(name = "hp_profile_id", referencedColumnName = "id")
