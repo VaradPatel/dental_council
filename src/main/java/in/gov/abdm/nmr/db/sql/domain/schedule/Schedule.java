@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.db.sql.domain.schedule;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,5 +25,7 @@ public class Schedule extends CommonAuditEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private BigInteger id;
 	private String name;
+	private Timestamp createdAt;
+	private Timestamp updatedAt;
 
 }

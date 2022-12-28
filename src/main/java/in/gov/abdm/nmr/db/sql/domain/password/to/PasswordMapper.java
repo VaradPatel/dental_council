@@ -11,6 +11,6 @@ import in.gov.abdm.nmr.db.sql.domain.user_detail.to.IUserDetailMapper;
 @Mapper(componentModel = ComponentModel.SPRING, uses = {IUserDetailMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface PasswordMapper {
 
-    @Mapping(target = "userDetail.password", ignore = true)
+    @Mapping(target = "user.password", ignore = true)
     PasswordTO passwordToDto(Password password);
 }

@@ -17,26 +17,28 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static in.gov.abdm.nmr.api.constant.NMRConstants.*;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "userDetail")
-public class UserDetail extends CommonAuditEntity {
+@Entity(name = "user")
+public class User extends CommonAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger id;
-    private String username;
     private String password;
+    private String username;
     private String refreshTokenId;
 
     @ManyToOne
-    @JoinColumn(name = "user_type")
+    @JoinColumn(name = USER_TYPE_ID,referencedColumnName = ID)
     private UserType userType;
-    
+
     @ManyToOne
-    @JoinColumn(name = "user_sub_type")
+    @JoinColumn(name = USER_SUB_TYPE_ID)
     private UserSubType userSubType;
 
 }

@@ -14,11 +14,11 @@ public interface IUserDetailService {
 
     Integer updateRefreshTokenId(UpdateRefreshTokenIdRequestTO refreshTokenRequestTO);
 
-    UserDetail findById(BigInteger id);
+    User findById(BigInteger id);
 
-    UserDetail saveUserDetail(UserDetail userDetail);
+    User saveUserDetail(User user);
 
-    UserDetail searchUserDetailInternal(UserDetailSearchTO userDetailSearchTO);
+    User searchUserDetailInternal(UserDetailSearchTO userDetailSearchTO);
 
-    UserDetail findUserDetailByUsername(String username);
+    User findUserDetailByUsername(String username);
 }

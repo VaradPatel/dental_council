@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import javax.persistence.EntityManager;
 
+import in.gov.abdm.nmr.db.sql.domain.user_detail.User;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,6 @@ import in.gov.abdm.nmr.api.controller.college.to.CollegeRegistrarCreationRequest
 import in.gov.abdm.nmr.db.sql.domain.college.College;
 import in.gov.abdm.nmr.db.sql.domain.college.ICollegeRepository;
 import in.gov.abdm.nmr.db.sql.domain.user_detail.IUserDetailService;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.UserDetail;
 import in.gov.abdm.nmr.db.sql.domain.user_detail.to.UserDetailSearchTO;
 import in.gov.abdm.nmr.db.sql.domain.user_sub_type.UserSubType;
 import in.gov.abdm.nmr.db.sql.domain.user_sub_type.UserSubTypeEnum;
@@ -46,13 +46,13 @@ public class CollegeRegistrarDaoService implements ICollegeRegistrarDaoService {
     }
 
     public CollegeRegistrar saveCollegeRegistrar(CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) {
-        UserDetail userDetail = new UserDetail(collegeRegistrarCreationRequestTo.getUserId(), collegeRegistrarCreationRequestTo.getEmailId(), //
+        User user = new User(collegeRegistrarCreationRequestTo.getUserId(), collegeRegistrarCreationRequestTo.getEmailId(), //
                 bCryptPasswordEncoder.encode(collegeRegistrarCreationRequestTo.getPassword()), null, //
                 entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()));
-        userDetailService.saveUserDetail(userDetail);
+        userDetailService.saveUserDetail(user);
 
         CollegeRegistrar collegeRegistrarEntity = collegeRegistrarMapper.collegeRegistrarDtoToEntity(collegeRegistrarCreationRequestTo);
-        collegeRegistrarEntity.setUserDetail(userDetail);
+        collegeRegistrarEntity.setUser(user);
 
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         UserDetailSearchTO userDetailSearchTO = new UserDetailSearchTO();

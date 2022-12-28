@@ -40,15 +40,15 @@ public class UserDetailService implements IUserDetailService {
 
     @Override
     public UserDetailTO searchUserDetail(UserDetailSearchTO userDetailSearchTO) {
-        UserDetail userDetail = searchUserDetailInternal(userDetailSearchTO);
-        return userDetailMapper.userDetailToDto(userDetail);
+        User user = searchUserDetailInternal(userDetailSearchTO);
+        return userDetailMapper.userDetailToDto(user);
     }
 
     @Override
-    public UserDetail searchUserDetailInternal(UserDetailSearchTO userDetailSearchTO) {
+    public User searchUserDetailInternal(UserDetailSearchTO userDetailSearchTO) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UserDetail> criteria = builder.createQuery(UserDetail.class);
-        Root<UserDetail> root = criteria.from(UserDetail.class);
+        CriteriaQuery<User> criteria = builder.createQuery(User.class);
+        Root<User> root = criteria.from(User.class);
 
         List<Predicate> predicates = new ArrayList<>();
 
@@ -71,8 +71,8 @@ public class UserDetailService implements IUserDetailService {
     @Override
     public Integer updateRefreshTokenId(UpdateRefreshTokenIdRequestTO refreshTokenRequestTO) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaUpdate<UserDetail> criteria = builder.createCriteriaUpdate(UserDetail.class);
-        Root<UserDetail> root = criteria.from(UserDetail.class);
+        CriteriaUpdate<User> criteria = builder.createCriteriaUpdate(User.class);
+        Root<User> root = criteria.from(User.class);
 
         List<Predicate> predicates = new ArrayList<>();
 
@@ -85,17 +85,17 @@ public class UserDetailService implements IUserDetailService {
     }
 
     @Override
-    public UserDetail findById(BigInteger id) {
+    public User findById(BigInteger id) {
         return userDetailRepository.findById(id).get();
     }
 
     @Override
-    public UserDetail saveUserDetail(UserDetail userDetail) {
-        return userDetailRepository.saveAndFlush(userDetail);
+    public User saveUserDetail(User user) {
+        return userDetailRepository.saveAndFlush(user);
     }
     
     @Override
-    public UserDetail findUserDetailByUsername(String username) {
+    public User findUserDetailByUsername(String username) {
         return userDetailRepository.findByUsername(username);
     }
 }

@@ -4,7 +4,7 @@ import java.math.BigInteger;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserDetailRepository extends JpaRepository<UserDetail, BigInteger> {
+public interface UserDetailRepository extends JpaRepository<User, BigInteger> {
 
-    UserDetail findByUsername(String username);
+    User findByUsername(String username);
 }

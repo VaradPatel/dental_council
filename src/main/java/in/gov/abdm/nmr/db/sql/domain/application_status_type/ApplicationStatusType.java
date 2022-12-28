@@ -1,6 +1,8 @@
 package in.gov.abdm.nmr.db.sql.domain.application_status_type;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
@@ -20,6 +22,7 @@ import java.sql.Timestamp;
 public class ApplicationStatusType extends CommonAuditEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger id;
     private Timestamp createdAt;
     private Timestamp updatedAt;

@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
+import in.gov.abdm.nmr.db.sql.domain.user_detail.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,6 @@ import in.gov.abdm.nmr.db.sql.domain.state.State;
 import in.gov.abdm.nmr.db.sql.domain.state_medical_council.StateMedicalCouncil;
 import in.gov.abdm.nmr.db.sql.domain.university.University;
 import in.gov.abdm.nmr.db.sql.domain.user_detail.IUserDetailService;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.UserDetail;
 import in.gov.abdm.nmr.db.sql.domain.user_sub_type.UserSubType;
 import in.gov.abdm.nmr.db.sql.domain.user_sub_type.UserSubTypeEnum;
 import in.gov.abdm.nmr.db.sql.domain.user_type.UserType;
@@ -48,12 +48,12 @@ public class CollegeDaoService implements ICollegeDaoService {
     }
 
     public College saveCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo) {
-        UserDetail userDetail = new UserDetail(collegeRegistrationRequestTo.getUserId(), collegeRegistrationRequestTo.getEmailId(), bCryptPasswordEncoder.encode("123456"), null, //
+        User user = new User(collegeRegistrationRequestTo.getUserId(), collegeRegistrationRequestTo.getEmailId(), bCryptPasswordEncoder.encode("123456"), null, //
                 entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()));
-        userDetailService.saveUserDetail(userDetail);
+        userDetailService.saveUserDetail(user);
 
         College collegeEntity = collegeDtoMapper.collegeRegistartionDtoToEntity(collegeRegistrationRequestTo);
-        collegeEntity.setUserDetail(userDetail);
+        collegeEntity.setUser(user);
 
         collegeEntity.setState(entityManager.getReference(State.class, collegeRegistrationRequestTo.getStateId()));
         collegeEntity.setStateMedicalCouncil(entityManager.getReference(StateMedicalCouncil.class, collegeRegistrationRequestTo.getCouncilId()));

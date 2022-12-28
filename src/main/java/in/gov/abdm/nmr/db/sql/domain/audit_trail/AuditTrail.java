@@ -8,7 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.UserDetail;
+import in.gov.abdm.nmr.db.sql.domain.user_detail.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +27,7 @@ public class AuditTrail extends CommonAuditEntity {
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private UserDetail login;
+    private User login;
 
     private String ipAddress;
     private String comment;

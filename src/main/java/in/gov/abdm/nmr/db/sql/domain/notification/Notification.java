@@ -8,7 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.UserDetail;
+import in.gov.abdm.nmr.db.sql.domain.user_detail.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,7 @@ public class Notification extends CommonAuditEntity {
 
     @ManyToOne
     @JoinColumn(name = "sender_user_id", referencedColumnName = "id")
-    private UserDetail login;
+    private User login;
 
     private String subject;
     private String description;
@@ -38,11 +38,11 @@ public class Notification extends CommonAuditEntity {
 
     @ManyToOne
     @JoinColumn(name = "from_user_id", referencedColumnName = "id")
-    private UserDetail fromUserId;
+    private User fromUserId;
 
     @ManyToOne
     @JoinColumn(name = "to_user_id", referencedColumnName = "id")
-    private UserDetail toUserId;
+    private User toUserId;
 
 
     private String fromRoleId;

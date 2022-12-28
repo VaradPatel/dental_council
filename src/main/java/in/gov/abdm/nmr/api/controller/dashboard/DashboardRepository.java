@@ -10,18 +10,21 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 import java.util.List;
 
-import static in.gov.abdm.nmr.api.constant.NMRConstants.IS_NEW;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.*;
 
 @Repository
 public interface DashboardRepository extends JpaRepository<HpVerificationStatus, BigInteger> {
 
-    @Query(value ="SELECT a.applicationStatusType.name as name, COUNT(a) as count " +
-            "FROM HpVerificationStatus a " +
-            "WHERE a.isNewApplication=:isNew " +
-            "GROUP BY a.applicationStatusType.name")
-    List<StatusWiseCount> fetchCountOnCard(@Param(IS_NEW) Integer isNew);
+    @Query(value = FETCH_HP_STATUS_WISE_COUNT_BY_APP_STATUS_AND_USER_TYPE_QUERY)
+    List<StatusWiseCount> fetchHpStatusWiseCountByAppStatusAndUserType(@Param(APPLICATION_STATUS_TYPE) String applicationStatusType, @Param(USER_TYPE) String userType);
 
-    List<HpVerificationStatus> findByIsNewApplication(Integer isNewApplication);
+    @Query(value = FETCH_TOTAL_COUNT_BY_APP_STATUS_AND_USER_TYPE_QUERY)
+    List<BigInteger> fetchTotalCountByAppStatusAndUserType(@Param(APPLICATION_STATUS_TYPE) String applicationStatusType, @Param(USER_TYPE) String userType);
 
+    @Query(value = FETCH_HP_STATUS_WISE_COUNT_BY_APP_STATUS_AND_USER_SUB_TYPE_QUERY)
+    List<StatusWiseCount> fetchHpStatusWiseCountByAppStatusAndUserTypeAndSubType(@Param(APPLICATION_STATUS_TYPE) String applicationStatusType, @Param(USER_TYPE) String userType, @Param(USER_SUB_TYPE) String userSubType);
+
+    @Query(value = FETCH_TOTAL_COUNT_BY_APP_STATUS_AND_USER_SUB_TYPE_QUERY)
+    List<BigInteger> fetchTotalCountByAppStatusAndUserTypeAndSubType(@Param(APPLICATION_STATUS_TYPE) String applicationStatusType, @Param(USER_TYPE) String userType, @Param(USER_SUB_TYPE) String userSubType);
 
 }
