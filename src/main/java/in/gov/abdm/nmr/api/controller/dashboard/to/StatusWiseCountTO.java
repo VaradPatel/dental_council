@@ -1,11 +1,11 @@
 package in.gov.abdm.nmr.api.controller.dashboard.to;
 
+import java.math.BigInteger;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigInteger;
 
 /**
  * Data Transfer Object - Structure to transfer data between layers and

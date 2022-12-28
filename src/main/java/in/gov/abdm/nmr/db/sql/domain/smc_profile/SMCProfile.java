@@ -7,7 +7,7 @@ import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.db.sql.domain.state_medical_council.StateMedicalCouncil;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.User;
+import in.gov.abdm.nmr.db.sql.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +25,7 @@ public class SMCProfile extends CommonAuditEntity {
 
     @OneToOne
     @JoinColumn(name = "userDetail")
-    private User user;
+    private User userDetail;
 
     private String firstName;
     private String lastName;

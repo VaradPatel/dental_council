@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.address.Address;
 import lombok.AllArgsConstructor;
@@ -32,18 +33,15 @@ public class WorkProfile {
 //    @OneToMany(mappedBy = "subdistrict", fetch = FetchType.LAZY)
 //    private List<City> cities;
     
-    @OneToMany(mappedBy = "workProfile", fetch = FetchType.LAZY)
-    private List<Address> address;
+    @OneToOne(mappedBy = "workProfile", fetch = FetchType.LAZY)
+    private Address address;
     
     private Integer facility;
     private Integer isUserCurrentlyWorking;
-//    private String pincode;
     private String proofOfWorkAttachment;
     private String url;
-//    private BigInteger districtId;
     private BigInteger userId;
     private BigInteger broadSpecialityId;
-//    private BigInteger stateId;
     private BigInteger workNatureId;
     private BigInteger workStatusId;
     private BigInteger hpProfileId;

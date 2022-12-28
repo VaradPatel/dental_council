@@ -8,7 +8,7 @@ import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.db.sql.domain.hp_profile.HpProfile;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.User;
+import in.gov.abdm.nmr.db.sql.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import in.gov.abdm.nmr.api.security.controller.to.LoginRequestTO;
+import in.gov.abdm.nmr.api.security.controller.to.LoginResponseTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
@@ -23,14 +24,14 @@ public class AuthController {
     }
 
     @PostMapping(path = PATH_LOGIN, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String login(@RequestBody(required = false) LoginRequestTO loginRequestTO, HttpServletResponse response) {
+    public LoginResponseTO login(@RequestBody(required = false) LoginRequestTO loginRequestTO, HttpServletResponse response) {
         return authService.login(response);
     }
 
     @PostMapping(path = PATH_REFRESH_TOKEN, produces = MediaType.APPLICATION_JSON_VALUE)
     //---
     @SecurityRequirement(name = "bearerAuth")
-    public String refreshToken(HttpServletResponse response) {
+    public LoginResponseTO refreshToken(HttpServletResponse response) {
         return authService.refreshToken(response);
     }
 }

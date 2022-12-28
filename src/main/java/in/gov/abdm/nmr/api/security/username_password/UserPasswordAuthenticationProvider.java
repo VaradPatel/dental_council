@@ -30,7 +30,8 @@ public class UserPasswordAuthenticationProvider extends DaoAuthenticationProvide
             throw new UsernameNotFoundException("Invalid username");
         }
 
-        if (userPassAuthToken.getUserType() == null || !userDetail.getUserType().equals(userPassAuthToken.getUserType())) {
+        if (userPassAuthToken.getUserType() == null || !userDetail.getUserType().equals(userPassAuthToken.getUserType()) || //
+                (userDetail.getUserSubType() == null || !userDetail.getUserSubType().equals(userPassAuthToken.getUserSubType()))) {
             LOGGER.error("Usertype and credentials do not match");
             userPassAuthToken.eraseCredentials();
             throw new AuthenticationServiceException("Invalid username");

@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 
-import in.gov.abdm.nmr.db.sql.domain.user_detail.IUserDetailService;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.to.UserDetailSearchTO;
+import in.gov.abdm.nmr.db.sql.domain.user.IUserDaoService;
+import in.gov.abdm.nmr.db.sql.domain.user.to.UserSearchTO;
 
 @Component
 public class JwtAuthenticationProvider implements AuthenticationProvider {
@@ -23,9 +23,9 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     private JwtUtil jwtUtil;
 
-    private IUserDetailService userDetailService;
+    private IUserDaoService userDetailService;
 
-    public JwtAuthenticationProvider(JwtUtil jwtUtil, IUserDetailService userDetailService) {
+    public JwtAuthenticationProvider(JwtUtil jwtUtil, IUserDaoService userDetailService) {
         this.jwtUtil = jwtUtil;
         this.userDetailService = userDetailService;
     }
@@ -43,7 +43,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             if (JwtTypeEnum.REFRESH_TOKEN.equals(jwtAuthtoken.getType())) {
                 DecodedJWT verifiedToken = jwtUtil.verifyToken(jwtAuthtoken.getCredentials(), JwtTypeEnum.REFRESH_TOKEN);
 
-                UserDetailSearchTO userDetailSearchTO = new UserDetailSearchTO();
+                UserSearchTO userDetailSearchTO = new UserSearchTO();
                 userDetailSearchTO.setUsername(verifiedToken.getSubject());
                 String refreshTokenId = userDetailService.findRefreshTokenId(userDetailSearchTO);
 

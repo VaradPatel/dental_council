@@ -2,9 +2,11 @@ package in.gov.abdm.nmr.api.security.controller;
 
 import javax.servlet.http.HttpServletResponse;
 
+import in.gov.abdm.nmr.api.security.controller.to.LoginResponseTO;
+
 public interface IAuthService {
 
-    String login(HttpServletResponse response);
+    LoginResponseTO login(HttpServletResponse response);
 
-    String refreshToken(HttpServletResponse response);
+    LoginResponseTO refreshToken(HttpServletResponse response);
 }

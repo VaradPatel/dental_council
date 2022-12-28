@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.db.sql.domain.user_detail;
 
 import java.math.BigInteger;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -29,8 +30,9 @@ public class User extends CommonAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger id;
-    private String password;
+    @Column(name = "user_name")
     private String username;
+    private String password;
     private String refreshTokenId;
 
     @ManyToOne

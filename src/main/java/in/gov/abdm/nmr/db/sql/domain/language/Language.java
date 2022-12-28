@@ -1,5 +1,7 @@
 package in.gov.abdm.nmr.db.sql.domain.language;
 
+import java.math.BigInteger;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,8 +21,7 @@ public class Language {
 	
 	    @Id
 	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private Long id;
-
+	    private BigInteger id;
 	    private String name;
 
 }

@@ -1,5 +1,8 @@
 package in.gov.abdm.nmr.db.sql.domain.application_status_type;
 
+import java.math.BigInteger;
+import java.sql.Timestamp;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,9 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.math.BigInteger;
-import java.sql.Timestamp;
 
 @Getter
 @Setter

@@ -14,8 +14,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 
 import in.gov.abdm.nmr.api.security.common.KeyUtil;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.IUserDetailService;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.to.UpdateRefreshTokenIdRequestTO;
+import in.gov.abdm.nmr.db.sql.domain.user.IUserDaoService;
+import in.gov.abdm.nmr.db.sql.domain.user.to.UpdateRefreshTokenIdRequestTO;
 
 @Component
 public class JwtUtil {
@@ -38,10 +38,10 @@ public class JwtUtil {
 
     private Long refreshTokenExpirySeconds;
 
-    private IUserDetailService userDetailService;
+    private IUserDaoService userDetailService;
 
     public JwtUtil(KeyUtil keyUtil, @Value("${nmr.jwt.private.key.pass}") String privateKeyPass, @Value("${nmr.access.token.expiry}") Long accessTokenExpirySeconds, //
-                   @Value("${nmr.refresh.token.expiry}") Long refreshTokenExpirySeconds, IUserDetailService userDetailService) {
+                   @Value("${nmr.refresh.token.expiry}") Long refreshTokenExpirySeconds, IUserDaoService userDetailService) {
         this.keyUtil = keyUtil;
         this.privateKeyPass = privateKeyPass;
         this.accessTokenExpirySeconds = accessTokenExpirySeconds;

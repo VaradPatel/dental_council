@@ -11,6 +11,6 @@ public interface ICollegeRepository extends JpaRepository<College, BigInteger> {
     @Query(value = "SELECT * FROM colleges where university=:university", nativeQuery = true)
     List<College> getCollege(BigInteger university);
 
-    @Query(value = "SELECT c.* FROM colleges c inner join user_detail ud on c.user_detail = ud.id where ud.id=:userDetailId", nativeQuery = true)
-    College findByUserDetail(Long userDetailId);
+    @Query(value = "SELECT c FROM college c join c.user usr where usr.id=:userDetailId")
+    College findByUserDetail(BigInteger userDetailId);
 }

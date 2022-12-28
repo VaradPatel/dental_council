@@ -9,4 +9,6 @@ public interface ICollegeRegistrarDaoService {
     CollegeRegistrar saveCollegeRegistrar(CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo);
     
     CollegeRegistrar findCollegeRegistrarById(BigInteger id);
+
+    CollegeRegistrar findByUserDetail(BigInteger userDetailId);
 }

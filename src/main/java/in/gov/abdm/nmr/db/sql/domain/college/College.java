@@ -16,7 +16,7 @@ import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.db.sql.domain.state.State;
 import in.gov.abdm.nmr.db.sql.domain.state_medical_council.StateMedicalCouncil;
 import in.gov.abdm.nmr.db.sql.domain.university.University;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.User;
+import in.gov.abdm.nmr.db.sql.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,8 +26,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 @Table(name = "colleges")
+@Entity(name = "college")
 public class College extends CommonAuditEntity {
 
     @Id
@@ -36,7 +36,7 @@ public class College extends CommonAuditEntity {
     private String name;
 
     private String collegeId;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "university")
     private University university;
@@ -55,6 +55,6 @@ public class College extends CommonAuditEntity {
     private State state;
 
     @OneToOne
-    @JoinColumn(name = "user_detail")
+    @JoinColumn(name = "user_id")
     private User user;
 }

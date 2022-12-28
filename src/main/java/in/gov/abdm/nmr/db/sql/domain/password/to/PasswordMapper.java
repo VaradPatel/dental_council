@@ -6,9 +6,9 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants.ComponentModel;
 
 import in.gov.abdm.nmr.db.sql.domain.password.Password;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.to.IUserDetailMapper;
+import in.gov.abdm.nmr.db.sql.domain.user.to.IUserMapper;
 
-@Mapper(componentModel = ComponentModel.SPRING, uses = {IUserDetailMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(componentModel = ComponentModel.SPRING, uses = {IUserMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface PasswordMapper {
 
     @Mapping(target = "user.password", ignore = true)
