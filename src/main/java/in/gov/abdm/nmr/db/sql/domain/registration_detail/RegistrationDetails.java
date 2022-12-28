@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.db.sql.domain.registration_detail;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
+import in.gov.abdm.nmr.db.sql.domain.hp_profile.HpProfile;
 import in.gov.abdm.nmr.db.sql.domain.qualification_detail.QualificationDetails;
 import in.gov.abdm.nmr.db.sql.domain.state.State;
 import in.gov.abdm.nmr.db.sql.domain.state_medical_council_status.StateMedicalCouncilStatus;
@@ -34,7 +36,7 @@ public class RegistrationDetails extends CommonAuditEntity {
     private String certificate;
 
 //    @OneToOne
-    private Integer stateMedicalCouncilId;
+    private BigInteger stateMedicalCouncilId;
     
     private String createdBy;
     private String dueDate;
@@ -74,4 +76,8 @@ public class RegistrationDetails extends CommonAuditEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "councilStatus", referencedColumnName = "id")
     private StateMedicalCouncilStatus councilStatus;
+    
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "hpProfileId", referencedColumnName = "id")
+    private HpProfile hpProfileId;
 }

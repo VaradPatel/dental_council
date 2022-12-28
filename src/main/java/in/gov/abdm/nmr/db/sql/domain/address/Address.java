@@ -17,6 +17,7 @@ import in.gov.abdm.nmr.db.sql.domain.district.District;
 import in.gov.abdm.nmr.db.sql.domain.state.State;
 import in.gov.abdm.nmr.db.sql.domain.sub_district.SubDistrict;
 import in.gov.abdm.nmr.db.sql.domain.villages.Villages;
+import in.gov.abdm.nmr.db.sql.domain.work_profile.WorkProfile;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,23 +35,23 @@ public class Address extends CommonAuditEntity {
 	private BigInteger id;
 
 	@OneToOne
-	@JoinColumn(name = "country")
+	@JoinColumn(name = "countryId", referencedColumnName = "id")
 	private Country country;
 
 	@OneToOne
-	@JoinColumn(name = "state")
+	@JoinColumn(name = "stateId", referencedColumnName = "id")
 	private State state;
 
 	@OneToOne
-	@JoinColumn(name = "district")
+	@JoinColumn(name = "districtId", referencedColumnName = "id")
 	private District district;
 
 	@OneToOne
-	@JoinColumn(name = "city")
+	@JoinColumn(name = "villageId", referencedColumnName = "id")
 	private Villages village;
 
 	@OneToOne
-	@JoinColumn(name = "subDistrict")
+	@JoinColumn(name = "subDistrictId", referencedColumnName = "id")
 	private SubDistrict subDistrict;
 
 	private String pincode;
@@ -59,7 +60,7 @@ public class Address extends CommonAuditEntity {
 	private String mobile;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "address_type_id")
+	@JoinColumn(name = "addressTypeId", referencedColumnName = "id")
 	private AddressType addressTypeId;
 
 //    @ManyToOne
@@ -68,9 +69,9 @@ public class Address extends CommonAuditEntity {
 
 	private BigInteger hpProfileId;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "workProfile")
-//    private WorkProfile workProfile;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workProfileId", referencedColumnName = "id")
+    private WorkProfile workProfile;
 
-	private BigInteger workProfile;
+//	private workProfile;
 }

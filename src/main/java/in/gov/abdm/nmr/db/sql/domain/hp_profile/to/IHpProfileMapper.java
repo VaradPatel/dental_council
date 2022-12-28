@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.db.sql.domain.hp_profile.to;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
 
+import in.gov.abdm.nmr.api.controller.hp.to.HpProfileAddResponseTO;
 import in.gov.abdm.nmr.api.controller.hp.to.HpProfileDetailResponseTO;
 import in.gov.abdm.nmr.api.controller.hp.to.HpProfileUpdateResponseTO;
 import in.gov.abdm.nmr.api.controller.hp.to.SmcRegistrationDetailResponseTO;
@@ -17,5 +18,7 @@ public interface IHpProfileMapper {
 	HpProfileDetailResponseTO HpProfileDetailToDto(HpProfileDetailTO hpProfileDetailTO);
 
 	HpProfileUpdateResponseTO HpProfileUpdateToDto(HpProfileUpdateResponseTO hpProfileUpdateResponseTO);
+
+	HpProfileAddResponseTO HpProfileAddToDto(HpProfileAddResponseTO hpProfileAddResponseTO);
 
 }

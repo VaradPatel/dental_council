@@ -17,14 +17,14 @@ public class AddressTO {
     private CountryTO country;
     private StateTO state;
     private DistrictTO district;
-    private VillagesTO city;
+    private VillagesTO village;
     private SubDistrictTO subDistrict;
     private String pincode;
     private String addressLine1;
     private String email;
     private String mobile;
-    private AddressTypeTO addressTypeId;
-    private String createdDate;
-    private String updatedDate;
+    private AddressTypeTO addressType;
+    private String createdAt;
+    private String updatedAt;
     private String fullName;
 }

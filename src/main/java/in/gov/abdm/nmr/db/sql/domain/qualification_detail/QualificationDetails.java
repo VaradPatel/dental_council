@@ -44,38 +44,38 @@ public class QualificationDetails {
 //    @JoinColumn(name = "district")
 //    private District district;
     
-    private BigInteger district;
+    private BigInteger districtId;
     
 //    @OneToOne(cascade=CascadeType.ALL)
 //    @JoinColumn(name = "college")
 //    private College college;
 
-    private BigInteger college;
+    private BigInteger collegeId;
     
 //    @OneToOne
 //    @JoinColumn(name = "country")
 //    private Country country;
     
-    private BigInteger country;
+    private BigInteger countryId;
 
 //    @OneToOne
 //    @JoinColumn(name = "course")
 //    private Course course;
-    private BigInteger course;
+    private BigInteger courseId;
 
 //    @OneToOne
 //    @JoinColumn(name = "state")
 //    private State state;
-    private BigInteger state;
+    private BigInteger stateId;
 
 //    @OneToOne(cascade=CascadeType.ALL)
 //    @JoinColumn(name = "university")
 //    private University university;
     
-    private BigInteger university;
+    private BigInteger universityId;
 
     @ManyToOne
-    @JoinColumn(name = "registrationDetail")
+    @JoinColumn(name = "registration_details_id", referencedColumnName = "id")
     private RegistrationDetails registrationDetails;
 
     @ManyToOne
