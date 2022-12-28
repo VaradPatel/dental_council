@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.db.sql.domain.user_type;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -16,6 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static in.gov.abdm.nmr.api.constant.NMRConstants.USER_TYPE;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,9 +28,10 @@ public class UserType extends CommonAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private BigInteger id;
     private String name;
+    private String code;
 
-    @OneToMany(mappedBy = "usertype", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = USER_TYPE, fetch = FetchType.LAZY)
     private List<UserSubType> userSubTypes;
 }

@@ -14,6 +14,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static in.gov.abdm.nmr.api.constant.NMRConstants.ID;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.USER_TYPE_ID;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -27,6 +30,6 @@ public class UserSubType extends CommonAuditEntity {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "usertype")
-    private UserType usertype;
+    @JoinColumn(name = USER_TYPE_ID,referencedColumnName = ID)
+    private UserType userType;
 }

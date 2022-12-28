@@ -11,7 +11,7 @@ import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.college.College;
 import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.UserDetail;
+import in.gov.abdm.nmr.db.sql.domain.user_detail.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,15 +27,15 @@ public class CollegeRegistrar extends CommonAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger id;
-    private String registrarName;
+    private String name;
     private String phoneNumber;
     private String emailId;
     
-//    @OneToOne
-//    @JoinColumn(name = "college")
-//    private College college;
+    @OneToOne
+    @JoinColumn(name = "college")
+    private College college;
 
     @OneToOne
-    @JoinColumn(name = "userId")
-    private UserDetail userDetail;
+    @JoinColumn(name = "user_detail")
+    private User user;
 }

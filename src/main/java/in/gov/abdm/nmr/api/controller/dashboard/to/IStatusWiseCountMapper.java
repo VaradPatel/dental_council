@@ -11,8 +11,8 @@ public interface IStatusWiseCountMapper {
         /**
          * This method transforms the StatusWiseCount Bean to the StatusWiseCountTO Bean
          * by transferring its contents
-         * @param statusWiseCount
+         * @param iStatusWiseCount
          * @return StatusWiseCountTO
          */
-        StatusWiseCountTO toStatusWiseCountTO(StatusWiseCount statusWiseCount);
+        StatusWiseCountTO toStatusWiseCountTO(IStatusWiseCount iStatusWiseCount);
 }

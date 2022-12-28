@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.db.sql.domain.user;
+package in.gov.abdm.nmr.db.sql.domain.user_detail;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -85,12 +85,12 @@ public class UserDaoService implements IUserDaoService {
     }
 
     @Override
-    public User findById(BigInteger id) {
-        return userDetailRepository.findById(id).orElse(null);
+    public UserDetail findById(BigInteger id) {
+        return userDetailRepository.findById(id).get();
     }
 
     @Override
-    public User saveUserDetail(User userDetail) {
+    public UserDetail saveUserDetail(UserDetail userDetail) {
         return userDetailRepository.saveAndFlush(userDetail);
     }
     

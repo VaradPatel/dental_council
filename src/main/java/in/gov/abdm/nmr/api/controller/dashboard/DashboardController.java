@@ -1,14 +1,15 @@
 package in.gov.abdm.nmr.api.controller.dashboard;
 
+import in.gov.abdm.nmr.api.controller.dashboard.to.RequestTO;
+import in.gov.abdm.nmr.api.controller.dashboard.to.ResponseTO;
+import in.gov.abdm.nmr.api.exception.InvalidRequestException;
 import static in.gov.abdm.nmr.api.constant.NMRConstants.FETCH_COUNT_ON_CARD_URL;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import static in.gov.abdm.nmr.api.constant.NMRConstants.*;
 import in.gov.abdm.nmr.api.controller.dashboard.to.ResponseTO;
 
 /**
@@ -22,15 +23,15 @@ public class DashboardController {
      * Singleton principle
      */
     @Autowired
-    private DashboardService dashboardService;
+    private IDashboardService iDashboardService;
 
     /**
      * This endpoint can be accessed to retrieve the count of applications according to their status
      * @return ResponseTO
      */
-    @GetMapping(path = FETCH_COUNT_ON_CARD_URL, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseTO> fetchCountOnCard(){
-        return new ResponseEntity<>(dashboardService.fetchCountOnCard(), HttpStatus.OK);
+    @PostMapping(FETCH_COUNT_ON_CARD_URL)
+    public ResponseEntity<ResponseTO> fetchCountOnCard(@RequestBody RequestTO requestTO) throws InvalidRequestException {
+        return ResponseEntity.ok(iDashboardService.fetchCountOnCard(requestTO.getUserType(), requestTO.getUserSubType()));
     }
 
 }

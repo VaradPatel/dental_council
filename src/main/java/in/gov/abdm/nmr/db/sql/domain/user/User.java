@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.db.sql.domain.user;
+package in.gov.abdm.nmr.db.sql.domain.user_detail;
 
 import java.math.BigInteger;
 
@@ -18,6 +18,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static in.gov.abdm.nmr.api.constant.NMRConstants.*;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -34,11 +36,11 @@ public class User extends CommonAuditEntity {
     private String refreshTokenId;
 
     @ManyToOne
-    @JoinColumn(name = "user_type_id")
+    @JoinColumn(name = USER_TYPE_ID,referencedColumnName = ID)
     private UserType userType;
-    
+
     @ManyToOne
-    @JoinColumn(name = "user_sub_type_id")
+    @JoinColumn(name = USER_SUB_TYPE_ID)
     private UserSubType userSubType;
 
 }

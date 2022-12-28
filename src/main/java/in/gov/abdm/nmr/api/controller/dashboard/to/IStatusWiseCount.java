@@ -6,7 +6,7 @@ import java.math.BigInteger;
  * Interface Based Projection - to fetch the partial result-set
  * Suggested Alternative to class based projections[DTOs]
  */
-public interface StatusWiseCount {
+public interface IStatusWiseCount {
 
     /**
      * Abstract method to fetch the application status name

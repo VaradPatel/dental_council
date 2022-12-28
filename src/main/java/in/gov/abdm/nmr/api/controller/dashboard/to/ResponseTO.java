@@ -17,21 +17,33 @@ import lombok.NoArgsConstructor;
 public class ResponseTO {
 
     /**
-     * This holds the list of count of new applications
+     * This holds the list of count of New applications
      * according to their status at that point in time
      */
     private List<StatusWiseCountTO> registrationRequests;
 
     /**
-     * This holds the list of count of existing applications
+     * This holds the list of count of Existing applications
      * according to their status at that point in time
      */
     private List<StatusWiseCountTO> updationRequests;
 
     /**
-     * This holds the list of count of suspended applications
+     * This holds the list of count of Suspended applications
      * according to their status at that point in time
      */
     private List<StatusWiseCountTO> suspensionRequests;
+
+    /**
+     * This holds the list of count of Black-listed applications
+     * according to their status at that point in time
+     */
+    private List<StatusWiseCountTO> blackListRequests;
+
+    /**
+     * This holds the list of count of Voluntary Retirement applications
+     * according to their status at that point in time
+     */
+    private List<StatusWiseCountTO> voluntaryRetirementRequests;
 
 }

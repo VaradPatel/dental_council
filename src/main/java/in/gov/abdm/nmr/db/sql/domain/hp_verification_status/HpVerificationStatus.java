@@ -1,17 +1,18 @@
 package in.gov.abdm.nmr.db.sql.domain.hp_verification_status;
 
-import java.math.BigInteger;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
 import in.gov.abdm.nmr.db.sql.domain.application_status_type.ApplicationStatusType;
+import in.gov.abdm.nmr.db.sql.domain.hp_profile.HpProfile;
+import in.gov.abdm.nmr.db.sql.domain.user_detail.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import javax.persistence.*;
+import java.math.BigInteger;
+
+import static in.gov.abdm.nmr.api.constant.NMRConstants.*;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.ID;
 
 @Getter
 @Setter
@@ -21,14 +22,18 @@ import lombok.Setter;
 public class HpVerificationStatus {
 
     @Id
-    private BigInteger hpVerificationStatusId;
-    private BigInteger hpProfileId;
-    private Integer isNewApplication;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private BigInteger id;
+
+    @OneToOne
+    @JoinColumn(name = HP_PROFILE_ID,referencedColumnName = ID)
+    private HpProfile hpProfile;
+
     @ManyToOne
-    @JoinColumn(name = "application_status_id",referencedColumnName = "id")
+    @JoinColumn(name = APPLICATION_STATUS_TYPE_ID,referencedColumnName = ID)
     private ApplicationStatusType applicationStatusType;
-    private BigInteger verifierDeanId;
-    private BigInteger verifierRegistrarId;
-    private Integer verifierSmcId;
-    private BigInteger verifierNmcId;
+
+    @OneToOne
+    @JoinColumn(name = VERIFIED_BY,referencedColumnName = ID)
+    private User verifiedBy;
 }
