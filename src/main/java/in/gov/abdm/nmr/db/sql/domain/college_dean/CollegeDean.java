@@ -21,7 +21,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "collegeDean")
 public class CollegeDean extends CommonAuditEntity {
 
     @Id
@@ -36,6 +36,6 @@ public class CollegeDean extends CommonAuditEntity {
     private College college;
 
     @OneToOne
-    @JoinColumn(name = "user_detail")
+    @JoinColumn(name = "user_id")
     private User user;
 }

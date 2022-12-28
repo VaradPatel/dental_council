@@ -1,5 +1,7 @@
 package in.gov.abdm.nmr.db.sql.domain.user_type;
 
+import java.math.BigInteger;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -7,10 +9,10 @@ import lombok.Getter;
 @Getter
 public enum UserTypeEnum {
 
-    HEALTH_PROFESSIONAL(1L, "Health Professional"), COLLEGE(2L, "College"), STATE_MEDICAL_COUNCIL(3L, "State Medical Council"), //
-    NATIONAL_MEDICAL_COUNCIL(4L, "National Medical Council");
+    HEALTH_PROFESSIONAL(BigInteger.valueOf(1), "Health Professional"), COLLEGE(BigInteger.valueOf(2), "College"), //
+    STATE_MEDICAL_COUNCIL(BigInteger.valueOf(3), "State Medical Council"), NATIONAL_MEDICAL_COUNCIL(BigInteger.valueOf(4), "National Medical Council");
 
-    private Long code;
+    private BigInteger code;
 
     private String name;
 }

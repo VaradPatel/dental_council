@@ -20,7 +20,7 @@ public class ProtectedPaths {
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<AntPathRequestMatcher> protectedPaths = new ArrayList<>();
         protectedPaths.add(new AntPathRequestMatcher(PATH_REFRESH_TOKEN));
-        protectedPaths.add(new AntPathRequestMatcher(PATH_REGISTER_COLLEGE_REGISTRAR, HttpMethod.PUT.name()));
+        protectedPaths.add(new AntPathRequestMatcher(PATH_UPDATE_COLLEGE, HttpMethod.PUT.name()));
         protectedPaths.add(new AntPathRequestMatcher(PATH_REGISTER_COLLEGE_REGISTRAR));
         protectedPaths.add(new AntPathRequestMatcher(PATH_REGISTER_COLLEGE_DEAN));
 

@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ICollegeDeanRepository extends JpaRepository<CollegeDean, BigInteger> {
 
-    @Query(value = "SELECT cd.* FROM college_dean cg inner join user ud on cg.user_id = ud.id where ud.id=:userDetailId", nativeQuery = true)
+    @Query(value = "SELECT c FROM collegeDean c join c.user usr where usr.id=:userDetailId")
     CollegeDean findByUserDetail(BigInteger userDetailId);
 }
