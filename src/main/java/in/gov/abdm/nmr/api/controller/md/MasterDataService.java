@@ -13,7 +13,7 @@ import in.gov.abdm.nmr.db.sql.domain.country.CountryService;
 import in.gov.abdm.nmr.db.sql.domain.district.DistrictService;
 import in.gov.abdm.nmr.db.sql.domain.language.LanguageService;
 import in.gov.abdm.nmr.db.sql.domain.state.StateService;
-import in.gov.abdm.nmr.db.sql.domain.state_medical_council.StateMedicalCouncilService;
+import in.gov.abdm.nmr.db.sql.domain.state_medical_council.StateMedicalCouncilDaoService;
 import in.gov.abdm.nmr.db.sql.domain.sub_district.SubDistrictService;
 import in.gov.abdm.nmr.db.sql.domain.university.UniversityService;
 import in.gov.abdm.nmr.db.sql.domain.villages.VillagesService;
@@ -21,7 +21,7 @@ import in.gov.abdm.nmr.db.sql.domain.villages.VillagesService;
 @Service
 public class MasterDataService implements IMasterDataService {
 
-	private StateMedicalCouncilService stateMedicalCouncilService;
+	private StateMedicalCouncilDaoService stateMedicalCouncilService;
 
 	private CountryService countryService;
 
@@ -43,7 +43,7 @@ public class MasterDataService implements IMasterDataService {
 
 	private IMasterDataMapper masterDataMapper;
 
-	public MasterDataService(StateMedicalCouncilService stateMedicalCouncilService, IMasterDataMapper masterDataMapper,
+	public MasterDataService(StateMedicalCouncilDaoService stateMedicalCouncilService, IMasterDataMapper masterDataMapper,
 			CountryService countryService, StateService stateService, DistrictService districtService, SubDistrictService subDistrictService,
 			VillagesService villagesService, BroadSpecialityService broadSpecialityService, UniversityService universityService, ICollegeDaoService collegeService,
 			LanguageService languageService) {

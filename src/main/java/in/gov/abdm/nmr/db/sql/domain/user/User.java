@@ -1,7 +1,8 @@
-package in.gov.abdm.nmr.db.sql.domain.user_detail;
+package in.gov.abdm.nmr.db.sql.domain.user;
 
 import java.math.BigInteger;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,22 +22,23 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "userDetail")
-public class UserDetail extends CommonAuditEntity {
+@Entity(name = "user")
+public class User extends CommonAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger id;
+    @Column(name = "user_name")
     private String username;
     private String password;
     private String refreshTokenId;
 
     @ManyToOne
-    @JoinColumn(name = "user_type")
+    @JoinColumn(name = "user_type_id")
     private UserType userType;
     
     @ManyToOne
-    @JoinColumn(name = "user_sub_type")
+    @JoinColumn(name = "user_sub_type_id")
     private UserSubType userSubType;
 
 }

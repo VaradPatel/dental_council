@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.api.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.api.security.common.RsaUtil;
 import in.gov.abdm.nmr.api.security.controller.to.LoginRequestTO;
+import in.gov.abdm.nmr.db.sql.domain.captcha.ICaptchaDaoService;
 
 @Component
 public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -31,7 +32,9 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
 
     private RsaUtil rsaUtil;
 
-    public UserPasswordAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper, RsaUtil rsaUtil) {
+    private ICaptchaDaoService captchaDaoService;
+
+    public UserPasswordAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper, RsaUtil rsaUtil, ICaptchaDaoService captchaDaoService) {
         super();
         this.setRequiresAuthenticationRequestMatcher(ProtectedPaths.getLoginPathMatcher());
         this.setAuthenticationManager(authenticationManager);
@@ -39,6 +42,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
         });
         this.objectMapper = objectMapper;
         this.rsaUtil = rsaUtil;
+        this.captchaDaoService = captchaDaoService;
     }
 
     @Override
@@ -49,9 +53,14 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
         try {
             LoginRequestTO requestBodyTO = readRequestBody(request);
             UserPasswordAuthenticationToken authRequest = UserPasswordAuthenticationToken.unauthenticated(requestBodyTO.getUsername(), //
-                    rsaUtil.decrypt(requestBodyTO.getPassword()), requestBodyTO.getUserType());
+                    rsaUtil.decrypt(requestBodyTO.getPassword()), requestBodyTO.getUserType(), requestBodyTO.getUserSubType());
 
             setDetails(request, authRequest);
+
+            if (!captchaDaoService.isCaptchaValidated(requestBodyTO.getCaptchaTransId())) {
+                throw new AuthenticationServiceException("Invalid captcha");
+            }
+
             return this.getAuthenticationManager().authenticate(authRequest);
         } catch (Exception e) {
             LOGGER.error("Exception occured while parsing username-password login request", e);

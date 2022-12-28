@@ -10,7 +10,7 @@ import in.gov.abdm.nmr.api.controller.college.to.CollegeRegistrarProfileTo;
 import in.gov.abdm.nmr.api.controller.college.to.CollegeRegistrationRequestTo;
 
 public interface ICollegeService {
-    CollegeProfileTo registerCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo);
+    CollegeProfileTo registerCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update);
 
     CollegeRegistrarProfileTo registerRegistrar(CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo);
 

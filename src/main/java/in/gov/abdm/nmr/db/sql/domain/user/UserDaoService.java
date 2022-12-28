@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.db.sql.domain.user_detail;
+package in.gov.abdm.nmr.db.sql.domain.user;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -16,22 +16,22 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import in.gov.abdm.nmr.db.sql.domain.user_detail.to.IUserDetailMapper;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.to.UpdateRefreshTokenIdRequestTO;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.to.UserDetailSearchTO;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.to.UserDetailTO;
+import in.gov.abdm.nmr.db.sql.domain.user.to.IUserMapper;
+import in.gov.abdm.nmr.db.sql.domain.user.to.UpdateRefreshTokenIdRequestTO;
+import in.gov.abdm.nmr.db.sql.domain.user.to.UserSearchTO;
+import in.gov.abdm.nmr.db.sql.domain.user.to.UserTO;
 
 @Service
 @Transactional
-public class UserDetailService implements IUserDetailService {
+public class UserDaoService implements IUserDaoService {
 
-    private IUserDetailMapper userDetailMapper;
+    private IUserMapper userDetailMapper;
 
-    private UserDetailRepository userDetailRepository;
+    private IUserepository userDetailRepository;
 
     private EntityManager entityManager;
 
-    public UserDetailService(IUserDetailMapper userDetailMapper, UserDetailRepository userDetailRepository, EntityManager entityManager) {
+    public UserDaoService(IUserMapper userDetailMapper, IUserepository userDetailRepository, EntityManager entityManager) {
         super();
         this.userDetailMapper = userDetailMapper;
         this.userDetailRepository = userDetailRepository;
@@ -39,16 +39,16 @@ public class UserDetailService implements IUserDetailService {
     }
 
     @Override
-    public UserDetailTO searchUserDetail(UserDetailSearchTO userDetailSearchTO) {
-        UserDetail userDetail = searchUserDetailInternal(userDetailSearchTO);
+    public UserTO searchUserDetail(UserSearchTO userDetailSearchTO) {
+        User userDetail = searchUserDetailInternal(userDetailSearchTO);
         return userDetailMapper.userDetailToDto(userDetail);
     }
 
     @Override
-    public UserDetail searchUserDetailInternal(UserDetailSearchTO userDetailSearchTO) {
+    public User searchUserDetailInternal(UserSearchTO userDetailSearchTO) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UserDetail> criteria = builder.createQuery(UserDetail.class);
-        Root<UserDetail> root = criteria.from(UserDetail.class);
+        CriteriaQuery<User> criteria = builder.createQuery(User.class);
+        Root<User> root = criteria.from(User.class);
 
         List<Predicate> predicates = new ArrayList<>();
 
@@ -64,38 +64,38 @@ public class UserDetailService implements IUserDetailService {
     }
 
     @Override
-    public String findRefreshTokenId(UserDetailSearchTO userDetailSearchTO) {
+    public String findRefreshTokenId(UserSearchTO userDetailSearchTO) {
         return searchUserDetailInternal(userDetailSearchTO).getRefreshTokenId();
     }
 
     @Override
     public Integer updateRefreshTokenId(UpdateRefreshTokenIdRequestTO refreshTokenRequestTO) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaUpdate<UserDetail> criteria = builder.createCriteriaUpdate(UserDetail.class);
-        Root<UserDetail> root = criteria.from(UserDetail.class);
+        CriteriaUpdate<User> criteria = builder.createCriteriaUpdate(User.class);
+        Root<User> root = criteria.from(User.class);
 
         List<Predicate> predicates = new ArrayList<>();
 
         if (StringUtils.isNotBlank(refreshTokenRequestTO.getUsername())) {
-            predicates.add(builder.equal(root.get("username"), refreshTokenRequestTO.getUsername()));
+            predicates.add(builder.equal(root.get(User_.USERNAME), refreshTokenRequestTO.getUsername()));
         }
 
-        criteria.set(root.get("refreshTokenId"), refreshTokenRequestTO.getRefreshTokenId()).where(predicates.toArray(new Predicate[0]));
+        criteria.set(root.get(User_.REFRESH_TOKEN_ID), refreshTokenRequestTO.getRefreshTokenId()).where(predicates.toArray(new Predicate[0]));
         return entityManager.createQuery(criteria).executeUpdate();
     }
 
     @Override
-    public UserDetail findById(BigInteger id) {
-        return userDetailRepository.findById(id).get();
+    public User findById(BigInteger id) {
+        return userDetailRepository.findById(id).orElse(null);
     }
 
     @Override
-    public UserDetail saveUserDetail(UserDetail userDetail) {
+    public User saveUserDetail(User userDetail) {
         return userDetailRepository.saveAndFlush(userDetail);
     }
     
     @Override
-    public UserDetail findUserDetailByUsername(String username) {
+    public User findUserDetailByUsername(String username) {
         return userDetailRepository.findByUsername(username);
     }
 }
