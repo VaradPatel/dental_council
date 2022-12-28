@@ -1,18 +1,15 @@
 package in.gov.abdm.nmr.db.sql.domain.state;
 
 import java.math.BigInteger;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.db.sql.domain.country.Country;
-import in.gov.abdm.nmr.db.sql.domain.district.District;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

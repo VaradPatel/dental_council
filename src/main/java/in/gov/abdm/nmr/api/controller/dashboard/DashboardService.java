@@ -1,20 +1,31 @@
 package in.gov.abdm.nmr.api.controller.dashboard;
 
+import static in.gov.abdm.nmr.api.constant.NMRConstants.BLACK_LIST;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.INVALID_USER_SUB_TYPE;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.INVALID_USER_TYPE;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.REGISTRATION;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.SUSPENSION;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.TOTAL_BLACK_LIST_REQUESTS;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.TOTAL_REGISTRATION_REQUESTS;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.TOTAL_SUSPENSION_REQUESTS;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.TOTAL_UPDATION_REQUESTS;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.TOTAL_VOLUNTARY_RETIREMENT_REQUESTS;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.UPDATION;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.VOLUNTARY_RETIREMENT;
+
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import in.gov.abdm.nmr.api.controller.dashboard.to.IStatusWiseCountMapper;
 import in.gov.abdm.nmr.api.controller.dashboard.to.ResponseTO;
 import in.gov.abdm.nmr.api.controller.dashboard.to.StatusWiseCountTO;
 import in.gov.abdm.nmr.api.exception.InvalidRequestException;
 import in.gov.abdm.nmr.db.sql.domain.user_sub_type.UserSubTypeEnum;
 import in.gov.abdm.nmr.db.sql.domain.user_type.UserTypeEnum;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static in.gov.abdm.nmr.api.constant.NMRConstants.*;
 
 
 @Service

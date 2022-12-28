@@ -19,7 +19,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "nmcProfile")
 public class NmcProfile extends CommonAuditEntity {
 
     @Id

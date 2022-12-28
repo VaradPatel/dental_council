@@ -1,17 +1,20 @@
 package in.gov.abdm.nmr.api.controller.aadhaar;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import in.gov.abdm.nmr.api.constant.NMRConstants;
-import in.gov.abdm.nmr.api.controller.aadhaar.to.AadhaarResponseTo;
-import in.gov.abdm.nmr.api.controller.aadhaar.to.AadhaarOtpGenerateRequestTo;
-import in.gov.abdm.nmr.api.controller.aadhaar.to.AadhaarOtpValidateRequestTo;
-import in.gov.abdm.nmr.api.exception.OtpException;
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import javax.validation.Valid;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import in.gov.abdm.nmr.api.constant.NMRConstants;
+import in.gov.abdm.nmr.api.controller.aadhaar.to.AadhaarOtpGenerateRequestTo;
+import in.gov.abdm.nmr.api.controller.aadhaar.to.AadhaarOtpValidateRequestTo;
+import in.gov.abdm.nmr.api.controller.aadhaar.to.AadhaarResponseTo;
+import in.gov.abdm.nmr.api.exception.OtpException;
 
 /**
  * Controller for sending and verifying one time password notifications.

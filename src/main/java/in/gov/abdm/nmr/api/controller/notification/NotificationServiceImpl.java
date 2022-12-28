@@ -1,11 +1,9 @@
 package in.gov.abdm.nmr.api.controller.notification;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import in.gov.abdm.nmr.api.constant.NMRConstants;
-import in.gov.abdm.nmr.api.controller.notification.to.KeyValue;
-import in.gov.abdm.nmr.api.controller.notification.to.NotificationDataTo;
-import in.gov.abdm.nmr.api.controller.notification.to.NotificationRequestTo;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -14,9 +12,14 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import in.gov.abdm.nmr.api.constant.NMRConstants;
+import in.gov.abdm.nmr.api.controller.notification.to.KeyValue;
+import in.gov.abdm.nmr.api.controller.notification.to.NotificationDataTo;
+import in.gov.abdm.nmr.api.controller.notification.to.NotificationRequestTo;
 
 /**
  * Implementations of methods to send OTP on SMS and Email

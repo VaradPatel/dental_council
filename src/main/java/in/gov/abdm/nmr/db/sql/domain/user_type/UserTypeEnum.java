@@ -1,9 +1,7 @@
 package in.gov.abdm.nmr.db.sql.domain.user_type;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 
 @AllArgsConstructor
 @Getter

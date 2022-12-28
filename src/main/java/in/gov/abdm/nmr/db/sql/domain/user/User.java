@@ -1,4 +1,8 @@
-package in.gov.abdm.nmr.db.sql.domain.user_detail;
+package in.gov.abdm.nmr.db.sql.domain.user;
+
+import static in.gov.abdm.nmr.api.constant.NMRConstants.ID;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.USER_SUB_TYPE_ID;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.USER_TYPE_ID;
 
 import java.math.BigInteger;
 
@@ -17,8 +21,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import static in.gov.abdm.nmr.api.constant.NMRConstants.*;
 
 @Getter
 @Setter

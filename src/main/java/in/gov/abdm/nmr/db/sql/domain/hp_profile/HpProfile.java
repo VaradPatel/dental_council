@@ -1,9 +1,19 @@
 package in.gov.abdm.nmr.db.sql.domain.hp_profile;
 
+import static in.gov.abdm.nmr.api.constant.NMRConstants.HP_PROFILE_STATUS_ID;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.ID;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.SCHEDULE_ID;
+
 import java.math.BigInteger;
 import java.sql.Date;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.hp_profile_status.HpProfileStatus;
 import in.gov.abdm.nmr.db.sql.domain.schedule.Schedule;
@@ -11,9 +21,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import static in.gov.abdm.nmr.api.constant.NMRConstants.*;
-import static in.gov.abdm.nmr.api.constant.NMRConstants.ID;
 
 @Getter
 @Setter

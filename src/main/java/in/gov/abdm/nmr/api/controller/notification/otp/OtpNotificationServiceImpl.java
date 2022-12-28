@@ -1,21 +1,29 @@
 package in.gov.abdm.nmr.api.controller.notification.otp;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
+
 import in.gov.abdm.nmr.api.constant.NMRConstants;
 import in.gov.abdm.nmr.api.controller.notification.NotificationService;
 import in.gov.abdm.nmr.api.controller.notification.NotificationType;
-import in.gov.abdm.nmr.api.controller.notification.otp.to.*;
+import in.gov.abdm.nmr.api.controller.notification.otp.to.OtpGenerateMessageTo;
+import in.gov.abdm.nmr.api.controller.notification.otp.to.OtpGenerateRequestTo;
+import in.gov.abdm.nmr.api.controller.notification.otp.to.OtpGenerateResponseTo;
+import in.gov.abdm.nmr.api.controller.notification.otp.to.OtpValidateMessageTo;
+import in.gov.abdm.nmr.api.controller.notification.otp.to.OtpValidateRequestTo;
+import in.gov.abdm.nmr.api.controller.notification.otp.to.OtpValidateResponseTo;
 import in.gov.abdm.nmr.api.controller.notification.to.NotificationDataTo;
 import in.gov.abdm.nmr.api.exception.OtpException;
 import in.gov.abdm.nmr.db.sql.domain.notification.otp.NmrOtpRepository;
 import in.gov.abdm.nmr.db.sql.domain.notification.otp.Otp;
 import in.gov.abdm.nmr.db.sql.domain.notification.otp.OtpRepository;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 /**
  * Implementation of methods to generate and validate OTP

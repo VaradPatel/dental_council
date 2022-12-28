@@ -8,8 +8,8 @@ import lombok.Data;
 public class LoginResponseTO {
 
     private BigInteger profileId;
-    private Long userType;
-    private Long userSubType;
+    private BigInteger userType;
+    private BigInteger userSubType;
     private Boolean hpRegistered;
     private Boolean blacklisted;
 }

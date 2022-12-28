@@ -1,7 +1,6 @@
 package in.gov.abdm.nmr.db.sql.domain.work_profile;
 
 import java.math.BigInteger;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,7 +8,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.address.Address;

@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.db.sql.domain.notification.otp;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OtpRepository extends JpaRepository<Otp, String> {
     List<Otp> findByExpiredIsFalseAndContactIs(String contact);

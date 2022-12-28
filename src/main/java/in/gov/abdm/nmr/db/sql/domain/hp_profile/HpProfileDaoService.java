@@ -89,7 +89,7 @@ import in.gov.abdm.nmr.db.sql.domain.work_status.WorkStatusRepository;
 import in.gov.abdm.nmr.db.sql.domain.work_status.WorkStatusTO;
 
 @Service
-public class HpProfileService implements IHpProfileService {
+public class HpProfileDaoService implements IHpProfileDaoService {
 
 	private IHpProfileMapper ihHpProfileMapper;
 
@@ -135,7 +135,7 @@ public class HpProfileService implements IHpProfileService {
 	
 	private VillagesRepository villagesRepository;
 
-	public HpProfileService(IHpProfileMapper ihHpProfileMapper, IHpProfileRepository iHpProfileRepository,
+	public HpProfileDaoService(IHpProfileMapper ihHpProfileMapper, IHpProfileRepository iHpProfileRepository,
 			IAddressRepository iAddressRepository, QualificationDetailRepository qualificationDetailRepository,
 			RegistrationDetailRepository registrationDetailRepository, WorkProfileRepository workProfileRepository,
 			SuperSpecialityRepository superSpecialityRepository, DistrictRepository districtRepository,
@@ -1355,4 +1355,9 @@ public class HpProfileService implements IHpProfileService {
 		}
 		
 	}
+
+    @Override
+    public HpProfile findByUserDetail(BigInteger userDetailId) {
+        return iHpProfileRepository.findByUserDetail(userDetailId);
+    }
 }

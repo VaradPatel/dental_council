@@ -1,5 +1,7 @@
 package in.gov.abdm.nmr.db.sql.domain.user_type;
 
+import static in.gov.abdm.nmr.api.constant.NMRConstants.USER_TYPE;
+
 import java.math.BigInteger;
 import java.util.List;
 
@@ -16,8 +18,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import static in.gov.abdm.nmr.api.constant.NMRConstants.USER_TYPE;
 
 @Getter
 @Setter

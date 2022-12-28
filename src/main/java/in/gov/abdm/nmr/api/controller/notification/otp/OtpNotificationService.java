@@ -1,12 +1,14 @@
 package in.gov.abdm.nmr.api.controller.notification.otp;
 
+import java.security.NoSuchAlgorithmException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
+
 import in.gov.abdm.nmr.api.controller.notification.otp.to.OtpGenerateRequestTo;
 import in.gov.abdm.nmr.api.controller.notification.otp.to.OtpGenerateResponseTo;
 import in.gov.abdm.nmr.api.controller.notification.otp.to.OtpValidateRequestTo;
 import in.gov.abdm.nmr.api.controller.notification.otp.to.OtpValidateResponseTo;
 import in.gov.abdm.nmr.api.exception.OtpException;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * Interface to declare methods

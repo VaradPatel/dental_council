@@ -1,10 +1,7 @@
 package in.gov.abdm.nmr.api.controller.aadhaar;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import in.gov.abdm.nmr.api.constant.NMRConstants;
-import in.gov.abdm.nmr.api.controller.aadhaar.to.AadhaarResponseTo;
-import in.gov.abdm.nmr.api.controller.aadhaar.to.AadhaarOtpGenerateRequestTo;
-import in.gov.abdm.nmr.api.controller.aadhaar.to.AadhaarOtpValidateRequestTo;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -14,8 +11,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import in.gov.abdm.nmr.api.constant.NMRConstants;
+import in.gov.abdm.nmr.api.controller.aadhaar.to.AadhaarOtpGenerateRequestTo;
+import in.gov.abdm.nmr.api.controller.aadhaar.to.AadhaarOtpValidateRequestTo;
+import in.gov.abdm.nmr.api.controller.aadhaar.to.AadhaarResponseTo;
 
 /**
  * Implementations of methods to send and validate Aadhaar OTP

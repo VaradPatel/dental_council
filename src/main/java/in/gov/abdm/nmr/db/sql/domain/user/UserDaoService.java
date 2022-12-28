@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.db.sql.domain.user_detail;
+package in.gov.abdm.nmr.db.sql.domain.user;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -27,11 +27,11 @@ public class UserDaoService implements IUserDaoService {
 
     private IUserMapper userDetailMapper;
 
-    private IUserepository userDetailRepository;
+    private IUseRepository userDetailRepository;
 
     private EntityManager entityManager;
 
-    public UserDaoService(IUserMapper userDetailMapper, IUserepository userDetailRepository, EntityManager entityManager) {
+    public UserDaoService(IUserMapper userDetailMapper, IUseRepository userDetailRepository, EntityManager entityManager) {
         super();
         this.userDetailMapper = userDetailMapper;
         this.userDetailRepository = userDetailRepository;
@@ -41,7 +41,7 @@ public class UserDaoService implements IUserDaoService {
     @Override
     public UserTO searchUserDetail(UserSearchTO userDetailSearchTO) {
         User userDetail = searchUserDetailInternal(userDetailSearchTO);
-        return userDetailMapper.userDetailToDto(userDetail);
+        return userDetailMapper.userToDto(userDetail);
     }
 
     @Override
@@ -85,12 +85,12 @@ public class UserDaoService implements IUserDaoService {
     }
 
     @Override
-    public UserDetail findById(BigInteger id) {
+    public User findById(BigInteger id) {
         return userDetailRepository.findById(id).get();
     }
 
     @Override
-    public UserDetail saveUserDetail(UserDetail userDetail) {
+    public User saveUserDetail(User userDetail) {
         return userDetailRepository.saveAndFlush(userDetail);
     }
     

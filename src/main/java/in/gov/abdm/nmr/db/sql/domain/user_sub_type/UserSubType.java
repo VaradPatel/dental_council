@@ -1,5 +1,10 @@
 package in.gov.abdm.nmr.db.sql.domain.user_sub_type;
 
+import static in.gov.abdm.nmr.api.constant.NMRConstants.ID;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.USER_TYPE_ID;
+
+import java.math.BigInteger;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,9 +19,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static in.gov.abdm.nmr.api.constant.NMRConstants.ID;
-import static in.gov.abdm.nmr.api.constant.NMRConstants.USER_TYPE_ID;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -26,7 +28,7 @@ public class UserSubType extends CommonAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private BigInteger id;
     private String name;
 
     @ManyToOne

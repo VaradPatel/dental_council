@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.api.controller.aadhaar.to;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

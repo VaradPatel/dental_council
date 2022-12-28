@@ -1,10 +1,9 @@
 package in.gov.abdm.nmr.db.sql.domain.notification.otp.impl;
 
-import in.gov.abdm.nmr.db.sql.domain.notification.otp.NmrOtpRepository;
-import in.gov.abdm.nmr.db.sql.domain.notification.otp.Otp;
-import in.gov.abdm.nmr.db.sql.domain.notification.otp.OtpRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -12,10 +11,13 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import in.gov.abdm.nmr.db.sql.domain.notification.otp.NmrOtpRepository;
+import in.gov.abdm.nmr.db.sql.domain.notification.otp.Otp;
+import in.gov.abdm.nmr.db.sql.domain.notification.otp.OtpRepository;
 
 @Repository
 public class NmrOtpRepositoryImpl implements NmrOtpRepository {
