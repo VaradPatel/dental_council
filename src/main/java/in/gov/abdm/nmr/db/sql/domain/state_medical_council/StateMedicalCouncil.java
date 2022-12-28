@@ -34,7 +34,7 @@ public class StateMedicalCouncil extends CommonAuditEntity {
 //    @JoinColumn(name = "state")
     private String state;
     
-    @OneToOne
-    @JoinColumn(name = "userDetail")
-    private User userDetail;
+//    @OneToOne
+//    @JoinColumn(name = "userDetail", referencedColumnName = "id")
+//    private User userDetail;
 }

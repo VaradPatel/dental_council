@@ -6,6 +6,7 @@ import static in.gov.abdm.nmr.api.constant.NMRConstants.SCHEDULE_ID;
 
 import java.math.BigInteger;
 import java.sql.Date;
+import java.sql.Timestamp;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
+import in.gov.abdm.nmr.db.sql.domain.country.Country;
 import in.gov.abdm.nmr.db.sql.domain.hp_profile_status.HpProfileStatus;
 import in.gov.abdm.nmr.db.sql.domain.schedule.Schedule;
 import lombok.AllArgsConstructor;
@@ -35,7 +37,7 @@ public class HpProfile {
 	private String aadhaarToken;
 	private String categoryName;
 	private String changedName;
-	private String createdAt;
+	private Timestamp createdAt;
 	private String createdBy;
 	private Date dateOfBirth;
 	private String emailId;
@@ -63,11 +65,14 @@ public class HpProfile {
 	private String signature;
 	private String spouseName;
 	private String systemOfMedicine;
-	private String updatedAt;
+	private Timestamp updatedAt;
 	private String updatedBy;
 	private String workExperienceInYear;
 	private String yearOfInfo;
-	private BigInteger countryNationality;
+	
+	@OneToOne
+	@JoinColumn(name = "countryNationalityId", referencedColumnName = ID)
+	private Country countryNationality;
 
 	@ManyToOne
 	@JoinColumn(name = HP_PROFILE_STATUS_ID,referencedColumnName = ID)

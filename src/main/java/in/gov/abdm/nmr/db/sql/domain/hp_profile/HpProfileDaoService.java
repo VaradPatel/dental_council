@@ -535,7 +535,7 @@ public class HpProfileDaoService implements IHpProfileDaoService {
 					Schedule schedule = iScheduleRepository
 							.findById(hpProfileUpdateRequest.getPersonalDetails().getSchedule().getId()).orElse(null);
 
-					hpProfile.setScheduleId(schedule.getId());
+					hpProfile.setSchedule(schedule);
 
 //					Nationality nationality = iNationalityRepository
 //							.findById(hpProfileUpdateRequest.getPersonalDetails().getCountryNationality().getId())
@@ -547,8 +547,8 @@ public class HpProfileDaoService implements IHpProfileDaoService {
 					Country setNationalityData = new Country();
 					setNationalityData.setId(countryNationality.getId());
 					setNationalityData.setName(countryNationality.getNationality());
-					if (countryNationality != null) {
-						hpProfile.setCountryNationalityId(setNationalityData);
+					if (countryNationality != null) {						
+						hpProfile.setCountryNationality(setNationalityData);
 					}
 
 //					hpProfile.setNationality(hpProfileUpdateRequest.getPersonalDetails().getNationality());
@@ -557,8 +557,8 @@ public class HpProfileDaoService implements IHpProfileDaoService {
 					hpProfile.setFullName(hpProfileUpdateRequest.getCommunicationAddress().getFullName());
 					hpProfile.setNmrId(hpProfileUpdateRequest.getImrDetails().getNmrId());
 					hpProfile.setYearOfInfo(hpProfileUpdateRequest.getImrDetails().getYearOfInfo());
-//					hpProfile.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
-//					hpProfile.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+					hpProfile.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
+					hpProfile.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
 					iHpProfileRepository.save(hpProfile);
 
 //					TODO: Setting Language
@@ -1070,8 +1070,8 @@ public class HpProfileDaoService implements IHpProfileDaoService {
 			if (countryNationality == null) {
 				throw new InvalidRequestException("Incorrect Nationality!");
 			}
-			else {
-				hpProfile.setCountryNationalityId(countryNationality);
+			else {			
+				hpProfile.setCountryNationality(countryNationality);
 			}
 			
 			
@@ -1080,8 +1080,8 @@ public class HpProfileDaoService implements IHpProfileDaoService {
 			if (schedule == null) {
 				throw new InvalidRequestException("Incorrect Schedule!");
 			}
-			else {
-				hpProfile.setScheduleId(schedule.getId());
+			else {				
+				hpProfile.setSchedule(schedule);;
 			}
 			
 			
