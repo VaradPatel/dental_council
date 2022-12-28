@@ -20,7 +20,7 @@ public class DashboardController {
      * Singleton principle
      */
     @Autowired
-    private DashboardService dashboardService;
+    private IDashboardService iDashboardService;
 
     /**
      * This endpoint can be accessed to retrieve the count of applications according to their status
@@ -29,7 +29,7 @@ public class DashboardController {
      */
     @PostMapping(FETCH_COUNT_ON_CARD_URL)
     public ResponseEntity<ResponseTO> fetchCountOnCard(@RequestBody RequestTO requestTO) throws InvalidRequestException {
-        return ResponseEntity.ok(dashboardService.fetchCountOnCard(requestTO.getUserType(), requestTO.getUserSubType()));
+        return ResponseEntity.ok(iDashboardService.fetchCountOnCard(requestTO.getUserType(), requestTO.getUserSubType()));
     }
 
 }
