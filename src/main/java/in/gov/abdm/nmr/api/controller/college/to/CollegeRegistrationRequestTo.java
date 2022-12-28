@@ -8,7 +8,7 @@ import lombok.Data;
 public class CollegeRegistrationRequestTo {
     private BigInteger id;
     private String name;
-    private String collegeId;
+    private String collegeCode;
     private String phoneNumber;
     private String emailId;
     private BigInteger userId;

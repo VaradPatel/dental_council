@@ -17,6 +17,7 @@ import in.gov.abdm.nmr.api.controller.college.to.CollegeRegistrarCreationRequest
 import in.gov.abdm.nmr.api.controller.college.to.CollegeRegistrarProfileTo;
 import in.gov.abdm.nmr.api.controller.college.to.CollegeRegistrationRequestTo;
 import in.gov.abdm.nmr.api.security.common.ProtectedPaths;
+import in.gov.abdm.nmr.exception.NmrException;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
@@ -29,42 +30,43 @@ public class CollegeController {
     }
 
     @PostMapping(path = "college", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CollegeProfileTo registerCollege(@RequestBody CollegeRegistrationRequestTo collegeRegistrationRequestTo) {
+    public CollegeProfileTo registerCollege(@RequestBody CollegeRegistrationRequestTo collegeRegistrationRequestTo) throws NmrException {
         return collegeService.registerCollege(collegeRegistrationRequestTo, false);
     }
 
     @PutMapping(path = ProtectedPaths.PATH_UPDATE_COLLEGE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public CollegeProfileTo updateCollege(@RequestBody CollegeRegistrationRequestTo collegeRegistrationRequestTo) {
+    @SecurityRequirement(name = "bearerAuth")
+    public CollegeProfileTo updateCollege(@RequestBody CollegeRegistrationRequestTo collegeRegistrationRequestTo) throws NmrException {
         return collegeService.registerCollege(collegeRegistrationRequestTo, true);
     }
 
     @PostMapping(path = ProtectedPaths.PATH_REGISTER_COLLEGE_REGISTRAR, produces = MediaType.APPLICATION_JSON_VALUE)
     @SecurityRequirement(name = "bearerAuth")
-    public CollegeRegistrarProfileTo registerRegistrar(@RequestBody CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) {
+    public CollegeRegistrarProfileTo registerRegistrar(@RequestBody CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException {
         return collegeService.registerRegistrar(collegeRegistrarCreationRequestTo);
     }
 
     @PostMapping(path = ProtectedPaths.PATH_REGISTER_COLLEGE_DEAN, produces = MediaType.APPLICATION_JSON_VALUE)
     @SecurityRequirement(name = "bearerAuth")
-    public CollegeDeanProfileTo registerDean(@RequestBody CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) {
+    public CollegeDeanProfileTo registerDean(@RequestBody CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
         return collegeService.registerDean(collegeDeanCreationRequestTo);
     }
 
     @GetMapping(path = "college/{id}")
     @SecurityRequirement(name = "bearerAuth")
-    public CollegeProfileTo retrieveCollegeProfile(@PathVariable(name = "id") BigInteger collegeId) {
+    public CollegeProfileTo retrieveCollegeProfile(@PathVariable(name = "id") BigInteger collegeId) throws NmrException {
         return collegeService.retrieveCollegeProfile(collegeId);
     }
 
     @GetMapping(path = "college/registrar/{id}")
     @SecurityRequirement(name = "bearerAuth")
-    public CollegeRegistrarProfileTo retrieveRegistrarProfile(@PathVariable(name = "id") BigInteger registrarId) {
+    public CollegeRegistrarProfileTo retrieveRegistrarProfile(@PathVariable(name = "id") BigInteger registrarId) throws NmrException {
         return collegeService.retrieveRegistrarProfile(registrarId);
     }
 
     @GetMapping(path = "college/dean/{id}")
     @SecurityRequirement(name = "bearerAuth")
-    public CollegeDeanProfileTo retrieveDeanProfile(@PathVariable(name = "id") BigInteger id) {
+    public CollegeDeanProfileTo retrieveDeanProfile(@PathVariable(name = "id") BigInteger id) throws NmrException {
         return collegeService.retrieveDeanProfile(id);
     }
 }

@@ -2,7 +2,7 @@ package in.gov.abdm.nmr.api.controller.college;
 
 import java.math.BigInteger;
 
-import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +21,7 @@ import in.gov.abdm.nmr.db.sql.domain.college_registrar.CollegeRegistrar;
 import in.gov.abdm.nmr.db.sql.domain.college_registrar.ICollegeRegistrarDaoService;
 import in.gov.abdm.nmr.db.sql.domain.user.IUserDaoService;
 import in.gov.abdm.nmr.db.sql.domain.user.User;
+import in.gov.abdm.nmr.exception.NmrException;
 
 @Service
 public class CollegeServiceImpl implements ICollegeService {
@@ -44,7 +45,7 @@ public class CollegeServiceImpl implements ICollegeService {
     }
 
     @Override
-    public CollegeProfileTo registerCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) {
+    public CollegeProfileTo registerCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException {
         College collegeProfileEntity = collegeService.saveCollege(collegeRegistrationRequestTo, update);
         CollegeProfileTo collegeCreationRequestToResponse = collegeMapper.collegeCreationRequestToResponse(collegeRegistrationRequestTo);
         collegeCreationRequestToResponse.setId(collegeProfileEntity.getId());
@@ -53,7 +54,7 @@ public class CollegeServiceImpl implements ICollegeService {
     }
 
     @Override
-    public CollegeRegistrarProfileTo registerRegistrar(CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) {
+    public CollegeRegistrarProfileTo registerRegistrar(CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException {
         CollegeRegistrar collegeRegistrarEntity = collegeRegistrarDaoService.saveCollegeRegistrar(collegeRegistrarCreationRequestTo);
         CollegeRegistrarProfileTo collegeRegistrarProfileTo = collegeMapper.collegeRegistrarRequestToResponse(collegeRegistrarCreationRequestTo);
         collegeRegistrarProfileTo.setId(collegeRegistrarEntity.getId());
@@ -62,7 +63,7 @@ public class CollegeServiceImpl implements ICollegeService {
     }
 
     @Override
-    public CollegeDeanProfileTo registerDean(CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) {
+    public CollegeDeanProfileTo registerDean(CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
         CollegeDean collegeDeanEntity = collegeDeanDaoService.saveCollegeDean(collegeDeanCreationRequestTo);
         CollegeDeanProfileTo collegeDeanProfileTO = collegeMapper.collegeDeanRequestToResponse(collegeDeanCreationRequestTo);
         collegeDeanProfileTO.setId(collegeDeanEntity.getId());
@@ -71,12 +72,12 @@ public class CollegeServiceImpl implements ICollegeService {
     }
 
     @Override
-    public CollegeProfileTo retrieveCollegeProfile(BigInteger collegeId) {
+    public CollegeProfileTo retrieveCollegeProfile(BigInteger collegeId) throws NmrException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User collegeUserDetail = userDetailService.findUserDetailByUsername(userName);
         College collegeEntity = collegeService.findById(collegeId);
         if (!collegeUserDetail.getId().equals(collegeEntity.getUser().getId())) {
-            throw new AuthenticationServiceException("Forbidden");
+            throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
         }
 
         CollegeProfileTo collegeProfileTO = collegeMapper.collegeEntityToCollegeProfile(collegeEntity);
@@ -87,12 +88,12 @@ public class CollegeServiceImpl implements ICollegeService {
     }
 
     @Override
-    public CollegeRegistrarProfileTo retrieveRegistrarProfile(BigInteger registrarId) {
+    public CollegeRegistrarProfileTo retrieveRegistrarProfile(BigInteger registrarId) throws NmrException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User collegeUserDetail = userDetailService.findUserDetailByUsername(userName);
         CollegeRegistrar collegeRegistrarEntity = collegeRegistrarDaoService.findCollegeRegistrarById(registrarId);
         if (!collegeUserDetail.getId().equals(collegeRegistrarEntity.getUser().getId())) {
-            throw new AuthenticationServiceException("Forbidden");
+            throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
         }
 
         CollegeRegistrarProfileTo collegeRegistrarProfileTo = collegeMapper.collegeRegistrarEntityToCollegeRegistrarProfile(collegeRegistrarEntity);
@@ -101,12 +102,12 @@ public class CollegeServiceImpl implements ICollegeService {
     }
 
     @Override
-    public CollegeDeanProfileTo retrieveDeanProfile(BigInteger id) {
+    public CollegeDeanProfileTo retrieveDeanProfile(BigInteger id) throws NmrException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User collegeUserDetail = userDetailService.findUserDetailByUsername(userName);
         CollegeDean collegeDeanEntity = collegeDeanDaoService.findCollegeDeanById(id);
         if (!collegeUserDetail.getId().equals(collegeDeanEntity.getUser().getId())) {
-            throw new AuthenticationServiceException("Forbidden");
+            throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
         }
 
         CollegeDeanProfileTo collegeDeanProfileTO = collegeMapper.collegeDeanEntityToCollegeDeanProfile(collegeDeanEntity);

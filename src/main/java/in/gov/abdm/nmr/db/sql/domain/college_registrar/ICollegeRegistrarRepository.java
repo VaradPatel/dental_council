@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ICollegeRegistrarRepository extends JpaRepository<CollegeRegistrar, BigInteger> {
 
-    @Query(value = "SELECT cr.* FROM college_registrar cr inner join user_detail ud on cr.user_detail = ud.id where ud.id=:userDetailId", nativeQuery = true)
+    @Query(value = "SELECT c FROM collegeRegistrar c join c.user usr where usr.id=:userDetailId")
     CollegeRegistrar findByUserDetail(BigInteger userDetailId);
 }

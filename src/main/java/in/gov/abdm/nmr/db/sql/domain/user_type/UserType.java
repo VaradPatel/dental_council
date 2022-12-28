@@ -30,7 +30,6 @@ public class UserType extends CommonAuditEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger id;
     private String name;
-    private String code;
 
     @OneToMany(mappedBy = USER_TYPE, fetch = FetchType.LAZY)
     private List<UserSubType> userSubTypes;

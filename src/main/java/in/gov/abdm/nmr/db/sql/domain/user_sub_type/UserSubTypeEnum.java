@@ -1,5 +1,7 @@
 package in.gov.abdm.nmr.db.sql.domain.user_sub_type;
 
+import java.math.BigInteger;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -7,9 +9,9 @@ import lombok.Getter;
 @Getter
 public enum UserSubTypeEnum {
 
-    COLLEGE(1L, "College", "College"), COLLEGE_REGISTRAR(2L, "College Registrar", "College"), COLLEGE_DEAN(3L, "College Dean", "College");
+    COLLEGE(BigInteger.valueOf(1), "College", "College"), COLLEGE_REGISTRAR(BigInteger.valueOf(2), "College Registrar", "College"), COLLEGE_DEAN(BigInteger.valueOf(3), "College Dean", "College");
 
-    private Long code;
+    private BigInteger code;
     private String name;
     private String userType;
 }

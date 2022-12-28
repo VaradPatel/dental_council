@@ -35,7 +35,7 @@ public class College extends CommonAuditEntity {
     private BigInteger id;
     private String name;
 
-    private String collegeId;
+    private String collegeCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "university")

@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import javax.persistence.EntityManager;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import in.gov.abdm.nmr.db.sql.domain.user_sub_type.UserSubType;
 import in.gov.abdm.nmr.db.sql.domain.user_sub_type.UserSubTypeEnum;
 import in.gov.abdm.nmr.db.sql.domain.user_type.UserType;
 import in.gov.abdm.nmr.db.sql.domain.user_type.UserTypeEnum;
+import in.gov.abdm.nmr.exception.NmrException;
 
 @Service
 @Transactional
@@ -45,10 +47,39 @@ public class CollegeDeanDaoService implements ICollegeDeanDaoService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    public CollegeDean saveCollegeDean(CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) {
+    public CollegeDean saveCollegeDean(CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
+        User collegeDeanUserDetail = null;
+        CollegeDean collegeDeanEntityOld = null;
+        if (collegeDeanCreationRequestTo.getId() != null || collegeDeanCreationRequestTo.getUserId() != null) {
+            String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+            collegeDeanUserDetail = userDetailService.findUserDetailByUsername(userName);
+
+            if (!collegeDeanUserDetail.getId().equals(collegeDeanCreationRequestTo.getUserId())) {
+                throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
+            }
+
+            if (!collegeDeanUserDetail.getUsername().equals(collegeDeanCreationRequestTo.getEmailId()) && userDetailService.findUserDetailByUsername(collegeDeanCreationRequestTo.getEmailId()) != null) {
+                throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
+            }
+
+            collegeDeanEntityOld = findByUserDetail(collegeDeanUserDetail.getId());
+            if (!collegeDeanEntityOld.getId().equals(collegeDeanCreationRequestTo.getId())) {
+                throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
+            }
+        } else if (userDetailService.findUserDetailByUsername(collegeDeanCreationRequestTo.getEmailId()) != null) {
+            throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
+        }
+
+
         User userDetail = new User(collegeDeanCreationRequestTo.getUserId(), collegeDeanCreationRequestTo.getEmailId(), //
                 bCryptPasswordEncoder.encode(collegeDeanCreationRequestTo.getPassword()), null, //
-                entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()));
+                entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_DEAN.getCode()));
+
+        if (collegeDeanUserDetail != null) {
+            userDetail.setCreatedAt(collegeDeanUserDetail.getCreatedAt());
+            userDetail.setRefreshTokenId(collegeDeanUserDetail.getRefreshTokenId());
+        }
+
         userDetailService.saveUserDetail(userDetail);
 
         CollegeDean collegeDeanEntity = collegeDeanMapper.collegeDeanDtoToEntity(collegeDeanCreationRequestTo);
@@ -58,16 +89,18 @@ public class CollegeDeanDaoService implements ICollegeDeanDaoService {
         UserSearchTO userDetailSearchTO = new UserSearchTO();
         userDetailSearchTO.setUsername(userName);
         College college = collegeRepository.findByUserDetail(userDetailService.searchUserDetail(userDetailSearchTO).getId());
+        collegeDeanEntity.setCollege(college);
 
-//        collegeDeanEntity.setCollege(college);
-
+        if (collegeDeanEntityOld != null) {
+            collegeDeanEntity.setCreatedAt(collegeDeanEntityOld.getCreatedAt());
+        }
         return collegeDeanRepository.saveAndFlush(collegeDeanEntity);
     }
 
     public CollegeDean findCollegeDeanById(BigInteger id) {
         return collegeDeanRepository.findById(id).orElse(new CollegeDean());
     }
-    
+
     @Override
     public CollegeDean findByUserDetail(BigInteger userDetailId) {
         return collegeDeanRepository.findByUserDetail(userDetailId);

@@ -25,7 +25,7 @@ public class CaptchaDaoService implements ICaptchaDaoService {
         this.captchaEnabled = captchaEnabled;
     }
 
-    private static final List<String> OPERATORS = Arrays.asList("+", "-", "*");
+    private static final List<String> OPERATORS = Arrays.asList("+", "-");
 
     @Override
     public Captcha generateCaptcha() throws NoSuchAlgorithmException {
@@ -41,8 +41,6 @@ public class CaptchaDaoService implements ICaptchaDaoService {
             captcha.setResult(Math.addExact(captcha.getNum1(), captcha.getNum2()));
         } else if ("-".equals(captcha.getOperation())) {
             captcha.setResult(Math.subtractExact(captcha.getNum1(), captcha.getNum2()));
-        } else if ("*".equals(captcha.getOperation())) {
-            captcha.setResult(Math.multiplyExact(captcha.getNum1(), captcha.getNum2()));
         }
 
         captcha.setExpiresAt(Timestamp.valueOf(LocalDateTime.now().plusMinutes(5)));
