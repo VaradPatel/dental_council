@@ -19,8 +19,8 @@ import in.gov.abdm.nmr.db.sql.domain.college_dean.CollegeDean;
 import in.gov.abdm.nmr.db.sql.domain.college_dean.ICollegeDeanDaoService;
 import in.gov.abdm.nmr.db.sql.domain.college_registrar.CollegeRegistrar;
 import in.gov.abdm.nmr.db.sql.domain.college_registrar.ICollegeRegistrarDaoService;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.IUserDetailService;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.UserDetail;
+import in.gov.abdm.nmr.db.sql.domain.user.IUserDaoService;
+import in.gov.abdm.nmr.db.sql.domain.user.User;
 
 @Service
 public class CollegeServiceImpl implements ICollegeService {
@@ -30,12 +30,12 @@ public class CollegeServiceImpl implements ICollegeService {
     private ICollegeMapper collegeMapper;
 
     private ICollegeRegistrarDaoService collegeRegistrarDaoService;
-    
-    private ICollegeDeanDaoService collegeDeanDaoService;
-    
-    private IUserDetailService userDetailService;
 
-    public CollegeServiceImpl(ICollegeDaoService collegeService, ICollegeMapper collegeMapper, ICollegeRegistrarDaoService collegeRegistrarDaoService, ICollegeDeanDaoService collegeDeanDaoService, IUserDetailService userDetailService) {
+    private ICollegeDeanDaoService collegeDeanDaoService;
+
+    private IUserDaoService userDetailService;
+
+    public CollegeServiceImpl(ICollegeDaoService collegeService, ICollegeMapper collegeMapper, ICollegeRegistrarDaoService collegeRegistrarDaoService, ICollegeDeanDaoService collegeDeanDaoService, IUserDaoService userDetailService) {
         this.collegeService = collegeService;
         this.collegeMapper = collegeMapper;
         this.collegeRegistrarDaoService = collegeRegistrarDaoService;
@@ -44,11 +44,11 @@ public class CollegeServiceImpl implements ICollegeService {
     }
 
     @Override
-    public CollegeProfileTo registerCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo) {
-        College collegeProfileEntity = collegeService.saveCollege(collegeRegistrationRequestTo);
+    public CollegeProfileTo registerCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) {
+        College collegeProfileEntity = collegeService.saveCollege(collegeRegistrationRequestTo, update);
         CollegeProfileTo collegeCreationRequestToResponse = collegeMapper.collegeCreationRequestToResponse(collegeRegistrationRequestTo);
         collegeCreationRequestToResponse.setId(collegeProfileEntity.getId());
-        collegeCreationRequestToResponse.setUserId(collegeProfileEntity.getUserDetail().getId());
+        collegeCreationRequestToResponse.setUserId(collegeProfileEntity.getUser().getId());
         return collegeCreationRequestToResponse;
     }
 
@@ -57,28 +57,28 @@ public class CollegeServiceImpl implements ICollegeService {
         CollegeRegistrar collegeRegistrarEntity = collegeRegistrarDaoService.saveCollegeRegistrar(collegeRegistrarCreationRequestTo);
         CollegeRegistrarProfileTo collegeRegistrarProfileTo = collegeMapper.collegeRegistrarRequestToResponse(collegeRegistrarCreationRequestTo);
         collegeRegistrarProfileTo.setId(collegeRegistrarEntity.getId());
-        collegeRegistrarProfileTo.setUserId(collegeRegistrarEntity.getUserDetail().getId());
+        collegeRegistrarProfileTo.setUserId(collegeRegistrarEntity.getUser().getId());
         return collegeRegistrarProfileTo;
     }
 
     @Override
     public CollegeDeanProfileTo registerDean(CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) {
-        CollegeDean collegeDeanEntity  = collegeDeanDaoService.saveCollegeDean(collegeDeanCreationRequestTo);
+        CollegeDean collegeDeanEntity = collegeDeanDaoService.saveCollegeDean(collegeDeanCreationRequestTo);
         CollegeDeanProfileTo collegeDeanProfileTO = collegeMapper.collegeDeanRequestToResponse(collegeDeanCreationRequestTo);
         collegeDeanProfileTO.setId(collegeDeanEntity.getId());
-        collegeDeanProfileTO.setUserId(collegeDeanEntity.getUserDetail().getId());
+        collegeDeanProfileTO.setUserId(collegeDeanEntity.getUser().getId());
         return collegeDeanProfileTO;
     }
 
     @Override
     public CollegeProfileTo retrieveCollegeProfile(BigInteger collegeId) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserDetail collegeUserDetail = userDetailService.findUserDetailByUsername(userName);
+        User collegeUserDetail = userDetailService.findUserDetailByUsername(userName);
         College collegeEntity = collegeService.findById(collegeId);
-        if(!collegeUserDetail.getId().equals(collegeEntity.getUserDetail().getId())) {
+        if (!collegeUserDetail.getId().equals(collegeEntity.getUser().getId())) {
             throw new AuthenticationServiceException("Forbidden");
         }
-        
+
         CollegeProfileTo collegeProfileTO = collegeMapper.collegeEntityToCollegeProfile(collegeEntity);
         collegeProfileTO.setCouncilId(collegeEntity.getStateMedicalCouncil().getId());
         collegeProfileTO.setStateId(collegeEntity.getState().getId());
@@ -89,28 +89,28 @@ public class CollegeServiceImpl implements ICollegeService {
     @Override
     public CollegeRegistrarProfileTo retrieveRegistrarProfile(BigInteger registrarId) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserDetail collegeUserDetail = userDetailService.findUserDetailByUsername(userName);
+        User collegeUserDetail = userDetailService.findUserDetailByUsername(userName);
         CollegeRegistrar collegeRegistrarEntity = collegeRegistrarDaoService.findCollegeRegistrarById(registrarId);
-        if(!collegeUserDetail.getId().equals(collegeRegistrarEntity.getUserDetail().getId())) {
+        if (!collegeUserDetail.getId().equals(collegeRegistrarEntity.getUser().getId())) {
             throw new AuthenticationServiceException("Forbidden");
         }
-        
+
         CollegeRegistrarProfileTo collegeRegistrarProfileTo = collegeMapper.collegeRegistrarEntityToCollegeRegistrarProfile(collegeRegistrarEntity);
-        collegeRegistrarProfileTo.setUserId(collegeRegistrarEntity.getUserDetail().getId());
+        collegeRegistrarProfileTo.setUserId(collegeRegistrarEntity.getUser().getId());
         return collegeRegistrarProfileTo;
     }
 
     @Override
     public CollegeDeanProfileTo retrieveDeanProfile(BigInteger id) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserDetail collegeUserDetail = userDetailService.findUserDetailByUsername(userName);
+        User collegeUserDetail = userDetailService.findUserDetailByUsername(userName);
         CollegeDean collegeDeanEntity = collegeDeanDaoService.findCollegeDeanById(id);
-        if(!collegeUserDetail.getId().equals(collegeDeanEntity.getUserDetail().getId())) {
+        if (!collegeUserDetail.getId().equals(collegeDeanEntity.getUser().getId())) {
             throw new AuthenticationServiceException("Forbidden");
         }
-        
+
         CollegeDeanProfileTo collegeDeanProfileTO = collegeMapper.collegeDeanEntityToCollegeDeanProfile(collegeDeanEntity);
-        collegeDeanProfileTO.setUserId(collegeDeanEntity.getUserDetail().getId());
+        collegeDeanProfileTO.setUserId(collegeDeanEntity.getUser().getId());
         return collegeDeanProfileTO;
     }
 }

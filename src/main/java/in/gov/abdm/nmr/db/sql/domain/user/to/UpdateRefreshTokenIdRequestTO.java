@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.db.sql.domain.user_detail.to;
+package in.gov.abdm.nmr.db.sql.domain.user.to;
 
 import javax.validation.constraints.NotBlank;
 

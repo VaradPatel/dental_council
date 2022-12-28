@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.country.Country;
+import in.gov.abdm.nmr.db.sql.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -77,4 +78,8 @@ public class HpProfile {
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "countryNationalityId", referencedColumnName = "id")
 	private Country countryNationalityId;
+	
+	@OneToOne
+    @JoinColumn(name = "user_detail_id")
+    private User userDetail;
 }

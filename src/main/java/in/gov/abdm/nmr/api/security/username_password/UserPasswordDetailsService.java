@@ -7,29 +7,29 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import in.gov.abdm.nmr.db.sql.domain.user_detail.IUserDetailService;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.to.UserDetailSearchTO;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.to.UserDetailTO;
+import in.gov.abdm.nmr.db.sql.domain.user.IUserDaoService;
+import in.gov.abdm.nmr.db.sql.domain.user.to.UserSearchTO;
+import in.gov.abdm.nmr.db.sql.domain.user.to.UserTO;
 
 @Component
 public class UserPasswordDetailsService implements UserDetailsService {
 
-    private IUserDetailService userDetailService;
+    private IUserDaoService userDetailService;
 
-    public UserPasswordDetailsService(IUserDetailService userDetailService) {
+    public UserPasswordDetailsService(IUserDaoService userDetailService) {
         this.userDetailService = userDetailService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDetailSearchTO userDetailSearchTO = new UserDetailSearchTO();
+        UserSearchTO userDetailSearchTO = new UserSearchTO();
         userDetailSearchTO.setUsername(username);
 
-        UserDetailTO userDetail = userDetailService.searchUserDetail(userDetailSearchTO);
+        UserTO userDetail = userDetailService.searchUserDetail(userDetailSearchTO);
         if (userDetail == null) {
             throw new UsernameNotFoundException("Invalid username");
         }
 
-        return new UserPassDetail(userDetail.getUsername(), userDetail.getPassword(), Collections.emptyList(), userDetail.getUserType().getId());
+        return new UserPassDetail(userDetail.getUsername(), userDetail.getPassword(), Collections.emptyList(), userDetail.getUserType().getId(), userDetail.getUserSubType().getId());
     }
 }

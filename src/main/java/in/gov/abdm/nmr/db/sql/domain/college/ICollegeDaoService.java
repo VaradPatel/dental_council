@@ -8,6 +8,7 @@ import in.gov.abdm.nmr.api.controller.college.to.CollegeRegistrationRequestTo;
 public interface ICollegeDaoService {
 
     List<CollegeTO> getCollegeData(BigInteger universityId);
-    College saveCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo);
+    College saveCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update);
     College findById(BigInteger collegeId);
+    College findByUserDetail(BigInteger userDetailId);
 }

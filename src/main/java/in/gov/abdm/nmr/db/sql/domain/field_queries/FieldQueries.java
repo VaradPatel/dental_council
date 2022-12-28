@@ -8,7 +8,7 @@ import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.db.sql.domain.common.CommonAuditEntity;
 import in.gov.abdm.nmr.db.sql.domain.hp_profile.HpProfile;
-import in.gov.abdm.nmr.db.sql.domain.user_detail.UserDetail;
+import in.gov.abdm.nmr.db.sql.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +30,7 @@ public class FieldQueries extends CommonAuditEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private UserDetail login;
+    private User login;
 
     private String fieldName;
     private String queryComment;

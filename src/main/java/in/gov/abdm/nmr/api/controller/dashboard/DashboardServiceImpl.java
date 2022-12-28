@@ -1,17 +1,18 @@
 package in.gov.abdm.nmr.api.controller.dashboard;
 
-import in.gov.abdm.nmr.api.controller.dashboard.to.IStatusWiseCountMapper;
-import in.gov.abdm.nmr.api.controller.dashboard.to.ResponseTO;
-import in.gov.abdm.nmr.api.controller.dashboard.to.StatusWiseCountTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.TOTAL_REGISTRATION_REQUESTS;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.TOTAL_UPDATION_REQUESTS;
 
 import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static in.gov.abdm.nmr.api.constant.NMRConstants.TOTAL_REGISTRATION_REQUESTS;
-import static in.gov.abdm.nmr.api.constant.NMRConstants.TOTAL_UPDATION_REQUESTS;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import in.gov.abdm.nmr.api.controller.dashboard.to.IStatusWiseCountMapper;
+import in.gov.abdm.nmr.api.controller.dashboard.to.ResponseTO;
+import in.gov.abdm.nmr.api.controller.dashboard.to.StatusWiseCountTO;
 
 
 @Service

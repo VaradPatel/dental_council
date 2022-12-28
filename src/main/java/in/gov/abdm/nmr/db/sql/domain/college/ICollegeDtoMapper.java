@@ -18,7 +18,7 @@ public interface ICollegeDtoMapper {
     @Mapping(target = "state", ignore = true)
     @Mapping(target = "university", ignore = true)
     @Mapping(target = "stateMedicalCouncil", ignore = true)
-    @Mapping(target = "userDetail", ignore = true)
+    @Mapping(target = "user", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     College collegeRegistartionDtoToEntity(CollegeRegistrationRequestTo collegeRegistrationRequestTo);

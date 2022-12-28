@@ -9,4 +9,6 @@ public interface ICollegeDeanDaoService {
     CollegeDean saveCollegeDean(CollegeDeanCreationRequestTo collegeDeanCreationRequestTo);
     
     CollegeDean findCollegeDeanById(BigInteger id);
+
+    CollegeDean findByUserDetail(BigInteger userDetailId);
 }

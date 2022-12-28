@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.api.controller.dashboard;
 
-import in.gov.abdm.nmr.api.controller.dashboard.to.ResponseTO;
+import static in.gov.abdm.nmr.api.constant.NMRConstants.FETCH_COUNT_ON_CARD_URL;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -8,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static in.gov.abdm.nmr.api.constant.NMRConstants.FETCH_COUNT_ON_CARD_URL;
+import in.gov.abdm.nmr.api.controller.dashboard.to.ResponseTO;
 
 /**
  * Presentation Layer to expose the endpoints of Dashboard
