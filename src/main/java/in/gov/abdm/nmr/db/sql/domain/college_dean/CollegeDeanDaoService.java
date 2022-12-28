@@ -59,7 +59,7 @@ public class CollegeDeanDaoService implements ICollegeDeanDaoService {
         userDetailSearchTO.setUsername(userName);
         College college = collegeRepository.findByUserDetail(userDetailService.searchUserDetail(userDetailSearchTO).getId());
 
-        collegeDeanEntity.setCollege(college);
+//        collegeDeanEntity.setCollege(college);
 
         return collegeDeanRepository.saveAndFlush(collegeDeanEntity);
     }

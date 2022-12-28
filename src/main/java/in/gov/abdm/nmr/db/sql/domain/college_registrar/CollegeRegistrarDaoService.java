@@ -59,7 +59,7 @@ public class CollegeRegistrarDaoService implements ICollegeRegistrarDaoService {
         userDetailSearchTO.setUsername(userName);
         College college = collegeRepository.findByUserDetail(userDetailService.searchUserDetail(userDetailSearchTO).getId());
 
-        collegeRegistrarEntity.setCollege(college);
+//        collegeRegistrarEntity.setCollege(college);
 
         return collegeRegistrarRepository.saveAndFlush(collegeRegistrarEntity);
     }
