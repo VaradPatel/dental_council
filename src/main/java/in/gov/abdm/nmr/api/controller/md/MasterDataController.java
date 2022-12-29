@@ -71,4 +71,19 @@ public class MasterDataController {
     public List<MasterDataTO> languages() {
         return masterDataService.languages();
     }
+    
+    @GetMapping(path = "/courses", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<MasterDataTO> courses() {
+        return masterDataService.courses();
+    }
+    
+    @GetMapping(path = "/registration_renewation_type", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<MasterDataTO> registrationRenewationType() {
+        return masterDataService.registrationRenewationType();
+    }
+    
+    @GetMapping(path = "/facility_type", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<MasterDataTO> facilityType() {
+        return masterDataService.facilityType();
+    }
 }

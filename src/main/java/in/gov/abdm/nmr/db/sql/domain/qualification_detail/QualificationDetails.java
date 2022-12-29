@@ -60,7 +60,7 @@ public class QualificationDetails {
 
 //    @OneToOne
 //    @JoinColumn(name = "course")
-//    private Course course;
+//    private FacilityType course;
     private BigInteger courseId;
 
 //    @OneToOne
