@@ -26,4 +26,5 @@ public class ErrorTO {
 
 	@JsonProperty("path")
 	private String path;
+
 }
