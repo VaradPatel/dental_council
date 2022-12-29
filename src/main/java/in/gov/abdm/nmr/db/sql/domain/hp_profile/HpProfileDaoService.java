@@ -50,7 +50,6 @@ import in.gov.abdm.nmr.db.sql.domain.languages_known.LanguagesKnown;
 import in.gov.abdm.nmr.db.sql.domain.languages_known.LanguagesKnownRepository;
 import in.gov.abdm.nmr.db.sql.domain.nationality.INationalityRepository;
 import in.gov.abdm.nmr.db.sql.domain.nationality.NationalityTO;
-import in.gov.abdm.nmr.db.sql.domain.organization_type.OrganizationType;
 import in.gov.abdm.nmr.db.sql.domain.organization_type.OrganizationTypeRepository;
 import in.gov.abdm.nmr.db.sql.domain.organization_type.OrganizationTypeTO;
 import in.gov.abdm.nmr.db.sql.domain.qualification_detail.QualificationDetailRepository;

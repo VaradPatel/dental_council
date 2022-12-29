@@ -27,11 +27,11 @@ public class UserDaoService implements IUserDaoService {
 
     private IUserMapper userDetailMapper;
 
-    private IUseRepository userDetailRepository;
+    private IUserRepository userDetailRepository;
 
     private EntityManager entityManager;
 
-    public UserDaoService(IUserMapper userDetailMapper, IUseRepository userDetailRepository, EntityManager entityManager) {
+    public UserDaoService(IUserMapper userDetailMapper, IUserRepository userDetailRepository, EntityManager entityManager) {
         super();
         this.userDetailMapper = userDetailMapper;
         this.userDetailRepository = userDetailRepository;
