@@ -34,11 +34,10 @@ public class CaptchaService implements ICaptchaService {
         BufferedImage bufferedImage = new BufferedImage(1200, 600, BufferedImage.TYPE_INT_RGB);
 
         Graphics g = bufferedImage.getGraphics();
-        g.setColor(Color.CYAN);
         g.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
 
         g.setColor(Color.BLACK);
-        g.setFont(new Font("TimesRoman", Font.BOLD, 25));
+        g.setFont(new Font("TimesRoman", Font.BOLD, 250));
         g.drawString(captcha.getNum1() + " " + captcha.getOperation() + " " + captcha.getNum1() + " =", 0, 400);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
