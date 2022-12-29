@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.db.sql.domain.course;
+package in.gov.abdm.nmr.db.sql.domain.registration_renewation_type;
 
 import java.math.BigInteger;
 
@@ -18,7 +18,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Course {
+public class RegistrationRenewationType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

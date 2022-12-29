@@ -8,8 +8,11 @@ import org.mapstruct.MappingConstants.ComponentModel;
 import in.gov.abdm.nmr.db.sql.domain.broad_speciality.BroadSpecialityTO;
 import in.gov.abdm.nmr.db.sql.domain.college.CollegeTO;
 import in.gov.abdm.nmr.db.sql.domain.country.CountryTO;
+import in.gov.abdm.nmr.db.sql.domain.course.CourseTO;
 import in.gov.abdm.nmr.db.sql.domain.district.DistrictTO;
+import in.gov.abdm.nmr.db.sql.domain.facility_type.FacilityTypeTO;
 import in.gov.abdm.nmr.db.sql.domain.language.LanguageTO;
+import in.gov.abdm.nmr.db.sql.domain.registration_renewation_type.RegistrationRenewationTypeTO;
 import in.gov.abdm.nmr.db.sql.domain.state.StateTO;
 import in.gov.abdm.nmr.db.sql.domain.state_medical_council.to.StateMedicalCouncilTO;
 import in.gov.abdm.nmr.db.sql.domain.sub_district.SubDistrictTO;
@@ -38,5 +41,11 @@ public interface IMasterDataMapper {
     List<MasterDataTO> collegesToMasterDataTOs(List<CollegeTO> colleges);
 
     List<MasterDataTO> languagesToMasterDataTOs(List<LanguageTO> languages);
+
+    List<MasterDataTO> coursesToMasterDataTOs(List<CourseTO> courses);
+    
+    List<MasterDataTO> registrationRenewationTypeDataTOs(List<RegistrationRenewationTypeTO> registrationRenewationType);
+    
+    List<MasterDataTO> facilityTypeDataTOs(List<FacilityTypeTO> facilityType);
 
 }

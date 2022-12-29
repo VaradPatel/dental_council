@@ -10,8 +10,11 @@ import in.gov.abdm.nmr.api.controller.md.to.MasterDataTO;
 import in.gov.abdm.nmr.db.sql.domain.broad_speciality.BroadSpecialityService;
 import in.gov.abdm.nmr.db.sql.domain.college.ICollegeDaoService;
 import in.gov.abdm.nmr.db.sql.domain.country.CountryService;
+import in.gov.abdm.nmr.db.sql.domain.course.ICourseService;
 import in.gov.abdm.nmr.db.sql.domain.district.DistrictService;
+import in.gov.abdm.nmr.db.sql.domain.facility_type.IFacilityTypeService;
 import in.gov.abdm.nmr.db.sql.domain.language.LanguageService;
+import in.gov.abdm.nmr.db.sql.domain.registration_renewation_type.IRegistrationRenewationTypeService;
 import in.gov.abdm.nmr.db.sql.domain.state.StateService;
 import in.gov.abdm.nmr.db.sql.domain.state_medical_council.StateMedicalCouncilDaoService;
 import in.gov.abdm.nmr.db.sql.domain.sub_district.SubDistrictService;
@@ -42,11 +45,18 @@ public class MasterDataService implements IMasterDataService {
 	private ICollegeDaoService collegeService;
 
 	private IMasterDataMapper masterDataMapper;
+	
+	private ICourseService courseService;
+	
+	private IRegistrationRenewationTypeService registrationRenewationTypeService;
+
+	private IFacilityTypeService facilityTypeService;
 
 	public MasterDataService(StateMedicalCouncilDaoService stateMedicalCouncilService, IMasterDataMapper masterDataMapper,
 			CountryService countryService, StateService stateService, DistrictService districtService, SubDistrictService subDistrictService,
 			VillagesService villagesService, BroadSpecialityService broadSpecialityService, UniversityService universityService, ICollegeDaoService collegeService,
-			LanguageService languageService) {
+			LanguageService languageService, ICourseService courseService, IRegistrationRenewationTypeService registrationRenewationTypeService,
+			IFacilityTypeService facilityTypeService) {
 		super();
 		this.stateMedicalCouncilService = stateMedicalCouncilService;
 		this.masterDataMapper = masterDataMapper;
@@ -59,6 +69,9 @@ public class MasterDataService implements IMasterDataService {
 		this.universityService = universityService;
 		this.collegeService = collegeService;
 		this.languageService = languageService;
+		this.courseService = courseService;
+		this.registrationRenewationTypeService = registrationRenewationTypeService;
+		this.facilityTypeService = facilityTypeService;
 	}
 
 	@Override
@@ -110,4 +123,21 @@ public class MasterDataService implements IMasterDataService {
 	public List<MasterDataTO> languages() {
 		return masterDataMapper.languagesToMasterDataTOs(languageService.getLanguageData());
 	}
+	
+	@Override
+	public List<MasterDataTO> courses() {
+		return masterDataMapper.coursesToMasterDataTOs(courseService.getCourseData());
+	}
+	
+	@Override
+	public List<MasterDataTO> registrationRenewationType() {
+		return masterDataMapper.registrationRenewationTypeDataTOs(registrationRenewationTypeService.getRegistrationRenewationType());
+	}
+
+	@Override
+	public List<MasterDataTO> facilityType() {
+		return masterDataMapper.facilityTypeDataTOs(facilityTypeService.getFacilityType());
+	}
+	
+	
 }

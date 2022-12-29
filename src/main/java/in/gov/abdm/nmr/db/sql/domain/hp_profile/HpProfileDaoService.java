@@ -827,7 +827,7 @@ public class HpProfileDaoService implements IHpProfileDaoService {
 //							university.setId(newQualification.getUniversity().getId());
 							qualification.setUniversityId(newQualification.getUniversity().getId());
 
-//							Course course = new Course();
+//							FacilityType course = new FacilityType();
 //							course.setId(newQualification.getCourse().getId());
 							qualification.setCourseId(newQualification.getCourse().getId());
 
@@ -902,7 +902,7 @@ public class HpProfileDaoService implements IHpProfileDaoService {
 											: hpProfileUpdateRequest.getQualificationDetail().get(cnt).getUniversity()
 													.getId());
 
-//							Course course = new Course();
+//							FacilityType course = new FacilityType();
 //							course.setId(
 //									hpProfileUpdateRequest.getQualificationDetail().get(cnt).getCourse().getId() == null
 //											? null
@@ -1248,7 +1248,7 @@ public class HpProfileDaoService implements IHpProfileDaoService {
 //					university.setId(newQualification.getUniversity().getId());
 					qualification.setUniversityId(newQualification.getUniversity().getId());
 
-//					Course course = new Course();
+//					FacilityType course = new FacilityType();
 //					course.setId(newQualification.getCourse().getId());
 					qualification.setCourseId(newQualification.getCourse().getId());
 
