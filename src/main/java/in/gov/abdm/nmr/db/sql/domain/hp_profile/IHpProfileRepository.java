@@ -92,6 +92,12 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
 			+ " where super_speciality.hp_profile_id = :hpProfileId", nativeQuery = true)
 	List<Tuple> fetchSuperSpecialityDetails(BigInteger hpProfileId);
 	
+	@Query(value = "select language.name as language, language.id as language_id "
+			+ " from languages_known"
+			+ " LEFT JOIN language on languages_known.language_id = language.id"
+			+ " where languages_known.hp_profile_id = :hpProfileId", nativeQuery = true)
+	List<Tuple> fetchLanguageDetails(BigInteger hpProfileId);
+	
 //	@Query(value = "select * from hp_profile where id = :hpProfileId", nativeQuery = true)
 //	HpProfile getByHpProfileId(BigInteger hpProfileId);
 	
