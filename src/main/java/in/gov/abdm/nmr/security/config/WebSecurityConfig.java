@@ -32,7 +32,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         LOGGER.info("Configuring web security");
-        return http.csrf().disable() //
+        return http.csrf().disable().cors().and() //
                 .headers().cacheControl().and().and() //
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and() //
                 .authorizeHttpRequests(authRequestConfig -> authRequestConfig.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()).build();
