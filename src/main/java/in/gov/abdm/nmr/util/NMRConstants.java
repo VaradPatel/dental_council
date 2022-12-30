@@ -19,6 +19,7 @@ public class NMRConstants {
     public static final String AADHAR_SERVICE_SEND_OTP = "/api/v3/aadhaar/sendOtp";
     public static final String AADHAR_SERVICE_VERIFY_OTP = "/api/v3/aadhaar/verifyOtp";
     public static final String NOTIFICATION_SERVICE_SEND_MESSAGE = "/internal/v3/notification/message";
+    public static final String RESET_PASSWORD = "/resetPassword";
     public static final String IS_NEW = "isNew";
     public static final String TOTAL_REGISTRATION_REQUESTS = "Total Registration Requests";
     public static final String TOTAL_UPDATION_REQUESTS = "Total Updation Requests";
@@ -38,6 +39,10 @@ public class NMRConstants {
     public static final String SMS_TEMPLATE_ID = "1007164181681962323";
     public static final String EMAIL_TEMPLATE_ID = "1007164181681962323";
     public static final String SUCCESS_RESPONSE = "Success";
+    public static final String USER_NOT_FOUND = "User not found";
+    public static final String PROBLEM_OCCURRED = "Problem Occurred";
+    public static final String USERNAME_NOT_NULL = "Username cannot be null or empty";
+    public static final String PASSWORD_NOT_NULL = "Password cannot be null or empty";
     public static final String OTP_INVALID = "Invalid OTP";
     public static final String OTP_NOT_FOUND = "OTP Not Found";
     public static final String OTP_EXPIRED = "OTP Expired";
