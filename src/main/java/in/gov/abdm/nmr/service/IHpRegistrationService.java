@@ -2,7 +2,7 @@ package in.gov.abdm.nmr.service;
 
 import java.math.BigInteger;
 
-import in.gov.abdm.nmr.dto.HpProfileAddRequestTO;
+import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
 import in.gov.abdm.nmr.dto.HpProfileAddResponseTO;
 import in.gov.abdm.nmr.dto.HpProfileDetailResponseTO;
 import in.gov.abdm.nmr.dto.HpProfileUpdateRequestTO;

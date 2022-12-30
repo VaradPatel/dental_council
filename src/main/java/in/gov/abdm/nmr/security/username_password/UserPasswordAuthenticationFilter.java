@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.security.common.RsaUtil;
-import in.gov.abdm.nmr.security.controller.to.LoginRequestTO;
+import in.gov.abdm.nmr.dto.LoginRequestTO;
 import in.gov.abdm.nmr.service.ICaptchaDaoService;
 
 @Component

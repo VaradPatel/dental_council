@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.dto;
 
+import in.gov.abdm.nmr.dto.college.CollegeTO;
 import lombok.Data;
 
 @Data

@@ -1,17 +1,18 @@
-package in.gov.abdm.nmr.security.controller;
+package in.gov.abdm.nmr.controller;
 
 import static in.gov.abdm.nmr.security.common.ProtectedPaths.PATH_LOGIN;
 import static in.gov.abdm.nmr.security.common.ProtectedPaths.PATH_REFRESH_TOKEN;
 
 import javax.servlet.http.HttpServletResponse;
 
+import in.gov.abdm.nmr.service.IAuthService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import in.gov.abdm.nmr.security.controller.to.LoginRequestTO;
-import in.gov.abdm.nmr.security.controller.to.LoginResponseTO;
+import in.gov.abdm.nmr.dto.LoginRequestTO;
+import in.gov.abdm.nmr.dto.LoginResponseTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController

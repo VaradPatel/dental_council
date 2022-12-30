@@ -8,7 +8,7 @@ import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
 import in.gov.abdm.nmr.entity.College;
-import in.gov.abdm.nmr.dto.CollegeTO;
+import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.mapper.ICollegeDtoMapper;
 import in.gov.abdm.nmr.repository.ICollegeRepository;
 import in.gov.abdm.nmr.service.ICollegeDaoService;

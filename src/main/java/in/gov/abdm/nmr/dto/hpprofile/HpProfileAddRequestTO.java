@@ -1,7 +1,8 @@
-package in.gov.abdm.nmr.dto;
+package in.gov.abdm.nmr.dto.hpprofile;
 
 import java.util.List;
 
+import in.gov.abdm.nmr.dto.*;
 import lombok.Value;
 
 @Value

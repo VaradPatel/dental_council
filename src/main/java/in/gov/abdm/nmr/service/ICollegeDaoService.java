@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import in.gov.abdm.nmr.entity.College;
-import in.gov.abdm.nmr.dto.CollegeTO;
+import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.dto.CollegeRegistrationRequestTo;
 import in.gov.abdm.nmr.exception.NmrException;
 

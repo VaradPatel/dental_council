@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import org.springframework.stereotype.Service;
 
-import in.gov.abdm.nmr.dto.HpProfileAddRequestTO;
+import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
 import in.gov.abdm.nmr.dto.HpProfileAddResponseTO;
 import in.gov.abdm.nmr.dto.HpProfileDetailResponseTO;
 import in.gov.abdm.nmr.dto.HpProfileUpdateRequestTO;

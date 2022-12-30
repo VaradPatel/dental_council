@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import in.gov.abdm.nmr.dto.HpProfileAddRequestTO;
+import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
 import in.gov.abdm.nmr.dto.HpProfileAddResponseTO;
 import in.gov.abdm.nmr.dto.HpProfileDetailResponseTO;
 import in.gov.abdm.nmr.dto.HpProfileUpdateRequestTO;

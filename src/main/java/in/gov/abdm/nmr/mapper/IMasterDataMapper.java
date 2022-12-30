@@ -2,12 +2,12 @@ package in.gov.abdm.nmr.mapper;
 
 import java.util.List;
 
-import in.gov.abdm.nmr.dto.MasterDataTO;
+import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
 
 import in.gov.abdm.nmr.dto.BroadSpecialityTO;
-import in.gov.abdm.nmr.dto.CollegeTO;
+import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.dto.CountryTO;
 import in.gov.abdm.nmr.dto.CourseTO;
 import in.gov.abdm.nmr.dto.DistrictTO;

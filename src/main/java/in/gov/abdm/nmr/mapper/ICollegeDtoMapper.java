@@ -2,7 +2,7 @@ package in.gov.abdm.nmr.mapper;
 
 import java.util.List;
 
-import in.gov.abdm.nmr.dto.CollegeTO;
+import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.entity.College;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;

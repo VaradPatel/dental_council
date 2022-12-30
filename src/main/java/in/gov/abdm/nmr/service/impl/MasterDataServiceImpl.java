@@ -3,7 +3,7 @@ package in.gov.abdm.nmr.service.impl;
 import java.math.BigInteger;
 import java.util.List;
 
-import in.gov.abdm.nmr.dto.MasterDataTO;
+import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
 import in.gov.abdm.nmr.service.IMasterDataService;
 import org.springframework.stereotype.Service;
 

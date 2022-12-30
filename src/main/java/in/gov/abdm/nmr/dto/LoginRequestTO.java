@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.security.controller.to;
+package in.gov.abdm.nmr.dto;
 
 import lombok.Data;
 

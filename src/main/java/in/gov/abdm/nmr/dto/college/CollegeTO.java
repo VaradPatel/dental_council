@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.dto;
+package in.gov.abdm.nmr.dto.college;
 
 import java.math.BigInteger;
 import java.util.List;

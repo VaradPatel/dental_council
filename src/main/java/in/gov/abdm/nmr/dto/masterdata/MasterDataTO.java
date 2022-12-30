@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.dto;
+package in.gov.abdm.nmr.dto.masterdata;
 
 import lombok.Data;
 

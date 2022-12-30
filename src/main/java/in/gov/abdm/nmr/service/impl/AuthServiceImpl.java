@@ -1,31 +1,25 @@
-package in.gov.abdm.nmr.security.controller;
+package in.gov.abdm.nmr.service.impl;
 
 import static in.gov.abdm.nmr.common.CustomHeaders.ACCESS_TOKEN;
 import static in.gov.abdm.nmr.common.CustomHeaders.REFRESH_TOKEN;
 
 import javax.servlet.http.HttpServletResponse;
 
+import in.gov.abdm.nmr.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import in.gov.abdm.nmr.security.controller.to.LoginResponseTO;
+import in.gov.abdm.nmr.dto.LoginResponseTO;
 import in.gov.abdm.nmr.security.jwt.JwtTypeEnum;
 import in.gov.abdm.nmr.security.jwt.JwtUtil;
-import in.gov.abdm.nmr.service.ICollegeDaoService;
-import in.gov.abdm.nmr.service.ICollegeDeanDaoService;
-import in.gov.abdm.nmr.service.ICollegeRegistrarDaoService;
 import in.gov.abdm.nmr.entity.HpProfile;
-import in.gov.abdm.nmr.service.IHpProfileDaoService;
-import in.gov.abdm.nmr.service.INmcDaoService;
-import in.gov.abdm.nmr.service.IStateMedicalCouncilDaoService;
-import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 
 @Service
-public class AuthService implements IAuthService {
+public class AuthServiceImpl implements IAuthService {
 
     private JwtUtil jwtUtil;
 
@@ -43,7 +37,7 @@ public class AuthService implements IAuthService {
 
     private INmcDaoService nmcDaoService;
 
-    public AuthService(JwtUtil jwtUtil, IUserDaoService userDetailDaoService, IHpProfileDaoService hpProfileService, ICollegeDaoService collegeDaoService, ICollegeDeanDaoService collegeDeanDaoService, ICollegeRegistrarDaoService collegeRegistrarDaoService, IStateMedicalCouncilDaoService stateMedicalCouncilService, INmcDaoService nmcDaoService) {
+    public AuthServiceImpl(JwtUtil jwtUtil, IUserDaoService userDetailDaoService, IHpProfileDaoService hpProfileService, ICollegeDaoService collegeDaoService, ICollegeDeanDaoService collegeDeanDaoService, ICollegeRegistrarDaoService collegeRegistrarDaoService, IStateMedicalCouncilDaoService stateMedicalCouncilService, INmcDaoService nmcDaoService) {
         this.jwtUtil = jwtUtil;
         this.userDetailDaoService = userDetailDaoService;
         this.hpProfileService = hpProfileService;

@@ -18,7 +18,7 @@ import in.gov.abdm.nmr.service.IHpProfileDaoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import in.gov.abdm.nmr.dto.HpProfileAddRequestTO;
+import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
 import in.gov.abdm.nmr.dto.HpProfileAddResponseTO;
 import in.gov.abdm.nmr.dto.HpProfileUpdateRequestTO;
 import in.gov.abdm.nmr.dto.HpProfileUpdateResponseTO;
@@ -29,7 +29,7 @@ import in.gov.abdm.nmr.dto.AddressTO;
 import in.gov.abdm.nmr.entity.AddressType;
 import in.gov.abdm.nmr.dto.AddressTypeTO;
 import in.gov.abdm.nmr.dto.BroadSpecialityTO;
-import in.gov.abdm.nmr.dto.CollegeTO;
+import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.entity.Country;
 import in.gov.abdm.nmr.repository.CountryRepository;
 import in.gov.abdm.nmr.dto.CountryTO;
