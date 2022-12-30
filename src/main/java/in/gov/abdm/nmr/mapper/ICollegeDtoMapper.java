@@ -17,7 +17,7 @@ public interface ICollegeDtoMapper {
 
     List<CollegeTO> collegeDataToDto(List<College> college);
     
-    @Mapping(target = "state", ignore = true)
+//    @Mapping(target = "state", ignore = true)
     @Mapping(target = "university", ignore = true)
     @Mapping(target = "stateMedicalCouncil", ignore = true)
     @Mapping(target = "user", ignore = true)

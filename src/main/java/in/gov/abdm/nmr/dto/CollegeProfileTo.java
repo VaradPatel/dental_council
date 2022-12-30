@@ -15,7 +15,7 @@ public class CollegeProfileTo {
     private BigInteger councilId;
     private BigInteger universityId;
     private String website;
-    private String address;
-    private String pinCode;
-    private BigInteger stateId;
+    private AddressTO address;
+//    private String pinCode;
+//    private BigInteger stateId;
 }

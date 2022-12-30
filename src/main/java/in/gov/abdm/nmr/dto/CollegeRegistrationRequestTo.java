@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.dto;
 
 import java.math.BigInteger;
 
+import in.gov.abdm.nmr.entity.Address;
 import lombok.Data;
 
 @Data
@@ -15,7 +16,7 @@ public class CollegeRegistrationRequestTo {
     private BigInteger councilId;
     private BigInteger universityId;
     private String website;
-    private String address;
-    private String pinCode;
-    private BigInteger stateId;
+    private Address address;
+//    private String pinCode;
+//    private BigInteger stateId;
 }
