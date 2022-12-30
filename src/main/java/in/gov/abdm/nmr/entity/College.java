@@ -42,14 +42,19 @@ public class College extends CommonAuditEntity {
     @JoinColumn(name = "stateMedicalCouncil")
     private StateMedicalCouncil stateMedicalCouncil;
     private String website;
-    private String address;
-    private String pinCode;
+    
+    @OneToOne
+    @JoinColumn(name = "address", referencedColumnName = "id")
+    private Address address;
+    
+    
+//    private String pinCode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "state")
-    private State state;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "state")
+//    private State state;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 }

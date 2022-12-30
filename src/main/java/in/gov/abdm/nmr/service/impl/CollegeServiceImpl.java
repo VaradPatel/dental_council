@@ -83,7 +83,7 @@ public class CollegeServiceImpl implements ICollegeService {
 
         CollegeProfileTo collegeProfileTO = collegeMapper.collegeEntityToCollegeProfile(collegeEntity);
         collegeProfileTO.setCouncilId(collegeEntity.getStateMedicalCouncil().getId());
-        collegeProfileTO.setStateId(collegeEntity.getState().getId());
+//        collegeProfileTO.setStateId(collegeEntity.getState().getId());
         collegeProfileTO.setUniversityId(collegeEntity.getUniversity().getId());
         return collegeProfileTO;
     }

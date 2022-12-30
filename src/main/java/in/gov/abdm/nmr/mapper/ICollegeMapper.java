@@ -19,7 +19,7 @@ public interface ICollegeMapper {
     CollegeDeanProfileTo collegeDeanRequestToResponse(CollegeDeanCreationRequestTo collegeDeanCreationRequestTo);
     
     @Mapping(target = "councilId", ignore = true)
-    @Mapping(target = "stateId", ignore = true)
+//    @Mapping(target = "stateId", ignore = true)
     @Mapping(target = "universityId", ignore = true)
     CollegeProfileTo collegeEntityToCollegeProfile(College college);
     

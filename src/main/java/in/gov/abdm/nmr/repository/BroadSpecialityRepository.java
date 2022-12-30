@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface BroadSpecialityRepository extends JpaRepository<BroadSpeciality, BigInteger> {
 
-    @Query(value = "SELECT name, id FROM speciality", nativeQuery = true)
+    @Query(value = "SELECT name, id FROM broad_speciality", nativeQuery = true)
     List<BroadSpeciality> getSpeciality();
 
 }
