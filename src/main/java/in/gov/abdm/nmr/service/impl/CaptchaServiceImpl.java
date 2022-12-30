@@ -39,7 +39,7 @@ public class CaptchaServiceImpl implements ICaptchaService {
 
         g.setColor(Color.BLACK);
         g.setFont(new Font("TimesRoman", Font.BOLD, 250));
-        g.drawString(captcha.getNum1() + " " + captcha.getOperation() + " " + captcha.getNum1() + " =", 0, 400);
+        g.drawString(captcha.getNum1() + " " + captcha.getOperation() + " " + captcha.getNum2() + " =", 0, 400);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage, "png", outputStream);

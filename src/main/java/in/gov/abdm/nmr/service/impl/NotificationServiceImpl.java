@@ -115,6 +115,7 @@ public class NotificationServiceImpl implements NotificationService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add(NMRConstants.TIMESTAMP, Timestamp.valueOf(LocalDateTime.now()).toString());
+        headers.add(NMRConstants.REQUEST_ID, "123");
         HttpEntity<String> dscRequest = new HttpEntity<String>(jsonString.toString(), headers);
         restTemplateDisableSSL.postForEntity(notificationEndpoint+NMRConstants.NOTIFICATION_SERVICE_SEND_MESSAGE, dscRequest, NotificationRequestTo.class);
         return NMRConstants.SUCCESS_RESPONSE;

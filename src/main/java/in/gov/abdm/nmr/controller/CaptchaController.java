@@ -8,6 +8,7 @@ import in.gov.abdm.nmr.dto.ValidateCaptchaRequestTO;
 import in.gov.abdm.nmr.dto.ValidateCaptchaResponseTO;
 import in.gov.abdm.nmr.service.ICaptchaService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,7 +26,7 @@ public class CaptchaController {
         return captchaService.generateCaptcha();
     }
 
-    @GetMapping("/validateCaptcha")
+    @PostMapping("/validateCaptcha")
     public ValidateCaptchaResponseTO validateCaptcha(@RequestBody ValidateCaptchaRequestTO validateCaptchaRequestTO) {
         return captchaService.validateCaptcha(validateCaptchaRequestTO);
     }
