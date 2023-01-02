@@ -1,4 +1,5 @@
-package in.gov.abdm.nmr.dto;
+package in.gov.abdm.nmr.mapper;
+import in.gov.abdm.nmr.dto.FetchSpecificDetailsResponseTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 
@@ -6,13 +7,13 @@ import org.mapstruct.MappingConstants;
  * Mapper Interface to ensure smooth transfer of data between two different Beans
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface IStatusWiseCountMapper {
+public interface IFetchSpecificDetailsMapper {
 
         /**
          * This method transforms the StatusWiseCount Bean to the StatusWiseCountTO Bean
          * by transferring its contents
-         * @param iStatusWiseCount
-         * @return StatusWiseCountTO
+         * @param iFetchSpecificDetails
+         * @return FetchSpecificDetailsResponseTO
          */
-        StatusWiseCountTO toStatusWiseCountTO(IStatusWiseCount iStatusWiseCount);
+        FetchSpecificDetailsResponseTO toFetchSpecificDetailsResponseTO(IFetchSpecificDetails iFetchSpecificDetails);
 }

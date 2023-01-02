@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.dto;
+package in.gov.abdm.nmr.mapper;
 
 import java.math.BigInteger;
 

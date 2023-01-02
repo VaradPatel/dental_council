@@ -1,10 +1,5 @@
 package in.gov.abdm.nmr.entity;
 
-import static in.gov.abdm.nmr.util.NMRConstants.APPLICATION_STATUS_TYPE_ID;
-import static in.gov.abdm.nmr.util.NMRConstants.HP_PROFILE_ID;
-import static in.gov.abdm.nmr.util.NMRConstants.ID;
-import static in.gov.abdm.nmr.util.NMRConstants.VERIFIED_BY;
-
 import java.math.BigInteger;
 
 import javax.persistence.Entity;
@@ -19,6 +14,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @Getter
 @Setter
@@ -42,4 +39,8 @@ public class HpVerificationStatus {
     @OneToOne
     @JoinColumn(name = VERIFIED_BY,referencedColumnName = ID)
     private User verifiedBy;
+
+    @OneToOne
+    @JoinColumn(name = REGISTRATION_DETAILS_ID,referencedColumnName = ID)
+    private RegistrationDetails registrationDetails;
 }
