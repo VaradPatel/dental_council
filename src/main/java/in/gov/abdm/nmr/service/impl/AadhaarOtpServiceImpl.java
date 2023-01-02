@@ -1,24 +1,11 @@
 package in.gov.abdm.nmr.service.impl;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
+import in.gov.abdm.nmr.client.AadhaarFClient;
 import in.gov.abdm.nmr.dto.AadhaarOtpGenerateRequestTo;
 import in.gov.abdm.nmr.dto.AadhaarResponseTo;
 import in.gov.abdm.nmr.service.AadhaarOtpService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.dto.AadhaarOtpValidateRequestTo;
 
 /**
@@ -29,47 +16,28 @@ import in.gov.abdm.nmr.dto.AadhaarOtpValidateRequestTo;
 public class AadhaarOtpServiceImpl implements AadhaarOtpService {
 
     @Autowired
-    RestTemplate restTemplateDisableSSL;
+    AadhaarFClient aadhaarFClient;
 
-    @Value("${global.aadhaar.endpoint}")
-    private String aadharEndpoint;
-
-    @Autowired
-    ObjectMapper mapper;
     /**
      * Sends Aadhar OTP
      * @param otpGenerateRequestTo coming from Aadhaar OTP Service
      * @return AadhaarResponseDto Object
-     * @throws JsonProcessingException
      */
     @Override
-    public AadhaarResponseTo sendOtp(AadhaarOtpGenerateRequestTo otpGenerateRequestTo) throws JsonProcessingException {
+    public AadhaarResponseTo sendOtp(AadhaarOtpGenerateRequestTo otpGenerateRequestTo) {
 
-        String jsonString = mapper.writeValueAsString(otpGenerateRequestTo);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(NMRConstants.TIMESTAMP, Timestamp.valueOf(LocalDateTime.now()).toString());
-        HttpEntity<String> dscRequest = new HttpEntity<String>(jsonString, headers);
-        ResponseEntity<AadhaarResponseTo> response= restTemplateDisableSSL.postForEntity(aadharEndpoint+NMRConstants.AADHAR_SERVICE_SEND_OTP, dscRequest, AadhaarResponseTo.class);
-        return response.getBody();
+        return aadhaarFClient.sendOTP(otpGenerateRequestTo);
     }
 
     /**
      * Verifies Aadhaar OTP
      * @param otpValidateRequestTo coming from Aadhaar OTP Service
      * @return AadhaarResponseDto Object
-     * @throws JsonProcessingException
      */
     @Override
-    public AadhaarResponseTo verifyOtp(AadhaarOtpValidateRequestTo otpValidateRequestTo) throws JsonProcessingException {
+    public AadhaarResponseTo verifyOtp(AadhaarOtpValidateRequestTo otpValidateRequestTo) {
 
-        String jsonString = mapper.writeValueAsString(otpValidateRequestTo);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(NMRConstants.TIMESTAMP, Timestamp.valueOf(LocalDateTime.now()).toString());
-        HttpEntity<String> dscRequest = new HttpEntity<String>(jsonString, headers);
-        ResponseEntity<AadhaarResponseTo> response= restTemplateDisableSSL.postForEntity(aadharEndpoint+NMRConstants.AADHAR_SERVICE_VERIFY_OTP, dscRequest, AadhaarResponseTo.class);
-        return response.getBody();
+        return aadhaarFClient.verifyOTP(otpValidateRequestTo);
     }
 }
 
