@@ -7,27 +7,26 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
-import in.gov.abdm.nmr.entity.College;
-import in.gov.abdm.nmr.dto.college.CollegeTO;
-import in.gov.abdm.nmr.mapper.ICollegeDtoMapper;
-import in.gov.abdm.nmr.repository.ICollegeRepository;
-import in.gov.abdm.nmr.service.ICollegeDaoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import in.gov.abdm.nmr.dto.CollegeRegistrationRequestTo;
-import in.gov.abdm.nmr.entity.State;
+import in.gov.abdm.nmr.dto.college.CollegeTO;
+import in.gov.abdm.nmr.entity.College;
 import in.gov.abdm.nmr.entity.StateMedicalCouncil;
 import in.gov.abdm.nmr.entity.University;
-import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.entity.UserSubType;
-import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.entity.UserType;
+import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.NmrException;
+import in.gov.abdm.nmr.mapper.ICollegeDtoMapper;
+import in.gov.abdm.nmr.repository.ICollegeRepository;
+import in.gov.abdm.nmr.service.ICollegeDaoService;
+import in.gov.abdm.nmr.service.IUserDaoService;
 
 @Service
 @Transactional

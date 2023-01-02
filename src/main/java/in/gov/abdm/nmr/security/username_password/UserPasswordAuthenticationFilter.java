@@ -18,9 +18,9 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import in.gov.abdm.nmr.dto.LoginRequestTO;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.security.common.RsaUtil;
-import in.gov.abdm.nmr.dto.LoginRequestTO;
 import in.gov.abdm.nmr.service.ICaptchaDaoService;
 
 @Component
@@ -53,7 +53,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
         try {
             LoginRequestTO requestBodyTO = readRequestBody(request);
             UserPasswordAuthenticationToken authRequest = UserPasswordAuthenticationToken.unauthenticated(requestBodyTO.getUsername(), //
-                    rsaUtil.decrypt(requestBodyTO.getPassword()), requestBodyTO.getUserType(), requestBodyTO.getUserSubType());
+                    rsaUtil.decrypt(requestBodyTO.getPassword()), requestBodyTO.getUserType());
 
             setDetails(request, authRequest);
 
