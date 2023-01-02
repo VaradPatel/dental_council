@@ -12,6 +12,8 @@ import lombok.experimental.UtilityClass;
 public class NMRConstants {
 
     public static final String FETCH_COUNT_ON_CARD_URL = "/college/dashboard/cardCount";
+
+    public static final String FETCH_SPECIFIC_DETAILS_URL = "/college/dashboard/fetchSpecificDetails";
     public static final String GENERATE_OTP = "/generateOtp";
     public static final String GENERATE_AADHAR_OTP = "/sendAadhaarOtp";
     public static final String VALIDATE_OTP = "/validateOtp";
@@ -20,7 +22,6 @@ public class NMRConstants {
     public static final String AADHAR_SERVICE_VERIFY_OTP = "/api/v3/aadhaar/verifyOtp";
     public static final String NOTIFICATION_SERVICE_SEND_MESSAGE = "/internal/v3/notification/message";
     public static final String RESET_PASSWORD = "/resetPassword";
-    public static final String IS_NEW = "isNew";
     public static final String TOTAL_REGISTRATION_REQUESTS = "Total Registration Requests";
     public static final String TOTAL_UPDATION_REQUESTS = "Total Updation Requests";
     public static final String OTP_GENERATION_EXCEEDED = "OTP Generation Attempts Exceeded";
@@ -106,6 +107,18 @@ public class NMRConstants {
             "AND hvs.verifiedBy.userType.name=:userType " +
             "AND hvs.verifiedBy.userSubType.name=:userSubType ";
 
+    public static final String FETCH_DETAILS_FOR_LISTING_BY_USER_TYPE_QUERY = "SELECT hvs.registrationDetails.registrationNo as registrationNo, hvs.hpProfile.fullName as nameOfApplicant, hvs.registrationDetails.stateMedicalCouncil.name as nameOfStateCouncil, hvs.registrationDetails.registrationDate as dateOfSubmission, hvs.verifiedBy.userType.name as verifiedByUserType, hvs.verifiedBy.userSubType.name as verifiedByUserSubType, hvs.hpProfile.hpProfileStatus.name as hpProfileStatus "+
+            "FROM HpVerificationStatus hvs "+
+            "WHERE hvs.verifiedBy.userType.name =:userType "+
+            "AND hvs.applicationStatusType.name =:applicationStatusType "+
+            "AND hvs.hpProfile.hpProfileStatus.name =:hpProfileStatus";
+    public static final String FETCH_DETAILS_FOR_LISTING_BY_USER_TYPE_AND_SUB_TYPE_QUERY = "SELECT hvs.registrationDetails.registrationNo as registrationNo, hvs.hpProfile.fullName as nameOfApplicant, hvs.registrationDetails.stateMedicalCouncil.name as nameOfStateCouncil, hvs.registrationDetails.registrationDate as dateOfSubmission, hvs.verifiedBy.userType.name as verifiedByUserType, hvs.verifiedBy.userSubType.name as verifiedByUserSubType, hvs.hpProfile.hpProfileStatus.name as hpProfileStatus "+
+            "FROM HpVerificationStatus hvs "+
+            "WHERE hvs.verifiedBy.userType.name =:userType "+
+            "AND hvs.verifiedBy.userSubType.name =:userSubType "+
+            "AND hvs.applicationStatusType.name =:applicationStatusType "+
+            "AND hvs.hpProfile.hpProfileStatus.name =:hpProfileStatus";
+
     public static final String REGISTRATION="Registration";
 
     public static final String UPDATION="Updation";
@@ -120,6 +133,9 @@ public class NMRConstants {
 
     public static final String INVALID_USER_TYPE="Invalid User type. Expected: Health Professional, College, State Medical Council or National Medical Council";
 
+    public static final String STATE_MEDICAL_COUNCIL_ID="state_medical_council_id";
+
+    public static final String REGISTRATION_DETAILS_ID = "registration_details_id";
 
 
 }
