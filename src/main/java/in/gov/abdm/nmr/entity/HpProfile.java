@@ -13,8 +13,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.Type;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -57,7 +60,11 @@ public class HpProfile {
 	private String picName;
 	private String primaryContactNo;
 	private String professionalType;
-	private String profilePhoto;
+	
+	@Lob
+	@Type(type="org.hibernate.type.BinaryType")
+	private byte[] profilePhoto;
+		
 	private String salutation;
 	private String signature;
 	private String spouseName;

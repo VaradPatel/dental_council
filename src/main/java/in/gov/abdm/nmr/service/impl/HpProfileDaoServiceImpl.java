@@ -1,10 +1,12 @@
 package in.gov.abdm.nmr.service.impl;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -12,66 +14,87 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.Predicate;
 
-import in.gov.abdm.nmr.entity.HpProfile;
-import in.gov.abdm.nmr.repository.*;
-import in.gov.abdm.nmr.service.IHpProfileDaoService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
-import in.gov.abdm.nmr.dto.HpProfileAddResponseTO;
-import in.gov.abdm.nmr.dto.HpProfileUpdateRequestTO;
-import in.gov.abdm.nmr.dto.HpProfileUpdateResponseTO;
-import in.gov.abdm.nmr.dto.SmcRegistrationDetailRequestTO;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
-import in.gov.abdm.nmr.entity.Address;
 import in.gov.abdm.nmr.dto.AddressTO;
-import in.gov.abdm.nmr.entity.AddressType;
 import in.gov.abdm.nmr.dto.AddressTypeTO;
 import in.gov.abdm.nmr.dto.BroadSpecialityTO;
-import in.gov.abdm.nmr.dto.college.CollegeTO;
-import in.gov.abdm.nmr.entity.Country;
-import in.gov.abdm.nmr.repository.CountryRepository;
 import in.gov.abdm.nmr.dto.CountryTO;
 import in.gov.abdm.nmr.dto.CourseTO;
-import in.gov.abdm.nmr.entity.District;
-import in.gov.abdm.nmr.repository.DistrictRepository;
-import in.gov.abdm.nmr.dto.DistrictTO;
 import in.gov.abdm.nmr.dto.CurrentWorkDetailsTO;
+import in.gov.abdm.nmr.dto.DistrictTO;
+import in.gov.abdm.nmr.dto.HpProfileAddResponseTO;
 import in.gov.abdm.nmr.dto.HpProfileDetailTO;
+import in.gov.abdm.nmr.dto.HpProfilePictureResponseTO;
+import in.gov.abdm.nmr.dto.HpProfileUpdateRequestTO;
+import in.gov.abdm.nmr.dto.HpProfileUpdateResponseTO;
 import in.gov.abdm.nmr.dto.HpSmcDetailTO;
-import in.gov.abdm.nmr.mapper.IHpProfileMapper;
 import in.gov.abdm.nmr.dto.IMRDetailsTO;
-import in.gov.abdm.nmr.dto.PersonalDetailsTO;
-import in.gov.abdm.nmr.dto.SpecialityDetailsTO;
-import in.gov.abdm.nmr.dto.WorkDetailsTO;
 import in.gov.abdm.nmr.dto.LanguageTO;
-import in.gov.abdm.nmr.entity.LanguagesKnown;
 import in.gov.abdm.nmr.dto.NationalityTO;
 import in.gov.abdm.nmr.dto.OrganizationTypeTO;
+import in.gov.abdm.nmr.dto.PersonalDetailsTO;
 import in.gov.abdm.nmr.dto.QualificationDetailRequestTO;
 import in.gov.abdm.nmr.dto.QualificationDetailTO;
-import in.gov.abdm.nmr.entity.QualificationDetails;
 import in.gov.abdm.nmr.dto.RegistrationDetailTO;
+import in.gov.abdm.nmr.dto.ScheduleTO;
+import in.gov.abdm.nmr.dto.SmcRegistrationDetailRequestTO;
+import in.gov.abdm.nmr.dto.SpecialityDetailsTO;
+import in.gov.abdm.nmr.dto.StateTO;
+import in.gov.abdm.nmr.dto.SubDistrictTO;
+import in.gov.abdm.nmr.dto.SuperSpecialityTO;
+import in.gov.abdm.nmr.dto.UniversityTO;
+import in.gov.abdm.nmr.dto.VillagesTO;
+import in.gov.abdm.nmr.dto.WorkDetailsTO;
+import in.gov.abdm.nmr.dto.WorkNatureTO;
+import in.gov.abdm.nmr.dto.WorkStatusTO;
+import in.gov.abdm.nmr.dto.college.CollegeTO;
+import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
+import in.gov.abdm.nmr.entity.Address;
+import in.gov.abdm.nmr.entity.AddressType;
+import in.gov.abdm.nmr.entity.Country;
+import in.gov.abdm.nmr.entity.District;
+import in.gov.abdm.nmr.entity.HpProfile;
+import in.gov.abdm.nmr.entity.LanguagesKnown;
+import in.gov.abdm.nmr.entity.QualificationDetails;
 import in.gov.abdm.nmr.entity.RegistrationDetails;
 import in.gov.abdm.nmr.entity.Schedule;
-import in.gov.abdm.nmr.dto.ScheduleTO;
 import in.gov.abdm.nmr.entity.State;
-import in.gov.abdm.nmr.dto.StateTO;
 import in.gov.abdm.nmr.entity.StateMedicalCouncil;
 import in.gov.abdm.nmr.entity.StateMedicalCouncilStatus;
 import in.gov.abdm.nmr.entity.SubDistrict;
-import in.gov.abdm.nmr.dto.SubDistrictTO;
 import in.gov.abdm.nmr.entity.SuperSpeciality;
-import in.gov.abdm.nmr.dto.SuperSpecialityTO;
-import in.gov.abdm.nmr.dto.UniversityTO;
 import in.gov.abdm.nmr.entity.Villages;
-import in.gov.abdm.nmr.dto.VillagesTO;
 import in.gov.abdm.nmr.entity.WorkNature;
-import in.gov.abdm.nmr.dto.WorkNatureTO;
 import in.gov.abdm.nmr.entity.WorkProfile;
 import in.gov.abdm.nmr.entity.WorkStatus;
-import in.gov.abdm.nmr.dto.WorkStatusTO;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.mapper.IHpProfileMapper;
+import in.gov.abdm.nmr.repository.CountryRepository;
+import in.gov.abdm.nmr.repository.DistrictRepository;
+import in.gov.abdm.nmr.repository.IAddressRepository;
+import in.gov.abdm.nmr.repository.IAddressTypeRepository;
+import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.INationalityRepository;
+import in.gov.abdm.nmr.repository.IScheduleRepository;
+import in.gov.abdm.nmr.repository.IStateMedicalCouncilRepository;
+import in.gov.abdm.nmr.repository.IStateMedicalCouncilStatusRepository;
+import in.gov.abdm.nmr.repository.IStateRepository;
+import in.gov.abdm.nmr.repository.LanguageRepository;
+import in.gov.abdm.nmr.repository.LanguagesKnownRepository;
+import in.gov.abdm.nmr.repository.OrganizationTypeRepository;
+import in.gov.abdm.nmr.repository.QualificationDetailRepository;
+import in.gov.abdm.nmr.repository.RegistrationDetailRepository;
+import in.gov.abdm.nmr.repository.SubDistrictRepository;
+import in.gov.abdm.nmr.repository.SuperSpecialityRepository;
+import in.gov.abdm.nmr.repository.VillagesRepository;
+import in.gov.abdm.nmr.repository.WorkNatureRepository;
+import in.gov.abdm.nmr.repository.WorkProfileRepository;
+import in.gov.abdm.nmr.repository.WorkStatusRepository;
+import in.gov.abdm.nmr.service.IHpProfileDaoService;
 
 @Service
 public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
@@ -121,17 +144,17 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 	private VillagesRepository villagesRepository;
 
 	public HpProfileDaoServiceImpl(IHpProfileMapper ihHpProfileMapper, IHpProfileRepository iHpProfileRepository,
-								   IAddressRepository iAddressRepository, QualificationDetailRepository qualificationDetailRepository,
-								   RegistrationDetailRepository registrationDetailRepository, WorkProfileRepository workProfileRepository,
-								   SuperSpecialityRepository superSpecialityRepository, DistrictRepository districtRepository,
+			IAddressRepository iAddressRepository, QualificationDetailRepository qualificationDetailRepository,
+			RegistrationDetailRepository registrationDetailRepository, WorkProfileRepository workProfileRepository,
+			SuperSpecialityRepository superSpecialityRepository, DistrictRepository districtRepository,
 
-								   IStateRepository stateRepository, INationalityRepository iNationalityRepository,
-								   IStateMedicalCouncilStatusRepository iStateMedicalCouncilStatusRepository,
-								   IScheduleRepository iScheduleRepository, CountryRepository countryRepository,
-								   LanguageRepository languageRepository, LanguagesKnownRepository languagesKnownRepository,
-								   IStateMedicalCouncilRepository iStateMedicalCouncilRepository, WorkNatureRepository workNatureRepository,
-								   WorkStatusRepository workStatusRepository, SubDistrictRepository subDistrictRepository,
-								   VillagesRepository villagesRepository) {
+			IStateRepository stateRepository, INationalityRepository iNationalityRepository,
+			IStateMedicalCouncilStatusRepository iStateMedicalCouncilStatusRepository,
+			IScheduleRepository iScheduleRepository, CountryRepository countryRepository,
+			LanguageRepository languageRepository, LanguagesKnownRepository languagesKnownRepository,
+			IStateMedicalCouncilRepository iStateMedicalCouncilRepository, WorkNatureRepository workNatureRepository,
+			WorkStatusRepository workStatusRepository, SubDistrictRepository subDistrictRepository,
+			VillagesRepository villagesRepository) {
 
 		super();
 		this.ihHpProfileMapper = ihHpProfileMapper;
@@ -288,7 +311,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 		for (Tuple language : languageList) {
 			LanguageTO languageTO = new LanguageTO();
 			languageTO.setName(language.get("language", String.class));
-			
+
 			languageTO.setId(language.get("language_id", BigInteger.class));
 			languageTOs.add(languageTO);
 		}
@@ -1381,4 +1404,44 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 	public HpProfile findByUserDetail(BigInteger userDetailId) {
 		return iHpProfileRepository.findByUserDetail(userDetailId);
 	}
+
+	@Override
+	public HpProfilePictureResponseTO uploadHpProfilePhoto(MultipartFile file, BigInteger hpProfileId) 
+			throws IOException {
+		
+		HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
+		if (hpProfile == null) {
+			throw new InvalidRequestException("Invalid Request!!");
+		}
+		String originalhpProfilePhoto = file.getOriginalFilename();
+		
+		if (originalhpProfilePhoto.toLowerCase().contains(".pdf")
+				|| originalhpProfilePhoto.toLowerCase().contains(".jpg")
+				|| originalhpProfilePhoto.toLowerCase().contains(".jpeg")
+				|| originalhpProfilePhoto.toLowerCase().contains(".png")) {
+		} else {
+			throw new InvalidRequestException(file.getOriginalFilename() + " is not a allowed file type !!");
+		}
+		
+		byte[] fileContent = file.getBytes();
+
+		String encodedHpProfilePhoto = Base64.getEncoder().encodeToString(fileContent);
+		hpProfile.setProfilePhoto(fileContent);
+		hpProfile.setPicName(file.getOriginalFilename());
+		HpProfile insertedData = iHpProfileRepository.save(hpProfile);
+		HpProfilePictureResponseTO hpProfilePictureResponseTO = new HpProfilePictureResponseTO();
+		
+		if (insertedData == null) {
+			hpProfilePictureResponseTO.setMessage("Success");
+			hpProfilePictureResponseTO.setStatus(200);
+			return hpProfilePictureResponseTO;
+		}
+		
+		hpProfilePictureResponseTO.setProfilePicture(insertedData.getProfilePhoto());
+		hpProfilePictureResponseTO.setPicName(insertedData.getPicName());
+		hpProfilePictureResponseTO.setMessage("Success");
+		hpProfilePictureResponseTO.setStatus(200);
+		return hpProfilePictureResponseTO;		
+	}
+
 }

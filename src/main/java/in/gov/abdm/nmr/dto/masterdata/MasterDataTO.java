@@ -6,6 +6,6 @@ import lombok.Data;
 public class MasterDataTO {
 
 	private Long id;
-    private String code;
+    private String isoCode;
     private String name;
 }

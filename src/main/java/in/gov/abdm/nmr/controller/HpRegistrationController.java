@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.controller;
 
+import java.io.IOException;
 import java.math.BigInteger;
 
-import in.gov.abdm.nmr.service.IHpRegistrationService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,16 +10,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
 import in.gov.abdm.nmr.dto.HpProfileAddResponseTO;
 import in.gov.abdm.nmr.dto.HpProfileDetailResponseTO;
+import in.gov.abdm.nmr.dto.HpProfilePictureResponseTO;
 import in.gov.abdm.nmr.dto.HpProfileUpdateRequestTO;
 import in.gov.abdm.nmr.dto.HpProfileUpdateResponseTO;
 import in.gov.abdm.nmr.dto.SmcRegistrationDetailRequestTO;
 import in.gov.abdm.nmr.dto.SmcRegistrationDetailResponseTO;
+import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.service.IHpRegistrationService;
 
 @RestController
 @RequestMapping("/hp")
@@ -51,5 +55,16 @@ public class HpRegistrationController {
     public HpProfileAddResponseTO addHpProfileDetail(@RequestBody HpProfileAddRequestTO hpProfileAddRequest) throws InvalidRequestException {
     	return hpService.addHpProfileDetail(hpProfileAddRequest);
     }
+	
+	@PostMapping(path = "/hpProfileDetail/profile_picture/{hp_profile_id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+		produces = MediaType.APPLICATION_JSON_VALUE) 
+	public HpProfilePictureResponseTO uploadHpProfilePhoto(
+			@RequestParam(value = "file", required = true) MultipartFile file,
+			@PathVariable(name = "hp_profile_id") BigInteger hpProfileId) throws IOException {
+		
+		return hpService.uploadHpProfilePicture(file, hpProfileId);
+	}
+	
+
 
 }
