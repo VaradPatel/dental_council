@@ -57,6 +57,7 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public LoginResponseTO refreshToken(HttpServletResponse response) {
+        //Maintained different methods in case of different functionality.
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         generateAccessAndRefreshToken(response, username);
         return createLoginResponse(username);
