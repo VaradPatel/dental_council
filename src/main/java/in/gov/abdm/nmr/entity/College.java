@@ -45,7 +45,7 @@ public class College extends CommonAuditEntity {
     
     @OneToOne
     @JoinColumn(name = "address", referencedColumnName = "id")
-    private Address address;
+    private String address;
     
     
 //    private String pinCode;
