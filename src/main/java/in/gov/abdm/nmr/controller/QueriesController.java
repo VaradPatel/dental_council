@@ -3,6 +3,7 @@ import in.gov.abdm.nmr.dto.QueryCreateTo;
 import in.gov.abdm.nmr.service.IQueriesService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
@@ -23,7 +24,7 @@ public class QueriesController {
 	 * @return returns created list of queries
 	 */
 	@PostMapping(path = NMRConstants.RAISE_QUERY, produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<QueryCreateTo> raiseQuery(@Valid @RequestBody List<QueryCreateTo> queryCreateTos) {
+	public String raiseQuery(@Valid @RequestBody List<QueryCreateTo> queryCreateTos) {
 		return queryService.createQueries(queryCreateTos);
 	}
 

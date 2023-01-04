@@ -10,7 +10,7 @@ public interface IQueriesService {
     /**
      * Creates query
      */
-    List<QueryCreateTo> createQueries(List<QueryCreateTo> queries);
+    String createQueries(List<QueryCreateTo> queries);
 
     /**
      * Get queries by hpProfileId
