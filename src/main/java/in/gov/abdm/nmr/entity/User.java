@@ -33,6 +33,8 @@ public class User extends CommonAuditEntity {
     private String username;
     private String password;
     private String refreshTokenId;
+    private boolean isSmsNotificationEnabled;
+    private boolean isEmailNotificationEnabled;
 
     @ManyToOne
     @JoinColumn(name = USER_TYPE_ID,referencedColumnName = ID)
