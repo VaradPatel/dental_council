@@ -9,7 +9,6 @@ import javax.transaction.Transactional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import in.gov.abdm.nmr.dto.CollegeRegistrationRequestTo;
@@ -38,15 +37,12 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
 
     private EntityManager entityManager;
 
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
     private IUserDaoService userDetailService;
 
-    public CollegeDaoServiceImpl(ICollegeRepository collegeRepository, ICollegeDtoMapper collegeDtoMapper, EntityManager entityManager, BCryptPasswordEncoder bCryptPasswordEncoder, IUserDaoService userDetailService) {
+    public CollegeDaoServiceImpl(ICollegeRepository collegeRepository, ICollegeDtoMapper collegeDtoMapper, EntityManager entityManager, IUserDaoService userDetailService) {
         this.collegeRepository = collegeRepository;
         this.collegeDtoMapper = collegeDtoMapper;
         this.entityManager = entityManager;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userDetailService = userDetailService;
     }
 
@@ -62,7 +58,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
                 throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
             }
 
-            User userDetail = new User(null, collegeRegistrationRequestTo.getEmailId(), bCryptPasswordEncoder.encode("123456"), null, //
+            User userDetail = new User(null, collegeRegistrationRequestTo.getEmailId(), null, null, true, true, //
                     entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()));
             userDetailService.saveUserDetail(userDetail);
 
