@@ -22,6 +22,8 @@ public class NMRConstants {
     public static final String AADHAR_SERVICE_VERIFY_OTP = "/api/v3/aadhaar/verifyOtp";
     public static final String NOTIFICATION_SERVICE_SEND_MESSAGE = "/internal/v3/notification/message";
     public static final String RESET_PASSWORD = "/resetPassword";
+    public static final String RAISE_QUERY = "/raiseQuery";
+    public static final String GET_QUERIES = "/queries/hpProfileId/{hpProfileId}";
     public static final String NOTIFICATION_SERVICE = "notification";
     public static final String AADHAAR_SERVICE = "aadhaar";
     public static final String GLOBAL_NOTIFICATION_ENDPOINT = "${global.notification.endpoint}";
