@@ -18,6 +18,7 @@ import in.gov.abdm.nmr.entity.User_;
 import in.gov.abdm.nmr.repository.IUserRepository;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import in.gov.abdm.nmr.mapper.IUserMapper;
@@ -101,5 +102,21 @@ public class UserDaoServiceImpl implements IUserDaoService {
     @Override
     public User findUserDetailByUsername(String username) {
         return userDetailRepository.findByUsername(username);
+    }
+    
+    @Override
+    public User toggleSmsNotification(boolean isSmsNotificationEnabled) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userDetail = userDetailRepository.findByUsername(userName);
+        userDetail.setSmsNotificationEnabled(isSmsNotificationEnabled);
+        return userDetailRepository.saveAndFlush(userDetail);
+    }
+
+    @Override
+    public User toggleEmailNotification(boolean isEmailNotificationEnabled) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userDetail = userDetailRepository.findByUsername(userName);
+        userDetail.setEmailNotificationEnabled(isEmailNotificationEnabled);
+        return userDetailRepository.saveAndFlush(userDetail);
     }
 }

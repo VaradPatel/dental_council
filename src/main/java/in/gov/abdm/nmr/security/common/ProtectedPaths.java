@@ -16,6 +16,9 @@ public class ProtectedPaths {
     public static final String PATH_UPDATE_COLLEGE = "/college";
     public static final String PATH_REGISTER_COLLEGE_REGISTRAR = "/college/registrar";
     public static final String PATH_REGISTER_COLLEGE_DEAN = "/college/dean";
+    public static final String PATH_USER_ROOT = "/user";
+    public static final String PATH_USER_SMSNOTIFICATIONENABLED = "/smsNotificationEnabled";
+    public static final String PATH_USER_EMAILNOTIFICATIONENABLED = "/emailNotificationEnabled";
 
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<AntPathRequestMatcher> protectedPaths = new ArrayList<>();
@@ -23,6 +26,8 @@ public class ProtectedPaths {
         protectedPaths.add(new AntPathRequestMatcher(PATH_UPDATE_COLLEGE, HttpMethod.PUT.name()));
         protectedPaths.add(new AntPathRequestMatcher(PATH_REGISTER_COLLEGE_REGISTRAR));
         protectedPaths.add(new AntPathRequestMatcher(PATH_REGISTER_COLLEGE_DEAN));
+        protectedPaths.add(new AntPathRequestMatcher(PATH_USER_ROOT + PATH_USER_SMSNOTIFICATIONENABLED));
+        protectedPaths.add(new AntPathRequestMatcher(PATH_USER_ROOT + PATH_USER_EMAILNOTIFICATIONENABLED));
 
         return protectedPaths.toArray(AntPathRequestMatcher[]::new);
     }
