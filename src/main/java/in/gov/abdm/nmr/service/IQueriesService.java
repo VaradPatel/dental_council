@@ -1,5 +1,8 @@
 package in.gov.abdm.nmr.service;
 import in.gov.abdm.nmr.dto.QueryCreateTo;
+import in.gov.abdm.nmr.dto.QueryUpdateStatusTo;
+
+import java.math.BigInteger;
 import java.util.List;
 
 /**
@@ -17,4 +20,8 @@ public interface IQueriesService {
      */
     List<QueryCreateTo> getQueriesByHpProfileId(Long hpProfileId);
 
+    /**
+     *Update status of raised query
+     */
+    String markQueryAsClosed(List<Long> queryIdList);
 }
