@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface QueriesRepository extends JpaRepository<Queries, BigInteger> {
 
-    List<Queries> findQueriesByHpProfileId(Long id);
+    List<Queries> findQueriesByHpProfileId(Long hpProfileId);
 
+    Queries findQueriesById(Long id);
 }
