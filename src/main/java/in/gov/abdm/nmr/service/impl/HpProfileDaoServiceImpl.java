@@ -1179,9 +1179,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 			StateMedicalCouncil stateMedicalCouncil = iStateMedicalCouncilRepository
 					.findById(hpProfileAddRequest.getRegistrationDetail().getStateMedicalCouncil().getId())
 					.orElse(null);
-			if (stateMedicalCouncil != null) {
-				addRegistrationDetail.setStateMedicalCouncilId(stateMedicalCouncil.getId());
-			}
+//			if (stateMedicalCouncil != null) {
+//				addRegistrationDetail.setStateMedicalCouncilId(stateMedicalCouncil.getId());
+//			}
 
 //			StateMedicalCouncilStatus stateMedicalCouncilStatus = iStateMedicalCouncilStatusRepository
 //					.findById(hpProfileAddRequest.getRegistrationDetail().getCouncilStatus().getId())

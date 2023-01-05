@@ -5,8 +5,8 @@ import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
-import in.gov.abdm.nmr.repository.IFetchSpecificDetailsRepository;
-import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
+import in.gov.abdm.nmr.repository.IFetchDetailsByRegNoRepository;
+import in.gov.abdm.nmr.service.IFetchDetailsByRegNoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,14 +21,14 @@ import static in.gov.abdm.nmr.util.NMRConstants.INVALID_USER_TYPE;
 
 
 @Service
-public class FetchSpecificDetailsService implements IFetchSpecificDetailsService {
+public class FetchDetailsByRegNoServiceImpl implements IFetchDetailsByRegNoService {
 
     /**
-     * Injecting a IFetchSpecificDetailsRepository bean instead of an explicit object creation to achieve
+     * Injecting IFetchDetailsByRegNoRepository bean instead of an explicit object creation to achieve
      * Singleton principle
      */
     @Autowired
-    private IFetchSpecificDetailsRepository iFetchSpecificDetailsRepository;
+    private IFetchDetailsByRegNoRepository iFetchDetailsByRegNoRepository;
 
     /**
      * Mapper Interface to transform the IFetchSpecificDetails Bean
@@ -38,21 +38,13 @@ public class FetchSpecificDetailsService implements IFetchSpecificDetailsService
     private IFetchSpecificDetailsMapper iFetchSpecificDetailsMapper;
 
     @Override
-    public List<FetchSpecificDetailsResponseTO> fetchSpecificDetails(String userType, String userSubType, String applicationStatusType, String hpProfileStatus) throws InvalidRequestException {
+    public List<FetchSpecificDetailsResponseTO> fetchDetailsByRegNo(String registrationNumber, String smcName, String userType, String userSubType){
 
-        if(userSubType!=null){
-            validateUserType(userType);
-            validateUserSubType(userSubType);
-            return fetchSpecificDetailsByUserTypeAndSubType(userType, userSubType, applicationStatusType, hpProfileStatus);
+        if(UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getName().equals(userType)){
+            return fetchDetailsForNMCByRegNo(registrationNumber, userType, userSubType);
         }
-        validateUserType(userType);
-        return fetchSpecificDetailsByUserType(userType, applicationStatusType, hpProfileStatus);
 
-    }
-
-    private List<FetchSpecificDetailsResponseTO> fetchSpecificDetailsByUserTypeAndSubType(String userType, String userSubType, String applicationStatusType, String hpProfileStatus){
-
-        return iFetchSpecificDetailsRepository.fetchDetailsForListingByUserTypeAndSubType(userType, userSubType, applicationStatusType, hpProfileStatus)
+        return iFetchDetailsByRegNoRepository.fetchDetailsByRegNo(registrationNumber, smcName, userType, userSubType)
                 .stream()
                 .map(fetchSpecificDetails-> {
                     FetchSpecificDetailsResponseTO fetchSpecificDetailsResponseTO=iFetchSpecificDetailsMapper.toFetchSpecificDetailsResponseTO(fetchSpecificDetails);
@@ -75,12 +67,10 @@ public class FetchSpecificDetailsService implements IFetchSpecificDetailsService
                 })
                 .toList();
 
-
     }
 
-    private List<FetchSpecificDetailsResponseTO> fetchSpecificDetailsByUserType(String userType, String applicationStatusType, String hpProfileStatus){
-
-         return iFetchSpecificDetailsRepository.fetchDetailsForListingByUserType(userType,applicationStatusType,hpProfileStatus)
+    private List<FetchSpecificDetailsResponseTO> fetchDetailsForNMCByRegNo(String registrationNumber, String userType, String userSubType){
+        return iFetchDetailsByRegNoRepository.fetchDetailsForNMCByRegNo(registrationNumber, userType, userSubType)
                 .stream()
                 .map(fetchSpecificDetails-> {
                     FetchSpecificDetailsResponseTO fetchSpecificDetailsResponseTO=iFetchSpecificDetailsMapper.toFetchSpecificDetailsResponseTO(fetchSpecificDetails);
@@ -103,7 +93,6 @@ public class FetchSpecificDetailsService implements IFetchSpecificDetailsService
                 })
                 .toList();
     }
-
     private void validateUserSubType(String userSubType) throws InvalidRequestException {
         if(Arrays.stream(UserSubTypeEnum.values()).noneMatch(t -> t.getName().equals(userSubType))){
             throw new InvalidRequestException(INVALID_USER_SUB_TYPE);
@@ -111,7 +100,7 @@ public class FetchSpecificDetailsService implements IFetchSpecificDetailsService
     }
 
     private void validateUserType(String userType) throws InvalidRequestException {
-       if(userType==null || Arrays.stream(UserTypeEnum.values()).noneMatch(t -> t.getName().equals(userType))){
+        if(userType==null || Arrays.stream(UserTypeEnum.values()).noneMatch(t -> t.getName().equals(userType))){
             throw new InvalidRequestException(INVALID_USER_TYPE);
         }
     }

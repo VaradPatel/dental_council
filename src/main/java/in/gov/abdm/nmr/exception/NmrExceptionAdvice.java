@@ -24,10 +24,6 @@ public class NmrExceptionAdvice {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    /**
-     * Constant for logging
-     */
-    private static final String CONTROLLER_ADVICE_EXCEPTION_CLASS = "WebExchangeBindException :{}";
 
     /**
      * Constant for Timestamp of generated response
