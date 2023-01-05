@@ -1,6 +1,6 @@
 package in.gov.abdm.nmr.service.impl;
 import in.gov.abdm.nmr.dto.ResetPasswordRequestTo;
-import in.gov.abdm.nmr.dto.ResetPasswordResponseTo;
+import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.repository.IUserRepository;
 import in.gov.abdm.nmr.service.IResetPasswordService;
@@ -29,7 +29,7 @@ public class ResetPasswordServiceImpl implements IResetPasswordService {
      * @return ResetPasswordResponseTo Object
      */
     @Override
-    public ResetPasswordResponseTo resetPassword(ResetPasswordRequestTo resetPasswordRequestTo) {
+    public ResponseMessageTo resetPassword(ResetPasswordRequestTo resetPasswordRequestTo) {
 
         User user = userRepository.findByUsername(resetPasswordRequestTo.getUsername());
 
@@ -37,12 +37,12 @@ public class ResetPasswordServiceImpl implements IResetPasswordService {
             user.setPassword(bCryptPasswordEncoder.encode(resetPasswordRequestTo.getPassword()));
             try {
                 userRepository.save(user);
-                return new ResetPasswordResponseTo(NMRConstants.SUCCESS_RESPONSE);
+                return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
             } catch (Exception e) {
-                return new ResetPasswordResponseTo(NMRConstants.PROBLEM_OCCURRED);
+                return new ResponseMessageTo(NMRConstants.PROBLEM_OCCURRED);
             }
         } else {
-            return new ResetPasswordResponseTo(NMRConstants.USER_NOT_FOUND);
+            return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
         }
 
     }

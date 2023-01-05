@@ -26,8 +26,6 @@ public class NMRConstants {
     public static final String GET_QUERIES = "/queries/hpProfileId/{hpProfileId}";
     public static final String NOTIFICATION_SERVICE = "notification";
     public static final String AADHAAR_SERVICE = "aadhaar";
-    public static final String DATA_INSERTED = "Data Inserted";
-    public static final String QUERY_UPDATED = "Query updated";
     public static final String CLOSED_STATUS = "closed";
 
     public static final String GLOBAL_NOTIFICATION_ENDPOINT = "${global.notification.endpoint}";

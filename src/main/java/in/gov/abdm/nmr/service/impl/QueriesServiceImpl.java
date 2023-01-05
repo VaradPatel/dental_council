@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.QueryCreateTo;
+import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.entity.Queries;
 import in.gov.abdm.nmr.mapper.QueriesDtoMapper;
 import in.gov.abdm.nmr.repository.QueriesRepository;
@@ -31,9 +32,9 @@ public class QueriesServiceImpl implements IQueriesService {
      * @return created list as it is
      */
     @Override
-    public String createQueries(List<QueryCreateTo> queryCreateTos) {
+    public ResponseMessageTo createQueries(List<QueryCreateTo> queryCreateTos) {
         queriesRepository.saveAll(queriesDtoMapper.queryDtoToData(queryCreateTos));
-        return NMRConstants.DATA_INSERTED;
+        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
     }
 
     /**
@@ -50,17 +51,17 @@ public class QueriesServiceImpl implements IQueriesService {
     /**
      * Update query status
      *
-     * @param queryIdList list of query ids
+     * @param queryIds list of query ids
      * @return string of message
      */
     @Override
-    public String markQueryAsClosed(List<Long> queryIdList) {
-        queryIdList.stream().forEach(id -> {
+    public ResponseMessageTo markQueryAsClosed(List<Long> queryIds) {
+        queryIds.stream().forEach(id -> {
             Queries queries=queriesRepository.findQueriesById(id);
             queries.setQueryStatus(NMRConstants.CLOSED_STATUS);
             queriesRepository.save(queries);
         });
-        return NMRConstants.QUERY_UPDATED;
+        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
     }
 }
 
