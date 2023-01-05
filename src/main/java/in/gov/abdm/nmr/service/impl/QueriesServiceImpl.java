@@ -1,7 +1,6 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.QueryCreateTo;
-import in.gov.abdm.nmr.dto.QueryUpdateStatusTo;
 import in.gov.abdm.nmr.entity.Queries;
 import in.gov.abdm.nmr.mapper.QueriesDtoMapper;
 import in.gov.abdm.nmr.repository.QueriesRepository;
