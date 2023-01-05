@@ -43,10 +43,7 @@ public class College extends CommonAuditEntity {
     private StateMedicalCouncil stateMedicalCouncil;
     private String website;
     
-    @OneToOne
-    @JoinColumn(name = "address", referencedColumnName = "id")
-    private Address address;
-    
+    private String address;
     
 //    private String pinCode;
 

@@ -9,21 +9,14 @@ public class UserPasswordAuthenticationToken extends UsernamePasswordAuthenticat
     private static final long serialVersionUID = -9000569283665023427L;
 
     private final String userType;
-    
-    private final String userSubType;
 
-    public UserPasswordAuthenticationToken(Object principal, Object credentials, String userType, String userSubType) {
+    public UserPasswordAuthenticationToken(Object principal, Object credentials, String userType) {
         super(principal, credentials);
         this.userType = userType;
-        this.userSubType = userSubType;
     }
 
     public String getUserType() {
         return userType;
-    }
-
-    public String getUserSubType() {
-        return userSubType;
     }
 
     @Override
@@ -43,7 +36,7 @@ public class UserPasswordAuthenticationToken extends UsernamePasswordAuthenticat
         return Objects.equals(userType, other.userType);
     }
 
-    public static UserPasswordAuthenticationToken unauthenticated(Object principal, Object credentials, String userType, String userSubType) {
-        return new UserPasswordAuthenticationToken(principal, credentials, userType, userSubType);
+    public static UserPasswordAuthenticationToken unauthenticated(Object principal, Object credentials, String userType) {
+        return new UserPasswordAuthenticationToken(principal, credentials, userType);
     }
 }

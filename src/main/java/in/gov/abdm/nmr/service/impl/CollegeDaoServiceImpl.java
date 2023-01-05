@@ -7,27 +7,25 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
-import in.gov.abdm.nmr.entity.College;
-import in.gov.abdm.nmr.dto.college.CollegeTO;
-import in.gov.abdm.nmr.mapper.ICollegeDtoMapper;
-import in.gov.abdm.nmr.repository.ICollegeRepository;
-import in.gov.abdm.nmr.service.ICollegeDaoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import in.gov.abdm.nmr.dto.CollegeRegistrationRequestTo;
-import in.gov.abdm.nmr.entity.State;
+import in.gov.abdm.nmr.dto.college.CollegeTO;
+import in.gov.abdm.nmr.entity.College;
 import in.gov.abdm.nmr.entity.StateMedicalCouncil;
 import in.gov.abdm.nmr.entity.University;
-import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.entity.UserSubType;
-import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.entity.UserType;
+import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.NmrException;
+import in.gov.abdm.nmr.mapper.ICollegeDtoMapper;
+import in.gov.abdm.nmr.repository.ICollegeRepository;
+import in.gov.abdm.nmr.service.ICollegeDaoService;
+import in.gov.abdm.nmr.service.IUserDaoService;
 
 @Service
 @Transactional
@@ -39,15 +37,12 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
 
     private EntityManager entityManager;
 
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
     private IUserDaoService userDetailService;
 
-    public CollegeDaoServiceImpl(ICollegeRepository collegeRepository, ICollegeDtoMapper collegeDtoMapper, EntityManager entityManager, BCryptPasswordEncoder bCryptPasswordEncoder, IUserDaoService userDetailService) {
+    public CollegeDaoServiceImpl(ICollegeRepository collegeRepository, ICollegeDtoMapper collegeDtoMapper, EntityManager entityManager, IUserDaoService userDetailService) {
         this.collegeRepository = collegeRepository;
         this.collegeDtoMapper = collegeDtoMapper;
         this.entityManager = entityManager;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userDetailService = userDetailService;
     }
 
@@ -63,7 +58,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
                 throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
             }
 
-            User userDetail = new User(null, collegeRegistrationRequestTo.getEmailId(), bCryptPasswordEncoder.encode("123456"), null, //
+            User userDetail = new User(null, collegeRegistrationRequestTo.getEmailId(), null, null, true, true, //
                     entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()));
             userDetailService.saveUserDetail(userDetail);
 

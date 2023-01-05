@@ -76,7 +76,7 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
 
 
         User userDetail = new User(collegeDeanCreationRequestTo.getUserId(), collegeDeanCreationRequestTo.getEmailId(), //
-                bCryptPasswordEncoder.encode(collegeDeanCreationRequestTo.getPassword()), null, //
+                bCryptPasswordEncoder.encode(collegeDeanCreationRequestTo.getPassword()), null, true, true, //
                 entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_DEAN.getCode()));
 
         if (collegeDeanUserDetail != null) {

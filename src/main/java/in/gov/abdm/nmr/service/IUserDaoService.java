@@ -22,4 +22,8 @@ public interface IUserDaoService {
     User searchUserDetailInternal(UserSearchTO userDetailSearchTO);
 
     User findUserDetailByUsername(String username);
+
+    User toggleSmsNotification(boolean isSmsNotificationEnabled);
+
+    User toggleEmailNotification(boolean isEmailNotificationEnabled);
 }

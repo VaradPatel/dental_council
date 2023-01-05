@@ -1,10 +1,15 @@
 package in.gov.abdm.nmr.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
 import in.gov.abdm.nmr.dto.HpProfileAddResponseTO;
 import in.gov.abdm.nmr.dto.HpProfileDetailResponseTO;
+import in.gov.abdm.nmr.dto.HpProfilePictureResponseTO;
 import in.gov.abdm.nmr.dto.HpProfileUpdateRequestTO;
 import in.gov.abdm.nmr.dto.HpProfileUpdateResponseTO;
 import in.gov.abdm.nmr.dto.SmcRegistrationDetailRequestTO;
@@ -21,6 +26,7 @@ public interface IHpRegistrationService {
 
     HpProfileAddResponseTO addHpProfileDetail(HpProfileAddRequestTO hpProfileUpdateRequest) throws InvalidRequestException;
 
+    HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException;
 }
 
 

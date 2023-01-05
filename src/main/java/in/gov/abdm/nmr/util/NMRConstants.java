@@ -25,6 +25,15 @@ public class NMRConstants {
     public static final String AADHAR_SERVICE_VERIFY_OTP = "/api/v3/aadhaar/verifyOtp";
     public static final String NOTIFICATION_SERVICE_SEND_MESSAGE = "/internal/v3/notification/message";
     public static final String RESET_PASSWORD = "/resetPassword";
+    public static final String RAISE_QUERY = "/raiseQuery";
+    public static final String GET_QUERIES = "/queries/hpProfileId/{hpProfileId}";
+    public static final String NOTIFICATION_SERVICE = "notification";
+    public static final String AADHAAR_SERVICE = "aadhaar";
+    public static final String DATA_INSERTED = "Data Inserted";
+    public static final String GLOBAL_NOTIFICATION_ENDPOINT = "${global.notification.endpoint}";
+    public static final String GLOBAL_AADHAAR_ENDPOINT = "${global.aadhaar.endpoint}";
+
+
     public static final String TOTAL_REGISTRATION_REQUESTS = "Total Registration Requests";
     public static final String TOTAL_UPDATION_REQUESTS = "Total Updation Requests";
     public static final String OTP_GENERATION_EXCEEDED = "OTP Generation Attempts Exceeded";
@@ -43,6 +52,8 @@ public class NMRConstants {
     public static final String SMS_TEMPLATE_ID = "1007164181681962323";
     public static final String EMAIL_TEMPLATE_ID = "1007164181681962323";
     public static final String SUCCESS_RESPONSE = "Success";
+    public static final String FAILURE_RESPONSE = "Fail";
+    public static final String SENT_RESPONSE = "sent";
     public static final String USER_NOT_FOUND = "User not found";
     public static final String PROBLEM_OCCURRED = "Problem Occurred";
     public static final String USERNAME_NOT_NULL = "Username cannot be null or empty";

@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.mapper;
 
 import in.gov.abdm.nmr.dto.HpProfileDetailTO;
+import in.gov.abdm.nmr.dto.HpProfilePictureResponseTO;
 import in.gov.abdm.nmr.dto.HpSmcDetailTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
@@ -22,5 +23,7 @@ public interface IHpProfileMapper {
 	HpProfileUpdateResponseTO HpProfileUpdateToDto(HpProfileUpdateResponseTO hpProfileUpdateResponseTO);
 
 	HpProfileAddResponseTO HpProfileAddToDto(HpProfileAddResponseTO hpProfileAddResponseTO);
+
+	HpProfilePictureResponseTO HpProfilePictureUploadToDto(HpProfilePictureResponseTO hpProfilePictureResponseTO);
 
 }
