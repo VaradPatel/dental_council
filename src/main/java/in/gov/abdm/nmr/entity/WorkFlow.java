@@ -19,6 +19,9 @@ public class WorkFlow extends CommonAuditEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger id;
     private String requestId;
+    private Timestamp startDate;
+    private Timestamp endDate;
+    private String remarks;
     
     @ManyToOne
     @JoinColumn(name = "application_type_id")

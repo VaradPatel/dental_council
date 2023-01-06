@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
@@ -18,6 +19,9 @@ public class WorkFlowRequestTO {
     private BigInteger actorId;
     private BigInteger actionId;
     private BigInteger hpProfileId;
+    private Timestamp startDate;
+    private Timestamp endDate;
+    private String remarks;
 
 
 }

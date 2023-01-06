@@ -71,6 +71,8 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 workFlow.setPreviousGroup(workFlow.getCurrentGroup());
                 workFlow.setCurrentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null) ;
                 workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
+                workFlow.setRemarks(requestTO.getRemarks());
+
             }
             iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO,iNextGroup));
             // Hp Profile status updation needs to be done for terminal operations
@@ -93,6 +95,9 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get())
                 .previousGroup(actorGroup)
                 .currentGroup(iGroupRepository.findById(iNextGroup.getAssignTo()).get())
+                .startDate(requestTO.getStartDate())
+                .endDate(requestTO.getEndDate())
+                .remarks(requestTO.getRemarks())
                 .build();
     }
 
@@ -107,6 +112,9 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get())
                 .previousGroup(actorGroup)
                 .currentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null)
+                .startDate(requestTO.getStartDate())
+                .endDate(requestTO.getEndDate())
+                .remarks(requestTO.getRemarks())
                 .build();
     }
 
