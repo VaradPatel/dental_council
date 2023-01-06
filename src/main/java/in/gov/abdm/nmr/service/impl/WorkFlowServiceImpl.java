@@ -60,7 +60,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
         INextGroup iNextGroup=inmrWorkFlowConfigurationRepository.getNextGroup(requestTO.getApplicationTypeId(), requestTO.getActorId(), requestTO.getActionId());
 
-        if(iNextGroup!=null && iNextGroup.getAssignTo()!=null){
+        if(iNextGroup != null){
             WorkFlow workFlow=iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
             if(workFlow==null){
                 WorkFlow newWorkFlow = buildNewWorkFlow(requestTO, iNextGroup);
@@ -69,7 +69,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 workFlow.setUpdatedAt(null);
                 workFlow.setAction(iActionRepository.findById(requestTO.getActionId()).get());
                 workFlow.setPreviousGroup(workFlow.getCurrentGroup());
-                workFlow.setCurrentGroup(iGroupRepository.findById(iNextGroup.getAssignTo()).get());
+                workFlow.setCurrentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null) ;
                 workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
             }
             iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO,iNextGroup));
@@ -106,7 +106,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 .hpProfile(iHpProfileRepository.findById(requestTO.getHpProfileId()).get())
                 .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get())
                 .previousGroup(actorGroup)
-                .currentGroup(iGroupRepository.findById(iNextGroup.getAssignTo()).get())
+                .currentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null)
                 .build();
     }
 
