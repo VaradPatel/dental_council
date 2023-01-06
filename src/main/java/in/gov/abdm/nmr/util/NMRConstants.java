@@ -25,13 +25,21 @@ public class NMRConstants {
     public static final String CHANGE_PASSWORD = "/changePassword";
     public static final String RAISE_QUERY = "/raiseQuery";
     public static final String GET_QUERIES = "/queries/hpProfileId/{hpProfileId}";
+    public static final String LOAD_RESET_PASSWORD_PAGE = "/loadResetPasswordPage";
+    public static final String SET_NEW_PASSWORD = "/setNewPassword";
+    public static final String GET_RESET_PASSWORD_EMAIL = "getResetPasswordEmail";
+    public static final String INVALID_OR_EXPIRED_TOKEN = "Invalid or expired token";
+    public static final String KEY_MESSAGE = "message";
+    public static final String KEY_TOKEN = "token";
+    public static final String KEY_PASSWORD = "password";
+    public static final String PASSWORD_CHANGED_SUCCESSFULLY = "Password changed successfully";
+    public static final String RESET_PASSWORD_FORM_NAME = "reset_password_form";
+    public static final int RESET_PASSWORD_LINK_EXPIRY_HOURS = 24;
     public static final String NOTIFICATION_SERVICE = "notification";
     public static final String AADHAAR_SERVICE = "aadhaar";
     public static final String CLOSED_STATUS = "closed";
-
     public static final String GLOBAL_NOTIFICATION_ENDPOINT = "${global.notification.endpoint}";
     public static final String GLOBAL_AADHAAR_ENDPOINT = "${global.aadhaar.endpoint}";
-
 
     public static final String TOTAL_REGISTRATION_REQUESTS = "Total Registration Requests";
     public static final String TOTAL_UPDATION_REQUESTS = "Total Updation Requests";
@@ -64,10 +72,9 @@ public class NMRConstants {
     public static final String TEMPLATE_ID = "templateId";
     public static final String SUBJECT = "subject";
     public static final String CONTENT = "content";
-    public static final String TIMESTAMP = "TIMESTAMP";
-    public static final String REQUEST_ID = "REQUEST_ID";
     public static final String MOBILE = "mobile";
     public static final String EMAIL_ID = "emailId";
+    public static final String RESET_PASS_EMAIL_SUBJECT = "Reset Password";
     public static final int OTP_GENERATION_MAX_ATTEMPTS = 5;
     public static final int OTP_MAX_ATTEMPTS = 3;
 
