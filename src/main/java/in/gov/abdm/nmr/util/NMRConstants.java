@@ -11,11 +11,14 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class NMRConstants {
 
-    public static final String FETCH_COUNT_ON_CARD_URL = "/dashboard/cardCount";
+    public static final String DASHBOARD_REQUEST_URL="/dashboard";
 
-    public static final String FETCH_SPECIFIC_DETAILS_URL = "/dashboard/fetchSpecificDetails";
 
-    public static final String FETCH_DETAILS_BY_REG_NO_URL = "/dashboard/fetchDetailsByRegNo";
+    public static final String FETCH_COUNT_ON_CARD_URL = "/cardCount";
+
+    public static final String FETCH_SPECIFIC_DETAILS_URL = "/fetchSpecificDetails";
+
+    public static final String FETCH_DETAILS_BY_REG_NO_URL = "/fetchDetailsByRegNo";
 
     public static final String GENERATE_OTP = "/generateOtp";
     public static final String GENERATE_AADHAR_OTP = "/sendAadhaarOtp";
@@ -27,6 +30,11 @@ public class NMRConstants {
     public static final String RESET_PASSWORD = "/resetPassword";
     public static final String RAISE_QUERY = "/raiseQuery";
     public static final String GET_QUERIES = "/queries/hpProfileId/{hpProfileId}";
+
+    public static final String ACTION_REQUEST_URL="/action";
+
+    public static final String INITIATE_WORK_FLOW_URL="/initiateWorkFlow";
+
     public static final String NOTIFICATION_SERVICE = "notification";
     public static final String AADHAAR_SERVICE = "aadhaar";
     public static final String DATA_INSERTED = "Data Inserted";

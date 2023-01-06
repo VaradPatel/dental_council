@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.exception;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -56,7 +58,8 @@ public class NmrExceptionAdvice {
     }
 
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<ErrorTO> handleException(HttpServletRequest req, Throwable ex) {
+    public ResponseEntity<ErrorTO> handleException(HttpServletRequest req, Throwable ex) throws Throwable {
+
         LOGGER.error(ex);
         ErrorTO error = new ErrorTO(new Date(), HttpStatus.INTERNAL_SERVER_ERROR.value(), "Unexpected error occured", req.getServletPath());
 

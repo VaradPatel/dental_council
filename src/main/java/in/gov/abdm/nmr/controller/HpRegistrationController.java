@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.controller;
 import java.io.IOException;
 import java.math.BigInteger;
 
+import in.gov.abdm.nmr.exception.WorkFlowException;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,7 +53,7 @@ public class HpRegistrationController {
     }
 	
 	@PostMapping(path = "/hpProfileDetail", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public HpProfileAddResponseTO addHpProfileDetail(@RequestBody HpProfileAddRequestTO hpProfileAddRequest) throws InvalidRequestException {
+    public HpProfileAddResponseTO addHpProfileDetail(@RequestBody HpProfileAddRequestTO hpProfileAddRequest) throws InvalidRequestException, WorkFlowException {
     	return hpService.addHpProfileDetail(hpProfileAddRequest);
     }
 	

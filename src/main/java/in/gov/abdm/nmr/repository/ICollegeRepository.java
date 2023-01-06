@@ -14,4 +14,5 @@ public interface ICollegeRepository extends JpaRepository<College, BigInteger> {
 
     @Query(value = "SELECT c FROM college c join c.user usr where usr.id=:userDetailId")
     College findByUserDetail(BigInteger userDetailId);
+
 }

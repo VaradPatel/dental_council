@@ -15,15 +15,15 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
 @Repository
 public interface IFetchDetailsByRegNoRepository extends JpaRepository<HpVerificationStatus, BigInteger> {
 
-    @Query(value = FETCH_DETAILS_BY_REG_NO_QUERY)
-    List<IFetchSpecificDetails> fetchDetailsByRegNo(@Param(REGISTRATION_NUMBER) String registrationNumber,
-                                                    @Param(SMC_NAME) String smcName,
-                                                    @Param(USER_TYPE) String userType,
-                                                    @Param(USER_SUB_TYPE) String userSubType);
-
-    @Query(value = FETCH_DETAILS_FOR_NMC_BY_REG_NO_QUERY)
-    List<IFetchSpecificDetails> fetchDetailsForNMCByRegNo(@Param(REGISTRATION_NUMBER) String registrationNumber,
-                                                    @Param(USER_TYPE) String userType,
-                                                    @Param(USER_SUB_TYPE) String userSubType);
+//    @Query(value = FETCH_DETAILS_BY_REG_NO_QUERY)
+//    List<IFetchSpecificDetails> fetchDetailsByRegNo(@Param(REGISTRATION_NUMBER) String registrationNumber,
+//                                                    @Param(SMC_NAME) String smcName,
+//                                                    @Param(USER_TYPE) String userType,
+//                                                    @Param(USER_SUB_TYPE) String userSubType);
+//
+//    @Query(value = FETCH_DETAILS_FOR_NMC_BY_REG_NO_QUERY)
+//    List<IFetchSpecificDetails> fetchDetailsForNMCByRegNo(@Param(REGISTRATION_NUMBER) String registrationNumber,
+//                                                    @Param(USER_TYPE) String userType,
+//                                                    @Param(USER_SUB_TYPE) String userSubType);
 
 }

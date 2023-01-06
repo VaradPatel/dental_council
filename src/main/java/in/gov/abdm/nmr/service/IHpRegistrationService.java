@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 
+import in.gov.abdm.nmr.exception.WorkFlowException;
 import org.springframework.web.multipart.MultipartFile;
 
 import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
@@ -24,7 +25,7 @@ public interface IHpRegistrationService {
     
     HpProfileUpdateResponseTO updateHpProfileDetail(BigInteger hpProfileId, HpProfileUpdateRequestTO hpProfileUpdateRequest) throws InvalidRequestException;
 
-    HpProfileAddResponseTO addHpProfileDetail(HpProfileAddRequestTO hpProfileUpdateRequest) throws InvalidRequestException;
+    HpProfileAddResponseTO addHpProfileDetail(HpProfileAddRequestTO hpProfileUpdateRequest) throws InvalidRequestException, WorkFlowException;
 
     HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException;
 }
