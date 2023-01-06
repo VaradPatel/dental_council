@@ -28,6 +28,7 @@ public class NMRConstants {
     public static final String AADHAR_SERVICE_VERIFY_OTP = "/api/v3/aadhaar/verifyOtp";
     public static final String NOTIFICATION_SERVICE_SEND_MESSAGE = "/internal/v3/notification/message";
     public static final String RESET_PASSWORD = "/resetPassword";
+    public static final String CHANGE_PASSWORD = "/changePassword";
     public static final String RAISE_QUERY = "/raiseQuery";
     public static final String GET_QUERIES = "/queries/hpProfileId/{hpProfileId}";
 
@@ -37,7 +38,8 @@ public class NMRConstants {
 
     public static final String NOTIFICATION_SERVICE = "notification";
     public static final String AADHAAR_SERVICE = "aadhaar";
-    public static final String DATA_INSERTED = "Data Inserted";
+    public static final String CLOSED_STATUS = "closed";
+
     public static final String GLOBAL_NOTIFICATION_ENDPOINT = "${global.notification.endpoint}";
     public static final String GLOBAL_AADHAAR_ENDPOINT = "${global.aadhaar.endpoint}";
 
@@ -63,6 +65,7 @@ public class NMRConstants {
     public static final String FAILURE_RESPONSE = "Fail";
     public static final String SENT_RESPONSE = "sent";
     public static final String USER_NOT_FOUND = "User not found";
+    public static final String OLD_PASSWORD_NOT_MATCHING = "Old password not matching";
     public static final String PROBLEM_OCCURRED = "Problem Occurred";
     public static final String USERNAME_NOT_NULL = "Username cannot be null or empty";
     public static final String PASSWORD_NOT_NULL = "Password cannot be null or empty";

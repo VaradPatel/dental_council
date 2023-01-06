@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.service;
 import in.gov.abdm.nmr.dto.QueryCreateTo;
+import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import java.util.List;
 
 /**
@@ -10,11 +11,15 @@ public interface IQueriesService {
     /**
      * Creates query
      */
-    String createQueries(List<QueryCreateTo> queries);
+    ResponseMessageTo createQueries(List<QueryCreateTo> queries);
 
     /**
      * Get queries by hpProfileId
      */
     List<QueryCreateTo> getQueriesByHpProfileId(Long hpProfileId);
 
+    /**
+     *Update status of raised query
+     */
+    ResponseMessageTo markQueryAsClosed(List<Long> queryIdList);
 }
