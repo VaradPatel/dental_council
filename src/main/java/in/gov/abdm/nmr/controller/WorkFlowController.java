@@ -1,0 +1,46 @@
+package in.gov.abdm.nmr.controller;
+
+import in.gov.abdm.nmr.dto.FetchDetailsByRegNoRequestTO;
+import in.gov.abdm.nmr.dto.FetchSpecificDetailsResponseTO;
+import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
+import in.gov.abdm.nmr.service.IWorkFlowService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+import static in.gov.abdm.nmr.util.NMRConstants.*;
+
+/**
+ * Presentation Layer to expose the Action endpoints
+ */
+@RestController
+@RequestMapping(ACTION_REQUEST_URL)
+public class WorkFlowController {
+
+
+    /**
+     * Injecting a IWorkFlowService bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
+    @Autowired
+    private IWorkFlowService iWorkFlowService;
+
+    /**
+     * This endpoint can be accessed to initiate workflow
+     * @return
+     */
+    @PostMapping(INITIATE_WORK_FLOW_URL)
+    public ResponseEntity<String> initiateWorkFlow(@RequestBody WorkFlowRequestTO requestTO) throws InvalidRequestException, WorkFlowException {
+        iWorkFlowService.initiateSubmissionWorkFlow(requestTO);
+        return ResponseEntity.ok("Success");
+    }
+
+}

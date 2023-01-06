@@ -21,10 +21,10 @@ import static in.gov.abdm.nmr.util.NMRConstants.INVALID_USER_TYPE;
 
 
 @Service
-public class FetchSpecificDetailsService implements IFetchSpecificDetailsService {
+public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsService {
 
     /**
-     * Injecting a IFetchSpecificDetailsRepository bean instead of an explicit object creation to achieve
+     * Injecting IFetchSpecificDetailsRepository bean instead of an explicit object creation to achieve
      * Singleton principle
      */
     @Autowired

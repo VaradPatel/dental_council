@@ -7,10 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DashboardRequestTO {
+public class FetchCountOnCardRequestTO {
 
     private String userType;
     private String userSubType;
-    private String appStatusType;
-    private String hpProfileStatus;
+
 }

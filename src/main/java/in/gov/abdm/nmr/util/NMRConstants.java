@@ -11,9 +11,15 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class NMRConstants {
 
-    public static final String FETCH_COUNT_ON_CARD_URL = "/college/dashboard/cardCount";
+    public static final String DASHBOARD_REQUEST_URL="/dashboard";
 
-    public static final String FETCH_SPECIFIC_DETAILS_URL = "/college/dashboard/fetchSpecificDetails";
+
+    public static final String FETCH_COUNT_ON_CARD_URL = "/cardCount";
+
+    public static final String FETCH_SPECIFIC_DETAILS_URL = "/fetchSpecificDetails";
+
+    public static final String FETCH_DETAILS_BY_REG_NO_URL = "/fetchDetailsByRegNo";
+
     public static final String GENERATE_OTP = "/generateOtp";
     public static final String GENERATE_AADHAR_OTP = "/sendAadhaarOtp";
     public static final String VALIDATE_OTP = "/validateOtp";
@@ -25,6 +31,11 @@ public class NMRConstants {
     public static final String CHANGE_PASSWORD = "/changePassword";
     public static final String RAISE_QUERY = "/raiseQuery";
     public static final String GET_QUERIES = "/queries/hpProfileId/{hpProfileId}";
+
+    public static final String ACTION_REQUEST_URL="/action";
+
+    public static final String INITIATE_WORK_FLOW_URL="/initiateWorkFlow";
+
     public static final String NOTIFICATION_SERVICE = "notification";
     public static final String AADHAAR_SERVICE = "aadhaar";
     public static final String CLOSED_STATUS = "closed";
@@ -133,6 +144,19 @@ public class NMRConstants {
             "AND hvs.applicationStatusType.name =:applicationStatusType "+
             "AND hvs.hpProfile.hpProfileStatus.name =:hpProfileStatus";
 
+    public static final String FETCH_DETAILS_BY_REG_NO_QUERY = "SELECT hvs.registrationDetails.registrationNo as registrationNo, hvs.hpProfile.fullName as nameOfApplicant, hvs.registrationDetails.stateMedicalCouncil.name as nameOfStateCouncil, hvs.registrationDetails.registrationDate as dateOfSubmission, hvs.verifiedBy.userType.name as verifiedByUserType, hvs.verifiedBy.userSubType.name as verifiedByUserSubType, hvs.hpProfile.hpProfileStatus.name as hpProfileStatus "+
+            "FROM HpVerificationStatus hvs "+
+            "WHERE hvs.registrationDetails.registrationNo=:registrationNumber"+
+            "AND hvs.registrationDetails.stateMedicalCouncil.name =:smcName "+
+            "AND hvs.verifiedBy.userType.name =:userType "+
+            "AND hvs.verifiedBy.userSubType.name =:userSubType ";
+
+    public static final String FETCH_DETAILS_FOR_NMC_BY_REG_NO_QUERY = "SELECT hvs.registrationDetails.registrationNo as registrationNo, hvs.hpProfile.fullName as nameOfApplicant, hvs.registrationDetails.stateMedicalCouncil.name as nameOfStateCouncil, hvs.registrationDetails.registrationDate as dateOfSubmission, hvs.verifiedBy.userType.name as verifiedByUserType, hvs.verifiedBy.userSubType.name as verifiedByUserSubType, hvs.hpProfile.hpProfileStatus.name as hpProfileStatus "+
+            "FROM HpVerificationStatus hvs "+
+            "WHERE hvs.registrationDetails.registrationNo=:registrationNumber"+
+            "AND hvs.verifiedBy.userType.name =:userType "+
+            "AND hvs.verifiedBy.userSubType.name =:userSubType ";
+
     public static final String REGISTRATION="Registration";
 
     public static final String UPDATION="Updation";
@@ -152,4 +176,6 @@ public class NMRConstants {
     public static final String REGISTRATION_DETAILS_ID = "registration_details_id";
 
 
+    public static final String REGISTRATION_NUMBER = "registrationNumber";
+    public static final String SMC_NAME = "smcName";
 }

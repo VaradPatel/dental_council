@@ -1,44 +1,32 @@
 package in.gov.abdm.nmr.service.impl;
 
-import static in.gov.abdm.nmr.util.NMRConstants.BLACK_LIST;
-import static in.gov.abdm.nmr.util.NMRConstants.INVALID_USER_SUB_TYPE;
-import static in.gov.abdm.nmr.util.NMRConstants.INVALID_USER_TYPE;
-import static in.gov.abdm.nmr.util.NMRConstants.REGISTRATION;
-import static in.gov.abdm.nmr.util.NMRConstants.SUSPENSION;
-import static in.gov.abdm.nmr.util.NMRConstants.TOTAL_BLACK_LIST_REQUESTS;
-import static in.gov.abdm.nmr.util.NMRConstants.TOTAL_REGISTRATION_REQUESTS;
-import static in.gov.abdm.nmr.util.NMRConstants.TOTAL_SUSPENSION_REQUESTS;
-import static in.gov.abdm.nmr.util.NMRConstants.TOTAL_UPDATION_REQUESTS;
-import static in.gov.abdm.nmr.util.NMRConstants.TOTAL_VOLUNTARY_RETIREMENT_REQUESTS;
-import static in.gov.abdm.nmr.util.NMRConstants.UPDATION;
-import static in.gov.abdm.nmr.util.NMRConstants.VOLUNTARY_RETIREMENT;
+import in.gov.abdm.nmr.dto.FetchCountOnCardResponseTO;
+import in.gov.abdm.nmr.dto.StatusWiseCountTO;
+import in.gov.abdm.nmr.enums.UserSubTypeEnum;
+import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.mapper.IStatusWiseCountMapper;
+import in.gov.abdm.nmr.repository.IFetchCountOnCardRepository;
+import in.gov.abdm.nmr.service.IFetchCountOnCardService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
-import in.gov.abdm.nmr.repository.IDashboardRepository;
-import in.gov.abdm.nmr.service.IDashboardService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import in.gov.abdm.nmr.mapper.IStatusWiseCountMapper;
-import in.gov.abdm.nmr.dto.ResponseTO;
-import in.gov.abdm.nmr.dto.StatusWiseCountTO;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
-import in.gov.abdm.nmr.enums.UserSubTypeEnum;
-import in.gov.abdm.nmr.enums.UserTypeEnum;
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 
 @Service
-public class DashboardServiceImpl implements IDashboardService {
+public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
 
     /**
-     * Injecting a Dashboard Repository bean instead of an explicit object creation to achieve
+     * Injecting IFetchCountOnCardRepository bean instead of an explicit object creation to achieve
      * Singleton principle
      */
     @Autowired
-    private IDashboardRepository iDashboardRepository;
+    private IFetchCountOnCardRepository iFetchCountOnCardRepository;
 
     /**
      * Mapper Interface to transform the StatusWiseCount Bean
@@ -48,7 +36,7 @@ public class DashboardServiceImpl implements IDashboardService {
     private IStatusWiseCountMapper iStatusWiseCountMapper;
 
     @Override
-    public ResponseTO fetchCountOnCard(String userType,String userSubType) throws InvalidRequestException {
+    public FetchCountOnCardResponseTO fetchCountOnCard(String userType, String userSubType) throws InvalidRequestException {
 
         if(userSubType!=null){
             validateUserSubType(userSubType);
@@ -59,74 +47,74 @@ public class DashboardServiceImpl implements IDashboardService {
 
     }
 
-    private ResponseTO fetchCountOnCardByUserTypeAndSubType(String userType, String userSubType){
+    private FetchCountOnCardResponseTO fetchCountOnCardByUserTypeAndSubType(String userType, String userSubType){
 
         /**
          * Data retrieval - Registration
          */
-        List<StatusWiseCountTO> registrationRequests= iDashboardRepository.fetchHpStatusWiseCountByAppStatusAndUserTypeAndSubType(REGISTRATION, userType, userSubType)
+        List<StatusWiseCountTO> registrationRequests= iFetchCountOnCardRepository.fetchHpStatusWiseCountByAppStatusAndUserTypeAndSubType(REGISTRATION, userType, userSubType)
                 .stream()
                 .map(statusWiseCount-> iStatusWiseCountMapper.toStatusWiseCountTO(statusWiseCount))
                 .toList();
 
         registrationRequests.add(StatusWiseCountTO.builder()
                 .name(TOTAL_REGISTRATION_REQUESTS)
-                .count(BigInteger.valueOf(iDashboardRepository.fetchTotalCountByAppStatusAndUserTypeAndSubType(REGISTRATION, userType, userSubType).size()))
+                .count(BigInteger.valueOf(iFetchCountOnCardRepository.fetchTotalCountByAppStatusAndUserTypeAndSubType(REGISTRATION, userType, userSubType).size()))
                 .build());
 
         /**
          * Data retrieval - Updation
          */
-        List<StatusWiseCountTO> updationRequests= iDashboardRepository.fetchHpStatusWiseCountByAppStatusAndUserTypeAndSubType(UPDATION, userType, userSubType)
+        List<StatusWiseCountTO> updationRequests= iFetchCountOnCardRepository.fetchHpStatusWiseCountByAppStatusAndUserTypeAndSubType(UPDATION, userType, userSubType)
                 .stream()
                 .map(statusWiseCount-> iStatusWiseCountMapper.toStatusWiseCountTO(statusWiseCount))
                 .toList();
 
         updationRequests.add(StatusWiseCountTO.builder()
                 .name(TOTAL_UPDATION_REQUESTS)
-                .count(BigInteger.valueOf(iDashboardRepository.fetchTotalCountByAppStatusAndUserTypeAndSubType(UPDATION, userType, userSubType).size()))
+                .count(BigInteger.valueOf(iFetchCountOnCardRepository.fetchTotalCountByAppStatusAndUserTypeAndSubType(UPDATION, userType, userSubType).size()))
                 .build());
 
         /**
          * Data retrieval - Suspension
          */
-        List<StatusWiseCountTO> suspensionRequests= iDashboardRepository.fetchHpStatusWiseCountByAppStatusAndUserTypeAndSubType(SUSPENSION, userType, userSubType)
+        List<StatusWiseCountTO> suspensionRequests= iFetchCountOnCardRepository.fetchHpStatusWiseCountByAppStatusAndUserTypeAndSubType(SUSPENSION, userType, userSubType)
                 .stream()
                 .map(statusWiseCount-> iStatusWiseCountMapper.toStatusWiseCountTO(statusWiseCount))
                 .toList();
 
         suspensionRequests.add(StatusWiseCountTO.builder()
                 .name(TOTAL_SUSPENSION_REQUESTS)
-                .count(BigInteger.valueOf(iDashboardRepository.fetchTotalCountByAppStatusAndUserTypeAndSubType(SUSPENSION, userType, userSubType).size()))
+                .count(BigInteger.valueOf(iFetchCountOnCardRepository.fetchTotalCountByAppStatusAndUserTypeAndSubType(SUSPENSION, userType, userSubType).size()))
                 .build());
 
         /**
          * Data retrieval - Black-List
          */
-        List<StatusWiseCountTO> blackListRequests= iDashboardRepository.fetchHpStatusWiseCountByAppStatusAndUserTypeAndSubType(BLACK_LIST, userType, userSubType)
+        List<StatusWiseCountTO> blackListRequests= iFetchCountOnCardRepository.fetchHpStatusWiseCountByAppStatusAndUserTypeAndSubType(BLACK_LIST, userType, userSubType)
                 .stream()
                 .map(statusWiseCount-> iStatusWiseCountMapper.toStatusWiseCountTO(statusWiseCount))
                 .toList();
 
         blackListRequests.add(StatusWiseCountTO.builder()
                 .name(TOTAL_BLACK_LIST_REQUESTS)
-                .count(BigInteger.valueOf(iDashboardRepository.fetchTotalCountByAppStatusAndUserTypeAndSubType(BLACK_LIST, userType, userSubType).size()))
+                .count(BigInteger.valueOf(iFetchCountOnCardRepository.fetchTotalCountByAppStatusAndUserTypeAndSubType(BLACK_LIST, userType, userSubType).size()))
                 .build());
 
         /**
          * Data retrieval - Voluntary Retirement
          */
-        List<StatusWiseCountTO> voluntaryRetirementRequests= iDashboardRepository.fetchHpStatusWiseCountByAppStatusAndUserTypeAndSubType(VOLUNTARY_RETIREMENT, userType, userSubType)
+        List<StatusWiseCountTO> voluntaryRetirementRequests= iFetchCountOnCardRepository.fetchHpStatusWiseCountByAppStatusAndUserTypeAndSubType(VOLUNTARY_RETIREMENT, userType, userSubType)
                 .stream()
                 .map(statusWiseCount-> iStatusWiseCountMapper.toStatusWiseCountTO(statusWiseCount))
                 .toList();
 
         voluntaryRetirementRequests.add(StatusWiseCountTO.builder()
                 .name(TOTAL_VOLUNTARY_RETIREMENT_REQUESTS)
-                .count(BigInteger.valueOf(iDashboardRepository.fetchTotalCountByAppStatusAndUserTypeAndSubType(VOLUNTARY_RETIREMENT, userType, userSubType).size()))
+                .count(BigInteger.valueOf(iFetchCountOnCardRepository.fetchTotalCountByAppStatusAndUserTypeAndSubType(VOLUNTARY_RETIREMENT, userType, userSubType).size()))
                 .build());
 
-        return ResponseTO.builder()
+        return FetchCountOnCardResponseTO.builder()
                 .registrationRequests(registrationRequests)
                 .updationRequests(updationRequests)
                 .suspensionRequests(suspensionRequests)
@@ -135,74 +123,74 @@ public class DashboardServiceImpl implements IDashboardService {
                 .build();
     }
 
-    private ResponseTO fetchCountOnCardByUserType(String userType){
+    private FetchCountOnCardResponseTO fetchCountOnCardByUserType(String userType){
 
         /**
          * Data retrieval - Registration
          */
-        List<StatusWiseCountTO> registrationRequests= iDashboardRepository.fetchHpStatusWiseCountByAppStatusAndUserType(REGISTRATION, userType)
+        List<StatusWiseCountTO> registrationRequests= iFetchCountOnCardRepository.fetchHpStatusWiseCountByAppStatusAndUserType(REGISTRATION, userType)
                 .stream()
                 .map(statusWiseCount-> iStatusWiseCountMapper.toStatusWiseCountTO(statusWiseCount))
                 .toList();
 
         registrationRequests.add(StatusWiseCountTO.builder()
                 .name(TOTAL_REGISTRATION_REQUESTS)
-                .count(BigInteger.valueOf(iDashboardRepository.fetchTotalCountByAppStatusAndUserType(REGISTRATION, userType).size()))
+                .count(BigInteger.valueOf(iFetchCountOnCardRepository.fetchTotalCountByAppStatusAndUserType(REGISTRATION, userType).size()))
                 .build());
 
         /**
          * Data retrieval - Updation
          */
-        List<StatusWiseCountTO> updationRequests= iDashboardRepository.fetchHpStatusWiseCountByAppStatusAndUserType(UPDATION, userType)
+        List<StatusWiseCountTO> updationRequests= iFetchCountOnCardRepository.fetchHpStatusWiseCountByAppStatusAndUserType(UPDATION, userType)
                 .stream()
                 .map(statusWiseCount-> iStatusWiseCountMapper.toStatusWiseCountTO(statusWiseCount))
                 .toList();
 
         updationRequests.add(StatusWiseCountTO.builder()
                 .name(TOTAL_UPDATION_REQUESTS)
-                .count(BigInteger.valueOf(iDashboardRepository.fetchTotalCountByAppStatusAndUserType(UPDATION, userType).size()))
+                .count(BigInteger.valueOf(iFetchCountOnCardRepository.fetchTotalCountByAppStatusAndUserType(UPDATION, userType).size()))
                 .build());
 
         /**
          * Data retrieval - Suspension
          */
-        List<StatusWiseCountTO> suspensionRequests= iDashboardRepository.fetchHpStatusWiseCountByAppStatusAndUserType(SUSPENSION, userType)
+        List<StatusWiseCountTO> suspensionRequests= iFetchCountOnCardRepository.fetchHpStatusWiseCountByAppStatusAndUserType(SUSPENSION, userType)
                 .stream()
                 .map(statusWiseCount-> iStatusWiseCountMapper.toStatusWiseCountTO(statusWiseCount))
                 .toList();
 
         suspensionRequests.add(StatusWiseCountTO.builder()
                 .name(TOTAL_SUSPENSION_REQUESTS)
-                .count(BigInteger.valueOf(iDashboardRepository.fetchTotalCountByAppStatusAndUserType(SUSPENSION, userType).size()))
+                .count(BigInteger.valueOf(iFetchCountOnCardRepository.fetchTotalCountByAppStatusAndUserType(SUSPENSION, userType).size()))
                 .build());
 
         /**
          * Data retrieval - Black-List
          */
-        List<StatusWiseCountTO> blackListRequests= iDashboardRepository.fetchHpStatusWiseCountByAppStatusAndUserType(BLACK_LIST, userType)
+        List<StatusWiseCountTO> blackListRequests= iFetchCountOnCardRepository.fetchHpStatusWiseCountByAppStatusAndUserType(BLACK_LIST, userType)
                 .stream()
                 .map(statusWiseCount-> iStatusWiseCountMapper.toStatusWiseCountTO(statusWiseCount))
                 .toList();
 
         blackListRequests.add(StatusWiseCountTO.builder()
                 .name(TOTAL_BLACK_LIST_REQUESTS)
-                .count(BigInteger.valueOf(iDashboardRepository.fetchTotalCountByAppStatusAndUserType(BLACK_LIST, userType).size()))
+                .count(BigInteger.valueOf(iFetchCountOnCardRepository.fetchTotalCountByAppStatusAndUserType(BLACK_LIST, userType).size()))
                 .build());
 
         /**
          * Data retrieval - Voluntary Retirement
          */
-        List<StatusWiseCountTO> voluntaryRetirementRequests= iDashboardRepository.fetchHpStatusWiseCountByAppStatusAndUserType(VOLUNTARY_RETIREMENT, userType)
+        List<StatusWiseCountTO> voluntaryRetirementRequests= iFetchCountOnCardRepository.fetchHpStatusWiseCountByAppStatusAndUserType(VOLUNTARY_RETIREMENT, userType)
                 .stream()
                 .map(statusWiseCount-> iStatusWiseCountMapper.toStatusWiseCountTO(statusWiseCount))
                 .toList();
 
         voluntaryRetirementRequests.add(StatusWiseCountTO.builder()
                 .name(TOTAL_VOLUNTARY_RETIREMENT_REQUESTS)
-                .count(BigInteger.valueOf(iDashboardRepository.fetchTotalCountByAppStatusAndUserType(VOLUNTARY_RETIREMENT, userType).size()))
+                .count(BigInteger.valueOf(iFetchCountOnCardRepository.fetchTotalCountByAppStatusAndUserType(VOLUNTARY_RETIREMENT, userType).size()))
                 .build());
 
-        return ResponseTO.builder()
+        return FetchCountOnCardResponseTO.builder()
                 .registrationRequests(registrationRequests)
                 .updationRequests(updationRequests)
                 .suspensionRequests(suspensionRequests)
