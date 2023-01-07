@@ -1,20 +1,21 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.math.BigInteger;
-
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
+import in.gov.abdm.nmr.enums.Action;
+import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.mapper.IHpProfileMapper;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
-import in.gov.abdm.nmr.mapper.IHpProfileMapper;
+import java.io.IOException;
+import java.math.BigInteger;
 
 @Service
 public class HpRegistrationServiceImpl implements IHpRegistrationService {
@@ -57,10 +58,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
 		HpProfileAddResponseTO hpProfileAddResponseTO = hpProfileService.addHpProfile(hpProfileAddRequestTO);
 		WorkFlowRequestTO workFlowRequestTO = WorkFlowRequestTO.builder().requestId(hpProfileAddRequestTO.getRequestId())
-				.applicationTypeId(BigInteger.ONE)
+				.applicationTypeId(ApplicationType.HP_REGISTRATION.getId())
 				.hpProfileId(hpProfileAddResponseTO.getHpProfileId())
-				.actionId(BigInteger.ONE)
-				.actorId(BigInteger.ONE)
+				.actionId(Action.SUBMIT.getId())
+				.actorId(Group.HEALTH_PROFESSIONAL.getId())
 				.build();
 		iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
 
