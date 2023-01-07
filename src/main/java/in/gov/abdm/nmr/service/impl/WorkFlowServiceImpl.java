@@ -59,10 +59,6 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     @Autowired
     private IHpProfileStatusRepository hpProfileStatusRepository;
 
-
-
-
-
     @Override
     public void initiateSubmissionWorkFlow(WorkFlowRequestTO requestTO) throws WorkFlowException {
 
@@ -85,13 +81,55 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             }
             hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
             iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO,iNextGroup,hpProfile));
-
-            // Hp Profile status updation needs to be done for terminal operations
-        }
-        else {
+        }else {
             throw new WorkFlowException("Next Group Not Found", HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @Override
+    public void initiateCollegeRegistrationWorkFlow(String requestId, BigInteger applicationTypeId, BigInteger actorId, BigInteger actionId) throws WorkFlowException {
+        INextGroup iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(applicationTypeId, actorId, actionId);
+        if (iNextGroup != null) {
+            WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestId);
+            if (workFlow == null) {
+                WorkFlow collegeWorkFlow = buildNewCollegeWorkFlow(requestId, applicationTypeId, actionId, actorId, iNextGroup );
+                iWorkFlowRepository.save(collegeWorkFlow);
+            } else {
+                workFlow.setUpdatedAt(null);
+                workFlow.setAction(iActionRepository.findById(actionId).get());
+                workFlow.setPreviousGroup(workFlow.getCurrentGroup());
+                workFlow.setCurrentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null) ;
+                workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
+            }
+            iWorkFlowAuditRepository.save(buildNewCollegeWorkFlowAudit(requestId,applicationTypeId,actionId,actorId, iNextGroup));
+        }else{
+            throw new WorkFlowException("Next Group Not Found", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private WorkFlow buildNewCollegeWorkFlow(String requestId, BigInteger applicationTypeId, BigInteger actionId, BigInteger actorId, INextGroup iNextGroup) {
+        Group actorGroup = iGroupRepository.findById(actorId).get();
+        return WorkFlow.builder().requestId(requestId)
+                .applicationType(iApplicationTypeRepository.findById(applicationTypeId).get())
+                .createdBy(actorGroup)
+                .action(iActionRepository.findById(actionId).get())
+                .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get())
+                .previousGroup(actorGroup)
+                .currentGroup(iGroupRepository.findById(iNextGroup.getAssignTo()).get())
+                .build();
+    }
+
+    private WorkFlowAudit buildNewCollegeWorkFlowAudit(String requestId, BigInteger applicationTypeId, BigInteger actionId, BigInteger actorId, INextGroup iNextGroup) {
+        Group actorGroup = iGroupRepository.findById(actorId).get();
+        return WorkFlowAudit.builder().requestId(requestId)
+                .applicationType(iApplicationTypeRepository.findById(applicationTypeId).get())
+                .createdBy(actorGroup)
+                .action(iActionRepository.findById(actionId).get())
+                .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get())
+                .previousGroup(actorGroup)
+                .currentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null)
+                .build();
     }
 
     private WorkFlow buildNewWorkFlow(WorkFlowRequestTO requestTO, INextGroup iNextGroup,HpProfile hpProfile) {

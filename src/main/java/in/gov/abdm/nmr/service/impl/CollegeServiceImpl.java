@@ -2,7 +2,13 @@ package in.gov.abdm.nmr.service.impl;
 
 import java.math.BigInteger;
 
-import in.gov.abdm.nmr.service.ICollegeService;
+import in.gov.abdm.nmr.enums.Action;
+import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.service.*;
+import in.gov.abdm.nmr.util.NMRUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -15,42 +21,49 @@ import in.gov.abdm.nmr.dto.CollegeRegistrarProfileTo;
 import in.gov.abdm.nmr.dto.CollegeRegistrationRequestTo;
 import in.gov.abdm.nmr.mapper.ICollegeMapper;
 import in.gov.abdm.nmr.entity.College;
-import in.gov.abdm.nmr.service.ICollegeDaoService;
 import in.gov.abdm.nmr.entity.CollegeDean;
-import in.gov.abdm.nmr.service.ICollegeDeanDaoService;
 import in.gov.abdm.nmr.entity.CollegeRegistrar;
-import in.gov.abdm.nmr.service.ICollegeRegistrarDaoService;
-import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.exception.NmrException;
+
+import javax.persistence.Id;
 
 @Service
 public class CollegeServiceImpl implements ICollegeService {
 
+    @Autowired
     private ICollegeDaoService collegeService;
 
+    @Autowired
     private ICollegeMapper collegeMapper;
 
+    @Autowired
     private ICollegeRegistrarDaoService collegeRegistrarDaoService;
 
+    @Autowired
     private ICollegeDeanDaoService collegeDeanDaoService;
 
+    @Autowired
     private IUserDaoService userDetailService;
 
-    public CollegeServiceImpl(ICollegeDaoService collegeService, ICollegeMapper collegeMapper, ICollegeRegistrarDaoService collegeRegistrarDaoService, ICollegeDeanDaoService collegeDeanDaoService, IUserDaoService userDetailService) {
-        this.collegeService = collegeService;
-        this.collegeMapper = collegeMapper;
-        this.collegeRegistrarDaoService = collegeRegistrarDaoService;
-        this.collegeDeanDaoService = collegeDeanDaoService;
-        this.userDetailService = userDetailService;
-    }
+    @Autowired
+    private IWorkFlowService workFlowService;
+
+    @Autowired
+    private IRequestCounterService requestCounterService;
 
     @Override
-    public CollegeProfileTo registerCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException {
+    public CollegeProfileTo registerCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException, WorkFlowException {
         College collegeProfileEntity = collegeService.saveCollege(collegeRegistrationRequestTo, update);
         CollegeProfileTo collegeCreationRequestToResponse = collegeMapper.collegeCreationRequestToResponse(collegeRegistrationRequestTo);
         collegeCreationRequestToResponse.setId(collegeProfileEntity.getId());
         collegeCreationRequestToResponse.setUserId(collegeProfileEntity.getUser().getId());
+        if(!update && collegeRegistrationRequestTo.getRequestId() == null){
+            String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.COLLEGE_REGISTRATION.getId()));
+            collegeCreationRequestToResponse.setRequestId(requestId);
+            collegeProfileEntity.setRequestId(requestId);
+            workFlowService.initiateCollegeRegistrationWorkFlow(requestId,ApplicationType.COLLEGE_REGISTRATION.getId(), Group.COLLEGE_ADMIN.getId(), Action.SUBMIT.getId());
+        }
         return collegeCreationRequestToResponse;
     }
 

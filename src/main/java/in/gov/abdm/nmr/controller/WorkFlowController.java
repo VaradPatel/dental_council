@@ -54,4 +54,14 @@ public class WorkFlowController {
         return ResponseEntity.ok("Success");
     }
 
+    /**
+     * This endpoint can be accessed to initiate workflow
+     * @return
+     */
+    @PostMapping(INITIATE_COLLEGE_WORK_FLOW_URL)
+    public ResponseEntity<String> initiateCollegeWorkFlow(@RequestBody WorkFlowRequestTO requestTO) throws InvalidRequestException, WorkFlowException {
+        iWorkFlowService.initiateCollegeRegistrationWorkFlow(requestTO.getRequestId(),requestTO.getApplicationTypeId(),requestTO.getActorId(),requestTO.getActionId());
+        return ResponseEntity.ok("Success");
+    }
+
 }
