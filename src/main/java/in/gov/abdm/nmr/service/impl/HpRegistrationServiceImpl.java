@@ -67,12 +67,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 			throws InvalidRequestException, WorkFlowException {
 		HpProfileAddResponseTO hpProfileAddResponseTO = hpProfileService.addHpProfile(hpProfileAddRequestTO);
 		String requestId = hpProfileAddRequestTO.getRequestId();
-		if(hpProfileAddRequestTO.getRequestId() == null ||
-				NEW_REQUEST_CREATION_STATUS_ID.contains(hpProfileAddResponseTO.getStatus())){
+		if(hpProfileAddRequestTO.getRequestId() == null){
 			RequestCounter requestCounter = requestCounterService.incrementAndRetrieveCount(ApplicationType.HP_REGISTRATION.getId());
 			requestId = requestCounter.getApplicationType().getRequestPrefixId().concat(String.valueOf(requestCounter.getCounter()));
 		}
-
 		WorkFlowRequestTO workFlowRequestTO = WorkFlowRequestTO.builder().requestId(requestId)
 				.applicationTypeId(ApplicationType.HP_REGISTRATION.getId())
 				.hpProfileId(hpProfileAddResponseTO.getHpProfileId())
@@ -80,8 +78,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 				.actorId(Group.HEALTH_PROFESSIONAL.getId())
 				.build();
 		iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
-
-
 		return iHpProfileMapper
 				.HpProfileAddToDto(hpProfileAddResponseTO);
 	}
