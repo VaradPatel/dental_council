@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.service.impl;
 import in.gov.abdm.nmr.dto.NextGroupTO;
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.entity.Group;
+import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.WorkFlow;
 import in.gov.abdm.nmr.entity.WorkFlowAudit;
 import in.gov.abdm.nmr.exception.NmrException;

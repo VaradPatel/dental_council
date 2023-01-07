@@ -19,4 +19,5 @@ public class ApplicationType extends CommonAuditEntity {
     private BigInteger id;
     private String name;
     private String description;
+    private String requestPrefixId;
 }
