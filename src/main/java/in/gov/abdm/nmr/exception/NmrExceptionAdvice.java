@@ -80,6 +80,20 @@ public class NmrExceptionAdvice {
         return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
     }
 
+
+    @ExceptionHandler({ WorkFlowException.class })
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorTO> workflowExceptionHandler(HttpServletRequest req, Throwable ex) {
+        LOGGER.error(ex);
+        ErrorTO error = new ErrorTO(new Date(), HttpStatus.BAD_REQUEST.value(), ex.getMessage(), req.getServletPath());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
+    }
+
+
     /**
      * <p>
      * MethodArgumentNotValidException exception is thrown after data binding
@@ -112,11 +126,11 @@ public class NmrExceptionAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(OtpException.class)
     public Map<String, Object> oTPExceptionHandler(OtpException e) {
-        System.out.println(e);
         Map<String, Object> errorMap = new HashMap<>();
         errorMap.put(RESPONSE_TIMESTAMP, LocalDate.now());
         LOGGER.error(e.getMessage());
         errorMap.put(MESSAGE, e.getMessage());
         return errorMap ;
     }
+
 }

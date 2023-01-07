@@ -2,25 +2,22 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
-import in.gov.abdm.nmr.entity.RequestCounter;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.Group;
-import in.gov.abdm.nmr.enums.HP_PROFILE_STATUS;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.IHpProfileMapper;
-import in.gov.abdm.nmr.repository.IApplicationTypeRepository;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
+import in.gov.abdm.nmr.util.NMRUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.List;
 
 @Service
 public class HpRegistrationServiceImpl implements IHpRegistrationService {
@@ -28,9 +25,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	private HpProfileDaoServiceImpl hpProfileService;
 
 	private IHpProfileMapper iHpProfileMapper;
-
-	private static final List<BigInteger> NEW_REQUEST_CREATION_STATUS_ID = List.of(HP_PROFILE_STATUS.REJECTED.getId(),
-			HP_PROFILE_STATUS.APPROVED.getId());
 
 	@Autowired
 	private IWorkFlowService iWorkFlowService;
@@ -68,8 +62,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 		HpProfileAddResponseTO hpProfileAddResponseTO = hpProfileService.addHpProfile(hpProfileAddRequestTO);
 		String requestId = hpProfileAddRequestTO.getRequestId();
 		if(hpProfileAddRequestTO.getRequestId() == null){
-			RequestCounter requestCounter = requestCounterService.incrementAndRetrieveCount(ApplicationType.HP_REGISTRATION.getId());
-			requestId = requestCounter.getApplicationType().getRequestPrefixId().concat(String.valueOf(requestCounter.getCounter()));
+			requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.HP_REGISTRATION.getId()));
 		}
 		WorkFlowRequestTO workFlowRequestTO = WorkFlowRequestTO.builder().requestId(requestId)
 				.applicationTypeId(ApplicationType.HP_REGISTRATION.getId())
