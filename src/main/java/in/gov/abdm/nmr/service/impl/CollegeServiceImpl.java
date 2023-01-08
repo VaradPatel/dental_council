@@ -58,7 +58,7 @@ public class CollegeServiceImpl implements ICollegeService {
         CollegeProfileTo collegeCreationRequestToResponse = collegeMapper.collegeCreationRequestToResponse(collegeRegistrationRequestTo);
         collegeCreationRequestToResponse.setId(collegeProfileEntity.getId());
         collegeCreationRequestToResponse.setUserId(collegeProfileEntity.getUser().getId());
-        if(!update && collegeRegistrationRequestTo.getRequestId() == null){
+        if(collegeRegistrationRequestTo.getRequestId() == null){
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.COLLEGE_REGISTRATION.getId()));
             collegeCreationRequestToResponse.setRequestId(requestId);
             collegeProfileEntity.setRequestId(requestId);

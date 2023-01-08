@@ -87,6 +87,10 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
     }
 
+    public boolean isAnyActiveWorkflowForHealthProfessional(BigInteger hpProfileId){
+        return iWorkFlowRepository.findPendingWorkflow(hpProfileId) != null;
+    }
+
     @Override
     public void initiateCollegeRegistrationWorkFlow(String requestId, BigInteger applicationTypeId, BigInteger actorId, BigInteger actionId) throws WorkFlowException {
         INextGroup iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(applicationTypeId, actorId, actionId);

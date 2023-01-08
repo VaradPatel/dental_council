@@ -8,7 +8,6 @@ import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.NMRUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,7 +48,6 @@ public class WorkFlowController {
         if(requestTO.getRequestId() == null || REQUEST_ID_CREATION_STATUSES.contains(requestTO.getProfileStatus())){
             requestTO.setRequestId(NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(requestTO.getApplicationTypeId())));
         }
-
         iWorkFlowService.initiateSubmissionWorkFlow(requestTO);
         return ResponseEntity.ok("Success");
     }

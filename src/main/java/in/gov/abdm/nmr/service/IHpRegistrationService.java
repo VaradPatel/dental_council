@@ -23,7 +23,7 @@ public interface IHpRegistrationService {
     
     HpProfileDetailResponseTO fetchHpProfileDetail(BigInteger hpProfileId);
     
-    HpProfileUpdateResponseTO updateHpProfileDetail(BigInteger hpProfileId, HpProfileUpdateRequestTO hpProfileUpdateRequest) throws InvalidRequestException;
+    HpProfileUpdateResponseTO updateHpProfileDetail(BigInteger hpProfileId, HpProfileUpdateRequestTO hpProfileUpdateRequest) throws InvalidRequestException, WorkFlowException;
 
     HpProfileAddResponseTO addHpProfileDetail(HpProfileAddRequestTO hpProfileUpdateRequest) throws InvalidRequestException, WorkFlowException;
 

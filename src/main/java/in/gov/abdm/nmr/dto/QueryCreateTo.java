@@ -40,4 +40,13 @@ public class QueryCreateTo {
 
     @JsonProperty("updatedAt")
     private Timestamp updatedAt;
+
+    @JsonProperty("groupId")
+    private BigInteger groupId;
+
+    @JsonProperty("requestId")
+    private String requestId;
+
+    @JsonProperty("applicationTypeId")
+    private BigInteger applicationTypeId;
 }

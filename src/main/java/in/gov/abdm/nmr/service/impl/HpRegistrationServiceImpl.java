@@ -13,6 +13,7 @@ import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.NMRUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,7 +52,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
 	@Override
 	public HpProfileUpdateResponseTO updateHpProfileDetail(BigInteger hpProfileId,
-			HpProfileUpdateRequestTO hpProfileUpdateRequest) throws InvalidRequestException {
+			HpProfileUpdateRequestTO hpProfileUpdateRequest) throws InvalidRequestException, WorkFlowException {
+		if(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(hpProfileId)){
+			throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
+		}
 		return iHpProfileMapper
 				.HpProfileUpdateToDto(hpProfileService.updateHpProfile(hpProfileId, hpProfileUpdateRequest));
 	}
@@ -59,6 +63,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	@Override
 	public HpProfileAddResponseTO addHpProfileDetail(HpProfileAddRequestTO hpProfileAddRequestTO)
 			throws InvalidRequestException, WorkFlowException {
+		if(hpProfileAddRequestTO.getRegistrationDetail().getHpProfileId() != null &&
+				iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(hpProfileAddRequestTO.getRegistrationDetail().getHpProfileId())){
+			throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
+		}
 		HpProfileAddResponseTO hpProfileAddResponseTO = hpProfileService.addHpProfile(hpProfileAddRequestTO);
 		String requestId = hpProfileAddRequestTO.getRequestId();
 		if(hpProfileAddRequestTO.getRequestId() == null){
