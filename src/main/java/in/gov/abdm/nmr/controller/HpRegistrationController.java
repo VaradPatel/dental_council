@@ -48,7 +48,7 @@ public class HpRegistrationController {
     }
 
 	@PutMapping(path = "/hpProfileDetail/{hp_profile_id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public HpProfileUpdateResponseTO updateHpProfileDetail(@RequestBody HpProfileUpdateRequestTO hpProfileUpdateRequest, @PathVariable(name = "hp_profile_id") BigInteger hpProfileId) throws InvalidRequestException {
+    public HpProfileUpdateResponseTO updateHpProfileDetail(@RequestBody HpProfileUpdateRequestTO hpProfileUpdateRequest, @PathVariable(name = "hp_profile_id") BigInteger hpProfileId) throws InvalidRequestException, WorkFlowException {
     	return hpService.updateHpProfileDetail(hpProfileId, hpProfileUpdateRequest);
     }
 	

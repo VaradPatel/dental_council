@@ -19,6 +19,7 @@ public class WorkFlowRequestTO {
     private BigInteger actorId;
     private BigInteger actionId;
     private BigInteger hpProfileId;
+    private BigInteger profileStatus;
     private Timestamp startDate;
     private Timestamp endDate;
     private String remarks;

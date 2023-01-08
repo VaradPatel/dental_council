@@ -9,9 +9,10 @@ import in.gov.abdm.nmr.dto.CollegeRegistrarCreationRequestTo;
 import in.gov.abdm.nmr.dto.CollegeRegistrarProfileTo;
 import in.gov.abdm.nmr.dto.CollegeRegistrationRequestTo;
 import in.gov.abdm.nmr.exception.NmrException;
+import in.gov.abdm.nmr.exception.WorkFlowException;
 
 public interface ICollegeService {
-    CollegeProfileTo registerCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException;
+    CollegeProfileTo registerCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException, WorkFlowException;
 
     CollegeRegistrarProfileTo registerRegistrar(CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException;
 

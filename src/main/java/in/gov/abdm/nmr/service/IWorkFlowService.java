@@ -11,4 +11,9 @@ import java.math.BigInteger;
 public interface IWorkFlowService {
 
     void initiateSubmissionWorkFlow(WorkFlowRequestTO requestTO) throws WorkFlowException;
+
+    void initiateCollegeRegistrationWorkFlow(String requestId, BigInteger applicationTypeId, BigInteger actorId, BigInteger actionId) throws WorkFlowException;
+
+    boolean isAnyActiveWorkflowForHealthProfessional(BigInteger hpProfileId);
+
 }

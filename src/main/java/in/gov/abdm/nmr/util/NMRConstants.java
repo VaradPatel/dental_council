@@ -34,6 +34,7 @@ public class NMRConstants {
     public static final String ACTION_REQUEST_URL="/action";
 
     public static final String INITIATE_WORK_FLOW_URL="/initiateWorkFlow";
+    public static final String INITIATE_COLLEGE_WORK_FLOW_URL="/initiateCollegeWorkFlow";
 
     public static final String NOTIFICATION_SERVICE = "notification";
     public static final String AADHAAR_SERVICE = "aadhaar";
