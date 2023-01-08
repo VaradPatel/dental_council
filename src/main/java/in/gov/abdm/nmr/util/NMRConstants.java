@@ -13,7 +13,6 @@ public class NMRConstants {
 
     public static final String DASHBOARD_REQUEST_URL="/dashboard";
 
-
     public static final String FETCH_COUNT_ON_CARD_URL = "/cardCount";
 
     public static final String FETCH_SPECIFIC_DETAILS_URL = "/fetchSpecificDetails";
@@ -43,9 +42,6 @@ public class NMRConstants {
     public static final String GLOBAL_NOTIFICATION_ENDPOINT = "${global.notification.endpoint}";
     public static final String GLOBAL_AADHAAR_ENDPOINT = "${global.aadhaar.endpoint}";
 
-
-    public static final String TOTAL_REGISTRATION_REQUESTS = "Total Registration Requests";
-    public static final String TOTAL_UPDATION_REQUESTS = "Total Updation Requests";
     public static final String OTP_GENERATION_EXCEEDED = "OTP Generation Attempts Exceeded";
     public static final String OTP_ATTEMPTS_EXCEEDED = "OTP Attempts Exceeded";
     public static final String NO_SUCH_OTP_TYPE = "No such OTP Type";
@@ -82,11 +78,16 @@ public class NMRConstants {
     public static final int OTP_GENERATION_MAX_ATTEMPTS = 5;
     public static final int OTP_MAX_ATTEMPTS = 3;
 
-    public static final String TOTAL_SUSPENSION_REQUESTS="Total Suspension Requests";
+    public static final String TOTAL_HP_REGISTRATION_REQUESTS = "Total HP Registration Requests";
+    public static final String TOTAL_HP_MODIFICATION_REQUESTS = "Total HP Modification Requests";
 
-    public static final String TOTAL_BLACK_LIST_REQUESTS="Total BlackList Requests";
+    public static final String TOTAL_TEMPORARY_SUSPENSION_REQUESTS="Total Temporary Suspension Requests";
 
-    public static final String TOTAL_VOLUNTARY_RETIREMENT_REQUESTS="Total Voluntary Retirement Requests";
+    public static final String TOTAL_PERMANENT_SUSPENSION_REQUESTS="Total Permanent Suspension Requests";
+
+    public static final String TOTAL_ACTIVATE_LICENSE_REQUESTS="Total Activate License Requests";
+
+    public static final String TOTAL_COLLEGE_REGISTRATION_REQUESTS = "Total College Registration Requests";
 
     public static final String HP_PROFILE_ID="hp_profile_id";
 
@@ -110,37 +111,24 @@ public class NMRConstants {
 
     public static final String APPLICATION_STATUS_TYPE="applicationStatusType";
 
-    public static final String FETCH_HP_STATUS_WISE_COUNT_BY_APP_STATUS_AND_USER_TYPE_QUERY="SELECT hvs.hpProfile.hpProfileStatus.name as name, COUNT(hvs) as count " +
-            "FROM HpVerificationStatus hvs " +
-            "WHERE hvs.applicationStatusType.name=:applicationStatusType " +
-            "AND hvs.verifiedBy.userType.name=:userType " +
-            "GROUP BY hvs.hpProfile.hpProfileStatus.name";
+    public static final String APPLICATION_TYPE_ID="applicationTypeId";
+    public static final String APPLICATION_TYPE_NAME="applicationTypeName";
 
-    public static final String FETCH_TOTAL_COUNT_BY_APP_STATUS_AND_USER_TYPE_QUERY="SELECT hvs.id from HpVerificationStatus hvs " +
-            "WHERE hvs.applicationStatusType.name=:applicationStatusType " +
-            "AND hvs.verifiedBy.userType.name=:userType ";
-
-    public static final String FETCH_HP_STATUS_WISE_COUNT_BY_APP_STATUS_AND_USER_SUB_TYPE_QUERY="SELECT hvs.hpProfile.hpProfileStatus.name as name, COUNT(hvs) as count " +
-            "FROM HpVerificationStatus hvs " +
-            "WHERE hvs.applicationStatusType.name=:applicationStatusType " +
-            "AND hvs.verifiedBy.userType.name=:userType " +
-            "AND hvs.verifiedBy.userSubType.name=:userSubType " +
-            "GROUP BY hvs.hpProfile.hpProfileStatus.name";
-
-    public static final String FETCH_TOTAL_COUNT_BY_APP_STATUS_AND_USER_SUB_TYPE_QUERY="SELECT hvs.id from HpVerificationStatus hvs " +
-            "WHERE hvs.applicationStatusType.name=:applicationStatusType " +
-            "AND hvs.verifiedBy.userType.name=:userType " +
-            "AND hvs.verifiedBy.userSubType.name=:userSubType ";
-
+    public static final String GROUP_ID="groupId";
+    public static final String FETCH_STATUS_WISE_COUNT_BY_GROUP_AND_APPLICATION_TYPE_QUERY="SELECT ws.name as name, COUNT(w) as count " +
+            "FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id " +
+            "WHERE w.application_type_id = :"+APPLICATION_TYPE_ID+" AND  w.current_group_id = :"+GROUP_ID+" " +
+            "OR ( w.previous_group_id = :"+GROUP_ID+" AND w.action_id IN ( 3,5 ) ) " +
+            "GROUP BY ws.name " +
+            "UNION " +
+            "SELECT ws.name as status, COUNT(wa) as count FROM work_flow_audit wa " +
+            "JOIN work_flow_status ws ON wa.work_flow_status_id = ws.id " +
+            "WHERE wa.application_type_id = 1 AND wa.previous_group_id = :"+GROUP_ID +" "+
+            "AND wa.action_id = 4"+
+            "GROUP BY ws.name";
     public static final String FETCH_DETAILS_FOR_LISTING_BY_USER_TYPE_QUERY = "SELECT hvs.registrationDetails.registrationNo as registrationNo, hvs.hpProfile.fullName as nameOfApplicant, hvs.registrationDetails.stateMedicalCouncil.name as nameOfStateCouncil, hvs.registrationDetails.registrationDate as dateOfSubmission, hvs.verifiedBy.userType.name as verifiedByUserType, hvs.verifiedBy.userSubType.name as verifiedByUserSubType, hvs.hpProfile.hpProfileStatus.name as hpProfileStatus "+
             "FROM HpVerificationStatus hvs "+
             "WHERE hvs.verifiedBy.userType.name =:userType "+
-            "AND hvs.applicationStatusType.name =:applicationStatusType "+
-            "AND hvs.hpProfile.hpProfileStatus.name =:hpProfileStatus";
-    public static final String FETCH_DETAILS_FOR_LISTING_BY_USER_TYPE_AND_SUB_TYPE_QUERY = "SELECT hvs.registrationDetails.registrationNo as registrationNo, hvs.hpProfile.fullName as nameOfApplicant, hvs.registrationDetails.stateMedicalCouncil.name as nameOfStateCouncil, hvs.registrationDetails.registrationDate as dateOfSubmission, hvs.verifiedBy.userType.name as verifiedByUserType, hvs.verifiedBy.userSubType.name as verifiedByUserSubType, hvs.hpProfile.hpProfileStatus.name as hpProfileStatus "+
-            "FROM HpVerificationStatus hvs "+
-            "WHERE hvs.verifiedBy.userType.name =:userType "+
-            "AND hvs.verifiedBy.userSubType.name =:userSubType "+
             "AND hvs.applicationStatusType.name =:applicationStatusType "+
             "AND hvs.hpProfile.hpProfileStatus.name =:hpProfileStatus";
 
@@ -157,25 +145,19 @@ public class NMRConstants {
             "AND hvs.verifiedBy.userType.name =:userType "+
             "AND hvs.verifiedBy.userSubType.name =:userSubType ";
 
-    public static final String REGISTRATION="Registration";
-
-    public static final String UPDATION="Updation";
-
-    public static final String SUSPENSION="Suspension";
-
-    public static final String BLACK_LIST="Blacklist";
-
-    public static final String VOLUNTARY_RETIREMENT="Voluntary Retirement";
-
     public static final String INVALID_USER_SUB_TYPE="Invalid User sub-type. Expected: College, College Dean or College Registrar";
 
     public static final String INVALID_USER_TYPE="Invalid User type. Expected: Health Professional, College, State Medical Council or National Medical Council";
 
+    public static final String INVALID_GROUP="Invalid Group. Expected: Health Professional, State Medical Council, National Medical Council, College Dean, College Registrar or College Admin";
+
+    public static final String INVALID_APPLICATION_TYPE="Invalid Application Type. Expected: Health Professional Registration, Health Professional Modification, Health Professional Temporary Suspension Request, Health Professional Permanent Suspension Request, Health Professional Activate License, College Registration ";
     public static final String STATE_MEDICAL_COUNCIL_ID="state_medical_council_id";
 
     public static final String REGISTRATION_DETAILS_ID = "registration_details_id";
 
-
     public static final String REGISTRATION_NUMBER = "registrationNumber";
+
     public static final String SMC_NAME = "smcName";
+    public static final String SUCCESS="Success";
 }

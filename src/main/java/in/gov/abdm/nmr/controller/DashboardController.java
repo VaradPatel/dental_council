@@ -52,7 +52,7 @@ public class DashboardController {
      */
     @PostMapping(FETCH_COUNT_ON_CARD_URL)
     public ResponseEntity<FetchCountOnCardResponseTO> fetchCountOnCard(@RequestBody FetchCountOnCardRequestTO requestTO) throws InvalidRequestException {
-        return ResponseEntity.ok(iFetchCountOnCardService.fetchCountOnCard(requestTO.getUserType(), requestTO.getUserSubType()));
+        return ResponseEntity.ok(iFetchCountOnCardService.fetchCountOnCard(requestTO.getGroupName()));
     }
 
     /**

@@ -43,38 +43,10 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         if(userSubType!=null){
             validateUserType(userType);
             validateUserSubType(userSubType);
-            return fetchSpecificDetailsByUserTypeAndSubType(userType, userSubType, applicationStatusType, hpProfileStatus);
+//            return fetchSpecificDetailsByUserTypeAndSubType(userType, userSubType, applicationStatusType, hpProfileStatus);
         }
         validateUserType(userType);
         return fetchSpecificDetailsByUserType(userType, applicationStatusType, hpProfileStatus);
-
-    }
-
-    private List<FetchSpecificDetailsResponseTO> fetchSpecificDetailsByUserTypeAndSubType(String userType, String userSubType, String applicationStatusType, String hpProfileStatus){
-
-        return iFetchSpecificDetailsRepository.fetchDetailsForListingByUserTypeAndSubType(userType, userSubType, applicationStatusType, hpProfileStatus)
-                .stream()
-                .map(fetchSpecificDetails-> {
-                    FetchSpecificDetailsResponseTO fetchSpecificDetailsResponseTO=iFetchSpecificDetailsMapper.toFetchSpecificDetailsResponseTO(fetchSpecificDetails);
-
-                    if(UserTypeEnum.COLLEGE.getName().equals(fetchSpecificDetails.getVerifiedByUserType())){
-                        fetchSpecificDetailsResponseTO.setCollegeVerificationStatus(fetchSpecificDetails.getHpProfileStatus());
-                    }
-                    if(UserTypeEnum.STATE_MEDICAL_COUNCIL.getName().equals(fetchSpecificDetails.getVerifiedByUserType())){
-                        fetchSpecificDetailsResponseTO.setCouncilVerificationStatus(fetchSpecificDetails.getHpProfileStatus());
-                    }
-                    if(UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getName().equals(fetchSpecificDetails.getVerifiedByUserType())){
-                        fetchSpecificDetailsResponseTO.setNMCVerificationStatus(fetchSpecificDetails.getHpProfileStatus());
-                    }
-
-                    long diffInMillis = Math.abs(new Date().getTime() - fetchSpecificDetails.getDateOfSubmission().getTime());
-                    long diff = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
-                    fetchSpecificDetailsResponseTO.setPendency(BigInteger.valueOf(diff));
-
-                    return fetchSpecificDetailsResponseTO;
-                })
-                .toList();
-
 
     }
 

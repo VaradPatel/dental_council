@@ -20,30 +20,37 @@ public class FetchCountOnCardResponseTO {
      * This holds the list of count of New applications
      * according to their status at that point in time
      */
-    private List<StatusWiseCountTO> registrationRequests;
+    private List<StatusWiseCountTO> hpRegistrationRequests;
 
     /**
      * This holds the list of count of Existing applications
      * according to their status at that point in time
      */
-    private List<StatusWiseCountTO> updationRequests;
+    private List<StatusWiseCountTO> hpModificationRequests;
 
     /**
-     * This holds the list of count of Suspended applications
+     * This holds the list of count of Temporary Suspension applications
      * according to their status at that point in time
      */
-    private List<StatusWiseCountTO> suspensionRequests;
+    private List<StatusWiseCountTO> temporarySuspensionRequests;
 
     /**
-     * This holds the list of count of Black-listed applications
+     * This holds the list of count of Permanent Suspension applications
      * according to their status at that point in time
      */
-    private List<StatusWiseCountTO> blackListRequests;
+    private List<StatusWiseCountTO> permanentSuspensionRequests;
 
     /**
-     * This holds the list of count of Voluntary Retirement applications
+     * This holds the list of count of Activate License applications
      * according to their status at that point in time
      */
-    private List<StatusWiseCountTO> voluntaryRetirementRequests;
+    private List<StatusWiseCountTO> activateLicenseRequests;
+
+    /**
+     * This holds the list of count of College Registration applications
+     * according to their status at that point in time
+     */
+    private List<StatusWiseCountTO> collegeRegistrationRequests;
+
 
 }
