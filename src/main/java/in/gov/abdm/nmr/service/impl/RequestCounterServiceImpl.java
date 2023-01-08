@@ -19,7 +19,7 @@ public class RequestCounterServiceImpl implements IRequestCounterService {
     @Override
     public RequestCounter incrementAndRetrieveCount(BigInteger applicationTypeId) throws WorkFlowException {
         Optional<RequestCounter> requestCounter = requestCounterRepository.findById(applicationTypeId);
-        if(requestCounter.get() != null) {
+        if(requestCounter.isPresent()) {
             BigInteger counter = requestCounter.get().getCounter().add(BigInteger.ONE);
             requestCounter.get().setCounter(counter);
             return requestCounter.get();

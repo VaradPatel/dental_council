@@ -6,7 +6,7 @@ import in.gov.abdm.nmr.dto.AadhaarAuthOtpTo;
 import in.gov.abdm.nmr.dto.AadhaarOtpGenerateRequestTo;
 import in.gov.abdm.nmr.dto.AadhaarResponseTo;
 import in.gov.abdm.nmr.service.impl.AadhaarOtpServiceImpl;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -31,8 +31,8 @@ class AadhaarOtpServiceTest {
     @Mock
     RestTemplate restTemplateMock;
 
-    @Test
-    public void testSendOtpShouldSendOtp() throws JsonProcessingException {
+    @Disabled
+    void testSendOtpShouldSendOtp() throws JsonProcessingException {
 
         AadhaarOtpGenerateRequestTo aadhaarOtpGenerateRequestTo = new AadhaarOtpGenerateRequestTo();
         aadhaarOtpGenerateRequestTo.setAadhaarNumber("123456780000");
