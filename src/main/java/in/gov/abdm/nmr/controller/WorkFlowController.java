@@ -43,13 +43,14 @@ public class WorkFlowController {
      * @return
      */
     @PostMapping(INITIATE_WORK_FLOW_URL)
+    public ResponseEntity<String> initiateWorkFlow(@RequestBody WorkFlowRequestTO requestTO) throws WorkFlowException {
     public ResponseEntity<String> initiateWorkFlow(@RequestBody WorkFlowRequestTO requestTO) throws InvalidRequestException, WorkFlowException {
 
         if(requestTO.getRequestId() == null || REQUEST_ID_CREATION_STATUSES.contains(requestTO.getProfileStatus())){
             requestTO.setRequestId(NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(requestTO.getApplicationTypeId())));
         }
         iWorkFlowService.initiateSubmissionWorkFlow(requestTO);
-        return ResponseEntity.ok("Success");
+        return ResponseEntity.ok(SUCCESS);
     }
 
     /**

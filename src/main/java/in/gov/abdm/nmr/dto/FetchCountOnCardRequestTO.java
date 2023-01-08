@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FetchCountOnCardRequestTO {
 
-    private String userType;
-    private String userSubType;
+    private String groupName;
 
 }
