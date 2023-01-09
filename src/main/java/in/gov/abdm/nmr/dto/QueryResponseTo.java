@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 
 @Data
-public class OpenQueriesResponseTo {
+public class QueryResponseTo {
 
     private BigInteger id;
     private BigInteger hpProfileId;

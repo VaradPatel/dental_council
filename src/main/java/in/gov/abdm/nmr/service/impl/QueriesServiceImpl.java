@@ -75,7 +75,7 @@ public class QueriesServiceImpl implements IQueriesService {
      * @return List of queries object
      */
     @Override
-    public List<OpenQueriesResponseTo> getQueriesByHpProfileId(BigInteger hpProfileId) {
+    public List<QueryResponseTo> getQueriesByHpProfileId(BigInteger hpProfileId) {
         return queriesDtoMapper.queryDataToOpenQueriesDto(queriesRepository.findQueriesByHpProfileId(hpProfileId));
     }
 

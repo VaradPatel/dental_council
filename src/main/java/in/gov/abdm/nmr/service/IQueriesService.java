@@ -1,5 +1,5 @@
 package in.gov.abdm.nmr.service;
-import in.gov.abdm.nmr.dto.OpenQueriesResponseTo;
+import in.gov.abdm.nmr.dto.QueryResponseTo;
 import in.gov.abdm.nmr.dto.QueryCreateTo;
 import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.exception.WorkFlowException;
@@ -20,7 +20,7 @@ public interface IQueriesService {
     /**
      * Get queries by hpProfileId
      */
-    List<OpenQueriesResponseTo> getQueriesByHpProfileId(BigInteger hpProfileId);
+    List<QueryResponseTo> getQueriesByHpProfileId(BigInteger hpProfileId);
 
     /**
      *Update status of raised query

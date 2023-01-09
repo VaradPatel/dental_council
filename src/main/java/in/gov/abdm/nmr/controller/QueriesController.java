@@ -1,5 +1,5 @@
 package in.gov.abdm.nmr.controller;
-import in.gov.abdm.nmr.dto.OpenQueriesResponseTo;
+import in.gov.abdm.nmr.dto.QueryResponseTo;
 import in.gov.abdm.nmr.dto.QueryCreateTo;
 import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.exception.WorkFlowException;
@@ -37,7 +37,7 @@ public class QueriesController {
 	 * @return returns list of queries associated with hpProfileId
 	 */
 	@GetMapping(path = NMRConstants.GET_QUERIES, produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<OpenQueriesResponseTo> getQueries(@PathVariable BigInteger hpProfileId){
+	public List<QueryResponseTo> getQueries(@PathVariable BigInteger hpProfileId){
 		return queryService.getQueriesByHpProfileId(hpProfileId);
 	}
 }
