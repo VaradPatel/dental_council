@@ -2,10 +2,12 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.NextGroupTO;
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
+
 import in.gov.abdm.nmr.entity.Group;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.WorkFlow;
 import in.gov.abdm.nmr.entity.WorkFlowAudit;
+import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.INextGroup;
@@ -112,6 +114,14 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         }
     }
 
+    @Override
+    public void assignQueriesBackToQueryCreator(String requestId) {
+        WorkFlow workflow = iWorkFlowRepository.findByRequestId(requestId);
+        workflow.setCurrentGroup(workflow.getPreviousGroup());
+        workflow.setPreviousGroup(workflow.getCurrentGroup());
+        workflow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).get());
+    }
+    
     private WorkFlow buildNewCollegeWorkFlow(String requestId, BigInteger applicationTypeId, BigInteger actionId, BigInteger actorId, INextGroup iNextGroup) {
         Group actorGroup = iGroupRepository.findById(actorId).get();
         return WorkFlow.builder().requestId(requestId)
@@ -171,4 +181,8 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 .build();
     }
 
+
+    public boolean isAnyApprovedWorkflowForHealthProfessional(BigInteger hpProfileId) {
+    	 return iWorkFlowRepository.findApprovedWorkflow(hpProfileId) != null;
+    }
 }

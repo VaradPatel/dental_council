@@ -534,7 +534,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 				&& (hpProfileUpdateRequest.getCurrentWorkDetails().getUrl() != null
 						&& hpProfileUpdateRequest.getCurrentWorkDetails().getUrl() != "")) {
 
-			if (hpProfileUpdateRequest.getPersonalDetails().getLanguage().size() > 0) {
 
 				String hpId = hpProfileId.toString();
 				if (iHpProfileRepository.existsById(hpProfileId) == true) {
@@ -1030,9 +1029,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 				throw new InvalidRequestException("Invalid Data!");
 			}
 
-		} else {
-			throw new InvalidRequestException("Incomplete Data!");
-		}
 
 	}
 
