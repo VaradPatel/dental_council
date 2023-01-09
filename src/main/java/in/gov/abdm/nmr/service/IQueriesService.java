@@ -1,8 +1,10 @@
 package in.gov.abdm.nmr.service;
+import in.gov.abdm.nmr.dto.OpenQueriesResponseTo;
 import in.gov.abdm.nmr.dto.QueryCreateTo;
 import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 
+import java.math.BigInteger;
 import java.util.List;
 
 /**
@@ -13,15 +15,15 @@ public interface IQueriesService {
     /**
      * Creates query
      */
-    ResponseMessageTo createQueries(List<QueryCreateTo> queries) throws WorkFlowException;
+    ResponseMessageTo createQueries(QueryCreateTo queryCreateTo) throws WorkFlowException;
 
     /**
      * Get queries by hpProfileId
      */
-    List<QueryCreateTo> getQueriesByHpProfileId(Long hpProfileId);
+    List<OpenQueriesResponseTo> getQueriesByHpProfileId(BigInteger hpProfileId);
 
     /**
      *Update status of raised query
      */
-    ResponseMessageTo markQueryAsClosed(List<Long> queryIdList);
+    ResponseMessageTo markQueryAsClosed(List<BigInteger> queryIdList);
 }
