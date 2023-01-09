@@ -1,10 +1,7 @@
 package in.gov.abdm.nmr.service;
-
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.OtpException;
 
