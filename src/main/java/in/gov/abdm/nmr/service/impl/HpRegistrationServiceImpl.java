@@ -8,6 +8,7 @@ import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.IHpProfileMapper;
+import in.gov.abdm.nmr.repository.IWorkFlowRepository;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
@@ -31,6 +32,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	private IWorkFlowService iWorkFlowService;
 	@Autowired
 	private IRequestCounterService requestCounterService;
+	@Autowired
+	private IWorkFlowRepository workFlowRepository;
 
 	public HpRegistrationServiceImpl(HpProfileDaoServiceImpl hpProfileService, IHpProfileMapper iHpProfileMapper) {
 		super();
@@ -56,8 +59,16 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 		if(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(hpProfileId)){
 			throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
 		}
-		return iHpProfileMapper
+		HpProfileUpdateResponseTO hpProfileUpdateResponseTO = iHpProfileMapper
 				.HpProfileUpdateToDto(hpProfileService.updateHpProfile(hpProfileId, hpProfileUpdateRequest));
+		WorkFlowRequestTO workFlowRequestTO = WorkFlowRequestTO.builder().requestId(hpProfileUpdateRequest.getRequestId())
+				.applicationTypeId(ApplicationType.HP_REGISTRATION.getId())
+				.hpProfileId(hpProfileId)
+				.actionId(Action.SUBMIT.getId())
+				.actorId(Group.HEALTH_PROFESSIONAL.getId())
+				.build();
+		iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
+		return hpProfileUpdateResponseTO;
 	}
 
 	@Override
