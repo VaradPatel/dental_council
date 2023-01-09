@@ -8,4 +8,6 @@ import in.gov.abdm.nmr.entity.WorkFlowStatus;
 
 public interface IWorkFlowStatusRepository extends JpaRepository<WorkFlowStatus, BigInteger> {
 
+    WorkFlowStatus findWorkFLowStatusById(BigInteger id);
+
 }
