@@ -2,8 +2,6 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
-import in.gov.abdm.nmr.entity.WorkFlowAudit;
-import in.gov.abdm.nmr.entity.WorkFlowStatus;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.Group;
@@ -24,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.sql.Timestamp;
 
 @Service
 public class HpRegistrationServiceImpl implements IHpRegistrationService {
@@ -68,12 +65,13 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 			throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
 		}
 		
-		if (workFlowRepository.findByRequestId(hpProfileUpdateRequest.getRequestId()).getWorkFlowStatus().equals(WorkflowStatus.QUERY_RAISED.getId())) {
+		if (workFlowRepository.findByRequestId(hpProfileUpdateRequest.getRequestId()).getWorkFlowStatus().getId().equals(WorkflowStatus.QUERY_RAISED.getId())) {
 			
 			HpProfileUpdateResponseTO hpProfileUpdateResponseTO = iHpProfileMapper
 					.HpProfileUpdateToDto(hpProfileService.updateHpProfile(hpProfileId, hpProfileUpdateRequest));
 			
 			iWorkFlowService.assignQueriesBackToQueryCreator(hpProfileUpdateRequest.getRequestId());
+			return hpProfileUpdateResponseTO;
 		}
 		if(iWorkFlowService.isAnyApprovedWorkflowForHealthProfessional(hpProfileId)) { 
 			String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.HP_MODIFICATION.getId()));
@@ -87,13 +85,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 			iWorkFlowService.initiateSubmissionWorkFlow(approvedWorkFlowRequestTO);		
 			
 		}
-		//if approved profile
-		//new modificaiton worflow
-		//copy data from main table to audit table.
-		//update data in main table along with new request id.
-		//initiate new workflow.
 		return null;
-//		return hpProfileUpdateResponseTO;
 	}
 
 	@Override
