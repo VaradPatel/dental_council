@@ -103,7 +103,7 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
 //	HpProfile getByHpProfileId(BigInteger hpProfileId);
 	
 	   
-    @Query(value = "SELECT hp.* FROM hp_profile hp inner join user_detail ud on hp.user_detail = ud.id where ud.id=:userDetailId", nativeQuery = true)
+    @Query(value = "SELECT hp.* FROM hp_profile hp inner join user ud on hp.user_id = ud.id where ud.id=:userDetailId", nativeQuery = true)
     HpProfile findByUserDetail(BigInteger userDetailId);
 
 	HpProfile findHpProfileById(BigInteger id);
