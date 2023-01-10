@@ -7,6 +7,7 @@ import in.gov.abdm.nmr.entity.Group;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.WorkFlow;
 import in.gov.abdm.nmr.entity.WorkFlowAudit;
+import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
@@ -117,9 +118,21 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     @Override
     public void assignQueriesBackToQueryCreator(String requestId) {
         WorkFlow workflow = iWorkFlowRepository.findByRequestId(requestId);
-        workflow.setCurrentGroup(workflow.getPreviousGroup());
-        workflow.setPreviousGroup(workflow.getCurrentGroup());
+        Group previousGroup = workflow.getPreviousGroup();
+        Group currentGroup = workflow.getCurrentGroup();
+        workflow.setCurrentGroup(previousGroup);
+        workflow.setPreviousGroup(currentGroup);
         workflow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).get());
+
+       WorkFlowAudit workFlowAudit= WorkFlowAudit.builder().requestId(requestId)
+                .applicationType(workflow.getApplicationType())
+                .createdBy(workflow.getCreatedBy())
+                .action(iActionRepository.findById(Action.SUBMIT.getId()).get())
+                .workFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).get())
+                .previousGroup(currentGroup)
+                .currentGroup(previousGroup)
+                .build();
+        iWorkFlowAuditRepository.save(workFlowAudit);
     }
     
     private WorkFlow buildNewCollegeWorkFlow(String requestId, BigInteger applicationTypeId, BigInteger actionId, BigInteger actorId, INextGroup iNextGroup) {
