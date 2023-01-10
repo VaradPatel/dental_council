@@ -68,7 +68,6 @@ public class AuthServiceImpl implements IAuthService {
 
         LoginResponseTO loginResponseTO = new LoginResponseTO();
         loginResponseTO.setUserType(userDetail.getUserType().getId());
-        loginResponseTO.setUserSubType(userDetail.getUserSubType().getId());
 
         if (UserTypeEnum.HEALTH_PROFESSIONAL.getCode().equals(userDetail.getUserType().getId())) {
             HpProfile hp = hpProfileService.findByUserDetail(userDetail.getId());
@@ -77,7 +76,8 @@ public class AuthServiceImpl implements IAuthService {
             loginResponseTO.setBlacklisted(false);
 
         } else if (UserTypeEnum.COLLEGE.getCode().equals(userDetail.getUserType().getId())) {
-
+            loginResponseTO.setUserSubType(userDetail.getUserSubType().getId());
+            
             if (UserSubTypeEnum.COLLEGE.getCode().equals(userDetail.getUserSubType().getId())) {
                 loginResponseTO.setProfileId(collegeDaoService.findByUserDetail(userDetail.getId()).getId());
 
