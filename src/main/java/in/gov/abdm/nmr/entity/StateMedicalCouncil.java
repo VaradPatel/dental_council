@@ -18,7 +18,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "stateMedicalCouncil")
 public class StateMedicalCouncil extends CommonAuditEntity {
 
     @Id

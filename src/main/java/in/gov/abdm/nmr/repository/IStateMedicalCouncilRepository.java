@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface IStateMedicalCouncilRepository extends JpaRepository<StateMedicalCouncil, BigInteger> {
 
-    @Query(value = "SELECT smc.* FROM state_medical_council smc inner join user ud on smc.user_id = ud.id where ud.id=:userDetailId", nativeQuery = true)
+    @Query(value = "SELECT smc FROM stateMedicalCouncil smc join smc.user usr where usr.id=:userDetailId")
     StateMedicalCouncil findByUserDetail(BigInteger userDetailId);
 }

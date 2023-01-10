@@ -28,7 +28,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "hpProfile")
 public class HpProfile {
 
 	@Id
