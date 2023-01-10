@@ -123,14 +123,17 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         workflow.setCurrentGroup(previousGroup);
         workflow.setPreviousGroup(currentGroup);
         workflow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).get());
-
+        
        WorkFlowAudit workFlowAudit= WorkFlowAudit.builder().requestId(requestId)
+    		    .hpProfile(workflow.getHpProfile())
                 .applicationType(workflow.getApplicationType())
                 .createdBy(workflow.getCreatedBy())
                 .action(iActionRepository.findById(Action.SUBMIT.getId()).get())
                 .workFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).get())
                 .previousGroup(currentGroup)
                 .currentGroup(previousGroup)
+                .startDate(workflow.getStartDate())
+                .endDate(workflow.getEndDate())
                 .build();
         iWorkFlowAuditRepository.save(workFlowAudit);
     }
