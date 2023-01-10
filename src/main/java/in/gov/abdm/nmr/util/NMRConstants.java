@@ -54,6 +54,7 @@ public class NMRConstants {
     public static final String OTP_CONTENT_TYPE = "otp";
     public static final String OTP_MESSAGES_PROPERTIES_KEY = "otp";
     public static final String INFO_CONTENT_TYPE = "info";
+    public static final String COLLEGE_PREFIX_TO_GET_WORKFLOW_STATUS = "college-";
     public static final String CONTACT_NOT_NULL = "Contact cannot be null or empty";
     public static final String AADHAR_NOT_NULL = "AADHAR Number cannot be null or empty";
     public static final String TYPE_NOT_NULL = "Type cannot be null or empty";
@@ -64,6 +65,7 @@ public class NMRConstants {
     public static final String SENT_RESPONSE = "sent";
     public static final String USER_NOT_FOUND = "User not found";
     public static final String WORKFLOW_STATUS_NOT_FOUND = "Workflow status not found";
+    public static final String TEMPLATE_ID_NOT_FOUND_IN_PROPERTIES = "Template id not found in properties";
     public static final String TEMPLATE_NOT_FOUND = "Template not found";
     public static final String OLD_PASSWORD_NOT_MATCHING = "Old password not matching";
     public static final String PROBLEM_OCCURRED = "Problem Occurred";
