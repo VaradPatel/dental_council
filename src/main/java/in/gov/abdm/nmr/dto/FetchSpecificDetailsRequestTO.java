@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FetchSpecificDetailsRequestTO {
 
-    private String userType;
-    private String userSubType;
-    private String appStatusType;
-    private String hpProfileStatus;
+    private String groupName;
+    private String applicationType;
+    private String workFlowStatus;
 
 }

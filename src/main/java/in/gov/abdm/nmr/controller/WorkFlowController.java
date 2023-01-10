@@ -2,7 +2,6 @@ package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
@@ -44,7 +43,6 @@ public class WorkFlowController {
      */
     @PostMapping(INITIATE_WORK_FLOW_URL)
     public ResponseEntity<String> initiateWorkFlow(@RequestBody WorkFlowRequestTO requestTO) throws WorkFlowException {
-    public ResponseEntity<String> initiateWorkFlow(@RequestBody WorkFlowRequestTO requestTO) throws InvalidRequestException, WorkFlowException {
 
         if(requestTO.getRequestId() == null || REQUEST_ID_CREATION_STATUSES.contains(requestTO.getProfileStatus())){
             requestTO.setRequestId(NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(requestTO.getApplicationTypeId())));
@@ -58,9 +56,9 @@ public class WorkFlowController {
      * @return
      */
     @PostMapping(INITIATE_COLLEGE_WORK_FLOW_URL)
-    public ResponseEntity<String> initiateCollegeWorkFlow(@RequestBody WorkFlowRequestTO requestTO) throws InvalidRequestException, WorkFlowException {
+    public ResponseEntity<String> initiateCollegeWorkFlow(@RequestBody WorkFlowRequestTO requestTO) throws WorkFlowException {
         iWorkFlowService.initiateCollegeRegistrationWorkFlow(requestTO.getRequestId(),requestTO.getApplicationTypeId(),requestTO.getActorId(),requestTO.getActionId());
-        return ResponseEntity.ok("Success");
+        return ResponseEntity.ok(SUCCESS);
     }
 
 }

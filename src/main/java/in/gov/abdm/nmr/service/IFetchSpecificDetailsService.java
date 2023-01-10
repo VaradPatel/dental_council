@@ -14,5 +14,5 @@ public interface IFetchSpecificDetailsService {
      *
      * @return FetchSpecificDetailsResponseTO
      */
-    List<FetchSpecificDetailsResponseTO> fetchSpecificDetails(String userType, String userSubType, String applicationStatusType, String hpProfileStatus) throws InvalidRequestException;
+    List<FetchSpecificDetailsResponseTO> fetchSpecificDetails(String groupName, String applicationType, String workFlowStatus) throws InvalidRequestException;
 }
