@@ -13,7 +13,7 @@ public interface INotificationService {
     /**
      * Generates API
      */
-    ResponseMessageTo generateOtp(OtpGenerateRequestTo otpGenerateRequestTo) throws NoSuchAlgorithmException, OtpException, JsonProcessingException;
+    ResponseMessageTo generateOtp(OtpGenerateRequestTo otpGenerateRequestTo) throws OtpException;
 
     /**
      * Validates API
@@ -21,8 +21,15 @@ public interface INotificationService {
     OtpValidateResponseTo validateOtp(OtpValidateRequestTo otpValidateRequestTo) throws OtpException;
 
     /**
-     * Sends SMS and Email Notification on each status change
+     * Sends SMS and Email Notification to HP on each status change
      */
-    ResponseMessageTo sendNotificationOnStatusChange(BigInteger hpProfileId,BigInteger workFlowStatusId);
+    ResponseMessageTo sendNotificationOnStatusChangeForHP(BigInteger hpProfileId,BigInteger workFlowStatusId);
+
+
+    /**
+     * Sends SMS and Email Notification to College on each status change
+     */
+    ResponseMessageTo sendNotificationOnStatusChangeForCollege(BigInteger collegeId,BigInteger workFlowStatusId);
+
 
 }
