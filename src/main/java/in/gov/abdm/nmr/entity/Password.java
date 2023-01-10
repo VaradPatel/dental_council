@@ -27,7 +27,7 @@ public class Password extends CommonAuditEntity {
     private String value;
 
     @ManyToOne
-    @JoinColumn(name = "user_detail")
-    private User userDetail;
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }
