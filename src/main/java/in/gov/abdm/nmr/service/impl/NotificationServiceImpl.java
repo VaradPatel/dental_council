@@ -1,15 +1,23 @@
 package in.gov.abdm.nmr.service.impl;
+import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
+import in.gov.abdm.nmr.client.NotificationDBFClient;
 import in.gov.abdm.nmr.client.NotificationFClient;
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.service.OtpNotificationService;
+import in.gov.abdm.nmr.entity.HpProfile;
+import in.gov.abdm.nmr.entity.WorkFlowStatus;
+import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.IWorkFlowStatusRepository;
+import in.gov.abdm.nmr.service.INotificationService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -23,7 +31,7 @@ import in.gov.abdm.nmr.repository.OtpRepository;
  * Implementation of methods to generate and validate OTP
  */
 @Service
-public class OtpNotificationServiceImpl implements OtpNotificationService {
+public class NotificationServiceImpl implements INotificationService {
 
     @Autowired
     NmrOtpRepository nmrOtpRepository;
@@ -32,7 +40,19 @@ public class OtpNotificationServiceImpl implements OtpNotificationService {
     OtpRepository otpRepository;
 
     @Autowired
+    IHpProfileRepository hpProfileRepository;
+
+    @Autowired
+    IWorkFlowStatusRepository workFlowStatusRepository;
+
+    @Autowired
     NotificationFClient notificationFClient;
+
+    @Autowired
+    NotificationDBFClient notificationDBFClient;
+
+    @Autowired
+    MessageSource messageSource;
 
     @Value("${notification.origin}")
     private String notificationOrigin;
@@ -48,7 +68,7 @@ public class OtpNotificationServiceImpl implements OtpNotificationService {
      * @throws OtpException
      */
     @Override
-    public OtpGenerateResponseTo generateOtp(OtpGenerateRequestTo otpGenerateRequestTo) throws NoSuchAlgorithmException, OtpException, JsonProcessingException {
+    public ResponseMessageTo generateOtp(OtpGenerateRequestTo otpGenerateRequestTo) throws NoSuchAlgorithmException, OtpException, JsonProcessingException {
         if (nmrOtpRepository.findOtpGeneratedInLast15Minutes(otpGenerateRequestTo.getContact()) >= NMRConstants.OTP_GENERATION_MAX_ATTEMPTS) {
             throw new OtpException(NMRConstants.OTP_GENERATION_EXCEEDED);
         }
@@ -61,6 +81,11 @@ public class OtpNotificationServiceImpl implements OtpNotificationService {
         }
 
         nmrOtpRepository.saveOtpDetails(DigestUtils.sha256Hex(otp), otpGenerateRequestTo.getContact());
+
+        String templateId= messageSource.getMessage(NMRConstants.OTP_MESSAGES_PROPERTIES_KEY,null, Locale.ENGLISH);
+
+        Template template=notificationDBFClient.getTemplateById(new BigInteger(templateId));
+
 
         NotificationRequestTo notificationRequestTo=new NotificationRequestTo();
         notificationRequestTo.setOrigin(notificationOrigin);
@@ -77,17 +102,17 @@ public class OtpNotificationServiceImpl implements OtpNotificationService {
 
             KeyValue templateKeyValue = new KeyValue();
             templateKeyValue.setKey(NMRConstants.TEMPLATE_ID);
-            templateKeyValue.setValue(NMRConstants.EMAIL_TEMPLATE_ID);
+            templateKeyValue.setValue(template.getId().toString());
             KeyValue subjectKeyValue = new KeyValue();
             subjectKeyValue.setKey(NMRConstants.SUBJECT);
-            subjectKeyValue.setValue(NMRConstants.EMAIL_SUBJECT);
+            subjectKeyValue.setValue(NMRConstants.OTP_EMAIL_SUBJECT);
             KeyValue contentKeyValue = new KeyValue();
             contentKeyValue.setKey(NMRConstants.CONTENT);
-            contentKeyValue.setValue(NMRConstants.EMAIL_BODY + otp);
+            contentKeyValue.setValue(template.getMessage());
             notificationRequestTo.setNotification(List.of(templateKeyValue, subjectKeyValue, contentKeyValue));
 
-            OtpGenerateMessageTo response=notificationFClient.sendNotification(notificationRequestTo,Timestamp.valueOf(LocalDateTime.now()),"123");
-            return new OtpGenerateResponseTo(new OtpGenerateMessageTo(response.status().equalsIgnoreCase(NMRConstants.SENT_RESPONSE)?NMRConstants.SUCCESS_RESPONSE:NMRConstants.FAILURE_RESPONSE));
+            NotificationResponseTo response=notificationFClient.sendNotification(notificationRequestTo,Timestamp.valueOf(LocalDateTime.now()),"123");
+            return new ResponseMessageTo(response.status().equalsIgnoreCase(NMRConstants.SENT_RESPONSE)?NMRConstants.SUCCESS_RESPONSE:NMRConstants.FAILURE_RESPONSE);
 
         } else if (NotificationType.SMS.getNotificationType().equals(otpGenerateRequestTo.getType())) {
 
@@ -99,19 +124,18 @@ public class OtpNotificationServiceImpl implements OtpNotificationService {
 
             KeyValue templateKeyValue = new KeyValue();
             templateKeyValue.setKey(NMRConstants.TEMPLATE_ID);
-            templateKeyValue.setValue(NMRConstants.SMS_TEMPLATE_ID);
+            templateKeyValue.setValue(template.getId().toString());
             KeyValue contentKeyValue = new KeyValue();
             contentKeyValue.setKey(NMRConstants.CONTENT);
-            contentKeyValue.setValue(NMRConstants.SMS_BODY_PART_ONE + otp + NMRConstants.SMS_BODY_PART_TWO);
+            contentKeyValue.setValue(template.getMessage());
             notificationRequestTo.setNotification(List.of(templateKeyValue, contentKeyValue));
 
-            OtpGenerateMessageTo response=notificationFClient.sendNotification(notificationRequestTo,Timestamp.valueOf(LocalDateTime.now()),"123");
-            return new OtpGenerateResponseTo(new OtpGenerateMessageTo(response.status().equalsIgnoreCase(NMRConstants.SENT_RESPONSE)?NMRConstants.SUCCESS_RESPONSE:NMRConstants.FAILURE_RESPONSE));
+            NotificationResponseTo response=notificationFClient.sendNotification(notificationRequestTo,Timestamp.valueOf(LocalDateTime.now()),"123");
+            return new ResponseMessageTo(response.status().equalsIgnoreCase(NMRConstants.SENT_RESPONSE)?NMRConstants.SUCCESS_RESPONSE:NMRConstants.FAILURE_RESPONSE);
 
         } else {
             throw (new OtpException(NMRConstants.NO_SUCH_OTP_TYPE));
         }
-
     }
 
     /**
@@ -154,12 +178,57 @@ public class OtpNotificationServiceImpl implements OtpNotificationService {
         throw new OtpException(NMRConstants.OTP_NOT_FOUND);
     }
 
-    String getConvertedResponse(String response){
+    /**
+     * Sends notification on each status change
+     * @param hpProfileId to fetch mobile number and emailId of user
+     * @param workFlowStatusId to fetch status of application
+     * @return success/failure
+     */
+    @Override
+    public ResponseMessageTo sendNotificationOnStatusChange(BigInteger hpProfileId, BigInteger workFlowStatusId) {
 
-        if(response.equalsIgnoreCase("sent")){
-            return NMRConstants.SUCCESS_RESPONSE;
-        }else {
-            return NMRConstants.FAILURE_RESPONSE;
+        HpProfile hpProfile= hpProfileRepository.findHpProfileById(hpProfileId);
+        if(null==hpProfile){
+            return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
         }
+
+        WorkFlowStatus workFlowStatus=workFlowStatusRepository.findWorkFLowStatusById(workFlowStatusId);
+
+        if(null==workFlowStatus){
+            return new ResponseMessageTo(NMRConstants.WORKFLOW_STATUS_NOT_FOUND);
+        }
+
+        String templateId= messageSource.getMessage(workFlowStatus.getName().toLowerCase(),null, Locale.ENGLISH);
+
+        Template template=notificationDBFClient.getTemplateById(new BigInteger(templateId));
+
+        if(null==template){
+            return new ResponseMessageTo(NMRConstants.TEMPLATE_NOT_FOUND);
+        }
+
+        NotificationRequestTo notificationRequestTo=new NotificationRequestTo();
+        notificationRequestTo.setOrigin(notificationOrigin);
+        notificationRequestTo.setSender(notificationSender);
+        notificationRequestTo.setContentType(NMRConstants.INFO_CONTENT_TYPE);
+
+        notificationRequestTo.setType(List.of(NotificationType.EMAIL.getNotificationType(),NotificationType.SMS.getNotificationType()));
+        KeyValue emailReceiver = new KeyValue(NMRConstants.EMAIL_ID,hpProfile.getEmailId());
+        KeyValue mobileReceiver = new KeyValue(NMRConstants.MOBILE,hpProfile.getMobileNumber());
+
+        notificationRequestTo.setReceiver(List.of(emailReceiver,mobileReceiver));
+
+        KeyValue templateKeyValue = new KeyValue();
+        templateKeyValue.setKey(NMRConstants.TEMPLATE_ID);
+        templateKeyValue.setValue(template.getId().toString());
+        KeyValue subjectKeyValue = new KeyValue();
+        subjectKeyValue.setKey(NMRConstants.SUBJECT);
+        subjectKeyValue.setValue(NMRConstants.INFO_EMAIL_SUBJECT);
+        KeyValue contentKeyValue = new KeyValue();
+        contentKeyValue.setKey(NMRConstants.CONTENT);
+        contentKeyValue.setValue(template.getMessage());
+        notificationRequestTo.setNotification(List.of(templateKeyValue, subjectKeyValue, contentKeyValue));
+        NotificationResponseTo response=notificationFClient.sendNotification(notificationRequestTo,Timestamp.valueOf(LocalDateTime.now()),"123");
+        return new ResponseMessageTo(response.status().equalsIgnoreCase(NMRConstants.SENT_RESPONSE)?NMRConstants.SUCCESS_RESPONSE:NMRConstants.FAILURE_RESPONSE);
     }
+
 }
