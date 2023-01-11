@@ -69,9 +69,9 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
     }
 
     private List<IFetchSpecificDetails> fetchDetailsForListingByStatus(String groupName, String applicationType, String workFlowStatus){
-        if(WorkFlowStatusEnum.APPROVED.getDescription().equals(workFlowStatus)){
+        if(WorkflowStatus.APPROVED.getDescription().equals(workFlowStatus)){
             return iFetchSpecificDetailsRepository.fetchDetailsWithApprovedStatusForListing(groupName,applicationType,workFlowStatus);
-        } else if (WorkFlowStatusEnum.PENDING.getDescription().equals(workFlowStatus)) {
+        } else if (WorkflowStatus.PENDING.getDescription().equals(workFlowStatus)) {
             return iFetchSpecificDetailsRepository.fetchDetailsWithPendingStatusForListing(groupName,applicationType,workFlowStatus);
         }
         return iFetchSpecificDetailsRepository.fetchDetailsForListing(groupName,applicationType,workFlowStatus);
@@ -89,7 +89,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
     }
 
     private void validateWorkFlowStatus(String workFlowStatus) throws InvalidRequestException {
-        if(workFlowStatus==null || Arrays.stream(WorkFlowStatusEnum.values()).noneMatch(t -> t.getDescription().equals(workFlowStatus))){
+        if(workFlowStatus==null || Arrays.stream(WorkflowStatus.values()).noneMatch(t -> t.getDescription().equals(workFlowStatus))){
             throw new InvalidRequestException(INVALID_WORK_FLOW_STATUS);
         }
     }
