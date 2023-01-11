@@ -5,9 +5,12 @@ import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.IHpProfileMapper;
+import in.gov.abdm.nmr.repository.IWorkFlowAuditRepository;
+import in.gov.abdm.nmr.repository.IWorkFlowRepository;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
@@ -31,6 +34,11 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	private IWorkFlowService iWorkFlowService;
 	@Autowired
 	private IRequestCounterService requestCounterService;
+	@Autowired
+	private IWorkFlowRepository workFlowRepository;
+	
+	@Autowired
+	private IWorkFlowAuditRepository iWorkFlowAuditRepository;
 
 	public HpRegistrationServiceImpl(HpProfileDaoServiceImpl hpProfileService, IHpProfileMapper iHpProfileMapper) {
 		super();
@@ -56,8 +64,28 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 		if(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(hpProfileId)){
 			throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
 		}
-		return iHpProfileMapper
-				.HpProfileUpdateToDto(hpProfileService.updateHpProfile(hpProfileId, hpProfileUpdateRequest));
+		
+		if (workFlowRepository.findByRequestId(hpProfileUpdateRequest.getRequestId()).getWorkFlowStatus().getId().equals(WorkflowStatus.QUERY_RAISED.getId())) {
+			
+			HpProfileUpdateResponseTO hpProfileUpdateResponseTO = iHpProfileMapper
+					.HpProfileUpdateToDto(hpProfileService.updateHpProfile(hpProfileId, hpProfileUpdateRequest));
+			
+			iWorkFlowService.assignQueriesBackToQueryCreator(hpProfileUpdateRequest.getRequestId());
+			return hpProfileUpdateResponseTO;
+		}
+		if(iWorkFlowService.isAnyApprovedWorkflowForHealthProfessional(hpProfileId)) { 
+			String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.HP_MODIFICATION.getId()));
+
+			WorkFlowRequestTO approvedWorkFlowRequestTO = WorkFlowRequestTO.builder().requestId(requestId)
+					.applicationTypeId(ApplicationType.HP_MODIFICATION.getId())
+					.hpProfileId(hpProfileId)
+					.actionId(Action.SUBMIT.getId())
+					.actorId(Group.HEALTH_PROFESSIONAL.getId())
+					.build();
+			iWorkFlowService.initiateSubmissionWorkFlow(approvedWorkFlowRequestTO);		
+			
+		}
+		return null;
 	}
 
 	@Override

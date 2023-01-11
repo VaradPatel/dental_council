@@ -15,5 +15,9 @@ public interface IWorkFlowService {
     void initiateCollegeRegistrationWorkFlow(String requestId, BigInteger applicationTypeId, BigInteger actorId, BigInteger actionId) throws WorkFlowException;
 
     boolean isAnyActiveWorkflowForHealthProfessional(BigInteger hpProfileId);
+    
+    boolean isAnyApprovedWorkflowForHealthProfessional(BigInteger hpProfileId);
+    
+    void assignQueriesBackToQueryCreator(String requestId);
 
 }

@@ -7,9 +7,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
-import in.gov.abdm.nmr.entity.CommonAuditEntity;
-import in.gov.abdm.nmr.entity.StateMedicalCouncil;
-import in.gov.abdm.nmr.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,9 +23,8 @@ public class NmcProfile extends CommonAuditEntity {
     private BigInteger id;
 
     @OneToOne
-    @JoinColumn(name = "userDetail")
-    private User userDetail;
-
+    @JoinColumn(name = "user_id")
+    private User user;
 
     private String firstName;
     private String lastName;

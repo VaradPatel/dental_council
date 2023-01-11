@@ -7,7 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import in.gov.abdm.nmr.entity.CommonAuditEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "stateMedicalCouncil")
 public class StateMedicalCouncil extends CommonAuditEntity {
 
     @Id
@@ -30,8 +29,4 @@ public class StateMedicalCouncil extends CommonAuditEntity {
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "state")
     private String state;
-    
-//    @OneToOne
-//    @JoinColumn(name = "userDetail", referencedColumnName = "id")
-//    private User userDetail;
 }

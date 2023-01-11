@@ -26,6 +26,7 @@ public class NMRConstants {
     public static final String AADHAR_SERVICE_SEND_OTP = "/api/v3/aadhaar/sendOtp";
     public static final String AADHAR_SERVICE_VERIFY_OTP = "/api/v3/aadhaar/verifyOtp";
     public static final String NOTIFICATION_SERVICE_SEND_MESSAGE = "/internal/v3/notification/message";
+    public static final String NOTIFICATION_DB_SERVICE_GET_TEMPLATE = "/internal/v3/notification/template/id/{id}";
     public static final String RESET_PASSWORD = "/resetPassword";
     public static final String CHANGE_PASSWORD = "/changePassword";
     public static final String RAISE_QUERY = "/raiseQuery";
@@ -37,31 +38,35 @@ public class NMRConstants {
     public static final String INITIATE_COLLEGE_WORK_FLOW_URL="/initiateCollegeWorkFlow";
 
     public static final String NOTIFICATION_SERVICE = "notification";
+    public static final String NOTIFICATION_DB_SERVICE = "notification-db";
     public static final String AADHAAR_SERVICE = "aadhaar";
     public static final String CLOSED_STATUS = "closed";
+    public static final String OPEN_STATUS = "open";
 
     public static final String GLOBAL_NOTIFICATION_ENDPOINT = "${global.notification.endpoint}";
-    public static final String GLOBAL_AADHAAR_ENDPOINT = "${global.aadhaar.endpoint}";
+     public static final String GLOBAL_AADHAAR_ENDPOINT = "${global.aadhaar.endpoint}";
 
     public static final String OTP_GENERATION_EXCEEDED = "OTP Generation Attempts Exceeded";
     public static final String OTP_ATTEMPTS_EXCEEDED = "OTP Attempts Exceeded";
     public static final String NO_SUCH_OTP_TYPE = "No such OTP Type";
-    public static final String EMAIL_SUBJECT = "NMR : Email Verification OTP";
-    public static final String EMAIL_BODY = "Your One time password to verify the email address is :";
-    public static final String SMS_BODY_PART_ONE = "OTP for creating your ABHA is ";
-    public static final String SMS_BODY_PART_TWO = " This One Time Password will be valid for 10 mins ABDM National Health Authority";
+    public static final String OTP_EMAIL_SUBJECT = "NMR : Email Verification OTP";
+    public static final String INFO_EMAIL_SUBJECT = "NMR : Status Changed";
     public static final String OTP_CONTENT_TYPE = "otp";
+    public static final String OTP_MESSAGES_PROPERTIES_KEY = "otp";
+    public static final String INFO_CONTENT_TYPE = "info";
+    public static final String COLLEGE_PREFIX_TO_GET_WORKFLOW_STATUS = "college-";
     public static final String CONTACT_NOT_NULL = "Contact cannot be null or empty";
     public static final String AADHAR_NOT_NULL = "AADHAR Number cannot be null or empty";
     public static final String TYPE_NOT_NULL = "Type cannot be null or empty";
     public static final String TRANSACTION_ID_NOT_NULL = "Transaction Id cannot be null or empty";
     public static final String OTP_NOT_NULL = "OTP cannot be null or empty";
-    public static final String SMS_TEMPLATE_ID = "1007164181681962323";
-    public static final String EMAIL_TEMPLATE_ID = "1007164181681962323";
     public static final String SUCCESS_RESPONSE = "Success";
     public static final String FAILURE_RESPONSE = "Fail";
     public static final String SENT_RESPONSE = "sent";
     public static final String USER_NOT_FOUND = "User not found";
+    public static final String WORKFLOW_STATUS_NOT_FOUND = "Workflow status not found";
+    public static final String TEMPLATE_ID_NOT_FOUND_IN_PROPERTIES = "Template id not found in properties";
+    public static final String TEMPLATE_NOT_FOUND = "Template not found";
     public static final String OLD_PASSWORD_NOT_MATCHING = "Old password not matching";
     public static final String PROBLEM_OCCURRED = "Problem Occurred";
     public static final String USERNAME_NOT_NULL = "Username cannot be null or empty";
