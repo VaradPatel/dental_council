@@ -61,10 +61,7 @@ public class DashboardController {
      */
     @PostMapping(FETCH_SPECIFIC_DETAILS_URL)
     public ResponseEntity<List<FetchSpecificDetailsResponseTO>> fetchSpecificDetails(@RequestBody FetchSpecificDetailsRequestTO requestTO) throws InvalidRequestException {
-        return ResponseEntity.ok(iFetchSpecificDetailsService.fetchSpecificDetails(requestTO.getUserType(),
-                requestTO.getUserSubType(),
-                requestTO.getAppStatusType(),
-                requestTO.getHpProfileStatus()));
+        return ResponseEntity.ok(iFetchSpecificDetailsService.fetchSpecificDetails(requestTO.getGroupName(), requestTO.getApplicationType(), requestTO.getWorkFlowStatus()));
     }
 
     /**

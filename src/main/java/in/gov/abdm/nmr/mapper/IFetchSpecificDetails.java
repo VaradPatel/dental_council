@@ -34,17 +34,12 @@ public interface IFetchSpecificDetails {
     /**
      * Abstract method to fetch the type of the user who had verified the application
      */
-    String getVerifiedByUserType();
+    String getGroupName();
 
     /**
-     * Abstract method to fetch the subtype of the user who had verified the application
+     * Abstract method to fetch the current Workflow Status of the application
      */
-    String getVerifiedByUserSubType();
-
-    /**
-     * Abstract method to fetch the current HP Profile Status of the application
-     */
-    String getHpProfileStatus();
+    String getWorkFlowStatus();
 
 
 }

@@ -121,6 +121,10 @@ public class NMRConstants {
     public static final String APPLICATION_TYPE_NAME="applicationTypeName";
 
     public static final String GROUP_ID="groupId";
+
+    public static final String GROUP_NAME="groupName";
+
+    public static final String WORK_FLOW_STATUS="workFlowStatus";
     public static final String FETCH_STATUS_WISE_COUNT_BY_GROUP_AND_APPLICATION_TYPE_QUERY="SELECT ws.name as name, COUNT(w) as count " +
             "FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id " +
             "WHERE w.application_type_id = :"+APPLICATION_TYPE_ID+" AND  w.current_group_id = :"+GROUP_ID+" " +
@@ -132,11 +136,39 @@ public class NMRConstants {
             "WHERE wa.application_type_id = 1 AND wa.previous_group_id = :"+GROUP_ID +" "+
             "AND wa.action_id = 4"+
             "GROUP BY ws.name";
-    public static final String FETCH_DETAILS_FOR_LISTING_BY_USER_TYPE_QUERY = "SELECT hvs.registrationDetails.registrationNo as registrationNo, hvs.hpProfile.fullName as nameOfApplicant, hvs.registrationDetails.stateMedicalCouncil.name as nameOfStateCouncil, hvs.registrationDetails.registrationDate as dateOfSubmission, hvs.verifiedBy.userType.name as verifiedByUserType, hvs.verifiedBy.userSubType.name as verifiedByUserSubType, hvs.hpProfile.hpProfileStatus.name as hpProfileStatus "+
-            "FROM HpVerificationStatus hvs "+
-            "WHERE hvs.verifiedBy.userType.name =:userType "+
-            "AND hvs.applicationStatusType.name =:applicationStatusType "+
-            "AND hvs.hpProfile.hpProfileStatus.name =:hpProfileStatus";
+
+    public static final String FETCH_DETAILS_FOR_LISTING_QUERY = "SELECT rd.registration_no as registrationNo, hp.full_name as nameOfApplicant, smc.name as nameOfStateCouncil, rd.registration_date as dateOfSubmission, g.name as groupName, ws.name as workFlowStatus " +
+            "FROM work_flow w JOIN registration_details rd ON w.hp_profile_id=rd.hp_profile_id " +
+            "JOIN hp_profile hp ON w.hp_profile_id = hp.id " +
+            "JOIN application_type a ON w.application_type_id = a.id " +
+            "JOIN \"group\" g ON w.previous_group_id=g.id " +
+            "JOIN work_flow_status ws ON w.work_flow_status_id= ws.id " +
+            "JOIN state_medical_council smc ON rd.state_medical_council_id = smc.id " +
+            "WHERE g.name = :"+GROUP_NAME+ " " +
+            "AND a.name = :"+APPLICATION_TYPE_NAME+" " +
+            "AND ws.name = :"+WORK_FLOW_STATUS+" ";
+
+    public static final String FETCH_DETAILS_WITH_PENDING_STATUS_FOR_LISTING_QUERY = "SELECT rd.registration_no as registrationNo, hp.full_name as nameOfApplicant, smc.name as nameOfStateCouncil, rd.registration_date as dateOfSubmission, g.name as groupName, ws.name as workFlowStatus " +
+            "FROM work_flow w JOIN registration_details rd ON w.hp_profile_id = rd.hp_profile_id " +
+            "JOIN hp_profile hp ON w.hp_profile_id = hp.id " +
+            "JOIN application_type a ON w.application_type_id = a.id " +
+            "JOIN \"group\" g ON w.current_group_id = g.id " +
+            "JOIN work_flow_status ws ON w.work_flow_status_id = ws.id " +
+            "JOIN state_medical_council smc ON rd.state_medical_council_id = smc.id " +
+            "WHERE g.name = :"+GROUP_NAME+ " " +
+            "AND a.name = :"+APPLICATION_TYPE_NAME+" " +
+            "AND ws.name = :"+WORK_FLOW_STATUS+" ";
+
+    public static final String FETCH_DETAILS_WITH_APPROVED_STATUS_FOR_LISTING_QUERY = "SELECT rd.registration_no as registrationNo, hp.full_name as nameOfApplicant, smc.name as nameOfStateCouncil, rd.registration_date as dateOfSubmission, g.name as groupName, ws.name as workFlowStatus " +
+            "FROM work_flow_audit wa JOIN registration_details rd ON w.hp_profile_id=rd.hp_profile_id " +
+            "JOIN hp_profile hp ON wa.hp_profile_id = hp.id " +
+            "JOIN application_type a ON wa.application_type_id = a.id " +
+            "JOIN \"group\" g ON wa.previous_group_id=g.id " +
+            "JOIN work_flow_status ws ON wa.work_flow_status_id= ws.id " +
+            "JOIN state_medical_council smc ON rd.state_medical_council_id = smc.id " +
+            "WHERE g.name = :"+GROUP_NAME+ " " +
+            "AND a.name = :"+APPLICATION_TYPE_NAME+" " +
+            "AND ws.name = :"+WORK_FLOW_STATUS+" ";
 
     public static final String FETCH_DETAILS_BY_REG_NO_QUERY = "SELECT hvs.registrationDetails.registrationNo as registrationNo, hvs.hpProfile.fullName as nameOfApplicant, hvs.registrationDetails.stateMedicalCouncil.name as nameOfStateCouncil, hvs.registrationDetails.registrationDate as dateOfSubmission, hvs.verifiedBy.userType.name as verifiedByUserType, hvs.verifiedBy.userSubType.name as verifiedByUserSubType, hvs.hpProfile.hpProfileStatus.name as hpProfileStatus "+
             "FROM HpVerificationStatus hvs "+
@@ -156,8 +188,8 @@ public class NMRConstants {
     public static final String INVALID_USER_TYPE="Invalid User type. Expected: Health Professional, College, State Medical Council or National Medical Council";
 
     public static final String INVALID_GROUP="Invalid Group. Expected: Health Professional, State Medical Council, National Medical Council, College Dean, College Registrar or College Admin";
-
-    public static final String INVALID_APPLICATION_TYPE="Invalid Application Type. Expected: Health Professional Registration, Health Professional Modification, Health Professional Temporary Suspension Request, Health Professional Permanent Suspension Request, Health Professional Activate License, College Registration ";
+    public static final String INVALID_WORK_FLOW_STATUS="Invalid Workflow Status. Expected: Pending, Approved, Query Raised, Rejected, Suspended or Blacklisted";
+    public static final String INVALID_APPLICATION_TYPE="Invalid Application Type. Expected: HP Registration, HP Modification, Temporary Suspension, Permanent Suspension, Activate License, College Registration ";
     public static final String STATE_MEDICAL_COUNCIL_ID="state_medical_council_id";
 
     public static final String REGISTRATION_DETAILS_ID = "registration_details_id";

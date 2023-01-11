@@ -1,25 +1,23 @@
 package in.gov.abdm.nmr.repository;
 
-import static in.gov.abdm.nmr.entity.HpProfile_.HP_PROFILE_STATUS;
-import static in.gov.abdm.nmr.util.NMRConstants.APPLICATION_STATUS_TYPE;
-import static in.gov.abdm.nmr.util.NMRConstants.FETCH_DETAILS_FOR_LISTING_BY_USER_TYPE_QUERY;
-import static in.gov.abdm.nmr.util.NMRConstants.USER_TYPE;
-
-import java.math.BigInteger;
-import java.util.List;
-
+import in.gov.abdm.nmr.entity.WorkFlow;
+import in.gov.abdm.nmr.mapper.IFetchSpecificDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import in.gov.abdm.nmr.entity.HpVerificationStatus;
-import in.gov.abdm.nmr.mapper.IFetchSpecificDetails;
+import java.math.BigInteger;
+import java.util.List;
+
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @Repository
-public interface IFetchSpecificDetailsRepository extends JpaRepository<HpVerificationStatus, BigInteger> {
-
-    @Query(value = FETCH_DETAILS_FOR_LISTING_BY_USER_TYPE_QUERY)
-    List<IFetchSpecificDetails> fetchDetailsForListingByUserType(@Param(USER_TYPE) String userType, @Param(APPLICATION_STATUS_TYPE) String applicationStatusType, @Param(HP_PROFILE_STATUS) String hpProfileStatus);
-
+public interface IFetchSpecificDetailsRepository extends JpaRepository<WorkFlow, BigInteger> {
+    @Query(value = FETCH_DETAILS_FOR_LISTING_QUERY,nativeQuery = true)
+    List<IFetchSpecificDetails> fetchDetailsForListing(@Param(GROUP_NAME) String groupName, @Param(APPLICATION_TYPE_NAME) String applicationTypeName, @Param(WORK_FLOW_STATUS) String workFlowStatus);
+    @Query(value = FETCH_DETAILS_WITH_PENDING_STATUS_FOR_LISTING_QUERY,nativeQuery = true)
+    List<IFetchSpecificDetails> fetchDetailsWithPendingStatusForListing(@Param(GROUP_NAME) String groupName, @Param(APPLICATION_TYPE_NAME) String applicationTypeName, @Param(WORK_FLOW_STATUS) String workFlowStatus);
+    @Query(value = FETCH_DETAILS_WITH_APPROVED_STATUS_FOR_LISTING_QUERY,nativeQuery = true)
+    List<IFetchSpecificDetails> fetchDetailsWithApprovedStatusForListing(@Param(GROUP_NAME) String groupName, @Param(APPLICATION_TYPE_NAME) String applicationTypeName, @Param(WORK_FLOW_STATUS) String workFlowStatus);
 }
