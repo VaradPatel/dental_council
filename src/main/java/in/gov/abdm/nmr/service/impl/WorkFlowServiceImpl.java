@@ -1,11 +1,16 @@
 package in.gov.abdm.nmr.service.impl;
 
+import java.io.IOException;
 import java.math.BigInteger;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.entity.Group;
 import in.gov.abdm.nmr.entity.HpProfile;
@@ -24,10 +29,13 @@ import in.gov.abdm.nmr.repository.INMRWorkFlowConfigurationRepository;
 import in.gov.abdm.nmr.repository.IWorkFlowAuditRepository;
 import in.gov.abdm.nmr.repository.IWorkFlowRepository;
 import in.gov.abdm.nmr.repository.IWorkFlowStatusRepository;
+import in.gov.abdm.nmr.service.IElasticsearchDaoService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 
 @Service
 public class WorkFlowServiceImpl implements IWorkFlowService {
+    
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * Injecting IWorkFlowRepository bean instead of an explicit object creation to achieve
@@ -67,8 +75,12 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
     @Autowired
     private IHpProfileStatusRepository hpProfileStatusRepository;
+    
+    @Autowired
+    private IElasticsearchDaoService elasticsearchDaoService;
 
     @Override
+    @Transactional
     public void initiateSubmissionWorkFlow(WorkFlowRequestTO requestTO) throws WorkFlowException {
 
         INextGroup iNextGroup=inmrWorkFlowConfigurationRepository.getNextGroup(requestTO.getApplicationTypeId(), requestTO.getActorId(), requestTO.getActionId());
@@ -90,10 +102,26 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             }
             hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
             iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO,iNextGroup,hpProfile));
+            
+            addOrUpdateToHpElasticIndex(iNextGroup, hpProfile);
         }else {
             throw new WorkFlowException("Next Group Not Found", HttpStatus.BAD_REQUEST);
         }
+    }
 
+    private void addOrUpdateToHpElasticIndex(INextGroup iNextGroup, HpProfile hpProfile) throws WorkFlowException {
+        if (isLastStepOfWorkFlow(iNextGroup)) {
+            try {
+                elasticsearchDaoService.indexHP(hpProfile.getId());
+            } catch (ElasticsearchException | IOException e) {
+                LOGGER.error("Exception while indexing HP", e);
+                throw new WorkFlowException("Exception while indexing HP", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+    }
+    
+    private boolean isLastStepOfWorkFlow(INextGroup nextGroup){
+        return nextGroup.getAssignTo() == null;
     }
 
     public boolean isAnyActiveWorkflowForHealthProfessional(BigInteger hpProfileId){
@@ -128,7 +156,6 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         Group currentGroup = workflow.getCurrentGroup();
         workflow.setCurrentGroup(previousGroup);
         workflow.setPreviousGroup(currentGroup);
-        workflow.setAction(iActionRepository.findById(Action.SUBMIT.getId()).get());
         workflow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).get());
         
        WorkFlowAudit workFlowAudit= WorkFlowAudit.builder().requestId(requestId)

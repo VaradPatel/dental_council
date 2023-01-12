@@ -15,7 +15,6 @@ import javax.persistence.Tuple;
 import javax.persistence.criteria.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -79,6 +78,7 @@ import in.gov.abdm.nmr.repository.IAddressRepository;
 import in.gov.abdm.nmr.repository.IAddressTypeRepository;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.repository.INationalityRepository;
+import in.gov.abdm.nmr.repository.IQualificationDetailRepository;
 import in.gov.abdm.nmr.repository.IScheduleRepository;
 import in.gov.abdm.nmr.repository.IStateMedicalCouncilRepository;
 import in.gov.abdm.nmr.repository.IStateMedicalCouncilStatusRepository;
@@ -86,8 +86,7 @@ import in.gov.abdm.nmr.repository.IStateRepository;
 import in.gov.abdm.nmr.repository.LanguageRepository;
 import in.gov.abdm.nmr.repository.LanguagesKnownRepository;
 import in.gov.abdm.nmr.repository.OrganizationTypeRepository;
-import in.gov.abdm.nmr.repository.QualificationDetailRepository;
-import in.gov.abdm.nmr.repository.RegistrationDetailRepository;
+import in.gov.abdm.nmr.repository.IRegistrationDetailRepository;
 import in.gov.abdm.nmr.repository.SubDistrictRepository;
 import in.gov.abdm.nmr.repository.SuperSpecialityRepository;
 import in.gov.abdm.nmr.repository.VillagesRepository;
@@ -105,9 +104,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
 	private IAddressRepository iAddressRepository;
 
-	private RegistrationDetailRepository registrationDetailRepository;
+	private IRegistrationDetailRepository registrationDetailRepository;
 
-	private QualificationDetailRepository qualificationDetailRepository;
+	private IQualificationDetailRepository qualificationDetailRepository;
 
 	private WorkProfileRepository workProfileRepository;
 
@@ -144,8 +143,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 	private VillagesRepository villagesRepository;
 
 	public HpProfileDaoServiceImpl(IHpProfileMapper ihHpProfileMapper, IHpProfileRepository iHpProfileRepository,
-			IAddressRepository iAddressRepository, QualificationDetailRepository qualificationDetailRepository,
-			RegistrationDetailRepository registrationDetailRepository, WorkProfileRepository workProfileRepository,
+			IAddressRepository iAddressRepository, IQualificationDetailRepository qualificationDetailRepository,
+			IRegistrationDetailRepository registrationDetailRepository, WorkProfileRepository workProfileRepository,
 			SuperSpecialityRepository superSpecialityRepository, DistrictRepository districtRepository,
 
 			IStateRepository stateRepository, INationalityRepository iNationalityRepository,
@@ -1341,4 +1340,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 		return hpProfilePictureResponseTO;		
 	}
 
+	@Override
+	public HpProfile findbyId(BigInteger id) {
+	    return iHpProfileRepository.findById(id).orElse(null);
+	}
 }

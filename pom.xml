@@ -23,6 +23,7 @@
 		<java.version>17</java.version>
 		<org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
 		<org.project.lombok.mapstruct.binding.version>0.2.0</org.project.lombok.mapstruct.binding.version>
+		<jakarta-json.version>2.1.1</jakarta-json.version>
 	</properties>
 
 	<dependencyManagement>
@@ -139,7 +140,6 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
-			<version>5.8.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -147,7 +147,11 @@
 			<artifactId>spring-cloud-starter-feign</artifactId>
 			<version>1.4.7.RELEASE</version>
 		</dependency>
-
+		<dependency>
+			<groupId>co.elastic.clients</groupId>
+			<artifactId>elasticsearch-java</artifactId>
+			<version>8.5.3</version>
+		</dependency>
 	</dependencies>
 
 	<build>

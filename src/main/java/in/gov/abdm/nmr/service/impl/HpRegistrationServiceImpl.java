@@ -33,10 +33,10 @@ import in.gov.abdm.nmr.mapper.IHpProfileAuditMapper;
 import in.gov.abdm.nmr.mapper.IHpProfileMapper;
 import in.gov.abdm.nmr.repository.IHpProfileAuditRepository;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.IRegistrationDetailRepository;
 import in.gov.abdm.nmr.repository.IWorkFlowAuditRepository;
 import in.gov.abdm.nmr.repository.IWorkFlowRepository;
 import in.gov.abdm.nmr.repository.RegistrationDetailAuditRepository;
-import in.gov.abdm.nmr.repository.RegistrationDetailRepository;
 import in.gov.abdm.nmr.repository.WorkProfileAuditRepository;
 import in.gov.abdm.nmr.repository.WorkProfileRepository;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
@@ -73,7 +73,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	private IHpProfileRepository iHpProfileRepository;
 	
 	@Autowired
-	private RegistrationDetailRepository registrationDetailRepository;
+	private IRegistrationDetailRepository registrationDetailRepository;
 	
 	@Autowired
 	private RegistrationDetailAuditRepository registrationDetailAuditRepository;
