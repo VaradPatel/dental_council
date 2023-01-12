@@ -1,24 +1,30 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.NextGroupTO;
-import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
+import java.math.BigInteger;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.entity.Group;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.WorkFlow;
 import in.gov.abdm.nmr.entity.WorkFlowAudit;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
-import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.INextGroup;
-import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.repository.IActionRepository;
+import in.gov.abdm.nmr.repository.IApplicationTypeRepository;
+import in.gov.abdm.nmr.repository.IGroupRepository;
+import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.IHpProfileStatusRepository;
+import in.gov.abdm.nmr.repository.INMRWorkFlowConfigurationRepository;
+import in.gov.abdm.nmr.repository.IWorkFlowAuditRepository;
+import in.gov.abdm.nmr.repository.IWorkFlowRepository;
+import in.gov.abdm.nmr.repository.IWorkFlowStatusRepository;
 import in.gov.abdm.nmr.service.IWorkFlowService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
-import java.math.BigInteger;
 
 @Service
 public class WorkFlowServiceImpl implements IWorkFlowService {
@@ -122,6 +128,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         Group currentGroup = workflow.getCurrentGroup();
         workflow.setCurrentGroup(previousGroup);
         workflow.setPreviousGroup(currentGroup);
+        workflow.setAction(iActionRepository.findById(Action.SUBMIT.getId()).get());
         workflow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).get());
         
        WorkFlowAudit workFlowAudit= WorkFlowAudit.builder().requestId(requestId)

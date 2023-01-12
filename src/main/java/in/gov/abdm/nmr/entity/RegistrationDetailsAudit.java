@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,7 +24,8 @@ import static in.gov.abdm.nmr.util.NMRConstants.STATE_MEDICAL_COUNCIL_ID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class RegistrationDetails extends CommonAuditEntity {
+@Builder
+public class RegistrationDetailsAudit extends CommonAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -84,5 +86,4 @@ public class RegistrationDetails extends CommonAuditEntity {
 
     private String requestId;
 
-    
 }

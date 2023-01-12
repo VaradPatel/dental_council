@@ -2,9 +2,9 @@ package in.gov.abdm.nmr.dto;
 
 import java.util.List;
 
-import lombok.Value;
+import lombok.Data;
 
-@Value
+@Data
 public class HpProfileUpdateRequestTO {
 
 	private PersonalDetailsTO personalDetails;
