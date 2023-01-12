@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.exception;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
@@ -58,7 +57,7 @@ public class NmrExceptionAdvice {
 
     @ExceptionHandler({Exception.class})
     public ResponseEntity<ErrorTO> handleException(HttpServletRequest req, Throwable ex){
-        LOGGER.error(ex);
+        LOGGER.error("Unexpected error occured", ex);
         ErrorTO error = new ErrorTO(new Date(), HttpStatus.INTERNAL_SERVER_ERROR.value(), "Unexpected error occured", req.getServletPath());
 
         HttpHeaders headers = new HttpHeaders();
