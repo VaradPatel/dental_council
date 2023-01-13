@@ -20,4 +20,6 @@ public interface IWorkFlowService {
     
     void assignQueriesBackToQueryCreator(String requestId);
 
+    boolean isAnyActiveWorkflowWithOtherApplicationType(BigInteger hpProfileId, BigInteger applicationTypeId);
+
 }

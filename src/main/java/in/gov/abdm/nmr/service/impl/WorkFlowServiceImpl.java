@@ -84,14 +84,23 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             }
             hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
             iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO,iNextGroup,hpProfile));
+
+
         }else {
             throw new WorkFlowException("Next Group Not Found", HttpStatus.BAD_REQUEST);
         }
 
     }
 
+
+    @Override
     public boolean isAnyActiveWorkflowForHealthProfessional(BigInteger hpProfileId){
         return iWorkFlowRepository.findPendingWorkflow(hpProfileId) != null;
+    }
+
+    @Override
+    public boolean isAnyActiveWorkflowWithOtherApplicationType(BigInteger hpProfileId, BigInteger applicationTypeId){
+        return iWorkFlowRepository.findAnyActiveWorkflowWithDifferentApplicationType(hpProfileId, applicationTypeId) == null;
     }
 
     @Override

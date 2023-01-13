@@ -54,7 +54,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
                 return jwtAuthtoken;
             }
         } catch (Exception e) {
-            LOGGER.error("Exception occured while authenticating JWT token", e);
+            LOGGER.error("Exception occurred while authenticating JWT token", e);
         }
         throw new AuthenticationServiceException("Unable to authenticate JWT token");
     }
