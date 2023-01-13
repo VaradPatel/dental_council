@@ -3,11 +3,14 @@ package in.gov.abdm.nmr.security.config;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.actuate.audit.AuditEvent;
-import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
+
+import brave.Tracer;
+import in.gov.abdm.nmr.entity.SecurityAuditTrail;
+import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 
 @Configuration
 public class SecurityAuditConfig {
@@ -17,12 +20,14 @@ public class SecurityAuditConfig {
     @EventListener
     public void auditEventHappened(AuditApplicationEvent auditApplicationEvent) {
         AuditEvent auditEvent = auditApplicationEvent.getAuditEvent();
-        LOGGER.info(auditEvent.getType());
+        SecurityAuditTrail details = (SecurityAuditTrail) auditEvent.getData().get("details");
+        LOGGER.debug(" Process Id: {} || IP Address: {} || User Agent: {} || User: {} || Method: {} || Endpoint: {} || Status: {}", //
+                details.getProcessId(), details.getIpAddress(), details.getUserAgent(), auditEvent.getPrincipal(), details.getHttpMethod(), //
+                details.getEndpoint(), auditEvent.getType());
     }
 
-    /** TODO: Basic impl for now */
     @Bean
-    public InMemoryAuditEventRepository auditEventRepository() {
-        return new InMemoryAuditEventRepository();
+    public SecurityAuditEventRepository auditEventRepository(ISecurityAuditTrailDaoService securityAuditTrailDaoService, Tracer tracer) {
+        return new SecurityAuditEventRepository(securityAuditTrailDaoService, tracer);
     }
 }
