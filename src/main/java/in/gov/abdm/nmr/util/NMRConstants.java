@@ -198,4 +198,7 @@ public class NMRConstants {
 
     public static final String SMC_NAME = "smcName";
     public static final String SUCCESS="Success";
+    public static final String DCS_INTEGRATOR_NAME="NMR";
+    public static final String E_SIGN_SUCCESS_STATUS="success";
+    public static final String E_SIGN_FAILURE_STATUS="failure";
 }
