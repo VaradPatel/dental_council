@@ -16,6 +16,7 @@ import javax.persistence.criteria.Predicate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import in.gov.abdm.nmr.client.DscFClient;
 import in.gov.abdm.nmr.dto.dsc.DscDocumentTo;
 import in.gov.abdm.nmr.dto.dsc.DscResponseTo;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -153,10 +154,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private VillagesRepository villagesRepository;
 
     @Autowired
-    RestTemplate restTemplateDisableSSL;
-
-    @Value("${dsc.verify.api}")
-    private String dscESignAPI;
+    DscFClient dscFClient;
 
     public HpProfileDaoServiceImpl(IHpProfileMapper ihHpProfileMapper, IHpProfileRepository iHpProfileRepository,
                                    IAddressRepository iAddressRepository, IQualificationDetailRepository qualificationDetailRepository,
@@ -236,12 +234,14 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             return new HpProfileDetailTO();
         }
 
+        System.out.println("0");
+
+
         if (hpProfileCheck.getTransactionId() != null && (hpProfileCheck.getESignStatus() == null || hpProfileCheck.getESignStatus().equalsIgnoreCase(NMRConstants.E_SIGN_FAILURE_STATUS))) {
 
             try {
-                ResponseEntity<Resource> fileSystemResource = restTemplateDisableSSL.getForEntity(
-                        dscESignAPI + hpProfileCheck.getTransactionId(), Resource.class);
-                if (fileSystemResource.getStatusCode().equals(HttpStatus.OK)) {
+                ResponseEntity<Resource> resource=dscFClient.verifyEspRequest(hpProfileCheck.getTransactionId());
+                if (resource.getStatusCode().equals(HttpStatus.OK)) {
                     hpProfileCheck.setESignStatus(NMRConstants.E_SIGN_SUCCESS_STATUS);
                     iHpProfileRepository.save(hpProfileCheck);
                 }

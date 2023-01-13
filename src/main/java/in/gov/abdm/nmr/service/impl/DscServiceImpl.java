@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import in.gov.abdm.nmr.client.DscFClient;
 import in.gov.abdm.nmr.dto.dsc.*;
 import in.gov.abdm.nmr.enums.TemplateEnum;
 import in.gov.abdm.nmr.service.IDscService;
@@ -17,24 +18,17 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @Transactional
 public class DscServiceImpl implements IDscService {
-    @Autowired
-    RestTemplate restTemplateDisableSSL;
 
-    @Value("${dsc.generate.api}")
-    private String dscGenerateApiUrl;
+    @Autowired
+    DscFClient dscFClient;
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
     public DscResponseTo invokeDSCGenEspRequest(DscRequestTo dscRequestTo) throws JsonProcessingException {
 
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<DscDocumentTo> dscRequest = new HttpEntity<>(dscInputData(dscRequestTo), headers);
-        ResponseEntity<String> response = restTemplateDisableSSL.exchange(dscGenerateApiUrl, HttpMethod.POST, dscRequest, String.class);
-        return objectMapper.readValue(response.getBody(), DscResponseTo.class);
+        ObjectMapper objectMapper= new ObjectMapper();
+        return objectMapper.readValue(dscFClient.genEspRequest(dscInputData(dscRequestTo)),DscResponseTo.class);
 
     }
 
