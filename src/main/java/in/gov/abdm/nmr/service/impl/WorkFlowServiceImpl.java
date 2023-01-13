@@ -119,7 +119,13 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             }
         }
     }
-    
+
+    @Override
+    public boolean isAnyActiveWorkflowWithOtherApplicationType(BigInteger hpProfileId, BigInteger applicationTypeId){
+        return iWorkFlowRepository.findAnyActiveWorkflowWithDifferentApplicationType(hpProfileId, applicationTypeId) == null;
+    }
+
+
     private boolean isLastStepOfWorkFlow(INextGroup nextGroup){
         return nextGroup.getAssignTo() == null;
     }
