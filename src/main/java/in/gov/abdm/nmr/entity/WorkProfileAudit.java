@@ -12,6 +12,7 @@ import javax.persistence.OneToOne;
 
 import in.gov.abdm.nmr.entity.Address;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,7 +22,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class WorkProfile {
+@Builder
+public class WorkProfileAudit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,5 +49,7 @@ public class WorkProfile {
     
 //    @OneToOne(mappedBy = "workProfile", fetch = FetchType.LAZY)
     private BigInteger organizationType;
+    
     private String requestId;
+
 }

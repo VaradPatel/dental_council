@@ -20,6 +20,7 @@ import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,8 +29,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "hpProfile")
-public class HpProfile {
+@Entity(name = "hpProfileAudit")
+@Builder
+public class HpProfileAudit {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,12 +87,11 @@ public class HpProfile {
 	@OneToOne
 	@JoinColumn(name = SCHEDULE_ID,referencedColumnName = ID)
 	private Schedule schedule;
-	
+
 	@OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+	@JoinColumn(name = "user_id")
+	private User user;
+	
 	
 	private String requestId;
-
-
 }

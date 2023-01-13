@@ -1,27 +1,48 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.*;
+import java.io.IOException;
+import java.math.BigInteger;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import in.gov.abdm.nmr.dto.HpProfileAddResponseTO;
+import in.gov.abdm.nmr.dto.HpProfileDetailResponseTO;
+import in.gov.abdm.nmr.dto.HpProfilePictureResponseTO;
+import in.gov.abdm.nmr.dto.HpProfileUpdateRequestTO;
+import in.gov.abdm.nmr.dto.HpProfileUpdateResponseTO;
+import in.gov.abdm.nmr.dto.SmcRegistrationDetailRequestTO;
+import in.gov.abdm.nmr.dto.SmcRegistrationDetailResponseTO;
+import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
+import in.gov.abdm.nmr.entity.HpProfile;
+import in.gov.abdm.nmr.entity.HpProfileAudit;
+import in.gov.abdm.nmr.entity.RegistrationDetails;
+import in.gov.abdm.nmr.entity.RegistrationDetailsAudit;
+import in.gov.abdm.nmr.entity.WorkProfile;
+import in.gov.abdm.nmr.entity.WorkProfileAudit;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.mapper.IHpProfileAuditMapper;
 import in.gov.abdm.nmr.mapper.IHpProfileMapper;
+import in.gov.abdm.nmr.repository.IHpProfileAuditRepository;
+import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.IRegistrationDetailRepository;
 import in.gov.abdm.nmr.repository.IWorkFlowAuditRepository;
 import in.gov.abdm.nmr.repository.IWorkFlowRepository;
+import in.gov.abdm.nmr.repository.RegistrationDetailAuditRepository;
+import in.gov.abdm.nmr.repository.WorkProfileAuditRepository;
+import in.gov.abdm.nmr.repository.WorkProfileRepository;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.NMRUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.math.BigInteger;
 
 @Service
 public class HpRegistrationServiceImpl implements IHpRegistrationService {
@@ -29,16 +50,39 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	private HpProfileDaoServiceImpl hpProfileService;
 
 	private IHpProfileMapper iHpProfileMapper;
+	
+	@Autowired
+	private IHpProfileAuditMapper iHpProfileAuditMapper;
 
 	@Autowired
 	private IWorkFlowService iWorkFlowService;
+	
 	@Autowired
 	private IRequestCounterService requestCounterService;
+	
 	@Autowired
 	private IWorkFlowRepository workFlowRepository;
 	
 	@Autowired
 	private IWorkFlowAuditRepository iWorkFlowAuditRepository;
+	
+	@Autowired
+	private IHpProfileAuditRepository iHpProfileAuditRepository;
+	
+	@Autowired
+	private IHpProfileRepository iHpProfileRepository;
+	
+	@Autowired
+	private IRegistrationDetailRepository registrationDetailRepository;
+	
+	@Autowired
+	private RegistrationDetailAuditRepository registrationDetailAuditRepository;
+	
+	@Autowired
+	private WorkProfileRepository workProfileRepository;
+	
+	@Autowired
+	private WorkProfileAuditRepository workProfileAuditRepository;
 
 	public HpRegistrationServiceImpl(HpProfileDaoServiceImpl hpProfileService, IHpProfileMapper iHpProfileMapper) {
 		super();
@@ -65,6 +109,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 			throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
 		}
 		
+		
 		if (workFlowRepository.findByRequestId(hpProfileUpdateRequest.getRequestId()).getWorkFlowStatus().getId().equals(WorkflowStatus.QUERY_RAISED.getId())) {
 			
 			HpProfileUpdateResponseTO hpProfileUpdateResponseTO = iHpProfileMapper
@@ -76,6 +121,18 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 		if(iWorkFlowService.isAnyApprovedWorkflowForHealthProfessional(hpProfileId)) { 
 			String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.HP_MODIFICATION.getId()));
 
+			hpProfileUpdateRequest.setRequestId(requestId);
+			
+			addHpProfileInHpProfileAudit(hpProfileId);
+			
+			addRegistrationDetailsInRegistrationAudit(hpProfileId);
+			
+			addWorkProfileToWorkProfileAudit(hpProfileId);
+			
+			HpProfileUpdateResponseTO hpProfileUpdateResponseTO = iHpProfileMapper
+					.HpProfileUpdateToDto(hpProfileService.updateHpProfile(hpProfileId, hpProfileUpdateRequest));
+			
+			
 			WorkFlowRequestTO approvedWorkFlowRequestTO = WorkFlowRequestTO.builder().requestId(requestId)
 					.applicationTypeId(ApplicationType.HP_MODIFICATION.getId())
 					.hpProfileId(hpProfileId)
@@ -84,10 +141,36 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 					.build();
 			iWorkFlowService.initiateSubmissionWorkFlow(approvedWorkFlowRequestTO);		
 			
+			return hpProfileUpdateResponseTO;
 		}
 		return null;
 	}
+	
+	private void addHpProfileInHpProfileAudit(BigInteger hpProfileId) {
+		HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
+		
+		HpProfileAudit hpProfileAudit = iHpProfileAuditMapper.HpProfileDetailAuditToDto(hpProfile);
+				
+		iHpProfileAuditRepository.save(hpProfileAudit);
+	}
+	
+	private void addRegistrationDetailsInRegistrationAudit(BigInteger hpProfileId) {
+		RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId);
+				
+		RegistrationDetailsAudit registrationDetailsAudit = iHpProfileAuditMapper.RegistrationDetailsAuditToDto(registrationDetails);
+		
+		registrationDetailAuditRepository.save(registrationDetailsAudit);
+	}
 
+	private void addWorkProfileToWorkProfileAudit(BigInteger hpProfileId) {
+		WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(hpProfileId);
+		
+		WorkProfileAudit workProfileAudit = iHpProfileAuditMapper.workProfileAuditToDto(workProfile);
+		
+		workProfileAuditRepository.save(workProfileAudit);
+	}
+	
+	
 	@Override
 	public HpProfileAddResponseTO addHpProfileDetail(HpProfileAddRequestTO hpProfileAddRequestTO)
 			throws InvalidRequestException, WorkFlowException {
@@ -95,20 +178,24 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 				iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(hpProfileAddRequestTO.getRegistrationDetail().getHpProfileId())){
 			throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
 		}
-		HpProfileAddResponseTO hpProfileAddResponseTO = hpProfileService.addHpProfile(hpProfileAddRequestTO);
 		String requestId = hpProfileAddRequestTO.getRequestId();
+		
 		if(hpProfileAddRequestTO.getRequestId() == null){
 			requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.HP_REGISTRATION.getId()));
 		}
+		
+		HpProfileAddResponseTO hpProfileAddResponseTO = hpProfileService.addHpProfile(hpProfileAddRequestTO, requestId);
+
 		WorkFlowRequestTO workFlowRequestTO = WorkFlowRequestTO.builder().requestId(requestId)
 				.applicationTypeId(ApplicationType.HP_REGISTRATION.getId())
 				.hpProfileId(hpProfileAddResponseTO.getHpProfileId())
 				.actionId(Action.SUBMIT.getId())
 				.actorId(Group.HEALTH_PROFESSIONAL.getId())
 				.build();
+		
 		iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
-		return iHpProfileMapper
-				.HpProfileAddToDto(hpProfileAddResponseTO);
+		
+		return iHpProfileMapper.HpProfileAddToDto(hpProfileAddResponseTO);
 	}
 	
 	@Override

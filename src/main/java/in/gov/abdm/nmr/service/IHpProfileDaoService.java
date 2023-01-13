@@ -15,4 +15,6 @@ public interface IHpProfileDaoService {
 
 	HpProfilePictureResponseTO uploadHpProfilePhoto(MultipartFile file, BigInteger hpProfileId)
 			throws InvalidRequestException, IOException;
+
+    HpProfile findbyId(BigInteger id);
 }

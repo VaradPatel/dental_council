@@ -1,27 +1,41 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.NextGroupTO;
-import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
+import java.io.IOException;
+import java.math.BigInteger;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import co.elastic.clients.elasticsearch._types.ElasticsearchException;
+import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.entity.Group;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.WorkFlow;
 import in.gov.abdm.nmr.entity.WorkFlowAudit;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
-import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.INextGroup;
-import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.repository.IActionRepository;
+import in.gov.abdm.nmr.repository.IApplicationTypeRepository;
+import in.gov.abdm.nmr.repository.IGroupRepository;
+import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.IHpProfileStatusRepository;
+import in.gov.abdm.nmr.repository.INMRWorkFlowConfigurationRepository;
+import in.gov.abdm.nmr.repository.IWorkFlowAuditRepository;
+import in.gov.abdm.nmr.repository.IWorkFlowRepository;
+import in.gov.abdm.nmr.repository.IWorkFlowStatusRepository;
+import in.gov.abdm.nmr.service.IElasticsearchDaoService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
-import java.math.BigInteger;
 
 @Service
 public class WorkFlowServiceImpl implements IWorkFlowService {
+    
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * Injecting IWorkFlowRepository bean instead of an explicit object creation to achieve
@@ -61,8 +75,12 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
     @Autowired
     private IHpProfileStatusRepository hpProfileStatusRepository;
+    
+    @Autowired
+    private IElasticsearchDaoService elasticsearchDaoService;
 
     @Override
+    @Transactional
     public void initiateSubmissionWorkFlow(WorkFlowRequestTO requestTO) throws WorkFlowException {
 
         INextGroup iNextGroup=inmrWorkFlowConfigurationRepository.getNextGroup(requestTO.getApplicationTypeId(), requestTO.getActorId(), requestTO.getActionId());
@@ -84,23 +102,30 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             }
             hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
             iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO,iNextGroup,hpProfile));
-
-
+            
+            addOrUpdateToHpElasticIndex(iNextGroup, hpProfile);
         }else {
             throw new WorkFlowException("Next Group Not Found", HttpStatus.BAD_REQUEST);
         }
-
     }
 
+    private void addOrUpdateToHpElasticIndex(INextGroup iNextGroup, HpProfile hpProfile) throws WorkFlowException {
+        if (isLastStepOfWorkFlow(iNextGroup)) {
+            try {
+                elasticsearchDaoService.indexHP(hpProfile.getId());
+            } catch (ElasticsearchException | IOException e) {
+                LOGGER.error("Exception while indexing HP", e);
+                throw new WorkFlowException("Exception while indexing HP", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+    }
+    
+    private boolean isLastStepOfWorkFlow(INextGroup nextGroup){
+        return nextGroup.getAssignTo() == null;
+    }
 
-    @Override
     public boolean isAnyActiveWorkflowForHealthProfessional(BigInteger hpProfileId){
         return iWorkFlowRepository.findPendingWorkflow(hpProfileId) != null;
-    }
-
-    @Override
-    public boolean isAnyActiveWorkflowWithOtherApplicationType(BigInteger hpProfileId, BigInteger applicationTypeId){
-        return iWorkFlowRepository.findAnyActiveWorkflowWithDifferentApplicationType(hpProfileId, applicationTypeId) == null;
     }
 
     @Override
