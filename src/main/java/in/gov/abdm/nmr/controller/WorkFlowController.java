@@ -2,11 +2,13 @@ package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.NMRUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,24 +41,28 @@ public class WorkFlowController {
 
     /**
      * This endpoint can be accessed to initiate workflow
+     * @return
      */
     @PostMapping(INITIATE_WORK_FLOW_URL)
-    public ResponseEntity<String> initiateWorkFlow(@RequestBody WorkFlowRequestTO requestTO) throws WorkFlowException {
-
-        if(requestTO.getRequestId() == null || REQUEST_ID_CREATION_STATUSES.contains(requestTO.getProfileStatus())){
-            requestTO.setRequestId(NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(requestTO.getApplicationTypeId())));
+    public ResponseEntity<String> initiateWorkFlow(@RequestBody WorkFlowRequestTO requestTO) throws InvalidRequestException, WorkFlowException {
+        if(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(requestTO.getHpProfileId(), requestTO.getApplicationTypeId())) {
+            if (requestTO.getRequestId() == null || !iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(requestTO.getHpProfileId())) {
+                requestTO.setRequestId(NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(requestTO.getApplicationTypeId())));
+            }
+            iWorkFlowService.initiateSubmissionWorkFlow(requestTO);
+            return ResponseEntity.ok(SUCCESS);
         }
-        iWorkFlowService.initiateSubmissionWorkFlow(requestTO);
-        return ResponseEntity.ok(SUCCESS);
+        throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
     }
 
     /**
      * This endpoint can be accessed to initiate workflow
+     * @return
      */
     @PostMapping(INITIATE_COLLEGE_WORK_FLOW_URL)
-    public ResponseEntity<String> initiateCollegeWorkFlow(@RequestBody WorkFlowRequestTO requestTO) throws WorkFlowException {
+    public ResponseEntity<String> initiateCollegeWorkFlow(@RequestBody WorkFlowRequestTO requestTO) throws InvalidRequestException, WorkFlowException {
         iWorkFlowService.initiateCollegeRegistrationWorkFlow(requestTO.getRequestId(),requestTO.getApplicationTypeId(),requestTO.getActorId(),requestTO.getActionId());
-        return ResponseEntity.ok(SUCCESS);
+        return ResponseEntity.ok("Success");
     }
 
 }
