@@ -75,6 +75,7 @@ public class AuthServiceImpl implements IAuthService {
 
         LoginResponseTO loginResponseTO = new LoginResponseTO();
         loginResponseTO.setUserType(userDetail.getUserType().getId());
+        loginResponseTO.setUserGroupId(userDetail.getGroup().getId());
 
         if (UserTypeEnum.HEALTH_PROFESSIONAL.getCode().equals(userDetail.getUserType().getId())) {
             HpProfile hp = hpProfileService.findByUserDetail(userDetail.getId());
