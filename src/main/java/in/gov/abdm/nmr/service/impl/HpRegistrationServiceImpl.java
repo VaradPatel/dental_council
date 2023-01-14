@@ -181,13 +181,13 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 		String requestId = hpProfileAddRequestTO.getRequestId();
 		
 		if(hpProfileAddRequestTO.getRequestId() == null){
-			requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.HP_REGISTRATION.getId()));
+			requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(hpProfileAddRequestTO.getApplicationTypeId()));
 		}
 		
 		HpProfileAddResponseTO hpProfileAddResponseTO = hpProfileService.addHpProfile(hpProfileAddRequestTO, requestId);
 
 		WorkFlowRequestTO workFlowRequestTO = WorkFlowRequestTO.builder().requestId(requestId)
-				.applicationTypeId(ApplicationType.HP_REGISTRATION.getId())
+				.applicationTypeId(hpProfileAddRequestTO.getApplicationTypeId())
 				.hpProfileId(hpProfileAddResponseTO.getHpProfileId())
 				.actionId(Action.SUBMIT.getId())
 				.actorId(Group.HEALTH_PROFESSIONAL.getId())
