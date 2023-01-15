@@ -1,21 +1,14 @@
 package in.gov.abdm.nmr.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.math.BigInteger;
-
+import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import org.springframework.web.multipart.MultipartFile;
 
-import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
-import in.gov.abdm.nmr.dto.HpProfileAddResponseTO;
-import in.gov.abdm.nmr.dto.HpProfileDetailResponseTO;
-import in.gov.abdm.nmr.dto.HpProfilePictureResponseTO;
-import in.gov.abdm.nmr.dto.HpProfileUpdateRequestTO;
-import in.gov.abdm.nmr.dto.HpProfileUpdateResponseTO;
-import in.gov.abdm.nmr.dto.SmcRegistrationDetailRequestTO;
-import in.gov.abdm.nmr.dto.SmcRegistrationDetailResponseTO;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.List;
 
 public interface IHpRegistrationService {
 
@@ -28,6 +21,9 @@ public interface IHpRegistrationService {
     HpProfileAddResponseTO addHpProfileDetail(HpProfileAddRequestTO hpProfileUpdateRequest) throws InvalidRequestException, WorkFlowException;
 
     HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException;
+
+    String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs) throws WorkFlowException;
+
 }
 
 

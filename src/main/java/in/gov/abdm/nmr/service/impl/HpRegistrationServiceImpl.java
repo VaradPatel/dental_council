@@ -2,20 +2,15 @@ package in.gov.abdm.nmr.service.impl;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
 
+import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.service.IHpProfileDaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import in.gov.abdm.nmr.dto.HpProfileAddResponseTO;
-import in.gov.abdm.nmr.dto.HpProfileDetailResponseTO;
-import in.gov.abdm.nmr.dto.HpProfilePictureResponseTO;
-import in.gov.abdm.nmr.dto.HpProfileUpdateRequestTO;
-import in.gov.abdm.nmr.dto.HpProfileUpdateResponseTO;
-import in.gov.abdm.nmr.dto.SmcRegistrationDetailRequestTO;
-import in.gov.abdm.nmr.dto.SmcRegistrationDetailResponseTO;
-import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.HpProfileAudit;
@@ -83,6 +78,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	
 	@Autowired
 	private WorkProfileAuditRepository workProfileAuditRepository;
+
+	@Autowired
+	private IHpProfileDaoService hpProfileDaoService;
 
 	public HpRegistrationServiceImpl(HpProfileDaoServiceImpl hpProfileService, IHpProfileMapper iHpProfileMapper) {
 		super();
@@ -201,5 +199,22 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	@Override
 	public HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException {
 		return iHpProfileMapper.HpProfilePictureUploadToDto(hpProfileService.uploadHpProfilePhoto(file, hpProfileId));
+	}
+
+	@Override
+	public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs) throws WorkFlowException {
+		for(QualificationDetailRequestTO qualificationDetailRequestTO: qualificationDetailRequestTOs){
+			String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.QUALIFICATION_ADDITION.getId()));
+			WorkFlowRequestTO workFlowRequestTO = new WorkFlowRequestTO();
+			workFlowRequestTO.setRequestId(requestId);
+			workFlowRequestTO.setActionId(Action.SUBMIT.getId());
+			workFlowRequestTO.setActorId(Group.HEALTH_PROFESSIONAL.getId());
+			workFlowRequestTO.setApplicationTypeId(ApplicationType.QUALIFICATION_ADDITION.getId());
+			workFlowRequestTO.setHpProfileId(hpProfileId);
+			qualificationDetailRequestTO.setRequestId(requestId);
+			iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
+		}
+		hpProfileDaoService.saveQualificationDetails(hpProfileService.findById(hpProfileId), null, qualificationDetailRequestTOs);
+		return "Success";
 	}
 }
