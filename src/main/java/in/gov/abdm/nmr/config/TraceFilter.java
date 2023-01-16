@@ -23,7 +23,6 @@ public class TraceFilter extends OncePerRequestFilter {
     private Tracer tracer;
 
     public TraceFilter(Tracer tracer) {
-        super();
         this.tracer = tracer;
     }
 

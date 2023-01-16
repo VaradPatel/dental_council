@@ -1,13 +1,12 @@
 package in.gov.abdm.nmr.entity;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,21 +17,20 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "collegeDean")
-public class CollegeDean extends CommonAuditEntity {
+@Entity(name = "securityAuditTrail")
+public class SecurityAuditTrail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger id;
-    private String name;
-    private String phoneNumber;
-    private String emailId;
-
-    @OneToOne
-    @JoinColumn(name = "college_id")
-    private College college;
-
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private String processId;
+    private String ipAddress;
+    private String userAgent;
+    private String httpMethod;
+    private String endpoint;
+    private String username;
+    private String payload;
+    private String status;
+    private String correlationId;
+    private Timestamp createdAt;
 }

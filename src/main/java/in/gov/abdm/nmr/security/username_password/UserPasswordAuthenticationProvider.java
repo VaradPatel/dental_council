@@ -27,6 +27,7 @@ public class UserPasswordAuthenticationProvider extends DaoAuthenticationProvide
 
         UserPassDetail userDetail = (UserPassDetail) this.getUserDetailsService().loadUserByUsername(userPassAuthToken.getName());
         if (userDetail == null) {
+            LOGGER.error("Invalid username");
             throw new UsernameNotFoundException("Invalid username");
         }
 

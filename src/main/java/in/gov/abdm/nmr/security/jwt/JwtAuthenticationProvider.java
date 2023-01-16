@@ -9,12 +9,14 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.stereotype.Component;
 
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
-import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.dto.UserSearchTO;
+import in.gov.abdm.nmr.service.IUserDaoService;
 
 @Component
 public class JwtAuthenticationProvider implements AuthenticationProvider {
@@ -34,6 +36,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         JwtAuthenticationToken jwtAuthtoken = (JwtAuthenticationToken) authentication;
         try {
+
             if (JwtTypeEnum.ACCESS_TOKEN.equals(jwtAuthtoken.getType())) {
                 DecodedJWT verifiedToken = jwtUtil.verifyToken(jwtAuthtoken.getCredentials(), JwtTypeEnum.ACCESS_TOKEN);
                 jwtAuthtoken = new JwtAuthenticationToken(verifiedToken.getSubject(), Collections.emptyList());
@@ -55,6 +58,10 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             }
         } catch (Exception e) {
             LOGGER.error("Exception occurred while authenticating JWT token", e);
+            if (e instanceof SignatureVerificationException) {
+                throw new InvalidBearerTokenException("Invalid token signature", e);
+            }
+            throw new AuthenticationServiceException("Exception occurred while authenticating JWT token", e);
         }
         throw new AuthenticationServiceException("Unable to authenticate JWT token");
     }
