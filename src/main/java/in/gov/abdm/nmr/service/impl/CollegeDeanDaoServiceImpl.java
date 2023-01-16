@@ -4,7 +4,7 @@ import java.math.BigInteger;
 
 import javax.persistence.EntityManager;
 
-import in.gov.abdm.nmr.entity.CollegeDean;
+import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.mapper.ICollegeDeanMapper;
 import in.gov.abdm.nmr.repository.ICollegeDeanRepository;
 import in.gov.abdm.nmr.service.ICollegeDeanDaoService;
@@ -15,14 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import in.gov.abdm.nmr.dto.CollegeDeanCreationRequestTo;
-import in.gov.abdm.nmr.entity.College;
 import in.gov.abdm.nmr.repository.ICollegeRepository;
 import in.gov.abdm.nmr.service.IUserDaoService;
-import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.dto.UserSearchTO;
-import in.gov.abdm.nmr.entity.UserSubType;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
-import in.gov.abdm.nmr.entity.UserType;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.NmrException;
 
@@ -77,7 +73,7 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
 
         User userDetail = new User(collegeDeanCreationRequestTo.getUserId(), collegeDeanCreationRequestTo.getEmailId(), //
                 bCryptPasswordEncoder.encode(collegeDeanCreationRequestTo.getPassword()), null, true, true, //
-                entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_DEAN.getCode()));
+                entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_DEAN.getCode()),  entityManager.getReference(Group.class, in.gov.abdm.nmr.enums.Group.COLLEGE_DEAN.getId()));
 
         if (collegeDeanUserDetail != null) {
             userDetail.setCreatedAt(collegeDeanUserDetail.getCreatedAt());

@@ -120,6 +120,8 @@ public class NMRConstants {
     public static final String APPLICATION_TYPE_ID="applicationTypeId";
     public static final String APPLICATION_TYPE_NAME="applicationTypeName";
 
+    public static final String GROUP_ID_COLUMN="group_id";
+
     public static final String GROUP_ID="groupId";
 
     public static final String GROUP_NAME="groupName";

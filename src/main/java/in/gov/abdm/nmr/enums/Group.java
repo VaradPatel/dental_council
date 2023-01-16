@@ -11,7 +11,8 @@ public enum Group {
     NMC(BigInteger.valueOf(3), "National Medical Council"),
     COLLEGE_DEAN(BigInteger.valueOf(4), "College Dean"),
     COLLEGE_REGISTRAR(BigInteger.valueOf(5), "College Registrar"),
-    COLLEGE_ADMIN(BigInteger.valueOf(6), "College Admin");
+    COLLEGE_ADMIN(BigInteger.valueOf(6), "College Admin"),
+    FMG(BigInteger.valueOf(7), "FMG");
 
     private final BigInteger id;
     private final String description;

@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.repository;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,7 +13,7 @@ public interface IWorkFlowRepository extends JpaRepository<WorkFlow, BigInteger>
     WorkFlow findByRequestId(String requestId);
 
     @Query(value = "Select * from work_flow wf  where wf.work_flow_status_id = 1 and hp_profile_id = :hpProfileId", nativeQuery = true)
-    WorkFlow findPendingWorkflow(BigInteger hpProfileId);
+    List<WorkFlow> findPendingWorkflow(BigInteger hpProfileId);
     
     @Query(value = "Select * from work_flow wf where wf.work_flow_status_id = 2 and hp_profile_id = :hpProfileId order by updated_at desc limit 1 offset 0 ", nativeQuery = true)
     WorkFlow findApprovedWorkflow(BigInteger hpProfileId);
