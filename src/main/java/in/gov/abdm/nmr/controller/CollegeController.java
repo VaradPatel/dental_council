@@ -54,19 +54,19 @@ public class CollegeController {
         return collegeService.registerDean(collegeDeanCreationRequestTo);
     }
 
-    @GetMapping(path = "college/{id}")
+    @GetMapping(path = ProtectedPaths.PATH_COLLEGE_PROFILE)
     @SecurityRequirement(name = "bearerAuth")
     public CollegeProfileTo retrieveCollegeProfile(@PathVariable(name = "id") BigInteger collegeId) throws NmrException {
         return collegeService.retrieveCollegeProfile(collegeId);
     }
 
-    @GetMapping(path = "college/registrar/{id}")
+    @GetMapping(path = ProtectedPaths.PATH_COLLEGE_REGISTRAR_PROFILE)
     @SecurityRequirement(name = "bearerAuth")
     public CollegeRegistrarProfileTo retrieveRegistrarProfile(@PathVariable(name = "id") BigInteger registrarId) throws NmrException {
         return collegeService.retrieveRegistrarProfile(registrarId);
     }
 
-    @GetMapping(path = "college/dean/{id}")
+    @GetMapping(path = ProtectedPaths.PATH_COLLEGE_DEAN_PROFILE)
     @SecurityRequirement(name = "bearerAuth")
     public CollegeDeanProfileTo retrieveDeanProfile(@PathVariable(name = "id") BigInteger id) throws NmrException {
         return collegeService.retrieveDeanProfile(id);
