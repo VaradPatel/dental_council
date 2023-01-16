@@ -44,6 +44,7 @@ public class College extends CommonAuditEntity {
     private String website;
     
     private String address;
+    private String requestId;
     
 //    private String pinCode;
 

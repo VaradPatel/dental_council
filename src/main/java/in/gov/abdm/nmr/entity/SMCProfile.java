@@ -1,5 +1,7 @@
 package in.gov.abdm.nmr.entity;
 
+import java.math.BigInteger;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -14,15 +16,15 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "smcProfile")
 public class SMCProfile extends CommonAuditEntity {
 
     @Id
-    private Long id;
+    private BigInteger id;
 
     @OneToOne
-    @JoinColumn(name = "userDetail")
-    private User userDetail;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     private String firstName;
     private String lastName;

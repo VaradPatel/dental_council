@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface INmcProfileRepository extends JpaRepository<NmcProfile, BigInteger>{
     
-    @Query(value = "SELECT nmc.* FROM nmc_profile nmc inner join user_detail ud on nmc.user_detail = ud.id where ud.id=:userDetailId", nativeQuery = true)
+    @Query(value = "SELECT nmc FROM nmcProfile nmc join nmc.user usr where usr.id=:userDetailId")
     NmcProfile findByUserDetail(BigInteger userDetailId);
 }

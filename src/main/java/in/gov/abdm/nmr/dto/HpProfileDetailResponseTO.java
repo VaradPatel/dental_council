@@ -15,4 +15,5 @@ public class HpProfileDetailResponseTO {
 	private CurrentWorkDetailsTO currentWorkDetails;
     private RegistrationDetailTO registrationDetail;
     private List<QualificationDetailTO> qualificationDetail;
+    private String requestId;
 }

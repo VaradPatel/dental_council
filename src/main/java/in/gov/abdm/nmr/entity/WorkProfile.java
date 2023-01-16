@@ -47,4 +47,5 @@ public class WorkProfile {
     
 //    @OneToOne(mappedBy = "workProfile", fetch = FetchType.LAZY)
     private BigInteger organizationType;
+    private String requestId;
 }

@@ -1,6 +1,6 @@
 package in.gov.abdm.nmr.client;
 import in.gov.abdm.nmr.dto.NotificationRequestTo;
-import in.gov.abdm.nmr.dto.OtpGenerateMessageTo;
+import in.gov.abdm.nmr.dto.NotificationResponseTo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +17,6 @@ import static in.gov.abdm.nmr.util.NMRConstants.NOTIFICATION_SERVICE_SEND_MESSAG
 public interface NotificationFClient {
 
     @PostMapping(value = NOTIFICATION_SERVICE_SEND_MESSAGE)
-    OtpGenerateMessageTo sendNotification(@RequestBody NotificationRequestTo req, @RequestHeader Timestamp TIMESTAMP,@RequestHeader String REQUEST_ID );
+    NotificationResponseTo sendNotification(@RequestBody NotificationRequestTo req, @RequestHeader Timestamp TIMESTAMP, @RequestHeader String REQUEST_ID );
 
 }

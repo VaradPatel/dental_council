@@ -24,10 +24,6 @@ public class NmrExceptionAdvice {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    /**
-     * Constant for logging
-     */
-    private static final String CONTROLLER_ADVICE_EXCEPTION_CLASS = "WebExchangeBindException :{}";
 
     /**
      * Constant for Timestamp of generated response
@@ -60,8 +56,8 @@ public class NmrExceptionAdvice {
     }
 
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<ErrorTO> handleException(HttpServletRequest req, Throwable ex) {
-        LOGGER.error(ex);
+    public ResponseEntity<ErrorTO> handleException(HttpServletRequest req, Throwable ex){
+        LOGGER.error("Unexpected error occured", ex);
         ErrorTO error = new ErrorTO(new Date(), HttpStatus.INTERNAL_SERVER_ERROR.value(), "Unexpected error occured", req.getServletPath());
 
         HttpHeaders headers = new HttpHeaders();
@@ -80,6 +76,20 @@ public class NmrExceptionAdvice {
 
         return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
     }
+
+
+    @ExceptionHandler({ WorkFlowException.class })
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorTO> workflowExceptionHandler(HttpServletRequest req, Throwable ex) {
+        LOGGER.error(ex);
+        ErrorTO error = new ErrorTO(new Date(), HttpStatus.BAD_REQUEST.value(), ex.getMessage(), req.getServletPath());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
+    }
+
 
     /**
      * <p>
@@ -113,11 +123,11 @@ public class NmrExceptionAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(OtpException.class)
     public Map<String, Object> oTPExceptionHandler(OtpException e) {
-        System.out.println(e);
         Map<String, Object> errorMap = new HashMap<>();
         errorMap.put(RESPONSE_TIMESTAMP, LocalDate.now());
         LOGGER.error(e.getMessage());
         errorMap.put(MESSAGE, e.getMessage());
         return errorMap ;
     }
+
 }

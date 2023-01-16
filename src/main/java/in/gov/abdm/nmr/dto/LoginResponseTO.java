@@ -10,6 +10,7 @@ public class LoginResponseTO {
     private BigInteger profileId;
     private BigInteger userType;
     private BigInteger userSubType;
+    private BigInteger userGroupId;
     private Boolean hpRegistered;
     private Boolean blacklisted;
 }

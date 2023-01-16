@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.controller;
 
 import java.math.BigInteger;
 
+import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.service.ICollegeService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,13 +32,13 @@ public class CollegeController {
     }
 
     @PostMapping(path = "college", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CollegeProfileTo registerCollege(@RequestBody CollegeRegistrationRequestTo collegeRegistrationRequestTo) throws NmrException {
+    public CollegeProfileTo registerCollege(@RequestBody CollegeRegistrationRequestTo collegeRegistrationRequestTo) throws NmrException, WorkFlowException {
         return collegeService.registerCollege(collegeRegistrationRequestTo, false);
     }
 
     @PutMapping(path = ProtectedPaths.PATH_UPDATE_COLLEGE, produces = MediaType.APPLICATION_JSON_VALUE)
     @SecurityRequirement(name = "bearerAuth")
-    public CollegeProfileTo updateCollege(@RequestBody CollegeRegistrationRequestTo collegeRegistrationRequestTo) throws NmrException {
+    public CollegeProfileTo updateCollege(@RequestBody CollegeRegistrationRequestTo collegeRegistrationRequestTo) throws NmrException, WorkFlowException {
         return collegeService.registerCollege(collegeRegistrationRequestTo, true);
     }
 

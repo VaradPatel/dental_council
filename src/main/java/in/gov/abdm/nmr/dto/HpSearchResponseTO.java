@@ -1,5 +1,7 @@
 package in.gov.abdm.nmr.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,10 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DashboardRequestTO {
+public class HpSearchResponseTO {
 
-    private String userType;
-    private String userSubType;
-    private String appStatusType;
-    private String hpProfileStatus;
+    private List<HpSearchResultTO> results;
+    private Long count;
 }

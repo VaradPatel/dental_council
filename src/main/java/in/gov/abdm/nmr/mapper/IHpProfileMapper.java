@@ -12,10 +12,8 @@ import in.gov.abdm.nmr.dto.HpProfileUpdateResponseTO;
 import in.gov.abdm.nmr.dto.SmcRegistrationDetailResponseTO;
 
 @Mapper(componentModel = ComponentModel.SPRING)
-//@Mapper(componentModel = ComponentModel.SPRING, uses = {StateMedicalCouncilTO.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface IHpProfileMapper {
 
-//    List<CountryTO> CountryDataToDto(List<Country> country); 
 	SmcRegistrationDetailResponseTO SmcRegistrationToDto(HpSmcDetailTO hpSmcDetailTO);
 
 	HpProfileDetailResponseTO HpProfileDetailToDto(HpProfileDetailTO hpProfileDetailTO);
