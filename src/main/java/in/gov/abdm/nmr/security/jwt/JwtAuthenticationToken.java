@@ -19,7 +19,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
     public JwtAuthenticationToken(String token, JwtTypeEnum type) {
         super(Collections.emptyList());
-        this.principal = "";
+        this.principal = null;
         this.token = token;
         this.type = type;
     }
@@ -27,7 +27,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
     public JwtAuthenticationToken(String principal, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.principal = principal;
-        this.token = "";
+        this.token = null;
         this.type = null;
     }
 

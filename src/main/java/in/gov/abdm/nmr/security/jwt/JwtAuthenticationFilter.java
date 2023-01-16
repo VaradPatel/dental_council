@@ -55,7 +55,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
-        JwtAuthenticationToken authRequest = new JwtAuthenticationToken("", JwtTypeEnum.ACCESS_TOKEN);
+        JwtAuthenticationToken authRequest = new JwtAuthenticationToken(null, JwtTypeEnum.ACCESS_TOKEN);
         try {
             if (StringUtils.isNotBlank(request.getHeader(HttpHeaders.AUTHORIZATION))) {
                 String accessToken = extractBearerToken(request);
@@ -99,8 +99,8 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
     }
 
     private void publishAuthenticationFailure(HttpServletRequest request, AuthenticationException exception) {
-        String username = "";
-        String payload = "";
+        String username = null;
+        String payload = null;
         if (StringUtils.isNotBlank(request.getHeader(HttpHeaders.AUTHORIZATION))) {
             String jwtToken = extractBearerToken(request);
             if (exception instanceof InvalidBearerTokenException && exception.getCause() instanceof SignatureVerificationException) {

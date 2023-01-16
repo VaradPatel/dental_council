@@ -35,7 +35,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private String requestBodyString = "";
+    private String requestBodyString = null;
 
     private ObjectMapper objectMapper;
 
@@ -66,7 +66,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        UserPasswordAuthenticationToken authRequest = UserPasswordAuthenticationToken.unauthenticated("", "", "");
+        UserPasswordAuthenticationToken authRequest = UserPasswordAuthenticationToken.unauthenticated(null, null, null);
         try {
             requestBodyString = readRequestBody(request);
             LoginRequestTO requestBodyTO = objectMapper.readValue(requestBodyString, LoginRequestTO.class);
@@ -101,8 +101,8 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
     }
 
     private void publishAuthenticationFailure(HttpServletRequest request, AuthenticationException exception) throws IOException {
-        String username = "";
-        String payload = "";
+        String username = null;
+        String payload = null;
         if (StringUtils.isNotBlank(requestBodyString)) {
             LoginRequestTO requestBodyTO = objectMapper.readValue(requestBodyString, LoginRequestTO.class);
             if (StringUtils.isNotBlank(requestBodyTO.getUsername())) {
