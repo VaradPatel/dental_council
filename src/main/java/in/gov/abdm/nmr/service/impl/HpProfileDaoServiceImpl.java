@@ -14,8 +14,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.Predicate;
 
+import in.gov.abdm.nmr.client.DscFClient;
+import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -96,6 +102,8 @@ import in.gov.abdm.nmr.repository.WorkProfileRepository;
 import in.gov.abdm.nmr.repository.WorkStatusRepository;
 import in.gov.abdm.nmr.service.IHpProfileDaoService;
 
+import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
+
 @Service
 public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
@@ -142,6 +150,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 	private SubDistrictRepository subDistrictRepository;
 
 	private VillagesRepository villagesRepository;
+
+	@Autowired
+	private DscFClient dscFClient;
 
 	public HpProfileDaoServiceImpl(IHpProfileMapper ihHpProfileMapper, IHpProfileRepository iHpProfileRepository,
 			IAddressRepository iAddressRepository, IQualificationDetailRepository qualificationDetailRepository,
@@ -220,9 +231,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         if (hpProfileCheck == null) {
             return new HpProfileDetailTO();
         }
-
-        System.out.println("0");
-
 
         if (hpProfileCheck.getTransactionId() != null && (hpProfileCheck.getESignStatus() == null || hpProfileCheck.getESignStatus().equalsIgnoreCase(NMRConstants.E_SIGN_FAILURE_STATUS))) {
 
@@ -508,6 +516,10 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 			hpSmcDetailTO.setCurrentWorkDetails(currentWorkDetailsTO);
 		}
 		//////////// Work profile Details end/////////////////////
+
+		hpSmcDetailTO.setTransactionId(hpProfile.get("transaction_id", String.class));
+		hpSmcDetailTO.setESignStatus(hpProfile.get("e_sign_status", String.class));
+
 		return hpSmcDetailTO;
 	}
 
