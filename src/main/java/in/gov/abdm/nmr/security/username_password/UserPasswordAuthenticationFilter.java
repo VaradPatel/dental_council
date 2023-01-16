@@ -22,11 +22,13 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import brave.Tracer;
 import in.gov.abdm.nmr.dto.LoginRequestTO;
 import in.gov.abdm.nmr.entity.SecurityAuditTrail;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.ICaptchaDaoService;
+import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 
 @Component
 public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -42,9 +44,13 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
     private ICaptchaDaoService captchaDaoService;
 
     private AuthenticationEventPublisher authEventPublisher;
+    
+    private ISecurityAuditTrailDaoService securityAuditTrailDaoService;
+    
+    private Tracer tracer;
 
     public UserPasswordAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper, RsaUtil rsaUtil, ICaptchaDaoService captchaDaoService, //
-                                            AuthenticationEventPublisher authEventPublisher) {
+                                            AuthenticationEventPublisher authEventPublisher, ISecurityAuditTrailDaoService securityAuditTrailDaoService, Tracer tracer) {
         super();
         this.setRequiresAuthenticationRequestMatcher(ProtectedPaths.getLoginPathMatcher());
         this.setAuthenticationManager(authenticationManager);
@@ -54,26 +60,28 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
         this.rsaUtil = rsaUtil;
         this.captchaDaoService = captchaDaoService;
         this.authEventPublisher = authEventPublisher;
+        this.securityAuditTrailDaoService = securityAuditTrailDaoService;
+        this.tracer = tracer;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        UserPasswordAuthenticationToken authRequest = UserPasswordAuthenticationToken.unauthenticated("", "", "");
         try {
             requestBodyString = readRequestBody(request);
             LoginRequestTO requestBodyTO = objectMapper.readValue(requestBodyString, LoginRequestTO.class);
-            UserPasswordAuthenticationToken authRequest = UserPasswordAuthenticationToken.unauthenticated(requestBodyTO.getUsername(), //
+            authRequest = UserPasswordAuthenticationToken.unauthenticated(requestBodyTO.getUsername(), //
                     rsaUtil.decrypt(requestBodyTO.getPassword()), requestBodyTO.getUserType());
             authRequest.setDetails(createSecurityAuditTrail(request));
 
             if (!captchaDaoService.isCaptchaValidated(requestBodyTO.getCaptchaTransId())) {
                 throw new AuthenticationServiceException("Invalid captcha");
             }
-
-            return this.getAuthenticationManager().authenticate(authRequest);
         } catch (Exception e) {
             LOGGER.error("Exception occured while parsing username-password login request", e);
             throw new AuthenticationServiceException("Exception occured while parsing username-password login request", e);
         }
+        return this.getAuthenticationManager().authenticate(authRequest);
     }
 
     private String readRequestBody(HttpServletRequest request) throws IOException {
@@ -94,12 +102,26 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
 
     private void publishAuthenticationFailure(HttpServletRequest request, AuthenticationException exception) throws IOException {
         String username = "";
+        String payload = "";
         if (StringUtils.isNotBlank(requestBodyString)) {
             LoginRequestTO requestBodyTO = objectMapper.readValue(requestBodyString, LoginRequestTO.class);
-            username = StringUtils.isNotBlank(requestBodyTO.getUsername()) ? requestBodyTO.getUsername() : requestBodyString;
+            if (StringUtils.isNotBlank(requestBodyTO.getUsername())) {
+                username = requestBodyTO.getUsername();
+            } else {
+                payload = requestBodyString;
+            }
+        }
+
+        SecurityAuditTrail securityAuditTrail = securityAuditTrailDaoService.findByCorrelationId(tracer.currentSpan().context().traceIdString());
+        if (securityAuditTrail != null) {
+            securityAuditTrail.setUsername(username);
+            securityAuditTrail.setPayload(payload);
+        } else {
+            securityAuditTrail = createSecurityAuditTrail(request);
+            securityAuditTrail.setPayload(payload);
         }
         UsernamePasswordAuthenticationToken failureAuthRequest = UsernamePasswordAuthenticationToken.unauthenticated(username, null);
-        failureAuthRequest.setDetails(createSecurityAuditTrail(request));
+        failureAuthRequest.setDetails(securityAuditTrail);
         authEventPublisher.publishAuthenticationFailure(exception, failureAuthRequest);
     }
 

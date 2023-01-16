@@ -29,6 +29,7 @@ public class SecurityAuditTrail {
     private String httpMethod;
     private String endpoint;
     private String username;
+    private String payload;
     private String status;
     private String correlationId;
     private Timestamp createdAt;

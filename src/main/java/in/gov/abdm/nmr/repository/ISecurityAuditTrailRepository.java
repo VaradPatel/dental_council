@@ -11,4 +11,6 @@ import in.gov.abdm.nmr.entity.SecurityAuditTrail;
 public interface ISecurityAuditTrailRepository extends JpaRepository<SecurityAuditTrail, BigInteger> {
 
     List<SecurityAuditTrail> findByUsernameAndCreatedAtGreaterThanEqualAndStatus(String user, Timestamp after, String status);
+    
+    SecurityAuditTrail findByCorrelationId(String correlationId);
 }

@@ -29,7 +29,7 @@ public class CollegeDean extends CommonAuditEntity {
     private String emailId;
 
     @OneToOne
-    @JoinColumn(name = "college")
+    @JoinColumn(name = "college_id")
     private College college;
 
     @OneToOne

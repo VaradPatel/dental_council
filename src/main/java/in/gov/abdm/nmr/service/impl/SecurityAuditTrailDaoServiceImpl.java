@@ -30,4 +30,9 @@ public class SecurityAuditTrailDaoServiceImpl implements ISecurityAuditTrailDaoS
         return securityAuditTrailRepository.findByUsernameAndCreatedAtGreaterThanEqualAndStatus(user, after, status);
     }
 
+    @Override
+    public SecurityAuditTrail findByCorrelationId(String correlationId) {
+        return securityAuditTrailRepository.findByCorrelationId(correlationId);
+    }
+
 }

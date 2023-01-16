@@ -17,12 +17,17 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.stereotype.Component;
 
+import com.auth0.jwt.exceptions.SignatureVerificationException;
+
+import brave.Tracer;
 import in.gov.abdm.nmr.entity.SecurityAuditTrail;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
+import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 
 @Component
 public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
@@ -30,16 +35,27 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
     private static final Logger LOGGER = LogManager.getLogger();
 
     private AuthenticationEventPublisher authEventPublisher;
+    
+    private JwtUtil jwtUtil;
+    
+    private ISecurityAuditTrailDaoService securityAuditTrailDaoService;
+    
+    private Tracer tracer;
 
-    protected JwtAuthenticationFilter(AuthenticationManager authenticationManager, AuthenticationEventPublisher authEventPublisher) {
+    protected JwtAuthenticationFilter(AuthenticationManager authenticationManager, AuthenticationEventPublisher authEventPublisher, JwtUtil jwtUtil, //
+                                      ISecurityAuditTrailDaoService securityAuditTrailDaoService, Tracer tracer) {
         super(new OrRequestMatcher(ProtectedPaths.getProtectedPathsMatchers()), authenticationManager);
         this.setAuthenticationSuccessHandler((request, response, authentication) -> {
         });
         this.authEventPublisher = authEventPublisher;
+        this.jwtUtil = jwtUtil;
+        this.securityAuditTrailDaoService = securityAuditTrailDaoService;
+        this.tracer = tracer;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
+        JwtAuthenticationToken authRequest = new JwtAuthenticationToken("", JwtTypeEnum.ACCESS_TOKEN);
         try {
             if (StringUtils.isNotBlank(request.getHeader(HttpHeaders.AUTHORIZATION))) {
                 String accessToken = extractBearerToken(request);
@@ -49,14 +65,17 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
                     tokenType = JwtTypeEnum.REFRESH_TOKEN;
                 }
 
-                JwtAuthenticationToken authRequest = new JwtAuthenticationToken(accessToken, tokenType);
+                authRequest = new JwtAuthenticationToken(accessToken, tokenType);
                 authRequest.setDetails(createSecurityAuditTrail(request));
-                return this.getAuthenticationManager().authenticate(authRequest);
+            } else {
+                LOGGER.error("No bearer token was passed");
+                throw new AuthenticationServiceException("No bearer token was passed");
             }
         } catch (Exception e) {
             LOGGER.error("Exception occured while parsing bearer token", e);
+            throw new AuthenticationServiceException("Exception occured while parsing bearer token", e);
         }
-        throw new AuthenticationServiceException("Unable to parse bearer token");
+        return this.getAuthenticationManager().authenticate(authRequest);
     }
 
     private String extractBearerToken(HttpServletRequest request) {
@@ -80,12 +99,28 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
     }
 
     private void publishAuthenticationFailure(HttpServletRequest request, AuthenticationException exception) {
-        String token = "";
+        String username = "";
+        String payload = "";
         if (StringUtils.isNotBlank(request.getHeader(HttpHeaders.AUTHORIZATION))) {
-            token = extractBearerToken(request);
+            String jwtToken = extractBearerToken(request);
+            if (exception instanceof InvalidBearerTokenException && exception.getCause() instanceof SignatureVerificationException) {
+                payload = jwtToken;
+            } else {
+                username = jwtUtil.decodeToken(jwtToken).getSubject();
+            }
         }
-        UsernamePasswordAuthenticationToken failureAuthRequest = UsernamePasswordAuthenticationToken.unauthenticated(token, null);
-        failureAuthRequest.setDetails(createSecurityAuditTrail(request));
+
+        SecurityAuditTrail securityAuditTrail = securityAuditTrailDaoService.findByCorrelationId(tracer.currentSpan().context().traceIdString());
+        if (securityAuditTrail != null) {
+            securityAuditTrail.setUsername(username);
+            securityAuditTrail.setPayload(payload);
+        } else {
+            securityAuditTrail = createSecurityAuditTrail(request);
+            securityAuditTrail.setPayload(payload);
+        }
+
+        UsernamePasswordAuthenticationToken failureAuthRequest = UsernamePasswordAuthenticationToken.unauthenticated(username, null);
+        failureAuthRequest.setDetails(securityAuditTrail);
         authEventPublisher.publishAuthenticationFailure(exception, failureAuthRequest);
     }
 

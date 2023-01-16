@@ -10,4 +10,6 @@ public interface ISecurityAuditTrailDaoService {
     SecurityAuditTrail saveAndFlush(SecurityAuditTrail securityAuditTrail);
     
     List<SecurityAuditTrail> findByUserAndCreatedAtGreaterThanEqualAndStatus(String user, Timestamp after, String status);
+    
+    SecurityAuditTrail findByCorrelationId(String correlationId);
 }
