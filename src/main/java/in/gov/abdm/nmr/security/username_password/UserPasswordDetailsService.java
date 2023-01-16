@@ -2,6 +2,8 @@ package in.gov.abdm.nmr.security.username_password;
 
 import java.util.Collections;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,6 +15,8 @@ import in.gov.abdm.nmr.service.IUserDaoService;
 
 @Component
 public class UserPasswordDetailsService implements UserDetailsService {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private IUserDaoService userDetailService;
 
@@ -27,6 +31,7 @@ public class UserPasswordDetailsService implements UserDetailsService {
 
         UserTO userDetail = userDetailService.searchUserDetail(userDetailSearchTO);
         if (userDetail == null) {
+            LOGGER.error("Invalid username");
             throw new UsernameNotFoundException("Invalid username");
         }
 

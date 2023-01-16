@@ -9,9 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
-import in.gov.abdm.nmr.entity.College;
-import in.gov.abdm.nmr.entity.CommonAuditEntity;
-import in.gov.abdm.nmr.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +29,7 @@ public class CollegeRegistrar extends CommonAuditEntity {
     private String emailId;
     
     @OneToOne
-    @JoinColumn(name = "college")
+    @JoinColumn(name = "college_id")
     private College college;
 
     @OneToOne

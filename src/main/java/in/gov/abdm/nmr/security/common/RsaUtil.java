@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.security.common;
 
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -36,7 +37,7 @@ public class RsaUtil {
         this.activeProfile = activeProfile;
     }
 
-    public String decrypt(String encrypted) {
+    public String decrypt(String encrypted) throws GeneralSecurityException {
         if (ApplicationProfileEnum.LOCAL.getCode().equals(activeProfile)) {
             return encrypted;
         }
@@ -47,8 +48,7 @@ public class RsaUtil {
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException | NoSuchAlgorithmException |
                  NoSuchPaddingException e) {
             LOGGER.error("Exception occured while decrypting encrypted string: ", e);
+            throw e;
         }
-
-        throw new IllegalArgumentException("Unable to decrypt encrypted string");
     }
 }

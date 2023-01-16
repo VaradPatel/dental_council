@@ -57,9 +57,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
 
         List<Predicate> predicates = new ArrayList<>();
 
-        if (StringUtils.isNotBlank(userDetailSearchTO.getUsername())) {
-            predicates.add(builder.equal(root.get("username"), userDetailSearchTO.getUsername()));
-        }
+        predicates.add(builder.equal(root.get("username"), userDetailSearchTO.getUsername()));
         criteria.select(root).where(predicates.toArray(new Predicate[0]));
         try {
             return entityManager.createQuery(criteria).getSingleResult();

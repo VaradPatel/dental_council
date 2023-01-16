@@ -33,6 +33,6 @@ public class ProtectedPaths {
     }
 
     public static AntPathRequestMatcher getLoginPathMatcher() {
-        return new AntPathRequestMatcher(PATH_LOGIN);
+        return new AntPathRequestMatcher(PATH_LOGIN, HttpMethod.POST.name());
     }
 }
