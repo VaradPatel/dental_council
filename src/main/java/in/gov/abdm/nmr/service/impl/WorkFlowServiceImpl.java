@@ -97,7 +97,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             }
             if (isLastStepOfWorkFlow(iNextGroup)) {
                 updateHealthProfessionalDetails(requestTO, iNextGroup, hpProfile);
-//                addOrUpdateToHpElasticIndex(iNextGroup, hpProfile);
+                addOrUpdateToHpElasticIndex(iNextGroup, hpProfile);
             }
             iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO,iNextGroup,hpProfile));
         }else {
