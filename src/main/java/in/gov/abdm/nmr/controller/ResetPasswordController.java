@@ -24,7 +24,7 @@ public class ResetPasswordController {
      * @param setPasswordLinkTo receiver email/mobile
      * @return Success/Fail message
      */
-    @PostMapping(NMRConstants.GET_SET_PASSWORD_LINK)
+    @PostMapping(NMRConstants.GET_RESET_PASSWORD_LINK)
     public ResponseMessageTo getResetPasswordLink(@RequestBody GetSetPasswordLinkTo setPasswordLinkTo) {
 
         return resetPasswordService.getResetPasswordLink(setPasswordLinkTo);
@@ -37,7 +37,7 @@ public class ResetPasswordController {
      * @return reset password page with success/failure
      */
     @PostMapping(NMRConstants.SET_NEW_PASSWORD)
-    public ResponseMessageTo processResetPassword(@RequestBody SetNewPasswordTo newPasswordTo) {
+    public ResponseMessageTo setNewPassword(@RequestBody SetNewPasswordTo newPasswordTo) {
 
         return resetPasswordService.setNewPassword(newPasswordTo);
     }
