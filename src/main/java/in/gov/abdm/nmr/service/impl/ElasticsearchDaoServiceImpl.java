@@ -40,7 +40,7 @@ public class ElasticsearchDaoServiceImpl implements IElasticsearchDaoService {
 
     @Override
     public void indexHP(BigInteger hpProfileId) throws ElasticsearchException, IOException {
-        HpProfile hpprofile = hpProfileDaoService.findbyId(hpProfileId);
+        HpProfile hpprofile = hpProfileDaoService.findById(hpProfileId);
 
         HpElasticDocumentTO elasticDocumentTO = new HpElasticDocumentTO();
         elasticDocumentTO.setProfileId(hpprofile.getId());

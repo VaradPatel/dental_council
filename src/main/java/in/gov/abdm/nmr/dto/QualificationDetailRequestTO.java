@@ -18,4 +18,5 @@ public class QualificationDetailRequestTO {
     private String qualificationMonth;
     private Integer isNameChange;
     private Integer isVerified;
+    private String requestId;
 }

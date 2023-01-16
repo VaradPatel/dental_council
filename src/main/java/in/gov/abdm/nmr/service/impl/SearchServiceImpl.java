@@ -84,7 +84,7 @@ public class SearchServiceImpl implements ISearchService {
             throw new NmrException("Exception while retrieving HP profile", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        HpProfile hpprofile = hpProfileDaoService.findbyId(profileId);
+        HpProfile hpprofile = hpProfileDaoService.findById(profileId);
         HpSearchProfileTO hpSearchProfileTO = new HpSearchProfileTO();
         hpSearchProfileTO.setFullName(hpprofile.getFullName());
         hpSearchProfileTO.setSalutation(hpprofile.getSalutation());

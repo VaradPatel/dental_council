@@ -73,7 +73,7 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
 
         User userDetail = new User(collegeRegistrarCreationRequestTo.getUserId(), collegeRegistrarCreationRequestTo.getEmailId(), //
                 bCryptPasswordEncoder.encode(collegeRegistrarCreationRequestTo.getPassword()), null, true, true, //
-                entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_REGISTRAR.getCode()));
+                entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_REGISTRAR.getCode()) , entityManager.getReference(Group.class, in.gov.abdm.nmr.enums.Group.COLLEGE_REGISTRAR.getId()));
 
         if (collegeRegistrarUserDetail != null) {
             userDetail.setCreatedAt(collegeRegistrarUserDetail.getCreatedAt());

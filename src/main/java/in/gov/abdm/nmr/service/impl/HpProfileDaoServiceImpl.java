@@ -14,6 +14,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.Predicate;
 
+import in.gov.abdm.nmr.util.NMRUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -94,6 +95,8 @@ import in.gov.abdm.nmr.repository.WorkNatureRepository;
 import in.gov.abdm.nmr.repository.WorkProfileRepository;
 import in.gov.abdm.nmr.repository.WorkStatusRepository;
 import in.gov.abdm.nmr.service.IHpProfileDaoService;
+
+import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
 
 @Service
 public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
@@ -1155,37 +1158,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 			List<QualificationDetailRequestTO> newqualificationDetailTOList = hpProfileAddRequest
 					.getQualificationDetail();
 
-			if (newqualificationDetailTOList.size() > 0) {
-				List<QualificationDetails> qualificationDetails = new ArrayList<QualificationDetails>();
-				for (QualificationDetailRequestTO newQualification : newqualificationDetailTOList) {
-
-					QualificationDetails qualification = new QualificationDetails();
-					qualification.setCountryId(newQualification.getCountry().getId());
-					qualification.setStateId(newQualification.getState().getId());
-					qualification.setCollegeId(newQualification.getCollege().getId());
-					qualification.setUniversityId(newQualification.getUniversity().getId());
-					qualification.setCourseId(newQualification.getCourse().getId());
-					qualification.setIsVerified(newQualification.getIsVerified());
-					qualification.setQualificationYear(newQualification.getQualificationYear());
-					qualification.setQualificationMonth(newQualification.getQualificationMonth());
-					qualification.setIsNameChange(newQualification.getIsNameChange());
-					qualification.setRegistrationDetails(newRegistrationDetails);
-					qualification.setHpProfile(hpProfile);
-					qualification.setIsVerified(newQualification.getIsVerified());
-					qualification.setEndDate(null);
-					qualification.setCertificate(null);
-					qualification.setName(null);
-					qualification.setStartDate(null);
-					qualification.setSystemOfMedicine(null);
-					qualificationDetails.add(qualification);
-
-				}
-
-				qualificationDetailRepository.saveAll(qualificationDetails);
-
-			} else {
-
-			}
+			saveQualificationDetails(hpProfile, newRegistrationDetails, newqualificationDetailTOList);
 			////////////////////////// Qualifictaion Data end //////////////////////////
 			////////////////////////// Super Speciality //////////////////////////
 			List<SuperSpecialityTO> newSuperSpecialities = hpProfileAddRequest.getSpecialityDetails()
@@ -1295,6 +1268,34 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 		}
 
 	}
+	@Override
+	public void saveQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, List<QualificationDetailRequestTO> qualificationDetailRequestTOS) {
+		if (qualificationDetailRequestTOS.size() > 0) {
+			List<QualificationDetails> qualificationDetails = qualificationDetailRequestTOS.stream().map(qualificationDetailRequestTO -> {
+				QualificationDetails qualification = new QualificationDetails();
+				qualification.setCountryId(qualificationDetailRequestTO.getCountry().getId());
+				qualification.setStateId(qualificationDetailRequestTO.getState().getId());
+				qualification.setCollegeId(qualificationDetailRequestTO.getCollege().getId());
+				qualification.setUniversityId(qualificationDetailRequestTO.getUniversity().getId());
+				qualification.setCourseId(qualificationDetailRequestTO.getCourse().getId());
+				qualification.setIsVerified(qualificationDetailRequestTO.getIsVerified());
+				qualification.setQualificationYear(qualificationDetailRequestTO.getQualificationYear());
+				qualification.setQualificationMonth(qualificationDetailRequestTO.getQualificationMonth());
+				qualification.setIsNameChange(qualificationDetailRequestTO.getIsNameChange());
+				qualification.setRegistrationDetails(newRegistrationDetails);
+				qualification.setHpProfile(hpProfile);
+				qualification.setIsVerified(qualificationDetailRequestTO.getIsVerified());
+				qualification.setEndDate(null);
+				qualification.setCertificate(null);
+				qualification.setName(null);
+				qualification.setStartDate(null);
+				qualification.setSystemOfMedicine(null);
+				qualification.setRequestId(coalesce(qualificationDetailRequestTO.getRequestId(), hpProfile.getRequestId()));
+				return qualification;
+			}).toList();
+			qualificationDetailRepository.saveAll(qualificationDetails);
+		}
+	}
 
 	@Override
 	public HpProfile findByUserDetail(BigInteger userDetailId) {
@@ -1341,7 +1342,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 	}
 
 	@Override
-	public HpProfile findbyId(BigInteger id) {
+	public HpProfile findById(BigInteger id) {
 	    return iHpProfileRepository.findById(id).orElse(null);
 	}
 }

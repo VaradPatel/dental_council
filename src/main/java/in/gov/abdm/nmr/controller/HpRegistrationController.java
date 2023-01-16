@@ -2,7 +2,9 @@ package in.gov.abdm.nmr.controller;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
 
+import in.gov.abdm.nmr.dto.*;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,13 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import in.gov.abdm.nmr.dto.HpProfileAddResponseTO;
-import in.gov.abdm.nmr.dto.HpProfileDetailResponseTO;
-import in.gov.abdm.nmr.dto.HpProfilePictureResponseTO;
-import in.gov.abdm.nmr.dto.HpProfileUpdateRequestTO;
-import in.gov.abdm.nmr.dto.HpProfileUpdateResponseTO;
-import in.gov.abdm.nmr.dto.SmcRegistrationDetailRequestTO;
-import in.gov.abdm.nmr.dto.SmcRegistrationDetailResponseTO;
 import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
@@ -67,6 +62,11 @@ public class HpRegistrationController {
 			@PathVariable(name = "hp_profile_id") BigInteger hpProfileId) throws IOException {
 
 		return hpService.uploadHpProfilePicture(file, hpProfileId);
+	}
+
+	@PostMapping(path = "/hpProfileDetail/{hp_profile_id}/qualification",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public String addQualifications(@PathVariable(name = "hp_profile_id") BigInteger hpProfileId, @RequestBody List<QualificationDetailRequestTO> qualificationDetailRequestTOs) throws WorkFlowException {
+		return hpService.addQualification(hpProfileId, qualificationDetailRequestTOs);
 	}
 
 }

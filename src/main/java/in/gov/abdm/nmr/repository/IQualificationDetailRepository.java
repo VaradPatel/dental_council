@@ -18,4 +18,6 @@ public interface IQualificationDetailRepository extends JpaRepository<Qualificat
     @Query(value = "SELECT qd.name as qualificationName, qd.qualification_year as qualificationYear, u.name as universityName FROM qualification_details qd " + //
             "left join universities u on qd.university_id = u.id where qd.hp_profile_id =:hpprofileId", nativeQuery = true)
     List<Tuple> findSearchQualificationDetailsByHpProfileId(BigInteger hpprofileId);
+
+    List<QualificationDetails> findByRequestId(String requestId);
 }

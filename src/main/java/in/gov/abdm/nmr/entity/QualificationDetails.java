@@ -37,6 +37,7 @@ public class QualificationDetails {
     private String qualificationYear;
     private Date startDate;
     private String systemOfMedicine;
+    private String requestId;
 
 //    @OneToOne
 //    @JoinColumn(name = "district")
