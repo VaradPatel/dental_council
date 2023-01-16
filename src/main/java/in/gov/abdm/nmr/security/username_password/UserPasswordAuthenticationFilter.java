@@ -118,6 +118,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
             securityAuditTrail.setPayload(payload);
         } else {
             securityAuditTrail = createSecurityAuditTrail(request);
+            securityAuditTrail.setUsername(username);
             securityAuditTrail.setPayload(payload);
         }
         UsernamePasswordAuthenticationToken failureAuthRequest = UsernamePasswordAuthenticationToken.unauthenticated(username, null);

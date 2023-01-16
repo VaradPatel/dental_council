@@ -116,6 +116,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
             securityAuditTrail.setPayload(payload);
         } else {
             securityAuditTrail = createSecurityAuditTrail(request);
+            securityAuditTrail.setUsername(username);
             securityAuditTrail.setPayload(payload);
         }
 
