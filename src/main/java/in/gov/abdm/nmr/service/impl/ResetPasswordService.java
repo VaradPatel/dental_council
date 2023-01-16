@@ -1,8 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.client.NotificationFClient;
-import in.gov.abdm.nmr.dto.KeyValue;
-import in.gov.abdm.nmr.dto.NotificationRequestTo;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.PasswordResetToken;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.enums.NotificationType;
@@ -10,6 +9,7 @@ import in.gov.abdm.nmr.repository.IUserRepository;
 import in.gov.abdm.nmr.repository.PasswordResetTokenRepository;
 import in.gov.abdm.nmr.service.IResetPasswordService;
 import in.gov.abdm.nmr.util.NMRConstants;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -45,76 +45,72 @@ public class ResetPasswordService implements IResetPasswordService {
 
     /**
      * Creates new unique token for reset password transaction
-     * @param email username of user
-     * @param token unique generated token
-     * @return returns boolean result of token creation
+     *
+     * @param setPasswordLinkTo email/mobile to send link
+     * @return ResponseMessageTo with message
      */
     @Override
-    public boolean createPasswordResetTokenForUser(String email, String token) {
-        passwordResetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
+    public ResponseMessageTo getResetPasswordLink(GetSetPasswordLinkTo setPasswordLinkTo) {
 
-        if (userRepository.existsByUsername(email)) {
+        String token = RandomString.make(30);
 
-            PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByUserName(email);
+        try {
 
-            if (passwordResetToken != null) {
-                passwordResetToken.setToken(token);
+            passwordResetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
+            if (userRepository.existsByUsername(setPasswordLinkTo.getContact())) {
+
+                PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByUserName(setPasswordLinkTo.getContact());
+
+                if (passwordResetToken != null) {
+                    passwordResetToken.setToken(token);
+                } else {
+                    passwordResetToken = new PasswordResetToken(token, setPasswordLinkTo.getContact());
+                }
+                passwordResetTokenRepository.save(passwordResetToken);
+
+                String resetPasswordLink = "www.google.com" + "/" + token;
+                sendNotification(setPasswordLinkTo, resetPasswordLink);
+
+                return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
             } else {
-                passwordResetToken = new PasswordResetToken(token, email);
+                return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
             }
-            passwordResetTokenRepository.save(passwordResetToken);
-            return true;
-        } else {
-            return false;
+        } catch (Exception e) {
+            return new ResponseMessageTo(NMRConstants.FAILURE_RESPONSE);
         }
+
     }
 
     /**
      * find user by unique token
-     * @param token unique token
+     *
+     * @param newPasswordTo unique token and new password
      * @return user object
      */
     @Override
-    public User getUserByPasswordResetToken(String token) {
-        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
+    public ResponseMessageTo setNewPassword(SetNewPasswordTo newPasswordTo) {
+        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(newPasswordTo.getToken());
         User user = userRepository.findByUsername(passwordResetToken.getUserName());
         if (passwordResetToken.getExpiryDate().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0) {
 
-            user = null;
+            return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
         }
-        return user;
-    }
 
-    /**
-     * Updates user password in repository
-     * @param user user object which need to save
-     * @param newPassword newly created password by user
-     */
-    @Override
-    public void updatePassword(User user, String newPassword) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String encodedPassword = passwordEncoder.encode(newPassword);
+        String encodedPassword = passwordEncoder.encode(newPasswordTo.getPassword());
         user.setPassword(encodedPassword);
         userRepository.save(user);
-    }
-
-    /**
-     * Gets context URL
-     * @param request Request to find context url
-     * @return context URL String
-     */
-    public String getSiteURL(HttpServletRequest request) {
-        String siteURL = request.getRequestURL().toString();
-        return siteURL.replace(request.getServletPath(), "");
+        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
     }
 
     /**
      * Calls send email API
-     * @param email receiver email id
-     * @param link reset password page link
+     *
+     * @param setPasswordLinkTo receiver details
+     * @param link              reset password page link
      */
     @Override
-    public void sendEmail(String email, String link) {
+    public void sendNotification(GetSetPasswordLinkTo setPasswordLinkTo, String link) {
 
         String content = "Hello,\n"
                 + "You have requested to reset your password."
@@ -129,10 +125,18 @@ public class ResetPasswordService implements IResetPasswordService {
         notificationRequestTo.setSender(notificationSender);
         notificationRequestTo.setContentType(NMRConstants.OTP_CONTENT_TYPE);
 
-        notificationRequestTo.setType(List.of(NotificationType.EMAIL.getNotificationType()));
         KeyValue receiver = new KeyValue();
+
+        if (setPasswordLinkTo.getType().equalsIgnoreCase(NMRConstants.MOBILE)) {
+            notificationRequestTo.setType(List.of(NotificationType.SMS.getNotificationType()));
+            receiver.setKey(NMRConstants.MOBILE);
+        } else {
+            notificationRequestTo.setType(List.of(NotificationType.EMAIL.getNotificationType()));
+            receiver.setKey(NMRConstants.EMAIL_ID);
+        }
+
         receiver.setKey(NMRConstants.EMAIL_ID);
-        receiver.setValue(email);
+        receiver.setValue(setPasswordLinkTo.getContact());
         notificationRequestTo.setReceiver(List.of(receiver));
 
         KeyValue templateKeyValue = new KeyValue();

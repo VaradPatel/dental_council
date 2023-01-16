@@ -1,4 +1,7 @@
 package in.gov.abdm.nmr.service;
+import in.gov.abdm.nmr.dto.GetSetPasswordLinkTo;
+import in.gov.abdm.nmr.dto.ResponseMessageTo;
+import in.gov.abdm.nmr.dto.SetNewPasswordTo;
 import in.gov.abdm.nmr.entity.User;
 import javax.servlet.http.HttpServletRequest;
 
@@ -7,13 +10,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface IResetPasswordService {
 
-    boolean createPasswordResetTokenForUser(String email,String token);
+    ResponseMessageTo getResetPasswordLink(GetSetPasswordLinkTo setPasswordLinkTo);
 
-    User getUserByPasswordResetToken(String token);
+    ResponseMessageTo setNewPassword(SetNewPasswordTo newPasswordTo);
 
-    void updatePassword(User user, String newPassword);
-
-    String getSiteURL(HttpServletRequest request);
-
-    void sendEmail(String email, String link);
+    void sendNotification(GetSetPasswordLinkTo setPasswordLinkTo, String link);
 }
