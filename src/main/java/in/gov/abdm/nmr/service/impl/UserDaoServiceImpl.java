@@ -124,7 +124,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public User toggleNotification(NotificationToggleRequestTO notificationToggleRequestTO) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User userDetail = userDetailRepository.findByUsername(userName);
-        notificationToggleRequestTO.getNotificationToggle().forEach(notificationToggleTO -> {
+        notificationToggleRequestTO.getNotificationToggles().forEach(notificationToggleTO -> {
             if(NMRConstants.SMS.equalsIgnoreCase(notificationToggleTO.getMode())){
                 userDetail.setSmsNotificationEnabled(notificationToggleTO.getIsEnabled());
             }else if(NMRConstants.EMAIL.equalsIgnoreCase(notificationToggleTO.getMode())){

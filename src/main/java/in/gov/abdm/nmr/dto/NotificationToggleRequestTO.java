@@ -10,5 +10,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NotificationToggleRequestTO {
-    private List<NotificationToggleTO> notificationToggle;
+    private List<NotificationToggleTO> notificationToggles;
 }
