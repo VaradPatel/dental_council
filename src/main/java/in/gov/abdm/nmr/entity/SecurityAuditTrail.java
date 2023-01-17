@@ -1,7 +1,6 @@
 package in.gov.abdm.nmr.entity;
 
 import java.math.BigInteger;
-import java.sql.Timestamp;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,7 +17,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "securityAuditTrail")
-public class SecurityAuditTrail {
+public class SecurityAuditTrail extends CommonAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,5 +31,4 @@ public class SecurityAuditTrail {
     private String payload;
     private String status;
     private String correlationId;
-    private Timestamp createdAt;
 }
