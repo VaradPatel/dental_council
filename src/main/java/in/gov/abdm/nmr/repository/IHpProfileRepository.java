@@ -17,7 +17,7 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
 			+ " where registration_no = :registrationNo and council_name = :councilName", nativeQuery = true)
 	Tuple fetchSmcRegistrationDetail(String registrationNo, Integer councilName);
 
-	@Query(value = "select registration_details.id as registration_id, hp_profile.request_id, registration_details.hp_profile_id, full_name, nmr_id, year_of_info, registration_no, registration_date,"
+	@Query(value = "select registration_details.id as registration_id, hp_profile.request_id, registration_details.hp_profile_id, full_name, nmr_id, year_of_info,transaction_id, e_sign_status ,registration_no, registration_date,"
 			+ " state_medical_council.name as state_medical_council_name, state_medical_council.id as state_medical_council_id, state_medical_council_status.id as state_medical_council_status_id, state_medical_council_status.name as state_medical_council_status_name, first_name, father_name,"
 			+ " salutation, gender, aadhaar_token, middle_name, mother_name, last_name, spouse_name, date_of_birth, "
 			+ " is_renewable, renewable_registration_date, is_name_change, country.id as nationality_id, country.nationality as nationality_name, "

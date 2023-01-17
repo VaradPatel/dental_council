@@ -92,5 +92,7 @@ public class HpProfile {
 	
 	private String requestId;
 
-
+	//eSignChange
+	private String transactionId;
+	private String eSignStatus;
 }

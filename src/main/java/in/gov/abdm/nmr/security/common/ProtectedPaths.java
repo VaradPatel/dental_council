@@ -13,9 +13,15 @@ public class ProtectedPaths {
 
     public static final String PATH_LOGIN = "/login";
     public static final String PATH_REFRESH_TOKEN = "/refreshToken";
+    
     public static final String PATH_UPDATE_COLLEGE = "/college";
     public static final String PATH_REGISTER_COLLEGE_REGISTRAR = "/college/registrar";
     public static final String PATH_REGISTER_COLLEGE_DEAN = "/college/dean";
+    
+    public static final String PATH_COLLEGE_PROFILE = "/college/{id}";
+    public static final String PATH_COLLEGE_REGISTRAR_PROFILE = "/college/registrar/{id}";
+    public static final String PATH_COLLEGE_DEAN_PROFILE = "/college/dean/{id}";
+    
     public static final String PATH_USER_ROOT = "/user";
     public static final String PATH_USER_SMSNOTIFICATIONENABLED = "/smsNotificationEnabled";
     public static final String PATH_USER_EMAILNOTIFICATIONENABLED = "/emailNotificationEnabled";
@@ -26,6 +32,9 @@ public class ProtectedPaths {
         protectedPaths.add(new AntPathRequestMatcher(PATH_UPDATE_COLLEGE, HttpMethod.PUT.name()));
         protectedPaths.add(new AntPathRequestMatcher(PATH_REGISTER_COLLEGE_REGISTRAR));
         protectedPaths.add(new AntPathRequestMatcher(PATH_REGISTER_COLLEGE_DEAN));
+        protectedPaths.add(new AntPathRequestMatcher(PATH_COLLEGE_PROFILE));
+        protectedPaths.add(new AntPathRequestMatcher(PATH_COLLEGE_DEAN_PROFILE));
+        protectedPaths.add(new AntPathRequestMatcher(PATH_COLLEGE_REGISTRAR_PROFILE));
         protectedPaths.add(new AntPathRequestMatcher(PATH_USER_ROOT + PATH_USER_SMSNOTIFICATIONENABLED));
         protectedPaths.add(new AntPathRequestMatcher(PATH_USER_ROOT + PATH_USER_EMAILNOTIFICATIONENABLED));
 

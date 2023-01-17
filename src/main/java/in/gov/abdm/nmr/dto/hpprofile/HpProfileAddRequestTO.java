@@ -20,4 +20,8 @@ public class HpProfileAddRequestTO {
     private List<QualificationDetailRequestTO> qualificationDetail;
 	private BigInteger applicationTypeId;
 	private String requestId;
+
+	//eSign_change
+	private String transactionId;
+	private String eSignStatus;
 }
