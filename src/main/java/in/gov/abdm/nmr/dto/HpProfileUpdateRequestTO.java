@@ -16,4 +16,8 @@ public class HpProfileUpdateRequestTO {
     private RegistrationDetailTO registrationDetail;
     private List<QualificationDetailRequestTO> qualificationDetail;
 	private String requestId;
+
+	//eSign_change
+	private String transactionId;
+	private String eSignStatus;
 }
