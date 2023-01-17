@@ -14,8 +14,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.Predicate;
 
+import in.gov.abdm.nmr.client.DscFClient;
+import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -145,6 +151,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
 	private VillagesRepository villagesRepository;
 
+	@Autowired
+	private DscFClient dscFClient;
+
 	public HpProfileDaoServiceImpl(IHpProfileMapper ihHpProfileMapper, IHpProfileRepository iHpProfileRepository,
 			IAddressRepository iAddressRepository, IQualificationDetailRepository qualificationDetailRepository,
 			IRegistrationDetailRepository registrationDetailRepository, WorkProfileRepository workProfileRepository,
@@ -214,20 +223,43 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 //		Join<Object, Object> registrationDetails = root.join(HpProfile_.REGISTRATION_DETAILS, JoinType.INNER);
 //
 //		List<Predicate> predicates = new ArrayList<>();
-		HpProfileDetailTO hpSmcDetailTO = new HpProfileDetailTO();
-		RegistrationDetailTO registrationDetailTO = new RegistrationDetailTO();
+        HpProfileDetailTO hpSmcDetailTO = new HpProfileDetailTO();
+        RegistrationDetailTO registrationDetailTO = new RegistrationDetailTO();
 
-		//////////// Registration Details Start/////////////////
-		Tuple hpProfile = iHpProfileRepository.fetchHpProfileDetail(hpProfileId);
+        HpProfile hpProfileCheck = iHpProfileRepository.findHpProfileById(hpProfileId);
 
-		if (hpProfile == null) {
-			return new HpProfileDetailTO();
-		}
+        if (hpProfileCheck == null) {
+            return new HpProfileDetailTO();
+        }
 
-		StateMedicalCouncil stateMedicalCouncil = iStateMedicalCouncilRepository
-				.findById(hpProfile.get("state_medical_council_id", BigInteger.class)).orElse(null);
+        if (hpProfileCheck.getTransactionId() != null && (hpProfileCheck.getESignStatus() == null || hpProfileCheck.getESignStatus().equalsIgnoreCase(NMRConstants.E_SIGN_FAILURE_STATUS))) {
 
-		registrationDetailTO.setStateMedicalCouncil(stateMedicalCouncil);
+            try {
+                ResponseEntity<Resource> resource=dscFClient.verifyEspRequest(hpProfileCheck.getTransactionId());
+                if (resource.getStatusCode().equals(HttpStatus.OK)) {
+                    hpProfileCheck.setESignStatus(NMRConstants.E_SIGN_SUCCESS_STATUS);
+                    iHpProfileRepository.save(hpProfileCheck);
+                }
+
+            } catch (Exception e) {
+                hpProfileCheck.setESignStatus(NMRConstants.E_SIGN_FAILURE_STATUS);
+                iHpProfileRepository.save(hpProfileCheck);
+            }
+
+        }
+
+
+        //////////// Registration Details Start/////////////////
+        Tuple hpProfile = iHpProfileRepository.fetchHpProfileDetail(hpProfileId);
+
+        if (hpProfile == null) {
+            return new HpProfileDetailTO();
+        }
+
+        StateMedicalCouncil stateMedicalCouncil = iStateMedicalCouncilRepository
+                .findById(hpProfile.get("state_medical_council_id", BigInteger.class)).orElse(null);
+
+        registrationDetailTO.setStateMedicalCouncil(stateMedicalCouncil);
 
 //		StateMedicalCouncilStatus stateMedicalCouncilStatus = iStateMedicalCouncilStatusRepository
 //				.findById(hpProfile.get("state_medical_council_status_id", BigInteger.class)).orElse(null);
@@ -484,6 +516,10 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 			hpSmcDetailTO.setCurrentWorkDetails(currentWorkDetailsTO);
 		}
 		//////////// Work profile Details end/////////////////////
+
+		hpSmcDetailTO.setTransactionId(hpProfile.get("transaction_id", String.class));
+		hpSmcDetailTO.setESignStatus(hpProfile.get("e_sign_status", String.class));
+
 		return hpSmcDetailTO;
 	}
 

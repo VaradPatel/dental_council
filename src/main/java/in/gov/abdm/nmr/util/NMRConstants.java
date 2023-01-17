@@ -31,6 +31,8 @@ public class NMRConstants {
     public static final String CHANGE_PASSWORD = "/changePassword";
     public static final String RAISE_QUERY = "/raiseQuery";
     public static final String GET_QUERIES = "/queries/hpProfileId/{hpProfileId}";
+    public static final String GET_RESET_PASSWORD_LINK = "/get-reset-password-link";
+    public static final String SET_NEW_PASSWORD = "/set-new-password";
 
     public static final String ACTION_REQUEST_URL="/action";
 
@@ -51,6 +53,7 @@ public class NMRConstants {
     public static final String NO_SUCH_OTP_TYPE = "No such OTP Type";
     public static final String OTP_EMAIL_SUBJECT = "NMR : Email Verification OTP";
     public static final String INFO_EMAIL_SUBJECT = "NMR : Status Changed";
+    public static final String SET_PASSWORD_EMAIlL_SUBJECT = "NMR : Set Password";
     public static final String OTP_CONTENT_TYPE = "otp";
     public static final String OTP_MESSAGES_PROPERTIES_KEY = "otp";
     public static final String INFO_CONTENT_TYPE = "info";
@@ -71,6 +74,8 @@ public class NMRConstants {
     public static final String PROBLEM_OCCURRED = "Problem Occurred";
     public static final String USERNAME_NOT_NULL = "Username cannot be null or empty";
     public static final String PASSWORD_NOT_NULL = "Password cannot be null or empty";
+    public static final String TOKEN_NOT_NULL = "Token cannot be null or empty";
+    public static final int RESET_PASSWORD_LINK_EXPIRY_HOURS = 24;
     public static final String OTP_INVALID = "Invalid OTP";
     public static final String OTP_NOT_FOUND = "OTP Not Found";
     public static final String OTP_EXPIRED = "OTP Expired";
@@ -203,4 +208,11 @@ public class NMRConstants {
 
     public static final String SMC_NAME = "smcName";
     public static final String SUCCESS="Success";
+    public static final String DCS_INTEGRATOR_NAME="NMR";
+    public static final String E_SIGN_SUCCESS_STATUS="success";
+    public static final String E_SIGN_FAILURE_STATUS="failure";
+    public static final String DSC_SERVICE = "dsc";
+    public static final String DSC_SERVICE_ENDPOINT = "${dsc.endpoint.url}";
+    public static final String GEN_ESP_REQUEST_URL = "/digiSign/genEspRequest";
+    public static final String VERIFY_ESP_REQUEST_URL = "/digiSign/pdf/{tansactionId}";
 }
