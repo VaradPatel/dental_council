@@ -13,10 +13,12 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
+import in.gov.abdm.nmr.dto.NotificationToggleRequestTO;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.entity.User_;
 import in.gov.abdm.nmr.repository.IUserRepository;
 import in.gov.abdm.nmr.service.IUserDaoService;
+import in.gov.abdm.nmr.util.NMRConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -115,6 +117,20 @@ public class UserDaoServiceImpl implements IUserDaoService {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User userDetail = userDetailRepository.findByUsername(userName);
         userDetail.setEmailNotificationEnabled(isEmailNotificationEnabled);
+        return userDetailRepository.saveAndFlush(userDetail);
+    }
+
+    @Override
+    public User toggleNotification(NotificationToggleRequestTO notificationToggleRequestTO) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userDetail = userDetailRepository.findByUsername(userName);
+        notificationToggleRequestTO.getNotificationToggles().forEach(notificationToggleTO -> {
+            if(NMRConstants.SMS.equalsIgnoreCase(notificationToggleTO.getMode())){
+                userDetail.setSmsNotificationEnabled(notificationToggleTO.getIsEnabled());
+            }else if(NMRConstants.EMAIL.equalsIgnoreCase(notificationToggleTO.getMode())){
+                userDetail.setEmailNotificationEnabled(notificationToggleTO.getIsEnabled());
+            }
+        });
         return userDetailRepository.saveAndFlush(userDetail);
     }
 }

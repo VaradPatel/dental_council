@@ -26,6 +26,7 @@ public class ProtectedPaths {
     public static final String PATH_USER_SMSNOTIFICATIONENABLED = "/smsNotificationEnabled";
     public static final String PATH_USER_EMAILNOTIFICATIONENABLED = "/emailNotificationEnabled";
 
+    public static final String PATH_USER_NOTIFICATION_ENABLED = "/enable-notification";
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<AntPathRequestMatcher> protectedPaths = new ArrayList<>();
         protectedPaths.add(new AntPathRequestMatcher(PATH_REFRESH_TOKEN));
@@ -37,6 +38,7 @@ public class ProtectedPaths {
         protectedPaths.add(new AntPathRequestMatcher(PATH_COLLEGE_REGISTRAR_PROFILE));
         protectedPaths.add(new AntPathRequestMatcher(PATH_USER_ROOT + PATH_USER_SMSNOTIFICATIONENABLED));
         protectedPaths.add(new AntPathRequestMatcher(PATH_USER_ROOT + PATH_USER_EMAILNOTIFICATIONENABLED));
+        protectedPaths.add(new AntPathRequestMatcher(PATH_USER_ROOT + PATH_USER_NOTIFICATION_ENABLED));
 
         return protectedPaths.toArray(AntPathRequestMatcher[]::new);
     }

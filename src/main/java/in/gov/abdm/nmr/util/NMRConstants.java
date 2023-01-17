@@ -86,6 +86,9 @@ public class NMRConstants {
     public static final String REQUEST_ID = "REQUEST_ID";
     public static final String MOBILE = "mobile";
     public static final String EMAIL_ID = "emailId";
+
+    public static final String SMS = "sms";
+    public static final String  EMAIL = "email";
     public static final int OTP_GENERATION_MAX_ATTEMPTS = 5;
     public static final int OTP_MAX_ATTEMPTS = 3;
 
