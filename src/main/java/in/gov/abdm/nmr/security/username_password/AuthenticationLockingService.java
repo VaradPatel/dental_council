@@ -99,7 +99,7 @@ public class AuthenticationLockingService {
 
         LocalDateTime timeWithDuration=user.getLockTime().toLocalDateTime().plusHours(NMRConstants.LOCK_TIME_DURATION);
 
-        if (timeWithDuration.compareTo(LocalDateTime.now())<0) {
+        if (timeWithDuration.isBefore(LocalDateTime.now())) {
             user.setAccountNonLocked(true);
             user.setLockTime(null);
             user.setFailedAttempt(0);
