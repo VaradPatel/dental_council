@@ -54,7 +54,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
             }
 
             User userDetail = new User(null, collegeRegistrationRequestTo.getEmailId(), null, null, true, true, //
-                    entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()),  entityManager.getReference(Group.class, in.gov.abdm.nmr.enums.Group.COLLEGE_REGISTRAR.getId()));
+                    entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()),  entityManager.getReference(Group.class, in.gov.abdm.nmr.enums.Group.COLLEGE_REGISTRAR.getId()),false,0,null);
             userDetailService.saveUserDetail(userDetail);
 
             College collegeEntity = collegeDtoMapper.collegeRegistartionDtoToEntity(collegeRegistrationRequestTo);

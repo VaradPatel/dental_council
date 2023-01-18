@@ -1,7 +1,8 @@
 package in.gov.abdm.nmr.service;
 
+import in.gov.abdm.nmr.dto.NotificationToggleRequestTO;
+import in.gov.abdm.nmr.dto.NotificationToggleResponseTO;
 import in.gov.abdm.nmr.dto.*;
-
 import java.math.BigInteger;
 import java.util.List;
 

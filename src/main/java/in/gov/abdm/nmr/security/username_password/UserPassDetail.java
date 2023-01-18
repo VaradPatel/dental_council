@@ -12,8 +12,8 @@ public class UserPassDetail extends User {
 
     private final String userType;
 
-    public UserPassDetail(String username, String password, Collection<? extends GrantedAuthority> authorities, String userType) {
-        super(username, password, authorities);
+    public UserPassDetail(String username, String password, Collection<? extends GrantedAuthority> authorities, String userType,boolean accountNonLocked) {
+        super(username, password, true,true,true,accountNonLocked,authorities);
         this.userType = userType;
     }
 

@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.entity;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
 
 import javax.persistence.*;
 
@@ -39,5 +40,9 @@ public class User extends CommonAuditEntity {
     @JoinColumn(name = GROUP_ID_COLUMN,referencedColumnName = ID)
     private Group group;
 
+    private boolean accountNonLocked;
 
+    private int failedAttempt;
+
+    private Timestamp lockTime;
 }

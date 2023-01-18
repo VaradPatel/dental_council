@@ -35,11 +35,11 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
     private static final Logger LOGGER = LogManager.getLogger();
 
     private AuthenticationEventPublisher authEventPublisher;
-    
+
     private JwtUtil jwtUtil;
-    
+
     private ISecurityAuditTrailDaoService securityAuditTrailDaoService;
-    
+
     private Tracer tracer;
 
     protected JwtAuthenticationFilter(AuthenticationManager authenticationManager, AuthenticationEventPublisher authEventPublisher, JwtUtil jwtUtil, //
@@ -59,6 +59,10 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
         try {
             if (StringUtils.isNotBlank(request.getHeader(HttpHeaders.AUTHORIZATION))) {
                 String accessToken = extractBearerToken(request);
+
+                if (accessToken == null) {
+                    throw new AuthenticationServiceException("Invalid bearer token format");
+                }
 
                 JwtTypeEnum tokenType = JwtTypeEnum.ACCESS_TOKEN;
                 if (ProtectedPaths.PATH_REFRESH_TOKEN.equals(request.getServletPath())) {
