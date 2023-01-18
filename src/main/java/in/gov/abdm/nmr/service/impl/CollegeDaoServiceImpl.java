@@ -61,7 +61,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
             collegeEntity.setId(null);
             collegeEntity.setUser(userDetail);
 
-//            collegeEntity.setState(entityManager.getReference(State.class, collegeRegistrationRequestTo.getStateId()));
+            collegeEntity.setState(entityManager.getReference(State.class, collegeRegistrationRequestTo.getStateId()));
             collegeEntity.setStateMedicalCouncil(entityManager.getReference(StateMedicalCouncil.class, collegeRegistrationRequestTo.getCouncilId()));
             collegeEntity.setUniversity(entityManager.getReference(University.class, collegeRegistrationRequestTo.getUniversityId()));
 
@@ -69,20 +69,8 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
         } else {
             String userName = SecurityContextHolder.getContext().getAuthentication().getName();
             User collegeUserDetail = userDetailService.findUserDetailByUsername(userName);
-
-            if (!collegeUserDetail.getId().equals(collegeRegistrationRequestTo.getUserId())) {
-                throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
-            }
-
-            if (!collegeUserDetail.getUsername().equals(collegeRegistrationRequestTo.getEmailId()) && userDetailService.findUserDetailByUsername(collegeRegistrationRequestTo.getEmailId()) != null) {
-                throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
-            }
-
+            
             College collegeEntity = findByUserDetail(collegeUserDetail.getId());
-            if (!collegeEntity.getId().equals(collegeRegistrationRequestTo.getId())) {
-                throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
-            }
-
             collegeUserDetail.setUsername(collegeRegistrationRequestTo.getEmailId());
             userDetailService.saveUserDetail(collegeUserDetail);
 
@@ -90,7 +78,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
             collegeEntity = collegeDtoMapper.collegeRegistartionDtoToEntity(collegeRegistrationRequestTo);
             collegeEntity.setCreatedAt(createdAt);
             collegeEntity.setUser(collegeUserDetail);
-//            collegeEntity.setState(entityManager.getReference(State.class, collegeRegistrationRequestTo.getStateId()));
+            collegeEntity.setState(entityManager.getReference(State.class, collegeRegistrationRequestTo.getStateId()));
             collegeEntity.setStateMedicalCouncil(entityManager.getReference(StateMedicalCouncil.class, collegeRegistrationRequestTo.getCouncilId()));
             collegeEntity.setUniversity(entityManager.getReference(University.class, collegeRegistrationRequestTo.getUniversityId()));
 

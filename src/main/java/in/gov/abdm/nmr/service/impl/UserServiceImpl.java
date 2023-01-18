@@ -4,16 +4,32 @@ import in.gov.abdm.nmr.dto.NotificationToggleRequestTO;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.springframework.stereotype.Service;
 import in.gov.abdm.nmr.dto.NotificationToggleResponseTO;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.mapper.INbeMapper;
+import in.gov.abdm.nmr.mapper.INmcMapper;
+import in.gov.abdm.nmr.mapper.ISmcMapper;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.service.IUserService;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
+import in.gov.abdm.nmr.util.NMRConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigInteger;
 import java.util.List;
 
 @Service
 public class UserServiceImpl implements IUserService {
+
+    @Autowired
+    private ISmcMapper smcMapper;
+    @Autowired
+    private INmcMapper nmcMapper;
+    @Autowired
+    private INbeMapper nbeMapper;
 
     private IUserDaoService userDaoService;
 
@@ -83,4 +99,19 @@ public class UserServiceImpl implements IUserService {
         }
         return false;
     }
+    @Override
+    public SMCProfileTO getSmcProfile(BigInteger userId) {
+        return smcMapper.smcProfileToDto(userDaoService.findSmcProfileByUserId(userId));
+    }
+
+    @Override
+    public NmcProfileTO getNmcProfile(BigInteger userId) {
+        return nmcMapper.nmcProfileToDto(userDaoService.findNmcProfileByUserId(userId));
+    }
+
+    @Override
+    public NbeProfileTO getNbeProfile(BigInteger userId) {
+         return nbeMapper.nbeProfileToDto( userDaoService.findNbeProfileByUserId(userId));
+    }
+
 }

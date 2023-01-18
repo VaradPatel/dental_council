@@ -1,21 +1,15 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
-
-import in.gov.abdm.nmr.dto.NotificationToggleRequestTO;
+import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.entity.NbeProfile;
+import in.gov.abdm.nmr.entity.NmcProfile;
+import in.gov.abdm.nmr.entity.SMCProfile;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.entity.User_;
+import in.gov.abdm.nmr.mapper.IUserMapper;
+import in.gov.abdm.nmr.repository.INbeProfileRepository;
+import in.gov.abdm.nmr.repository.INmcProfileRepository;
+import in.gov.abdm.nmr.repository.ISmcProfileRepository;
 import in.gov.abdm.nmr.repository.IUserRepository;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -23,10 +17,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import in.gov.abdm.nmr.mapper.IUserMapper;
-import in.gov.abdm.nmr.dto.UpdateRefreshTokenIdRequestTO;
-import in.gov.abdm.nmr.dto.UserSearchTO;
-import in.gov.abdm.nmr.dto.UserTO;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.criteria.*;
+import javax.transaction.Transactional;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -35,14 +32,20 @@ public class UserDaoServiceImpl implements IUserDaoService {
     private IUserMapper userDetailMapper;
 
     private IUserRepository userDetailRepository;
+    private ISmcProfileRepository smcProfileRepository;
+    private INmcProfileRepository nmcProfileRepository;
+    private INbeProfileRepository nbeProfileRepository;
 
     private EntityManager entityManager;
 
-    public UserDaoServiceImpl(IUserMapper userDetailMapper, IUserRepository userDetailRepository, EntityManager entityManager) {
+    public UserDaoServiceImpl(IUserMapper userDetailMapper, IUserRepository userDetailRepository, EntityManager entityManager, ISmcProfileRepository smcProfileRepository,INmcProfileRepository nmcProfileRepository, INbeProfileRepository nbeProfileRepository) {
         super();
         this.userDetailMapper = userDetailMapper;
         this.userDetailRepository = userDetailRepository;
         this.entityManager = entityManager;
+        this.smcProfileRepository= smcProfileRepository;
+        this.nmcProfileRepository=nmcProfileRepository;
+        this.nbeProfileRepository=nbeProfileRepository;
     }
 
     @Override
@@ -132,5 +135,20 @@ public class UserDaoServiceImpl implements IUserDaoService {
             }
         });
         return userDetailRepository.saveAndFlush(userDetail);
+    }
+
+    @Override
+    public SMCProfile findSmcProfileByUserId(BigInteger userId) {
+       return smcProfileRepository.findByUserDetail(userId);
+    }
+
+    @Override
+    public NmcProfile findNmcProfileByUserId(BigInteger userId) {
+        return nmcProfileRepository .findByUserDetail(userId);
+    }
+
+    @Override
+    public NbeProfile findNbeProfileByUserId(BigInteger userId) {
+        return nbeProfileRepository.findByUserDetail(userId);
     }
 }
