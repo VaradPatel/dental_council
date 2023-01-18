@@ -14,10 +14,7 @@ import in.gov.abdm.nmr.service.IUserService;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
-import in.gov.abdm.nmr.util.NMRConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.math.BigInteger;
 import java.util.List;
 
