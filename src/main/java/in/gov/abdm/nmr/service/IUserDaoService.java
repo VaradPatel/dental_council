@@ -1,12 +1,15 @@
 package in.gov.abdm.nmr.service;
 
-import java.math.BigInteger;
-
 import in.gov.abdm.nmr.dto.NotificationToggleRequestTO;
-import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.dto.UpdateRefreshTokenIdRequestTO;
 import in.gov.abdm.nmr.dto.UserSearchTO;
 import in.gov.abdm.nmr.dto.UserTO;
+import in.gov.abdm.nmr.entity.NbeProfile;
+import in.gov.abdm.nmr.entity.NmcProfile;
+import in.gov.abdm.nmr.entity.SMCProfile;
+import in.gov.abdm.nmr.entity.User;
+
+import java.math.BigInteger;
 
 public interface IUserDaoService {
 
@@ -28,4 +31,7 @@ public interface IUserDaoService {
 
     User toggleEmailNotification(boolean isEmailNotificationEnabled);
     User toggleNotification(NotificationToggleRequestTO notificationToggleRequestTO);
+    SMCProfile findSmcProfileByUserId(BigInteger userId);
+   NmcProfile findNmcProfileByUserId(BigInteger userId);
+   NbeProfile findNbeProfileByUserId(BigInteger userId);
 }

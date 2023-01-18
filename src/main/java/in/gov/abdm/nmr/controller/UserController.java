@@ -1,16 +1,13 @@
 package in.gov.abdm.nmr.controller;
 
-import in.gov.abdm.nmr.dto.NotificationToggleRequestTO;
+import in.gov.abdm.nmr.dto.*;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import in.gov.abdm.nmr.dto.NotificationToggleResponseTO;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IUserService;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @RestController
@@ -37,5 +34,16 @@ public class UserController {
     public List<NotificationToggleResponseTO> toggleNotification(@RequestBody NotificationToggleRequestTO notificationToggleRequestTO) {
         return userService.toggleNotification(notificationToggleRequestTO);
     }
-
+    @GetMapping(path="/smc/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
+    public SMCProfileTO smcProfile(@PathVariable(name = "id") BigInteger userId){
+        return userService.getSmcProfile(userId);
+    }
+    @GetMapping(path="/nmc/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
+    public NmcProfileTO nmcProfile(@PathVariable(name = "id") BigInteger userId){
+        return userService.getNmcProfile(userId);
+    }
+  @GetMapping(path="/nbe/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
+  public NbeProfileTO nbeProfile(@PathVariable(name = "id") BigInteger userId){
+      return userService.getNbeProfile(userId);
+  }
 }

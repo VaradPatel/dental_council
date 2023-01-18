@@ -23,7 +23,7 @@ public class SMCProfile extends CommonAuditEntity {
     private BigInteger id;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id",referencedColumnName = "id")
     private User user;
 
     private String firstName;
