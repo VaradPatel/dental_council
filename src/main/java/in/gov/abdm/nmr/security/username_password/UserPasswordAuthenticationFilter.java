@@ -51,7 +51,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
     private Tracer tracer;
 
     @Autowired
-    AuthenticationLockHandler authenticationHandler;
+    AuthenticationLockingService authenticationHandler;
 
     public UserPasswordAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper, RsaUtil rsaUtil, ICaptchaDaoService captchaDaoService, //
                                             AuthenticationEventPublisher authEventPublisher, ISecurityAuditTrailDaoService securityAuditTrailDaoService, Tracer tracer) {
@@ -142,6 +142,6 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
         super.unsuccessfulAuthentication(request, response, failed);
         publishAuthenticationFailure(request, failed);
 
-        authenticationHandler.onAuthenticationFailure(objectMapper.readValue(requestBodyString, LoginRequestTO.class).getUsername());
+        authenticationHandler.updateFailedAttemptsAndLockStatus(objectMapper.readValue(requestBodyString, LoginRequestTO.class).getUsername());
     }
 }

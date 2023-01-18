@@ -11,9 +11,6 @@ import in.gov.abdm.nmr.mapper.INmcMapper;
 import in.gov.abdm.nmr.mapper.ISmcMapper;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.service.IUserService;
-import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigInteger;
 import java.util.List;
@@ -53,49 +50,6 @@ public class UserServiceImpl implements IUserService {
                 NotificationToggleResponseTO.builder().userId(userDetail.getId()).mode(NMRConstants.EMAIL).enabled(userDetail.isEmailNotificationEnabled()).build());
     }
 
-    /**
-     * Increases login failed attempt by 1
-     *
-     * @param user user class object
-     */
-    public void increaseFailedAttempts(User user) {
-        user.setFailedAttempt(user.getFailedAttempt() + 1);
-        userDaoService.saveUserDetail(user);
-    }
-
-    /**
-     * Sets user status to lock and create entry for lock time
-     *
-     * @param user class object
-     */
-    public void lock(User user) {
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        user.setAccountNonLocked(false);
-        user.setLockTime(new Timestamp(calendar.getTimeInMillis()));
-        userDaoService.saveUserDetail(user);
-    }
-
-    /**
-     * Unlocked user after expiry time
-     *
-     * @param user class object
-     * @return success/failure of account unlocking
-     */
-    public boolean unlockWhenTimeExpired(User user) {
-        long lockTimeInMillis = user.getLockTime().getTime();
-        long currentTimeInMillis = System.currentTimeMillis();
-
-        if (lockTimeInMillis + NMRConstants.LOCK_TIME_DURATION * 60 * 60 * 1000 < currentTimeInMillis) {
-            user.setAccountNonLocked(true);
-            user.setLockTime(null);
-            user.setFailedAttempt(0);
-            userDaoService.saveUserDetail(user);
-            return true;
-        }
-        return false;
-    }
     @Override
     public SMCProfileTO getSmcProfile(BigInteger userId) {
         return smcMapper.smcProfileToDto(userDaoService.findSmcProfileByUserId(userId));

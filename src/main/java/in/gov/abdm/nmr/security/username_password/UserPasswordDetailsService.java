@@ -19,7 +19,7 @@ public class UserPasswordDetailsService implements UserDetailsService {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Autowired
-    AuthenticationLockHandler authenticationHandler;
+    AuthenticationLockingService authenticationHandler;
 
     private IUserDaoService userDetailService;
 
@@ -38,7 +38,7 @@ public class UserPasswordDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("Invalid username");
         }
 
-        boolean isAccountLocked= authenticationHandler.onAuthenticationSuccess(username);
-        return new UserPassDetail(userDetail.getUsername(), userDetail.getPassword(), Collections.emptyList(), userDetail.getUserType().getId(),isAccountLocked);
+        boolean isAccountNonLocked= authenticationHandler.checkAndUpdateLockStatus(username);
+        return new UserPassDetail(userDetail.getUsername(), userDetail.getPassword(), Collections.emptyList(), userDetail.getUserType().getId(),isAccountNonLocked);
     }
 }
