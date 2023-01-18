@@ -11,7 +11,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class NMRConstants {
 
-    public static final String DASHBOARD_REQUEST_URL="/dashboard";
+    public static final String DASHBOARD_REQUEST_URL = "/dashboard";
 
     public static final String FETCH_COUNT_ON_CARD_URL = "/cardCount";
 
@@ -34,10 +34,10 @@ public class NMRConstants {
     public static final String GET_RESET_PASSWORD_LINK = "/get-reset-password-link";
     public static final String SET_NEW_PASSWORD = "/set-new-password";
 
-    public static final String ACTION_REQUEST_URL="/action";
+    public static final String ACTION_REQUEST_URL = "/action";
 
-    public static final String INITIATE_WORK_FLOW_URL="/initiateWorkFlow";
-    public static final String INITIATE_COLLEGE_WORK_FLOW_URL="/initiateCollegeWorkFlow";
+    public static final String INITIATE_WORK_FLOW_URL = "/initiateWorkFlow";
+    public static final String INITIATE_COLLEGE_WORK_FLOW_URL = "/initiateCollegeWorkFlow";
 
     public static final String NOTIFICATION_SERVICE = "notification";
     public static final String NOTIFICATION_DB_SERVICE = "notification-db";
@@ -46,7 +46,7 @@ public class NMRConstants {
     public static final String OPEN_STATUS = "open";
 
     public static final String GLOBAL_NOTIFICATION_ENDPOINT = "${global.notification.endpoint}";
-     public static final String GLOBAL_AADHAAR_ENDPOINT = "${global.aadhaar.endpoint}";
+    public static final String GLOBAL_AADHAAR_ENDPOINT = "${global.aadhaar.endpoint}";
 
     public static final String OTP_GENERATION_EXCEEDED = "OTP Generation Attempts Exceeded";
     public static final String OTP_ATTEMPTS_EXCEEDED = "OTP Attempts Exceeded";
@@ -88,63 +88,63 @@ public class NMRConstants {
     public static final String EMAIL_ID = "emailId";
 
     public static final String SMS = "sms";
-    public static final String  EMAIL = "email";
+    public static final String EMAIL = "email";
     public static final int OTP_GENERATION_MAX_ATTEMPTS = 5;
     public static final int OTP_MAX_ATTEMPTS = 3;
 
     public static final String TOTAL_HP_REGISTRATION_REQUESTS = "Total HP Registration Requests";
     public static final String TOTAL_HP_MODIFICATION_REQUESTS = "Total HP Modification Requests";
 
-    public static final String TOTAL_TEMPORARY_SUSPENSION_REQUESTS="Total Temporary Suspension Requests";
+    public static final String TOTAL_TEMPORARY_SUSPENSION_REQUESTS = "Total Temporary Suspension Requests";
 
-    public static final String TOTAL_PERMANENT_SUSPENSION_REQUESTS="Total Permanent Suspension Requests";
+    public static final String TOTAL_PERMANENT_SUSPENSION_REQUESTS = "Total Permanent Suspension Requests";
 
-    public static final String TOTAL_ACTIVATE_LICENSE_REQUESTS="Total Activate License Requests";
+    public static final String TOTAL_ACTIVATE_LICENSE_REQUESTS = "Total Activate License Requests";
 
     public static final String TOTAL_COLLEGE_REGISTRATION_REQUESTS = "Total College Registration Requests";
 
-    public static final String HP_PROFILE_ID="hp_profile_id";
+    public static final String HP_PROFILE_ID = "hp_profile_id";
 
-    public static final String ID="id";
+    public static final String ID = "id";
 
-    public static final String HP_PROFILE_STATUS_ID="hp_profile_status_id";
+    public static final String HP_PROFILE_STATUS_ID = "hp_profile_status_id";
 
-    public static final String APPLICATION_STATUS_TYPE_ID="application_status_type_id";
+    public static final String APPLICATION_STATUS_TYPE_ID = "application_status_type_id";
 
-    public static final String VERIFIED_BY="verified_by";
+    public static final String VERIFIED_BY = "verified_by";
 
-    public static final String SCHEDULE_ID="schedule_id";
+    public static final String SCHEDULE_ID = "schedule_id";
 
-    public static final String USER_TYPE_ID="user_type_id";
+    public static final String USER_TYPE_ID = "user_type_id";
 
-    public static final String USER_TYPE="userType";
+    public static final String USER_TYPE = "userType";
 
-    public static final String USER_SUB_TYPE="userSubType";
+    public static final String USER_SUB_TYPE = "userSubType";
 
-    public static final String USER_SUB_TYPE_ID="user_sub_type_id";
+    public static final String USER_SUB_TYPE_ID = "user_sub_type_id";
 
-    public static final String APPLICATION_STATUS_TYPE="applicationStatusType";
+    public static final String APPLICATION_STATUS_TYPE = "applicationStatusType";
 
-    public static final String APPLICATION_TYPE_ID="applicationTypeId";
-    public static final String APPLICATION_TYPE_NAME="applicationTypeName";
+    public static final String APPLICATION_TYPE_ID = "applicationTypeId";
+    public static final String APPLICATION_TYPE_NAME = "applicationTypeName";
 
-    public static final String GROUP_ID_COLUMN="group_id";
+    public static final String GROUP_ID_COLUMN = "group_id";
 
-    public static final String GROUP_ID="groupId";
+    public static final String GROUP_ID = "groupId";
 
-    public static final String GROUP_NAME="groupName";
+    public static final String GROUP_NAME = "groupName";
 
-    public static final String WORK_FLOW_STATUS="workFlowStatus";
-    public static final String FETCH_STATUS_WISE_COUNT_BY_GROUP_AND_APPLICATION_TYPE_QUERY="SELECT ws.name as name, COUNT(w) as count " +
+    public static final String WORK_FLOW_STATUS = "workFlowStatus";
+    public static final String FETCH_STATUS_WISE_COUNT_BY_GROUP_AND_APPLICATION_TYPE_QUERY = "SELECT ws.name as name, COUNT(w) as count " +
             "FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id " +
-            "WHERE w.application_type_id = :"+APPLICATION_TYPE_ID+" AND  w.current_group_id = :"+GROUP_ID+" " +
-            "OR ( w.previous_group_id = :"+GROUP_ID+" AND w.action_id IN ( 3,5 ) ) " +
+            "WHERE w.application_type_id = :" + APPLICATION_TYPE_ID + " AND  w.current_group_id = :" + GROUP_ID + " " +
+            "OR ( w.previous_group_id = :" + GROUP_ID + " AND w.action_id IN ( 3,5 ) ) " +
             "GROUP BY ws.name " +
             "UNION " +
             "SELECT ws.name as status, COUNT(wa) as count FROM work_flow_audit wa " +
             "JOIN work_flow_status ws ON wa.work_flow_status_id = ws.id " +
-            "WHERE wa.application_type_id = 1 AND wa.previous_group_id = :"+GROUP_ID +" "+
-            "AND wa.action_id = 4"+
+            "WHERE wa.application_type_id = 1 AND wa.previous_group_id = :" + GROUP_ID + " " +
+            "AND wa.action_id = 4" +
             "GROUP BY ws.name";
 
     public static final String FETCH_DETAILS_FOR_LISTING_QUERY = "SELECT rd.registration_no as registrationNo, hp.full_name as nameOfApplicant, smc.name as nameOfStateCouncil, rd.registration_date as dateOfSubmission, g.name as groupName, ws.name as workFlowStatus " +
@@ -154,9 +154,9 @@ public class NMRConstants {
             "JOIN \"group\" g ON w.previous_group_id=g.id " +
             "JOIN work_flow_status ws ON w.work_flow_status_id= ws.id " +
             "JOIN state_medical_council smc ON rd.state_medical_council_id = smc.id " +
-            "WHERE g.name = :"+GROUP_NAME+ " " +
-            "AND a.name = :"+APPLICATION_TYPE_NAME+" " +
-            "AND ws.name = :"+WORK_FLOW_STATUS+" ";
+            "WHERE g.name = :" + GROUP_NAME + " " +
+            "AND a.name = :" + APPLICATION_TYPE_NAME + " " +
+            "AND ws.name = :" + WORK_FLOW_STATUS + " ";
 
     public static final String FETCH_DETAILS_WITH_PENDING_STATUS_FOR_LISTING_QUERY = "SELECT rd.registration_no as registrationNo, hp.full_name as nameOfApplicant, smc.name as nameOfStateCouncil, rd.registration_date as dateOfSubmission, g.name as groupName, ws.name as workFlowStatus " +
             "FROM work_flow w JOIN registration_details rd ON w.hp_profile_id = rd.hp_profile_id " +
@@ -165,9 +165,9 @@ public class NMRConstants {
             "JOIN \"group\" g ON w.current_group_id = g.id " +
             "JOIN work_flow_status ws ON w.work_flow_status_id = ws.id " +
             "JOIN state_medical_council smc ON rd.state_medical_council_id = smc.id " +
-            "WHERE g.name = :"+GROUP_NAME+ " " +
-            "AND a.name = :"+APPLICATION_TYPE_NAME+" " +
-            "AND ws.name = :"+WORK_FLOW_STATUS+" ";
+            "WHERE g.name = :" + GROUP_NAME + " " +
+            "AND a.name = :" + APPLICATION_TYPE_NAME + " " +
+            "AND ws.name = :" + WORK_FLOW_STATUS + " ";
 
     public static final String FETCH_DETAILS_WITH_APPROVED_STATUS_FOR_LISTING_QUERY = "SELECT rd.registration_no as registrationNo, hp.full_name as nameOfApplicant, smc.name as nameOfStateCouncil, rd.registration_date as dateOfSubmission, g.name as groupName, ws.name as workFlowStatus " +
             "FROM work_flow_audit wa JOIN registration_details rd ON w.hp_profile_id=rd.hp_profile_id " +
@@ -176,43 +176,47 @@ public class NMRConstants {
             "JOIN \"group\" g ON wa.previous_group_id=g.id " +
             "JOIN work_flow_status ws ON wa.work_flow_status_id= ws.id " +
             "JOIN state_medical_council smc ON rd.state_medical_council_id = smc.id " +
-            "WHERE g.name = :"+GROUP_NAME+ " " +
-            "AND a.name = :"+APPLICATION_TYPE_NAME+" " +
-            "AND ws.name = :"+WORK_FLOW_STATUS+" ";
+            "WHERE g.name = :" + GROUP_NAME + " " +
+            "AND a.name = :" + APPLICATION_TYPE_NAME + " " +
+            "AND ws.name = :" + WORK_FLOW_STATUS + " ";
 
-    public static final String FETCH_DETAILS_BY_REG_NO_QUERY = "SELECT hvs.registrationDetails.registrationNo as registrationNo, hvs.hpProfile.fullName as nameOfApplicant, hvs.registrationDetails.stateMedicalCouncil.name as nameOfStateCouncil, hvs.registrationDetails.registrationDate as dateOfSubmission, hvs.verifiedBy.userType.name as verifiedByUserType, hvs.verifiedBy.userSubType.name as verifiedByUserSubType, hvs.hpProfile.hpProfileStatus.name as hpProfileStatus "+
-            "FROM HpVerificationStatus hvs "+
-            "WHERE hvs.registrationDetails.registrationNo=:registrationNumber"+
-            "AND hvs.registrationDetails.stateMedicalCouncil.name =:smcName "+
-            "AND hvs.verifiedBy.userType.name =:userType "+
+    public static final String FETCH_DETAILS_BY_REG_NO_QUERY = "SELECT hvs.registrationDetails.registrationNo as registrationNo, hvs.hpProfile.fullName as nameOfApplicant, hvs.registrationDetails.stateMedicalCouncil.name as nameOfStateCouncil, hvs.registrationDetails.registrationDate as dateOfSubmission, hvs.verifiedBy.userType.name as verifiedByUserType, hvs.verifiedBy.userSubType.name as verifiedByUserSubType, hvs.hpProfile.hpProfileStatus.name as hpProfileStatus " +
+            "FROM HpVerificationStatus hvs " +
+            "WHERE hvs.registrationDetails.registrationNo=:registrationNumber" +
+            "AND hvs.registrationDetails.stateMedicalCouncil.name =:smcName " +
+            "AND hvs.verifiedBy.userType.name =:userType " +
             "AND hvs.verifiedBy.userSubType.name =:userSubType ";
 
-    public static final String FETCH_DETAILS_FOR_NMC_BY_REG_NO_QUERY = "SELECT hvs.registrationDetails.registrationNo as registrationNo, hvs.hpProfile.fullName as nameOfApplicant, hvs.registrationDetails.stateMedicalCouncil.name as nameOfStateCouncil, hvs.registrationDetails.registrationDate as dateOfSubmission, hvs.verifiedBy.userType.name as verifiedByUserType, hvs.verifiedBy.userSubType.name as verifiedByUserSubType, hvs.hpProfile.hpProfileStatus.name as hpProfileStatus "+
-            "FROM HpVerificationStatus hvs "+
-            "WHERE hvs.registrationDetails.registrationNo=:registrationNumber"+
-            "AND hvs.verifiedBy.userType.name =:userType "+
+    public static final String FETCH_DETAILS_FOR_NMC_BY_REG_NO_QUERY = "SELECT hvs.registrationDetails.registrationNo as registrationNo, hvs.hpProfile.fullName as nameOfApplicant, hvs.registrationDetails.stateMedicalCouncil.name as nameOfStateCouncil, hvs.registrationDetails.registrationDate as dateOfSubmission, hvs.verifiedBy.userType.name as verifiedByUserType, hvs.verifiedBy.userSubType.name as verifiedByUserSubType, hvs.hpProfile.hpProfileStatus.name as hpProfileStatus " +
+            "FROM HpVerificationStatus hvs " +
+            "WHERE hvs.registrationDetails.registrationNo=:registrationNumber" +
+            "AND hvs.verifiedBy.userType.name =:userType " +
             "AND hvs.verifiedBy.userSubType.name =:userSubType ";
 
-    public static final String INVALID_USER_SUB_TYPE="Invalid User sub-type. Expected: College, College Dean or College Registrar";
+    public static final String INVALID_USER_SUB_TYPE = "Invalid User sub-type. Expected: College, College Dean or College Registrar";
 
-    public static final String INVALID_USER_TYPE="Invalid User type. Expected: Health Professional, College, State Medical Council or National Medical Council";
+    public static final String INVALID_USER_TYPE = "Invalid User type. Expected: Health Professional, College, State Medical Council or National Medical Council";
 
-    public static final String INVALID_GROUP="Invalid Group. Expected: Health Professional, State Medical Council, National Medical Council, College Dean, College Registrar or College Admin";
-    public static final String INVALID_WORK_FLOW_STATUS="Invalid Workflow Status. Expected: Pending, Approved, Query Raised, Rejected, Suspended or Blacklisted";
-    public static final String INVALID_APPLICATION_TYPE="Invalid Application Type. Expected: HP Registration, HP Modification, Temporary Suspension, Permanent Suspension, Activate License, College Registration ";
-    public static final String STATE_MEDICAL_COUNCIL_ID="state_medical_council_id";
+    public static final String INVALID_GROUP = "Invalid Group. Expected: Health Professional, State Medical Council, National Medical Council, College Dean, College Registrar or College Admin";
+    public static final String INVALID_WORK_FLOW_STATUS = "Invalid Workflow Status. Expected: Pending, Approved, Query Raised, Rejected, Suspended or Blacklisted";
+    public static final String INVALID_APPLICATION_TYPE = "Invalid Application Type. Expected: HP Registration, HP Modification, Temporary Suspension, Permanent Suspension, Activate License, College Registration ";
+    public static final String STATE_MEDICAL_COUNCIL_ID = "state_medical_council_id";
 
     public static final String REGISTRATION_DETAILS_ID = "registration_details_id";
 
     public static final String REGISTRATION_NUMBER = "registrationNumber";
 
     public static final String SMC_NAME = "smcName";
-    public static final String SUCCESS="Success";
-    public static final String DCS_INTEGRATOR_NAME="NMR";
-    public static final String E_SIGN_SUCCESS_STATUS="success";
-    public static final String E_SIGN_FAILURE_STATUS="failure";
+    public static final String SUCCESS = "Success";
+    public static final String DCS_INTEGRATOR_NAME = "NMR";
+    public static final String E_SIGN_SUCCESS_STATUS = "success";
+    public static final String E_SIGN_FAILURE_STATUS = "failure";
     public static final String DSC_SERVICE = "dsc";
     public static final String DSC_SERVICE_ENDPOINT = "${dsc.endpoint.url}";
     public static final String GEN_ESP_REQUEST_URL = "/digiSign/genEspRequest";
     public static final String VERIFY_ESP_REQUEST_URL = "/digiSign/pdf/{tansactionId}";
+    public final int MAX_FAILED_ATTEMPTS = 3;
+    public static final long LOCK_TIME_DURATION = 3; // hours
+    public static final String ACCOUNT_LOCKED_MESSAGE = "Your account has been locked for " + LOCK_TIME_DURATION + " hours due to " + MAX_FAILED_ATTEMPTS + " failed attempts";
+    public static final String ACCOUNT_UNLOCKED_MESSAGE = "Your account has been unlocked. Please try to login again";
 }

@@ -4,11 +4,11 @@ import java.util.Collections;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-
 import in.gov.abdm.nmr.dto.UserSearchTO;
 import in.gov.abdm.nmr.dto.UserTO;
 import in.gov.abdm.nmr.service.IUserDaoService;
@@ -17,6 +17,9 @@ import in.gov.abdm.nmr.service.IUserDaoService;
 public class UserPasswordDetailsService implements UserDetailsService {
 
     private static final Logger LOGGER = LogManager.getLogger();
+
+    @Autowired
+    AuthenticationLockHandler authenticationHandler;
 
     private IUserDaoService userDetailService;
 
@@ -35,6 +38,7 @@ public class UserPasswordDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("Invalid username");
         }
 
-        return new UserPassDetail(userDetail.getUsername(), userDetail.getPassword(), Collections.emptyList(), userDetail.getUserType().getId());
+        boolean isAccountLocked= authenticationHandler.onAuthenticationSuccess(username);
+        return new UserPassDetail(userDetail.getUsername(), userDetail.getPassword(), Collections.emptyList(), userDetail.getUserType().getId(),isAccountLocked);
     }
 }
