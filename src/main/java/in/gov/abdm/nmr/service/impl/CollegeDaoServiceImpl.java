@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import in.gov.abdm.nmr.dto.CollegeRegistrationRequestTo;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.entity.College;
-import in.gov.abdm.nmr.entity.Group;
+import in.gov.abdm.nmr.entity.UserGroup;
 import in.gov.abdm.nmr.entity.State;
 import in.gov.abdm.nmr.entity.StateMedicalCouncil;
 import in.gov.abdm.nmr.entity.University;
@@ -66,7 +66,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
             }
 
             User userDetail = new User(null, collegeRegistrationRequestTo.getEmailId(), null, null, true, true, //
-                    entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()),  entityManager.getReference(Group.class, in.gov.abdm.nmr.enums.Group.COLLEGE_REGISTRAR.getId()),false,0,null);
+                    entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()),  entityManager.getReference(UserGroup.class, in.gov.abdm.nmr.enums.Group.COLLEGE_REGISTRAR.getId()),false,0,null);
             userDetailService.saveUserDetail(userDetail);
 
             College collegeEntity = collegeDtoMapper.collegeRegistartionDtoToEntity(collegeRegistrationRequestTo);

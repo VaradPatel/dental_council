@@ -15,7 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Group extends CommonAuditEntity {
+public class UserGroup extends CommonAuditEntity {
     
     @Id
     private BigInteger id;

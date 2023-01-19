@@ -29,15 +29,15 @@ public class WorkFlowAudit extends CommonAuditEntity {
 
     @ManyToOne
     @JoinColumn(name = "created_by")
-    private Group createdBy;
+    private UserGroup createdBy;
 
     @ManyToOne
     @JoinColumn(name = "previous_group_id")
-    private Group previousGroup;
+    private UserGroup previousGroup;
 
     @ManyToOne
     @JoinColumn(name = "current_group_id")
-    private Group currentGroup;
+    private UserGroup currentGroup;
 
     @ManyToOne
     @JoinColumn(name = "action_id")

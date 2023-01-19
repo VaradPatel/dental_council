@@ -26,7 +26,7 @@ public class NmrWorkFlowConfiguration extends CommonAuditEntity {
 
     @ManyToOne
     @JoinColumn(name = "action_performed_by")
-    private Group actionPerformedBy;
+    private UserGroup actionPerformedBy;
 
     @ManyToOne
     @JoinColumn(name = "action_performed")
@@ -34,7 +34,7 @@ public class NmrWorkFlowConfiguration extends CommonAuditEntity {
 
     @ManyToOne
     @JoinColumn(name = "assign_to")
-    private Group assignTo;
+    private UserGroup assignTo;
     private Boolean isActive;
     private Timestamp activeFrom;
     private Timestamp activeUntil;

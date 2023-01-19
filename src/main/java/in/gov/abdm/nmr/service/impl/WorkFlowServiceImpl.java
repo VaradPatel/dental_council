@@ -7,7 +7,6 @@ import java.util.List;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.repository.*;
-import in.gov.abdm.nmr.util.NMRUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +56,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     private IApplicationTypeRepository iApplicationTypeRepository;
 
     @Autowired
-    private IGroupRepository iGroupRepository;
+    private IUserGroupRepository iGroupRepository;
 
     @Autowired
     private IActionRepository iActionRepository;
@@ -160,8 +159,8 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     @Override
     public void assignQueriesBackToQueryCreator(String requestId) {
         WorkFlow workflow = iWorkFlowRepository.findByRequestId(requestId);
-        Group previousGroup = workflow.getPreviousGroup();
-        Group currentGroup = workflow.getCurrentGroup();
+        UserGroup previousGroup = workflow.getPreviousGroup();
+        UserGroup currentGroup = workflow.getCurrentGroup();
         workflow.setCurrentGroup(previousGroup);
         workflow.setPreviousGroup(currentGroup);
         workflow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).get());
@@ -181,7 +180,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     }
     
     private WorkFlow buildNewCollegeWorkFlow(String requestId, BigInteger applicationTypeId, BigInteger actionId, BigInteger actorId, INextGroup iNextGroup) {
-        Group actorGroup = iGroupRepository.findById(actorId).get();
+        UserGroup actorGroup = iGroupRepository.findById(actorId).get();
         return WorkFlow.builder().requestId(requestId)
                 .applicationType(iApplicationTypeRepository.findById(applicationTypeId).get())
                 .createdBy(actorGroup)
@@ -193,7 +192,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     }
 
     private WorkFlowAudit buildNewCollegeWorkFlowAudit(String requestId, BigInteger applicationTypeId, BigInteger actionId, BigInteger actorId, INextGroup iNextGroup) {
-        Group actorGroup = iGroupRepository.findById(actorId).get();
+        UserGroup actorGroup = iGroupRepository.findById(actorId).get();
         return WorkFlowAudit.builder().requestId(requestId)
                 .applicationType(iApplicationTypeRepository.findById(applicationTypeId).get())
                 .createdBy(actorGroup)
@@ -206,7 +205,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
     private WorkFlow buildNewWorkFlow(WorkFlowRequestTO requestTO, INextGroup iNextGroup,HpProfile hpProfile) {
 
-        Group actorGroup = iGroupRepository.findById(requestTO.getActorId()).get();
+        UserGroup actorGroup = iGroupRepository.findById(requestTO.getActorId()).get();
 
         return WorkFlow.builder().requestId(requestTO.getRequestId())
                 .applicationType(iApplicationTypeRepository.findById(requestTO.getApplicationTypeId()).get())
@@ -224,7 +223,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
     private WorkFlowAudit buildNewWorkFlowAudit(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile) {
 
-        Group actorGroup = iGroupRepository.findById(requestTO.getActorId()).get();
+        UserGroup actorGroup = iGroupRepository.findById(requestTO.getActorId()).get();
         return WorkFlowAudit.builder().requestId(requestTO.getRequestId())
                 .applicationType(iApplicationTypeRepository.findById(requestTO.getApplicationTypeId()).get())
                 .createdBy(actorGroup)

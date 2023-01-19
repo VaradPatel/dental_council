@@ -4,8 +4,8 @@ import java.math.BigInteger;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import in.gov.abdm.nmr.entity.Group;
+import in.gov.abdm.nmr.entity.UserGroup;
 
-public interface IGroupRepository extends JpaRepository<Group, BigInteger> {
+public interface IUserGroupRepository extends JpaRepository<UserGroup, BigInteger> {
 
 }

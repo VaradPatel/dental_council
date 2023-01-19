@@ -1,8 +1,5 @@
 package in.gov.abdm.nmr.mapper;
 
-import in.gov.abdm.nmr.entity.Group;
-import in.gov.abdm.nmr.entity.WorkFlowStatus;
-
 import java.math.BigInteger;
 
 /**
