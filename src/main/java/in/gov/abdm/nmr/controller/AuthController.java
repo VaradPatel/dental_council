@@ -26,13 +26,13 @@ public class AuthController {
 
     @PostMapping(path = PATH_LOGIN, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public LoginResponseTO login(@RequestBody(required = false) LoginRequestTO loginRequestTO, HttpServletResponse response) {
-        return authService.login(response);
+        return authService.successfulAuth(response);
     }
 
     @PostMapping(path = PATH_REFRESH_TOKEN, produces = MediaType.APPLICATION_JSON_VALUE)
     //---
     @SecurityRequirement(name = "bearerAuth")
     public LoginResponseTO refreshToken(HttpServletResponse response) {
-        return authService.refreshToken(response);
+        return authService.successfulAuth(response);
     }
 }

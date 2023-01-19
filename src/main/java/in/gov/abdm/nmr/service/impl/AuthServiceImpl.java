@@ -14,6 +14,7 @@ import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.security.common.RoleConstants;
 import in.gov.abdm.nmr.security.jwt.JwtTypeEnum;
 import in.gov.abdm.nmr.security.jwt.JwtUtil;
 import in.gov.abdm.nmr.service.IAuthService;
@@ -56,23 +57,15 @@ public class AuthServiceImpl implements IAuthService {
     }
 
     @Override
-    public LoginResponseTO login(HttpServletResponse response) {
+    public LoginResponseTO successfulAuth(HttpServletResponse response) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        generateAccessAndRefreshToken(response, username);
-        return createLoginResponse(username);
+        User userDetail = userDetailDaoService.findByUsername(username);
+
+        generateAccessAndRefreshToken(response, username, userDetail);
+        return createLoginResponse(userDetail);
     }
 
-    @Override
-    public LoginResponseTO refreshToken(HttpServletResponse response) {
-        //Maintained different methods in case of different functionality.
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        generateAccessAndRefreshToken(response, username);
-        return createLoginResponse(username);
-    }
-
-    private LoginResponseTO createLoginResponse(String username) {
-        User userDetail = userDetailDaoService.findUserDetailByUsername(username);
-
+    private LoginResponseTO createLoginResponse(User userDetail) {
         LoginResponseTO loginResponseTO = new LoginResponseTO();
         loginResponseTO.setUserType(userDetail.getUserType().getId());
         loginResponseTO.setUserGroupId(userDetail.getGroup().getId());
@@ -85,7 +78,7 @@ public class AuthServiceImpl implements IAuthService {
 
         } else if (UserTypeEnum.COLLEGE.getCode().equals(userDetail.getUserType().getId())) {
             loginResponseTO.setUserSubType(userDetail.getUserSubType().getId());
-            
+
             if (UserSubTypeEnum.COLLEGE.getCode().equals(userDetail.getUserSubType().getId())) {
                 loginResponseTO.setProfileId(collegeDaoService.findByUserDetail(userDetail.getId()).getId());
 
@@ -106,8 +99,30 @@ public class AuthServiceImpl implements IAuthService {
         return loginResponseTO;
     }
 
-    private void generateAccessAndRefreshToken(HttpServletResponse response, String username) {
-        response.setHeader(ACCESS_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.ACCESS_TOKEN));
-        response.setHeader(REFRESH_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.REFRESH_TOKEN));
+    private void generateAccessAndRefreshToken(HttpServletResponse response, String username, User userDetail) {
+        String role = null;
+        if (UserTypeEnum.HEALTH_PROFESSIONAL.getCode().equals(userDetail.getUserType().getId())) {
+            role = RoleConstants.ROLE_HEALTH_PROFESSIONAL;
+
+        } else if (UserTypeEnum.COLLEGE.getCode().equals(userDetail.getUserType().getId())) {
+
+            if (UserSubTypeEnum.COLLEGE.getCode().equals(userDetail.getUserSubType().getId())) {
+                role = RoleConstants.ROLE_COLLEGE_ADMIN;
+            } else if (UserSubTypeEnum.COLLEGE_DEAN.getCode().equals(userDetail.getUserSubType().getId())) {
+                role = RoleConstants.ROLE_COLLEGE_DEAN;
+            } else if (UserSubTypeEnum.COLLEGE_REGISTRAR.getCode().equals(userDetail.getUserSubType().getId())) {
+                role = RoleConstants.ROLE_COLLEGE_REGISTRAR;
+            }
+
+        } else if (UserTypeEnum.STATE_MEDICAL_COUNCIL.getCode().equals(userDetail.getUserType().getId())) {
+            role = RoleConstants.ROLE_STATE_MEDICAL_COUNCIL;
+
+        } else if (UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode().equals(userDetail.getUserType().getId())) {
+            role = RoleConstants.ROLE_NATIONAL_MEDICAL_COUNCIL;
+        } else if (UserTypeEnum.NBE.getCode().equals(userDetail.getUserType().getId())) {
+            role = RoleConstants.ROLE_NBE;
+        }
+        response.setHeader(ACCESS_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.ACCESS_TOKEN, role));
+        response.setHeader(REFRESH_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.REFRESH_TOKEN, role));
     }
 }

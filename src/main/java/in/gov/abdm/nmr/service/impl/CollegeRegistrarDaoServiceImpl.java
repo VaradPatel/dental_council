@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import in.gov.abdm.nmr.mapper.ICollegeRegistrarMapper;
 import in.gov.abdm.nmr.repository.ICollegeRegistrarRepository;
 import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.ICollegeRegistrarDaoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,14 +38,19 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
     private IUserDaoService userDetailService;
 
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    
+    private IAccessControlService accessControlService;
 
-    public CollegeRegistrarDaoServiceImpl(ICollegeRegistrarRepository collegeRegistrarRepository, ICollegeRepository collegeRepository, ICollegeRegistrarMapper collegeRegistrarMapper, EntityManager entityManager, IUserDaoService userDetailService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public CollegeRegistrarDaoServiceImpl(ICollegeRegistrarRepository collegeRegistrarRepository, ICollegeRepository collegeRepository, //
+                                          ICollegeRegistrarMapper collegeRegistrarMapper, EntityManager entityManager, IUserDaoService userDetailService, //
+                                          BCryptPasswordEncoder bCryptPasswordEncoder, IAccessControlService accessControlService) {
         this.collegeRegistrarRepository = collegeRegistrarRepository;
         this.collegeRepository = collegeRepository;
         this.collegeRegistrarMapper = collegeRegistrarMapper;
         this.entityManager = entityManager;
         this.userDetailService = userDetailService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.accessControlService = accessControlService;
     }
 
     @Override
@@ -53,13 +59,13 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
         CollegeRegistrar collegeRegistrarEntityOld = null;
         if (collegeRegistrarCreationRequestTo.getId() != null || collegeRegistrarCreationRequestTo.getUserId() != null) {
             String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-            collegeRegistrarUserDetail = userDetailService.findUserDetailByUsername(userName);
+            collegeRegistrarUserDetail = userDetailService.findByUsername(userName);
 
             if (!collegeRegistrarUserDetail.getId().equals(collegeRegistrarCreationRequestTo.getUserId())) {
                 throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
             }
 
-            if (!collegeRegistrarUserDetail.getUsername().equals(collegeRegistrarCreationRequestTo.getEmailId()) && userDetailService.findUserDetailByUsername(collegeRegistrarCreationRequestTo.getEmailId()) != null) {
+            if (!collegeRegistrarUserDetail.getUsername().equals(collegeRegistrarCreationRequestTo.getEmailId()) && userDetailService.findByUsername(collegeRegistrarCreationRequestTo.getEmailId()) != null) {
                 throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
             }
 
@@ -67,7 +73,7 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
             if (!collegeRegistrarEntityOld.getId().equals(collegeRegistrarCreationRequestTo.getId())) {
                 throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
             }
-        } else if (userDetailService.findUserDetailByUsername(collegeRegistrarCreationRequestTo.getEmailId()) != null) {
+        } else if (userDetailService.findByUsername(collegeRegistrarCreationRequestTo.getEmailId()) != null) {
             throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
         }
 
@@ -98,8 +104,13 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
     }
 
     @Override
-    public CollegeRegistrar findCollegeRegistrarById(BigInteger id) {
-        return collegeRegistrarRepository.findById(id).orElse(new CollegeRegistrar());
+    public CollegeRegistrar findCollegeRegistrarById(BigInteger id) throws NmrException {
+        CollegeRegistrar collegeRegistrarEntity = collegeRegistrarRepository.findById(id).orElse(null);
+        if (collegeRegistrarEntity == null) {
+            throw new NmrException("Invalid college id", HttpStatus.BAD_REQUEST);
+        }
+        accessControlService.validateUser(collegeRegistrarEntity.getUser().getId());
+        return collegeRegistrarEntity;
     }
 
     @Override

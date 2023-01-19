@@ -12,7 +12,7 @@ public enum Group {
     COLLEGE_DEAN(BigInteger.valueOf(4), "College Dean"),
     COLLEGE_REGISTRAR(BigInteger.valueOf(5), "College Registrar"),
     COLLEGE_ADMIN(BigInteger.valueOf(6), "College Admin"),
-    FMG(BigInteger.valueOf(7), "FMG");
+    NBE(BigInteger.valueOf(7), "NBE");
 
     private final BigInteger id;
     private final String description;
