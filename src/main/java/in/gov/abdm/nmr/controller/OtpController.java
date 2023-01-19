@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.controller;
 import javax.validation.Valid;
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.service.INotificationService;
+import in.gov.abdm.nmr.service.IOtpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,10 +14,10 @@ import in.gov.abdm.nmr.exception.OtpException;
  * Controller for sending and verifying one time password notifications.
  */
 @RestController
-public class NotificationController {
+public class OtpController {
 
     @Autowired
-    INotificationService otpNotificationService;
+	IOtpService otpService;
 
 	/**
 	 * API Endpoint to generate  OTP
@@ -28,7 +28,7 @@ public class NotificationController {
 	@PostMapping(path = NMRConstants.GENERATE_OTP, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseMessageTo generateOtp(@Valid @RequestBody OtpGenerateRequestTo otpGenerateRequestTo)
 			throws OtpException {
-		return otpNotificationService.generateOtp(otpGenerateRequestTo);
+		return otpService.generateOtp(otpGenerateRequestTo);
 	}
 
 	/**
@@ -40,6 +40,6 @@ public class NotificationController {
 	@PostMapping(path = NMRConstants.VALIDATE_OTP, produces = MediaType.APPLICATION_JSON_VALUE)
 	public OtpValidateResponseTo validateOtp(@Valid @RequestBody OtpValidateRequestTo otpValidateRequestTo)
 			throws OtpException {
-		return otpNotificationService.validateOtp(otpValidateRequestTo);
+		return otpService.validateOtp(otpValidateRequestTo);
 	}
 }

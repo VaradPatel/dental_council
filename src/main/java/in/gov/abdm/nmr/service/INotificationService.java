@@ -1,35 +1,19 @@
 package in.gov.abdm.nmr.service;
-import java.math.BigInteger;
-import java.security.NoSuchAlgorithmException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.exception.OtpException;
 
 /**
  * Interface to declare methods
  */
 public interface INotificationService {
 
-    /**
-     * Generates API
-     */
-    ResponseMessageTo generateOtp(OtpGenerateRequestTo otpGenerateRequestTo) throws OtpException;
+    ResponseMessageTo sendNotificationOnStatusChangeForHP(String applicationType, String action, String email, String mobile);
 
-    /**
-     * Validates API
-     */
-    OtpValidateResponseTo validateOtp(OtpValidateRequestTo otpValidateRequestTo) throws OtpException;
+    ResponseMessageTo sendNotificationOnStatusChangeForCollege(String applicationType, String action, String email, String mobile);
 
-    /**
-     * Sends SMS and Email Notification to HP on each status change
-     */
-    ResponseMessageTo sendNotificationOnStatusChangeForHP(BigInteger hpProfileId,BigInteger workFlowStatusId);
+    ResponseMessageTo sendNotificationForResetPasswordLink(String type, String receiver, String link);
 
+    ResponseMessageTo sendNotificationForOTP(String type, String otp, String receiver);
 
-    /**
-     * Sends SMS and Email Notification to College on each status change
-     */
-    ResponseMessageTo sendNotificationOnStatusChangeForCollege(BigInteger collegeId,BigInteger workFlowStatusId);
-
+    ResponseMessageTo sendNotificationForVerifiedOTP(String type, String receiver);
 
 }

@@ -11,6 +11,4 @@ public interface IResetPasswordService {
     ResponseMessageTo getResetPasswordLink(GetSetPasswordLinkTo setPasswordLinkTo);
 
     ResponseMessageTo setNewPassword(SetNewPasswordTo newPasswordTo);
-
-    ResponseMessageTo sendNotification(GetSetPasswordLinkTo setPasswordLinkTo, String link);
 }

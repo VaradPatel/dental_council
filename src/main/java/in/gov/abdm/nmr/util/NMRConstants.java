@@ -55,11 +55,16 @@ public class NMRConstants {
     public static final String INFO_EMAIL_SUBJECT = "NMR : Status Changed";
     public static final String SET_PASSWORD_EMAIlL_SUBJECT = "NMR : Set Password";
     public static final String OTP_CONTENT_TYPE = "otp";
-    public static final String OTP_MESSAGES_PROPERTIES_KEY = "otp";
+    public static final String SMS_OTP_MESSAGE_PROPERTIES_KEY = "sms-otp";
+    public static final String EMAIL_OTP_MESSAGE_PROPERTIES_KEY = "email-otp";
+    public static final String SMS_VERIFIED_MESSAGE_PROPERTIES_KEY = "sms-verified";
+    public static final String EMAIL_VERIFIED_MESSAGE_PROPERTIES_KEY = "email-verified";
+    public static final String STATUS_CHANGED_MESSAGE_PROPERTIES_KEY = "status-changed";
     public static final String INFO_CONTENT_TYPE = "info";
     public static final String COLLEGE_PREFIX_TO_GET_WORKFLOW_STATUS = "college-";
     public static final String CONTACT_NOT_NULL = "Contact cannot be null or empty";
     public static final String AADHAR_NOT_NULL = "AADHAR Number cannot be null or empty";
+    public static final String HP_PROFILE_NOT_NULL = "HP Profile ID cannot be null or empty";
     public static final String TYPE_NOT_NULL = "Type cannot be null or empty";
     public static final String TRANSACTION_ID_NOT_NULL = "Transaction Id cannot be null or empty";
     public static final String OTP_NOT_NULL = "OTP cannot be null or empty";
@@ -67,6 +72,7 @@ public class NMRConstants {
     public static final String FAILURE_RESPONSE = "Fail";
     public static final String SENT_RESPONSE = "sent";
     public static final String USER_NOT_FOUND = "User not found";
+    public static final String LINK_EXPIRED = "Link expired";
     public static final String WORKFLOW_STATUS_NOT_FOUND = "Workflow status not found";
     public static final String TEMPLATE_ID_NOT_FOUND_IN_PROPERTIES = "Template id not found in properties";
     public static final String TEMPLATE_NOT_FOUND = "Template not found";
@@ -219,4 +225,10 @@ public class NMRConstants {
     public static final long LOCK_TIME_DURATION = 3; // hours
     public static final String ACCOUNT_LOCKED_MESSAGE = "Your account has been locked for " + LOCK_TIME_DURATION + " hours due to " + MAX_FAILED_ATTEMPTS + " failed attempts";
     public static final String ACCOUNT_UNLOCKED_MESSAGE = "Your account has been unlocked. Please try to login again";
+    public static final String TEMPLATE_VAR1 = "var1";
+    public static final String TEMPLATE_VAR2 = "var2";
+    public static final String TEMPLATE_VAR3 = "var3";
+    public static final String MESSAGE_SENDER = "National Medical Council";
+    public static final String DEFAULT_COUNTRY_AADHAR = "India";
+    public static final int DEFAULT_ADDRESS_TYPE_AADHAR = 4;
 }

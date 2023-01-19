@@ -11,6 +11,7 @@ public interface IStateRepository extends JpaRepository<State, BigInteger> {
 
     @Query(value = "SELECT * FROM state where country=:country", nativeQuery = true)
     List<State> getState(BigInteger country);
-    
 
+
+    State findByName(String name);
 }
