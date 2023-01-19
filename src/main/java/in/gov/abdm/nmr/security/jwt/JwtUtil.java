@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.security.jwt;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +20,8 @@ import in.gov.abdm.nmr.dto.UpdateRefreshTokenIdRequestTO;
 
 @Component
 public class JwtUtil {
+
+    public static final String AUTHORITIES_LABEL = "authorities";
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -49,7 +52,7 @@ public class JwtUtil {
         this.userDetailService = userDetailService;
     }
 
-    public String generateToken(String username, JwtTypeEnum type) {
+    public String generateToken(String username, JwtTypeEnum type, String role) {
         LOGGER.info("Generating {}", type);
 
         Long expiry = accessTokenExpirySeconds;
@@ -64,7 +67,7 @@ public class JwtUtil {
         }
 
         return JWT.create().withJWTId(jwtId).withIssuer(ISSUER_VALUE).withSubject(username).withAudience(AUDIENCE_VALUE).withIssuedAt(Instant.now()) //
-                .withExpiresAt(Instant.now().plusSeconds(expiry)).withClaim(TOKEN_TYPE_LABEL, type.getCode()) //
+                .withExpiresAt(Instant.now().plusSeconds(expiry)).withClaim(TOKEN_TYPE_LABEL, type.getCode()).withClaim(AUTHORITIES_LABEL, Arrays.asList(role)) //
                 .sign(Algorithm.RSA512(keyUtil.getPublicKey(KEY_ALIAS), keyUtil.getPrivateKey(KEY_ALIAS, privateKeyPass)));
     }
 

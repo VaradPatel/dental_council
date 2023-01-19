@@ -10,7 +10,7 @@ public interface ICollegeDeanDaoService {
 
     CollegeDean saveCollegeDean(CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException;
     
-    CollegeDean findCollegeDeanById(BigInteger id);
+    CollegeDean findCollegeDeanById(BigInteger id) throws NmrException;
 
     CollegeDean findByUserDetail(BigInteger userDetailId);
 }

@@ -1,6 +1,6 @@
 package in.gov.abdm.nmr.security.jwt;
 
-import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -9,6 +9,8 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.stereotype.Component;
 
@@ -36,10 +38,11 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         JwtAuthenticationToken jwtAuthtoken = (JwtAuthenticationToken) authentication;
         try {
-
             if (JwtTypeEnum.ACCESS_TOKEN.equals(jwtAuthtoken.getType())) {
                 DecodedJWT verifiedToken = jwtUtil.verifyToken(jwtAuthtoken.getCredentials(), JwtTypeEnum.ACCESS_TOKEN);
-                jwtAuthtoken = new JwtAuthenticationToken(verifiedToken.getSubject(), Collections.emptyList());
+                List<? extends GrantedAuthority> authorities = verifiedToken.getClaim(JwtUtil.AUTHORITIES_LABEL).asList(String.class).stream().map(SimpleGrantedAuthority::new).toList();
+                jwtAuthtoken = new JwtAuthenticationToken(verifiedToken.getSubject(), authorities);
+                jwtAuthtoken.setAuthenticated(true);
                 return jwtAuthtoken;
             }
 
@@ -53,7 +56,9 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
                 if (StringUtils.isBlank(verifiedToken.getId()) || StringUtils.isBlank(refreshTokenId) || !refreshTokenId.equals(verifiedToken.getId())) {
                     throw new AuthenticationServiceException("Unable to authenticate token");
                 }
-                jwtAuthtoken = new JwtAuthenticationToken(verifiedToken.getSubject(), Collections.emptyList());
+                List<? extends GrantedAuthority> authorities = verifiedToken.getClaim(JwtUtil.AUTHORITIES_LABEL).asList(String.class).stream().map(SimpleGrantedAuthority::new).toList();
+                jwtAuthtoken = new JwtAuthenticationToken(verifiedToken.getSubject(), authorities);
+                jwtAuthtoken.setAuthenticated(true);
                 return jwtAuthtoken;
             }
         } catch (Exception e) {

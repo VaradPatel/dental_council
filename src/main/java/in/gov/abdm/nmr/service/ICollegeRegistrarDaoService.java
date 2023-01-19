@@ -10,7 +10,7 @@ public interface ICollegeRegistrarDaoService {
 
     CollegeRegistrar saveCollegeRegistrar(CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException;
     
-    CollegeRegistrar findCollegeRegistrarById(BigInteger id);
+    CollegeRegistrar findCollegeRegistrarById(BigInteger id) throws NmrException;
 
     CollegeRegistrar findByUserDetail(BigInteger userDetailId);
 }

@@ -1,14 +1,20 @@
 package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.exception.NmrException;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
+import in.gov.abdm.nmr.security.common.RoleConstants;
 import in.gov.abdm.nmr.service.IUserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.math.BigInteger;
 import java.util.List;
+
+import javax.annotation.security.RolesAllowed;
 
 @RestController
 @RequestMapping("/user")
@@ -34,16 +40,29 @@ public class UserController {
     public List<NotificationToggleResponseTO> toggleNotification(@RequestBody NotificationToggleRequestTO notificationToggleRequestTO) {
         return userService.toggleNotification(notificationToggleRequestTO);
     }
-    @GetMapping(path="/smc/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-    public SMCProfileTO smcProfile(@PathVariable(name = "id") BigInteger userId){
-        return userService.getSmcProfile(userId);
+    
+    
+    @GetMapping(path = ProtectedPaths.PATH_SMC_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
+    //---
+    @RolesAllowed({RoleConstants.STATE_MEDICAL_COUNCIL})
+    @SecurityRequirement(name = "bearerAuth")
+    public SMCProfileTO smcProfile(@PathVariable(name = "id") BigInteger id) throws NmrException {
+        return userService.getSmcProfile(id);
     }
-    @GetMapping(path="/nmc/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-    public NmcProfileTO nmcProfile(@PathVariable(name = "id") BigInteger userId){
-        return userService.getNmcProfile(userId);
+
+    @GetMapping(path = ProtectedPaths.PATH_NMC_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
+    //---
+    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL})
+    @SecurityRequirement(name = "bearerAuth")
+    public NmcProfileTO nmcProfile(@PathVariable(name = "id") BigInteger id) throws NmrException {
+        return userService.getNmcProfile(id);
     }
-  @GetMapping(path="/nbe/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-  public NbeProfileTO nbeProfile(@PathVariable(name = "id") BigInteger userId){
-      return userService.getNbeProfile(userId);
-  }
+
+    @GetMapping(path = ProtectedPaths.PATH_NBE_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
+    //---
+    @RolesAllowed({RoleConstants.NBE})
+    @SecurityRequirement(name = "bearerAuth")
+    public NbeProfileTO nbeProfile(@PathVariable(name = "id") BigInteger id) throws NmrException {
+        return userService.getNbeProfile(id);
+    }
 }

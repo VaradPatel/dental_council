@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -53,6 +54,15 @@ public class NmrExceptionAdvice {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, headers, nmrException.getStatus());
+    }
+    
+    @ExceptionHandler({AccessDeniedException.class})
+    public ResponseEntity<ErrorTO> handleSecurityException(HttpServletRequest req, Throwable ex) {
+        ErrorTO error = new ErrorTO(new Date(), HttpStatus.FORBIDDEN.value(), ex.getMessage(), req.getServletPath());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(error, headers, HttpStatus.FORBIDDEN.value());
     }
 
     @ExceptionHandler({Exception.class})
