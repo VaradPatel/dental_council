@@ -88,7 +88,7 @@ public class ResetPasswordService implements IResetPasswordService {
 
             PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(newPasswordTo.getToken());
 
-            User user = userDaoService.findUserDetailByUsername(passwordResetToken.getUserName());
+            User user = userDaoService.findByUsername(passwordResetToken.getUserName());
 
             if(null==user){
                 return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);

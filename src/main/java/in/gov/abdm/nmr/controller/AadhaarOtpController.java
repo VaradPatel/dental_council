@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,6 +22,7 @@ import in.gov.abdm.nmr.exception.OtpException;
  * Controller for sending and verifying one time password notifications.
  */
 @RestController
+@RequestMapping(NMRConstants.AADHAAR_REQUEST_MAPPING)
 public class AadhaarOtpController {
 
     @Autowired
@@ -32,7 +34,7 @@ public class AadhaarOtpController {
 	 * @return AadhaarResponseDto object
 	 * @throws JsonProcessingException
 	 */
-	@PostMapping(path = NMRConstants.GENERATE_AADHAR_OTP, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = NMRConstants.SEND_OTP, produces = MediaType.APPLICATION_JSON_VALUE)
 	public AadhaarResponseTo sendOtp(@Valid @RequestBody AadhaarOtpGenerateRequestTo otpGenerateRequestTo)
 			throws  JsonProcessingException {
 		return aadharOtpService.sendOtp(otpGenerateRequestTo);
@@ -44,7 +46,7 @@ public class AadhaarOtpController {
 	 * @return AadhaarResponseDto object
 	 * @throws OtpException
 	 */
-	@PostMapping(path = NMRConstants.VALIDATE_AADHAR_OTP, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = NMRConstants.VERIFY_OTP, produces = MediaType.APPLICATION_JSON_VALUE)
 	public AadhaarResponseTo verifyOtp(@Valid @RequestBody AadhaarOtpValidateRequestTo otpValidateRequestTo) throws JsonProcessingException {
 		return aadharOtpService.verifyOtp(otpValidateRequestTo);
 	}
