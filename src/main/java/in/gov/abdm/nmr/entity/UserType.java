@@ -29,5 +29,5 @@ public class UserType extends CommonAuditEntity {
 
     @OneToOne
     @JoinColumn(name = GROUP_ID_COLUMN,referencedColumnName = ID)
-    private Group group;
+    private UserGroup group;
 }

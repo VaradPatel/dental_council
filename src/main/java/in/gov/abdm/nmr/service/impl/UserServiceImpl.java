@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import in.gov.abdm.nmr.dto.NotificationToggleResponseTO;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.mapper.INbeMapper;
 import in.gov.abdm.nmr.mapper.INmcMapper;
 import in.gov.abdm.nmr.mapper.ISmcMapper;
@@ -51,18 +52,18 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public SMCProfileTO getSmcProfile(BigInteger userId) {
-        return smcMapper.smcProfileToDto(userDaoService.findSmcProfileByUserId(userId));
+    public SMCProfileTO getSmcProfile(BigInteger id) throws NmrException {
+        return smcMapper.smcProfileToDto(userDaoService.findSmcProfile(id));
     }
 
     @Override
-    public NmcProfileTO getNmcProfile(BigInteger userId) {
-        return nmcMapper.nmcProfileToDto(userDaoService.findNmcProfileByUserId(userId));
+    public NmcProfileTO getNmcProfile(BigInteger id) throws NmrException {
+        return nmcMapper.nmcProfileToDto(userDaoService.findNmcProfile(id));
     }
 
     @Override
-    public NbeProfileTO getNbeProfile(BigInteger userId) {
-         return nbeMapper.nbeProfileToDto( userDaoService.findNbeProfileByUserId(userId));
+    public NbeProfileTO getNbeProfile(BigInteger id) throws NmrException {
+         return nbeMapper.nbeProfileToDto( userDaoService.findNbeProfile(id));
     }
 
 }

@@ -1,29 +1,41 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.*;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import in.gov.abdm.nmr.dto.NotificationToggleRequestTO;
+import in.gov.abdm.nmr.dto.UpdateRefreshTokenIdRequestTO;
+import in.gov.abdm.nmr.dto.UserSearchTO;
+import in.gov.abdm.nmr.dto.UserTO;
 import in.gov.abdm.nmr.entity.NbeProfile;
 import in.gov.abdm.nmr.entity.NmcProfile;
 import in.gov.abdm.nmr.entity.SMCProfile;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.entity.User_;
+import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.mapper.IUserMapper;
 import in.gov.abdm.nmr.repository.INbeProfileRepository;
 import in.gov.abdm.nmr.repository.INmcProfileRepository;
 import in.gov.abdm.nmr.repository.ISmcProfileRepository;
 import in.gov.abdm.nmr.repository.IUserRepository;
+import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.criteria.*;
-import javax.transaction.Transactional;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @Transactional
@@ -37,8 +49,11 @@ public class UserDaoServiceImpl implements IUserDaoService {
     private INbeProfileRepository nbeProfileRepository;
 
     private EntityManager entityManager;
+    
+    private IAccessControlService accessControlService;
 
-    public UserDaoServiceImpl(IUserMapper userDetailMapper, IUserRepository userDetailRepository, EntityManager entityManager, ISmcProfileRepository smcProfileRepository,INmcProfileRepository nmcProfileRepository, INbeProfileRepository nbeProfileRepository) {
+    public UserDaoServiceImpl(IUserMapper userDetailMapper, IUserRepository userDetailRepository, EntityManager entityManager, ISmcProfileRepository smcProfileRepository, //
+                              INmcProfileRepository nmcProfileRepository, INbeProfileRepository nbeProfileRepository, IAccessControlService accessControlService) {
         super();
         this.userDetailMapper = userDetailMapper;
         this.userDetailRepository = userDetailRepository;
@@ -46,6 +61,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
         this.smcProfileRepository= smcProfileRepository;
         this.nmcProfileRepository=nmcProfileRepository;
         this.nbeProfileRepository=nbeProfileRepository;
+        this.accessControlService = accessControlService;
     }
 
     @Override
@@ -103,7 +119,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     }
     
     @Override
-    public User findUserDetailByUsername(String username) {
+    public User findByUsername(String username) {
         return userDetailRepository.findByUsername(username);
     }
     
@@ -138,17 +154,32 @@ public class UserDaoServiceImpl implements IUserDaoService {
     }
 
     @Override
-    public SMCProfile findSmcProfileByUserId(BigInteger userId) {
-       return smcProfileRepository.findByUserDetail(userId);
+    public SMCProfile findSmcProfile(BigInteger id) throws NmrException {
+        SMCProfile smcProfileEntity = smcProfileRepository.findById(id).orElse(null);
+        if (smcProfileEntity == null) {
+            throw new NmrException("Invalid college id", HttpStatus.BAD_REQUEST);
+        }
+        accessControlService.validateUser(smcProfileEntity.getUser().getId());
+        return smcProfileEntity;
     }
 
     @Override
-    public NmcProfile findNmcProfileByUserId(BigInteger userId) {
-        return nmcProfileRepository .findByUserDetail(userId);
+    public NmcProfile findNmcProfile(BigInteger id) throws NmrException {
+        NmcProfile nmcProfileEntity = nmcProfileRepository.findById(id).orElse(null);
+        if (nmcProfileEntity == null) {
+            throw new NmrException("Invalid college id", HttpStatus.BAD_REQUEST);
+        }
+        accessControlService.validateUser(nmcProfileEntity.getUser().getId());
+        return nmcProfileEntity;
     }
 
     @Override
-    public NbeProfile findNbeProfileByUserId(BigInteger userId) {
-        return nbeProfileRepository.findByUserDetail(userId);
+    public NbeProfile findNbeProfile(BigInteger id) throws NmrException {
+        NbeProfile nbeProfileEntity = nbeProfileRepository.findById(id).orElse(null);
+        if (nbeProfileEntity == null) {
+            throw new NmrException("Invalid college id", HttpStatus.BAD_REQUEST);
+        }
+        accessControlService.validateUser(nbeProfileEntity.getUser().getId());
+        return nbeProfileEntity;
     }
 }

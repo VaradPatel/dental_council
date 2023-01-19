@@ -1,18 +1,17 @@
 package in.gov.abdm.nmr.security.username_password;
 
-import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.service.impl.UserDaoServiceImpl;
-import in.gov.abdm.nmr.util.NMRConstants;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.stereotype.Component;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.service.impl.UserDaoServiceImpl;
+import in.gov.abdm.nmr.util.NMRConstants;
 
 @Component
 public class AuthenticationLockingService {
@@ -29,7 +28,7 @@ public class AuthenticationLockingService {
      */
     public void updateFailedAttemptsAndLockStatus(String username) throws AuthenticationServiceException {
 
-        User user = userDaoService.findUserDetailByUsername(username);
+        User user = userDaoService.findByUsername(username);
 
         if (user != null) {
             if (user.isAccountNonLocked()) {
@@ -57,7 +56,7 @@ public class AuthenticationLockingService {
      * @throws AuthenticationServiceException
      */
     public boolean checkAndUpdateLockStatus(String username) throws AuthenticationServiceException {
-        User user = userDaoService.findUserDetailByUsername(username);
+        User user = userDaoService.findByUsername(username);
 
         if (user.isAccountNonLocked()) {
             return true;

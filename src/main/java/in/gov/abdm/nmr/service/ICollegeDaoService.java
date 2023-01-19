@@ -12,6 +12,6 @@ public interface ICollegeDaoService {
 
     List<CollegeTO> getCollegeData(BigInteger universityId);
     College saveCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException;
-    College findById(BigInteger collegeId);
+    College findById(BigInteger collegeId) throws NmrException;
     College findByUserDetail(BigInteger userDetailId);
 }
