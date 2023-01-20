@@ -27,10 +27,10 @@ public class NMRConstants {
     public static final String AADHAR_SERVICE_VERIFY_OTP = "/api/v3/aadhaar/verifyOtp";
     public static final String NOTIFICATION_SERVICE_SEND_MESSAGE = "/internal/v3/notification/message";
     public static final String NOTIFICATION_DB_SERVICE_GET_TEMPLATE = "/internal/v3/notification/template/id/{id}";
-    public static final String RESET_PASSWORD = "/resetPassword";
-    public static final String CHANGE_PASSWORD = "/changePassword";
-    public static final String RAISE_QUERY = "/raiseQuery";
-    public static final String GET_QUERIES = "/queries/hpProfileId/{hpProfileId}";
+    public static final String RESET_PASSWORD = "/reset-password";
+    public static final String CHANGE_PASSWORD = "/change-password";
+    public static final String RAISE_QUERY = "/queries";
+    public static final String GET_QUERIES = "/queries/{hp-profile-id}";
     public static final String GET_RESET_PASSWORD_LINK = "/get-reset-password-link";
     public static final String SET_NEW_PASSWORD = "/set-new-password";
     public static final String ACTION_REQUEST_URL = "/action";

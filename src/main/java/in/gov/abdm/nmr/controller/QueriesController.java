@@ -37,7 +37,7 @@ public class QueriesController {
 	 * @return returns list of queries associated with hpProfileId
 	 */
 	@GetMapping(path = NMRConstants.GET_QUERIES, produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<QueryResponseTo> getQueries(@PathVariable BigInteger hpProfileId){
+	public List<QueryResponseTo> getQueries(@PathVariable("hp-profile-id") BigInteger hpProfileId){
 		return queryService.getQueriesByHpProfileId(hpProfileId);
 	}
 }
