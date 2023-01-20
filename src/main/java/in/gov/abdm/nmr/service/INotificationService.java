@@ -6,9 +6,9 @@ import in.gov.abdm.nmr.dto.*;
  */
 public interface INotificationService {
 
-    ResponseMessageTo sendNotificationOnStatusChangeForHP(String applicationType, String action, String email, String mobile);
+    ResponseMessageTo sendNotificationOnStatusChangeForHP(String applicationType, String action, String mobile, String email);
 
-    ResponseMessageTo sendNotificationOnStatusChangeForCollege(String applicationType, String action, String email, String mobile);
+    ResponseMessageTo sendNotificationOnStatusChangeForCollege(String applicationType, String action, String mobile,String email);
 
     ResponseMessageTo sendNotificationForResetPasswordLink(String type, String receiver, String link);
 

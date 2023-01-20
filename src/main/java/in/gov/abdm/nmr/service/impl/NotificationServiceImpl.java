@@ -99,7 +99,7 @@ public class NotificationServiceImpl implements INotificationService {
                     .replace(NMRConstants.TEMPLATE_VAR2, NMRConstants.MESSAGE_SENDER)
                     .finish();
 
-            sendNotification(List.of(NotificationType.EMAIL.getNotificationType()), NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SUBJECT, message, receiver,receiver);
+            sendNotification(List.of(NotificationType.EMAIL.getNotificationType()), NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_VERIFICATION_SUCCESSFUL_SUBJECT, message, receiver,receiver);
 
         } else if (NotificationType.SMS.getNotificationType().equals(type)) {
             Template template = getMessageTemplate(NMRConstants.SMS_VERIFIED_MESSAGE_PROPERTIES_KEY);
@@ -124,7 +124,7 @@ public class NotificationServiceImpl implements INotificationService {
      * @return success/failure
      */
     @Override
-    public ResponseMessageTo sendNotificationOnStatusChangeForHP(String applicationType, String action, String email, String mobile) {
+    public ResponseMessageTo sendNotificationOnStatusChangeForHP(String applicationType, String action, String mobile, String email) {
 
         Template template = getMessageTemplate(NMRConstants.STATUS_CHANGED_MESSAGE_PROPERTIES_KEY);
 
@@ -148,7 +148,7 @@ public class NotificationServiceImpl implements INotificationService {
      * @return success/failure
      */
     @Override
-    public ResponseMessageTo sendNotificationOnStatusChangeForCollege(String applicationType, String action, String email, String mobile) {
+    public ResponseMessageTo sendNotificationOnStatusChangeForCollege(String applicationType, String action, String mobile, String email) {
 
         Template template = getMessageTemplate(NMRConstants.STATUS_CHANGED_MESSAGE_PROPERTIES_KEY);
 
@@ -173,16 +173,20 @@ public class NotificationServiceImpl implements INotificationService {
     public ResponseMessageTo sendNotificationForResetPasswordLink(String type, String receiver, String link) {
 
         if (NotificationType.EMAIL.getNotificationType().equals(type)) {
-            Template template = getMessageTemplate(NMRConstants.EMAIL_OTP_MESSAGE_PROPERTIES_KEY);
-            String message = link;
-            return sendNotification(List.of(NotificationType.EMAIL.getNotificationType()), NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.OTP_EMAIL_SUBJECT, message, receiver, receiver);
+            Template template = getMessageTemplate(NMRConstants.EMAIL_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY);
+            String message = new TemplatedStringBuilder(template.getMessage())
+                    .replace(NMRConstants.TEMPLATE_VAR1, link)
+                    .finish();
+            return sendNotification(List.of(NotificationType.EMAIL.getNotificationType()), NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SET_PASSWORD_SUBJECT, message, receiver, receiver);
 
         } else if (NotificationType.SMS.getNotificationType().equals(type)) {
-            Template template = getMessageTemplate(NMRConstants.SMS_OTP_MESSAGE_PROPERTIES_KEY);
-            String message = link;
-            return sendNotification(List.of(NotificationType.SMS.getNotificationType()), NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.OTP_EMAIL_SUBJECT, message, receiver,receiver);
+            Template template = getMessageTemplate(NMRConstants.SMS_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY);
+            String message = new TemplatedStringBuilder(template.getMessage())
+                    .replace(NMRConstants.TEMPLATE_VAR1, link)
+                    .finish();
+            return sendNotification(List.of(NotificationType.SMS.getNotificationType()), NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SET_PASSWORD_SUBJECT, message, receiver,receiver);
         }
-        return null;
+        return new ResponseMessageTo(NMRConstants.NO_SUCH_TYPE);
     }
 
     @SneakyThrows
@@ -248,8 +252,6 @@ public class NotificationServiceImpl implements INotificationService {
         contentKeyValue.setValue(content);
 
         notificationRequestTo.setNotification(List.of(templateKeyValue, subjectKeyValue, contentKeyValue));
-
-        System.out.println(notificationRequestTo);
 
         NotificationResponseTo response;
         try {

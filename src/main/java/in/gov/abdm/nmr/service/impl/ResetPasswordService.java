@@ -64,8 +64,6 @@ public class ResetPasswordService implements IResetPasswordService {
 
                 String resetPasswordLink = resetPasswordUrl + "/" + token;
 
-                System.out.println(resetPasswordLink);
-
                 return notificationService.sendNotificationForResetPasswordLink(setPasswordLinkTo.getType(),setPasswordLinkTo.getContact(),resetPasswordLink);
 
             } else {
