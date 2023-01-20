@@ -7,7 +7,7 @@ import java.math.BigInteger;
 @Data
 public class NmcProfileTO {
     private BigInteger id;
-    private  BigInteger userId;
+    private BigInteger userId;
     private String firstName;
     private String lastName;
     private String middleName;
