@@ -7,5 +7,5 @@ import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ISmcMapper {
-   SMCProfileTO smcProfileToDto(SMCProfile smcProfile);
+    SMCProfileTO smcProfileToDto(SMCProfile smcProfile);
 }

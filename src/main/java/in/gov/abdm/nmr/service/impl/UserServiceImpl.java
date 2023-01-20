@@ -1,9 +1,5 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.NotificationToggleRequestTO;
-import in.gov.abdm.nmr.util.NMRConstants;
-import org.springframework.stereotype.Service;
-import in.gov.abdm.nmr.dto.NotificationToggleResponseTO;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.exception.NmrException;
@@ -12,13 +8,15 @@ import in.gov.abdm.nmr.mapper.INmcMapper;
 import in.gov.abdm.nmr.mapper.ISmcMapper;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.service.IUserService;
+import in.gov.abdm.nmr.util.NMRConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.math.BigInteger;
 import java.util.List;
 
 @Service
 public class UserServiceImpl implements IUserService {
-
     @Autowired
     private ISmcMapper smcMapper;
     @Autowired
@@ -63,7 +61,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public NbeProfileTO getNbeProfile(BigInteger id) throws NmrException {
-         return nbeMapper.nbeProfileToDto( userDaoService.findNbeProfile(id));
+        return nbeMapper.nbeProfileToDto(userDaoService.findNbeProfile(id));
     }
 
 }
