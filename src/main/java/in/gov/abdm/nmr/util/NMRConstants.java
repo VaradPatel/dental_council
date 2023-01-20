@@ -23,6 +23,7 @@ public class NMRConstants {
     public static final String GENERATE_AADHAR_OTP = "/sendAadhaarOtp";
     public static final String VALIDATE_OTP = "/validateOtp";
     public static final String VALIDATE_AADHAR_OTP = "/verifyAadhaarOtp";
+    public static final String FACILITY_SERVICE_SEARCH = "/v1.5/facility/search";
     public static final String AADHAR_SERVICE_SEND_OTP = "/api/v3/aadhaar/sendOtp";
     public static final String AADHAR_SERVICE_VERIFY_OTP = "/api/v3/aadhaar/verifyOtp";
     public static final String NOTIFICATION_SERVICE_SEND_MESSAGE = "/internal/v3/notification/message";
@@ -34,12 +35,15 @@ public class NMRConstants {
     public static final String GET_RESET_PASSWORD_LINK = "/get-reset-password-link";
     public static final String SET_NEW_PASSWORD = "/set-new-password";
 
+    public static final String PATH_FACILITY_ROOT = "/facility";
+    public static final String PATH_FACILITY_SEARCH = "/search";
+
     public static final String ACTION_REQUEST_URL = "/action";
 
     public static final String INITIATE_WORK_FLOW_URL = "/initiateWorkFlow";
     public static final String INITIATE_COLLEGE_WORK_FLOW_URL = "/initiateCollegeWorkFlow";
-
     public static final String NOTIFICATION_SERVICE = "notification";
+    public static final String FACILITY_SERVICE = "facility";
     public static final String NOTIFICATION_DB_SERVICE = "notification-db";
     public static final String AADHAAR_SERVICE = "aadhaar";
     public static final String CLOSED_STATUS = "closed";
@@ -47,7 +51,7 @@ public class NMRConstants {
 
     public static final String GLOBAL_NOTIFICATION_ENDPOINT = "${global.notification.endpoint}";
     public static final String GLOBAL_AADHAAR_ENDPOINT = "${global.aadhaar.endpoint}";
-
+    public static final String GLOBAL_FACILITY_ENDPOINT = "${global.facility.endpoint}";
     public static final String OTP_GENERATION_EXCEEDED = "OTP Generation Attempts Exceeded";
     public static final String OTP_ATTEMPTS_EXCEEDED = "OTP Attempts Exceeded";
     public static final String NO_SUCH_OTP_TYPE = "No such OTP Type";
