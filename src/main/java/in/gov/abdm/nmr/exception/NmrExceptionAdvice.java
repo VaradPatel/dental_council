@@ -140,4 +140,19 @@ public class NmrExceptionAdvice {
         return errorMap ;
     }
 
+    /**
+     * Exception handler for OTP Exceptions
+     *
+     * @param e
+     * @return
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(TemplateException.class)
+    public Map<String, Object> templateExceptionHandler(TemplateException e) {
+        Map<String, Object> errorMap = new HashMap<>();
+        errorMap.put(RESPONSE_TIMESTAMP, LocalDate.now());
+        LOGGER.error(e.getMessage());
+        errorMap.put(MESSAGE, e.getMessage());
+        return errorMap ;
+    }
 }

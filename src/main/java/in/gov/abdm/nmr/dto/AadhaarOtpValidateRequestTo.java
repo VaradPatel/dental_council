@@ -7,6 +7,7 @@ import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.math.BigInteger;
 
 /**
  * Request TO for validate API
@@ -15,6 +16,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AadhaarOtpValidateRequestTo {
+
+    @JsonProperty("hpProfileId")
+    BigInteger hpProfileId;
 
     @JsonProperty("aadhaarNumber")
     @NotEmpty(message = NMRConstants.AADHAR_NOT_NULL)

@@ -1,4 +1,5 @@
 package in.gov.abdm.nmr.service.impl;
+
 import in.gov.abdm.nmr.client.AadhaarFClient;
 import in.gov.abdm.nmr.dto.AadhaarOtpGenerateRequestTo;
 import in.gov.abdm.nmr.dto.AadhaarResponseTo;
@@ -18,8 +19,12 @@ public class AadhaarOtpServiceImpl implements AadhaarOtpService {
     @Autowired
     AadhaarFClient aadhaarFClient;
 
+    @Autowired
+    HpProfileDaoServiceImpl hpProfileDaoService;
+
     /**
      * Sends Aadhar OTP
+     *
      * @param otpGenerateRequestTo coming from Aadhaar OTP Service
      * @return AadhaarResponseDto Object
      */
@@ -31,13 +36,18 @@ public class AadhaarOtpServiceImpl implements AadhaarOtpService {
 
     /**
      * Verifies Aadhaar OTP
+     *
      * @param otpValidateRequestTo coming from Aadhaar OTP Service
      * @return AadhaarResponseDto Object
      */
     @Override
     public AadhaarResponseTo verifyOtp(AadhaarOtpValidateRequestTo otpValidateRequestTo) {
 
-        return aadhaarFClient.verifyOTP(otpValidateRequestTo);
+        AadhaarResponseTo aadhaarResponseTo=aadhaarFClient.verifyOTP(otpValidateRequestTo);
+
+        hpProfileDaoService.setHpProfilePhotoAndAddressThroughAadhaar(otpValidateRequestTo.getHpProfileId(),aadhaarResponseTo.getAadhaarUserKycDto());
+
+        return aadhaarResponseTo;
     }
 }
 

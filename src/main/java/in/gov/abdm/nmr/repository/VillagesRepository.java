@@ -12,4 +12,5 @@ public interface VillagesRepository extends JpaRepository<Villages, BigInteger> 
     @Query(value = "SELECT * FROM villages where sub_districts_code=:sub_district", nativeQuery = true)
     List<Villages> getVillage(BigInteger sub_district);
 
+    Villages findByName(String name);
 }

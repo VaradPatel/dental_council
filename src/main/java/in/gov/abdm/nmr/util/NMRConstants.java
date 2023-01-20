@@ -19,6 +19,10 @@ public class NMRConstants {
 
     public static final String FETCH_DETAILS_BY_REG_NO_URL = "/fetchDetailsByRegNo";
 
+    public static final String NOTIFICATION_REQUEST_MAPPING = "/notification";
+    public static final String AADHAAR_REQUEST_MAPPING = "/aadhaar";
+    public static final String SEND_OTP = "/send-otp";
+    public static final String VERIFY_OTP = "/verify-otp";
     public static final String GENERATE_OTP = "/generateOtp";
     public static final String GENERATE_AADHAR_OTP = "/sendAadhaarOtp";
     public static final String VALIDATE_OTP = "/validateOtp";
@@ -28,10 +32,10 @@ public class NMRConstants {
     public static final String AADHAR_SERVICE_VERIFY_OTP = "/api/v3/aadhaar/verifyOtp";
     public static final String NOTIFICATION_SERVICE_SEND_MESSAGE = "/internal/v3/notification/message";
     public static final String NOTIFICATION_DB_SERVICE_GET_TEMPLATE = "/internal/v3/notification/template/id/{id}";
-    public static final String RESET_PASSWORD = "/resetPassword";
-    public static final String CHANGE_PASSWORD = "/changePassword";
-    public static final String RAISE_QUERY = "/raiseQuery";
-    public static final String GET_QUERIES = "/queries/hpProfileId/{hpProfileId}";
+    public static final String RESET_PASSWORD = "/reset-password";
+    public static final String CHANGE_PASSWORD = "/change-password";
+    public static final String RAISE_QUERY = "/queries";
+    public static final String GET_QUERIES = "/queries/{hp-profile-id}";
     public static final String GET_RESET_PASSWORD_LINK = "/get-reset-password-link";
     public static final String SET_NEW_PASSWORD = "/set-new-password";
 
@@ -39,7 +43,6 @@ public class NMRConstants {
     public static final String PATH_FACILITY_SEARCH = "/search";
 
     public static final String ACTION_REQUEST_URL = "/action";
-
     public static final String INITIATE_WORK_FLOW_URL = "/initiateWorkFlow";
     public static final String INITIATE_COLLEGE_WORK_FLOW_URL = "/initiateCollegeWorkFlow";
     public static final String NOTIFICATION_SERVICE = "notification";
@@ -48,22 +51,30 @@ public class NMRConstants {
     public static final String AADHAAR_SERVICE = "aadhaar";
     public static final String CLOSED_STATUS = "closed";
     public static final String OPEN_STATUS = "open";
-
     public static final String GLOBAL_NOTIFICATION_ENDPOINT = "${global.notification.endpoint}";
     public static final String GLOBAL_AADHAAR_ENDPOINT = "${global.aadhaar.endpoint}";
     public static final String GLOBAL_FACILITY_ENDPOINT = "${global.facility.endpoint}";
     public static final String OTP_GENERATION_EXCEEDED = "OTP Generation Attempts Exceeded";
     public static final String OTP_ATTEMPTS_EXCEEDED = "OTP Attempts Exceeded";
     public static final String NO_SUCH_OTP_TYPE = "No such OTP Type";
+    public static final String NO_SUCH_TYPE = "No such type";
     public static final String OTP_EMAIL_SUBJECT = "NMR : Email Verification OTP";
     public static final String INFO_EMAIL_SUBJECT = "NMR : Status Changed";
-    public static final String SET_PASSWORD_EMAIlL_SUBJECT = "NMR : Set Password";
+    public static final String INFO_EMAIL_VERIFICATION_SUCCESSFUL_SUBJECT = "NMR : Verification Successful";
+    public static final String INFO_EMAIL_SET_PASSWORD_SUBJECT = "NMR : Set New Password";
     public static final String OTP_CONTENT_TYPE = "otp";
-    public static final String OTP_MESSAGES_PROPERTIES_KEY = "otp";
+    public static final String SMS_OTP_MESSAGE_PROPERTIES_KEY = "sms-otp";
+    public static final String EMAIL_OTP_MESSAGE_PROPERTIES_KEY = "email-otp";
+    public static final String SMS_VERIFIED_MESSAGE_PROPERTIES_KEY = "sms-verified";
+    public static final String EMAIL_VERIFIED_MESSAGE_PROPERTIES_KEY = "email-verified";
+    public static final String STATUS_CHANGED_MESSAGE_PROPERTIES_KEY = "status-changed";
+    public static final String SMS_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY = "sms-reset";
+    public static final String EMAIL_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY = "email-reset";
     public static final String INFO_CONTENT_TYPE = "info";
     public static final String COLLEGE_PREFIX_TO_GET_WORKFLOW_STATUS = "college-";
     public static final String CONTACT_NOT_NULL = "Contact cannot be null or empty";
     public static final String AADHAR_NOT_NULL = "AADHAR Number cannot be null or empty";
+    public static final String HP_PROFILE_NOT_NULL = "HP Profile ID cannot be null or empty";
     public static final String TYPE_NOT_NULL = "Type cannot be null or empty";
     public static final String TRANSACTION_ID_NOT_NULL = "Transaction Id cannot be null or empty";
     public static final String OTP_NOT_NULL = "OTP cannot be null or empty";
@@ -71,6 +82,7 @@ public class NMRConstants {
     public static final String FAILURE_RESPONSE = "Fail";
     public static final String SENT_RESPONSE = "sent";
     public static final String USER_NOT_FOUND = "User not found";
+    public static final String LINK_EXPIRED = "Link expired";
     public static final String WORKFLOW_STATUS_NOT_FOUND = "Workflow status not found";
     public static final String TEMPLATE_ID_NOT_FOUND_IN_PROPERTIES = "Template id not found in properties";
     public static final String TEMPLATE_NOT_FOUND = "Template not found";
@@ -223,4 +235,10 @@ public class NMRConstants {
     public static final long LOCK_TIME_DURATION = 3; // hours
     public static final String ACCOUNT_LOCKED_MESSAGE = "Your account has been locked for " + LOCK_TIME_DURATION + " hours due to " + MAX_FAILED_ATTEMPTS + " failed attempts";
     public static final String ACCOUNT_UNLOCKED_MESSAGE = "Your account has been unlocked. Please try to login again";
+    public static final String TEMPLATE_VAR1 = "var1";
+    public static final String TEMPLATE_VAR2 = "var2";
+    public static final String TEMPLATE_VAR3 = "var3";
+    public static final String MESSAGE_SENDER = "National Medical Council";
+    public static final String DEFAULT_COUNTRY_AADHAR = "India";
+    public static final int DEFAULT_ADDRESS_TYPE_AADHAR = 4;
 }
