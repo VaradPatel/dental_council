@@ -88,8 +88,8 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             HpProfile hpProfile = iHpProfileRepository.findById(requestTO.getHpProfileId()).get();
             WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
             if (workFlow == null) {
-                WorkFlow newWorkFlow = buildNewWorkFlow(requestTO, iNextGroup, hpProfile);
-                iWorkFlowRepository.save(newWorkFlow);
+                workFlow = buildNewWorkFlow(requestTO, iNextGroup, hpProfile);
+                iWorkFlowRepository.save(workFlow);
             } else {
                 workFlow.setUpdatedAt(null);
                 workFlow.setAction(iActionRepository.findById(requestTO.getActionId()).get());
@@ -103,7 +103,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 addOrUpdateToHpElasticIndex(iNextGroup, hpProfile);
             }
             iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile));
-            notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+//            notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
 
         } else {
             throw new WorkFlowException("Next Group Not Found", HttpStatus.BAD_REQUEST);

@@ -13,10 +13,10 @@ import in.gov.abdm.nmr.entity.WorkProfileAudit;
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface IHpProfileAuditMapper {
 
-	HpProfileAudit HpProfileDetailAuditToDto(HpProfile hpProfile);
+	HpProfileAudit hpProfileToHpProfileAudit(HpProfile hpProfile);
 	
-	RegistrationDetailsAudit RegistrationDetailsAuditToDto(RegistrationDetails registrationDetails); 
+	RegistrationDetailsAudit registrationDetailsToRegistrationDetailsAudit(RegistrationDetails registrationDetails);
 	
-	WorkProfileAudit workProfileAuditToDto(WorkProfile workProfile);
+	WorkProfileAudit workProfileToWorkProfileAudit(WorkProfile workProfile);
 
 }

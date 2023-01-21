@@ -24,4 +24,5 @@ public interface IHpProfileMapper {
 
 	HpProfilePictureResponseTO HpProfilePictureUploadToDto(HpProfilePictureResponseTO hpProfilePictureResponseTO);
 
+
 }

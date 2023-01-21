@@ -5,13 +5,14 @@ import java.math.BigInteger;
 import java.util.List;
 
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
+import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.service.IHpProfileDaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import in.gov.abdm.nmr.dto.hpprofile.HpProfileAddRequestTO;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.HpProfileAudit;
 import in.gov.abdm.nmr.entity.RegistrationDetails;
@@ -21,7 +22,6 @@ import in.gov.abdm.nmr.entity.WorkProfileAudit;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.Group;
-import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.IHpProfileAuditMapper;
@@ -41,9 +41,7 @@ import in.gov.abdm.nmr.util.NMRUtil;
 
 @Service
 public class HpRegistrationServiceImpl implements IHpRegistrationService {
-
-	private HpProfileDaoServiceImpl hpProfileService;
-
+	@Autowired
 	private IHpProfileMapper iHpProfileMapper;
 	
 	@Autowired
@@ -82,123 +80,37 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	@Autowired
 	private IHpProfileDaoService hpProfileDaoService;
 
-	public HpRegistrationServiceImpl(HpProfileDaoServiceImpl hpProfileService, IHpProfileMapper iHpProfileMapper) {
-		super();
-		this.hpProfileService = hpProfileService;
-		this.iHpProfileMapper = iHpProfileMapper;
-	}
+
 
 	@Override
 	public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(
 			SmcRegistrationDetailRequestTO smcRegistrationDetailRequestTO) {
 		return iHpProfileMapper
-				.SmcRegistrationToDto(hpProfileService.fetchSmcRegistrationDetail(smcRegistrationDetailRequestTO));
+				.SmcRegistrationToDto(hpProfileDaoService.fetchSmcRegistrationDetail(smcRegistrationDetailRequestTO));
 	}
 
-	@Override
-	public HpProfileDetailResponseTO fetchHpProfileDetail(BigInteger hpProfileId) {
-		return iHpProfileMapper.HpProfileDetailToDto(hpProfileService.fetchHpProfileDetail(hpProfileId));
-	}
-
-	@Override
-	public HpProfileUpdateResponseTO updateHpProfileDetail(BigInteger hpProfileId,
-			HpProfileUpdateRequestTO hpProfileUpdateRequest) throws InvalidRequestException, WorkFlowException {
-		if(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(hpProfileId)){
-			throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
-		}
-		
-		
-		if (workFlowRepository.findByRequestId(hpProfileUpdateRequest.getRequestId()).getWorkFlowStatus().getId().equals(WorkflowStatus.QUERY_RAISED.getId())) {
-			
-			HpProfileUpdateResponseTO hpProfileUpdateResponseTO = iHpProfileMapper
-					.HpProfileUpdateToDto(hpProfileService.updateHpProfile(hpProfileId, hpProfileUpdateRequest));
-			
-			iWorkFlowService.assignQueriesBackToQueryCreator(hpProfileUpdateRequest.getRequestId());
-			return hpProfileUpdateResponseTO;
-		}
-		if(iWorkFlowService.isAnyApprovedWorkflowForHealthProfessional(hpProfileId)) { 
-			String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.HP_MODIFICATION.getId()));
-
-			hpProfileUpdateRequest.setRequestId(requestId);
-			
-			addHpProfileInHpProfileAudit(hpProfileId);
-			
-			addRegistrationDetailsInRegistrationAudit(hpProfileId);
-			
-			addWorkProfileToWorkProfileAudit(hpProfileId);
-			
-			HpProfileUpdateResponseTO hpProfileUpdateResponseTO = iHpProfileMapper
-					.HpProfileUpdateToDto(hpProfileService.updateHpProfile(hpProfileId, hpProfileUpdateRequest));
-			
-			
-			WorkFlowRequestTO approvedWorkFlowRequestTO = WorkFlowRequestTO.builder().requestId(requestId)
-					.applicationTypeId(ApplicationType.HP_MODIFICATION.getId())
-					.hpProfileId(hpProfileId)
-					.actionId(Action.SUBMIT.getId())
-					.actorId(Group.HEALTH_PROFESSIONAL.getId())
-					.build();
-			iWorkFlowService.initiateSubmissionWorkFlow(approvedWorkFlowRequestTO);		
-			
-			return hpProfileUpdateResponseTO;
-		}
-		return null;
-	}
-	
 	private void addHpProfileInHpProfileAudit(BigInteger hpProfileId) {
 		HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
-		
-		HpProfileAudit hpProfileAudit = iHpProfileAuditMapper.HpProfileDetailAuditToDto(hpProfile);
-				
+		HpProfileAudit hpProfileAudit = iHpProfileAuditMapper.hpProfileToHpProfileAudit(hpProfile);
 		iHpProfileAuditRepository.save(hpProfileAudit);
 	}
 	
 	private void addRegistrationDetailsInRegistrationAudit(BigInteger hpProfileId) {
 		RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId);
-				
-		RegistrationDetailsAudit registrationDetailsAudit = iHpProfileAuditMapper.RegistrationDetailsAuditToDto(registrationDetails);
-		
+		RegistrationDetailsAudit registrationDetailsAudit = iHpProfileAuditMapper.registrationDetailsToRegistrationDetailsAudit(registrationDetails);
 		registrationDetailAuditRepository.save(registrationDetailsAudit);
 	}
 
 	private void addWorkProfileToWorkProfileAudit(BigInteger hpProfileId) {
 		WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(hpProfileId);
-		
-		WorkProfileAudit workProfileAudit = iHpProfileAuditMapper.workProfileAuditToDto(workProfile);
-		
+		WorkProfileAudit workProfileAudit = iHpProfileAuditMapper.workProfileToWorkProfileAudit(workProfile);
 		workProfileAuditRepository.save(workProfileAudit);
 	}
 	
 	
 	@Override
-	public HpProfileAddResponseTO addHpProfileDetail(HpProfileAddRequestTO hpProfileAddRequestTO)
-			throws InvalidRequestException, WorkFlowException {
-		if(hpProfileAddRequestTO.getRegistrationDetail().getHpProfileId() != null &&
-				iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(hpProfileAddRequestTO.getRegistrationDetail().getHpProfileId())){
-			throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
-		}
-		String requestId = hpProfileAddRequestTO.getRequestId();
-		
-		if(hpProfileAddRequestTO.getRequestId() == null){
-			requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(hpProfileAddRequestTO.getApplicationTypeId()));
-		}
-		
-		HpProfileAddResponseTO hpProfileAddResponseTO = hpProfileService.addHpProfile(hpProfileAddRequestTO, requestId);
-
-		WorkFlowRequestTO workFlowRequestTO = WorkFlowRequestTO.builder().requestId(requestId)
-				.applicationTypeId(hpProfileAddRequestTO.getApplicationTypeId())
-				.hpProfileId(hpProfileAddResponseTO.getHpProfileId())
-				.actionId(Action.SUBMIT.getId())
-				.actorId(Group.HEALTH_PROFESSIONAL.getId())
-				.build();
-		
-		iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
-		
-		return iHpProfileMapper.HpProfileAddToDto(hpProfileAddResponseTO);
-	}
-	
-	@Override
 	public HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException {
-		return iHpProfileMapper.HpProfilePictureUploadToDto(hpProfileService.uploadHpProfilePhoto(file, hpProfileId));
+		return iHpProfileMapper.HpProfilePictureUploadToDto(hpProfileDaoService.uploadHpProfilePhoto(file, hpProfileId));
 	}
 
 	@Override
@@ -214,41 +126,53 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 			qualificationDetailRequestTO.setRequestId(requestId);
 			iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
 		}
-		hpProfileDaoService.saveQualificationDetails(hpProfileService.findById(hpProfileId), null, qualificationDetailRequestTOs);
+		hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs);
 		return "Success";
 	}
 
 	
 	@Override
-	public HpProfileUpdateResponseTO updateHpPersonalDetail(BigInteger hpProfileId,
-			HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException {
-		
-		HpProfileUpdateResponseTO hpProfileUpdateResponseTO = iHpProfileMapper
-				.HpProfileUpdateToDto(hpProfileService.updateHpPersonalDetails(hpProfileId, hpPersonalUpdateRequestTO));
-		
-		return hpProfileUpdateResponseTO;
+	public HpProfileUpdateResponseTO addOrUpdateHpPersonalDetail(BigInteger hpProfileId,
+																 HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException {
+		return hpProfileDaoService.updateHpPersonalDetails(hpProfileId, hpPersonalUpdateRequestTO);
 	}
 
 	@Override
-	public HpProfileUpdateResponseTO updateHpRegistrationDetail(BigInteger hpProfileId,
-			HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO) {
-		
-		HpProfileUpdateResponseTO hpProfileUpdateResponseTO = iHpProfileMapper
-				.HpProfileUpdateToDto(hpProfileService.updateHpRegistrationDetails(hpProfileId, hpRegistrationUpdateRequestTO));
-		
-		return hpProfileUpdateResponseTO;
+	public HpProfileUpdateResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
+																	 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO) {
+		return iHpProfileMapper
+				.HpProfileUpdateToDto(hpProfileDaoService.updateHpRegistrationDetails(hpProfileId, hpRegistrationUpdateRequestTO));
 	}
 
 	@Override
-	public HpProfileUpdateResponseTO updateWorkProfileDetail(BigInteger hpProfileId,
-			HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO) {
-		
-		HpProfileUpdateResponseTO hpProfileUpdateResponseTO = iHpProfileMapper
-				.HpProfileUpdateToDto(hpProfileService.updateWorkProfileDetails(hpProfileId, hpWorkProfileUpdateRequestTO));
-		
-		return hpProfileUpdateResponseTO;
-		
+	public HpProfileUpdateResponseTO addOrUpdateWorkProfileDetail(BigInteger hpProfileId,
+																  HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO) {
+		return iHpProfileMapper
+				.HpProfileUpdateToDto(hpProfileDaoService.updateWorkProfileDetails(hpProfileId, hpWorkProfileUpdateRequestTO));
 	}
 
+	@Override
+	public HpProfileAddResponseTO submitHpProfile(HpSubmitRequestTO hpSubmitRequestTO)
+			throws InvalidRequestException, WorkFlowException {
+		if(hpSubmitRequestTO.getHpProfileId() != null &&
+				iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(hpSubmitRequestTO.getHpProfileId())){
+			throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
+		}
+		if (hpSubmitRequestTO.getRequestId() != null && WorkflowStatus.QUERY_RAISED.getId().equals(workFlowRepository.findByRequestId(hpSubmitRequestTO.getRequestId()).getWorkFlowStatus().getId())) {
+			iWorkFlowService.assignQueriesBackToQueryCreator(hpSubmitRequestTO.getRequestId());
+		}else {
+			String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(hpSubmitRequestTO.getApplicationTypeId()));
+			WorkFlowRequestTO workFlowRequestTO = WorkFlowRequestTO.builder().requestId(requestId)
+					.applicationTypeId(hpSubmitRequestTO.getApplicationTypeId())
+					.hpProfileId(hpSubmitRequestTO.getHpProfileId())
+					.actionId(Action.SUBMIT.getId())
+					.actorId(Group.HEALTH_PROFESSIONAL.getId())
+					.build();
+			iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
+			HpProfile hpProfileById = iHpProfileRepository.findHpProfileById(hpSubmitRequestTO.getHpProfileId());
+			hpProfileById.setRequestId(requestId);
+		}
+		return new HpProfileAddResponseTO(201, "Hp Profile Submitted Successfully!", hpSubmitRequestTO.getHpProfileId());
+	}
 
 }

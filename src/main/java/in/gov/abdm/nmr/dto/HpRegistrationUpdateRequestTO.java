@@ -13,7 +13,5 @@ import lombok.Data;
 public class HpRegistrationUpdateRequestTO {
 	private RegistrationDetailTO registrationDetail;
 	private List<QualificationDetailRequestTO> qualificationDetail;
-    private String requestId;
-    private String qualificationFrom;
     private HpNbeDetails hpNbeDetails;
 }

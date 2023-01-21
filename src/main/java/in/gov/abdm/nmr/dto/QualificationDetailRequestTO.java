@@ -25,4 +25,6 @@ public class QualificationDetailRequestTO {
     private String year;
     private String month;
     private Integer marks_obtained;
+    private String qualificationFrom;
+
 }

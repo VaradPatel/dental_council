@@ -107,4 +107,7 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
     HpProfile findByUserDetail(BigInteger userDetailId);
 
 	HpProfile findHpProfileById(BigInteger id);
+
+	@Query(value = "SELECT hp FROM main.hp_profile hp where registration_id=:registrationId")
+	HpProfile findByRegistrationId(BigInteger registrationId);
 }

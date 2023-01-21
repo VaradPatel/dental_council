@@ -4,6 +4,7 @@ import in.gov.abdm.nmr.client.AadhaarFClient;
 import in.gov.abdm.nmr.dto.AadhaarOtpGenerateRequestTo;
 import in.gov.abdm.nmr.dto.AadhaarResponseTo;
 import in.gov.abdm.nmr.service.AadhaarOtpService;
+import in.gov.abdm.nmr.service.IHpProfileDaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +21,7 @@ public class AadhaarOtpServiceImpl implements AadhaarOtpService {
     AadhaarFClient aadhaarFClient;
 
     @Autowired
-    HpProfileDaoServiceImpl hpProfileDaoService;
+    IHpProfileDaoService hpProfileDaoService;
 
     /**
      * Sends Aadhar OTP
@@ -30,7 +31,6 @@ public class AadhaarOtpServiceImpl implements AadhaarOtpService {
      */
     @Override
     public AadhaarResponseTo sendOtp(AadhaarOtpGenerateRequestTo otpGenerateRequestTo) {
-
         return aadhaarFClient.sendOTP(otpGenerateRequestTo);
     }
 
@@ -42,11 +42,8 @@ public class AadhaarOtpServiceImpl implements AadhaarOtpService {
      */
     @Override
     public AadhaarResponseTo verifyOtp(AadhaarOtpValidateRequestTo otpValidateRequestTo) {
-
         AadhaarResponseTo aadhaarResponseTo=aadhaarFClient.verifyOTP(otpValidateRequestTo);
-
         hpProfileDaoService.setHpProfilePhotoAndAddressThroughAadhaar(otpValidateRequestTo.getHpProfileId(),aadhaarResponseTo.getAadhaarUserKycDto());
-
         return aadhaarResponseTo;
     }
 }

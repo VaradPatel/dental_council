@@ -13,9 +13,8 @@ public enum ApplicationType {
     HP_ACTIVATE_LICENSE(BigInteger.valueOf(5), "Activate License"),
     COLLEGE_REGISTRATION(BigInteger.valueOf(6), "College Registration"),
     FOREIGN_HP_REGISTRATION(BigInteger.valueOf(7), "Foreign HP Registration"),
-    QUALIFICATION_ADDITION(BigInteger.valueOf(8), "Qualification Addition");
-
-
+    QUALIFICATION_ADDITION(BigInteger.valueOf(8), "Qualification Addition"),
+    FOREIGN_HP_MODIFICATION(BigInteger.valueOf(9), "Foreign HP Registration");
 
     private final BigInteger id;
     private final String description;

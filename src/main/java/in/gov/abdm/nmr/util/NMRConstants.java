@@ -241,4 +241,6 @@ public class NMRConstants {
     public static final String MESSAGE_SENDER = "National Medical Council";
     public static final String DEFAULT_COUNTRY_AADHAR = "India";
     public static final int DEFAULT_ADDRESS_TYPE_AADHAR = 4;
+    public static final String INDIA = "India";
+    public static final String INTERNATIONAL = "International";
 }

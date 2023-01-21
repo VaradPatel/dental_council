@@ -8,7 +8,8 @@ public enum HpProfileStatus {
     QUERY_RAISED(BigInteger.valueOf(3)),
     REJECTED(BigInteger.valueOf(4)),
     SUSPENDED(BigInteger.valueOf(5)),
-    BLACKLISTED(BigInteger.valueOf(6)),;
+    BLACKLISTED(BigInteger.valueOf(6)),
+    DRAFT(BigInteger.valueOf(7));
 
     private BigInteger id;
     HpProfileStatus(BigInteger id){

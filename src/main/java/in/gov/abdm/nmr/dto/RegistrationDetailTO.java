@@ -16,6 +16,5 @@ public class RegistrationDetailTO {
     private StateMedicalCouncilStatus councilStatus;
     private String isRenewable;
     private Date renewableRegistrationDate;
-    private BigInteger hpProfileId;
     private String isNameChange;
 }

@@ -42,4 +42,5 @@ public class HpNbeDetails {
 	private String requestId;
 	private Timestamp createdAt;
 	private Timestamp updatedAt;
+	private BigInteger hpProfileId;
 }
