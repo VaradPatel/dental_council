@@ -50,6 +50,48 @@ public class HpRegistrationController {
 		return hpService.updateHpProfileDetail(hpProfileId, hpProfileUpdateRequest);
 	}
 
+	@PutMapping(path = "health-professional/personal/{hp_profile_id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public HpProfileUpdateResponseTO updateHpProfileDetail(@RequestBody HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO,
+			@PathVariable(name = "hp_profile_id") BigInteger hpProfileId)
+			throws InvalidRequestException, WorkFlowException {
+		return hpService.updateHpPersonalDetail(hpProfileId, hpPersonalUpdateRequestTO);
+	}
+	
+	@PutMapping(path = "health-professional/registration/{hp_profile_id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public HpProfileUpdateResponseTO updateHpProfileDetail(@RequestBody HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO,
+			@PathVariable(name = "hp_profile_id") BigInteger hpProfileId)
+			throws InvalidRequestException, WorkFlowException {
+		return hpService.updateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequestTO);
+	}
+
+	@PutMapping(path = "health-professional/work-profile/{hp_profile_id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public HpProfileUpdateResponseTO updateHpProfileDetail(@RequestBody HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO,
+			@PathVariable(name = "hp_profile_id") BigInteger hpProfileId)
+			throws InvalidRequestException, WorkFlowException {
+		return hpService.updateWorkProfileDetail(hpProfileId, hpWorkProfileUpdateRequestTO);
+	}
+	
+	
+	@PostMapping(path = "health-professional/personal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public HpProfileUpdateResponseTO AddHpProfileDetail(@RequestBody HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO			)
+			throws InvalidRequestException, WorkFlowException {
+		return hpService.updateHpPersonalDetail(BigInteger.ZERO, hpPersonalUpdateRequestTO);
+	}
+	
+	@PostMapping(path = "health-professional/registration/{hp_profile_id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public HpProfileUpdateResponseTO addHpProfileDetail(@RequestBody HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO,
+			@PathVariable(name = "hp_profile_id") BigInteger hpProfileId)
+			throws InvalidRequestException, WorkFlowException {
+		return hpService.updateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequestTO);
+	}
+
+	@PostMapping(path = "health-professional/work-profile/{hp_profile_id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public HpProfileUpdateResponseTO addHpProfileDetail(@RequestBody HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO,
+			@PathVariable(name = "hp_profile_id") BigInteger hpProfileId)
+			throws InvalidRequestException, WorkFlowException {
+		return hpService.updateWorkProfileDetail(hpProfileId, hpWorkProfileUpdateRequestTO);
+	}
+	
 	@PostMapping(path = "/hpProfileDetail", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public HpProfileAddResponseTO addHpProfileDetail(@RequestBody HpProfileAddRequestTO hpProfileAddRequest)
 			throws InvalidRequestException, WorkFlowException {

@@ -1,6 +1,8 @@
 package in.gov.abdm.nmr.service;
 
+import in.gov.abdm.nmr.dto.HpPersonalUpdateRequestTO;
 import in.gov.abdm.nmr.dto.HpProfilePictureResponseTO;
+import in.gov.abdm.nmr.dto.HpProfileUpdateResponseTO;
 import in.gov.abdm.nmr.dto.QualificationDetailRequestTO;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.RegistrationDetails;
@@ -22,4 +24,7 @@ public interface IHpProfileDaoService {
     HpProfile findById(BigInteger id);
 
     void saveQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, List<QualificationDetailRequestTO> qualificationDetailRequestTOS);
+
+	HpProfileUpdateResponseTO updateHpPersonalDetails(BigInteger hpProfileId,
+			HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException;
 }
