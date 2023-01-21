@@ -1,7 +1,5 @@
 package in.gov.abdm.nmr.dto;
 
-import in.gov.abdm.nmr.dto.AddressTO;
-import in.gov.abdm.nmr.dto.OrganizationTypeTO;
 import lombok.Data;
 
 @Data

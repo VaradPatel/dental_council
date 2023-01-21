@@ -217,4 +217,38 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 		hpProfileDaoService.saveQualificationDetails(hpProfileService.findById(hpProfileId), null, qualificationDetailRequestTOs);
 		return "Success";
 	}
+
+	
+	@Override
+	public HpProfileUpdateResponseTO updateHpPersonalDetail(BigInteger hpProfileId,
+			HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException {
+		
+		HpProfileUpdateResponseTO hpProfileUpdateResponseTO = iHpProfileMapper
+				.HpProfileUpdateToDto(hpProfileService.updateHpPersonalDetails(hpProfileId, hpPersonalUpdateRequestTO));
+		
+		return hpProfileUpdateResponseTO;
+	}
+
+	@Override
+	public HpProfileUpdateResponseTO updateHpRegistrationDetail(BigInteger hpProfileId,
+			HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO) {
+		
+		HpProfileUpdateResponseTO hpProfileUpdateResponseTO = iHpProfileMapper
+				.HpProfileUpdateToDto(hpProfileService.updateHpRegistrationDetails(hpProfileId, hpRegistrationUpdateRequestTO));
+		
+		return hpProfileUpdateResponseTO;
+	}
+
+	@Override
+	public HpProfileUpdateResponseTO updateWorkProfileDetail(BigInteger hpProfileId,
+			HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO) {
+		
+		HpProfileUpdateResponseTO hpProfileUpdateResponseTO = iHpProfileMapper
+				.HpProfileUpdateToDto(hpProfileService.updateWorkProfileDetails(hpProfileId, hpWorkProfileUpdateRequestTO));
+		
+		return hpProfileUpdateResponseTO;
+		
+	}
+
+
 }

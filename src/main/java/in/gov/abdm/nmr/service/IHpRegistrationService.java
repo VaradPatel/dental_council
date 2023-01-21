@@ -24,6 +24,15 @@ public interface IHpRegistrationService {
 
     String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs) throws WorkFlowException;
 
+	HpProfileUpdateResponseTO updateHpPersonalDetail(BigInteger hpProfileId,
+			HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException;
+
+	HpProfileUpdateResponseTO updateHpRegistrationDetail(BigInteger hpProfileId,
+			HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO);
+
+	HpProfileUpdateResponseTO updateWorkProfileDetail(BigInteger hpProfileId,
+			HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO);
+
 }
 
 

@@ -1,5 +1,7 @@
 package in.gov.abdm.nmr.entity;
 
+import java.math.BigInteger;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 

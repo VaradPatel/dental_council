@@ -19,4 +19,10 @@ public class QualificationDetailRequestTO {
     private Integer isNameChange;
     private Integer isVerified;
     private String requestId;
+    
+    private String roll_no;
+    private String result;
+    private String year;
+    private String month;
+    private Integer marks_obtained;
 }
