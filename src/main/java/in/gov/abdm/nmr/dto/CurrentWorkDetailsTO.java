@@ -1,6 +1,8 @@
 package in.gov.abdm.nmr.dto;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 public class CurrentWorkDetailsTO {

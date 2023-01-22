@@ -19,17 +19,22 @@ public interface IHpRegistrationService {
 
     String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs) throws WorkFlowException;
 
-	HpProfileUpdateResponseTO addOrUpdateHpPersonalDetail(BigInteger hpProfileId,
+    HpProfilePersonalResponseTO addOrUpdateHpPersonalDetail(BigInteger hpProfileId,
                                                           HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException;
 
-	HpProfileUpdateResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
+    HpProfileRegistrationResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
                                                               HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO);
 
-	HpProfileUpdateResponseTO addOrUpdateWorkProfileDetail(BigInteger hpProfileId,
+    HpProfileWorkDetailsResponseTO addOrUpdateWorkProfileDetail(BigInteger hpProfileId,
                                                            HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO);
 
     HpProfileAddResponseTO submitHpProfile(HpSubmitRequestTO hpSubmitRequestTO) throws InvalidRequestException, WorkFlowException;
 
+    HpProfilePersonalResponseTO getHealthProfessionalPersonalDetail(BigInteger hpProfileId);
+
+    HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId);
+
+    HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(BigInteger hpProfileId);
 }
 
 

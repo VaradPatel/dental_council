@@ -2,12 +2,13 @@ package in.gov.abdm.nmr.dto;
 
 import java.math.BigInteger;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class SuperSpecialityTO {
 
     private BigInteger id;
-    private BigInteger hpProfileId;
     private String name;
 }

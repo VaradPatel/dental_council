@@ -1,15 +1,14 @@
 package in.gov.abdm.nmr.dto;
 
-import java.math.BigInteger;
-
 import in.gov.abdm.nmr.dto.college.CollegeTO;
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
-public class QualificationDetailRequestTO {
-	private BigInteger id;
+public class QualificationDetailResponseTo {
+    private BigInteger id;
     private CountryTO country;
-//    private QualificationStatusTO qualificationStatus;
     private StateTO state;
     private CollegeTO college;
     private UniversityTO university;
@@ -20,5 +19,4 @@ public class QualificationDetailRequestTO {
     private Integer isVerified;
     private String requestId;
     private String qualificationFrom;
-
 }

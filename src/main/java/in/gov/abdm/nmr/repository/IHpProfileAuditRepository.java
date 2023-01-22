@@ -13,6 +13,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface IHpProfileAuditRepository extends JpaRepository<HpProfileAudit, BigInteger> {
 
-    @Query(value = "SELECT hp FROM main.hp_profile_audit hp where registration_id=:registrationId")
+    @Query(value = "SELECT hp FROM hp_profile_audit hp where registration_id=:registrationId", nativeQuery = true)
     HpProfileAudit findByRegistrationId(BigInteger registrationId);
 }

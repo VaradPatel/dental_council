@@ -3,13 +3,7 @@ package in.gov.abdm.nmr.entity;
 import java.math.BigInteger;
 import java.sql.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,39 +33,39 @@ public class QualificationDetails {
     private String systemOfMedicine;
     private String requestId;
 
-//    @OneToOne
-//    @JoinColumn(name = "district")
-//    private District district;
+    @OneToOne
+    @JoinColumn(name = "district_id", referencedColumnName = "id")
+    private District district;
     
-    private BigInteger districtId;
-    
-//    @OneToOne(cascade=CascadeType.ALL)
-//    @JoinColumn(name = "college")
-//    private College college;
+//    private BigInteger districtId;
 
-    private BigInteger collegeId;
-    
-//    @OneToOne
-//    @JoinColumn(name = "country")
-//    private Country country;
-    
-    private BigInteger countryId;
+    @OneToOne
+    @JoinColumn(name = "college_id", referencedColumnName = "id")
+    private College college;
 
-//    @OneToOne
-//    @JoinColumn(name = "course")
-//    private FacilityType course;
-    private BigInteger courseId;
+//    private BigInteger collegeId;
 
-//    @OneToOne
-//    @JoinColumn(name = "state")
-//    private State state;
-    private BigInteger stateId;
-
-//    @OneToOne(cascade=CascadeType.ALL)
-//    @JoinColumn(name = "university")
-//    private University university;
+    @OneToOne
+    @JoinColumn(name = "country_id", referencedColumnName = "id")
+    private Country country;
     
-    private BigInteger universityId;
+//    private BigInteger countryId;
+
+    @OneToOne
+    @JoinColumn(name = "course_id", referencedColumnName = "id")
+    private Course course;
+//    private BigInteger courseId;
+
+    @OneToOne
+    @JoinColumn(name = "state_id", referencedColumnName = "id")
+    private State state;
+//    private BigInteger stateId;
+
+    @OneToOne
+    @JoinColumn(name = "university_id", referencedColumnName = "id")
+    private University university;
+    
+//    private BigInteger universityId;
 
     @ManyToOne
     @JoinColumn(name = "registration_details_id", referencedColumnName = "id")

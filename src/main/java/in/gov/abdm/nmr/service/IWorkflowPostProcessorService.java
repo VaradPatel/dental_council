@@ -8,4 +8,6 @@ public interface IWorkflowPostProcessorService {
 
     void updateElasticDB();
 
+    void generateNmrId();
+
 }

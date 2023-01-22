@@ -103,11 +103,14 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
 //	HpProfile getByHpProfileId(BigInteger hpProfileId);
 	
 	   
-    @Query(value = "SELECT hp FROM hpProfile hp join hp.user usr where usr.id=:userDetailId")
+    @Query(value = "SELECT hp FROM hpProfile hp join hp.user usr where usr.id=:userDetailId", nativeQuery = true)
     HpProfile findByUserDetail(BigInteger userDetailId);
 
 	HpProfile findHpProfileById(BigInteger id);
 
-	@Query(value = "SELECT hp FROM main.hp_profile hp where registration_id=:registrationId")
+	@Query(value = "SELECT hp FROM main.hp_profile hp where registration_id=:registrationId", nativeQuery = true)
 	HpProfile findByRegistrationId(BigInteger registrationId);
+
+	@Query(value = "SELECT * FROM main.hp_profile where registration_id =:registrationId ORDER BY id DESC LIMIT 1 OFFSET 1", nativeQuery = true)
+	HpProfile findSecondLastHpProfile(BigInteger registrationId);
 }

@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigInteger;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,6 +18,6 @@ import lombok.Setter;
 public class BroadSpeciality {
 
     @Id
-    private Long id;
+    private BigInteger id;
     private String name;
 }

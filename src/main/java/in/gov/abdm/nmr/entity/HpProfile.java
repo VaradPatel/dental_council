@@ -95,4 +95,5 @@ public class HpProfile {
 	//eSignChange
 	private String transactionId;
 	private String eSignStatus;
+	private BigInteger registrationId;
 }

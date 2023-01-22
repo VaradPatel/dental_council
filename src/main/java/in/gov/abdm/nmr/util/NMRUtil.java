@@ -4,6 +4,8 @@ import in.gov.abdm.nmr.entity.RequestCounter;
 import lombok.experimental.UtilityClass;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Collection;
+
 /**
  * Util class for NMR.
  */
@@ -23,5 +25,16 @@ public final class NMRUtil {
      */
     public static <T> T coalesce(T value, T fallBackValue){
         return value != null ? value : fallBackValue;
+    }
+
+    /**
+     * Return value if it is not null otherwise fallBackValue.
+     * @param value the main value to be returned when not null.
+     * @param fallBackValue the fallback value to be returned when main value is not available.
+     * @param <T> the object data type.
+     * @return the value when it's not null otherwise returns fallBackValue.
+     */
+    public static <T extends Collection> T coalesceCollection(T value, T fallBackValue){
+        return !value.isEmpty()  ? value : fallBackValue;
     }
 }

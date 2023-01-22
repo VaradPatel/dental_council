@@ -88,6 +88,15 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 	private DscFClient dscFClient;
 	@PersistenceContext
 	private EntityManager entityManager;
+	@Autowired
+	private ICollegeRepository collegeRepository;
+	@Autowired
+	private IUniversityRepository universityRepository;
+	@Autowired
+	private CourseRepository courseRepository;
+	@Autowired
+	private BroadSpecialityRepository broadSpecialityRepository;
+
 
 	public HpSmcDetailTO fetchSmcRegistrationDetail(SmcRegistrationDetailRequestTO smcRegistrationDetailRequestTO) {
 		List<Predicate> predicates = new ArrayList<>();
@@ -114,15 +123,27 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 		if (hpProfile == null || HpProfileStatus.APPROVED.getId().equals(hpProfile.getHpProfileStatus().getId())) {
 			hpProfile = new HpProfile();
 			mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, hpProfile);
-			iHpProfileRepository.saveAndFlush(hpProfile);
+			HpProfile savedHpProfile = iHpProfileRepository.save(hpProfile);
+			hpProfile.setId(savedHpProfile.getId());
+
 		} else {
 			mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, hpProfile);
 		}
 		if (hpPersonalUpdateRequestTO.getCommunicationAddress() != null) {
 			Address address = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(hpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId()), new Address());
-			mapAddressRequestToEntity(hpProfileId, hpPersonalUpdateRequestTO, address);
+			mapAddressRequestToEntity(hpProfile.getId(), hpPersonalUpdateRequestTO, address);
 			iAddressRepository.save(address);
 		}
+		List<LanguageTO> languages = hpPersonalUpdateRequestTO.getPersonalDetails().getLanguage();
+		if(languagesKnownRepository.existsById(hpProfile.getId())){
+			languagesKnownRepository.deleteById(hpProfile.getId());
+		}
+		List<LanguagesKnown> languagesKnowns = new ArrayList<>();
+		for(LanguageTO languageTO : languages){
+			languagesKnowns.add(LanguagesKnown.builder().hpProfile(hpProfile).languageId(languageTO.getId()).build());
+		}
+		languagesKnownRepository.saveAll(languagesKnowns);
+
 		return new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", hpProfile.getId());
 	}
 
@@ -309,11 +330,11 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 	}
 
 	private void mapIndianQualificationRequestToEntity(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, QualificationDetailRequestTO indianQualification, QualificationDetails qualification) {
-		qualification.setCountryId(indianQualification.getCountry().getId());
-		qualification.setStateId(indianQualification.getState().getId());
-		qualification.setCollegeId(indianQualification.getCollege().getId());
-		qualification.setUniversityId(indianQualification.getUniversity().getId());
-		qualification.setCourseId(indianQualification.getCourse().getId());
+		qualification.setCountry(countryRepository.findById(indianQualification.getCountry().getId()).get());
+		qualification.setState(stateRepository.findById(indianQualification.getState().getId()).get());
+		qualification.setCollege(collegeRepository.findById(indianQualification.getCollege().getId()).get());
+		qualification.setUniversity(universityRepository.findById(indianQualification.getUniversity().getId()).get());
+		qualification.setCourse(courseRepository.findById(indianQualification.getCourse().getId()).get());
 		qualification.setIsVerified(indianQualification.getIsVerified());
 		qualification.setQualificationYear(indianQualification.getQualificationYear());
 		qualification.setQualificationMonth(indianQualification.getQualificationMonth());
@@ -408,6 +429,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 		hpProfile.setGender(hpPersonalUpdateRequestTO.getPersonalDetails().getGender());
 		hpProfile.setDateOfBirth(hpPersonalUpdateRequestTO.getPersonalDetails().getDateOfBirth());
 		hpProfile.setRequestId(hpPersonalUpdateRequestTO.getRequestId());
+		hpProfile.setRegistrationId(hpPersonalUpdateRequestTO.getImrDetails().getRegistrationNumber());
 
 		Schedule schedule = iScheduleRepository
 				.findById(hpPersonalUpdateRequestTO.getPersonalDetails().getSchedule().getId()).orElse(null);
@@ -440,8 +462,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 		registrationDetail.setRegistrationDate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationDate());
 		registrationDetail.setRegistrationNo(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationNumber());
 		registrationDetail.setStateMedicalCouncil(iStateMedicalCouncilRepository
-				.findById(hpRegistrationUpdateRequestTO.getRegistrationDetail().getStateMedicalCouncil().getId())
-				.orElse(null));
+				.findById(hpRegistrationUpdateRequestTO.getRegistrationDetail().getStateMedicalCouncil().getId()).get());
 
 		registrationDetail.setIsRenewable(hpRegistrationUpdateRequestTO.getRegistrationDetail().getIsRenewable());
 		registrationDetail.setRenewableRegistrationDate(
@@ -460,10 +481,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 	}
 
 	private void mapWorkRequestToEntity(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, WorkProfile addWorkProfile, BigInteger hpProfileId) {
-		addWorkProfile.setBroadSpecialityId(
-				hpWorkProfileUpdateRequestTO.getSpecialityDetails().getBroadSpeciality().getId());
-		addWorkProfile.setWorkNatureId(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature().getId());
-		addWorkProfile.setWorkStatusId(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus().getId());
+		addWorkProfile.setBroadSpeciality(broadSpecialityRepository.findById(hpWorkProfileUpdateRequestTO.getSpecialityDetails().getBroadSpeciality().getId()).get());
+		addWorkProfile.setWorkNature(workNatureRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature().getId()).get());
+		addWorkProfile.setWorkStatus(workStatusRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus().getId()).get());
 		addWorkProfile.setIsUserCurrentlyWorking(
 				hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking());
 		addWorkProfile.setFacility(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().getFacility());

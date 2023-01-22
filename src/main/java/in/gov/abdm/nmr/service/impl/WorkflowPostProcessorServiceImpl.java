@@ -47,6 +47,11 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
     }
 
+    @Override
+    public void generateNmrId() {
+
+    }
+
     private void updateRegistrationDetails(BigInteger id, BigInteger transactionHpProfileId) {
         RegistrationDetails registrationDetailsByHpProfileId = registrationDetailRepository.getRegistrationDetailsByHpProfileId(transactionHpProfileId);
         RegistrationDetailsAudit registrationDetailsAudit = hpProfileAuditMapper.registrationDetailsToRegistrationDetailsAudit(registrationDetailsByHpProfileId);

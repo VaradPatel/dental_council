@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.dto.hpprofile;
 
-
 import lombok.Data;
 import java.math.BigInteger;
 
@@ -9,5 +8,8 @@ public class HpSubmitRequestTO {
     private BigInteger hpProfileId;
     private BigInteger applicationTypeId;
     private String requestId;
+    private String transactionId;
+    private String eSignStatus;
+    private Integer hprShareAcknowledgement;
 }
 

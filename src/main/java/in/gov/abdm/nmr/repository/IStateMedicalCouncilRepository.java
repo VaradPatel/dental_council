@@ -8,4 +8,6 @@ import in.gov.abdm.nmr.entity.StateMedicalCouncil;
 
 public interface IStateMedicalCouncilRepository extends JpaRepository<StateMedicalCouncil, BigInteger> {
 
+
+
 }

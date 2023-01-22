@@ -38,8 +38,4 @@ public interface IHpProfileDaoService {
 
 	ResponseMessageTo setHpProfilePhotoAndAddressThroughAadhaar(BigInteger id, AadhaarUserKycTo userKycTo);
 
-
-
-
-
-}
+    }

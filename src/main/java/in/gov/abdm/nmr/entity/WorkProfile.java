@@ -2,13 +2,7 @@ package in.gov.abdm.nmr.entity;
 
 import java.math.BigInteger;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 import in.gov.abdm.nmr.entity.Address;
 import lombok.AllArgsConstructor;
@@ -39,9 +33,15 @@ public class WorkProfile {
     private String proofOfWorkAttachment;
     private String url;
     private BigInteger userId;
-    private BigInteger broadSpecialityId;
-    private BigInteger workNatureId;
-    private BigInteger workStatusId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "broad_speciality_id", referencedColumnName = "id")
+    private BroadSpeciality broadSpeciality;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "work_nature_id", referencedColumnName = "id")
+    private WorkNature workNature;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "work_status_id", referencedColumnName = "id")
+    private WorkStatus workStatus;
     private BigInteger hpProfileId;
     private String workOrganization;
     

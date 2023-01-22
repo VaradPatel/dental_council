@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.dto;
 
+import java.math.BigInteger;
 import java.sql.Date;
 import java.util.List;
 
@@ -23,4 +24,8 @@ public class PersonalDetailsTO {
     private Date dateOfBirth;
     private String gender;
     private ScheduleTO schedule;
+    private byte[] profilePhoto;
+    private String fullName;
+
+
 }

@@ -3,37 +3,25 @@ package in.gov.abdm.nmr.service.impl;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
-import in.gov.abdm.nmr.enums.WorkflowStatus;
+import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.enums.*;
+import in.gov.abdm.nmr.enums.Action;
+import in.gov.abdm.nmr.enums.AddressType;
+import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.mapper.*;
+import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.IHpProfileDaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import in.gov.abdm.nmr.entity.HpProfile;
-import in.gov.abdm.nmr.entity.HpProfileAudit;
-import in.gov.abdm.nmr.entity.RegistrationDetails;
-import in.gov.abdm.nmr.entity.RegistrationDetailsAudit;
-import in.gov.abdm.nmr.entity.WorkProfile;
-import in.gov.abdm.nmr.entity.WorkProfileAudit;
-import in.gov.abdm.nmr.enums.Action;
-import in.gov.abdm.nmr.enums.ApplicationType;
-import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
-import in.gov.abdm.nmr.mapper.IHpProfileAuditMapper;
-import in.gov.abdm.nmr.mapper.IHpProfileMapper;
-import in.gov.abdm.nmr.repository.IHpProfileAuditRepository;
-import in.gov.abdm.nmr.repository.IHpProfileRepository;
-import in.gov.abdm.nmr.repository.IRegistrationDetailRepository;
-import in.gov.abdm.nmr.repository.IWorkFlowAuditRepository;
-import in.gov.abdm.nmr.repository.IWorkFlowRepository;
-import in.gov.abdm.nmr.repository.RegistrationDetailAuditRepository;
-import in.gov.abdm.nmr.repository.WorkProfileAuditRepository;
-import in.gov.abdm.nmr.repository.WorkProfileRepository;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
@@ -80,6 +68,29 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	@Autowired
 	private IHpProfileDaoService hpProfileDaoService;
 
+	@Autowired
+	private IAddressRepository iAddressRepository;
+
+	@Autowired
+	private LanguagesKnownRepository languagesKnownRepository;
+
+	@Autowired
+	private LanguageRepository languageRepository;
+
+	@Autowired
+	private HpNbeDetailsRepository hpNbeDetailsRepository;
+
+	@Autowired
+	private IQualificationDetailRepository qualificationDetailRepository;
+
+	@Autowired
+	private ICustomQualificationDetailRepository customQualificationDetailRepository;
+
+	@Autowired
+	private SuperSpecialityRepository superSpecialityRepository;
+
+	@Autowired
+	private BroadSpecialityRepository broadSpecialityRepository;
 
 
 	@Override
@@ -132,23 +143,24 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
 	
 	@Override
-	public HpProfileUpdateResponseTO addOrUpdateHpPersonalDetail(BigInteger hpProfileId,
+	public HpProfilePersonalResponseTO addOrUpdateHpPersonalDetail(BigInteger hpProfileId,
 																 HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException {
-		return hpProfileDaoService.updateHpPersonalDetails(hpProfileId, hpPersonalUpdateRequestTO);
+		HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpPersonalDetails(hpProfileId, hpPersonalUpdateRequestTO);
+		return getHealthProfessionalPersonalDetail(hpProfileUpdateResponseTO.getHpProfileId());
 	}
 
 	@Override
-	public HpProfileUpdateResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
+	public HpProfileRegistrationResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
 																	 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO) {
-		return iHpProfileMapper
-				.HpProfileUpdateToDto(hpProfileDaoService.updateHpRegistrationDetails(hpProfileId, hpRegistrationUpdateRequestTO));
+		HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(hpProfileId, hpRegistrationUpdateRequestTO);
+		return getHealthProfessionalRegistrationDetail(hpProfileUpdateResponseTO.getHpProfileId());
 	}
 
 	@Override
-	public HpProfileUpdateResponseTO addOrUpdateWorkProfileDetail(BigInteger hpProfileId,
+	public HpProfileWorkDetailsResponseTO addOrUpdateWorkProfileDetail(BigInteger hpProfileId,
 																  HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO) {
-		return iHpProfileMapper
-				.HpProfileUpdateToDto(hpProfileDaoService.updateWorkProfileDetails(hpProfileId, hpWorkProfileUpdateRequestTO));
+		HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateWorkProfileDetails(hpProfileId, hpWorkProfileUpdateRequestTO);
+		return getHealthProfessionalWorkDetail(hpProfileUpdateResponseTO.getHpProfileId());
 	}
 
 	@Override
@@ -170,9 +182,54 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 					.build();
 			iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
 			HpProfile hpProfileById = iHpProfileRepository.findHpProfileById(hpSubmitRequestTO.getHpProfileId());
+			hpProfileById.setTransactionId(hpSubmitRequestTO.getTransactionId());
+			hpProfileById.setESignStatus(hpSubmitRequestTO.getESignStatus());
 			hpProfileById.setRequestId(requestId);
 		}
 		return new HpProfileAddResponseTO(201, "Hp Profile Submitted Successfully!", hpSubmitRequestTO.getHpProfileId());
+	}
+
+	@Override
+	public HpProfilePersonalResponseTO getHealthProfessionalPersonalDetail(BigInteger hpProfileId) {
+		HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
+		Address communicationAddressByHpProfileId = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfileId, AddressType.COMMUNICATION.getId());
+		List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(hpProfileId);
+		List<Language> languages = languageRepository.getLanguage();
+		return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, languagesKnown, languages);
+	}
+
+	@Override
+	public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) {
+		BigInteger previousHpProfileId = getSecondLastHpProfile(hpProfileId);
+		List<SuperSpeciality> superSpecialities = NMRUtil.coalesceCollection(superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId), superSpecialityRepository.getSuperSpecialityFromHpProfileId(previousHpProfileId));
+		WorkProfile workProfile = NMRUtil.coalesce(workProfileRepository.getWorkProfileByHpProfileId(hpProfileId), workProfileRepository.getWorkProfileByHpProfileId(previousHpProfileId));
+		HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(superSpecialities, workProfile);
+		hpProfileWorkDetailsResponseTO.setHpProfileId(hpProfileId);
+		return hpProfileWorkDetailsResponseTO;
+	}
+
+	@Override
+	public HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(BigInteger hpProfileId) {
+		BigInteger previousHpProfileId = getSecondLastHpProfile(hpProfileId);
+		RegistrationDetails registrationDetails = NMRUtil.coalesce(registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId),
+				registrationDetailRepository.getRegistrationDetailsByHpProfileId(previousHpProfileId));
+		HpNbeDetails nbeDetails = NMRUtil.coalesce(hpNbeDetailsRepository.findByHpProfileId(hpProfileId),hpNbeDetailsRepository.findByHpProfileId(previousHpProfileId));
+		List<QualificationDetails> indianQualifications = NMRUtil.coalesceCollection(qualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId),
+				qualificationDetailRepository.getQualificationDetailsByHpProfileId(previousHpProfileId));
+		List<CustomQualificationDetails> internationalQualifications =  NMRUtil.coalesceCollection(customQualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId),
+		customQualificationDetailRepository.getQualificationDetailsByHpProfileId(previousHpProfileId));
+		HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = HpProfileRegistrationMapper.convertEntitiesToRegistrationResponseTo(registrationDetails, nbeDetails, indianQualifications, internationalQualifications);
+		hpProfileRegistrationResponseTO.setHpProfileId(hpProfileId);
+		return  hpProfileRegistrationResponseTO;
+	}
+
+	private BigInteger getSecondLastHpProfile(BigInteger hpProfileId){
+		HpProfile secondLastHpProfile = iHpProfileRepository.findSecondLastHpProfile(iHpProfileRepository.findById(hpProfileId).get().getRegistrationId());
+		if(secondLastHpProfile != null){
+			return secondLastHpProfile.getId();
+		}
+		return BigInteger.ZERO;
+
 	}
 
 }
