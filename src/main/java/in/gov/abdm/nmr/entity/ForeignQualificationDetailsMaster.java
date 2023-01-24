@@ -1,27 +1,20 @@
 package in.gov.abdm.nmr.entity;
 
-import java.math.BigInteger;
-import java.sql.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import javax.persistence.*;
+import java.math.BigInteger;
+import java.sql.Date;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class CustomQualificationDetails {
+public class ForeignQualificationDetailsMaster {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,7 +45,7 @@ public class CustomQualificationDetails {
 
     @ManyToOne
     @JoinColumn(name = "hpProfileId", referencedColumnName = "id")
-    private HpProfile hpProfile;
+    private HpProfileMaster hpProfileMaster;
 
 
 }

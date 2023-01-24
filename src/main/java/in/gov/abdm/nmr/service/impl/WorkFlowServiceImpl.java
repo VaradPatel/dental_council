@@ -8,6 +8,7 @@ import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.INotificationService;
+import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,13 +73,13 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     private IHpProfileStatusRepository hpProfileStatusRepository;
 
     @Autowired
-    private IElasticsearchDaoService elasticsearchDaoService;
-
-    @Autowired
     private IQualificationDetailRepository qualificationDetailRepository;
 
     @Autowired
     INotificationService notificationService;
+
+    @Autowired
+    IWorkflowPostProcessorService workflowPostProcessorService;
 
     @Override
     @Transactional
@@ -99,8 +100,8 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 workFlow.setRemarks(requestTO.getRemarks());
             }
             if (isLastStepOfWorkFlow(iNextGroup)) {
-                updateHealthProfessionalDetails(requestTO, iNextGroup, hpProfile);
-                addOrUpdateToHpElasticIndex(iNextGroup, hpProfile);
+                workflowPostProcessorService.performPostWorkflowUpdates(requestTO,hpProfile,iNextGroup);
+
             }
             iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile));
 //            notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
@@ -110,22 +111,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         }
     }
 
-    private void updateHealthProfessionalDetails(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile) {
-        if (!ApplicationType.QUALIFICATION_ADDITION.getId().equals(requestTO.getApplicationTypeId())) {
-            hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
-        }
-        List<QualificationDetails> qualificationDetails = qualificationDetailRepository.findByRequestId(requestTO.getRequestId());
-        qualificationDetails.forEach(qualificationDetail -> qualificationDetail.setIsVerified(1));
-    }
 
-    private void addOrUpdateToHpElasticIndex(INextGroup iNextGroup, HpProfile hpProfile) throws WorkFlowException {
-        try {
-            elasticsearchDaoService.indexHP(hpProfile.getId());
-        } catch (ElasticsearchException | IOException e) {
-            LOGGER.error("Exception while indexing HP", e);
-            throw new WorkFlowException("Exception while indexing HP", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
     @Override
     public boolean isAnyActiveWorkflowWithOtherApplicationType(BigInteger hpProfileId, BigInteger applicationTypeId) {

@@ -5,7 +5,6 @@ import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.experimental.UtilityClass;
-import org.hibernate.resource.beans.container.internal.NoSuchBeanException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.List;
 public final class HpProfileRegistrationMapper {
 
 
-public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(RegistrationDetails registrationDetails, HpNbeDetails nbeDetails, List<QualificationDetails> indianQualifications, List<CustomQualificationDetails> internationalQualifications) {
+public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(RegistrationDetails registrationDetails, HpNbeDetails nbeDetails, List<QualificationDetails> indianQualifications, List<ForeignQualificationDetails> internationalQualifications) {
         HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = new HpProfileRegistrationResponseTO();
         RegistrationDetailTO registrationDetailsTo = new RegistrationDetailTO();
         NbeResponseTo  nbeResponseTo =  new NbeResponseTo();

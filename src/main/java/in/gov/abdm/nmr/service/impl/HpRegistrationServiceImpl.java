@@ -3,7 +3,6 @@ package in.gov.abdm.nmr.service.impl;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Optional;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
@@ -33,7 +32,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	private IHpProfileMapper iHpProfileMapper;
 	
 	@Autowired
-	private IHpProfileAuditMapper iHpProfileAuditMapper;
+	private IHpProfileMasterMapper iHpProfileAuditMapper;
 
 	@Autowired
 	private IWorkFlowService iWorkFlowService;
@@ -48,7 +47,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	private IWorkFlowAuditRepository iWorkFlowAuditRepository;
 	
 	@Autowired
-	private IHpProfileAuditRepository iHpProfileAuditRepository;
+	private IHpProfileMasterRepository iHpProfileAuditRepository;
 	
 	@Autowired
 	private IHpProfileRepository iHpProfileRepository;
@@ -57,13 +56,13 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	private IRegistrationDetailRepository registrationDetailRepository;
 	
 	@Autowired
-	private RegistrationDetailAuditRepository registrationDetailAuditRepository;
+	private RegistrationDetailMasterRepository registrationDetailAuditRepository;
 	
 	@Autowired
 	private WorkProfileRepository workProfileRepository;
 	
 	@Autowired
-	private WorkProfileAuditRepository workProfileAuditRepository;
+	private WorkProfileMasterRepository workProfileAuditRepository;
 
 	@Autowired
 	private IHpProfileDaoService hpProfileDaoService;
@@ -84,7 +83,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	private IQualificationDetailRepository qualificationDetailRepository;
 
 	@Autowired
-	private ICustomQualificationDetailRepository customQualificationDetailRepository;
+	private IForeignQualificationDetailRepository customQualificationDetailRepository;
 
 	@Autowired
 	private SuperSpecialityRepository superSpecialityRepository;
@@ -102,19 +101,19 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
 	private void addHpProfileInHpProfileAudit(BigInteger hpProfileId) {
 		HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
-		HpProfileAudit hpProfileAudit = iHpProfileAuditMapper.hpProfileToHpProfileAudit(hpProfile);
-		iHpProfileAuditRepository.save(hpProfileAudit);
+		HpProfileMaster hpProfileMaster = iHpProfileAuditMapper.hpProfileToHpProfileMaster(hpProfile);
+		iHpProfileAuditRepository.save(hpProfileMaster);
 	}
 	
 	private void addRegistrationDetailsInRegistrationAudit(BigInteger hpProfileId) {
 		RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId);
-		RegistrationDetailsAudit registrationDetailsAudit = iHpProfileAuditMapper.registrationDetailsToRegistrationDetailsAudit(registrationDetails);
+		RegistrationDetailsMaster registrationDetailsAudit = iHpProfileAuditMapper.registrationDetailsToRegistrationDetailsMaster(registrationDetails);
 		registrationDetailAuditRepository.save(registrationDetailsAudit);
 	}
 
 	private void addWorkProfileToWorkProfileAudit(BigInteger hpProfileId) {
 		WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(hpProfileId);
-		WorkProfileAudit workProfileAudit = iHpProfileAuditMapper.workProfileToWorkProfileAudit(workProfile);
+		WorkProfileMaster workProfileAudit = iHpProfileAuditMapper.workProfileToWorkProfileMaster(workProfile);
 		workProfileAuditRepository.save(workProfileAudit);
 	}
 	
@@ -216,7 +215,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 		HpNbeDetails nbeDetails = NMRUtil.coalesce(hpNbeDetailsRepository.findByHpProfileId(hpProfileId),hpNbeDetailsRepository.findByHpProfileId(previousHpProfileId));
 		List<QualificationDetails> indianQualifications = NMRUtil.coalesceCollection(qualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId),
 				qualificationDetailRepository.getQualificationDetailsByHpProfileId(previousHpProfileId));
-		List<CustomQualificationDetails> internationalQualifications =  NMRUtil.coalesceCollection(customQualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId),
+		List<ForeignQualificationDetails> internationalQualifications =  NMRUtil.coalesceCollection(customQualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId),
 		customQualificationDetailRepository.getQualificationDetailsByHpProfileId(previousHpProfileId));
 		HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = HpProfileRegistrationMapper.convertEntitiesToRegistrationResponseTo(registrationDetails, nbeDetails, indianQualifications, internationalQualifications);
 		hpProfileRegistrationResponseTO.setHpProfileId(hpProfileId);

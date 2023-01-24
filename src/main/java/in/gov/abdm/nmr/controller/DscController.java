@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import in.gov.abdm.nmr.dto.dsc.DscRequestTo;
 import in.gov.abdm.nmr.dto.dsc.DscResponseTo;
 import in.gov.abdm.nmr.service.IDscService;
+import in.gov.abdm.nmr.util.NMRConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,7 @@ public class DscController {
 	 * @param dscRequestTo holds all user details which required for esign.
 	 * @return response from genDscRequest.
 	 */
-	@PostMapping(path = "/eSign", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = NMRConstants.E_SIGN, produces = MediaType.APPLICATION_JSON_VALUE)
 	public DscResponseTo invokeDSCGenEspRequest(@RequestBody DscRequestTo dscRequestTo) throws JsonProcessingException {
 		return dscService.invokeDSCGenEspRequest(dscRequestTo);
 	}

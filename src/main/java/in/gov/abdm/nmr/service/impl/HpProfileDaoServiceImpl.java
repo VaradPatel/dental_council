@@ -79,7 +79,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 	@Autowired
 	private VillagesRepository villagesRepository;
 	@Autowired
-	private ICustomQualificationDetailRepository iCustomQualificationDetailRepository;
+	private IForeignQualificationDetailRepository iCustomQualificationDetailRepository;
 	@Autowired
 	private HpNbeDetailsRepository hpNbeDetailsRepository;
 	@Autowired
@@ -349,9 +349,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 	private void saveInternationalQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
 													  List<QualificationDetailRequestTO> qualificationDetailRequestTOS) {
 		if (qualificationDetailRequestTOS.size() > 0) {
-			List<CustomQualificationDetails> internationQualifications = new ArrayList<CustomQualificationDetails>();
+			List<ForeignQualificationDetails> internationQualifications = new ArrayList<ForeignQualificationDetails>();
 			for (QualificationDetailRequestTO internationQualification : qualificationDetailRequestTOS) {
-				CustomQualificationDetails customQualification = new CustomQualificationDetails();
+				ForeignQualificationDetails customQualification = new ForeignQualificationDetails();
 				if(internationQualification.getId() != null){
 					customQualification = iCustomQualificationDetailRepository.findById(internationQualification.getId()).get();
 					mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationQualification, customQualification);
@@ -364,7 +364,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 		}
 	}
 
-	private void mapQualificationRequestToEntity(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, QualificationDetailRequestTO newCustomQualification, CustomQualificationDetails customQualification) {
+	private void mapQualificationRequestToEntity(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, QualificationDetailRequestTO newCustomQualification, ForeignQualificationDetails customQualification) {
 		customQualification.setCountry(newCustomQualification.getCountry().getName());
 		customQualification.setState(newCustomQualification.getState().getName());
 		customQualification.setCollege(newCustomQualification.getCollege().getName());
