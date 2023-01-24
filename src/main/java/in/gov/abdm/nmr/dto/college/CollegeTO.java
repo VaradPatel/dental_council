@@ -13,5 +13,4 @@ public class CollegeTO {
 
     private BigInteger id;
     private String name;
-    private List<District> districts;
 }
