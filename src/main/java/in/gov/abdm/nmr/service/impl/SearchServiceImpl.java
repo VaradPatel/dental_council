@@ -9,9 +9,15 @@ import java.util.List;
 
 import javax.persistence.Tuple;
 
+import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.repository.IForeignQualificationDetailMasterRepository;
+import in.gov.abdm.nmr.repository.IHpProfileMasterRepository;
+import in.gov.abdm.nmr.repository.IQualificationDetailMasterRepository;
+import in.gov.abdm.nmr.repository.RegistrationDetailMasterRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -23,11 +29,8 @@ import in.gov.abdm.nmr.dto.HpSearchProfileTO;
 import in.gov.abdm.nmr.dto.HpSearchRequestTO;
 import in.gov.abdm.nmr.dto.HpSearchResponseTO;
 import in.gov.abdm.nmr.dto.HpSearchResultTO;
-import in.gov.abdm.nmr.entity.HpProfile;
-import in.gov.abdm.nmr.entity.RegistrationDetails;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.service.IElasticsearchDaoService;
-import in.gov.abdm.nmr.service.IHpProfileDaoService;
 import in.gov.abdm.nmr.service.IQualificationDetailDaoService;
 import in.gov.abdm.nmr.service.IRegistrationDetailDaoService;
 import in.gov.abdm.nmr.service.ISearchService;
@@ -36,29 +39,27 @@ import in.gov.abdm.nmr.service.ISearchService;
 public class SearchServiceImpl implements ISearchService {
 
     private static final Logger LOGGER = LogManager.getLogger();
-
+    @Autowired
     private IElasticsearchDaoService elasticsearchDaoService;
-
-    private IHpProfileDaoService hpProfileDaoService;
-
+    @Autowired
+    private IHpProfileMasterRepository iHpProfileMasterRepository;
+    @Autowired
+    private RegistrationDetailMasterRepository registrationDetailMasterRepository;
+    @Autowired
+    private IQualificationDetailMasterRepository qualificationDetailMasterRepository;
+    @Autowired
+    private IForeignQualificationDetailMasterRepository foreignQualificationDetailMasterRepository;
+    @Autowired
     private IQualificationDetailDaoService qualificationDetailDaoService;
-
+    @Autowired
     private IRegistrationDetailDaoService registrationDetailDaoService;
 
-    private static final List<BigInteger> profileStatusCodes = Arrays.asList(BigInteger.valueOf(2l), BigInteger.valueOf(5l), BigInteger.valueOf(6l));
-
-    public SearchServiceImpl(IElasticsearchDaoService elasticsearchDaoService, IHpProfileDaoService hpProfileDaoService, //
-                             IQualificationDetailDaoService qualificationDetailDaoService, IRegistrationDetailDaoService registrationDetailDaoService) {
-        this.elasticsearchDaoService = elasticsearchDaoService;
-        this.hpProfileDaoService = hpProfileDaoService;
-        this.qualificationDetailDaoService = qualificationDetailDaoService;
-        this.registrationDetailDaoService = registrationDetailDaoService;
-    }
+    private static final List<BigInteger> PROFILE_STATUS_CODES = Arrays.asList(BigInteger.valueOf(2l), BigInteger.valueOf(5l), BigInteger.valueOf(6l));
 
     @Override
     public HpSearchResponseTO searchHP(HpSearchRequestTO hpSearchRequestTO) throws NmrException {
         try {
-            if (hpSearchRequestTO != null && hpSearchRequestTO.getProfileStatusId() != null && !profileStatusCodes.contains(hpSearchRequestTO.getProfileStatusId())) {
+            if (hpSearchRequestTO != null && hpSearchRequestTO.getProfileStatusId() != null && !PROFILE_STATUS_CODES.contains(hpSearchRequestTO.getProfileStatusId())) {
                 throw new NmrException("Invalid profile status code", HttpStatus.BAD_REQUEST);
             }
             SearchResponse<HpSearchResultTO> results = elasticsearchDaoService.searchHP(hpSearchRequestTO);
@@ -84,32 +85,40 @@ public class SearchServiceImpl implements ISearchService {
             throw new NmrException("Exception while retrieving HP profile", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        HpProfile hpprofile = hpProfileDaoService.findById(profileId);
+        HpProfileMaster hpProfileMaster = iHpProfileMasterRepository.findById(profileId).get();
         HpSearchProfileTO hpSearchProfileTO = new HpSearchProfileTO();
-        hpSearchProfileTO.setFullName(hpprofile.getFullName());
-        hpSearchProfileTO.setSalutation(hpprofile.getSalutation());
-        hpSearchProfileTO.setFatherHusbandName(StringUtils.isNotBlank(hpprofile.getSpouseName()) ? hpprofile.getSpouseName() : hpprofile.getFatherName());
-        hpSearchProfileTO.setDateOfBirth(new SimpleDateFormat("dd-MM-yyyy").format(hpprofile.getDateOfBirth()));
-        hpSearchProfileTO.setMobileNumber(hpprofile.getMobileNumber());
-        hpSearchProfileTO.setEmail(hpprofile.getEmailId());
-        hpSearchProfileTO.setYearOfInfo(hpprofile.getYearOfInfo());
-        hpSearchProfileTO.setNmrId(hpprofile.getNmrId());
+        hpSearchProfileTO.setFullName(hpProfileMaster.getFullName());
+        hpSearchProfileTO.setSalutation(hpProfileMaster.getSalutation());
+        hpSearchProfileTO.setFatherHusbandName(StringUtils.isNotBlank(hpProfileMaster.getSpouseName()) ? hpProfileMaster.getSpouseName() : hpProfileMaster.getFatherName());
+        hpSearchProfileTO.setDateOfBirth(new SimpleDateFormat("dd-MM-yyyy").format(hpProfileMaster.getDateOfBirth()));
+        hpSearchProfileTO.setMobileNumber(hpProfileMaster.getMobileNumber());
+        hpSearchProfileTO.setEmail(hpProfileMaster.getEmailId());
+        hpSearchProfileTO.setYearOfInfo(hpProfileMaster.getYearOfInfo());
+        hpSearchProfileTO.setNmrId(hpProfileMaster.getNmrId());
 
-        RegistrationDetails registrationDetails = registrationDetailDaoService.findByHpProfileId(profileId);
-        hpSearchProfileTO.setStateMedicalCouncil(registrationDetails.getStateMedicalCouncil().getName());
-        hpSearchProfileTO.setRegistrationNumber(registrationDetails.getRegistrationNo());
-        hpSearchProfileTO.setDateOfRegistration(new SimpleDateFormat("dd-MM-yyyy").format(registrationDetails.getRegistrationDate()));
+        RegistrationDetailsMaster registrationDetailsMaster = registrationDetailMasterRepository.getRegistrationDetailsByHpProfileId(profileId);
+        hpSearchProfileTO.setStateMedicalCouncil(registrationDetailsMaster.getStateMedicalCouncil().getName());
+        hpSearchProfileTO.setRegistrationNumber(registrationDetailsMaster.getRegistrationNo());
+        hpSearchProfileTO.setDateOfRegistration(new SimpleDateFormat("dd-MM-yyyy").format(registrationDetailsMaster.getRegistrationDate()));
 
         List<HpSearchProfileQualificationTO> qualificationTOs = new ArrayList<>();
-        for (Tuple qualificationDetail : qualificationDetailDaoService.findSearchQualificationDetailsByHpProfileId(profileId)) {
+        List<QualificationDetailsMaster> indianQualifications = qualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(profileId);
+        qualificationTOs.addAll(indianQualifications.stream().map(indianQualification ->{
             HpSearchProfileQualificationTO hpSearchProfileQualificationTO = new HpSearchProfileQualificationTO();
-            hpSearchProfileQualificationTO.setQualification(qualificationDetail.get("qualificationName", String.class));
-            hpSearchProfileQualificationTO.setQualificationYear(qualificationDetail.get("qualificationYear", String.class));
-            hpSearchProfileQualificationTO.setUniversityName(qualificationDetail.get("universityName", String.class));
-            qualificationTOs.add(hpSearchProfileQualificationTO);
-        }
+            hpSearchProfileQualificationTO.setQualification(indianQualification.getName());
+            hpSearchProfileQualificationTO.setQualificationYear(indianQualification.getQualificationYear());
+            hpSearchProfileQualificationTO.setUniversityName(indianQualification.getUniversity().getName());
+            return hpSearchProfileQualificationTO;
+        }).toList());
+        List<ForeignQualificationDetailsMaster> internationalQualifications = foreignQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(profileId);
+        qualificationTOs.addAll(internationalQualifications.stream().map(internationalQualification ->{
+            HpSearchProfileQualificationTO hpSearchProfileQualificationTO = new HpSearchProfileQualificationTO();
+            hpSearchProfileQualificationTO.setQualification(internationalQualification.getName());
+            hpSearchProfileQualificationTO.setQualificationYear(internationalQualification.getQualificationYear());
+            hpSearchProfileQualificationTO.setUniversityName(internationalQualification.getUniversity());
+            return hpSearchProfileQualificationTO;
+        }).toList());
         hpSearchProfileTO.setQualifications(qualificationTOs);
-
         return hpSearchProfileTO;
     }
 }

@@ -136,7 +136,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         updateWorkflowToMaster(transactionHpProfile.getId(), masterHpProfileDetails);
 
         try {
-            updateElasticDB(iNextGroup, transactionHpProfile);
+            updateElasticDB(iNextGroup, masterHpProfileDetails);
         } catch (WorkFlowException e) {
             throw new RuntimeException(e);
         }
@@ -328,10 +328,10 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     }
 
     @Override
-    public void updateElasticDB(INextGroup iNextGroup, HpProfile hpProfile) throws WorkFlowException {
+    public void updateElasticDB(INextGroup iNextGroup, HpProfileMaster hpProfileMaster) throws WorkFlowException {
 
         try {
-            elasticsearchDaoService.indexHP(hpProfile.getId());
+            elasticsearchDaoService.indexHP(hpProfileMaster.getId());
         } catch (ElasticsearchException | IOException e) {
             LOGGER.error("Exception while indexing HP", e);
             throw new WorkFlowException("Exception while indexing HP", HttpStatus.INTERNAL_SERVER_ERROR);
