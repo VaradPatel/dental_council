@@ -36,8 +36,9 @@ public class NMRConstants {
     public static final String CHANGE_PASSWORD = "/change-password";
     public static final String RAISE_QUERY = "/queries";
     public static final String GET_QUERIES = "/queries/{hp-profile-id}";
-    public static final String GET_RESET_PASSWORD_LINK = "/get-reset-password-link";
+    public static final String GET_RESET_PASSWORD_LINK = "/send-reset-password-link";
     public static final String SET_NEW_PASSWORD = "/set-new-password";
+    public static final String E_SIGN = "/e-sign";
 
     public static final String PATH_FACILITY_ROOT = "/facility";
     public static final String PATH_FACILITY_SEARCH = "/search";

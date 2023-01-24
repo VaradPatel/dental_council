@@ -24,8 +24,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.STATE_MEDICAL_COUNCIL_ID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Builder
-public class RegistrationDetailsAudit extends CommonAuditEntity {
+public class RegistrationDetailsMaster extends CommonAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -82,7 +81,7 @@ public class RegistrationDetailsAudit extends CommonAuditEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "hpProfileId", referencedColumnName = "id")
-    private HpProfile hpProfileId;
+    private HpProfileMaster hpProfileMaster;
 
     private String requestId;
 

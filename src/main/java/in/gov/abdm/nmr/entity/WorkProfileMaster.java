@@ -10,7 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
-import in.gov.abdm.nmr.entity.Address;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,7 +22,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Builder
-public class WorkProfileAudit {
+public class WorkProfileMaster {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

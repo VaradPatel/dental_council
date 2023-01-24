@@ -29,9 +29,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "hpProfileAudit")
+@Entity(name = "hpProfileMaster")
 @Builder
-public class HpProfileAudit {
+public class HpProfileMaster {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
