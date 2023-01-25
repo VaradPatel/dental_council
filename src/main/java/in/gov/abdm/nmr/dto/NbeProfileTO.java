@@ -12,4 +12,6 @@ public class NbeProfileTO {
     private String lastName;
     private String middleName;
     private String displayName;
+    private String emailId;
+    private String mobileNo;
 }
