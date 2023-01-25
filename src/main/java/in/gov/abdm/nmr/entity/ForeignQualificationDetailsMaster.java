@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.math.BigInteger;
@@ -20,12 +21,16 @@ public class ForeignQualificationDetailsMaster {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private BigInteger id;
-    private String certificate;
+    @Lob
+    @Type(type="org.hibernate.type.BinaryType")
+    private byte[] certificate;
     private Date endDate;
     private Integer isNameChange;
     private Integer isVerified;
     private String name;
-    private String nameChangeProofAttach;
+    @Lob
+    @Type(type="org.hibernate.type.BinaryType")
+    private byte[] nameChangeProofAttach;
     private String qualificationMonth;
     private String qualificationYear;
     private Date startDate;
