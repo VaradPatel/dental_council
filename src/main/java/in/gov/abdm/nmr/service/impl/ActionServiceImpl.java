@@ -31,7 +31,7 @@ public class ActionServiceImpl implements IActionService {
     @Autowired
     IQualificationDetailRepository iQualificationDetailRepository;
     @Autowired
-    ICustomQualificationDetailRepository iCustomQualificationDetailRepository;
+    IForeignQualificationDetailRepository iForeignQualificationDetailRepository;
     @Autowired
     SuperSpecialityRepository superSpecialityRepository;
     @Autowired
@@ -112,16 +112,16 @@ public class ActionServiceImpl implements IActionService {
         }
         iQualificationDetailRepository.saveAll(qualificationDetails);
 
-        List<CustomQualificationDetails> customQualificationDetailsList = new ArrayList<>();
-        List<CustomQualificationDetails> customQualificationDetails = iCustomQualificationDetailRepository.getQualificationDetailsByHpProfileId(existingHpProfile.getId());
-        for (CustomQualificationDetails customQualificationDetail : customQualificationDetails) {
-            CustomQualificationDetails newCustomQualificationDetails = new CustomQualificationDetails();
+        List<ForeignQualificationDetails> customQualificationDetailsList = new ArrayList<>();
+        List<ForeignQualificationDetails> customQualificationDetails = iForeignQualificationDetailRepository.getQualificationDetailsByHpProfileId(existingHpProfile.getId());
+        for (ForeignQualificationDetails customQualificationDetail : customQualificationDetails) {
+            ForeignQualificationDetails newCustomQualificationDetails = new ForeignQualificationDetails();
             org.springframework.beans.BeanUtils.copyProperties(customQualificationDetail, newCustomQualificationDetails);
             newCustomQualificationDetails.setId(null);
             newCustomQualificationDetails.setHpProfile(targetedHpProfile);
             customQualificationDetailsList.add(newCustomQualificationDetails);
         }
-        iCustomQualificationDetailRepository.saveAll(customQualificationDetailsList);
+        iForeignQualificationDetailRepository.saveAll(customQualificationDetailsList);
 
         List<SuperSpeciality> superSpecialities = new ArrayList<>();
         List<SuperSpeciality> superSpecialityList = superSpecialityRepository.getSuperSpecialityFromHpProfileId(existingHpProfile.getId());
