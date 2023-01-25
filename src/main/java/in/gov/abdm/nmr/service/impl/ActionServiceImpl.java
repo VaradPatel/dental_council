@@ -121,7 +121,7 @@ public class ActionServiceImpl implements IActionService {
             newCustomQualificationDetails.setHpProfile(targetedHpProfile);
             customQualificationDetailsList.add(newCustomQualificationDetails);
         }
-        iCustomQualificationDetailRepository.saveAll(customQualificationDetailsList);
+        iForeignQualificationDetailRepository.saveAll(customQualificationDetailsList);
 
         List<SuperSpeciality> superSpecialities = new ArrayList<>();
         List<SuperSpeciality> superSpecialityList = superSpecialityRepository.getSuperSpecialityFromHpProfileId(existingHpProfile.getId());
