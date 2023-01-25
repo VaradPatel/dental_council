@@ -26,4 +26,6 @@ public class NbeProfile extends CommonAuditEntity {
     private String lastName;
     private String middleName;
     private String displayName;
+    private String emailId;
+    private String mobileNo;
 }
