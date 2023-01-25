@@ -31,7 +31,7 @@ public class ActionServiceImpl implements IActionService {
     @Autowired
     IQualificationDetailRepository iQualificationDetailRepository;
     @Autowired
-    IForeignQualificationDetailRepository iCustomQualificationDetailRepository;
+    IForeignQualificationDetailRepository iForeignQualificationDetailRepository;
     @Autowired
     SuperSpecialityRepository superSpecialityRepository;
     @Autowired
@@ -113,7 +113,7 @@ public class ActionServiceImpl implements IActionService {
         iQualificationDetailRepository.saveAll(qualificationDetails);
 
         List<ForeignQualificationDetails> customQualificationDetailsList = new ArrayList<>();
-        List<ForeignQualificationDetails> customQualificationDetails = iCustomQualificationDetailRepository.getQualificationDetailsByHpProfileId(existingHpProfile.getId());
+        List<ForeignQualificationDetails> customQualificationDetails = iForeignQualificationDetailRepository.getQualificationDetailsByHpProfileId(existingHpProfile.getId());
         for (ForeignQualificationDetails customQualificationDetail : customQualificationDetails) {
             ForeignQualificationDetails newCustomQualificationDetails = new ForeignQualificationDetails();
             org.springframework.beans.BeanUtils.copyProperties(customQualificationDetail, newCustomQualificationDetails);
