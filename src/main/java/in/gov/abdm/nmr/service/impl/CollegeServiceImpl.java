@@ -1,16 +1,6 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.math.BigInteger;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import in.gov.abdm.nmr.dto.CollegeDeanCreationRequestTo;
-import in.gov.abdm.nmr.dto.CollegeDeanProfileTo;
-import in.gov.abdm.nmr.dto.CollegeProfileTo;
-import in.gov.abdm.nmr.dto.CollegeRegistrarCreationRequestTo;
-import in.gov.abdm.nmr.dto.CollegeRegistrarProfileTo;
-import in.gov.abdm.nmr.dto.CollegeRegistrationRequestTo;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.College;
 import in.gov.abdm.nmr.entity.CollegeDean;
 import in.gov.abdm.nmr.entity.CollegeRegistrar;
@@ -20,17 +10,26 @@ import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.ICollegeMapper;
-import in.gov.abdm.nmr.service.ICollegeDaoService;
-import in.gov.abdm.nmr.service.ICollegeDeanDaoService;
-import in.gov.abdm.nmr.service.ICollegeRegistrarDaoService;
-import in.gov.abdm.nmr.service.ICollegeService;
-import in.gov.abdm.nmr.service.IRequestCounterService;
-import in.gov.abdm.nmr.service.IWorkFlowService;
+import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
+@Slf4j
 public class CollegeServiceImpl implements ICollegeService {
-
+    @Value("${max.data.size}")
+    private Integer maxSize;
+    @Value("${sort.order}")
+    private String defaultSortOrder;
     @Autowired
     private ICollegeDaoService collegeService;
 
@@ -58,11 +57,11 @@ public class CollegeServiceImpl implements ICollegeService {
         collegeCreationRequestToResponse.setCouncilName(collegeProfileEntity.getStateMedicalCouncil().getName());
         collegeCreationRequestToResponse.setStateName(collegeProfileEntity.getState().getName());
         collegeCreationRequestToResponse.setUniversityName(collegeProfileEntity.getUniversity().getName());
-        if(collegeRegistrationRequestTo.getRequestId() == null){
+        if (collegeRegistrationRequestTo.getRequestId() == null) {
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.COLLEGE_REGISTRATION.getId()));
             collegeCreationRequestToResponse.setRequestId(requestId);
             collegeProfileEntity.setRequestId(requestId);
-            workFlowService.initiateCollegeRegistrationWorkFlow(requestId,ApplicationType.COLLEGE_REGISTRATION.getId(), Group.COLLEGE_ADMIN.getId(), Action.SUBMIT.getId());
+            workFlowService.initiateCollegeRegistrationWorkFlow(requestId, ApplicationType.COLLEGE_REGISTRATION.getId(), Group.COLLEGE_ADMIN.getId(), Action.SUBMIT.getId());
         }
         return collegeCreationRequestToResponse;
     }
@@ -109,5 +108,54 @@ public class CollegeServiceImpl implements ICollegeService {
         CollegeDeanProfileTo collegeDeanProfileTO = collegeMapper.collegeDeanEntityToCollegeDeanProfile(collegeDeanEntity);
         collegeDeanProfileTO.setUserId(collegeDeanEntity.getUser().getId());
         return collegeDeanProfileTO;
+    }
+
+    @Override
+    public CollegeRegistrationResponseTO getCollegeRegistrationDetails(String pageNo, String limit, String search, String collegeId, String collegeName, String councilName, String columnToSort, String sortOrder) {
+        CollegeRegistrationResponseTO collegeRegistrationResponseTO = null;
+        CollegeRegistrationRequestParamsTO collegeRegistrationRequestParams = new CollegeRegistrationRequestParamsTO();
+        collegeRegistrationRequestParams.setLimit(Integer.valueOf(limit));
+        collegeRegistrationRequestParams.setPageNo(Integer.valueOf(pageNo));
+        collegeRegistrationRequestParams.setCollegeId(collegeId);
+        collegeRegistrationRequestParams.setCollegeName(collegeName);
+        collegeRegistrationRequestParams.setCouncilName(councilName);
+        collegeRegistrationRequestParams.setSearch(search);
+        String column = getColumnToSort(columnToSort);
+        collegeRegistrationRequestParams.setColumnToSort(column);
+        final String sortingOrder = sortOrder == null ? defaultSortOrder : sortOrder;
+        collegeRegistrationRequestParams.setSortOrder(sortingOrder);
+        try {
+            final Integer dataLimit = maxSize < Integer.valueOf(limit) ? maxSize : Integer.valueOf(limit);
+            Pageable pageable = PageRequest.of(Integer.valueOf(pageNo), dataLimit);
+            collegeRegistrationResponseTO = collegeService.getCollegeRegistrationData(collegeRegistrationRequestParams, pageable);
+        } catch (Exception e) {
+            log.error("Service exception " + e.getMessage());
+        }
+        return collegeRegistrationResponseTO;
+    }
+
+    private String getColumnToSort(String columnToSort) {
+        Map<String, String> columns;
+        if (columnToSort != null && columnToSort.length() > 0) {
+            columns = mapColumnToTable();
+            if (columns.containsKey(columnToSort)) {
+                return columns.get(columnToSort);
+            } else {
+                return "Invalid column Name to sort";
+            }
+        } else {
+            return " wf.created_at ";
+        }
+    }
+
+    private Map<String, String> mapColumnToTable() {
+        Map<String, String> columnToSortMap = new HashMap<>();
+        columnToSortMap.put("createdAt", " wf.created_at");
+        columnToSortMap.put("collegeId", " c.college_code");
+        columnToSortMap.put("collegeName", " c.name");
+        columnToSortMap.put("councilName", " smc.name");
+        columnToSortMap.put("status", "  wfs.name");
+        columnToSortMap.put("pendency", " pendency");
+        return columnToSortMap;
     }
 }

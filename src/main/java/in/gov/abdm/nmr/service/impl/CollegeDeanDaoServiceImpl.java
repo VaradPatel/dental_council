@@ -1,27 +1,25 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.math.BigInteger;
-
-import javax.persistence.EntityManager;
-
+import in.gov.abdm.nmr.dto.CollegeDeanCreationRequestTo;
+import in.gov.abdm.nmr.dto.UserSearchTO;
 import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.enums.UserSubTypeEnum;
+import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.mapper.ICollegeDeanMapper;
 import in.gov.abdm.nmr.repository.ICollegeDeanRepository;
+import in.gov.abdm.nmr.repository.ICollegeRepository;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.ICollegeDeanDaoService;
+import in.gov.abdm.nmr.service.IUserDaoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import in.gov.abdm.nmr.dto.CollegeDeanCreationRequestTo;
-import in.gov.abdm.nmr.repository.ICollegeRepository;
-import in.gov.abdm.nmr.service.IUserDaoService;
-import in.gov.abdm.nmr.dto.UserSearchTO;
-import in.gov.abdm.nmr.enums.UserSubTypeEnum;
-import in.gov.abdm.nmr.enums.UserTypeEnum;
-import in.gov.abdm.nmr.exception.NmrException;
+import javax.persistence.EntityManager;
+import java.math.BigInteger;
 
 @Service
 @Transactional
@@ -38,7 +36,7 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
     private IUserDaoService userDetailService;
 
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    
+
     private IAccessControlService accessControlService;
 
     public CollegeDeanDaoServiceImpl(ICollegeDeanRepository collegeDeanRepository, ICollegeRepository collegeRepository, ICollegeDeanMapper collegeDeanMapper, //
@@ -79,7 +77,7 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
 
         User userDetail = new User(collegeDeanCreationRequestTo.getUserId(), collegeDeanCreationRequestTo.getEmailId(), //
                 bCryptPasswordEncoder.encode(collegeDeanCreationRequestTo.getPassword()), null, true, true, //
-                entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_DEAN.getCode()),  entityManager.getReference(UserGroup.class, in.gov.abdm.nmr.enums.Group.COLLEGE_DEAN.getId()),false,0,null);
+                entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_DEAN.getCode()), entityManager.getReference(UserGroup.class, in.gov.abdm.nmr.enums.Group.COLLEGE_DEAN.getId()), false, 0, null);
 
         if (collegeDeanUserDetail != null) {
             userDetail.setCreatedAt(collegeDeanUserDetail.getCreatedAt());
@@ -116,4 +114,5 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
     public CollegeDean findByUserDetail(BigInteger userDetailId) {
         return collegeDeanRepository.findByUserDetail(userDetailId);
     }
+
 }

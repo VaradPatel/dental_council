@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.dto;
 
-import java.math.BigInteger;
-
 import lombok.Data;
+
+import java.math.BigInteger;
 
 @Data
 public class CollegeRegistrationRequestTo {
