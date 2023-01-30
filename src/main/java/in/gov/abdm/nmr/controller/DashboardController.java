@@ -76,6 +76,8 @@ public class DashboardController {
 //                requestTO.getUserSubType()));
 //    }
 
-
-
+    @PostMapping("/fetchDashboardData")
+    public DashboardResponseTO DashBoardResponseTO(@RequestBody DashboardRequestTO requestTO) throws InvalidRequestException {
+        return iFetchSpecificDetailsService.fetchDashboardData(requestTO);
+    }
 }
