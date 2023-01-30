@@ -43,6 +43,7 @@ public class NMRConstants {
     public static final String PATH_FACILITY_ROOT = "/facility";
     public static final String PATH_FACILITY_SEARCH = "/search";
 
+    public static final String PATH_COLLEGE_REGISTRATION = "/registration/colleges";
     public static final String ACTION_REQUEST_URL = "/action";
 
     public static final String SUSPENSION_REQUEST_URL = "/suspend";
@@ -200,6 +201,18 @@ public class NMRConstants {
             "WHERE g.name = :" + GROUP_NAME + " " +
             "AND a.name = :" + APPLICATION_TYPE_NAME + " " +
             "AND ws.name = :" + WORK_FLOW_STATUS + " ";
+
+    public static final String FETCH_COLLEGE_REGISTRATION_RECORDS = "SELECT c.college_code, c.name as College_Name, smc.name as Council_Name, wfs.name as status,DATE_PART('day', (wf.updated_at- wf.created_at)) as pendency, wf.created_at   " +
+            "  FROM main.work_flow wf  INNER JOIN main.colleges c  ON c.request_id= wf.request_id  " +
+            "   INNER JOIN  main.state_medical_council smc ON smc.id =c.state_medical_council   " +
+            "  JOIN main.work_flow_status wfs ON wfs.id= wf.work_flow_status_id   " +
+            "   WHERE  wf.application_type_id=6 AND  c.state_medical_council IS NOT NULL ";
+
+    public static final String FETCH_COUNT_OF_COLLEGE_REGISTRATION_RECORDS = "SELECT COUNT(*)    " +
+            "  FROM main.work_flow wf  INNER JOIN main.colleges c  ON c.request_id= wf.request_id  " +
+            "   INNER JOIN  main.state_medical_council smc ON smc.id =c.state_medical_council   " +
+            "  JOIN main.work_flow_status wfs ON wfs.id= wf.work_flow_status_id   " +
+            "   WHERE  wf.application_type_id=6 AND  c.state_medical_council IS NOT NULL ";
 
     public static final String FETCH_DETAILS_BY_REG_NO_QUERY = "SELECT hvs.registrationDetails.registrationNo as registrationNo, hvs.hpProfile.fullName as nameOfApplicant, hvs.registrationDetails.stateMedicalCouncil.name as nameOfStateCouncil, hvs.registrationDetails.registrationDate as dateOfSubmission, hvs.verifiedBy.userType.name as verifiedByUserType, hvs.verifiedBy.userSubType.name as verifiedByUserSubType, hvs.hpProfile.hpProfileStatus.name as hpProfileStatus " +
             "FROM HpVerificationStatus hvs " +
