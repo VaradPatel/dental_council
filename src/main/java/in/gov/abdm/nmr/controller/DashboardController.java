@@ -78,4 +78,9 @@ public class DashboardController {
 
 
 
+    @PostMapping("/fetchTrackApplicationDetails")
+    public ResponseEntity<List<FetchTrackApplicationResponseTO>> fetchTrackApplicationDetails(@RequestBody FetchTrackApplicationRequestTO requestTO) {
+        return ResponseEntity.ok(iFetchSpecificDetailsService.fetchTrackApplicationDetails(requestTO));
+    }
+
 }

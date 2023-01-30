@@ -1,6 +1,8 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.FetchSpecificDetailsResponseTO;
+import in.gov.abdm.nmr.dto.FetchTrackApplicationRequestTO;
+import in.gov.abdm.nmr.dto.FetchTrackApplicationResponseTO;
 import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetails;
@@ -8,12 +10,12 @@ import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
 import in.gov.abdm.nmr.repository.IFetchSpecificDetailsRepository;
 import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
@@ -66,6 +68,20 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                     return fetchSpecificDetailsResponseTO;
                 })
                 .toList();
+    }
+
+    //new impl
+    @Override
+    public List<FetchTrackApplicationResponseTO> fetchTrackApplicationDetails(FetchTrackApplicationRequestTO requestTO) {
+        Pageable pagination = PageRequest.of(requestTO.getPage(), requestTO.getSize());
+
+        List<BigInteger> hipIds = iFetchSpecificDetailsRepository.getHpProfileIds(requestTO.getHpId());
+        System.out.println("--------------> " + hipIds);
+
+        return iFetchSpecificDetailsRepository.fetchTrackApplicationDetails(
+                hipIds,
+                pagination
+        );
     }
 
     private List<IFetchSpecificDetails> fetchDetailsForListingByStatus(String groupName, String applicationType, String workFlowStatus){
