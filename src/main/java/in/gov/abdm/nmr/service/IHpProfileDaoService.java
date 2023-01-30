@@ -21,10 +21,10 @@ public interface IHpProfileDaoService {
 			HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException;
 
 	HpProfileUpdateResponseTO updateHpRegistrationDetails(BigInteger hpProfileId,
-																 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO);
+																 String hpRegistrationUpdateRequestTO,MultipartFile certificate, MultipartFile proof);
 
 	HpProfileUpdateResponseTO updateWorkProfileDetails(BigInteger hpProfileId,
-													   HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO);
+													   String hpWorkProfileUpdateRequestString, MultipartFile proof);
 
 	HpProfilePictureResponseTO uploadHpProfilePhoto(MultipartFile file, BigInteger hpProfileId)
 			throws InvalidRequestException, IOException;

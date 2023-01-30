@@ -28,7 +28,7 @@ public class RegistrationDetails extends CommonAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String certificate;
+    private byte[] certificate;
 
     @OneToOne
     @JoinColumn(name = STATE_MEDICAL_COUNCIL_ID,referencedColumnName = ID)
@@ -42,7 +42,7 @@ public class RegistrationDetails extends CommonAuditEntity {
     private String isNuid;
     private String isRenewable;
     private String isRenewableRegistration;
-    private String nameChangeProofAttachment;
+    private byte[] nameChangeProofAttachment;
     private String nuidNumber;
     private String nuidValidTill;
     private String parentCouncil;

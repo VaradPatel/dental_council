@@ -23,10 +23,10 @@ public interface IHpRegistrationService {
                                                           HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException;
 
     HpProfileRegistrationResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
-                                                              HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO);
+                                                              String hpRegistrationUpdateRequestTO,MultipartFile certificate,MultipartFile proof);
 
     HpProfileWorkDetailsResponseTO addOrUpdateWorkProfileDetail(BigInteger hpProfileId,
-                                                           HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO);
+                                                           String hpWorkProfileUpdateRequestTO, MultipartFile proof);
 
     HpProfileAddResponseTO submitHpProfile(HpSubmitRequestTO hpSubmitRequestTO) throws InvalidRequestException, WorkFlowException;
 

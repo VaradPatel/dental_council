@@ -30,7 +30,7 @@ public class WorkProfile {
     
     private Integer facility;
     private Integer isUserCurrentlyWorking;
-    private String proofOfWorkAttachment;
+    private byte[] proofOfWorkAttachment;
     private String url;
     private BigInteger userId;
     @OneToOne(cascade = CascadeType.ALL)

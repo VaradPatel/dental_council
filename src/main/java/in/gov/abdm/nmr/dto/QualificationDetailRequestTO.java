@@ -3,9 +3,13 @@ package in.gov.abdm.nmr.dto;
 import java.math.BigInteger;
 
 import in.gov.abdm.nmr.dto.college.CollegeTO;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class QualificationDetailRequestTO {
 	private BigInteger id;
     private CountryTO country;
