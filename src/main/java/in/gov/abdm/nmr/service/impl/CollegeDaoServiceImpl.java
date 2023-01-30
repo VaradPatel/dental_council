@@ -1,34 +1,30 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-
+import in.gov.abdm.nmr.dto.CollegeRegistrationRequestParamsTO;
 import in.gov.abdm.nmr.dto.CollegeRegistrationRequestTo;
+import in.gov.abdm.nmr.dto.CollegeRegistrationResponseTO;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
-import in.gov.abdm.nmr.entity.College;
-import in.gov.abdm.nmr.entity.UserGroup;
-import in.gov.abdm.nmr.entity.State;
-import in.gov.abdm.nmr.entity.StateMedicalCouncil;
-import in.gov.abdm.nmr.entity.University;
-import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.entity.UserSubType;
-import in.gov.abdm.nmr.entity.UserType;
+import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.mapper.ICollegeDtoMapper;
 import in.gov.abdm.nmr.repository.ICollegeRepository;
+import in.gov.abdm.nmr.repository.ICollegeRepositoryCustom;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.ICollegeDaoService;
 import in.gov.abdm.nmr.service.IUserDaoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.util.List;
 
 @Service
 @Transactional
@@ -41,8 +37,10 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
     private EntityManager entityManager;
 
     private IUserDaoService userDetailService;
-    
+
     private IAccessControlService accessControlService;
+    @Autowired
+    private ICollegeRepositoryCustom collegeRepositoryCustom;
 
     public CollegeDaoServiceImpl(ICollegeRepository collegeRepository, ICollegeDtoMapper collegeDtoMapper, EntityManager entityManager, IUserDaoService userDetailService, //
                                  IAccessControlService accessControlService) {
@@ -53,7 +51,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
         this.accessControlService = accessControlService;
     }
 
-	@Override
+    @Override
     public List<CollegeTO> getCollegeData(BigInteger universityId) {
         return collegeDtoMapper.collegeDataToDto(collegeRepository.getCollege(universityId));
     }
@@ -66,7 +64,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
             }
 
             User userDetail = new User(null, collegeRegistrationRequestTo.getEmailId(), null, null, true, true, //
-                    entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()),  entityManager.getReference(UserGroup.class, in.gov.abdm.nmr.enums.Group.COLLEGE_REGISTRAR.getId()),false,0,null);
+                    entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserGroup.class, in.gov.abdm.nmr.enums.Group.COLLEGE_REGISTRAR.getId()), false, 0, null);
             userDetailService.saveUserDetail(userDetail);
 
             College collegeEntity = collegeDtoMapper.collegeRegistartionDtoToEntity(collegeRegistrationRequestTo);
@@ -81,7 +79,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
         } else {
             String userName = SecurityContextHolder.getContext().getAuthentication().getName();
             User collegeUserDetail = userDetailService.findByUsername(userName);
-            
+
             College collegeEntity = findByUserDetail(collegeUserDetail.getId());
             collegeUserDetail.setUsername(collegeRegistrationRequestTo.getEmailId());
             userDetailService.saveUserDetail(collegeUserDetail);
@@ -111,5 +109,10 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
     @Override
     public College findByUserDetail(BigInteger userDetailId) {
         return collegeRepository.findByUserDetail(userDetailId);
+    }
+
+    @Override
+    public CollegeRegistrationResponseTO getCollegeRegistrationData(CollegeRegistrationRequestParamsTO collegeRegistrationRequestParamsTO, Pageable pageable) {
+        return collegeRepositoryCustom.getCollegeRegistrationData(collegeRegistrationRequestParamsTO, pageable);
     }
 }

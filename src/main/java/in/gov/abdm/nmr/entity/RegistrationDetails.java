@@ -2,18 +2,13 @@ package in.gov.abdm.nmr.entity;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import static in.gov.abdm.nmr.util.NMRConstants.ID;
 import static in.gov.abdm.nmr.util.NMRConstants.STATE_MEDICAL_COUNCIL_ID;
@@ -28,6 +23,9 @@ public class RegistrationDetails extends CommonAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Lob
+    @Type(type="org.hibernate.type.BinaryType")
     private byte[] certificate;
 
     @OneToOne
@@ -42,6 +40,8 @@ public class RegistrationDetails extends CommonAuditEntity {
     private String isNuid;
     private String isRenewable;
     private String isRenewableRegistration;
+    @Lob
+    @Type(type="org.hibernate.type.BinaryType")
     private byte[] nameChangeProofAttachment;
     private String nuidNumber;
     private String nuidValidTill;

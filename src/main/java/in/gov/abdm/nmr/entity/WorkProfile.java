@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 @Getter
 @Setter
@@ -30,6 +31,7 @@ public class WorkProfile {
     
     private Integer facility;
     private Integer isUserCurrentlyWorking;
+    @Type(type="org.hibernate.type.BinaryType")
     private byte[] proofOfWorkAttachment;
     private String url;
     private BigInteger userId;

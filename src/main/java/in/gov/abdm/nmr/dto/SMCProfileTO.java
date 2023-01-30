@@ -15,4 +15,6 @@ public class SMCProfileTO {
     private Integer ndhmEnrollment;
     private Integer enrolledNumber;
     private String displayName;
+    private String emailId;
+    private String mobileNo;
 }

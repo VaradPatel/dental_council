@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 @Getter
 @Setter
@@ -37,7 +38,8 @@ public class WorkProfileMaster {
     
     private Integer facility;
     private Integer isUserCurrentlyWorking;
-    private String proofOfWorkAttachment;
+    @Type(type="org.hibernate.type.BinaryType")
+    private byte[] proofOfWorkAttachment;
     private String url;
     private BigInteger userId;
     private BigInteger broadSpecialityId;

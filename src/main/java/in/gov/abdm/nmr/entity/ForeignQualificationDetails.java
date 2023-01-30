@@ -3,18 +3,13 @@ package in.gov.abdm.nmr.entity;
 import java.math.BigInteger;
 import java.sql.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 @Getter
 @Setter
@@ -27,12 +22,16 @@ public class ForeignQualificationDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private BigInteger id;
-    private String certificate;
+    @Lob
+    @Type(type="org.hibernate.type.BinaryType")
+    private byte[] certificate;
     private Date endDate;
     private Integer isNameChange;
     private Integer isVerified;
     private String name;
-    private String nameChangeProofAttach;
+    @Lob
+    @Type(type="org.hibernate.type.BinaryType")
+    private byte[] nameChangeProofAttach;
     private String qualificationMonth;
     private String qualificationYear;
     private Date startDate;
