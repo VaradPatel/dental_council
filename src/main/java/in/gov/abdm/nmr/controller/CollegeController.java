@@ -1,29 +1,18 @@
 package in.gov.abdm.nmr.controller;
 
-import java.math.BigInteger;
-
-import javax.annotation.security.RolesAllowed;
-
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import in.gov.abdm.nmr.dto.CollegeDeanCreationRequestTo;
-import in.gov.abdm.nmr.dto.CollegeDeanProfileTo;
-import in.gov.abdm.nmr.dto.CollegeProfileTo;
-import in.gov.abdm.nmr.dto.CollegeRegistrarCreationRequestTo;
-import in.gov.abdm.nmr.dto.CollegeRegistrarProfileTo;
-import in.gov.abdm.nmr.dto.CollegeRegistrationRequestTo;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.security.common.RoleConstants;
 import in.gov.abdm.nmr.service.ICollegeService;
+import in.gov.abdm.nmr.util.NMRConstants;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.security.RolesAllowed;
+import java.math.BigInteger;
 
 @RestController
 public class CollegeController {
@@ -79,5 +68,10 @@ public class CollegeController {
     @SecurityRequirement(name = "bearerAuth")
     public CollegeDeanProfileTo retrieveDeanProfile(@PathVariable(name = "id") BigInteger id) throws NmrException {
         return collegeService.retrieveDeanProfile(id);
+    }
+
+    @GetMapping(path = NMRConstants.PATH_COLLEGE_REGISTRATION)
+    public CollegeRegistrationResponseTO getCollegeRegistrationDetails(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo, @RequestParam(required = false, value = "limit", defaultValue = "2") String limit, @RequestParam(required = false, value = "search") String search, @RequestParam(required = false, value = "id") String collegeId, @RequestParam(required = false, value = "name") String collegeName, @RequestParam(required = false, value = "council") String councilName, @RequestParam(required = false, value = "sort") String columnToSort, @RequestParam(required = false, value = "sortingOrder") String sortOrder) {
+        return collegeService.getCollegeRegistrationDetails(pageNo, limit, search, collegeId, collegeName, councilName, columnToSort, sortOrder);
     }
 }
