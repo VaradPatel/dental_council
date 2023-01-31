@@ -36,8 +36,8 @@ public class CaptchaDaoServiceImpl implements ICaptchaDaoService {
         SecureRandom secureRandom = SecureRandom.getInstanceStrong();
 
 
-        captcha.setNum1(secureRandom.nextInt(100));
-        captcha.setNum2(secureRandom.nextInt(100));
+        captcha.setNum1(secureRandom.nextInt(51, 100));
+        captcha.setNum2(secureRandom.nextInt(1, 50));
         captcha.setOperation(OPERATORS.get(secureRandom.nextInt(OPERATORS.size())));
 
         if ("+".equals(captcha.getOperation())) {
