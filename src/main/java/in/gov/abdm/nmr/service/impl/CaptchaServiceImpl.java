@@ -40,7 +40,7 @@ public class CaptchaServiceImpl implements ICaptchaService {
     public GenerateCaptchaResponseTO generateCaptcha() throws NoSuchAlgorithmException, IOException {
         Captcha captchaEntity = captchaDaoService.generateCaptcha();
 
-        cn.apiclub.captcha.Captcha captcha = new cn.apiclub.captcha.Captcha.Builder(1300, 470) //
+        cn.apiclub.captcha.Captcha captcha = new cn.apiclub.captcha.Captcha.Builder(1300, 575) //
                 .addText(() -> captchaEntity.getNum1() + " " + captchaEntity.getOperation() + " " + captchaEntity.getNum2() + " = ?", new DefaultWordRenderer(COLORS, FONTS)) //
                 .addNoise().build();
 
