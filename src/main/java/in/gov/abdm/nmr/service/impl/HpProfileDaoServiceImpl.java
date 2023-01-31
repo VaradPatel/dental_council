@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.client.DscFClient;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
@@ -12,6 +13,7 @@ import in.gov.abdm.nmr.service.IHpProfileDaoService;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -149,7 +151,13 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
 	@Override
 	public HpProfileUpdateResponseTO updateHpRegistrationDetails(BigInteger hpProfileId,
-																 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO) {
+																 String hpRegistrationUpdateRequestString,MultipartFile certificate, MultipartFile proof) {
+
+		HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO=getHpRegistrationUpdateRequestTO(hpRegistrationUpdateRequestString);
+		hpRegistrationUpdateRequestTO.getRegistrationDetail().setCertificate(certificate);
+		hpRegistrationUpdateRequestTO.getRegistrationDetail().setNameChangeProof(proof);
+
+
 		RegistrationDetails registrationDetail = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId);
 		HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
 
@@ -176,7 +184,11 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
 	@Override
 	public HpProfileUpdateResponseTO updateWorkProfileDetails(BigInteger hpProfileId,
-															  HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO) {
+															  String hpWorkProfileUpdateRequestString, MultipartFile proof) {
+
+		HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO=getUpdateWorkProfileDetailsTo(hpWorkProfileUpdateRequestString);
+
+		hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().setProof(proof);
 
 		WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(hpProfileId);
 		if (workProfile == null) {
@@ -458,6 +470,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 		hpNbeDetails.setHpProfileId(hpProfile.getId());
 	}
 
+	@SneakyThrows
 	private void mapRegistrationRequestToEntity(HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, RegistrationDetails registrationDetail, HpProfile hpProfile) {
 		registrationDetail.setRegistrationDate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationDate());
 		registrationDetail.setRegistrationNo(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationNumber());
@@ -473,6 +486,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
 		registrationDetail.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
 		registrationDetail.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+		registrationDetail.setCertificate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getCertificate().getBytes());
+		registrationDetail.setNameChangeProofAttachment(hpRegistrationUpdateRequestTO.getRegistrationDetail().getNameChangeProof().getBytes());
 	}
 
 	private void mapSuperSpecialityToEntity(BigInteger hpProfileId, SuperSpecialityTO speciality, SuperSpeciality superSpeciality) {
@@ -480,6 +495,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 		superSpeciality.setHpProfileId(hpProfileId);
 	}
 
+	@SneakyThrows
 	private void mapWorkRequestToEntity(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, WorkProfile addWorkProfile, BigInteger hpProfileId) {
 		addWorkProfile.setBroadSpeciality(broadSpecialityRepository.findById(hpWorkProfileUpdateRequestTO.getSpecialityDetails().getBroadSpeciality().getId()).get());
 		addWorkProfile.setWorkNature(workNatureRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature().getId()).get());
@@ -492,6 +508,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 				.setWorkOrganization(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().getWorkOrganization());
 		addWorkProfile.setRequestId(hpWorkProfileUpdateRequestTO.getRequestId());
 		addWorkProfile.setHpProfileId(hpProfileId);
+		addWorkProfile.setProofOfWorkAttachment(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().getProof().getBytes());
 	}
 
 	private String checkIsNullAndAddSeparator(String string) {
@@ -500,6 +517,31 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 		} else {
 			return string + ", ";
 		}
+	}
+
+	@SneakyThrows
+	private String multipartFileToBase64(MultipartFile file)  {
+		 return Base64.getEncoder().encodeToString(file.getBytes());
+	}
+
+	@SneakyThrows
+	HpRegistrationUpdateRequestTO getHpRegistrationUpdateRequestTO(String hpRegistrationUpdateRequestString){
+
+		ObjectMapper objectMapper=new ObjectMapper();
+
+		HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO=objectMapper.readValue(hpRegistrationUpdateRequestString,HpRegistrationUpdateRequestTO.class);
+
+		return hpRegistrationUpdateRequestTO;
+	}
+
+	@SneakyThrows
+	HpWorkProfileUpdateRequestTO getUpdateWorkProfileDetailsTo(String getUpdateWorkProfileDetailsString){
+
+		ObjectMapper objectMapper=new ObjectMapper();
+
+		HpWorkProfileUpdateRequestTO hpRegistrationUpdateRequestTO=objectMapper.readValue(getUpdateWorkProfileDetailsString,HpWorkProfileUpdateRequestTO.class);
+
+		return hpRegistrationUpdateRequestTO;
 	}
 
 }

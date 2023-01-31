@@ -150,15 +150,16 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
 	@Override
 	public HpProfileRegistrationResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
-																	 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO) {
-		HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(hpProfileId, hpRegistrationUpdateRequestTO);
+																	 String hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof) {
+
+		HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(hpProfileId, hpRegistrationUpdateRequestTO,certificate,proof);
 		return getHealthProfessionalRegistrationDetail(hpProfileUpdateResponseTO.getHpProfileId());
 	}
 
 	@Override
 	public HpProfileWorkDetailsResponseTO addOrUpdateWorkProfileDetail(BigInteger hpProfileId,
-																  HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO) {
-		HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateWorkProfileDetails(hpProfileId, hpWorkProfileUpdateRequestTO);
+																  String hpWorkProfileUpdateRequestString, MultipartFile proof) {
+		HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateWorkProfileDetails(hpProfileId, hpWorkProfileUpdateRequestString, proof);
 		return getHealthProfessionalWorkDetail(hpProfileUpdateResponseTO.getHpProfileId());
 	}
 

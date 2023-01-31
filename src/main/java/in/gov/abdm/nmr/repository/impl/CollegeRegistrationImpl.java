@@ -111,7 +111,7 @@ public class CollegeRegistrationImpl implements ICollegeRepositoryCustom {
             collegeRegistrationTO.setCollegeName((String) result[1]);
             collegeRegistrationTO.setCouncilName((String) result[2]);
             if (result[3] != null) {
-                if (Status.APPROVED.getName().equals (result[3])) {
+                if (Status.APPROVED.getName().equals(result[3])) {
                     collegeRegistrationTO.setStatus(Status.VERIFIED.getName());
                 } else if (Status.PENDING.getName().equals(result[3])) {
                     collegeRegistrationTO.setStatus(Status.SUMBMITTED.getName());
@@ -121,8 +121,9 @@ public class CollegeRegistrationImpl implements ICollegeRepositoryCustom {
             } else {
                 collegeRegistrationTO.setStatus((String) result[3]);
             }
-            collegeRegistrationTO.setPendency((Double) result[4]);
-            collegeRegistrationTO.setSubmittedOn((Date) result[5]);
+            collegeRegistrationTO.setSubmittedOn((Date) result[4]);
+            collegeRegistrationTO.setPendency((Double) result[5]);
+
             collegeRegistrationTOS.add(collegeRegistrationTO);
         });
         collegeRegistrationResponseTO.setTotalNoOfRecords(getCount(collegeRegistrationRequestParamsTO));

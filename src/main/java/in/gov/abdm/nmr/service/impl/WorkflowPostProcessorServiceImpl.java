@@ -87,6 +87,9 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     IQualificationDetailRepository qualificationDetailRepository;
 
     @Autowired
+    IForeignQualificationDetailRepository foreignQualificationDetailRepository;
+
+    @Autowired
     IQualificationDetailMasterRepository qualificationDetailMasterRepository;
 
     @Autowired
@@ -149,6 +152,9 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         }
         List<QualificationDetails> qualificationDetails = qualificationDetailRepository.findByRequestId(requestTO.getRequestId());
         qualificationDetails.forEach(qualificationDetail -> qualificationDetail.setIsVerified(1));
+
+        List<ForeignQualificationDetails> foreignQualificationDetails = foreignQualificationDetailRepository.findByRequestId(requestTO.getRequestId());
+        foreignQualificationDetails.forEach(foreignQualificationDetail -> foreignQualificationDetail.setIsVerified(1));
     }
 
     private void updateRegistrationDetailsToMaster(BigInteger transactionHpProfileId, HpProfileMaster hpProfileMaster) {

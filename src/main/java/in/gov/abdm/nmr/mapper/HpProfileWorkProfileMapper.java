@@ -4,11 +4,16 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.SuperSpeciality;
 import in.gov.abdm.nmr.entity.WorkProfile;
 import lombok.experimental.UtilityClass;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
+
 @UtilityClass
 public final class HpProfileWorkProfileMapper {
+
+    @Autowired
+    IAddressMapper addressMapper;
     public static HpProfileWorkDetailsResponseTO convertEntitiesToWorkDetailResponseTo(List<SuperSpeciality> superSpecialities, WorkProfile workProfile) {
         HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO =  new HpProfileWorkDetailsResponseTO();
         SpecialityDetailsTO specialityDetailsTO =  new SpecialityDetailsTO();
@@ -17,7 +22,7 @@ public final class HpProfileWorkProfileMapper {
         specialityDetailsTO.setSuperSpeciality(superSpecialities.stream().map(superSpeciality -> SuperSpecialityTO.builder().id(superSpeciality.getId()).name(superSpeciality.getName()).build()).toList());
         specialityDetailsTO.setBroadSpeciality(BroadSpecialityTO.builder().name(workProfile.getBroadSpeciality().getName()).id(workProfile.getBroadSpeciality().getId()).build());
         workDetailsTO.setWorkNature(WorkNatureTO.builder().id(workProfile.getWorkNature().getId()).name(workProfile.getWorkNature().getName()).build());
-        workDetailsTO.setIsUserCurrentlyWorking(workDetailsTO.getIsUserCurrentlyWorking());
+        workDetailsTO.setIsUserCurrentlyWorking(workProfile.getIsUserCurrentlyWorking());
         workDetailsTO.setWorkStatus(WorkStatusTO.builder().id(workProfile.getWorkStatus().getId()).name(workProfile.getWorkStatus().getName()).build());
 
         currentWorkDetailsTO.setWorkOrganization(workProfile.getWorkOrganization());

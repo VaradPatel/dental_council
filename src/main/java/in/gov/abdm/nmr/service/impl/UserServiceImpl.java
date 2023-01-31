@@ -64,4 +64,18 @@ public class UserServiceImpl implements IUserService {
         return nbeMapper.nbeProfileToDto(userDaoService.findNbeProfile(id));
     }
 
+    @Override
+    public SMCProfileTO updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException {
+        return smcMapper.smcProfileToDto(userDaoService.updateSmcProfile(id, smcProfileTO));
+    }
+
+    @Override
+    public NmcProfileTO updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException {
+        return nmcMapper.nmcProfileToDto(userDaoService.updateNmcProfile(id, nmcProfileTO));
+    }
+
+    @Override
+    public NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException {
+        return nbeMapper.nbeProfileToDto(userDaoService.updateNbeProfile(id, nbeProfileTO));
+    }
 }

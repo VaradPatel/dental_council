@@ -1,14 +1,5 @@
 package in.gov.abdm.nmr.service.impl;
 
-import static in.gov.abdm.nmr.common.CustomHeaders.ACCESS_TOKEN;
-import static in.gov.abdm.nmr.common.CustomHeaders.REFRESH_TOKEN;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-
 import in.gov.abdm.nmr.dto.LoginResponseTO;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.User;
@@ -17,14 +8,15 @@ import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.security.common.RoleConstants;
 import in.gov.abdm.nmr.security.jwt.JwtTypeEnum;
 import in.gov.abdm.nmr.security.jwt.JwtUtil;
-import in.gov.abdm.nmr.service.IAuthService;
-import in.gov.abdm.nmr.service.ICollegeDaoService;
-import in.gov.abdm.nmr.service.ICollegeDeanDaoService;
-import in.gov.abdm.nmr.service.ICollegeRegistrarDaoService;
-import in.gov.abdm.nmr.service.IHpProfileDaoService;
-import in.gov.abdm.nmr.service.INmcDaoService;
-import in.gov.abdm.nmr.service.ISmcProfileDaoService;
-import in.gov.abdm.nmr.service.IUserDaoService;
+import in.gov.abdm.nmr.service.*;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletResponse;
+
+import static in.gov.abdm.nmr.common.CustomHeaders.ACCESS_TOKEN;
+import static in.gov.abdm.nmr.common.CustomHeaders.REFRESH_TOKEN;
 
 @Service
 public class AuthServiceImpl implements IAuthService {
@@ -44,8 +36,9 @@ public class AuthServiceImpl implements IAuthService {
     private ISmcProfileDaoService smcProfileDaoService;
 
     private INmcDaoService nmcDaoService;
+    private INbeDaoService nbeDaoService;
 
-    public AuthServiceImpl(JwtUtil jwtUtil, IUserDaoService userDetailDaoService, IHpProfileDaoService hpProfileService, ICollegeDaoService collegeDaoService, ICollegeDeanDaoService collegeDeanDaoService, ICollegeRegistrarDaoService collegeRegistrarDaoService, ISmcProfileDaoService smcProfileDaoService, INmcDaoService nmcDaoService) {
+    public AuthServiceImpl(JwtUtil jwtUtil, IUserDaoService userDetailDaoService, IHpProfileDaoService hpProfileService, ICollegeDaoService collegeDaoService, ICollegeDeanDaoService collegeDeanDaoService, ICollegeRegistrarDaoService collegeRegistrarDaoService, ISmcProfileDaoService smcProfileDaoService, INmcDaoService nmcDaoService, INbeDaoService nbeDaoService) {
         this.jwtUtil = jwtUtil;
         this.userDetailDaoService = userDetailDaoService;
         this.hpProfileService = hpProfileService;
@@ -54,6 +47,7 @@ public class AuthServiceImpl implements IAuthService {
         this.collegeRegistrarDaoService = collegeRegistrarDaoService;
         this.smcProfileDaoService = smcProfileDaoService;
         this.nmcDaoService = nmcDaoService;
+        this.nbeDaoService = nbeDaoService;
     }
 
     @Override
@@ -95,6 +89,8 @@ public class AuthServiceImpl implements IAuthService {
 
         } else if (UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode().equals(userDetail.getUserType().getId())) {
             loginResponseTO.setProfileId(nmcDaoService.findByUserDetail(userDetail.getId()).getId());
+        } else if (UserTypeEnum.NBE.getCode().equals(userDetail.getUserType().getId())) {
+            loginResponseTO.setProfileId(nbeDaoService.findByUserDetail(userDetail.getId()).getId());
         }
         return loginResponseTO;
     }

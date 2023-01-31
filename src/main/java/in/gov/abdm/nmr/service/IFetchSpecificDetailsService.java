@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.service;
 
+import in.gov.abdm.nmr.dto.DashboardRequestTO;
+import in.gov.abdm.nmr.dto.DashboardResponseTO;
 import in.gov.abdm.nmr.dto.FetchSpecificDetailsResponseTO;
-import in.gov.abdm.nmr.dto.FetchTrackApplicationRequestTO;
-import in.gov.abdm.nmr.dto.FetchTrackApplicationResponseTO;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 
 import java.util.List;
@@ -18,5 +18,5 @@ public interface IFetchSpecificDetailsService {
      */
     List<FetchSpecificDetailsResponseTO> fetchSpecificDetails(String groupName, String applicationType, String workFlowStatus) throws InvalidRequestException;
 
-    List<FetchTrackApplicationResponseTO> fetchTrackApplicationDetails(FetchTrackApplicationRequestTO requestTO);
+    DashboardResponseTO fetchDashboardData(DashboardRequestTO dashboardRequestTO) throws InvalidRequestException;
 }
