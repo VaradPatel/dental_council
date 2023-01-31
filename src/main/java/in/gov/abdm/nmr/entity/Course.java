@@ -25,5 +25,5 @@ public class Course {
     @Column(name = "id")
     private BigInteger id;
 
-    private String name;
+    private String courseName;
 }
