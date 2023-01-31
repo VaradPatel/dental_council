@@ -59,10 +59,10 @@ public class DashboardController {
      * This endpoint can be accessed to retrieve specific details based on the card selected
      * @return List<FetchSpecificDetailsResponseTO>
      */
-    @PostMapping(FETCH_SPECIFIC_DETAILS_URL)
-    public ResponseEntity<List<FetchSpecificDetailsResponseTO>> fetchSpecificDetails(@RequestBody FetchSpecificDetailsRequestTO requestTO) throws InvalidRequestException {
-        return ResponseEntity.ok(iFetchSpecificDetailsService.fetchSpecificDetails(requestTO.getGroupName(), requestTO.getApplicationType(), requestTO.getWorkFlowStatus()));
-    }
+//    @PostMapping(FETCH_SPECIFIC_DETAILS_URL)
+//    public ResponseEntity<List<FetchSpecificDetailsResponseTO>> fetchSpecificDetails(@RequestBody FetchSpecificDetailsRequestTO requestTO) throws InvalidRequestException {
+//        return ResponseEntity.ok(iFetchSpecificDetailsService.fetchSpecificDetails(requestTO.getGroupName(), requestTO.getApplicationType(), requestTO.getWorkFlowStatus()));
+//    }
 
     /**
      * This endpoint can be accessed to retrieve specific details based on the Registration Number
@@ -76,6 +76,8 @@ public class DashboardController {
 //                requestTO.getUserSubType()));
 //    }
 
-
-
+    @PostMapping(FETCH_SPECIFIC_DETAILS_URL)
+    public DashboardResponseTO DashBoardResponseTO(@RequestBody DashboardRequestTO requestTO) throws InvalidRequestException {
+        return iFetchSpecificDetailsService.fetchDashboardData(requestTO);
+    }
 }

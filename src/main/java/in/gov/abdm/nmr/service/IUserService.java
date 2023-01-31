@@ -14,7 +14,17 @@ public interface IUserService {
 
     List<NotificationToggleResponseTO> toggleNotification(NotificationToggleRequestTO notificationToggleRequestTO);
 
-   SMCProfileTO getSmcProfile(BigInteger id) throws NmrException;
-   NmcProfileTO getNmcProfile(BigInteger id) throws NmrException;
-   NbeProfileTO getNbeProfile(BigInteger id) throws NmrException;
+    SMCProfileTO getSmcProfile(BigInteger id) throws NmrException;
+
+    NmcProfileTO getNmcProfile(BigInteger id) throws NmrException;
+
+    NbeProfileTO getNbeProfile(BigInteger id) throws NmrException;
+
+    SMCProfileTO updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException;
+
+    NmcProfileTO updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException;
+
+    NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException;
+
+
 }

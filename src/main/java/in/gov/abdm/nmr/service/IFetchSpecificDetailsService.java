@@ -1,5 +1,7 @@
 package in.gov.abdm.nmr.service;
 
+import in.gov.abdm.nmr.dto.DashboardRequestTO;
+import in.gov.abdm.nmr.dto.DashboardResponseTO;
 import in.gov.abdm.nmr.dto.FetchSpecificDetailsResponseTO;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 
@@ -15,4 +17,6 @@ public interface IFetchSpecificDetailsService {
      * @return FetchSpecificDetailsResponseTO
      */
     List<FetchSpecificDetailsResponseTO> fetchSpecificDetails(String groupName, String applicationType, String workFlowStatus) throws InvalidRequestException;
+
+    DashboardResponseTO fetchDashboardData(DashboardRequestTO dashboardRequestTO) throws InvalidRequestException;
 }
