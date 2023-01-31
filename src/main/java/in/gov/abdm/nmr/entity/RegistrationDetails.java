@@ -23,6 +23,7 @@ public class RegistrationDetails extends CommonAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @Lob
     @Type(type="org.hibernate.type.BinaryType")
     private byte[] certificate;
