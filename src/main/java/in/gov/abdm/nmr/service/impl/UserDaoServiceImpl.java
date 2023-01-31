@@ -1,16 +1,10 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.NotificationToggleRequestTO;
-import in.gov.abdm.nmr.dto.UpdateRefreshTokenIdRequestTO;
-import in.gov.abdm.nmr.dto.UserSearchTO;
-import in.gov.abdm.nmr.dto.UserTO;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.mapper.IUserMapper;
-import in.gov.abdm.nmr.repository.INbeProfileRepository;
-import in.gov.abdm.nmr.repository.INmcProfileRepository;
-import in.gov.abdm.nmr.repository.ISmcProfileRepository;
-import in.gov.abdm.nmr.repository.IUserRepository;
+import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -41,7 +35,6 @@ public class UserDaoServiceImpl implements IUserDaoService {
     private EntityManager entityManager;
 
     private IAccessControlService accessControlService;
-
     public UserDaoServiceImpl(IUserMapper userDetailMapper, IUserRepository userDetailRepository, EntityManager entityManager, ISmcProfileRepository smcProfileRepository, //
                               INmcProfileRepository nmcProfileRepository, INbeProfileRepository nbeProfileRepository, IAccessControlService accessControlService) {
         super();
@@ -171,5 +164,60 @@ public class UserDaoServiceImpl implements IUserDaoService {
         }
         accessControlService.validateUser(nbeProfileEntity.getUser().getId());
         return nbeProfileEntity;
+    }
+
+    @Override
+    public SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException {
+        SMCProfile smcProfile = smcProfileRepository.findById(id).orElse(null);
+        if (smcProfile == null) {
+            throw new NmrException("Invalid profile id", HttpStatus.BAD_REQUEST);
+        }
+        smcProfile.setId(id);
+        smcProfile.setFirstName(smcProfileTO.getFirstName());
+        smcProfile.setMiddleName(smcProfileTO.getMiddleName());
+        smcProfile.setLastName(smcProfileTO.getLastName());
+        smcProfile.setDisplayName(smcProfileTO.getDisplayName());
+        smcProfile.setEnrolledNumber(smcProfileTO.getEnrolledNumber());
+        smcProfile.setNdhmEnrollment(smcProfileTO.getNdhmEnrollment());
+        smcProfile.setMobileNo(smcProfileTO.getMobileNo());
+        smcProfile.setEmailId(smcProfileTO.getEmailId());
+        StateMedicalCouncil stateMedicalCouncil = new StateMedicalCouncil();
+        stateMedicalCouncil.setId(smcProfileTO.getStateMedicalCouncil().getId());
+        smcProfile.setStateMedicalCouncil(stateMedicalCouncil);
+        return smcProfileRepository.save(smcProfile);
+    }
+
+    @Override
+    public NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException {
+        NmcProfile nmcProfile = nmcProfileRepository.findById(id).orElse(null);
+        if (nmcProfile == null) {
+            throw new NmrException("Invalid profile id", HttpStatus.BAD_REQUEST);
+        }
+        nmcProfile.setId(id);
+        nmcProfile.setFirstName(nmcProfileTO.getFirstName());
+        nmcProfile.setMiddleName(nmcProfileTO.getMiddleName());
+        nmcProfile.setLastName(nmcProfileTO.getLastName());
+        nmcProfile.setDisplayName(nmcProfileTO.getDisplayName());
+        nmcProfile.setEnrolledNumber(nmcProfileTO.getEnrolledNumber());
+        nmcProfile.setNdhmEnrollment(nmcProfileTO.getNdhmEnrollment());
+        nmcProfile.setEmailId(nmcProfileTO.getEmailId());
+        nmcProfile.setMobileNo(nmcProfileTO.getMobileNo());
+        return nmcProfileRepository.saveAndFlush(nmcProfile);
+    }
+
+    @Override
+    public NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException {
+        NbeProfile nbeProfile = nbeProfileRepository.findById(id).orElse(null);
+        if (nbeProfile == null) {
+            throw new NmrException("Invalid profile id", HttpStatus.BAD_REQUEST);
+        }
+        nbeProfile.setId(id);
+        nbeProfile.setFirstName(nbeProfileTO.getFirstName());
+        nbeProfile.setMiddleName(nbeProfileTO.getMiddleName());
+        nbeProfile.setLastName(nbeProfileTO.getLastName());
+        nbeProfile.setDisplayName(nbeProfileTO.getDisplayName());
+        nbeProfile.setEmailId(nbeProfileTO.getEmailId());
+        nbeProfile.setMobileNo(nbeProfileTO.getMobileNo());
+        return nbeProfileRepository.saveAndFlush(nbeProfile);
     }
 }
