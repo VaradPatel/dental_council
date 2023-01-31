@@ -15,8 +15,8 @@ public class FetchTrackApplicationResponseTO {
 
     @JsonProperty("requestId")
     private String requestId;
-    @JsonProperty("applicationTypeId")
-    private BigInteger applicationTypeId;
+    @JsonProperty("applicationType")
+    private String applicationTypeId;
     @JsonProperty("createdAt")
     private Date createdAt;
     @JsonProperty("workFlowStatusId")

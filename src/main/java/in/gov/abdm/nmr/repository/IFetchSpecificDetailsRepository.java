@@ -30,6 +30,7 @@ public interface IFetchSpecificDetailsRepository extends JpaRepository<WorkFlow,
 
     @Query(value = "SELECT request_id, application_type_id, created_at, work_flow_status_id ,current_group_id, " +
             " extract(day from now()- created_at) pendency_days " +
-            " FROM work_flow where hp_profile_id IN (:hpProfileIds)", nativeQuery = true)
-    List<Tuple>fetchTrackApplicationDetails(List<BigInteger> hpProfileIds, Pageable pagination);
+            " FROM work_flow where hp_profile_id IN (:hpProfileIds) " +
+            " AND application_type_id IN(:searchByAppType) ", nativeQuery = true)
+    List<Tuple> fetchTrackApplicationDetails(List<BigInteger> hpProfileIds, List<BigInteger> searchByAppType, Pageable pagination);
 }

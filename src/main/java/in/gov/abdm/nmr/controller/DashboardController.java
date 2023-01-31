@@ -5,6 +5,7 @@ import in.gov.abdm.nmr.service.IFetchCountOnCardService;
 import in.gov.abdm.nmr.service.IFetchDetailsByRegNoService;
 import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -79,5 +80,10 @@ public class DashboardController {
     @PostMapping(FETCH_SPECIFIC_DETAILS_URL)
     public DashboardResponseTO DashBoardResponseTO(@RequestBody DashboardRequestTO requestTO) throws InvalidRequestException {
         return iFetchSpecificDetailsService.fetchDashboardData(requestTO);
+    }
+
+    @PostMapping(FETCH_TRACK_APP_URL)
+    public ResponseEntity<List<FetchTrackApplicationResponseTO>> fetchTrackApplicationDetails(@RequestBody FetchTrackApplicationRequestTO requestTO) {
+        return new ResponseEntity<>(iFetchSpecificDetailsService.fetchTrackApplicationDetails(requestTO), HttpStatus.ACCEPTED);
     }
 }
