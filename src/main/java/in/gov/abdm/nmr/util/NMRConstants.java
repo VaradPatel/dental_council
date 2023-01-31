@@ -202,7 +202,9 @@ public class NMRConstants {
             "AND a.name = :" + APPLICATION_TYPE_NAME + " " +
             "AND ws.name = :" + WORK_FLOW_STATUS + " ";
 
-    public static final String FETCH_COLLEGE_REGISTRATION_RECORDS = "SELECT c.college_code, c.name as College_Name, smc.name as Council_Name, wfs.name as status,DATE_PART('day', (wf.updated_at- wf.created_at)) as pendency, wf.created_at   " +
+    public static final String FETCH_COLLEGE_REGISTRATION_RECORDS = "SELECT c.college_code AS College_Id, c.name AS College_Name, smc.name AS Council_Name, wfs.name AS Status, wf.created_at AS Date_Of_Submission,  " +
+            "  CASE WHEN (wf.updated_at> wf.created_at) THEN DATE_PART('day', (wf.updated_at- wf.created_at)) " +
+            "  WHEN (wf.updated_at= wf.created_at) THEN DATE_PART('day', (now()- wf.created_at))END as pendency  " +
             "  FROM main.work_flow wf  INNER JOIN main.colleges c  ON c.request_id= wf.request_id  " +
             "   INNER JOIN  main.state_medical_council smc ON smc.id =c.state_medical_council   " +
             "  JOIN main.work_flow_status wfs ON wfs.id= wf.work_flow_status_id   " +

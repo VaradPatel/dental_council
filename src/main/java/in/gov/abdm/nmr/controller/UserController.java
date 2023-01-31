@@ -38,7 +38,6 @@ public class UserController {
         return userService.toggleNotification(notificationToggleRequestTO);
     }
 
-
     @GetMapping(path = ProtectedPaths.PATH_SMC_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
     //---
     @RolesAllowed({RoleConstants.STATE_MEDICAL_COUNCIL})
@@ -61,5 +60,26 @@ public class UserController {
     @SecurityRequirement(name = "bearerAuth")
     public NbeProfileTO nbeProfile(@PathVariable(name = "id") BigInteger id) throws NmrException {
         return userService.getNbeProfile(id);
+    }
+
+    @PutMapping(path = ProtectedPaths.PATH_SMC_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RolesAllowed({RoleConstants.STATE_MEDICAL_COUNCIL})
+    @SecurityRequirement(name = "bearerAuth")
+    public SMCProfileTO updateSMCProfile(@PathVariable(name = "id") BigInteger id, @RequestBody SMCProfileTO smcProfileTO) throws NmrException {
+        return userService.updateSmcProfile(id, smcProfileTO);
+    }
+
+    @PutMapping(path = ProtectedPaths.PATH_NMC_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL})
+    @SecurityRequirement(name = "bearerAuth")
+    public NmcProfileTO updateNmcProfile(@PathVariable(name = "id") BigInteger id, @RequestBody NmcProfileTO nmcProfileTO) throws NmrException {
+        return userService.updateNmcProfile(id, nmcProfileTO);
+    }
+
+    @PutMapping(path = ProtectedPaths.PATH_NBE_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RolesAllowed({RoleConstants.NBE})
+    @SecurityRequirement(name = "bearerAuth")
+    public NbeProfileTO updateNbeProfile(@PathVariable(name = "id") BigInteger id, @RequestBody NbeProfileTO nbeProfileTO) throws NmrException {
+        return userService.updateNbeProfile(id, nbeProfileTO);
     }
 }
