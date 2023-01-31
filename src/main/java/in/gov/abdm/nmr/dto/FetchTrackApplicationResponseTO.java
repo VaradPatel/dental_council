@@ -1,23 +1,28 @@
 package in.gov.abdm.nmr.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 
+
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class FetchTrackApplicationResponseTO {
 
-    private String request_id;
-    private BigInteger application_type_id;
-    private Date created_at;
-    private BigInteger work_flow_status_id;
-    private BigInteger current_group_id;
-    private Integer pendency_days;
+    @JsonProperty("requestId")
+    private String requestId;
+    @JsonProperty("applicationTypeId")
+    private BigInteger applicationTypeId;
+    @JsonProperty("createdAt")
+    private Date createdAt;
+    @JsonProperty("workFlowStatusId")
+    private BigInteger workFlowStatusId;
+    @JsonProperty("currentGroupId")
+    private BigInteger currentGroupId;
+    @JsonProperty("pendencyDays")
+    private BigDecimal pendencyDays;
 }

@@ -1,17 +1,17 @@
 package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.service.IFetchCountOnCardService;
 import in.gov.abdm.nmr.service.IFetchDetailsByRegNoService;
 import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import in.gov.abdm.nmr.exception.InvalidRequestException;
 
 import java.util.List;
 
@@ -76,11 +76,10 @@ public class DashboardController {
 //                requestTO.getUserSubType()));
 //    }
 
-
-
+    //FetchTrackApplicationResponseTO
     @PostMapping("/fetchTrackApplicationDetails")
     public ResponseEntity<List<FetchTrackApplicationResponseTO>> fetchTrackApplicationDetails(@RequestBody FetchTrackApplicationRequestTO requestTO) {
-        return ResponseEntity.ok(iFetchSpecificDetailsService.fetchTrackApplicationDetails(requestTO));
+        return new ResponseEntity<>(iFetchSpecificDetailsService.fetchTrackApplicationDetails(requestTO), HttpStatus.ACCEPTED);
     }
 
 }

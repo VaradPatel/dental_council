@@ -13,7 +13,6 @@ public class FetchTrackApplicationRequestTO {
 
     private BigInteger hpId;
     private String applicationType;
-
     private int page;
     private int size;
     private String sortBy;
