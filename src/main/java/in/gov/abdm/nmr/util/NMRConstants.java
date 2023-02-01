@@ -206,15 +206,15 @@ public class NMRConstants {
     public static final String FETCH_COLLEGE_REGISTRATION_RECORDS = "SELECT c.college_code AS College_Id, c.name AS College_Name, smc.name AS Council_Name, wfs.name AS Status, wf.created_at AS Date_Of_Submission,  " +
             "  CASE WHEN (wf.updated_at> wf.created_at) THEN DATE_PART('day', (wf.updated_at- wf.created_at)) " +
             "  WHEN (wf.updated_at= wf.created_at) THEN DATE_PART('day', (now()- wf.created_at))END as pendency  " +
-            "  FROM main.work_flow wf  INNER JOIN main.colleges c  ON c.request_id= wf.request_id  " +
-            "   INNER JOIN  main.state_medical_council smc ON smc.id =c.state_medical_council   " +
-            "  JOIN main.work_flow_status wfs ON wfs.id= wf.work_flow_status_id   " +
+            "  FROM work_flow wf  INNER JOIN colleges c  ON c.request_id= wf.request_id  " +
+            "   INNER JOIN  state_medical_council smc ON smc.id =c.state_medical_council   " +
+            "  JOIN work_flow_status wfs ON wfs.id= wf.work_flow_status_id   " +
             "   WHERE  wf.application_type_id=6 AND  c.state_medical_council IS NOT NULL ";
 
     public static final String FETCH_COUNT_OF_COLLEGE_REGISTRATION_RECORDS = "SELECT COUNT(*)    " +
-            "  FROM main.work_flow wf  INNER JOIN main.colleges c  ON c.request_id= wf.request_id  " +
-            "   INNER JOIN  main.state_medical_council smc ON smc.id =c.state_medical_council   " +
-            "  JOIN main.work_flow_status wfs ON wfs.id= wf.work_flow_status_id   " +
+            "  FROM work_flow wf  INNER JOIN colleges c  ON c.request_id= wf.request_id  " +
+            "   INNER JOIN  state_medical_council smc ON smc.id =c.state_medical_council   " +
+            "  JOIN work_flow_status wfs ON wfs.id= wf.work_flow_status_id   " +
             "   WHERE  wf.application_type_id=6 AND  c.state_medical_council IS NOT NULL ";
 
     public static final String FETCH_DETAILS_BY_REG_NO_QUERY = "SELECT hvs.registrationDetails.registrationNo as registrationNo, hvs.hpProfile.fullName as nameOfApplicant, hvs.registrationDetails.stateMedicalCouncil.name as nameOfStateCouncil, hvs.registrationDetails.registrationDate as dateOfSubmission, hvs.verifiedBy.userType.name as verifiedByUserType, hvs.verifiedBy.userSubType.name as verifiedByUserSubType, hvs.hpProfile.hpProfileStatus.name as hpProfileStatus " +
