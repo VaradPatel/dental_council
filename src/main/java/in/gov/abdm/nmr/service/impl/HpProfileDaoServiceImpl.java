@@ -381,7 +381,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 		customQualification.setState(newCustomQualification.getState().getName());
 		customQualification.setCollege(newCustomQualification.getCollege().getName());
 		customQualification.setUniversity(newCustomQualification.getUniversity().getName());
-		customQualification.setCourse(newCustomQualification.getCourse().getName());
+		customQualification.setCourse(newCustomQualification.getCourse().getCourseName());
 		customQualification.setIsVerified(newCustomQualification.getIsVerified());
 		customQualification.setQualificationYear(newCustomQualification.getQualificationYear());
 		customQualification.setQualificationMonth(newCustomQualification.getQualificationMonth());
@@ -509,6 +509,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 		addWorkProfile.setRequestId(hpWorkProfileUpdateRequestTO.getRequestId());
 		addWorkProfile.setHpProfileId(hpProfileId);
 		addWorkProfile.setProofOfWorkAttachment(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().getProof().getBytes());
+		addWorkProfile.setRequestId(hpWorkProfileUpdateRequestTO.getRequestId());
 	}
 
 	private String checkIsNullAndAddSeparator(String string) {

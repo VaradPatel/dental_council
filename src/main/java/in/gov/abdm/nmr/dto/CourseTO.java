@@ -14,5 +14,5 @@ import lombok.NoArgsConstructor;
 public class CourseTO {
 
     private BigInteger id;
-    private String name;
+    private String courseName;
 }

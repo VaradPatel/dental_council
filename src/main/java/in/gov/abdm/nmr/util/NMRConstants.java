@@ -16,6 +16,7 @@ public class NMRConstants {
     public static final String FETCH_COUNT_ON_CARD_URL = "/cardCount";
 
     public static final String FETCH_SPECIFIC_DETAILS_URL = "/fetchSpecificDetails";
+    public static final String FETCH_TRACK_APP_URL = "/fetchTrackApplicationDetails";
 
     public static final String FETCH_DETAILS_BY_REG_NO_URL = "/fetchDetailsByRegNo";
 

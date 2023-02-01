@@ -185,6 +185,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 			hpProfileById.setTransactionId(hpSubmitRequestTO.getTransactionId());
 			hpProfileById.setESignStatus(hpSubmitRequestTO.getESignStatus());
 			hpProfileById.setRequestId(requestId);
+			iHpProfileRepository.save(hpProfileById);
 		}
 		return new HpProfileAddResponseTO(201, "Hp Profile Submitted Successfully!", hpSubmitRequestTO.getHpProfileId());
 	}
