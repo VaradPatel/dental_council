@@ -134,7 +134,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestId);
             if (workFlow == null) {
                 WorkFlow collegeWorkFlow = buildNewCollegeWorkFlow(requestId, applicationTypeId, actionId, actorId, iNextGroup);
-                iWorkFlowRepository.save(collegeWorkFlow);
+                workFlow = iWorkFlowRepository.save(collegeWorkFlow);
             } else {
                 workFlow.setUpdatedAt(null);
                 workFlow.setAction(iActionRepository.findById(actionId).get());
