@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
+import in.gov.abdm.nmr.mapper.CourseMasterToMapper;
 import in.gov.abdm.nmr.service.IMasterDataService;
 import org.springframework.stereotype.Service;
 
@@ -118,7 +119,8 @@ public class MasterDataServiceImpl implements IMasterDataService {
 	
 	@Override
 	public List<MasterDataTO> courses() {
-		return masterDataMapper.coursesToMasterDataTOs(courseService.getCourseData());
+
+		return CourseMasterToMapper.courseToListToCourseMasterToList(courseService.getCourseData());
 	}
 	
 	@Override
