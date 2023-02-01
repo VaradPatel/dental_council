@@ -82,6 +82,12 @@ public class DashboardController {
         return iFetchSpecificDetailsService.fetchDashboardData(requestTO);
     }
 
+    /**
+     * This endpoint can be accessed to retrieve track Application details.
+     *
+     * @param requestTO requestTO object which contains hpId ,applicationType, page, size and sortBy
+     * @return FetchTrackApplicationResponseTO object which contains details of Doctor has requested.
+     */
     @PostMapping(FETCH_TRACK_APP_URL)
     public ResponseEntity<List<FetchTrackApplicationResponseTO>> fetchTrackApplicationDetails(@RequestBody FetchTrackApplicationRequestTO requestTO) {
         return new ResponseEntity<>(iFetchSpecificDetailsService.fetchTrackApplicationDetails(requestTO), HttpStatus.ACCEPTED);
