@@ -26,9 +26,8 @@ public class WorkProfile {
 //    @OneToMany(mappedBy = "subdistrict", fetch = FetchType.LAZY)
 //    private List<City> cities;
     
-    @OneToOne(mappedBy = "workProfile", fetch = FetchType.LAZY)
-    private Address address;
-    
+
+    private String address;
     private Integer facility;
     private Integer isUserCurrentlyWorking;
     @Type(type="org.hibernate.type.BinaryType")
@@ -46,8 +45,15 @@ public class WorkProfile {
     private WorkStatus workStatus;
     private BigInteger hpProfileId;
     private String workOrganization;
+    @OneToOne
+    @JoinColumn(name = "stateId", referencedColumnName = "id")
+    private State state;
+    @OneToOne
+    @JoinColumn(name = "districtId", referencedColumnName = "id")
+    private District district;
     
 //    @OneToOne(mappedBy = "workProfile", fetch = FetchType.LAZY)
     private BigInteger organizationType;
     private String requestId;
+    private String pincode;
 }
