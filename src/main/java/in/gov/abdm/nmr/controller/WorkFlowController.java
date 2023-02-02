@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigInteger;
@@ -24,7 +23,6 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
  * Presentation Layer to expose the Action endpoints
  */
 @RestController
-@RequestMapping(ACTION_REQUEST_URL)
 public class WorkFlowController {
 
     private static final List<BigInteger> REQUEST_ID_CREATION_STATUSES = List.of(HpProfileStatus.REJECTED.getId(),
@@ -43,8 +41,8 @@ public class WorkFlowController {
      * This endpoint can be accessed to initiate workflow
      * @return
      */
-    @PostMapping(INITIATE_WORK_FLOW_URL)
-    public ResponseEntity<String> initiateWorkFlow(@RequestBody WorkFlowRequestTO requestTO) throws InvalidRequestException, WorkFlowException {
+    @PostMapping(HEALTH_PROFESSIONAL_ACTION)
+    public ResponseEntity<String> executeActionOnHealthProfessional(@RequestBody WorkFlowRequestTO requestTO) throws InvalidRequestException, WorkFlowException {
         if(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(requestTO.getHpProfileId(), requestTO.getApplicationTypeId())) {
             if (requestTO.getRequestId() == null || !iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(requestTO.getHpProfileId())) {
                 requestTO.setRequestId(NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(requestTO.getApplicationTypeId())));
@@ -59,8 +57,8 @@ public class WorkFlowController {
      * This endpoint can be accessed to initiate workflow
      * @return
      */
-    @PostMapping(INITIATE_COLLEGE_WORK_FLOW_URL)
-    public ResponseEntity<String> initiateCollegeWorkFlow(@RequestBody WorkFlowRequestTO requestTO) throws InvalidRequestException, WorkFlowException {
+    @PostMapping(COLLEGES_ACTION)
+    public ResponseEntity<String> executeActionOnCollege(@RequestBody WorkFlowRequestTO requestTO) throws InvalidRequestException, WorkFlowException {
         iWorkFlowService.initiateCollegeRegistrationWorkFlow(requestTO.getRequestId(),requestTO.getApplicationTypeId(),requestTO.getActorId(),requestTO.getActionId());
         return ResponseEntity.ok("Success");
     }

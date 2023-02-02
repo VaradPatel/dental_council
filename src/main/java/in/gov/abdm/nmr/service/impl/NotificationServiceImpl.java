@@ -158,7 +158,7 @@ public class NotificationServiceImpl implements INotificationService {
                 .replace(NMRConstants.TEMPLATE_VAR3, NMRConstants.MESSAGE_SENDER)
                 .finish();
 
-        return sendNotification(List.of(NotificationType.SMS.getNotificationType(), NotificationType.EMAIL.getNotificationType()), NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SUBJECT, message, mobile, email);
+        return sendNotification(List.of(NotificationType.EMAIL.getNotificationType()), NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SUBJECT, message, mobile, email);
     }
 
     /**

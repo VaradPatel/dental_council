@@ -81,6 +81,9 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     @Autowired
     IWorkflowPostProcessorService workflowPostProcessorService;
 
+    @Autowired
+    ICollegeRepository collegeRepository;
+
     @Override
     @Transactional
     public void initiateSubmissionWorkFlow(WorkFlowRequestTO requestTO) throws WorkFlowException {
@@ -104,7 +107,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
             }
             iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile));
-//            notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+            notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
 
         } else {
             throw new WorkFlowException("Next Group Not Found", HttpStatus.BAD_REQUEST);
@@ -129,6 +132,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
     @Override
     public void initiateCollegeRegistrationWorkFlow(String requestId, BigInteger applicationTypeId, BigInteger actorId, BigInteger actionId) throws WorkFlowException {
+
         INextGroup iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(applicationTypeId, actorId, actionId);
         if (iNextGroup != null) {
             WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestId);
@@ -143,7 +147,10 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
             }
             iWorkFlowAuditRepository.save(buildNewCollegeWorkFlowAudit(requestId, applicationTypeId, actionId, actorId, iNextGroup));
-            notificationService.sendNotificationOnStatusChangeForCollege(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+            College college = collegeRepository.findCollegeByRequestId(requestId);
+            if(college != null && college.getEmailId() != null) {
+                notificationService.sendNotificationOnStatusChangeForCollege(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), null, college.getEmailId());
+            }
 
         } else {
             throw new WorkFlowException("Next Group Not Found", HttpStatus.BAD_REQUEST);
