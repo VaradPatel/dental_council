@@ -124,6 +124,7 @@ public class CollegeRegistrationImpl implements ICollegeRepositoryCustom {
             }
             collegeRegistrationTO.setSubmittedOn((Date) result[5]);
             collegeRegistrationTO.setPendency((Double) result[6]);
+            collegeRegistrationTO.setRequestId((String) result[7]);
 
             collegeRegistrationTOS.add(collegeRegistrationTO);
         });
