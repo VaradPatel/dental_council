@@ -12,6 +12,7 @@ public class CollegeRegistrationTO {
     private String councilName;
     private String status;
     private Date submittedOn;
-    private  Double pendency;
+    private Double pendency;
+    private String requestId;
 
 }
