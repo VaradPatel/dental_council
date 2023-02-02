@@ -127,12 +127,10 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
 
     @Override
     public DashboardResponseTO fetchDashboardData(DashboardRequestTO dashboardRequestTO) throws InvalidRequestException {
-
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User userDetail = userDetailRepository.findByUsername(userName);
         BigInteger groupId = userDetail.getGroup().getId();
         BigInteger userId = userDetail.getId();
-
         String sortOrder = dashboardRequestTO.getSortOrder();
         String column = getColumnToSort(dashboardRequestTO.getSortBy());
         int size = dashboardRequestTO.getSize();
@@ -146,7 +144,6 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         dashboardRequestParamsTO.setPageNo(pageNo);
         dashboardRequestParamsTO.setSize(size);
         dashboardRequestParamsTO.setSortBy(column);
-
         if(groupId.equals(Group.SMC.getId())){
             SMCProfile smcProfile = smcProfileRepository.findByUserDetail(userId);
             dashboardRequestParamsTO.setSmcId(smcProfile.getStateMedicalCouncil().getId().toString());
@@ -157,7 +154,6 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
             CollegeRegistrar collegeRegistrar = collegeRegistrarRepository.findByUserDetail(userId);
             dashboardRequestParamsTO.setCollegeId(collegeRegistrar.getCollege().getId().toString());
         }
-
         final String sortingOrder = sortOrder == null ? defaultSortOrder : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
         final int dataLimit = maxSize < size ? maxSize : size;
