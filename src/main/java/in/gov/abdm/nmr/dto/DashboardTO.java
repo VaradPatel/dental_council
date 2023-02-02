@@ -11,6 +11,7 @@ public class DashboardTO {
     private String CollegeDean;
     private String CollegeRegistrar;
     private String nmc;
+    private String nbe;
     private BigInteger hpProfileId;
     private String requestId;
     private String registrationNo;

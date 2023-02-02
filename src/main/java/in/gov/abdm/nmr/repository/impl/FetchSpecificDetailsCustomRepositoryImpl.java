@@ -1,6 +1,8 @@
 package in.gov.abdm.nmr.repository.impl;
 
-import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.dto.DashboardRequestParamsTO;
+import in.gov.abdm.nmr.dto.DashboardResponseTO;
+import in.gov.abdm.nmr.dto.DashboardTO;
 import in.gov.abdm.nmr.repository.IFetchSpecificDetailsCustomRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +40,15 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         if (Objects.nonNull(dashboardRequestParamsTO.getNmrId()) && !dashboardRequestParamsTO.getNmrId().isEmpty()) {
             sb.append("AND rd.registration_no ILIKE '%" + dashboardRequestParamsTO.getNmrId() + "%' ");
         }
+
+        if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
+            sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
+        }
+
+        if (Objects.nonNull(dashboardRequestParamsTO.getCollegeId()) && !dashboardRequestParamsTO.getCollegeId().isEmpty()) {
+            sb.append("AND qd.college_id = " + dashboardRequestParamsTO.getCollegeId() + " ");
+        }
+
         return sb.toString();
     };
 
@@ -53,12 +64,87 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
     private static final Function<DashboardRequestParamsTO, String> DASHBOARD = (dashboardRequestParamsTO) -> {
         StringBuilder sb = new StringBuilder();
         sb.append(
-                "SELECT doctor, smc, College_Dean, College_Registrar, nmc,calculate.hp_profile_id, calculate.request_id ,rd.registration_no, rd.created_at,stmc.name,hp.full_name from ( select rank() over (PARTITION BY hp_profile_id order by wf.id desc) as current_status, CASE when wf.previous_group_id IN (2,3,4) and wf.action_id = 5 THEN 'SUBMITTED' when wf.previous_group_id = 1 and wf.action_id = 1 THEN 'SUBMITTED' when wf.current_group_id = 1 and wf.action_id = 3 THEN 'PENDING' when wf.previous_group_id IN (2,3,4,5) and wf.action_id IN (2,4,5) THEN 'SUBMITTED' END as doctor, CASE when wf.current_group_id = 2 and wf.action_id IN (1,3,4) THEN 'PENDING' when wf.previous_group_id = 2 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 2 and wf.action_id = 2 THEN 'FORWARDED' when wf.previous_group_id = 2 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 2 and wf.action_id = 3 THEN 'QUERY RAISED' when wf.previous_group_id IN (4,5) and wf.action_id IN (3,4,5) THEN 'FORWARDED' when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' END as SMC, CASE when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'APPROVED' when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and lag(wf.action_id) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and lag(wf.action_id,2) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' when wf.previous_group_id = 2 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' when wf.current_group_id = 4 and wf.action_id IN (1,2,3) THEN 'PENDING' when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 4 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 4 and wf.action_id = 3 THEN 'QUERY RAISED' END as College_Dean, CASE when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and lag(wf.action_id) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and lag(wf.action_id,2) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' when wf.current_group_id = 5 and wf.action_id IN (4,3) THEN 'PENDING' when wf.previous_group_id = 5 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 5 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 5 and wf.action_id = 3 THEN 'QUERY RAISED' END as College_Registrar, CASE when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
-                        "WHEN wf.previous_group_id = 4 and wf.action_id = 4 THEN 'NOT YET RECEIVED' when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'NOT YET RECEIVED' when wf.current_group_id = 3 and wf.action_id IN (4,3) THEN 'PENDING' when wf.previous_group_id = 3 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 3 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 3 and wf.action_id = 3 THEN 'QUERY RAISED' END as NMC, wf.id,request_id, hp_profile_id, previous_group_id, current_group_id, action_id from work_flow_audit as wf INNER JOIN ( select  request_id as lat_request_id, hp_profile_id as lat_hp_profile_id from work_flow order by hp_profile_id desc ) latest_wf on request_id = lat_request_id " +
+                "select doctor, smc, College_Dean, College_Registrar, nmc, nbe, calculate.hp_profile_id, calculate.request_id, rd.registration_no, rd.created_at,stmc.name, hp.full_name " +
+                        "from " +
+                        "( " +
+                        "select     " +
+                        "rank() over (PARTITION BY hp_profile_id order by wf.id desc) as current_status,   " +
+                        "CASE " +
+                        "when wf.previous_group_id IN (2,3,4) and wf.action_id = 5 THEN 'SUBMITTED' " +
+                        "when wf.previous_group_id = 1 and wf.action_id = 1 THEN 'SUBMITTED' " +
+                        "when wf.current_group_id = 1 and wf.action_id = 3 THEN 'PENDING' " +
+                        "when wf.previous_group_id IN (2,3,4,5) and wf.action_id IN (2,4,5) THEN 'SUBMITTED' " +
+                        "END as doctor, " +
+                        "CASE " +
+                        "when wf.current_group_id = 2 and wf.action_id IN (1,3,4) THEN 'PENDING' " +
+                        "when wf.previous_group_id = 2 and wf.action_id = 4 THEN 'APPROVED' " +
+                        "when wf.previous_group_id = 2 and wf.action_id = 2 THEN 'FORWARDED' " +
+                        "when wf.previous_group_id = 2 and wf.action_id = 5 THEN 'REJECTED' " +
+                        "when wf.previous_group_id = 2 and wf.action_id = 3 THEN 'QUERY RAISED' " +
+                        "when wf.previous_group_id IN (4,5) and wf.action_id IN (3,4,5) THEN 'FORWARDED' " +
+                        "when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
+                        "END as SMC, " +
+                        "CASE " +
+                        "when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
+                        "when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and " +
+                        "lag(wf.action_id) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' " +
+                        "when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and " +
+                        "lag(wf.action_id,2) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' " +
+                        "when wf.previous_group_id = 2 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
+                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
+                        "when wf.current_group_id = 4 and wf.action_id IN (1,2,3) THEN 'PENDING' " +
+                        "when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'APPROVED' " +
+                        "when wf.previous_group_id = 4 and wf.action_id = 5 THEN 'REJECTED' " +
+                        "when wf.previous_group_id = 4 and wf.action_id = 3 THEN 'QUERY RAISED' " +
+                        "END as College_Dean, " +
+                        "CASE " +
+                        "when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
+                        "when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and " +
+                        "lag(wf.action_id) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' " +
+                        "when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and " +
+                        "lag(wf.action_id,2) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' " +
+                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
+                        "when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' " +
+                        "when wf.current_group_id = 5 and wf.action_id IN (4,3) THEN 'PENDING' " +
+                        "when wf.previous_group_id = 5 and wf.action_id = 4 THEN 'APPROVED' " +
+                        "when wf.previous_group_id = 5 and wf.action_id = 5 THEN 'REJECTED' " +
+                        "when wf.previous_group_id = 5 and wf.action_id = 3 THEN 'QUERY RAISED' " +
+                        "END as College_Registrar, " +
+                        "CASE " +
+                        "when wf.current_group_id = 7 and wf.action_id IN (1,3,4) THEN 'PENDING' " +
+                        "when wf.previous_group_id = 7 and wf.action_id = 4 THEN 'APPROVED' " +
+                        "when wf.previous_group_id = 7 and wf.action_id = 5 THEN 'REJECTED' " +
+                        "when wf.previous_group_id = 7 and wf.action_id = 3 THEN 'QUERY RAISED' " +
+                        "when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
+                        "END as NBE, " +
+                        "CASE " +
+                        "when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
+                        "when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' " +
+                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
+                        "when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'NOT YET RECEIVED' " +
+                        "when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'NOT YET RECEIVED' " +
+                        "when wf.current_group_id = 3 and wf.action_id IN (4,3) THEN 'PENDING' " +
+                        "when wf.previous_group_id = 3 and wf.action_id = 4 THEN 'APPROVED' " +
+                        "when wf.previous_group_id = 3 and wf.action_id = 5 THEN 'REJECTED' " +
+                        "when wf.previous_group_id = 3 and wf.action_id = 3 THEN 'QUERY RAISED' " +
+                        "END as NMC, " +
+                        "wf.id,request_id, hp_profile_id, previous_group_id, current_group_id, action_id, wf.application_type_id " +
+                        "from main.work_flow_audit as wf " +
+                        "INNER JOIN " +
+                        "( " +
+                        "select  request_id as lat_request_id, hp_profile_id as lat_hp_profile_id " +
+                        "from main.work_flow  " +
+                        "order by hp_profile_id desc " +
+                        ") latest_wf on request_id = lat_request_id " +
                         "WHERE  work_flow_status_id = " + dashboardRequestParamsTO.getWorkFlowStatusId() + " " +
-                        "ORDER BY lat_hp_profile_id desc, wf.id asc ) calculate INNER JOIN registration_details as rd ON rd.hp_profile_id = calculate.hp_profile_id " +
-                        "INNER JOIN state_medical_council as stmc ON rd.state_medical_council_id = stmc.id INNER JOIN hp_profile as hp ON rd.hp_profile_id = hp.id " +
-                        "WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 ");
+                        "order by lat_hp_profile_id desc, wf.id asc " +
+                        ")  " +
+                        "calculate " +
+                        "INNER JOIN main.registration_details as rd on rd.hp_profile_id = calculate.hp_profile_id " +
+                        "INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id " +
+                        "INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id " +
+                        "INNER JOIN main.qualification_details as qd on qd.hp_profile_id = hp.id AND qd.request_id = hp.request_id " +
+                        "WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 AND calculate.application_type_id = " + dashboardRequestParamsTO.getApplicationTypeId() + " ");
 
         String parameters = DASHBOARD_PARAMETERS.apply(dashboardRequestParamsTO);
 
@@ -87,12 +173,87 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
     private static final Function<DashboardRequestParamsTO, String> GET_RECORD_COUNT = (dashboardRequestParamsTO) -> {
         StringBuilder sb = new StringBuilder();
         sb.append(
-                "SELECT count(*) from ( select rank() over (PARTITION BY hp_profile_id order by wf.id desc) as current_status, CASE when wf.previous_group_id IN (2,3,4) and wf.action_id = 5 THEN 'SUBMITTED' when wf.previous_group_id = 1 and wf.action_id = 1 THEN 'SUBMITTED' when wf.current_group_id = 1 and wf.action_id = 3 THEN 'PENDING' when wf.previous_group_id IN (2,3,4,5) and wf.action_id IN (2,4,5) THEN 'SUBMITTED' END as doctor, CASE when wf.current_group_id = 2 and wf.action_id IN (1,3,4) THEN 'PENDING' when wf.previous_group_id = 2 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 2 and wf.action_id = 2 THEN 'FORWARDED' when wf.previous_group_id = 2 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 2 and wf.action_id = 3 THEN 'QUERY RAISED' when wf.previous_group_id IN (4,5) and wf.action_id IN (3,4,5) THEN 'FORWARDED' when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' END as SMC, CASE when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'APPROVED' when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and lag(wf.action_id) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and lag(wf.action_id,2) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' when wf.previous_group_id = 2 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' when wf.current_group_id = 4 and wf.action_id IN (1,2,3) THEN 'PENDING' when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 4 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 4 and wf.action_id = 3 THEN 'QUERY RAISED' END as College_Dean, CASE when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and lag(wf.action_id) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and lag(wf.action_id,2) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' when wf.current_group_id = 5 and wf.action_id IN (4,3) THEN 'PENDING' when wf.previous_group_id = 5 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 5 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 5 and wf.action_id = 3 THEN 'QUERY RAISED' END as College_Registrar, CASE when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
-                        "WHEN wf.previous_group_id = 4 and wf.action_id = 4 THEN 'NOT YET RECEIVED' when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'NOT YET RECEIVED' when wf.current_group_id = 3 and wf.action_id IN (4,3) THEN 'PENDING' when wf.previous_group_id = 3 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 3 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 3 and wf.action_id = 3 THEN 'QUERY RAISED' END as NMC, wf.id,request_id, hp_profile_id, previous_group_id, current_group_id, action_id from work_flow_audit as wf INNER JOIN ( select  request_id as lat_request_id, hp_profile_id as lat_hp_profile_id from work_flow order by hp_profile_id desc ) latest_wf on request_id = lat_request_id " +
+                "select count(*) " +
+                        "from " +
+                        "( " +
+                        "select     " +
+                        "rank() over (PARTITION BY hp_profile_id order by wf.id desc) as current_status,   " +
+                        "CASE " +
+                        "when wf.previous_group_id IN (2,3,4) and wf.action_id = 5 THEN 'SUBMITTED' " +
+                        "when wf.previous_group_id = 1 and wf.action_id = 1 THEN 'SUBMITTED' " +
+                        "when wf.current_group_id = 1 and wf.action_id = 3 THEN 'PENDING' " +
+                        "when wf.previous_group_id IN (2,3,4,5) and wf.action_id IN (2,4,5) THEN 'SUBMITTED' " +
+                        "END as doctor, " +
+                        "CASE " +
+                        "when wf.current_group_id = 2 and wf.action_id IN (1,3,4) THEN 'PENDING' " +
+                        "when wf.previous_group_id = 2 and wf.action_id = 4 THEN 'APPROVED' " +
+                        "when wf.previous_group_id = 2 and wf.action_id = 2 THEN 'FORWARDED' " +
+                        "when wf.previous_group_id = 2 and wf.action_id = 5 THEN 'REJECTED' " +
+                        "when wf.previous_group_id = 2 and wf.action_id = 3 THEN 'QUERY RAISED' " +
+                        "when wf.previous_group_id IN (4,5) and wf.action_id IN (3,4,5) THEN 'FORWARDED' " +
+                        "when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
+                        "END as SMC, " +
+                        "CASE " +
+                        "when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
+                        "when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and " +
+                        "lag(wf.action_id) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' " +
+                        "when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and " +
+                        "lag(wf.action_id,2) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' " +
+                        "when wf.previous_group_id = 2 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
+                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
+                        "when wf.current_group_id = 4 and wf.action_id IN (1,2,3) THEN 'PENDING' " +
+                        "when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'APPROVED' " +
+                        "when wf.previous_group_id = 4 and wf.action_id = 5 THEN 'REJECTED' " +
+                        "when wf.previous_group_id = 4 and wf.action_id = 3 THEN 'QUERY RAISED' " +
+                        "END as College_Dean, " +
+                        "CASE " +
+                        "when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
+                        "when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and " +
+                        "lag(wf.action_id) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' " +
+                        "when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and " +
+                        "lag(wf.action_id,2) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' " +
+                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
+                        "when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' " +
+                        "when wf.current_group_id = 5 and wf.action_id IN (4,3) THEN 'PENDING' " +
+                        "when wf.previous_group_id = 5 and wf.action_id = 4 THEN 'APPROVED' " +
+                        "when wf.previous_group_id = 5 and wf.action_id = 5 THEN 'REJECTED' " +
+                        "when wf.previous_group_id = 5 and wf.action_id = 3 THEN 'QUERY RAISED' " +
+                        "END as College_Registrar, " +
+                        "CASE " +
+                        "when wf.current_group_id = 7 and wf.action_id IN (1,3,4) THEN 'PENDING' " +
+                        "when wf.previous_group_id = 7 and wf.action_id = 4 THEN 'APPROVED' " +
+                        "when wf.previous_group_id = 7 and wf.action_id = 5 THEN 'REJECTED' " +
+                        "when wf.previous_group_id = 7 and wf.action_id = 3 THEN 'QUERY RAISED' " +
+                        "when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
+                        "END as NBE, " +
+                        "CASE " +
+                        "when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
+                        "when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' " +
+                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
+                        "when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'NOT YET RECEIVED' " +
+                        "when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'NOT YET RECEIVED' " +
+                        "when wf.current_group_id = 3 and wf.action_id IN (4,3) THEN 'PENDING' " +
+                        "when wf.previous_group_id = 3 and wf.action_id = 4 THEN 'APPROVED' " +
+                        "when wf.previous_group_id = 3 and wf.action_id = 5 THEN 'REJECTED' " +
+                        "when wf.previous_group_id = 3 and wf.action_id = 3 THEN 'QUERY RAISED' " +
+                        "END as NMC, " +
+                        "wf.id,request_id, hp_profile_id, previous_group_id, current_group_id, action_id, wf.application_type_id " +
+                        "from main.work_flow_audit as wf " +
+                        "INNER JOIN " +
+                        "( " +
+                        "select  request_id as lat_request_id, hp_profile_id as lat_hp_profile_id " +
+                        "from main.work_flow  " +
+                        "order by hp_profile_id desc " +
+                        ") latest_wf on request_id = lat_request_id " +
                         "WHERE  work_flow_status_id = " + dashboardRequestParamsTO.getWorkFlowStatusId() + " " +
-                        "ORDER BY lat_hp_profile_id desc, wf.id asc ) calculate INNER JOIN registration_details as rd ON rd.hp_profile_id = calculate.hp_profile_id " +
-                        "INNER JOIN state_medical_council as stmc ON rd.state_medical_council_id = stmc.id INNER JOIN hp_profile as hp ON rd.hp_profile_id = hp.id " +
-                        "WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 ");
+                        "order by lat_hp_profile_id desc, wf.id asc " +
+                        ")  " +
+                        "calculate " +
+                        "INNER JOIN main.registration_details as rd on rd.hp_profile_id = calculate.hp_profile_id " +
+                        "INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id " +
+                        "INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id " +
+                        "INNER JOIN main.qualification_details as qd on qd.hp_profile_id = hp.id AND qd.request_id = hp.request_id " +
+                        "WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 AND calculate.application_type_id = " + dashboardRequestParamsTO.getApplicationTypeId() + " ");
 
         String parameters = DASHBOARD_PARAMETERS.apply(dashboardRequestParamsTO);
 
@@ -121,12 +282,13 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setCollegeDean((String) result[2]);
             dashBoardTO.setCollegeRegistrar((String) result[3]);
             dashBoardTO.setNmc((String) result[4]);
-            dashBoardTO.setHpProfileId((BigInteger) result[5]);
-            dashBoardTO.setRequestId((String) result[6]);
-            dashBoardTO.setRegistrationNo((String) result[7]);
-            dashBoardTO.setCreatedAt((String) result[8]);
-            dashBoardTO.setName((String) result[9]);
-            dashBoardTO.setFullName((String) result[10]);
+            dashBoardTO.setNbe((String) result[5]);
+            dashBoardTO.setHpProfileId((BigInteger) result[6]);
+            dashBoardTO.setRequestId((String) result[7]);
+            dashBoardTO.setRegistrationNo((String) result[8]);
+            dashBoardTO.setCreatedAt((String) result[9]);
+            dashBoardTO.setName((String) result[10]);
+            dashBoardTO.setFullName((String) result[11]);
             dashboardTOList.add(dashBoardTO);
         });
         dashBoardResponseTO.setDashboardTOList(dashboardTOList);
