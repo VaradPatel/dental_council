@@ -166,6 +166,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	@Override
 	public HpProfileAddResponseTO submitHpProfile(HpSubmitRequestTO hpSubmitRequestTO)
 			throws InvalidRequestException, WorkFlowException {
+		String requestId = null;
 		if(hpSubmitRequestTO.getHpProfileId() != null &&
 				iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(hpSubmitRequestTO.getHpProfileId())){
 			throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
@@ -173,7 +174,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 		if (hpSubmitRequestTO.getRequestId() != null && WorkflowStatus.QUERY_RAISED.getId().equals(workFlowRepository.findByRequestId(hpSubmitRequestTO.getRequestId()).getWorkFlowStatus().getId())) {
 			iWorkFlowService.assignQueriesBackToQueryCreator(hpSubmitRequestTO.getRequestId());
 		}else {
-			String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(hpSubmitRequestTO.getApplicationTypeId()));
+			requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(hpSubmitRequestTO.getApplicationTypeId()));
 			WorkFlowRequestTO workFlowRequestTO = WorkFlowRequestTO.builder().requestId(requestId)
 					.applicationTypeId(hpSubmitRequestTO.getApplicationTypeId())
 					.hpProfileId(hpSubmitRequestTO.getHpProfileId())
@@ -187,7 +188,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 			hpProfileById.setRequestId(requestId);
 			iHpProfileRepository.save(hpProfileById);
 		}
-		return new HpProfileAddResponseTO(201, "Hp Profile Submitted Successfully!", hpSubmitRequestTO.getHpProfileId());
+		return new HpProfileAddResponseTO(201, "Hp Profile Submitted Successfully!", hpSubmitRequestTO.getHpProfileId(),requestId);
 	}
 
 	@Override
@@ -232,5 +233,4 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 		return BigInteger.ZERO;
 
 	}
-
 }
