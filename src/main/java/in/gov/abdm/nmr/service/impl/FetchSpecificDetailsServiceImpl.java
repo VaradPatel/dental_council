@@ -1,7 +1,9 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.enums.*;
+import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetails;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
@@ -57,21 +59,21 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
 
         return fetchDetailsForListingByStatus(groupName, applicationType, workFlowStatus)
                 .stream()
-                .map(fetchSpecificDetails-> {
-                    FetchSpecificDetailsResponseTO fetchSpecificDetailsResponseTO=iFetchSpecificDetailsMapper.toFetchSpecificDetailsResponseTO(fetchSpecificDetails);
+                .map(fetchSpecificDetails -> {
+                    FetchSpecificDetailsResponseTO fetchSpecificDetailsResponseTO = iFetchSpecificDetailsMapper.toFetchSpecificDetailsResponseTO(fetchSpecificDetails);
 
-                    if(Group.COLLEGE_ADMIN.getDescription().equals(fetchSpecificDetails.getGroupName()) ||
+                    if (Group.COLLEGE_ADMIN.getDescription().equals(fetchSpecificDetails.getGroupName()) ||
                             Group.COLLEGE_DEAN.getDescription().equals(fetchSpecificDetails.getGroupName()) ||
-                                    Group.COLLEGE_REGISTRAR.getDescription().equals(fetchSpecificDetails.getGroupName())){
+                            Group.COLLEGE_REGISTRAR.getDescription().equals(fetchSpecificDetails.getGroupName())) {
                         fetchSpecificDetailsResponseTO.setCollegeVerificationStatus(fetchSpecificDetails.getWorkFlowStatus());
                     }
-                    if(Group.SMC.getDescription().equals(fetchSpecificDetails.getGroupName())){
+                    if (Group.SMC.getDescription().equals(fetchSpecificDetails.getGroupName())) {
                         fetchSpecificDetailsResponseTO.setCouncilVerificationStatus(fetchSpecificDetails.getWorkFlowStatus());
                     }
-                    if(Group.NMC.getDescription().equals(fetchSpecificDetails.getGroupName())){
+                    if (Group.NMC.getDescription().equals(fetchSpecificDetails.getGroupName())) {
                         fetchSpecificDetailsResponseTO.setNMCVerificationStatus(fetchSpecificDetails.getWorkFlowStatus());
                     }
-                    if(fetchSpecificDetails.getDateOfSubmission()!=null) {
+                    if (fetchSpecificDetails.getDateOfSubmission() != null) {
                         long diffInMillis = Math.abs(new Date().getTime() - fetchSpecificDetails.getDateOfSubmission().getTime());
                         long diff = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
                         fetchSpecificDetailsResponseTO.setPendency(BigInteger.valueOf(diff));
@@ -132,6 +134,12 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         return iFetchSpecificDetailsCustomRepository.fetchDashboardData(dashboardRequestParamsTO, pageable);
     }
 
+    /**
+     * this method used to get track application details.
+     *
+     * @param requestTO  hpId and filter values and pagination details
+     * @return list of application details for particular user.
+     */
     @Override
     public List<FetchTrackApplicationResponseTO> fetchTrackApplicationDetails(FetchTrackApplicationRequestTO requestTO) {
         List<FetchTrackApplicationResponseTO> list = new ArrayList<>();

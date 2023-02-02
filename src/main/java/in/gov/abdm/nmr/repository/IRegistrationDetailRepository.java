@@ -12,7 +12,7 @@ public interface IRegistrationDetailRepository extends JpaRepository<Registratio
     @Query(value = "SELECT * FROM registration_details where hp_profile_id = :hpProfileId", nativeQuery = true)
     RegistrationDetails getRegistrationDetailsByHpProfileId(BigInteger hpProfileId);
 
-    @Query(value = "SELECT * FROM main.hp_profile where registration_id =:registrationId ORDER BY id asc LIMIT 2 OFFSET 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM hp_profile where registration_id =:registrationId ORDER BY id asc LIMIT 2 OFFSET 1", nativeQuery = true)
     HpProfile findSecondLastHpProfile(BigInteger registrationId);
 
 
