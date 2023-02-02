@@ -130,7 +130,6 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
 
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User userDetail = userDetailRepository.findByUsername(userName);
-
         BigInteger groupId = userDetail.getGroup().getId();
         BigInteger userId = userDetail.getId();
 
