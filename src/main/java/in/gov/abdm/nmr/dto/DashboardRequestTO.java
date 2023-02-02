@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DashboardRequestTO {
-    private String workFlowStatus;
+    private String workFlowStatusId;
+    private String applicationTypeId;
     private String name;
     private String nmrId;
     private String search;

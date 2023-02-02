@@ -1,20 +1,24 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.entity.CollegeDean;
+import in.gov.abdm.nmr.entity.CollegeRegistrar;
+import in.gov.abdm.nmr.entity.SMCProfile;
+import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetails;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
-import in.gov.abdm.nmr.repository.IFetchSpecificDetailsCustomRepository;
-import in.gov.abdm.nmr.repository.IFetchSpecificDetailsRepository;
+import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.Tuple;
@@ -51,6 +55,18 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
     @Autowired
     private IFetchSpecificDetailsCustomRepository iFetchSpecificDetailsCustomRepository;
 
+    @Autowired
+    private IUserRepository userDetailRepository;
+
+    @Autowired
+    private ISmcProfileRepository smcProfileRepository;
+
+    @Autowired
+    private ICollegeDeanRepository collegeDeanRepository;
+
+    @Autowired
+    private ICollegeRegistrarRepository collegeRegistrarRepository;
+
     @Override
     public List<FetchSpecificDetailsResponseTO> fetchSpecificDetails(String groupName, String applicationType, String workFlowStatus) throws InvalidRequestException {
         validateGroupName(groupName);
@@ -59,21 +75,21 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
 
         return fetchDetailsForListingByStatus(groupName, applicationType, workFlowStatus)
                 .stream()
-                .map(fetchSpecificDetails -> {
-                    FetchSpecificDetailsResponseTO fetchSpecificDetailsResponseTO = iFetchSpecificDetailsMapper.toFetchSpecificDetailsResponseTO(fetchSpecificDetails);
+                .map(fetchSpecificDetails-> {
+                    FetchSpecificDetailsResponseTO fetchSpecificDetailsResponseTO=iFetchSpecificDetailsMapper.toFetchSpecificDetailsResponseTO(fetchSpecificDetails);
 
-                    if (Group.COLLEGE_ADMIN.getDescription().equals(fetchSpecificDetails.getGroupName()) ||
+                    if(Group.COLLEGE_ADMIN.getDescription().equals(fetchSpecificDetails.getGroupName()) ||
                             Group.COLLEGE_DEAN.getDescription().equals(fetchSpecificDetails.getGroupName()) ||
-                            Group.COLLEGE_REGISTRAR.getDescription().equals(fetchSpecificDetails.getGroupName())) {
+                            Group.COLLEGE_REGISTRAR.getDescription().equals(fetchSpecificDetails.getGroupName())){
                         fetchSpecificDetailsResponseTO.setCollegeVerificationStatus(fetchSpecificDetails.getWorkFlowStatus());
                     }
-                    if (Group.SMC.getDescription().equals(fetchSpecificDetails.getGroupName())) {
+                    if(Group.SMC.getDescription().equals(fetchSpecificDetails.getGroupName())){
                         fetchSpecificDetailsResponseTO.setCouncilVerificationStatus(fetchSpecificDetails.getWorkFlowStatus());
                     }
-                    if (Group.NMC.getDescription().equals(fetchSpecificDetails.getGroupName())) {
+                    if(Group.NMC.getDescription().equals(fetchSpecificDetails.getGroupName())){
                         fetchSpecificDetailsResponseTO.setNMCVerificationStatus(fetchSpecificDetails.getWorkFlowStatus());
                     }
-                    if (fetchSpecificDetails.getDateOfSubmission() != null) {
+                    if(fetchSpecificDetails.getDateOfSubmission()!=null) {
                         long diffInMillis = Math.abs(new Date().getTime() - fetchSpecificDetails.getDateOfSubmission().getTime());
                         long diff = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
                         fetchSpecificDetailsResponseTO.setPendency(BigInteger.valueOf(diff));
@@ -111,21 +127,37 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
 
     @Override
     public DashboardResponseTO fetchDashboardData(DashboardRequestTO dashboardRequestTO) throws InvalidRequestException {
-        String workFlowStatus = dashboardRequestTO.getWorkFlowStatus();
+
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userDetail = userDetailRepository.findByUsername(userName);
+
+        BigInteger groupId = userDetail.getGroup().getId();
+        BigInteger userId = userDetail.getId();
+
         String sortOrder = dashboardRequestTO.getSortOrder();
         String column = getColumnToSort(dashboardRequestTO.getSortBy());
         int size = dashboardRequestTO.getSize();
         int pageNo = dashboardRequestTO.getPageNo();
-        validateWorkFlowStatus(workFlowStatus);
-        String workFlowStatusId = Arrays.stream(WorkflowStatus.values()).filter(workFlow -> workFlowStatus.equals(workFlow.getDescription())).findFirst().get().getId().toString();
         DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
-        dashboardRequestParamsTO.setWorkFlowStatusId(workFlowStatusId);
+        dashboardRequestParamsTO.setWorkFlowStatusId(dashboardRequestTO.getWorkFlowStatusId());
+        dashboardRequestParamsTO.setApplicationTypeId(dashboardRequestTO.getApplicationTypeId());
         dashboardRequestParamsTO.setName(dashboardRequestTO.getName());
         dashboardRequestParamsTO.setNmrId(dashboardRequestTO.getNmrId());
         dashboardRequestParamsTO.setSearch(dashboardRequestTO.getSearch());
         dashboardRequestParamsTO.setPageNo(pageNo);
         dashboardRequestParamsTO.setSize(size);
         dashboardRequestParamsTO.setSortBy(column);
+
+        if(groupId.equals(Group.SMC.getId())){
+            SMCProfile smcProfile = smcProfileRepository.findByUserDetail(userId);
+            dashboardRequestParamsTO.setSmcId(smcProfile.getStateMedicalCouncil().getId().toString());
+        }else if (groupId.equals(Group.COLLEGE_DEAN.getId())){
+            CollegeDean collegeDean = collegeDeanRepository.findByUserDetail(userId);
+            dashboardRequestParamsTO.setCollegeId(collegeDean.getCollege().getId().toString());
+        }else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())){
+            CollegeRegistrar collegeRegistrar = collegeRegistrarRepository.findByUserDetail(userId);
+            dashboardRequestParamsTO.setCollegeId(collegeRegistrar.getCollege().getId().toString());
+        }
 
         final String sortingOrder = sortOrder == null ? defaultSortOrder : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
@@ -134,12 +166,6 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         return iFetchSpecificDetailsCustomRepository.fetchDashboardData(dashboardRequestParamsTO, pageable);
     }
 
-    /**
-     * this method used to get track application details.
-     *
-     * @param requestTO  hpId and filter values and pagination details
-     * @return list of application details for particular user.
-     */
     @Override
     public List<FetchTrackApplicationResponseTO> fetchTrackApplicationDetails(FetchTrackApplicationRequestTO requestTO) {
         List<FetchTrackApplicationResponseTO> list = new ArrayList<>();
@@ -200,14 +226,15 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         Map<String, String> columnToSortMap = new HashMap<>();
         columnToSortMap.put("doctor", " doctor");
         columnToSortMap.put("smc", " smc");
-        columnToSortMap.put("collegeDean", " College_Dean");
-        columnToSortMap.put("collegeRegistrar", " College_Registrar");
+        columnToSortMap.put("collegeDean", " college_dean");
+        columnToSortMap.put("collegeRegistrar", " college_registrar");
         columnToSortMap.put("nmc", " nmc");
-        columnToSortMap.put("hpProfileId", " calculate.hp_profile_id");
-        columnToSortMap.put("requestId", " calculate.request_id");
-        columnToSortMap.put("createdAt", " rd.created_at");
-        columnToSortMap.put("name", " stmc.name");
-        columnToSortMap.put("fullName", " hp.full_name");
+        columnToSortMap.put("hpProfileId", " hp_profile_id");
+        columnToSortMap.put("requestId", " request_id");
+        columnToSortMap.put("registrationNo", " registration_no");
+        columnToSortMap.put("createdAt", " created_at");
+        columnToSortMap.put("name", " name");
+        columnToSortMap.put("fullName", " full_name");
         return columnToSortMap;
     }
 }
