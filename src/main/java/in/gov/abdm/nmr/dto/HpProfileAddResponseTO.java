@@ -10,4 +10,5 @@ public class HpProfileAddResponseTO {
 	private Integer status;
 	private String message;
 	private BigInteger hpProfileId;
+	private String requestId;
 }
