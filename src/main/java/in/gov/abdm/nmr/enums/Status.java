@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.util;
+package in.gov.abdm.nmr.enums;
 
 import lombok.Getter;
 

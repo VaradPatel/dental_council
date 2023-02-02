@@ -5,7 +5,7 @@ import in.gov.abdm.nmr.dto.CollegeRegistrationResponseTO;
 import in.gov.abdm.nmr.dto.CollegeRegistrationTO;
 import in.gov.abdm.nmr.repository.ICollegeRepositoryCustom;
 import in.gov.abdm.nmr.util.NMRConstants;
-import in.gov.abdm.nmr.util.Status;
+import in.gov.abdm.nmr.enums.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -107,22 +107,23 @@ public class CollegeRegistrationImpl implements ICollegeRepositoryCustom {
         List<Object[]> results = query.getResultList();
         results.forEach(result -> {
             CollegeRegistrationTO collegeRegistrationTO = new CollegeRegistrationTO();
-            collegeRegistrationTO.setCollegeId((String) result[0]);
-            collegeRegistrationTO.setCollegeName((String) result[1]);
-            collegeRegistrationTO.setCouncilName((String) result[2]);
-            if (result[3] != null) {
-                if (Status.APPROVED.getName().equals(result[3])) {
+            collegeRegistrationTO.setId((BigInteger) result[0]);
+            collegeRegistrationTO.setCollegeId((String) result[1]);
+            collegeRegistrationTO.setCollegeName((String) result[2]);
+            collegeRegistrationTO.setCouncilName((String) result[3]);
+            if (result[4] != null) {
+                if (Status.APPROVED.getName().equals(result[4])) {
                     collegeRegistrationTO.setStatus(Status.VERIFIED.getName());
-                } else if (Status.PENDING.getName().equals(result[3])) {
+                } else if (Status.PENDING.getName().equals(result[4])) {
                     collegeRegistrationTO.setStatus(Status.SUMBMITTED.getName());
                 } else {
-                    collegeRegistrationTO.setStatus((String) result[3]);
+                    collegeRegistrationTO.setStatus((String) result[4]);
                 }
             } else {
-                collegeRegistrationTO.setStatus((String) result[3]);
+                collegeRegistrationTO.setStatus((String) result[4]);
             }
-            collegeRegistrationTO.setSubmittedOn((Date) result[4]);
-            collegeRegistrationTO.setPendency((Double) result[5]);
+            collegeRegistrationTO.setSubmittedOn((Date) result[5]);
+            collegeRegistrationTO.setPendency((Double) result[6]);
 
             collegeRegistrationTOS.add(collegeRegistrationTO);
         });
