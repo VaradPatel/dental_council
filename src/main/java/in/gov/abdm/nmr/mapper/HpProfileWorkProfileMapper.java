@@ -14,7 +14,7 @@ public final class HpProfileWorkProfileMapper {
 
     @Autowired
     IAddressMapper addressMapper;
-    public static HpProfileWorkDetailsResponseTO convertEntitiesToWorkDetailResponseTo(List<SuperSpeciality> superSpecialities, WorkProfile workProfile) {
+    public static HpProfileWorkDetailsResponseTO    convertEntitiesToWorkDetailResponseTo(List<SuperSpeciality> superSpecialities, WorkProfile workProfile) {
         HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO =  new HpProfileWorkDetailsResponseTO();
         SpecialityDetailsTO specialityDetailsTO =  new SpecialityDetailsTO();
         WorkDetailsTO workDetailsTO =  new WorkDetailsTO();
@@ -29,6 +29,10 @@ public final class HpProfileWorkProfileMapper {
         currentWorkDetailsTO.setFacility(workProfile.getFacility());
         currentWorkDetailsTO.setUrl(workProfile.getUrl());
         currentWorkDetailsTO.setOrganizationType(OrganizationTypeTO.builder().id(workProfile.getOrganizationType()).build());
+        StateTO state = StateTO.builder().id(workProfile.getState().getId()).name(workProfile.getState().getName()).build();
+        DistrictTO district = DistrictTO.builder().id(workProfile.getDistrict().getId()).name(workProfile.getDistrict().getName()).build();
+        AddressTO address = AddressTO.builder().addressLine1(workProfile.getAddress()).district(district).state(state).pincode(workProfile.getPincode()).build();
+        currentWorkDetailsTO.setAddress(address);
 
         hpProfileWorkDetailsResponseTO.setWorkDetails(workDetailsTO);
         hpProfileWorkDetailsResponseTO.setSpecialityDetails(specialityDetailsTO);

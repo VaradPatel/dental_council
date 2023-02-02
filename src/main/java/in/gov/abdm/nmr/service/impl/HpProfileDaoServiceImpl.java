@@ -510,6 +510,11 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 		addWorkProfile.setHpProfileId(hpProfileId);
 		addWorkProfile.setProofOfWorkAttachment(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().getProof().getBytes());
 		addWorkProfile.setRequestId(hpWorkProfileUpdateRequestTO.getRequestId());
+		addWorkProfile.setAddress(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().getAddress().getAddressLine1());
+		addWorkProfile.setState(stateRepository.findById(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().getAddress().getState().getId()).get());
+		addWorkProfile.setDistrict(districtRepository.findById(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().getAddress().getDistrict().getId()).get());
+		addWorkProfile.setPincode(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().getAddress().getPincode());
+		addWorkProfile.setOrganizationType(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().getOrganizationType().getId());
 	}
 
 	private String checkIsNullAndAddSeparator(String string) {

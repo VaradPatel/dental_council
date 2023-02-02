@@ -44,6 +44,8 @@ public final class HpPersonalDetailMapper {
         addressTO.setEmail(address.getEmail());
         addressTO.setMobile(address.getMobile());
         addressTO.setId(address.getId());
+        addressTO.setPincode(address.getPincode());
+
 
         imrDetailsTO.setRegistrationNumber(hpProfile.getRegistrationId());
         imrDetailsTO.setYearOfInfo(hpProfile.getYearOfInfo());
