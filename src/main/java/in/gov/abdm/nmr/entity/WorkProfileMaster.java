@@ -32,9 +32,8 @@ public class WorkProfileMaster {
 
 //    @OneToMany(mappedBy = "subdistrict", fetch = FetchType.LAZY)
 //    private List<City> cities;
-    
-    @OneToOne(mappedBy = "workProfile", fetch = FetchType.LAZY)
-    private Address address;
+
+    private String address;
     
     private Integer facility;
     private Integer isUserCurrentlyWorking;
