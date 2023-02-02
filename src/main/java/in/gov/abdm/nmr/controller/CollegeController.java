@@ -48,7 +48,7 @@ public class CollegeController {
 
     @GetMapping(path = ProtectedPaths.PATH_COLLEGE_PROFILE)
     //---
-    @RolesAllowed({RoleConstants.COLLEGE_ADMIN})
+    @RolesAllowed({RoleConstants.COLLEGE_ADMIN, RoleConstants.NATIONAL_MEDICAL_COUNCIL})
     @SecurityRequirement(name = "bearerAuth")
     public CollegeProfileTo retrieveCollegeProfile(@PathVariable(name = "id") BigInteger collegeId) throws NmrException {
         return collegeService.retrieveCollegeProfile(collegeId);
