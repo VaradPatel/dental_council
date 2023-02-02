@@ -41,36 +41,26 @@ public class QualificationDetails {
     @OneToOne
     @JoinColumn(name = "district_id", referencedColumnName = "id")
     private District district;
-    
-//    private BigInteger districtId;
 
     @OneToOne
     @JoinColumn(name = "college_id", referencedColumnName = "id")
     private College college;
 
-//    private BigInteger collegeId;
-
     @OneToOne
     @JoinColumn(name = "country_id", referencedColumnName = "id")
     private Country country;
-    
-//    private BigInteger countryId;
 
     @OneToOne
     @JoinColumn(name = "course_id", referencedColumnName = "id")
     private Course course;
-//    private BigInteger courseId;
 
     @OneToOne
     @JoinColumn(name = "state_id", referencedColumnName = "id")
     private State state;
-//    private BigInteger stateId;
 
     @OneToOne
     @JoinColumn(name = "university_id", referencedColumnName = "id")
     private University university;
-    
-//    private BigInteger universityId;
 
     @ManyToOne
     @JoinColumn(name = "registration_details_id", referencedColumnName = "id")
@@ -79,10 +69,5 @@ public class QualificationDetails {
     @ManyToOne
     @JoinColumn(name = "hpProfileId", referencedColumnName = "id")
     private HpProfile hpProfile;
-
-    
-//    @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "qualificationStatus", referencedColumnName = "id")
-//    private QualificationStatus qualificationStatus;
 
 }

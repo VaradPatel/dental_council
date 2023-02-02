@@ -11,4 +11,5 @@ public class HpProfileRegistrationResponseTO {
     private List<QualificationDetailResponseTo> qualificationDetailResponseTos;
     private NbeResponseTo nbeResponseTo;
     private BigInteger hpProfileId;
+    private String requestId;
 }

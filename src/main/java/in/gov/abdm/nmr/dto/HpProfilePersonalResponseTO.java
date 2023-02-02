@@ -10,5 +10,6 @@ public class HpProfilePersonalResponseTO {
     private AddressTO communicationAddress;
     private IMRDetailsTO imrDetails;
     private BigInteger hpProfileId;
+    private String requestId;
 
 }

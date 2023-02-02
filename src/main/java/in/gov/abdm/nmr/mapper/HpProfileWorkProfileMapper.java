@@ -37,6 +37,7 @@ public final class HpProfileWorkProfileMapper {
         hpProfileWorkDetailsResponseTO.setWorkDetails(workDetailsTO);
         hpProfileWorkDetailsResponseTO.setSpecialityDetails(specialityDetailsTO);
         hpProfileWorkDetailsResponseTO.setCurrentWorkDetails(currentWorkDetailsTO);
+        hpProfileWorkDetailsResponseTO.setRequestId(workProfile.getRequestId());
         return hpProfileWorkDetailsResponseTO;
     }
 }

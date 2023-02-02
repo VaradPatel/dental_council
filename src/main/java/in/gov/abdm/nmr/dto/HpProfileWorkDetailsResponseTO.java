@@ -10,5 +10,6 @@ public class HpProfileWorkDetailsResponseTO {
     private WorkDetailsTO workDetails;
     private CurrentWorkDetailsTO currentWorkDetails;
     private BigInteger hpProfileId;
+    private String requestId;
 
 }

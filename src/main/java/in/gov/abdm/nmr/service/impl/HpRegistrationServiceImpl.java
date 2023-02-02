@@ -186,6 +186,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 			hpProfileById.setTransactionId(hpSubmitRequestTO.getTransactionId());
 			hpProfileById.setESignStatus(hpSubmitRequestTO.getESignStatus());
 			hpProfileById.setRequestId(requestId);
+			RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
+			registrationDetails.setRequestId(requestId);
+			WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(hpSubmitRequestTO.getHpProfileId());
+			workProfile.setRequestId(requestId);
+			registrationDetailRepository.save(registrationDetails);
+			workProfileRepository.save(workProfile);
 			iHpProfileRepository.save(hpProfileById);
 		}
 		return new HpProfileAddResponseTO(201, "Hp Profile Submitted Successfully!", hpSubmitRequestTO.getHpProfileId(),requestId);

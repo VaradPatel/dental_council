@@ -37,6 +37,7 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
         if(!indianQualifications.isEmpty()) {
             qualifications.addAll(indianQualifications.stream().map(indianQualification -> {
                 QualificationDetailResponseTo qualificationDetailResponseTo = new QualificationDetailResponseTo();
+
                 qualificationDetailResponseTo.setId(indianQualification.getId());
                 qualificationDetailResponseTo.setQualificationYear(indianQualification.getQualificationYear());
                 qualificationDetailResponseTo.setQualificationMonth(indianQualification.getQualificationMonth());
@@ -69,6 +70,7 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
         hpProfileRegistrationResponseTO.setRegistrationDetailTO(registrationDetailsTo);
         hpProfileRegistrationResponseTO.setNbeResponseTo(nbeResponseTo);
         hpProfileRegistrationResponseTO.setQualificationDetailResponseTos(qualifications);
+        hpProfileRegistrationResponseTO.setRequestId(registrationDetails.getRequestId());
         return  hpProfileRegistrationResponseTO;
     }
 }
