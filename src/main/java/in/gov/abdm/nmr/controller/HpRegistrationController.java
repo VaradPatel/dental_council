@@ -22,7 +22,7 @@ public class HpRegistrationController {
         this.hpService = hpService;
     }
 
-    @GetMapping(path = "/hpSmcRegistrationDetail", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/hpSmcRegistrationDetail", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(
             @RequestBody SmcRegistrationDetailRequestTO smcRegistrationDetailRequestTO) {
         return hpService.fetchSmcRegistrationDetail(smcRegistrationDetailRequestTO);
