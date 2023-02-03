@@ -1,29 +1,24 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.io.IOException;
 import java.math.BigInteger;
-import java.util.List;
 
 import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.repository.*;
-import in.gov.abdm.nmr.service.INotificationService;
-import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;
+import in.gov.abdm.nmr.service.*;
+import in.gov.abdm.nmr.util.NMRUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.INextGroup;
-import in.gov.abdm.nmr.service.IElasticsearchDaoService;
-import in.gov.abdm.nmr.service.IWorkFlowService;
 import org.springframework.util.CollectionUtils;
 
 import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
@@ -84,15 +79,24 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     @Autowired
     ICollegeRepository collegeRepository;
 
+    @Autowired
+    private IUserDaoService userDetailService;
+
     @Override
     @Transactional
     public void initiateSubmissionWorkFlow(WorkFlowRequestTO requestTO) throws WorkFlowException {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = null;
+        if (userName != null) {
+            user = userDetailService.findByUsername(userName);
+        }
+
         INextGroup iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(requestTO.getApplicationTypeId(), requestTO.getActorId(), requestTO.getActionId());
         if (iNextGroup != null) {
             HpProfile hpProfile = iHpProfileRepository.findById(requestTO.getHpProfileId()).get();
             WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
             if (workFlow == null) {
-                workFlow = buildNewWorkFlow(requestTO, iNextGroup, hpProfile);
+                workFlow = buildNewWorkFlow(requestTO, iNextGroup, hpProfile, user);
                 iWorkFlowRepository.save(workFlow);
             } else {
                 workFlow.setUpdatedAt(null);
@@ -101,12 +105,13 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 workFlow.setCurrentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null);
                 workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
                 workFlow.setRemarks(requestTO.getRemarks());
+                workFlow.setUserId(user);
             }
             if (isLastStepOfWorkFlow(iNextGroup)) {
                 workflowPostProcessorService.performPostWorkflowUpdates(requestTO,hpProfile,iNextGroup);
 
             }
-            iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile));
+            iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
             notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
 
         } else {
@@ -132,12 +137,17 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
     @Override
     public void initiateCollegeRegistrationWorkFlow(String requestId, BigInteger applicationTypeId, BigInteger actorId, BigInteger actionId) throws WorkFlowException {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = null;
+        if (userName != null) {
+            user = userDetailService.findByUsername(userName);
+        }
 
         INextGroup iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(applicationTypeId, actorId, actionId);
         if (iNextGroup != null) {
             WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestId);
             if (workFlow == null) {
-                WorkFlow collegeWorkFlow = buildNewCollegeWorkFlow(requestId, applicationTypeId, actionId, actorId, iNextGroup);
+                WorkFlow collegeWorkFlow = buildNewCollegeWorkFlow(requestId, applicationTypeId, actionId, actorId, iNextGroup, user);
                 workFlow = iWorkFlowRepository.save(collegeWorkFlow);
             } else {
                 workFlow.setUpdatedAt(null);
@@ -145,8 +155,9 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 workFlow.setPreviousGroup(workFlow.getCurrentGroup());
                 workFlow.setCurrentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null);
                 workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
+                workFlow.setUserId(user);
             }
-            iWorkFlowAuditRepository.save(buildNewCollegeWorkFlowAudit(requestId, applicationTypeId, actionId, actorId, iNextGroup));
+            iWorkFlowAuditRepository.save(buildNewCollegeWorkFlowAudit(requestId, applicationTypeId, actionId, actorId, iNextGroup,user));
             College college = collegeRepository.findCollegeByRequestId(requestId);
             if(college != null && college.getEmailId() != null) {
                 notificationService.sendNotificationOnStatusChangeForCollege(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), null, college.getEmailId());
@@ -159,12 +170,18 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
     @Override
     public void assignQueriesBackToQueryCreator(String requestId) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = null;
+        if (userName != null) {
+            user = userDetailService.findByUsername(userName);
+        }
         WorkFlow workflow = iWorkFlowRepository.findByRequestId(requestId);
         UserGroup previousGroup = workflow.getPreviousGroup();
         UserGroup currentGroup = workflow.getCurrentGroup();
         workflow.setCurrentGroup(previousGroup);
         workflow.setPreviousGroup(currentGroup);
         workflow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).get());
+        workflow.setUserId(user);
 
         WorkFlowAudit workFlowAudit = WorkFlowAudit.builder().requestId(requestId)
                 .hpProfile(workflow.getHpProfile())
@@ -176,11 +193,12 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 .currentGroup(previousGroup)
                 .startDate(workflow.getStartDate())
                 .endDate(workflow.getEndDate())
+                .userId(user)
                 .build();
         iWorkFlowAuditRepository.save(workFlowAudit);
     }
 
-    private WorkFlow buildNewCollegeWorkFlow(String requestId, BigInteger applicationTypeId, BigInteger actionId, BigInteger actorId, INextGroup iNextGroup) {
+    private WorkFlow buildNewCollegeWorkFlow(String requestId, BigInteger applicationTypeId, BigInteger actionId, BigInteger actorId, INextGroup iNextGroup, User user) {
         UserGroup actorGroup = iGroupRepository.findById(actorId).get();
         return WorkFlow.builder().requestId(requestId)
                 .applicationType(iApplicationTypeRepository.findById(applicationTypeId).get())
@@ -189,10 +207,11 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get())
                 .previousGroup(actorGroup)
                 .currentGroup(iGroupRepository.findById(iNextGroup.getAssignTo()).get())
+                .userId(user)
                 .build();
     }
 
-    private WorkFlowAudit buildNewCollegeWorkFlowAudit(String requestId, BigInteger applicationTypeId, BigInteger actionId, BigInteger actorId, INextGroup iNextGroup) {
+    private WorkFlowAudit buildNewCollegeWorkFlowAudit(String requestId, BigInteger applicationTypeId, BigInteger actionId, BigInteger actorId, INextGroup iNextGroup, User user) {
         UserGroup actorGroup = iGroupRepository.findById(actorId).get();
         return WorkFlowAudit.builder().requestId(requestId)
                 .applicationType(iApplicationTypeRepository.findById(applicationTypeId).get())
@@ -201,10 +220,11 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get())
                 .previousGroup(actorGroup)
                 .currentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null)
+                .userId(user)
                 .build();
     }
 
-    private WorkFlow buildNewWorkFlow(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile) {
+    private WorkFlow buildNewWorkFlow(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile, User user) {
 
         UserGroup actorGroup = iGroupRepository.findById(requestTO.getActorId()).get();
 
@@ -219,10 +239,11 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 .startDate(requestTO.getStartDate())
                 .endDate(requestTO.getEndDate())
                 .remarks(requestTO.getRemarks())
+                .userId(user)
                 .build();
     }
 
-    private WorkFlowAudit buildNewWorkFlowAudit(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile) {
+    private WorkFlowAudit buildNewWorkFlowAudit(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile, User user) {
 
         UserGroup actorGroup = iGroupRepository.findById(requestTO.getActorId()).get();
         return WorkFlowAudit.builder().requestId(requestTO.getRequestId())
@@ -236,6 +257,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 .startDate(requestTO.getStartDate())
                 .endDate(requestTO.getEndDate())
                 .remarks(requestTO.getRemarks())
+                .userId(user)
                 .build();
     }
 
