@@ -6,5 +6,5 @@ import lombok.Value;
 public class SmcRegistrationDetailRequestTO {
 
     private Integer councilId;
-    private String registrationNumber;
+    private Integer registrationNumber;
 }
