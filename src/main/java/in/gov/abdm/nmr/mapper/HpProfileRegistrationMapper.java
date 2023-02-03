@@ -41,6 +41,7 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
                 qualificationDetailResponseTo.setId(indianQualification.getId());
                 qualificationDetailResponseTo.setQualificationYear(indianQualification.getQualificationYear());
                 qualificationDetailResponseTo.setQualificationMonth(indianQualification.getQualificationMonth());
+                qualificationDetailResponseTo.setIsNameChange(indianQualification.getIsNameChange());
                 qualificationDetailResponseTo.setQualificationFrom(NMRConstants.INDIA);
                 qualificationDetailResponseTo.setCountry(CountryTO.builder().id(indianQualification.getCountry().getId()).name(indianQualification.getCountry().getName()).nationality(indianQualification.getCountry().getNationality()).build());
                 qualificationDetailResponseTo.setState(StateTO.builder().id(indianQualification.getState().getId()).name(indianQualification.getState().getName()).build());
