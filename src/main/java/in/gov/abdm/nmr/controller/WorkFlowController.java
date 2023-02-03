@@ -1,11 +1,13 @@
 package in.gov.abdm.nmr.controller;
 
+import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
+import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,13 +44,14 @@ public class WorkFlowController {
      * @return
      */
     @PostMapping(HEALTH_PROFESSIONAL_ACTION)
-    public ResponseEntity<String> executeActionOnHealthProfessional(@RequestBody WorkFlowRequestTO requestTO) throws InvalidRequestException, WorkFlowException {
+    public ResponseEntity<ResponseMessageTo> executeActionOnHealthProfessional(@RequestBody WorkFlowRequestTO requestTO) throws InvalidRequestException, WorkFlowException {
         if(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(requestTO.getHpProfileId(), requestTO.getApplicationTypeId())) {
             if (requestTO.getRequestId() == null || !iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(requestTO.getHpProfileId())) {
                 requestTO.setRequestId(NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(requestTO.getApplicationTypeId())));
             }
             iWorkFlowService.initiateSubmissionWorkFlow(requestTO);
-            return ResponseEntity.ok(SUCCESS);
+            return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
+
         }
         throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
     }
@@ -58,9 +61,8 @@ public class WorkFlowController {
      * @return
      */
     @PostMapping(COLLEGES_ACTION)
-    public ResponseEntity<String> executeActionOnCollege(@RequestBody WorkFlowRequestTO requestTO) throws InvalidRequestException, WorkFlowException {
+    public ResponseEntity<ResponseMessageTo> executeActionOnCollege(@RequestBody WorkFlowRequestTO requestTO) throws InvalidRequestException, WorkFlowException {
         iWorkFlowService.initiateCollegeRegistrationWorkFlow(requestTO.getRequestId(),requestTO.getApplicationTypeId(),requestTO.getActorId(),requestTO.getActionId());
-        return ResponseEntity.ok("Success");
+        return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
     }
-
 }
