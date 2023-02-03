@@ -51,4 +51,8 @@ public class WorkFlowAudit extends CommonAuditEntity {
     @JoinColumn(name = "hp_profile_id")
     private HpProfile hpProfile;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User userId;
+
 }
