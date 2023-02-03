@@ -122,9 +122,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                                                              HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException {
         HpProfile hpProfile = iHpProfileRepository.findById(NMRUtil.coalesce(hpProfileId, BigInteger.ZERO)).orElse(null);
 
-        boolean isApprovedProfile=HpProfileStatus.APPROVED.getId().equals(hpProfile.getHpProfileStatus().getId());
-
-        if (hpProfile == null || isApprovedProfile) {
+        if (hpProfile == null || HpProfileStatus.APPROVED.getId().equals(hpProfile.getHpProfileStatus().getId())){
             hpProfile = new HpProfile();
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, hpProfile);
             HpProfile savedHpProfile = iHpProfileRepository.save(hpProfile);
