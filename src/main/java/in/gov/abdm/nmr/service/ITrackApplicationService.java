@@ -1,0 +1,11 @@
+package in.gov.abdm.nmr.service;
+
+import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestTo;
+import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
+
+public interface ITrackApplicationService {
+
+   HealthProfessionalApplicationResponseTo fetchApplicationDetails(HealthProfessionalApplicationRequestTo healthProfessionalApplicationRequestTo);
+
+   HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(HealthProfessionalApplicationRequestTo healthProfessionalApplicationRequestTo);
+}
