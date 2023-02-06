@@ -210,26 +210,22 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
 	@Override
 	public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) {
-		//BigInteger previousHpProfileId = getSecondLastHpProfile(hpProfileId);
 		List<SuperSpeciality> superSpecialities = NMRUtil.coalesceCollection(superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId), superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId));
-		WorkProfile workProfile = NMRUtil.coalesce(workProfileRepository.getWorkProfileByHpProfileId(hpProfileId), workProfileRepository.getWorkProfileByHpProfileId(hpProfileId));
+		WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(hpProfileId);
 		HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(superSpecialities, workProfile);
-		//hpProfileWorkDetailsResponseTO.setHpProfileId(hpProfileId);
+
 		return hpProfileWorkDetailsResponseTO;
 	}
 
 	@Override
 	public HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(BigInteger hpProfileId) {
-		BigInteger previousHpProfileId = getSecondLastHpProfile(hpProfileId);
-		RegistrationDetails registrationDetails = NMRUtil.coalesce(registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId),
-				registrationDetailRepository.getRegistrationDetailsByHpProfileId(previousHpProfileId));
-		HpNbeDetails nbeDetails = NMRUtil.coalesce(hpNbeDetailsRepository.findByHpProfileId(hpProfileId),hpNbeDetailsRepository.findByHpProfileId(previousHpProfileId));
-		List<QualificationDetails> indianQualifications = NMRUtil.coalesceCollection(qualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId),
-				qualificationDetailRepository.getQualificationDetailsByHpProfileId(previousHpProfileId));
-		List<ForeignQualificationDetails> internationalQualifications =  NMRUtil.coalesceCollection(customQualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId),
-		customQualificationDetailRepository.getQualificationDetailsByHpProfileId(previousHpProfileId));
+
+		RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId);
+		HpNbeDetails nbeDetails = hpNbeDetailsRepository.findByHpProfileId(hpProfileId);
+		List<QualificationDetails> indianQualifications = qualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId);
+		List<ForeignQualificationDetails> internationalQualifications =  customQualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId);
 		HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = HpProfileRegistrationMapper.convertEntitiesToRegistrationResponseTo(registrationDetails, nbeDetails, indianQualifications, internationalQualifications);
-		hpProfileRegistrationResponseTO.setHpProfileId(hpProfileId);
+
 		return  hpProfileRegistrationResponseTO;
 	}
 

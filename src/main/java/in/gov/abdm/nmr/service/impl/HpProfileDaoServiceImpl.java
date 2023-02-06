@@ -128,13 +128,14 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     public HpProfileUpdateResponseTO updateHpPersonalDetails(BigInteger hpProfileId,
                                                              HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException {
         HpProfile existingHpProfile = iHpProfileRepository.findById(NMRUtil.coalesce(hpProfileId, BigInteger.ZERO)).orElse(null);
-        HpProfile existingHpProfileCopy=existingHpProfile;
+        HpProfile copiedExistingHpProfile = existingHpProfile;
         HpProfile targetedHpProfile = null;
+        BigInteger updatedHpProfileId = null;
         if (existingHpProfile == null || HpProfileStatus.APPROVED.getId().equals(existingHpProfile.getHpProfileStatus().getId())) {
             existingHpProfile = new HpProfile();
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, existingHpProfile);
             targetedHpProfile = iHpProfileRepository.save(existingHpProfile);
-            existingHpProfile.setId(targetedHpProfile.getId());
+            updatedHpProfileId = targetedHpProfile.getId();
 
         } else {
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, existingHpProfile);
@@ -154,16 +155,19 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         }
         languagesKnownRepository.saveAll(languagesKnowns);
 
-        if (existingHpProfileCopy != null) {
-            if (HpProfileStatus.APPROVED.getId().equals(existingHpProfileCopy.getHpProfileStatus().getId())) {
-                RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(existingHpProfileCopy.getId());
+
+        if (copiedExistingHpProfile != null) {
+
+            if (HpProfileStatus.APPROVED.getId().equals(copiedExistingHpProfile.getHpProfileStatus().getId())) {
+
+                RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(copiedExistingHpProfile.getId());
                 RegistrationDetails newRegistrationDetails = new RegistrationDetails();
                 org.springframework.beans.BeanUtils.copyProperties(registrationDetails, newRegistrationDetails);
                 newRegistrationDetails.setId(null);
                 newRegistrationDetails.setHpProfileId(targetedHpProfile);
                 iRegistrationDetailRepository.save(newRegistrationDetails);
 
-                WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(existingHpProfileCopy.getId());
+                WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(copiedExistingHpProfile.getId());
                 WorkProfile newWorkProfile = new WorkProfile();
                 org.springframework.beans.BeanUtils.copyProperties(workProfile, newWorkProfile);
                 newWorkProfile.setId(null);
@@ -171,7 +175,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 workProfileRepository.save(newWorkProfile);
 
                 List<LanguagesKnown> languagesKnownList = new ArrayList<>();
-                List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(existingHpProfileCopy.getId());
+                List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(copiedExistingHpProfile.getId());
                 for (LanguagesKnown languageKnown : languagesKnown) {
                     LanguagesKnown newLanguagesKnown = new LanguagesKnown();
                     org.springframework.beans.BeanUtils.copyProperties(languageKnown, newLanguagesKnown);
@@ -182,7 +186,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 languagesKnownRepository.saveAll(languagesKnownList);
 
                 List<QualificationDetails> qualificationDetails = new ArrayList<>();
-                List<QualificationDetails> qualificationDetailsList = iQualificationDetailRepository.getQualificationDetailsByHpProfileId(existingHpProfileCopy.getId());
+                List<QualificationDetails> qualificationDetailsList = iQualificationDetailRepository.getQualificationDetailsByHpProfileId(copiedExistingHpProfile.getId());
                 for (QualificationDetails qualificationDetail : qualificationDetailsList) {
                     QualificationDetails newQualificationDetails = new QualificationDetails();
                     org.springframework.beans.BeanUtils.copyProperties(qualificationDetail, newQualificationDetails);
@@ -193,7 +197,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 iQualificationDetailRepository.saveAll(qualificationDetails);
 
                 List<ForeignQualificationDetails> customQualificationDetailsList = new ArrayList<>();
-                List<ForeignQualificationDetails> customQualificationDetails = iForeignQualificationDetailRepository.getQualificationDetailsByHpProfileId(existingHpProfileCopy.getId());
+                List<ForeignQualificationDetails> customQualificationDetails = iForeignQualificationDetailRepository.getQualificationDetailsByHpProfileId(copiedExistingHpProfile.getId());
                 for (ForeignQualificationDetails customQualificationDetail : customQualificationDetails) {
                     ForeignQualificationDetails newCustomQualificationDetails = new ForeignQualificationDetails();
                     org.springframework.beans.BeanUtils.copyProperties(customQualificationDetail, newCustomQualificationDetails);
@@ -204,7 +208,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 iForeignQualificationDetailRepository.saveAll(customQualificationDetailsList);
 
                 List<SuperSpeciality> superSpecialities = new ArrayList<>();
-                List<SuperSpeciality> superSpecialityList = superSpecialityRepository.getSuperSpecialityFromHpProfileId(existingHpProfileCopy.getId());
+                List<SuperSpeciality> superSpecialityList = superSpecialityRepository.getSuperSpecialityFromHpProfileId(copiedExistingHpProfile.getId());
                 for (SuperSpeciality superSpeciality : superSpecialityList) {
                     SuperSpeciality newSuperSpeciality = new SuperSpeciality();
                     org.springframework.beans.BeanUtils.copyProperties(superSpeciality, newSuperSpeciality);
@@ -216,7 +220,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             }
         }
 
-        return new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", existingHpProfile.getId());
+        return new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", updatedHpProfileId);
     }
 
     @Override
@@ -512,6 +516,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         hpProfile.setDateOfBirth(hpPersonalUpdateRequestTO.getPersonalDetails().getDateOfBirth());
         hpProfile.setRequestId(hpPersonalUpdateRequestTO.getRequestId());
         hpProfile.setRegistrationId(hpPersonalUpdateRequestTO.getImrDetails().getRegistrationNumber());
+        hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
 
         Schedule schedule = iScheduleRepository
                 .findById(hpPersonalUpdateRequestTO.getPersonalDetails().getSchedule().getId()).orElse(null);
