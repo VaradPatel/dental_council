@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 public class DashboardRequestTO {
     private String workFlowStatusId;
     private String applicationTypeId;
+    private String userGroupStatus;
+    private String smcId;
     private String name;
     private String nmrId;
     private String search;
