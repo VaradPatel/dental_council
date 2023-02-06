@@ -266,4 +266,11 @@ public class NMRConstants {
     public static final int DEFAULT_ADDRESS_TYPE_AADHAR = 4;
     public static final String INDIA = "India";
     public static final String INTERNATIONAL = "International";
+
+    public static final String NOT_NULL_ERROR_MSG = "The {0} is mandatory.";
+    public static final String NOT_BLANK_ERROR_MSG = "The {0} should not be blank.";
+    public static final String INPUT_VALIDATION_ERROR_CODE = "ABDM-NMR-400";
+    public static final String INPUT_VALIDATION_INTERNAL_ERROR_CODE = "ABDM-NMR-401";
+    public static final String INVALID_INPUT_ERROR_MSG = "Invalid input";
+
 }
