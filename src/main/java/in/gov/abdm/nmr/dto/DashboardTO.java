@@ -6,16 +6,16 @@ import java.math.BigInteger;
 
 @Data
 public class DashboardTO {
-    private String doctor;
-    private String smc;
-    private String CollegeDean;
-    private String CollegeRegistrar;
-    private String nmc;
-    private String nbe;
+    private String doctorStatus;
+    private String smcStatus;
+    private String collegeDeanStatus;
+    private String CollegeRegistrarStatus;
+    private String nmcStatus;
+    private String nbeStatus;
     private BigInteger hpProfileId;
     private String requestId;
     private String registrationNo;
     private String createdAt;
-    private String name;
-    private String fullName;
+    private String councilName;
+    private String applicantFullName;
 }

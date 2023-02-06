@@ -92,7 +92,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	@Autowired
 	private BroadSpecialityRepository broadSpecialityRepository;
 
-
+	/**
+	 * This method fetches the SMC registration details for a given request.
+	 *
+	 * @param smcRegistrationDetailRequestTO A TO (Transfer Object) containing the details required to fetch the SMC registration information.
+	 * @return SmcRegistrationDetailResponseTO A TO (Transfer Object) containing the SMC registration information that was fetched.
+	 */
 	@Override
 	public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(
 			SmcRegistrationDetailRequestTO smcRegistrationDetailRequestTO) {

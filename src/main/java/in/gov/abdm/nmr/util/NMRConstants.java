@@ -3,6 +3,9 @@ package in.gov.abdm.nmr.util;
 
 import lombok.experimental.UtilityClass;
 
+import static in.gov.abdm.nmr.enums.ApplicationType.COLLEGE_REGISTRATION;
+import static in.gov.abdm.nmr.enums.ApplicationType.HP_ACTIVATE_LICENSE;
+
 /**
  * This class holds all the constants associated with NMR application
  */
@@ -46,6 +49,8 @@ public class NMRConstants {
 
     public static final String PATH_COLLEGE_REGISTRATION = "/registration/colleges";
     public static final String ACTION_REQUEST_URL = "/action";
+
+    public static final String PATH_TRACK_APPLICATIONS_STATUS = "/applications/status";
 
     public static final String SUSPENSION_REQUEST_URL = "/suspend";
 
@@ -264,4 +269,32 @@ public class NMRConstants {
     public static final int DEFAULT_ADDRESS_TYPE_AADHAR = 4;
     public static final String INDIA = "India";
     public static final String INTERNATIONAL = "International";
+    public static final String FETCH_REACTIVATION_RECORDS = " SELECT hp.id AS Profile_Id, hp.full_name AS Display_Name, wf.created_at AS Date_of_Submission, " +
+            " wf.start_date AS Reactivation_date, a.name AS Type_Of_Suspension,wf.remarks   " +
+            " FROM main.work_flow wf  INNER JOIN main.hp_profile hp ON wf.hp_profile_id=hp.id " +
+            " JOIN main.application_type a ON wf.application_type_id=a.id " +
+            "WHERE  " +
+            "  a.id IN(SELECT p.id " +
+            " FROM (SELECT id,registration_id, " +
+            " DENSE_RANK () OVER ( PARTITION BY registration_id ORDER BY ID DESC) AS registration_id_rank  " +
+            " FROM main.hp_profile  " +
+            " WHERE registration_id IN (SELECT pro.registration_id FROM main.work_flow wfl JOIN main.hp_profile pro ON pro.id= wfl.hp_profile_id  " +
+            " WHERE wfl.application_type_id= "+HP_ACTIVATE_LICENSE.getId()+"  )) AS p  WHERE p.registration_id_rank=2) ";
+    public static final String FETCH_COUNT_OF_REACTIVATION_RECORDS = " SELECT COUNT(*) "+
+            " FROM main.work_flow wf  INNER JOIN main.hp_profile hp ON wf.hp_profile_id=hp.id " +
+            " JOIN main.application_type a ON wf.application_type_id=a.id " +
+            "WHERE  " +
+            "  a.id IN(SELECT p.id " +
+            " FROM (SELECT id,registration_id,  " +
+            " DENSE_RANK () OVER ( PARTITION BY registration_id ORDER BY ID DESC) AS registration_id_rank  " +
+            " FROM main.hp_profile  " +
+            " WHERE registration_id IN (SELECT pro.registration_id FROM main.work_flow wfl JOIN main.hp_profile pro ON pro.id= wfl.hp_profile_id  " +
+            " WHERE wfl.application_type_id= "+HP_ACTIVATE_LICENSE.getId()+" )) AS p  WHERE p.registration_id_rank=2) ";
+
+    public static final String NOT_NULL_ERROR_MSG = "The {0} is mandatory.";
+    public static final String NOT_BLANK_ERROR_MSG = "The {0} should not be blank.";
+    public static final String INPUT_VALIDATION_ERROR_CODE = "ABDM-NMR-400";
+    public static final String INPUT_VALIDATION_INTERNAL_ERROR_CODE = "ABDM-NMR-401";
+    public static final String INVALID_INPUT_ERROR_MSG = "Invalid input";
+
 }

@@ -144,15 +144,21 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         dashboardRequestParamsTO.setPageNo(pageNo);
         dashboardRequestParamsTO.setSize(size);
         dashboardRequestParamsTO.setSortBy(column);
+        dashboardRequestParamsTO.setUserGroupId(groupId);
+        dashboardRequestParamsTO.setUserGroupStatus(dashboardRequestTO.getUserGroupStatus());
         if(groupId.equals(Group.SMC.getId())){
             SMCProfile smcProfile = smcProfileRepository.findByUserDetail(userId);
-            dashboardRequestParamsTO.setSmcId(smcProfile.getStateMedicalCouncil().getId().toString());
+            dashboardRequestParamsTO.setCouncilId(smcProfile.getStateMedicalCouncil().getId().toString());
         }else if (groupId.equals(Group.COLLEGE_DEAN.getId())){
             CollegeDean collegeDean = collegeDeanRepository.findByUserDetail(userId);
             dashboardRequestParamsTO.setCollegeId(collegeDean.getCollege().getId().toString());
         }else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())){
             CollegeRegistrar collegeRegistrar = collegeRegistrarRepository.findByUserDetail(userId);
             dashboardRequestParamsTO.setCollegeId(collegeRegistrar.getCollege().getId().toString());
+        }
+        if(groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
+                || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())){
+            dashboardRequestParamsTO.setSmcId(dashboardRequestTO.getSmcId());
         }
         final String sortingOrder = sortOrder == null ? defaultSortOrder : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
@@ -219,17 +225,18 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
     }
     private Map<String, String> mapColumnToTable() {
         Map<String, String> columnToSortMap = new HashMap<>();
-        columnToSortMap.put("doctor", " doctor");
-        columnToSortMap.put("smc", " smc");
-        columnToSortMap.put("collegeDean", " college_dean");
-        columnToSortMap.put("collegeRegistrar", " college_registrar");
-        columnToSortMap.put("nmc", " nmc");
-        columnToSortMap.put("hpProfileId", " hp_profile_id");
-        columnToSortMap.put("requestId", " request_id");
-        columnToSortMap.put("registrationNo", " registration_no");
-        columnToSortMap.put("createdAt", " created_at");
-        columnToSortMap.put("name", " name");
-        columnToSortMap.put("fullName", " full_name");
+        columnToSortMap.put("doctorStatus", " doctor_status");
+        columnToSortMap.put("smcStatus", " smc_status");
+        columnToSortMap.put("collegeDeanStatus", " college_dean_status");
+        columnToSortMap.put("collegeRegistrarStatus", " college_registrar_status");
+        columnToSortMap.put("nmcStatus", " nmc_status");
+        columnToSortMap.put("nbeStatus", " nbe_status");
+        columnToSortMap.put("hpProfileId", " calculate.hp_profile_id");
+        columnToSortMap.put("requestId", " calculate.request_id");
+        columnToSortMap.put("registrationNo", " rd.registration_no");
+        columnToSortMap.put("createdAt", " rd.created_at");
+        columnToSortMap.put("councilName", " stmc.name");
+        columnToSortMap.put("applicantFullName", " hp.full_name");
         return columnToSortMap;
     }
 }

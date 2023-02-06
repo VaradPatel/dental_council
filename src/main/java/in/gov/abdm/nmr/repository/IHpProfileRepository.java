@@ -10,7 +10,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface IHpProfileRepository extends JpaRepository<HpProfile, BigInteger> {
-	
+
+	/**
+	 * Represents a query to fetch the SMC registration details of a healthcare professional.
+	 *
+	 * @param registrationNo The registration number of the healthcare professional.
+	 * @param councilId      The ID of the state medical council.
+	 * @return A tuple containing the HP profile ID, registration number, name of the state medical council, and full name of the healthcare professional.
+	 */
 	@Query(value = "select registration_details.hp_profile_id, registration_no, state_medical_council.name, full_name "
 			+ " from hp_profile INNER JOIN registration_details on hp_profile_id = hp_profile.id"
 			+ " INNER JOIN state_medical_council ON state_medical_council.id = :councilId"

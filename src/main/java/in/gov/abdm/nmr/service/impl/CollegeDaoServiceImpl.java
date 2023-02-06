@@ -110,6 +110,16 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
         return collegeRepository.findByUserDetail(userDetailId);
     }
 
+    /**
+     * Service Implementation's method  for fetching the College registration records
+     * for the NMC that has been submitted for approval
+     *
+     * @param collegeRegistrationRequestParamsTO - Object with all the attributes related to pagination, filter and sorting
+     * @param pageable                           - Object of Pageable that helps in pagination
+     * @return the CollegeRegistrationResponseTO  response Object
+     * which contains all the details related to the College submitted to NMC
+     * for approval
+     */
     @Override
     public CollegeRegistrationResponseTO getCollegeRegistrationData(CollegeRegistrationRequestParamsTO collegeRegistrationRequestParamsTO, Pageable pageable) {
         return collegeRepositoryCustom.getCollegeRegistrationData(collegeRegistrationRequestParamsTO, pageable);
