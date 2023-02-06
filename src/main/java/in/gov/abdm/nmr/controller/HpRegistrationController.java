@@ -14,6 +14,7 @@ import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 @RestController
 @RequestMapping("/hp")
@@ -62,12 +63,21 @@ public class HpRegistrationController {
      * @throws WorkFlowException when there's an error with the workflow.
      */
     @PutMapping(path = "health-professional/personal/{hp_profile_id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public HpProfilePersonalResponseTO updateHealthProfessionalPersonalDetail(@RequestBody HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO,
-                                                                              @PathVariable(name = "hp_profile_id") BigInteger hpProfileId)
+    public HpProfilePersonalResponseTO updateHealthProfessionalPersonalDetail(
+            @Valid @RequestBody HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO,
+            @PathVariable(name = "hp_profile_id") BigInteger hpProfileId)
             throws InvalidRequestException, WorkFlowException {
         return hpService.addOrUpdateHpPersonalDetail(hpProfileId, hpPersonalUpdateRequestTO);
     }
 
+    /**
+     * This method is used to get the personal details of a health professional based on the hp_profile_id.
+     *
+     * @param hpProfileId The unique identifier of the health professional.
+     * @return An instance of {@link HpProfilePersonalResponseTO} containing the personal details of the health professional.
+     * @throws InvalidRequestException If the request is invalid.
+     * @throws WorkFlowException       If there is a problem with the workflow.
+     */
     @GetMapping(path = "health-professional/personal/{hp_profile_id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfilePersonalResponseTO getHealthProfessionalPersonalDetail(@PathVariable(name = "hp_profile_id") BigInteger hpProfileId)
             throws InvalidRequestException, WorkFlowException {

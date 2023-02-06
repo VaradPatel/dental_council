@@ -1,10 +1,12 @@
 package in.gov.abdm.nmr.exception;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import in.gov.abdm.nmr.util.NMRConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @RestControllerAdvice
 public class NmrExceptionAdvice {
@@ -109,16 +113,19 @@ public class NmrExceptionAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorInfo handleValidationExceptions(MethodArgumentNotValidException ex) {
         ErrorInfo errorInfo = new ErrorInfo();
-        errorInfo.setCode("ABDM-NMR-001");
+        errorInfo.setCode(INPUT_VALIDATION_ERROR_CODE);
         errorInfo.setMessage(HttpStatus.BAD_REQUEST.toString());
         List<DetailsTO> details = new ArrayList<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
             DetailsTO detailsTO = new DetailsTO();
-            detailsTO.setCode("ABDM-NMR-001");
-            detailsTO.setMessage("Invalid input");
+            detailsTO.setCode(INPUT_VALIDATION_INTERNAL_ERROR_CODE);
+            detailsTO.setMessage(INVALID_INPUT_ERROR_MSG);
             AttributeTO attributeTO = new AttributeTO();
-            attributeTO.setKey(((FieldError) error).getField());
-            attributeTO.setValue(error.getDefaultMessage());
+            String field = ((FieldError) error).getField();
+            String defaultMessage = error.getDefaultMessage();
+            attributeTO.setKey(field);
+            String formattedMessage = MessageFormat.format(defaultMessage, field);
+            attributeTO.setValue(formattedMessage);
             detailsTO.setAttribute(attributeTO);
             details.add(detailsTO);
         });

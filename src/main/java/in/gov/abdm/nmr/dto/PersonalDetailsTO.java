@@ -21,7 +21,6 @@ import static in.gov.abdm.nmr.util.NMRConstants.NOT_NULL_ERROR_MSG;
 public class PersonalDetailsTO {
 
     @NotBlank(message = NOT_BLANK_ERROR_MSG)
-    //@Pattern(regexp = "^(Mr|Ms|Mrs|Dr|Miss)\\\\.?$", message = "Mr., Ms., Mrs.,Dr., and Miss.")
     private String salutation;
 
     private String aadhaarToken;

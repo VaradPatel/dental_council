@@ -8,12 +8,28 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+
+/**
+ * A class to represent error information.
+ */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ErrorInfo {
+
+    /**
+     * Code field representing error code.
+     */
     private String code;
+
+    /**
+     * Message field representing error message.
+     */
     private String message;
+
+    /**
+     * Details field representing error details.
+     */
     private List<DetailsTO> details;
 }
