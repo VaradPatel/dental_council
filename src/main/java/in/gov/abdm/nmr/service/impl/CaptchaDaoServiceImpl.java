@@ -36,13 +36,14 @@ public class CaptchaDaoServiceImpl implements ICaptchaDaoService {
         SecureRandom secureRandom = SecureRandom.getInstanceStrong();
 
 
-        captcha.setNum1(secureRandom.nextInt(51, 100));
-        captcha.setNum2(secureRandom.nextInt(1, 50));
+        captcha.setNum1(secureRandom.nextInt(51, 98));
         captcha.setOperation(OPERATORS.get(secureRandom.nextInt(OPERATORS.size())));
 
         if ("+".equals(captcha.getOperation())) {
+            captcha.setNum2(secureRandom.nextInt(1, 100 - captcha.getNum1()));
             captcha.setResult(Math.addExact(captcha.getNum1(), captcha.getNum2()));
         } else if ("-".equals(captcha.getOperation())) {
+            captcha.setNum2(secureRandom.nextInt(1, 50));
             captcha.setResult(Math.subtractExact(captcha.getNum1(), captcha.getNum2()));
         }
 
