@@ -264,4 +264,8 @@ public class NMRConstants {
     public static final int DEFAULT_ADDRESS_TYPE_AADHAR = 4;
     public static final String INDIA = "India";
     public static final String INTERNATIONAL = "International";
+
+    public static final String NOT_NULL_ERROR_MSG = "The specified field is mandatory.";
+    public static final String NOT_BLANK_ERROR_MSG = "The field salutation shouldn't be blank.";
+
 }

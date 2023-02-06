@@ -1,9 +1,7 @@
 package in.gov.abdm.nmr.exception;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -55,7 +53,7 @@ public class NmrExceptionAdvice {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, headers, nmrException.getStatus());
     }
-    
+
     @ExceptionHandler({AccessDeniedException.class})
     public ResponseEntity<ErrorTO> handleSecurityException(HttpServletRequest req, Throwable ex) {
         ErrorTO error = new ErrorTO(new Date(), HttpStatus.FORBIDDEN.value(), ex.getMessage(), req.getServletPath());
@@ -102,27 +100,32 @@ public class NmrExceptionAdvice {
 
 
     /**
-     * <p>
-     * MethodArgumentNotValidException exception is thrown after data binding
-     * and validation failure.
-     * This method returns BindingResult from MethodArgumentNotValidException and then
-     * compose list of error messages based on all rejected fields
-     * </p>
+     * Exception handler for {@link MethodArgumentNotValidException}.
      *
-     * @param ex
-     * @return list of error messages after analysis of binding and validation errors.
+     * @param ex the exception to be handled
+     * @return ErrorInfo object containing the error information
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
+    public ErrorInfo handleValidationExceptions(MethodArgumentNotValidException ex) {
+        ErrorInfo errorInfo = new ErrorInfo();
+        errorInfo.setCode("ABDM-NMR-001");
+        errorInfo.setMessage(HttpStatus.BAD_REQUEST.toString());
+        List<DetailsTO> details = new ArrayList<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
+            DetailsTO detailsTO = new DetailsTO();
+            detailsTO.setCode("ABDM-NMR-001");
+            detailsTO.setMessage("Invalid input");
+            AttributeTO attributeTO = new AttributeTO();
+            attributeTO.setKey(((FieldError) error).getField());
+            attributeTO.setValue(error.getDefaultMessage());
+            detailsTO.setAttribute(attributeTO);
+            details.add(detailsTO);
         });
-        return errors;
+        errorInfo.setDetails(details);
+        return errorInfo;
     }
+
 
     /**
      * Exception handler for OTP Exceptions
