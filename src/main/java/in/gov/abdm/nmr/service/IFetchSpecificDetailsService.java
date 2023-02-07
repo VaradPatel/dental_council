@@ -16,6 +16,12 @@ public interface IFetchSpecificDetailsService {
      */
     List<FetchSpecificDetailsResponseTO> fetchSpecificDetails(String groupName, String applicationType, String workFlowStatus) throws InvalidRequestException;
 
+    /**
+     * This method fetches the dashboard data based on the input request.
+     * @param dashboardRequestTO The request object containing the parameters for fetching dashboard data.
+     * @return DashboardResponseTO The response object containing the details fetched from dashboard.
+     * @throws InvalidRequestException If the input request is invalid.
+     */
     DashboardResponseTO fetchDashboardData(DashboardRequestTO dashboardRequestTO) throws InvalidRequestException;
 
     List<FetchTrackApplicationResponseTO> fetchTrackApplicationDetails(FetchTrackApplicationRequestTO requestTO);

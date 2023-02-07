@@ -18,14 +18,28 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+/**
+ * A class that implements all the methods of the Custom Repository interface IFetchTrackApplicationDetailsCustomRepository
+ * which deals with health professional's applications and track status
+ */
 @Repository
 @Transactional
 @Slf4j
 public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchTrackApplicationDetailsCustomRepository {
 
+    /**
+     * Injecting a EntityManager bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @PersistenceContext
     private EntityManager entityManager;
 
+    /**
+     * Represents a functional interface to generates a dynamic WHERE clause based on the HealthProfessionalApplicationRequestParamsTo
+     * object passed as a parameter.
+     * @param healthProfessionalApplicationRequestParamsTo - object that contains the criteria for the query.
+     * @return a string query with appended WHERE clause for the query.
+     */
     private static final Function<HealthProfessionalApplicationRequestParamsTo, String> TRACK_APPLICATION_PARAMETERS = (healthProfessionalApplicationRequestParamsTo) -> {
         StringBuilder sb = new StringBuilder();
 
@@ -43,6 +57,11 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         return sb.toString();
     };
 
+    /**
+     * Represents a functional interface to sort the results based on the parameters specified in HealthProfessionalApplicationRequestParamsTo.
+     * @param healthProfessionalApplicationRequestParamsTo - which holds the parameters.
+     * @return A query string with appended sort order in the format "ORDER BY column_name sort_order"
+     */
     private static final Function<HealthProfessionalApplicationRequestParamsTo, String> SORT_RECORDS = healthProfessionalApplicationRequestParamsTo -> {
         StringBuilder sb = new StringBuilder();
         sb.append("ORDER BY  ");
@@ -52,6 +71,12 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         return sb.toString();
     };
 
+    /**
+     * Represents a functional interface to generates a dynamic WHERE clause based on the HealthProfessionalApplicationRequestParamsTo
+     * object passed as a parameter.
+     * @param healthProfessionalApplicationRequestParamsTo - an object that contains parameters for the function
+     * @return a string query to get the status of the Health Professional's application requests.
+     */
     private static final Function<HealthProfessionalApplicationRequestParamsTo, String> TRACK_APPLICATION = (healthProfessionalApplicationRequestParamsTo) -> {
         StringBuilder sb = new StringBuilder();
         sb.append(
@@ -144,6 +169,11 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         return sb.toString();
     };
 
+    /**
+     * This method is used to retrieve the count of health professional application records based on the provided parameters.
+     * @param healthProfessionalApplicationRequestParamsTo - the parameters used to retrieve the health professional application records count
+     * @return totalRecords the count of health professional application requests
+     */
     private BigInteger getCount(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo) {
         BigInteger totalRecords = null;
         try {
@@ -156,6 +186,12 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         return totalRecords;
     }
 
+    /**
+     * Represents a functional interface to generates a dynamic WHERE clause based on the HealthProfessionalApplicationRequestParamsTo
+     * object passed as a parameter.
+     * @param healthProfessionalApplicationRequestParamsTo - an object that contains parameters for the function
+     * @return a query to get the count of the Health Professional's application requests.
+     */
     private static final Function<HealthProfessionalApplicationRequestParamsTo, String> GET_RECORD_COUNT = (healthProfessionalApplicationRequestParamsTo) -> {
         StringBuilder sb = new StringBuilder();
         sb.append(
@@ -244,6 +280,14 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         return sb.toString();
     };
 
+    /**
+     * Retrieves the details of health professional applications requests based on the provided parameters.
+     * @param healthProfessionalApplicationRequestParamsTo - object containing the filter criteria for fetching application details
+     * @param pagination                                   - object for pagination
+     * @return the HealthProfessionalApplicationResponseTo object representing the response object
+     * which contains all the details used to track the health professionals who have
+     * raised a request
+     */
     @Override
     public HealthProfessionalApplicationResponseTo fetchTrackApplicationDetails(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, Pageable pagination) {
         HealthProfessionalApplicationResponseTo healthProfessionalApplicationResponseTo = new HealthProfessionalApplicationResponseTo();
