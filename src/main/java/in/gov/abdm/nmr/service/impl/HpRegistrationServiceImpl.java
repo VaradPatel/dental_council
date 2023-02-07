@@ -11,6 +11,7 @@ import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.mapper.*;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.IHpProfileDaoService;
@@ -191,6 +192,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 			hpProfileById.setTransactionId(hpSubmitRequestTO.getTransactionId());
 			hpProfileById.setESignStatus(hpSubmitRequestTO.getESignStatus());
 			hpProfileById.setRequestId(requestId);
+
 			RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
 			registrationDetails.setRequestId(requestId);
 			WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(hpSubmitRequestTO.getHpProfileId());
@@ -213,26 +215,22 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
 	@Override
 	public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) {
-		BigInteger previousHpProfileId = getSecondLastHpProfile(hpProfileId);
-		List<SuperSpeciality> superSpecialities = NMRUtil.coalesceCollection(superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId), superSpecialityRepository.getSuperSpecialityFromHpProfileId(previousHpProfileId));
-		WorkProfile workProfile = NMRUtil.coalesce(workProfileRepository.getWorkProfileByHpProfileId(hpProfileId), workProfileRepository.getWorkProfileByHpProfileId(previousHpProfileId));
+		List<SuperSpeciality> superSpecialities = NMRUtil.coalesceCollection(superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId), superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId));
+		WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(hpProfileId);
 		HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(superSpecialities, workProfile);
-		hpProfileWorkDetailsResponseTO.setHpProfileId(hpProfileId);
+
 		return hpProfileWorkDetailsResponseTO;
 	}
 
 	@Override
 	public HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(BigInteger hpProfileId) {
-		BigInteger previousHpProfileId = getSecondLastHpProfile(hpProfileId);
-		RegistrationDetails registrationDetails = NMRUtil.coalesce(registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId),
-				registrationDetailRepository.getRegistrationDetailsByHpProfileId(previousHpProfileId));
-		HpNbeDetails nbeDetails = NMRUtil.coalesce(hpNbeDetailsRepository.findByHpProfileId(hpProfileId),hpNbeDetailsRepository.findByHpProfileId(previousHpProfileId));
-		List<QualificationDetails> indianQualifications = NMRUtil.coalesceCollection(qualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId),
-				qualificationDetailRepository.getQualificationDetailsByHpProfileId(previousHpProfileId));
-		List<ForeignQualificationDetails> internationalQualifications =  NMRUtil.coalesceCollection(customQualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId),
-		customQualificationDetailRepository.getQualificationDetailsByHpProfileId(previousHpProfileId));
+
+		RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId);
+		HpNbeDetails nbeDetails = hpNbeDetailsRepository.findByHpProfileId(hpProfileId);
+		List<QualificationDetails> indianQualifications = qualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId);
+		List<ForeignQualificationDetails> internationalQualifications =  customQualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId);
 		HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = HpProfileRegistrationMapper.convertEntitiesToRegistrationResponseTo(registrationDetails, nbeDetails, indianQualifications, internationalQualifications);
-		hpProfileRegistrationResponseTO.setHpProfileId(hpProfileId);
+
 		return  hpProfileRegistrationResponseTO;
 	}
 

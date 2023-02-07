@@ -9,16 +9,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import in.gov.abdm.nmr.entity.CommonAuditEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class HpProfileStatus extends CommonAuditEntity {
 
     @Id

@@ -51,6 +51,10 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @Autowired
     private SuperSpecialityRepository superSpecialityRepository;
     @Autowired
+    IForeignQualificationDetailRepository iForeignQualificationDetailRepository;
+    @Autowired
+    IQualificationDetailRepository iQualificationDetailRepository;
+    @Autowired
     private DistrictRepository districtRepository;
     @Autowired
     private IStateRepository stateRepository;
@@ -70,6 +74,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private LanguageRepository languageRepository;
     @Autowired
     private LanguagesKnownRepository languagesKnownRepository;
+
+    @Autowired
+    IRegistrationDetailRepository iRegistrationDetailRepository;
     @Autowired
     private IStateMedicalCouncilRepository iStateMedicalCouncilRepository;
     @Autowired
@@ -120,33 +127,100 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @Override
     public HpProfileUpdateResponseTO updateHpPersonalDetails(BigInteger hpProfileId,
                                                              HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException {
-        HpProfile hpProfile = iHpProfileRepository.findById(NMRUtil.coalesce(hpProfileId, BigInteger.ZERO)).orElse(null);
-
-        if (hpProfile == null || HpProfileStatus.APPROVED.getId().equals(hpProfile.getHpProfileStatus().getId())){
-            hpProfile = new HpProfile();
-            mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, hpProfile);
-            HpProfile savedHpProfile = iHpProfileRepository.save(hpProfile);
-            hpProfile.setId(savedHpProfile.getId());
+        HpProfile existingHpProfile = iHpProfileRepository.findById(NMRUtil.coalesce(hpProfileId, BigInteger.ZERO)).orElse(null);
+        HpProfile copiedExistingHpProfile = existingHpProfile;
+        HpProfile targetedHpProfile = null;
+        BigInteger updatedHpProfileId = null;
+        if (existingHpProfile == null || HpProfileStatus.APPROVED.getId().equals(existingHpProfile.getHpProfileStatus().getId())) {
+            existingHpProfile = new HpProfile();
+            mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, existingHpProfile);
+            targetedHpProfile = iHpProfileRepository.save(existingHpProfile);
+            updatedHpProfileId = targetedHpProfile.getId();
 
         } else {
-            mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, hpProfile);
+            mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, existingHpProfile);
         }
         if (hpPersonalUpdateRequestTO.getCommunicationAddress() != null) {
-            Address address = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(hpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId()), new Address());
-            mapAddressRequestToEntity(hpProfile.getId(), hpPersonalUpdateRequestTO, address);
+            Address address = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(existingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId()), new Address());
+            mapAddressRequestToEntity(existingHpProfile.getId(), hpPersonalUpdateRequestTO, address);
             iAddressRepository.save(address);
         }
         List<LanguageTO> languages = hpPersonalUpdateRequestTO.getPersonalDetails().getLanguage();
-        if (languagesKnownRepository.existsById(hpProfile.getId())) {
-            languagesKnownRepository.deleteById(hpProfile.getId());
+        if (languagesKnownRepository.existsById(existingHpProfile.getId())) {
+            languagesKnownRepository.deleteById(existingHpProfile.getId());
         }
         List<LanguagesKnown> languagesKnowns = new ArrayList<>();
         for (LanguageTO languageTO : languages) {
-            languagesKnowns.add(LanguagesKnown.builder().hpProfile(hpProfile).languageId(languageTO.getId()).build());
+            languagesKnowns.add(LanguagesKnown.builder().hpProfile(existingHpProfile).languageId(languageTO.getId()).build());
         }
         languagesKnownRepository.saveAll(languagesKnowns);
 
-        return new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", hpProfile.getId());
+
+        if (copiedExistingHpProfile != null) {
+
+            if (HpProfileStatus.APPROVED.getId().equals(copiedExistingHpProfile.getHpProfileStatus().getId())) {
+
+                RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(copiedExistingHpProfile.getId());
+                RegistrationDetails newRegistrationDetails = new RegistrationDetails();
+                org.springframework.beans.BeanUtils.copyProperties(registrationDetails, newRegistrationDetails);
+                newRegistrationDetails.setId(null);
+                newRegistrationDetails.setHpProfileId(targetedHpProfile);
+                iRegistrationDetailRepository.save(newRegistrationDetails);
+
+                WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(copiedExistingHpProfile.getId());
+                WorkProfile newWorkProfile = new WorkProfile();
+                org.springframework.beans.BeanUtils.copyProperties(workProfile, newWorkProfile);
+                newWorkProfile.setId(null);
+                newWorkProfile.setHpProfileId(targetedHpProfile.getId());
+                workProfileRepository.save(newWorkProfile);
+
+                List<LanguagesKnown> languagesKnownList = new ArrayList<>();
+                List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(copiedExistingHpProfile.getId());
+                for (LanguagesKnown languageKnown : languagesKnown) {
+                    LanguagesKnown newLanguagesKnown = new LanguagesKnown();
+                    org.springframework.beans.BeanUtils.copyProperties(languageKnown, newLanguagesKnown);
+                    newLanguagesKnown.setId(null);
+                    newLanguagesKnown.setHpProfile(targetedHpProfile);
+                    languagesKnownList.add(newLanguagesKnown);
+                }
+                languagesKnownRepository.saveAll(languagesKnownList);
+
+                List<QualificationDetails> qualificationDetails = new ArrayList<>();
+                List<QualificationDetails> qualificationDetailsList = iQualificationDetailRepository.getQualificationDetailsByHpProfileId(copiedExistingHpProfile.getId());
+                for (QualificationDetails qualificationDetail : qualificationDetailsList) {
+                    QualificationDetails newQualificationDetails = new QualificationDetails();
+                    org.springframework.beans.BeanUtils.copyProperties(qualificationDetail, newQualificationDetails);
+                    newQualificationDetails.setId(null);
+                    newQualificationDetails.setHpProfile(targetedHpProfile);
+                    qualificationDetails.add(newQualificationDetails);
+                }
+                iQualificationDetailRepository.saveAll(qualificationDetails);
+
+                List<ForeignQualificationDetails> customQualificationDetailsList = new ArrayList<>();
+                List<ForeignQualificationDetails> customQualificationDetails = iForeignQualificationDetailRepository.getQualificationDetailsByHpProfileId(copiedExistingHpProfile.getId());
+                for (ForeignQualificationDetails customQualificationDetail : customQualificationDetails) {
+                    ForeignQualificationDetails newCustomQualificationDetails = new ForeignQualificationDetails();
+                    org.springframework.beans.BeanUtils.copyProperties(customQualificationDetail, newCustomQualificationDetails);
+                    newCustomQualificationDetails.setId(null);
+                    newCustomQualificationDetails.setHpProfile(targetedHpProfile);
+                    customQualificationDetailsList.add(newCustomQualificationDetails);
+                }
+                iForeignQualificationDetailRepository.saveAll(customQualificationDetailsList);
+
+                List<SuperSpeciality> superSpecialities = new ArrayList<>();
+                List<SuperSpeciality> superSpecialityList = superSpecialityRepository.getSuperSpecialityFromHpProfileId(copiedExistingHpProfile.getId());
+                for (SuperSpeciality superSpeciality : superSpecialityList) {
+                    SuperSpeciality newSuperSpeciality = new SuperSpeciality();
+                    org.springframework.beans.BeanUtils.copyProperties(superSpeciality, newSuperSpeciality);
+                    newSuperSpeciality.setId(null);
+                    newSuperSpeciality.setHpProfileId(targetedHpProfile.getId());
+                    superSpecialities.add(newSuperSpeciality);
+                }
+                superSpecialityRepository.saveAll(superSpecialities);
+            }
+        }
+
+        return new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", updatedHpProfileId);
     }
 
     @Override
@@ -442,6 +516,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         hpProfile.setDateOfBirth(hpPersonalUpdateRequestTO.getPersonalDetails().getDateOfBirth());
         hpProfile.setRequestId(hpPersonalUpdateRequestTO.getRequestId());
         hpProfile.setRegistrationId(hpPersonalUpdateRequestTO.getImrDetails().getRegistrationNumber());
+        hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
 
         Schedule schedule = iScheduleRepository
                 .findById(hpPersonalUpdateRequestTO.getPersonalDetails().getSchedule().getId()).orElse(null);
