@@ -3,13 +3,26 @@ package in.gov.abdm.nmr.service;
 import in.gov.abdm.nmr.dto.ActionRequestTo;
 import in.gov.abdm.nmr.dto.ReactivateHealthProfessionalResponseTO;
 import in.gov.abdm.nmr.exception.WorkFlowException;
+
 /**
  * An interface that deals with the reactivation and suspension requests
  * */
 public interface IActionService {
 
+    /**
+     * This method is used to suspend a health professional based on the request provided.
+     * @param actionRequestTo the request object containing necessary information to suspend a health professional.
+     * @return a string indicating the result of the suspension request.
+     * @throws WorkFlowException if there is any error while processing the suspension request.
+     */
     String suspendRequest(ActionRequestTo actionRequestTo) throws WorkFlowException;
 
+    /**
+     * This method is used to reactivate a health professional based on the request provided.
+     * @param actionRequestTo the request object containing necessary information to reactivate a health professional.
+     * @return a string indicating the result of the reactivate request.
+     * @throws WorkFlowException if there is any error while processing the suspension request.
+     */
     String reactiveRequest(ActionRequestTo actionRequestTo) throws WorkFlowException;
 
     /**

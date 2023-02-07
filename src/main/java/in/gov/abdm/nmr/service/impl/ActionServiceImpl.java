@@ -35,27 +35,83 @@ public class ActionServiceImpl implements IActionService {
     private Integer maxSize;
     @Value("${sort.order}")
     private String defaultSortOrder;
+
+    /**
+     * Injecting a IHpProfileRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
-    IHpProfileRepository iHpProfileRepository;
+    private IHpProfileRepository iHpProfileRepository;
+
+    /**
+     * Injecting a IRegistrationDetailRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
-    IRegistrationDetailRepository iRegistrationDetailRepository;
+    private IRegistrationDetailRepository iRegistrationDetailRepository;
+
+    /**
+     * Injecting a WorkProfileRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
-    WorkProfileRepository workProfileRepository;
+    private WorkProfileRepository workProfileRepository;
+
+    /**
+     * Injecting a LanguagesKnownRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
-    LanguagesKnownRepository languagesKnownRepository;
+    private LanguagesKnownRepository languagesKnownRepository;
+
+    /**
+     * Injecting a IQualificationDetailRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
-    IQualificationDetailRepository iQualificationDetailRepository;
+    private IQualificationDetailRepository iQualificationDetailRepository;
+
+    /**
+     * Injecting a IForeignQualificationDetailRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
-    IForeignQualificationDetailRepository iForeignQualificationDetailRepository;
+    private IForeignQualificationDetailRepository iForeignQualificationDetailRepository;
+
+    /**
+     * Injecting a SuperSpecialityRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
-    SuperSpecialityRepository superSpecialityRepository;
+    private SuperSpecialityRepository superSpecialityRepository;
+
+    /**
+     * Injecting a IRequestCounterService bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
     private IRequestCounterService requestCounterService;
+
+    /**
+     * Injecting a IWorkFlowService bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
     private IWorkFlowService iWorkFlowService;
+
+    /**
+     * Injecting a IWorkFlowCustomRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
     private IWorkFlowCustomRepository iWorkFlowCustomRepository;
 
+    /**
+     * This method is used to suspend a health professional based on the request provided.
+     * @param actionRequestTo the request object containing necessary information to suspend a health professional.
+     * @return a string indicating the result of the suspension request.
+     * @throws WorkFlowException if there is any error while processing the suspension request.
+     */
     @Override
     public String suspendRequest(ActionRequestTo actionRequestTo) throws WorkFlowException {
         String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(actionRequestTo.getApplicationTypeId()));
@@ -64,6 +120,12 @@ public class ActionServiceImpl implements IActionService {
         return newHpProfile.getId().toString();
     }
 
+    /**
+     * This method is used to reactivate a health professional based on the request provided.
+     * @param actionRequestTo the request object containing necessary information to reactivate a health professional.
+     * @return a string indicating the result of the reactivate request.
+     * @throws WorkFlowException if there is any error while processing the suspension request.
+     */
     @Override
     public String reactiveRequest(ActionRequestTo actionRequestTo) throws WorkFlowException {
         String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(actionRequestTo.getApplicationTypeId()));
@@ -131,6 +193,13 @@ public class ActionServiceImpl implements IActionService {
         return columnToSortMap;
     }
 
+    /**
+     * This method is used to initiate the workflow for a suspension and reactivate request.
+     * @param actionRequestTo the request containing details of the action to be taken
+     * @param requestId the unique identifier for the request
+     * @param newHpProfile the new health professional profile created as a result of the request
+     * @throws WorkFlowException if there is any error while initiating the workflow
+     */
     private void initiateWorkFlow(ActionRequestTo actionRequestTo, String requestId, HpProfile newHpProfile) throws WorkFlowException {
         WorkFlowRequestTO workFlowRequestTO = new WorkFlowRequestTO();
         workFlowRequestTO.setRequestId(requestId);
