@@ -139,6 +139,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         } else {
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, existingHpProfile);
+            updatedHpProfileId = existingHpProfile.getId();
         }
         if (hpPersonalUpdateRequestTO.getCommunicationAddress() != null) {
             Address address = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(existingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId()), new Address());
