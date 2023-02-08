@@ -5,12 +5,11 @@ import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.repository.IUserRepository;
 import in.gov.abdm.nmr.service.ITrackApplicationService;
-import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,17 +18,15 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
+import static in.gov.abdm.nmr.util.NMRConstants.DEFAULT_SORT_ORDER;
+import static in.gov.abdm.nmr.util.NMRConstants.MAX_DATA_SIZE;
+
 /**
  * A class that implements all the methods of the interface ITrackApplicationService
  * which deals with health professional's applications and track status
  * */
 @Service
 public class TrackApplicationServiceImpl implements ITrackApplicationService {
-
-    @Value("${max.data.size}")
-    private Integer maxSize;
-    @Value("${sort.order}")
-    private String defaultSortOrder;
 
     /**
      * Injecting a IFetchTrackApplicationDetailsCustomRepository bean instead of an explicit object creation to achieve
@@ -74,9 +71,9 @@ public class TrackApplicationServiceImpl implements ITrackApplicationService {
         int size = healthProfessionalApplicationRequestTo.getSize();
         int pageNo = healthProfessionalApplicationRequestTo.getPageNo();
 
-        final String sortingOrder = sortOrder == null ? defaultSortOrder : sortOrder;
+        final String sortingOrder = sortOrder == null ? DEFAULT_SORT_ORDER : sortOrder;
         applicationRequestParamsTo.setSortOrder(sortingOrder);
-        final int dataLimit = maxSize < size ? maxSize : size;
+        final int dataLimit = MAX_DATA_SIZE < size ? MAX_DATA_SIZE : size;
         Pageable pageable = PageRequest.of(pageNo, dataLimit);
         applicationRequestParamsTo.setSize(size);
         applicationRequestParamsTo.setPageNo(pageNo);

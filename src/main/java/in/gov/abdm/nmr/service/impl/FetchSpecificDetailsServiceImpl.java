@@ -14,7 +14,6 @@ import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -35,11 +34,6 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
  * */
 @Service
 public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsService {
-
-    @Value("${max.data.size}")
-    private Integer maxSize;
-    @Value("${sort.order}")
-    private String defaultSortOrder;
 
     /**
      * Injecting IFetchSpecificDetailsRepository bean instead of an explicit object creation to achieve
@@ -189,9 +183,9 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                 || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())){
             dashboardRequestParamsTO.setSmcId(dashboardRequestTO.getSmcId());
         }
-        final String sortingOrder = sortOrder == null ? defaultSortOrder : sortOrder;
+        final String sortingOrder = sortOrder == null ? DEFAULT_SORT_ORDER : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
-        final int dataLimit = maxSize < size ? maxSize : size;
+        final int dataLimit = MAX_DATA_SIZE < size ? MAX_DATA_SIZE : size;
         Pageable pageable = PageRequest.of(pageNo, dataLimit);
         return iFetchSpecificDetailsCustomRepository.fetchDashboardData(dashboardRequestParamsTO, pageable);
     }
@@ -202,7 +196,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         List<BigInteger> searchByAppType;
         Pageable pagination = PageRequest.of(
                 requestTO.getPage(),
-                requestTO.getSize() > maxSize ? maxSize : requestTO.getSize(),
+                requestTO.getSize() > MAX_DATA_SIZE ? MAX_DATA_SIZE : requestTO.getSize(),
                 Sort.by(requestTO.getSortBy()).ascending());
         if (Objects.nonNull(requestTO.getApplicationType()) && !requestTO.getApplicationType().equalsIgnoreCase("")) {
             searchByAppType = Arrays.asList(Arrays.stream(ApplicationType.values())
