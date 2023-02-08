@@ -14,7 +14,6 @@ import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -29,14 +28,12 @@ import java.util.concurrent.TimeUnit;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 
-
+/**
+ * A class that implements all the methods of the interface IFetchSpecificDetailsService
+ * which deals with dashboard count, dashboard fetch specific details
+ * */
 @Service
 public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsService {
-
-    @Value("${max.data.size}")
-    private Integer maxSize;
-    @Value("${sort.order}")
-    private String defaultSortOrder;
 
     /**
      * Injecting IFetchSpecificDetailsRepository bean instead of an explicit object creation to achieve
@@ -52,18 +49,38 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
     @Autowired
     private IFetchSpecificDetailsMapper iFetchSpecificDetailsMapper;
 
+    /**
+     * Injecting IFetchSpecificDetailsCustomRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
     private IFetchSpecificDetailsCustomRepository iFetchSpecificDetailsCustomRepository;
 
+    /**
+     * Injecting IUserRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
     private IUserRepository userDetailRepository;
 
+    /**
+     * Injecting ISmcProfileRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
     private ISmcProfileRepository smcProfileRepository;
 
+    /**
+     * Injecting ICollegeDeanRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
     private ICollegeDeanRepository collegeDeanRepository;
 
+    /**
+     * Injecting ICollegeRegistrarRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
     private ICollegeRegistrarRepository collegeRegistrarRepository;
 
@@ -125,6 +142,12 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         }
     }
 
+    /**
+     * This method fetches the dashboard data based on the input request.
+     * @param dashboardRequestTO The request object containing the parameters for fetching dashboard data.
+     * @return DashboardResponseTO The response object containing the details fetched from dashboard.
+     * @throws InvalidRequestException If the input request is invalid.
+     */
     @Override
     public DashboardResponseTO fetchDashboardData(DashboardRequestTO dashboardRequestTO) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -144,9 +167,11 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         dashboardRequestParamsTO.setPageNo(pageNo);
         dashboardRequestParamsTO.setSize(size);
         dashboardRequestParamsTO.setSortBy(column);
+        dashboardRequestParamsTO.setUserGroupId(groupId);
+        dashboardRequestParamsTO.setUserGroupStatus(dashboardRequestTO.getUserGroupStatus());
         if(groupId.equals(Group.SMC.getId())){
             SMCProfile smcProfile = smcProfileRepository.findByUserDetail(userId);
-            dashboardRequestParamsTO.setSmcId(smcProfile.getStateMedicalCouncil().getId().toString());
+            dashboardRequestParamsTO.setCouncilId(smcProfile.getStateMedicalCouncil().getId().toString());
         }else if (groupId.equals(Group.COLLEGE_DEAN.getId())){
             CollegeDean collegeDean = collegeDeanRepository.findByUserDetail(userId);
             dashboardRequestParamsTO.setCollegeId(collegeDean.getCollege().getId().toString());
@@ -154,9 +179,13 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
             CollegeRegistrar collegeRegistrar = collegeRegistrarRepository.findByUserDetail(userId);
             dashboardRequestParamsTO.setCollegeId(collegeRegistrar.getCollege().getId().toString());
         }
-        final String sortingOrder = sortOrder == null ? defaultSortOrder : sortOrder;
+        if(groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
+                || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())){
+            dashboardRequestParamsTO.setSmcId(dashboardRequestTO.getSmcId());
+        }
+        final String sortingOrder = sortOrder == null ? DEFAULT_SORT_ORDER : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
-        final int dataLimit = maxSize < size ? maxSize : size;
+        final int dataLimit = MAX_DATA_SIZE < size ? MAX_DATA_SIZE : size;
         Pageable pageable = PageRequest.of(pageNo, dataLimit);
         return iFetchSpecificDetailsCustomRepository.fetchDashboardData(dashboardRequestParamsTO, pageable);
     }
@@ -167,7 +196,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         List<BigInteger> searchByAppType;
         Pageable pagination = PageRequest.of(
                 requestTO.getPage(),
-                requestTO.getSize() > maxSize ? maxSize : requestTO.getSize(),
+                requestTO.getSize() > MAX_DATA_SIZE ? MAX_DATA_SIZE : requestTO.getSize(),
                 Sort.by(requestTO.getSortBy()).ascending());
         if (Objects.nonNull(requestTO.getApplicationType()) && !requestTO.getApplicationType().equalsIgnoreCase("")) {
             searchByAppType = Arrays.asList(Arrays.stream(ApplicationType.values())
@@ -204,6 +233,11 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         return list;
     }
 
+    /**
+     Maps the database column name to be used for sorting based on the columnToSort name.
+     @param columnToSort - name of the column to be sorted
+     @return database column name to be used for sorting
+     */
     private String getColumnToSort(String columnToSort) {
         Map<String, String> columns;
         if (columnToSort.length() > 0) {
@@ -219,17 +253,18 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
     }
     private Map<String, String> mapColumnToTable() {
         Map<String, String> columnToSortMap = new HashMap<>();
-        columnToSortMap.put("doctor", " doctor");
-        columnToSortMap.put("smc", " smc");
-        columnToSortMap.put("collegeDean", " college_dean");
-        columnToSortMap.put("collegeRegistrar", " college_registrar");
-        columnToSortMap.put("nmc", " nmc");
-        columnToSortMap.put("hpProfileId", " hp_profile_id");
-        columnToSortMap.put("requestId", " request_id");
-        columnToSortMap.put("registrationNo", " registration_no");
-        columnToSortMap.put("createdAt", " created_at");
-        columnToSortMap.put("name", " name");
-        columnToSortMap.put("fullName", " full_name");
+        columnToSortMap.put("doctorStatus", " doctor_status");
+        columnToSortMap.put("smcStatus", " smc_status");
+        columnToSortMap.put("collegeDeanStatus", " college_dean_status");
+        columnToSortMap.put("collegeRegistrarStatus", " college_registrar_status");
+        columnToSortMap.put("nmcStatus", " nmc_status");
+        columnToSortMap.put("nbeStatus", " nbe_status");
+        columnToSortMap.put("hpProfileId", " calculate.hp_profile_id");
+        columnToSortMap.put("requestId", " calculate.request_id");
+        columnToSortMap.put("registrationNo", " rd.registration_no");
+        columnToSortMap.put("createdAt", " rd.created_at");
+        columnToSortMap.put("councilName", " stmc.name");
+        columnToSortMap.put("applicantFullName", " hp.full_name");
         return columnToSortMap;
     }
 }

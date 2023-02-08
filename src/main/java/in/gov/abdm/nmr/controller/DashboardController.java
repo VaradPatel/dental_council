@@ -76,6 +76,12 @@ public class DashboardController {
 //                requestTO.getUserSubType()));
 //    }
 
+    /**
+     * This API endpoint is used to retrieve Dashboard specific request details.
+     * @param requestTO - The request object containing the necessary parameters to fetch the dashboard details.
+     * @return The response object with request specific details related to the dashboard.
+     * @throws InvalidRequestException when the request is invalid.
+     */
     @PostMapping(PATH_DASHBOARD_FETCH_DETAILS)
     public DashboardResponseTO DashBoardResponseTO(@RequestBody DashboardRequestTO requestTO) throws InvalidRequestException {
         return iFetchSpecificDetailsService.fetchDashboardData(requestTO);

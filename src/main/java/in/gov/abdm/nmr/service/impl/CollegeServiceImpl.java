@@ -14,7 +14,6 @@ import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,13 +22,12 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
+import static in.gov.abdm.nmr.util.NMRConstants.DEFAULT_SORT_ORDER;
+import static in.gov.abdm.nmr.util.NMRConstants.MAX_DATA_SIZE;
+
 @Service
 @Slf4j
 public class CollegeServiceImpl implements ICollegeService {
-    @Value("${max.data.size}")
-    private Integer maxSize;
-    @Value("${sort.order}")
-    private String defaultSortOrder;
     @Autowired
     private ICollegeDaoService collegeService;
 
@@ -91,6 +89,7 @@ public class CollegeServiceImpl implements ICollegeService {
         collegeProfileTO.setCouncilName(collegeEntity.getStateMedicalCouncil().getName());
         collegeProfileTO.setStateName(collegeEntity.getState().getName());
         collegeProfileTO.setUniversityName(collegeEntity.getUniversity().getName());
+        collegeProfileTO.setUserId(collegeEntity.getUser().getId());
         return collegeProfileTO;
     }
 
@@ -110,23 +109,36 @@ public class CollegeServiceImpl implements ICollegeService {
         return collegeDeanProfileTO;
     }
 
+    /**
+     * Service Implementation's method for fetching the College registration records
+     * for the NMC that has been submitted for approval
+     *
+     * @param pageNo       - Gives the current page number
+     * @param offset        - Gives the number of records to be displayed
+     * @param search       - Gives the search criteria like HP_Id, HP_name, Submiited_Date, Remarks
+     * @param sortBy -  According to which column the sort has to happen
+     * @param sortType    -  Sorting order ASC or DESC
+     * @return the CollegeRegistrationResponseTO  response Object
+     * which contains all the details related to the College submitted to NMC
+     * for approval
+     */
     @Override
-    public CollegeRegistrationResponseTO getCollegeRegistrationDetails(String pageNo, String limit, String search, String collegeId, String collegeName, String councilName, String columnToSort, String sortOrder) {
+    public CollegeRegistrationResponseTO getCollegeRegistrationDetails(String pageNo, String offset, String search, String collegeId, String collegeName, String councilName, String sortBy, String sortType) {
         CollegeRegistrationResponseTO collegeRegistrationResponseTO = null;
         CollegeRegistrationRequestParamsTO collegeRegistrationRequestParams = new CollegeRegistrationRequestParamsTO();
-        collegeRegistrationRequestParams.setLimit(Integer.valueOf(limit));
+        final Integer dataLimit = MAX_DATA_SIZE < Integer.valueOf(offset) ? MAX_DATA_SIZE : Integer.valueOf(offset);
+        collegeRegistrationRequestParams.setOffset(dataLimit);
         collegeRegistrationRequestParams.setPageNo(Integer.valueOf(pageNo));
         collegeRegistrationRequestParams.setCollegeId(collegeId);
         collegeRegistrationRequestParams.setCollegeName(collegeName);
         collegeRegistrationRequestParams.setCouncilName(councilName);
         collegeRegistrationRequestParams.setSearch(search);
-        String column = getColumnToSort(columnToSort);
-        collegeRegistrationRequestParams.setColumnToSort(column);
-        final String sortingOrder = sortOrder == null ? defaultSortOrder : sortOrder;
-        collegeRegistrationRequestParams.setSortOrder(sortingOrder);
+        String column = getColumnToSort(sortBy);
+        collegeRegistrationRequestParams.setSortBy(column);
+        final String sortingOrder = sortType == null ? DEFAULT_SORT_ORDER : sortType;
+        collegeRegistrationRequestParams.setSortType(sortingOrder);
         try {
-            final Integer dataLimit = maxSize < Integer.valueOf(limit) ? maxSize : Integer.valueOf(limit);
-            Pageable pageable = PageRequest.of(Integer.valueOf(pageNo), dataLimit);
+            Pageable pageable = PageRequest.of(collegeRegistrationRequestParams.getPageNo(), collegeRegistrationRequestParams.getOffset());
             collegeRegistrationResponseTO = collegeService.getCollegeRegistrationData(collegeRegistrationRequestParams, pageable);
         } catch (Exception e) {
             log.error("Service exception " + e.getMessage());
@@ -141,7 +153,7 @@ public class CollegeServiceImpl implements ICollegeService {
             if (columns.containsKey(columnToSort)) {
                 return columns.get(columnToSort);
             } else {
-                return "Invalid column Name to sort";
+                return " wf.created_at ";
             }
         } else {
             return " wf.created_at ";

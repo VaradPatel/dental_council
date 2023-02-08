@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.repository.impl;
 import in.gov.abdm.nmr.dto.DashboardRequestParamsTO;
 import in.gov.abdm.nmr.dto.DashboardResponseTO;
 import in.gov.abdm.nmr.dto.DashboardTO;
+import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.repository.IFetchSpecificDetailsCustomRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -18,14 +19,28 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+/**
+ * A class that implements all the methods of the Custom Repository interface IFetchSpecificDetailsCustomRepository
+ * which deals with dashboard count, dashboard fetch specific details
+ */
 @Repository
 @Transactional
 @Slf4j
 public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificDetailsCustomRepository {
 
+    /**
+     * Injecting a EntityManager bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @PersistenceContext
     private EntityManager entityManager;
 
+    /**
+     * Represents a functional interface to generates a dynamic WHERE clause based on the DashboardRequestParamsTO
+     * object passed as a parameter.
+     * @param dashboardRequestParamsTO - object that contains the criteria for the query.
+     * @return a string query with appended WHERE clause for the query.
+     */
     private static final Function<DashboardRequestParamsTO, String> DASHBOARD_PARAMETERS = (dashboardRequestParamsTO) -> {
         StringBuilder sb = new StringBuilder();
 
@@ -41,17 +56,55 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             sb.append("AND rd.registration_no ILIKE '%" + dashboardRequestParamsTO.getNmrId() + "%' ");
         }
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
-            sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
+        if (Objects.nonNull(dashboardRequestParamsTO.getCouncilId()) && !dashboardRequestParamsTO.getCouncilId().isEmpty()) {
+            sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getCouncilId() + " ");
         }
 
         if (Objects.nonNull(dashboardRequestParamsTO.getCollegeId()) && !dashboardRequestParamsTO.getCollegeId().isEmpty()) {
             sb.append("AND qd.college_id = " + dashboardRequestParamsTO.getCollegeId() + " ");
         }
 
+        if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
+            sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
+        }
+
+        if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
+            sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
+        }
+
+        if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
+            sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
+        }
+
+        if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
+            sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
+        }
+        if (Objects.nonNull(dashboardRequestParamsTO.getUserGroupId())){
+            BigInteger groupId = dashboardRequestParamsTO.getUserGroupId();
+            String userGroupStatus = dashboardRequestParamsTO.getUserGroupStatus().toUpperCase();
+            if(groupId.equals(Group.SMC.getId())){
+                sb.append("AND smc_status = '" + userGroupStatus + "' ");
+            } else if(groupId.equals(Group.COLLEGE_DEAN.getId())){
+                sb.append("AND college_dean_status = '" + userGroupStatus + "' ");
+            } else if(groupId.equals(Group.COLLEGE_REGISTRAR.getId())){
+                sb.append("AND college_registrar_status = '" + userGroupStatus + "' ");
+            } else if(groupId.equals(Group.NMC.getId())){
+                sb.append("AND nmc_status = '" + userGroupStatus + "' ");
+            } else if(groupId.equals(Group.NBE.getId())){
+                sb.append("AND nbe_status = '" + userGroupStatus + "' ");
+            } else if(groupId.equals(Group.COLLEGE_ADMIN.getId())){
+                sb.append("AND college_registrar_status = '" + userGroupStatus + "' ");
+                sb.append("AND college_dean_status = '" + userGroupStatus + "' ");
+            }
+        }
         return sb.toString();
     };
 
+    /**
+     * Represents a functional interface to sort the results based on the parameters specified in DashboardRequestParamsTO.
+     * @param dashboardRequestParamsTO - which holds the parameters.
+     * @return A query string with appended sort order in the format "ORDER BY column_name sort_order"
+     */
     private static final Function<DashboardRequestParamsTO, String> SORT_RECORDS = dashboardRequestParamsTO -> {
         StringBuilder sb = new StringBuilder();
         sb.append("ORDER BY  ");
@@ -61,10 +114,16 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         return sb.toString();
     };
 
+    /**
+     * Represents a functional interface to generates a dynamic WHERE clause based on the DashboardRequestParamsTO
+     * object passed as a parameter.
+     * @param dashboardRequestParamsTO - an object that contains parameters for the function
+     * @return a string query to get the request details.
+     */
     private static final Function<DashboardRequestParamsTO, String> DASHBOARD = (dashboardRequestParamsTO) -> {
         StringBuilder sb = new StringBuilder();
         sb.append(
-                "select doctor, smc, College_Dean, College_Registrar, nmc, nbe, calculate.hp_profile_id, calculate.request_id, rd.registration_no, rd.created_at,stmc.name, hp.full_name " +
+                "select doctor_status, smc_status, college_dean_status, college_registrar_status, nmc_status, nbe_status, calculate.hp_profile_id, calculate.request_id, rd.registration_no, rd.created_at, stmc.name, hp.full_name " +
                         "from " +
                         "( " +
                         "select     " +
@@ -74,7 +133,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                         "when wf.previous_group_id = 1 and wf.action_id = 1 THEN 'SUBMITTED' " +
                         "when wf.current_group_id = 1 and wf.action_id = 3 THEN 'PENDING' " +
                         "when wf.previous_group_id IN (2,3,4,5) and wf.action_id IN (2,4,5) THEN 'SUBMITTED' " +
-                        "END as doctor, " +
+                        "END as doctor_status, " +
                         "CASE " +
                         "when wf.current_group_id = 2 and wf.action_id IN (1,3,4) THEN 'PENDING' " +
                         "when wf.previous_group_id = 2 and wf.action_id = 4 THEN 'APPROVED' " +
@@ -83,7 +142,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                         "when wf.previous_group_id = 2 and wf.action_id = 3 THEN 'QUERY RAISED' " +
                         "when wf.previous_group_id IN (4,5) and wf.action_id IN (3,4,5) THEN 'FORWARDED' " +
                         "when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
-                        "END as SMC, " +
+                        "END as smc_status, " +
                         "CASE " +
                         "when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
                         "when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and " +
@@ -96,7 +155,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                         "when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'APPROVED' " +
                         "when wf.previous_group_id = 4 and wf.action_id = 5 THEN 'REJECTED' " +
                         "when wf.previous_group_id = 4 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as College_Dean, " +
+                        "END as college_dean_status, " +
                         "CASE " +
                         "when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
                         "when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and " +
@@ -109,14 +168,14 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                         "when wf.previous_group_id = 5 and wf.action_id = 4 THEN 'APPROVED' " +
                         "when wf.previous_group_id = 5 and wf.action_id = 5 THEN 'REJECTED' " +
                         "when wf.previous_group_id = 5 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as College_Registrar, " +
+                        "END as college_registrar_status, " +
                         "CASE " +
                         "when wf.current_group_id = 7 and wf.action_id IN (1,3,4) THEN 'PENDING' " +
                         "when wf.previous_group_id = 7 and wf.action_id = 4 THEN 'APPROVED' " +
                         "when wf.previous_group_id = 7 and wf.action_id = 5 THEN 'REJECTED' " +
                         "when wf.previous_group_id = 7 and wf.action_id = 3 THEN 'QUERY RAISED' " +
                         "when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
-                        "END as NBE, " +
+                        "END as nbe_status, " +
                         "CASE " +
                         "when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
                         "when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' " +
@@ -127,7 +186,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                         "when wf.previous_group_id = 3 and wf.action_id = 4 THEN 'APPROVED' " +
                         "when wf.previous_group_id = 3 and wf.action_id = 5 THEN 'REJECTED' " +
                         "when wf.previous_group_id = 3 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as NMC, " +
+                        "END as nmc_status, " +
                         "wf.id,request_id, hp_profile_id, previous_group_id, current_group_id, action_id, wf.application_type_id " +
                         "from main.work_flow_audit as wf " +
                         "INNER JOIN " +
@@ -158,6 +217,12 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         return sb.toString();
     };
 
+    /**
+     * This method is used to retrieve the count of Dashboard records based on the provided parameters.
+     *
+     * @param dashboardRequestParamsTO - the parameters used to retrieve the Dashboard records list.
+     * @return totalRecords the count of Dashboard records list.
+     */
     private BigInteger getCount(DashboardRequestParamsTO dashboardRequestParamsTO) {
         BigInteger totalRecords = null;
         try {
@@ -170,6 +235,13 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         return totalRecords;
     }
 
+    /**
+     * Represents a functional interface to generates a dynamic WHERE clause based on the DashboardRequestParamsTO
+     * object passed as a parameter.
+     *
+     * @param dashboardRequestParamsTO - an object that contains parameters for the function
+     * @return a query to get the count of the Dashboard records list.
+     */
     private static final Function<DashboardRequestParamsTO, String> GET_RECORD_COUNT = (dashboardRequestParamsTO) -> {
         StringBuilder sb = new StringBuilder();
         sb.append(
@@ -183,7 +255,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                         "when wf.previous_group_id = 1 and wf.action_id = 1 THEN 'SUBMITTED' " +
                         "when wf.current_group_id = 1 and wf.action_id = 3 THEN 'PENDING' " +
                         "when wf.previous_group_id IN (2,3,4,5) and wf.action_id IN (2,4,5) THEN 'SUBMITTED' " +
-                        "END as doctor, " +
+                        "END as doctor_status, " +
                         "CASE " +
                         "when wf.current_group_id = 2 and wf.action_id IN (1,3,4) THEN 'PENDING' " +
                         "when wf.previous_group_id = 2 and wf.action_id = 4 THEN 'APPROVED' " +
@@ -192,7 +264,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                         "when wf.previous_group_id = 2 and wf.action_id = 3 THEN 'QUERY RAISED' " +
                         "when wf.previous_group_id IN (4,5) and wf.action_id IN (3,4,5) THEN 'FORWARDED' " +
                         "when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
-                        "END as SMC, " +
+                        "END as smc_status, " +
                         "CASE " +
                         "when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
                         "when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and " +
@@ -205,7 +277,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                         "when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'APPROVED' " +
                         "when wf.previous_group_id = 4 and wf.action_id = 5 THEN 'REJECTED' " +
                         "when wf.previous_group_id = 4 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as College_Dean, " +
+                        "END as college_dean_status, " +
                         "CASE " +
                         "when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
                         "when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and " +
@@ -218,14 +290,14 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                         "when wf.previous_group_id = 5 and wf.action_id = 4 THEN 'APPROVED' " +
                         "when wf.previous_group_id = 5 and wf.action_id = 5 THEN 'REJECTED' " +
                         "when wf.previous_group_id = 5 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as College_Registrar, " +
+                        "END as college_registrar_status, " +
                         "CASE " +
                         "when wf.current_group_id = 7 and wf.action_id IN (1,3,4) THEN 'PENDING' " +
                         "when wf.previous_group_id = 7 and wf.action_id = 4 THEN 'APPROVED' " +
                         "when wf.previous_group_id = 7 and wf.action_id = 5 THEN 'REJECTED' " +
                         "when wf.previous_group_id = 7 and wf.action_id = 3 THEN 'QUERY RAISED' " +
                         "when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
-                        "END as NBE, " +
+                        "END as nbe_status, " +
                         "CASE " +
                         "when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
                         "when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' " +
@@ -236,7 +308,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                         "when wf.previous_group_id = 3 and wf.action_id = 4 THEN 'APPROVED' " +
                         "when wf.previous_group_id = 3 and wf.action_id = 5 THEN 'REJECTED' " +
                         "when wf.previous_group_id = 3 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as NMC, " +
+                        "END as nmc_status, " +
                         "wf.id,request_id, hp_profile_id, previous_group_id, current_group_id, action_id, wf.application_type_id " +
                         "from main.work_flow_audit as wf " +
                         "INNER JOIN " +
@@ -263,7 +335,13 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         return sb.toString();
     };
 
-
+    /**
+     * Retrieves the details of Dashboard records list based on the provided parameters.
+     * @param dashboardRequestParamsTO - object containing the filter criteria for fetching request details
+     * @param pagination                                   - object for pagination
+     * @return the DashboardResponseTO object representing the response object
+     * which contains all the Dashboard records list
+     */
     @Override
     public DashboardResponseTO fetchDashboardData(DashboardRequestParamsTO dashboardRequestParamsTO, Pageable pagination) {
         DashboardResponseTO dashBoardResponseTO = new DashboardResponseTO();
@@ -277,18 +355,18 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         List<Object[]> results =query.getResultList();
         results.forEach(result -> {
             DashboardTO dashBoardTO = new DashboardTO();
-            dashBoardTO.setDoctor((String) result[0]);
-            dashBoardTO.setSmc((String) result[1]);
-            dashBoardTO.setCollegeDean((String) result[2]);
-            dashBoardTO.setCollegeRegistrar((String) result[3]);
-            dashBoardTO.setNmc((String) result[4]);
-            dashBoardTO.setNbe((String) result[5]);
+            dashBoardTO.setDoctorStatus((String) result[0]);
+            dashBoardTO.setSmcStatus((String) result[1]);
+            dashBoardTO.setCollegeDeanStatus((String) result[2]);
+            dashBoardTO.setCollegeRegistrarStatus((String) result[3]);
+            dashBoardTO.setNmcStatus((String) result[4]);
+            dashBoardTO.setNbeStatus((String) result[5]);
             dashBoardTO.setHpProfileId((BigInteger) result[6]);
             dashBoardTO.setRequestId((String) result[7]);
             dashBoardTO.setRegistrationNo((String) result[8]);
             dashBoardTO.setCreatedAt((String) result[9]);
-            dashBoardTO.setName((String) result[10]);
-            dashBoardTO.setFullName((String) result[11]);
+            dashBoardTO.setCouncilName((String) result[10]);
+            dashBoardTO.setApplicantFullName((String) result[11]);
             dashboardTOList.add(dashBoardTO);
         });
         dashBoardResponseTO.setDashboardTOList(dashboardTOList);

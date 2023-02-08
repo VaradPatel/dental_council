@@ -35,6 +35,11 @@ public class ProtectedPaths {
     public static final String PATH_DASHBOARD_FETCH_DETAILS = "/fetchSpecificDetails";
 
     public static final String PATH_DASHBOARD_ROOT = "/dashboard";
+
+    public static final String PATH_HEALTH_PROFESSIONAL_ROOT = "/health-professional";
+
+    public static final String PATH_HEALTH_PROFESSIONAL_APPLICATIONS = "/applications";
+
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<AntPathRequestMatcher> protectedPaths = new ArrayList<>();
         protectedPaths.add(new AntPathRequestMatcher(PATH_REFRESH_TOKEN));
@@ -56,6 +61,8 @@ public class ProtectedPaths {
         protectedPaths.add(new AntPathRequestMatcher(PATH_USER_ROOT + PATH_NBE_PROFILE));
 
         protectedPaths.add(new AntPathRequestMatcher(PATH_DASHBOARD_ROOT + PATH_DASHBOARD_FETCH_DETAILS));
+
+        protectedPaths.add(new AntPathRequestMatcher(PATH_HEALTH_PROFESSIONAL_ROOT + PATH_HEALTH_PROFESSIONAL_APPLICATIONS));
 
         return protectedPaths.toArray(AntPathRequestMatcher[]::new);
     }

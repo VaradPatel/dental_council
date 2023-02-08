@@ -11,10 +11,17 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 /**
- * Client to call Facility Service API
+ * Feign client for accessing the Facility Service.
  */
 @FeignClient(name = FACILITY_SERVICE, url = GLOBAL_FACILITY_ENDPOINT)
 public interface FacilityFClient {
+    /**
+     * Endpoint for searching facilities in facility service.
+     *
+     * @param authorization           the authorization header value
+     * @param facilitySearchRequestTO the facility search request payload
+     * @return the FacilitySearchResponseTO search response Object
+     */
     @PostMapping(value = FACILITY_SERVICE_SEARCH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     FacilitySearchResponseTO findFacility(@RequestHeader(value = "Authorization") String authorization, @RequestBody FacilitySearchRequestTO facilitySearchRequestTO);
 }
