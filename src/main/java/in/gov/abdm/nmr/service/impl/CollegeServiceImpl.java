@@ -14,7 +14,6 @@ import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,13 +22,12 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
+import static in.gov.abdm.nmr.util.NMRConstants.DEFAULT_SORT_ORDER;
+import static in.gov.abdm.nmr.util.NMRConstants.MAX_DATA_SIZE;
+
 @Service
 @Slf4j
 public class CollegeServiceImpl implements ICollegeService {
-    @Value("${max.data.size}")
-    private Integer maxSize;
-    @Value("${sort.order}")
-    private String defaultSortOrder;
     @Autowired
     private ICollegeDaoService collegeService;
 
@@ -128,7 +126,7 @@ public class CollegeServiceImpl implements ICollegeService {
     public CollegeRegistrationResponseTO getCollegeRegistrationDetails(String pageNo, String offset, String search, String collegeId, String collegeName, String councilName, String sortBy, String sortType) {
         CollegeRegistrationResponseTO collegeRegistrationResponseTO = null;
         CollegeRegistrationRequestParamsTO collegeRegistrationRequestParams = new CollegeRegistrationRequestParamsTO();
-        final Integer dataLimit = maxSize < Integer.valueOf(offset) ? maxSize : Integer.valueOf(offset);
+        final Integer dataLimit = MAX_DATA_SIZE < Integer.valueOf(offset) ? MAX_DATA_SIZE : Integer.valueOf(offset);
         collegeRegistrationRequestParams.setOffset(dataLimit);
         collegeRegistrationRequestParams.setPageNo(Integer.valueOf(pageNo));
         collegeRegistrationRequestParams.setCollegeId(collegeId);
@@ -137,7 +135,7 @@ public class CollegeServiceImpl implements ICollegeService {
         collegeRegistrationRequestParams.setSearch(search);
         String column = getColumnToSort(sortBy);
         collegeRegistrationRequestParams.setSortBy(column);
-        final String sortingOrder = sortType == null ? defaultSortOrder : sortType;
+        final String sortingOrder = sortType == null ? DEFAULT_SORT_ORDER : sortType;
         collegeRegistrationRequestParams.setSortType(sortingOrder);
         try {
             Pageable pageable = PageRequest.of(collegeRegistrationRequestParams.getPageNo(), collegeRegistrationRequestParams.getOffset());
