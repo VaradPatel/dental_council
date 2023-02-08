@@ -29,7 +29,10 @@ import java.util.concurrent.TimeUnit;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 
-
+/**
+ * A class that implements all the methods of the interface IFetchSpecificDetailsService
+ * which deals with dashboard count, dashboard fetch specific details
+ * */
 @Service
 public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsService {
 
@@ -52,18 +55,38 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
     @Autowired
     private IFetchSpecificDetailsMapper iFetchSpecificDetailsMapper;
 
+    /**
+     * Injecting IFetchSpecificDetailsCustomRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
     private IFetchSpecificDetailsCustomRepository iFetchSpecificDetailsCustomRepository;
 
+    /**
+     * Injecting IUserRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
     private IUserRepository userDetailRepository;
 
+    /**
+     * Injecting ISmcProfileRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
     private ISmcProfileRepository smcProfileRepository;
 
+    /**
+     * Injecting ICollegeDeanRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
     private ICollegeDeanRepository collegeDeanRepository;
 
+    /**
+     * Injecting ICollegeRegistrarRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
     private ICollegeRegistrarRepository collegeRegistrarRepository;
 
@@ -125,6 +148,12 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         }
     }
 
+    /**
+     * This method fetches the dashboard data based on the input request.
+     * @param dashboardRequestTO The request object containing the parameters for fetching dashboard data.
+     * @return DashboardResponseTO The response object containing the details fetched from dashboard.
+     * @throws InvalidRequestException If the input request is invalid.
+     */
     @Override
     public DashboardResponseTO fetchDashboardData(DashboardRequestTO dashboardRequestTO) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -210,6 +239,11 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         return list;
     }
 
+    /**
+     Maps the database column name to be used for sorting based on the columnToSort name.
+     @param columnToSort - name of the column to be sorted
+     @return database column name to be used for sorting
+     */
     private String getColumnToSort(String columnToSort) {
         Map<String, String> columns;
         if (columnToSort.length() > 0) {

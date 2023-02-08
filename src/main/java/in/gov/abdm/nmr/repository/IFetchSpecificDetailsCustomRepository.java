@@ -7,6 +7,9 @@ import org.springframework.data.domain.Pageable;
 
 import java.math.BigInteger;
 
+/**
+ * An interface for the customized repository of Dashboard Fetch Specific Details repository
+ */
 public interface IFetchSpecificDetailsCustomRepository {
     DashboardResponseTO fetchDashboardData(DashboardRequestParamsTO dashboardRequestParamsTO, Pageable pagination);
 }

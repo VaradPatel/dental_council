@@ -55,12 +55,8 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
         User collegeDeanUserDetail = null;
         CollegeDean collegeDeanEntityOld = null;
         if (collegeDeanCreationRequestTo.getId() != null || collegeDeanCreationRequestTo.getUserId() != null) {
-            String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-            collegeDeanUserDetail = userDetailService.findByUsername(userName);
-
-            if (!collegeDeanUserDetail.getId().equals(collegeDeanCreationRequestTo.getUserId())) {
-                throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
-            }
+            accessControlService.validateUser(collegeDeanCreationRequestTo.getUserId());
+            collegeDeanUserDetail = userDetailService.findById(collegeDeanCreationRequestTo.getUserId());
 
             if (!collegeDeanUserDetail.getUsername().equals(collegeDeanCreationRequestTo.getEmailId()) && userDetailService.findByUsername(collegeDeanCreationRequestTo.getEmailId()) != null) {
                 throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
@@ -70,6 +66,19 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
             if (!collegeDeanEntityOld.getId().equals(collegeDeanCreationRequestTo.getId())) {
                 throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
             }
+
+            collegeDeanUserDetail.setUsername(collegeDeanCreationRequestTo.getEmailId());
+            if (collegeDeanCreationRequestTo.getPassword() != null) {
+                collegeDeanUserDetail.setPassword(bCryptPasswordEncoder.encode(collegeDeanCreationRequestTo.getPassword()));
+            }
+            userDetailService.saveUserDetail(collegeDeanUserDetail);
+
+            CollegeDean collegeDeanEntity = collegeDeanMapper.collegeDeanDtoToEntity(collegeDeanCreationRequestTo);
+            collegeDeanEntity.setUser(collegeDeanUserDetail);
+            collegeDeanEntity.setCreatedAt(collegeDeanEntityOld.getCreatedAt());
+            collegeDeanEntity.setCollege(collegeDeanEntityOld.getCollege());
+            return collegeDeanRepository.saveAndFlush(collegeDeanEntity);
+
         } else if (userDetailService.findByUsername(collegeDeanCreationRequestTo.getEmailId()) != null) {
             throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
         }
@@ -77,13 +86,7 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
 
         User userDetail = new User(collegeDeanCreationRequestTo.getUserId(), collegeDeanCreationRequestTo.getEmailId(), //
                 bCryptPasswordEncoder.encode(collegeDeanCreationRequestTo.getPassword()), null, true, true, //
-                entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_DEAN.getCode()), entityManager.getReference(UserGroup.class, in.gov.abdm.nmr.enums.Group.COLLEGE_DEAN.getId()), false, 0, null);
-
-        if (collegeDeanUserDetail != null) {
-            userDetail.setCreatedAt(collegeDeanUserDetail.getCreatedAt());
-            userDetail.setRefreshTokenId(collegeDeanUserDetail.getRefreshTokenId());
-        }
-
+                entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_DEAN.getCode()), entityManager.getReference(UserGroup.class, in.gov.abdm.nmr.enums.Group.COLLEGE_DEAN.getId()), true, 0, null);
         userDetailService.saveUserDetail(userDetail);
 
         CollegeDean collegeDeanEntity = collegeDeanMapper.collegeDeanDtoToEntity(collegeDeanCreationRequestTo);
@@ -92,12 +95,10 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         UserSearchTO userDetailSearchTO = new UserSearchTO();
         userDetailSearchTO.setUsername(userName);
+        
         College college = collegeRepository.findByUserDetail(userDetailService.searchUserDetail(userDetailSearchTO).getId());
         collegeDeanEntity.setCollege(college);
 
-        if (collegeDeanEntityOld != null) {
-            collegeDeanEntity.setCreatedAt(collegeDeanEntityOld.getCreatedAt());
-        }
         return collegeDeanRepository.saveAndFlush(collegeDeanEntity);
     }
 

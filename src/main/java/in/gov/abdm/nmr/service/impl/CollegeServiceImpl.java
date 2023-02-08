@@ -91,6 +91,7 @@ public class CollegeServiceImpl implements ICollegeService {
         collegeProfileTO.setCouncilName(collegeEntity.getStateMedicalCouncil().getName());
         collegeProfileTO.setStateName(collegeEntity.getState().getName());
         collegeProfileTO.setUniversityName(collegeEntity.getUniversity().getName());
+        collegeProfileTO.setUserId(collegeEntity.getUser().getId());
         return collegeProfileTO;
     }
 

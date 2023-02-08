@@ -19,6 +19,10 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A class that implements all the methods of the interface ITrackApplicationService
+ * which deals with health professional's applications and track status
+ * */
 @Service
 public class TrackApplicationServiceImpl implements ITrackApplicationService {
 
@@ -27,16 +31,35 @@ public class TrackApplicationServiceImpl implements ITrackApplicationService {
     @Value("${sort.order}")
     private String defaultSortOrder;
 
+    /**
+     * Injecting a IFetchTrackApplicationDetailsCustomRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
     private IFetchTrackApplicationDetailsCustomRepository iFetchTrackApplicationDetailsCustomRepository;
 
+    /**
+     * Injecting a IUserRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
     private IUserRepository userDetailRepository;
 
+    /**
+     * Injecting a IHpProfileRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @Autowired
     private IHpProfileRepository hpProfileRepository;
 
-
+    /**
+     * Retrieves information about the status of a health professional's requests for NMC, NBE, SMC, Dean, Registrar and Admin.
+     *
+     * @param healthProfessionalApplicationRequestTo - HealthProfessionalApplicationRequestTo object representing the request
+     * @return the HealthProfessionalApplicationResponseTo object representing the response object
+     * which contains all the details used to track the health professionals who have
+     * raised a request
+     */
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetails(HealthProfessionalApplicationRequestTo healthProfessionalApplicationRequestTo) {
 
@@ -61,6 +84,14 @@ public class TrackApplicationServiceImpl implements ITrackApplicationService {
         return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable);
     }
 
+    /**
+     * Retrieves information about a health professional's application requests to track by health professional.
+     *
+     * @param healthProfessionalApplicationRequestTo - HealthProfessionalApplicationRequestTo object representing the request
+     * @return the HealthProfessionalApplicationResponseTo object representing the response object
+     * which contains all the details used to track the health professionals who have
+     * raised a request
+     */
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(HealthProfessionalApplicationRequestTo healthProfessionalApplicationRequestTo) {
         if(healthProfessionalApplicationRequestTo.getSmcId() == null && healthProfessionalApplicationRequestTo.getRegistrationNo() == null){
@@ -72,6 +103,11 @@ public class TrackApplicationServiceImpl implements ITrackApplicationService {
         return fetchApplicationDetails(healthProfessionalApplicationRequestTo);
     }
 
+    /**
+     Maps the database column name to be used for sorting based on the columnToSort name.
+     @param columnToSort - name of the column to be sorted
+     @return database column name to be used for sorting
+     */
     private String getColumnToSort(String columnToSort) {
         Map<String, String> columns;
         if (columnToSort.length() > 0) {

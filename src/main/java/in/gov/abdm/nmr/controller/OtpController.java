@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.exception.OtpException;
+import java.security.GeneralSecurityException;
 
 /**
  * Controller for sending and verifying one time password notifications.
@@ -41,7 +42,7 @@ public class OtpController {
 	 */
 	@PostMapping(path = NMRConstants.VERIFY_OTP, produces = MediaType.APPLICATION_JSON_VALUE)
 	public OtpValidateResponseTo validateOtp(@Valid @RequestBody OtpValidateRequestTo otpValidateRequestTo)
-			throws OtpException {
+			throws OtpException, GeneralSecurityException {
 		return otpService.validateOtp(otpValidateRequestTo);
 	}
 }

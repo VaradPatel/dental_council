@@ -19,14 +19,28 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+/**
+ * A class that implements all the methods of the Custom Repository interface IFetchSpecificDetailsCustomRepository
+ * which deals with dashboard count, dashboard fetch specific details
+ */
 @Repository
 @Transactional
 @Slf4j
 public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificDetailsCustomRepository {
 
+    /**
+     * Injecting a EntityManager bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @PersistenceContext
     private EntityManager entityManager;
 
+    /**
+     * Represents a functional interface to generates a dynamic WHERE clause based on the DashboardRequestParamsTO
+     * object passed as a parameter.
+     * @param dashboardRequestParamsTO - object that contains the criteria for the query.
+     * @return a string query with appended WHERE clause for the query.
+     */
     private static final Function<DashboardRequestParamsTO, String> DASHBOARD_PARAMETERS = (dashboardRequestParamsTO) -> {
         StringBuilder sb = new StringBuilder();
 
@@ -86,6 +100,11 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         return sb.toString();
     };
 
+    /**
+     * Represents a functional interface to sort the results based on the parameters specified in DashboardRequestParamsTO.
+     * @param dashboardRequestParamsTO - which holds the parameters.
+     * @return A query string with appended sort order in the format "ORDER BY column_name sort_order"
+     */
     private static final Function<DashboardRequestParamsTO, String> SORT_RECORDS = dashboardRequestParamsTO -> {
         StringBuilder sb = new StringBuilder();
         sb.append("ORDER BY  ");
@@ -95,6 +114,12 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         return sb.toString();
     };
 
+    /**
+     * Represents a functional interface to generates a dynamic WHERE clause based on the DashboardRequestParamsTO
+     * object passed as a parameter.
+     * @param dashboardRequestParamsTO - an object that contains parameters for the function
+     * @return a string query to get the request details.
+     */
     private static final Function<DashboardRequestParamsTO, String> DASHBOARD = (dashboardRequestParamsTO) -> {
         StringBuilder sb = new StringBuilder();
         sb.append(
@@ -192,6 +217,12 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         return sb.toString();
     };
 
+    /**
+     * This method is used to retrieve the count of Dashboard records based on the provided parameters.
+     *
+     * @param dashboardRequestParamsTO - the parameters used to retrieve the Dashboard records list.
+     * @return totalRecords the count of Dashboard records list.
+     */
     private BigInteger getCount(DashboardRequestParamsTO dashboardRequestParamsTO) {
         BigInteger totalRecords = null;
         try {
@@ -204,6 +235,13 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         return totalRecords;
     }
 
+    /**
+     * Represents a functional interface to generates a dynamic WHERE clause based on the DashboardRequestParamsTO
+     * object passed as a parameter.
+     *
+     * @param dashboardRequestParamsTO - an object that contains parameters for the function
+     * @return a query to get the count of the Dashboard records list.
+     */
     private static final Function<DashboardRequestParamsTO, String> GET_RECORD_COUNT = (dashboardRequestParamsTO) -> {
         StringBuilder sb = new StringBuilder();
         sb.append(
@@ -297,7 +335,13 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         return sb.toString();
     };
 
-
+    /**
+     * Retrieves the details of Dashboard records list based on the provided parameters.
+     * @param dashboardRequestParamsTO - object containing the filter criteria for fetching request details
+     * @param pagination                                   - object for pagination
+     * @return the DashboardResponseTO object representing the response object
+     * which contains all the Dashboard records list
+     */
     @Override
     public DashboardResponseTO fetchDashboardData(DashboardRequestParamsTO dashboardRequestParamsTO, Pageable pagination) {
         DashboardResponseTO dashBoardResponseTO = new DashboardResponseTO();
