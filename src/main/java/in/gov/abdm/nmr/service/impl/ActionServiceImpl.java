@@ -15,7 +15,6 @@ import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +23,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static in.gov.abdm.nmr.util.NMRConstants.DEFAULT_SORT_ORDER;
+import static in.gov.abdm.nmr.util.NMRConstants.MAX_DATA_SIZE;
+
 /**
  * A class that implements all the methods of the interface  IActionService
  * which deals with the suspension and reactivation requests
@@ -31,10 +34,6 @@ import java.util.Map;
 @Service
 @Slf4j
 public class ActionServiceImpl implements IActionService {
-    @Value("${max.data.size}")
-    private Integer maxSize;
-    @Value("${sort.order}")
-    private String defaultSortOrder;
 
     /**
      * Injecting a IHpProfileRepository bean instead of an explicit object creation to achieve
@@ -152,10 +151,10 @@ public class ActionServiceImpl implements IActionService {
         ReactivateHealthProfessionalResponseTO reactivateHealthProfessionalResponseTO = null;
         ReactivateHealthProfessionalRequestParam reactivateHealthProfessionalQueryParam = new ReactivateHealthProfessionalRequestParam();
         reactivateHealthProfessionalQueryParam.setPageNo(Integer.valueOf(pageNo));
-        final Integer dataLimit = maxSize < Integer.valueOf(offset) ? maxSize : Integer.valueOf(offset);
+        final Integer dataLimit = MAX_DATA_SIZE < Integer.valueOf(offset) ? MAX_DATA_SIZE : Integer.valueOf(offset);
         reactivateHealthProfessionalQueryParam.setOffset(dataLimit);
         reactivateHealthProfessionalQueryParam.setSearch(search);
-        final String sortingOrder = sortType == null ? defaultSortOrder : sortType;
+        final String sortingOrder = sortType == null ? DEFAULT_SORT_ORDER : sortType;
         reactivateHealthProfessionalQueryParam.setSortType(sortingOrder);
         String column = getColumnToSort(sortBy);
         reactivateHealthProfessionalQueryParam.setSortBy(column);
