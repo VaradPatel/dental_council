@@ -122,6 +122,8 @@ public class NMRConstants {
 
     public static final String TOTAL_PERMANENT_SUSPENSION_REQUESTS = "Total Permanent Suspension Requests";
 
+    public static final String TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS = "Total Consolidated Suspension Requests";
+
     public static final String TOTAL_ACTIVATE_LICENSE_REQUESTS = "Total Activate License Requests";
 
     public static final String TOTAL_COLLEGE_REGISTRATION_REQUESTS = "Total College Registration Requests";
@@ -166,7 +168,7 @@ public class NMRConstants {
             "UNION " +
             "SELECT ws.name as status, COUNT(wa) as count FROM work_flow_audit wa " +
             "JOIN work_flow_status ws ON wa.work_flow_status_id = ws.id " +
-            "WHERE wa.application_type_id = 1 AND wa.previous_group_id = :" + GROUP_ID + " " +
+            "WHERE wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + " " +
             "AND wa.action_id = 4" +
             "GROUP BY ws.name";
 

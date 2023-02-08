@@ -8,10 +8,7 @@ import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -53,9 +50,9 @@ public class DashboardController {
      *
      * @return FetchCountOnCardResponseTO
      */
-    @PostMapping(FETCH_COUNT_ON_CARD_URL)
-    public ResponseEntity<FetchCountOnCardResponseTO> fetchCountOnCard(@RequestBody FetchCountOnCardRequestTO requestTO) throws InvalidRequestException {
-        return ResponseEntity.ok(iFetchCountOnCardService.fetchCountOnCard(requestTO.getGroupName()));
+    @GetMapping(FETCH_COUNT_ON_CARD_URL)
+    public ResponseEntity<FetchCountOnCardResponseTO> fetchCountOnCard() throws InvalidRequestException {
+        return ResponseEntity.ok(iFetchCountOnCardService.fetchCountOnCard());
     }
 
     /**
