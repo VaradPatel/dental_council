@@ -129,6 +129,14 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 		return iHpProfileMapper.HpProfilePictureUploadToDto(hpProfileDaoService.uploadHpProfilePhoto(file, hpProfileId));
 	}
 
+	/**
+	 * Adds a list of qualification details to the specified health professional's profile.
+	 *
+	 * @param hpProfileId                   The ID of the health professional's profile.
+	 * @param qualificationDetailRequestTOs A list of qualification detail requests.
+	 * @return The string "Success" if the operation is successful.
+	 * @throws WorkFlowException If an error occurs while initiating the submission workflow.
+	 */
 	@Override
 	public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs) throws WorkFlowException {
 		for(QualificationDetailRequestTO qualificationDetailRequestTO: qualificationDetailRequestTOs){
