@@ -34,8 +34,11 @@ class MasterDataControllerTest {
 
     private List<MasterDataTO> expectedResult;
 
+    List<MasterDataTO> expected;
+
     @BeforeEach
     void setUp() {
+        expected = new ArrayList<>();
         mockMvc = MockMvcBuilders.standaloneSetup(masterDataController).build();
         expectedResult = new ArrayList<>();
         expectedResult.add(new MasterDataTO(1L, "HOSPITAL", "Hospital"));
@@ -44,13 +47,13 @@ class MasterDataControllerTest {
 
     @AfterEach
     void tearDown() {
+        expected = null;
         mockMvc = null;
         expectedResult = null;
     }
 
     @Test
     public void testSmcs() {
-        List<MasterDataTO> expected = new ArrayList<>();
         when(masterDataService.smcs()).thenReturn(expected);
         List<MasterDataTO> actual = masterDataController.smcs();
         assertEquals(expected, actual);
@@ -58,7 +61,6 @@ class MasterDataControllerTest {
 
     @Test
     public void testSpecialities() {
-        List<MasterDataTO> expected = new ArrayList<>();
         when(masterDataService.specialities()).thenReturn(expected);
         List<MasterDataTO> actual = masterDataController.specialities();
         assertEquals(expected, actual);
@@ -66,7 +68,6 @@ class MasterDataControllerTest {
 
     @Test
     public void testCountries() {
-        List<MasterDataTO> expected = new ArrayList<>();
         when(masterDataService.countries()).thenReturn(expected);
         List<MasterDataTO> actual = masterDataController.countries();
         assertEquals(expected, actual);
@@ -75,7 +76,6 @@ class MasterDataControllerTest {
     @Test
     public void testStates() {
         BigInteger countryId = BigInteger.ONE;
-        List<MasterDataTO> expected = new ArrayList<>();
         when(masterDataService.states(countryId)).thenReturn(expected);
         List<MasterDataTO> actual = masterDataController.states(countryId);
         assertEquals(expected, actual);
@@ -84,7 +84,6 @@ class MasterDataControllerTest {
     @Test
     public void testDistricts() {
         BigInteger stateId = BigInteger.ONE;
-        List<MasterDataTO> expected = new ArrayList<>();
         when(masterDataService.districts(stateId)).thenReturn(expected);
         List<MasterDataTO> actual = masterDataController.districts(stateId);
         assertEquals(expected, actual);
@@ -93,7 +92,6 @@ class MasterDataControllerTest {
     @Test
     public void testSubDistricts() {
         BigInteger districtId = BigInteger.ONE;
-        List<MasterDataTO> expected = new ArrayList<>();
         when(masterDataService.subDistricts(districtId)).thenReturn(expected);
         List<MasterDataTO> actual = masterDataController.subDistricts(districtId);
         assertEquals(expected, actual);

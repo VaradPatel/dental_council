@@ -19,10 +19,11 @@ public interface IHpRegistrationService {
     /**
      * The fetchSmcRegistrationDetail method is used to retrieve the SMC registration details of a user.
      *
-     * @param smcRegistrationDetailRequestTO The SMC registration detail request transfer object which contains the required information to retrieve the SMC registration details.
+     * @param councilId
+     * @param registrationNumber
      * @return SmcRegistrationDetailResponseTO The SMC registration detail response transfer object which contains the SMC registration details of the user.
      */
-    SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(SmcRegistrationDetailRequestTO smcRegistrationDetailRequestTO);
+    SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(Integer councilId, BigInteger registrationNumber);
 
     /**
      * Uploads the profile picture for the given HP profile ID.

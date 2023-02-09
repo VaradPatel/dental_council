@@ -4,12 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class HpWorkProfileUpdateRequestTO {
-	private SpecialityDetailsTO specialityDetails;
-	private WorkDetailsTO workDetails;
-	private CurrentWorkDetailsTO currentWorkDetails;
-	private String requestId;
+    private SpecialityDetailsTO specialityDetails;
+    private WorkDetailsTO workDetails;
+    private List<CurrentWorkDetailsTO> currentWorkDetails;
+    private String requestId;
 }

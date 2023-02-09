@@ -19,4 +19,5 @@ public class CollegeProfileTo {
     private String address;
     private String pinCode;
     private String requestId;
+    private boolean isApproved;
 }

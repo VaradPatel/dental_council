@@ -25,7 +25,7 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
 			+ " from hp_profile INNER JOIN registration_details on hp_profile_id = hp_profile.id"
 			+ " INNER JOIN state_medical_council ON state_medical_council.id = :councilId"
 			+ " where registration_id = :registrationNo", nativeQuery = true)
-	Tuple fetchSmcRegistrationDetail(Integer registrationNo, Integer councilId);
+	Tuple fetchSmcRegistrationDetail(BigInteger registrationNo, Integer councilId);
 
 	@Query(value = "select registration_details.id as registration_id, hp_profile.request_id, registration_details.hp_profile_id, full_name, nmr_id, year_of_info,transaction_id, e_sign_status ,registration_no, registration_date,"
 			+ " state_medical_council.name as state_medical_council_name, state_medical_council.id as state_medical_council_id, state_medical_council_status.id as state_medical_council_status_id, state_medical_council_status.name as state_medical_council_status_name, first_name, father_name,"

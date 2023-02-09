@@ -3,12 +3,13 @@ package in.gov.abdm.nmr.dto;
 import lombok.Data;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Data
 public class HpProfileWorkDetailsResponseTO {
     private SpecialityDetailsTO specialityDetails;
     private WorkDetailsTO workDetails;
-    private CurrentWorkDetailsTO currentWorkDetails;
+    private List<CurrentWorkDetailsTO> currentWorkDetails;
     private BigInteger hpProfileId;
     private String requestId;
 

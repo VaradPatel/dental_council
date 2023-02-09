@@ -6,7 +6,6 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -24,13 +23,8 @@ public class UserPasswordAuthenticationProvider extends DaoAuthenticationProvide
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         UserPasswordAuthenticationToken userPassAuthToken = (UserPasswordAuthenticationToken) authentication;
-
+        
         UserPassDetail userDetail = (UserPassDetail) this.getUserDetailsService().loadUserByUsername(userPassAuthToken.getName());
-        if (userDetail == null) {
-            LOGGER.error("Invalid username");
-            throw new UsernameNotFoundException("Invalid username");
-        }
-
         if (userPassAuthToken.getUserType() == null || !userDetail.getUserType().equals(userPassAuthToken.getUserType())) {
             LOGGER.error("Usertype and credentials do not match");
             userPassAuthToken.eraseCredentials();

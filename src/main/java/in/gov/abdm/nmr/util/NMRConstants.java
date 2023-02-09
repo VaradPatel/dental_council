@@ -264,19 +264,21 @@ public class NMRConstants {
             "AND a.name = :" + APPLICATION_TYPE_NAME + " " +
             "AND ws.name = :" + WORK_FLOW_STATUS + " ";
 
-    public static final String FETCH_COLLEGE_REGISTRATION_RECORDS = "SELECT c.id AS Id, c.college_code AS College_Id, c.name AS College_Name, smc.name AS Council_Name, wfs.name AS Status, wf.created_at AS Date_Of_Submission,  " +
-            "  CASE WHEN (wf.updated_at> wf.created_at) THEN DATE_PART('day', (wf.updated_at- wf.created_at)) " +
-            "  WHEN (wf.updated_at= wf.created_at) THEN DATE_PART('day', (now()- wf.created_at))END as pendency , wf.request_id as request_id " +
-            "  FROM work_flow wf  INNER JOIN colleges c  ON c.request_id= wf.request_id  " +
-            "   INNER JOIN  state_medical_council smc ON smc.id =c.state_medical_council   " +
-            "  JOIN work_flow_status wfs ON wfs.id= wf.work_flow_status_id   " +
-            "   WHERE  wf.application_type_id=6 AND  c.state_medical_council IS NOT NULL ";
+    public static final String FETCH_COLLEGE_REGISTRATION_RECORDS = """
+             SELECT c.id AS Id, c.college_code AS College_Id, c.name AS College_Name, smc.name AS Council_Name, wfs.name AS Status, wf.created_at AS Date_Of_Submission, 
+            CASE WHEN (wf.updated_at> wf.created_at) THEN DATE_PART('day', (wf.updated_at- wf.created_at)) 
+               WHEN (wf.updated_at= wf.created_at) THEN DATE_PART('day', (now()- wf.created_at))END as pendency , wf.request_id as request_id
+              FROM work_flow wf  INNER JOIN colleges c  ON c.request_id= wf.request_id 
+               INNER JOIN  state_medical_council smc ON smc.id =c.state_medical_council 
+               JOIN work_flow_status wfs ON wfs.id= wf.work_flow_status_id  
+               WHERE  wf.application_type_id= """ + COLLEGE_REGISTRATION.getId() + "  AND  c.state_medical_council IS NOT NULL ";
 
-    public static final String FETCH_COUNT_OF_COLLEGE_REGISTRATION_RECORDS = "SELECT COUNT(*)    " +
-            "  FROM work_flow wf  INNER JOIN colleges c  ON c.request_id= wf.request_id  " +
-            "   INNER JOIN  state_medical_council smc ON smc.id =c.state_medical_council   " +
-            "  JOIN work_flow_status wfs ON wfs.id= wf.work_flow_status_id   " +
-            "   WHERE  wf.application_type_id=6 AND  c.state_medical_council IS NOT NULL ";
+    public static final String FETCH_COUNT_OF_COLLEGE_REGISTRATION_RECORDS = """
+            SELECT COUNT(*)  
+              FROM work_flow wf  INNER JOIN colleges c  ON c.request_id= wf.request_id  
+              INNER JOIN  state_medical_council smc ON smc.id =c.state_medical_council 
+             JOIN work_flow_status wfs ON wfs.id= wf.work_flow_status_id  
+             WHERE  wf.application_type_id= """ + COLLEGE_REGISTRATION.getId() + "  AND  c.state_medical_council IS NOT NULL ";
 
     public static final String FETCH_DETAILS_BY_REG_NO_QUERY = "SELECT hvs.registrationDetails.registrationNo as registrationNo, hvs.hpProfile.fullName as nameOfApplicant, hvs.registrationDetails.stateMedicalCouncil.name as nameOfStateCouncil, hvs.registrationDetails.registrationDate as dateOfSubmission, hvs.verifiedBy.userType.name as verifiedByUserType, hvs.verifiedBy.userSubType.name as verifiedByUserSubType, hvs.hpProfile.hpProfileStatus.name as hpProfileStatus " +
             "FROM HpVerificationStatus hvs " +
@@ -325,27 +327,23 @@ public class NMRConstants {
     public static final int DEFAULT_ADDRESS_TYPE_AADHAR = 4;
     public static final String INDIA = "India";
     public static final String INTERNATIONAL = "International";
-    public static final String FETCH_REACTIVATION_RECORDS = " SELECT hp.id AS Profile_Id, hp.full_name AS Display_Name, wf.created_at AS Date_of_Submission, " +
-            " wf.start_date AS Reactivation_date, a.name AS Type_Of_Suspension,wf.remarks   " +
-            " FROM main.work_flow wf  INNER JOIN main.hp_profile hp ON wf.hp_profile_id=hp.id " +
-            " JOIN main.application_type a ON wf.application_type_id=a.id " +
-            "WHERE  " +
-            "  a.id IN(SELECT p.id " +
-            " FROM (SELECT id,registration_id, " +
-            " DENSE_RANK () OVER ( PARTITION BY registration_id ORDER BY ID DESC) AS registration_id_rank  " +
-            " FROM main.hp_profile  " +
-            " WHERE registration_id IN (SELECT pro.registration_id FROM main.work_flow wfl JOIN main.hp_profile pro ON pro.id= wfl.hp_profile_id  " +
-            " WHERE wfl.application_type_id= "+HP_ACTIVATE_LICENSE.getId()+"  )) AS p  WHERE p.registration_id_rank=2) ";
-    public static final String FETCH_COUNT_OF_REACTIVATION_RECORDS = " SELECT COUNT(*) "+
-            " FROM main.work_flow wf  INNER JOIN main.hp_profile hp ON wf.hp_profile_id=hp.id " +
-            " JOIN main.application_type a ON wf.application_type_id=a.id " +
-            "WHERE  " +
-            "  a.id IN(SELECT p.id " +
-            " FROM (SELECT id,registration_id,  " +
-            " DENSE_RANK () OVER ( PARTITION BY registration_id ORDER BY ID DESC) AS registration_id_rank  " +
-            " FROM main.hp_profile  " +
-            " WHERE registration_id IN (SELECT pro.registration_id FROM main.work_flow wfl JOIN main.hp_profile pro ON pro.id= wfl.hp_profile_id  " +
-            " WHERE wfl.application_type_id= "+HP_ACTIVATE_LICENSE.getId()+" )) AS p  WHERE p.registration_id_rank=2) ";
+    public static final String FETCH_REACTIVATION_RECORDS = """
+            SELECT hp.id AS Profile_Id, hp.full_name AS Display_Name, wf.created_at AS Date_of_Submission,
+             wf.start_date AS Reactivation_date, a.name AS Type_Of_Suspension,wf.remarks 
+             FROM main.work_flow wf  INNER JOIN main.hp_profile hp ON wf.hp_profile_id=hp.id
+             JOIN main.application_type a ON wf.application_type_id=a.id
+             WHERE  a.id IN(SELECT p.id FROM 
+             (SELECT id,registration_id, DENSE_RANK () OVER ( PARTITION BY registration_id ORDER BY ID DESC) AS registration_id_rank 
+             FROM main.hp_profile WHERE registration_id IN (SELECT pro.registration_id FROM 
+             main.work_flow wfl JOIN main.hp_profile pro ON pro.id= wfl.hp_profile_id  WHERE wfl.application_type_id="""
+            + HP_ACTIVATE_LICENSE.getId() + "  )) AS p  WHERE p.registration_id_rank=2) ";
+    public static final String FETCH_COUNT_OF_REACTIVATION_RECORDS = """
+            SELECT COUNT(*) FROM main.work_flow wf  INNER JOIN main.hp_profile hp ON wf.hp_profile_id=hp.id
+            JOIN main.application_type a ON wf.application_type_id=a.id WHERE a.id IN(SELECT p.id FROM 
+            (SELECT id,registration_id,  DENSE_RANK () OVER ( PARTITION BY registration_id ORDER BY ID DESC) AS registration_id_rank 
+             FROM main.hp_profile WHERE registration_id IN
+             (SELECT pro.registration_id FROM main.work_flow wfl JOIN main.hp_profile pro ON pro.id= wfl.hp_profile_id 
+             WHERE wfl.application_type_id=""" + HP_ACTIVATE_LICENSE.getId() + " )) AS p  WHERE p.registration_id_rank=2) ";
 
     public static final String NOT_NULL_ERROR_MSG = "The {0} is mandatory.";
     public static final String NOT_BLANK_ERROR_MSG = "The {0} should not be blank.";
@@ -353,7 +351,14 @@ public class NMRConstants {
     public static final String INPUT_VALIDATION_INTERNAL_ERROR_CODE = "ABDM-NMR-401";
     public static final String INVALID_INPUT_ERROR_MSG = "Invalid input";
 
-    public static final int MAX_DATA_SIZE = 10;
+    public static final String FETCH_WORK_PROFILE_RECORDS_BY_HP_ID = """
+            SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id, 
+            broad_speciality_id, state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at, 
+            updated_at, request_id, facility_type_id, organization_type FROM work_profile where hp_profile_id =:""" + HP_PROFILE_ID;
+
+    public static final int MAX_DATA_SIZE = 500;
 
     public static final String DEFAULT_SORT_ORDER  = "ASC";
+
+    public static final String NO_DATA_FOUND = "No data found";
 }

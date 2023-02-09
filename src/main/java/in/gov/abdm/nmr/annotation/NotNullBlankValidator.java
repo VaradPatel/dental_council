@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.util;
+package in.gov.abdm.nmr.annotation;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

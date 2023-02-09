@@ -55,4 +55,6 @@ public class College extends CommonAuditEntity {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+
+    private boolean isApproved;
 }
