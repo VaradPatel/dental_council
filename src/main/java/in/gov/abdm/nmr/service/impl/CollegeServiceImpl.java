@@ -113,11 +113,11 @@ public class CollegeServiceImpl implements ICollegeService {
      * Service Implementation's method for fetching the College registration records
      * for the NMC that has been submitted for approval
      *
-     * @param pageNo       - Gives the current page number
-     * @param offset        - Gives the number of records to be displayed
-     * @param search       - Gives the search criteria like HP_Id, HP_name, Submiited_Date, Remarks
-     * @param sortBy -  According to which column the sort has to happen
-     * @param sortType    -  Sorting order ASC or DESC
+     * @param pageNo   - Gives the current page number
+     * @param offset   - Gives the number of records to be displayed
+     * @param search   - Gives the search criteria like HP_Id, HP_name, Submiited_Date, Remarks
+     * @param sortBy   -  According to which column the sort has to happen
+     * @param sortType -  Sorting order ASC or DESC
      * @return the CollegeRegistrationResponseTO  response Object
      * which contains all the details related to the College submitted to NMC
      * for approval

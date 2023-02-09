@@ -31,7 +31,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
 /**
  * A class that implements all the methods of the interface IFetchSpecificDetailsService
  * which deals with dashboard count, dashboard fetch specific details
- * */
+ */
 @Service
 public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsService {
 
@@ -92,21 +92,21 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
 
         return fetchDetailsForListingByStatus(groupName, applicationType, workFlowStatus)
                 .stream()
-                .map(fetchSpecificDetails-> {
-                    FetchSpecificDetailsResponseTO fetchSpecificDetailsResponseTO=iFetchSpecificDetailsMapper.toFetchSpecificDetailsResponseTO(fetchSpecificDetails);
+                .map(fetchSpecificDetails -> {
+                    FetchSpecificDetailsResponseTO fetchSpecificDetailsResponseTO = iFetchSpecificDetailsMapper.toFetchSpecificDetailsResponseTO(fetchSpecificDetails);
 
-                    if(Group.COLLEGE_ADMIN.getDescription().equals(fetchSpecificDetails.getGroupName()) ||
+                    if (Group.COLLEGE_ADMIN.getDescription().equals(fetchSpecificDetails.getGroupName()) ||
                             Group.COLLEGE_DEAN.getDescription().equals(fetchSpecificDetails.getGroupName()) ||
-                            Group.COLLEGE_REGISTRAR.getDescription().equals(fetchSpecificDetails.getGroupName())){
+                            Group.COLLEGE_REGISTRAR.getDescription().equals(fetchSpecificDetails.getGroupName())) {
                         fetchSpecificDetailsResponseTO.setCollegeVerificationStatus(fetchSpecificDetails.getWorkFlowStatus());
                     }
-                    if(Group.SMC.getDescription().equals(fetchSpecificDetails.getGroupName())){
+                    if (Group.SMC.getDescription().equals(fetchSpecificDetails.getGroupName())) {
                         fetchSpecificDetailsResponseTO.setCouncilVerificationStatus(fetchSpecificDetails.getWorkFlowStatus());
                     }
-                    if(Group.NMC.getDescription().equals(fetchSpecificDetails.getGroupName())){
+                    if (Group.NMC.getDescription().equals(fetchSpecificDetails.getGroupName())) {
                         fetchSpecificDetailsResponseTO.setNMCVerificationStatus(fetchSpecificDetails.getWorkFlowStatus());
                     }
-                    if(fetchSpecificDetails.getDateOfSubmission()!=null) {
+                    if (fetchSpecificDetails.getDateOfSubmission() != null) {
                         long diffInMillis = Math.abs(new Date().getTime() - fetchSpecificDetails.getDateOfSubmission().getTime());
                         long diff = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
                         fetchSpecificDetailsResponseTO.setPendency(BigInteger.valueOf(diff));
@@ -116,34 +116,36 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                 .toList();
     }
 
-    private List<IFetchSpecificDetails> fetchDetailsForListingByStatus(String groupName, String applicationType, String workFlowStatus){
-        if(WorkflowStatus.APPROVED.getDescription().equals(workFlowStatus)){
-            return iFetchSpecificDetailsRepository.fetchDetailsWithApprovedStatusForListing(groupName,applicationType,workFlowStatus);
+    private List<IFetchSpecificDetails> fetchDetailsForListingByStatus(String groupName, String applicationType, String workFlowStatus) {
+        if (WorkflowStatus.APPROVED.getDescription().equals(workFlowStatus)) {
+            return iFetchSpecificDetailsRepository.fetchDetailsWithApprovedStatusForListing(groupName, applicationType, workFlowStatus);
         } else if (WorkflowStatus.PENDING.getDescription().equals(workFlowStatus)) {
-            return iFetchSpecificDetailsRepository.fetchDetailsWithPendingStatusForListing(groupName,applicationType,workFlowStatus);
+            return iFetchSpecificDetailsRepository.fetchDetailsWithPendingStatusForListing(groupName, applicationType, workFlowStatus);
         }
-        return iFetchSpecificDetailsRepository.fetchDetailsForListing(groupName,applicationType,workFlowStatus);
+        return iFetchSpecificDetailsRepository.fetchDetailsForListing(groupName, applicationType, workFlowStatus);
     }
+
     private void validateGroupName(String groupName) throws InvalidRequestException {
-        if(groupName==null || Arrays.stream(Group.values()).noneMatch(t -> t.getDescription().equals(groupName))){
+        if (groupName == null || Arrays.stream(Group.values()).noneMatch(t -> t.getDescription().equals(groupName))) {
             throw new InvalidRequestException(INVALID_GROUP);
         }
     }
 
     private void validateApplicationType(String applicationType) throws InvalidRequestException {
-        if(applicationType==null || Arrays.stream(ApplicationType.values()).noneMatch(t -> t.getDescription().equals(applicationType))){
+        if (applicationType == null || Arrays.stream(ApplicationType.values()).noneMatch(t -> t.getDescription().equals(applicationType))) {
             throw new InvalidRequestException(INVALID_APPLICATION_TYPE);
         }
     }
 
     private void validateWorkFlowStatus(String workFlowStatus) throws InvalidRequestException {
-        if(workFlowStatus==null || Arrays.stream(WorkflowStatus.values()).noneMatch(t -> t.getDescription().equals(workFlowStatus))){
+        if (workFlowStatus == null || Arrays.stream(WorkflowStatus.values()).noneMatch(t -> t.getDescription().equals(workFlowStatus))) {
             throw new InvalidRequestException(INVALID_WORK_FLOW_STATUS);
         }
     }
 
     /**
      * This method fetches the dashboard data based on the input request.
+     *
      * @param dashboardRequestTO The request object containing the parameters for fetching dashboard data.
      * @return DashboardResponseTO The response object containing the details fetched from dashboard.
      * @throws InvalidRequestException If the input request is invalid.
@@ -169,18 +171,18 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         dashboardRequestParamsTO.setSortBy(column);
         dashboardRequestParamsTO.setUserGroupId(groupId);
         dashboardRequestParamsTO.setUserGroupStatus(dashboardRequestTO.getUserGroupStatus());
-        if(groupId.equals(Group.SMC.getId())){
+        if (groupId.equals(Group.SMC.getId())) {
             SMCProfile smcProfile = smcProfileRepository.findByUserDetail(userId);
             dashboardRequestParamsTO.setCouncilId(smcProfile.getStateMedicalCouncil().getId().toString());
-        }else if (groupId.equals(Group.COLLEGE_DEAN.getId())){
+        } else if (groupId.equals(Group.COLLEGE_DEAN.getId())) {
             CollegeDean collegeDean = collegeDeanRepository.findByUserDetail(userId);
             dashboardRequestParamsTO.setCollegeId(collegeDean.getCollege().getId().toString());
-        }else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())){
+        } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
             CollegeRegistrar collegeRegistrar = collegeRegistrarRepository.findByUserDetail(userId);
             dashboardRequestParamsTO.setCollegeId(collegeRegistrar.getCollege().getId().toString());
         }
-        if(groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
-                || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())){
+        if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
+                || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
             dashboardRequestParamsTO.setSmcId(dashboardRequestTO.getSmcId());
         }
         final String sortingOrder = sortOrder == null ? DEFAULT_SORT_ORDER : sortOrder;
@@ -234,9 +236,10 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
     }
 
     /**
-     Maps the database column name to be used for sorting based on the columnToSort name.
-     @param columnToSort - name of the column to be sorted
-     @return database column name to be used for sorting
+     * Maps the database column name to be used for sorting based on the columnToSort name.
+     *
+     * @param columnToSort - name of the column to be sorted
+     * @return database column name to be used for sorting
      */
     private String getColumnToSort(String columnToSort) {
         Map<String, String> columns;
@@ -251,6 +254,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
             return " rd.created_at ";
         }
     }
+
     private Map<String, String> mapColumnToTable() {
         Map<String, String> columnToSortMap = new HashMap<>();
         columnToSortMap.put("doctorStatus", " doctor_status");
