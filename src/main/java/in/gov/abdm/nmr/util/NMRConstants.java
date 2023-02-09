@@ -300,4 +300,6 @@ public class NMRConstants {
     public static final int MAX_DATA_SIZE = 10;
 
     public static final String DEFAULT_SORT_ORDER  = "ASC";
+
+    public static final String NO_DATA_FOUND = "No data found";
 }

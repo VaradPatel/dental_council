@@ -202,4 +202,20 @@ public class NmrExceptionAdvice {
         errorMap.put(MESSAGE, e.getMessage());
         return errorMap;
     }
+
+    /**
+     * Handles the {@link NoDataFoundException} and returns a response with HTTP status code 404 (Not Found) and an error message.
+     *
+     * @param ex the {@link NoDataFoundException} to be handled
+     * @return a map containing the error response timestamp and message
+     */
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NoDataFoundException.class)
+    public Map<String, Object> handleNoDataFoundException(NoDataFoundException ex) {
+        Map<String, Object> errorMap = new HashMap<>();
+        errorMap.put(RESPONSE_TIMESTAMP, LocalDate.now());
+        LOGGER.error(ex.getMessage());
+        errorMap.put(MESSAGE, ex.getMessage());
+        return errorMap;
+    }
 }
