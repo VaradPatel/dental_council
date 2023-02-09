@@ -83,7 +83,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
             collegeEntity.setState(entityManager.getReference(State.class, collegeRegistrationRequestTo.getStateId()));
             collegeEntity.setStateMedicalCouncil(entityManager.getReference(StateMedicalCouncil.class, collegeRegistrationRequestTo.getCouncilId()));
             collegeEntity.setUniversity(entityManager.getReference(University.class, collegeRegistrationRequestTo.getUniversityId()));
-
+            collegeEntity.setApproved(true);
             return collegeRepository.saveAndFlush(collegeEntity);
         } else {
             accessControlService.validateUser(collegeRegistrationRequestTo.getUserId());

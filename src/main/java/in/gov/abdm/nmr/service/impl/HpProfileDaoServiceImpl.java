@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
-import javax.persistence.criteria.Predicate;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -230,8 +229,10 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                                                                  String hpRegistrationUpdateRequestString, MultipartFile certificate, MultipartFile proof) {
 
         HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO = getHpRegistrationUpdateRequestTO(hpRegistrationUpdateRequestString);
-        hpRegistrationUpdateRequestTO.getRegistrationDetail().setCertificate(certificate);
-        hpRegistrationUpdateRequestTO.getRegistrationDetail().setNameChangeProof(proof);
+        if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
+            hpRegistrationUpdateRequestTO.getRegistrationDetail().setCertificate(certificate);
+            hpRegistrationUpdateRequestTO.getRegistrationDetail().setNameChangeProof(proof);
+        }
 
 
         RegistrationDetails registrationDetail = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId);
@@ -295,8 +296,10 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @Override
     public void saveQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, List<QualificationDetailRequestTO> qualificationDetailRequestTOS) {
-        saveIndianQualificationDetails(hpProfile, newRegistrationDetails, qualificationDetailRequestTOS.stream().filter(qualificationDetailRequestTO -> NMRConstants.INDIA.equals(qualificationDetailRequestTO.getQualificationFrom())).toList());
-        saveInternationalQualificationDetails(hpProfile, newRegistrationDetails, qualificationDetailRequestTOS.stream().filter(qualificationDetailRequestTO -> NMRConstants.INTERNATIONAL.equals(qualificationDetailRequestTO.getQualificationFrom())).toList());
+        if (qualificationDetailRequestTOS != null) {
+            saveIndianQualificationDetails(hpProfile, newRegistrationDetails, qualificationDetailRequestTOS.stream().filter(qualificationDetailRequestTO -> NMRConstants.INDIA.equals(qualificationDetailRequestTO.getQualificationFrom())).toList());
+            saveInternationalQualificationDetails(hpProfile, newRegistrationDetails, qualificationDetailRequestTOS.stream().filter(qualificationDetailRequestTO -> NMRConstants.INTERNATIONAL.equals(qualificationDetailRequestTO.getQualificationFrom())).toList());
+        }
     }
 
     @Override
@@ -540,33 +543,34 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     private void mapNbeRequestDetailsToEntity(HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, HpNbeDetails hpNbeDetails, HpProfile hpProfile) {
-        hpNbeDetails.setMarksObtained(hpRegistrationUpdateRequestTO.getHpNbeDetails().getMarksObtained());
-        hpNbeDetails.setMonthOfPassing(hpRegistrationUpdateRequestTO.getHpNbeDetails().getMonthOfPassing());
-        hpNbeDetails.setRollNo(hpRegistrationUpdateRequestTO.getHpNbeDetails().getRollNo());
-        hpNbeDetails.setUserResult(hpRegistrationUpdateRequestTO.getHpNbeDetails().getUserResult());
-        hpNbeDetails.setYearOfPassing(hpRegistrationUpdateRequestTO.getHpNbeDetails().getYearOfPassing());
-        hpNbeDetails.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
-        hpNbeDetails.setHpProfileId(hpProfile.getId());
+        if (hpRegistrationUpdateRequestTO.getHpNbeDetails() != null) {
+            hpNbeDetails.setMarksObtained(hpRegistrationUpdateRequestTO.getHpNbeDetails().getMarksObtained());
+            hpNbeDetails.setMonthOfPassing(hpRegistrationUpdateRequestTO.getHpNbeDetails().getMonthOfPassing());
+            hpNbeDetails.setRollNo(hpRegistrationUpdateRequestTO.getHpNbeDetails().getRollNo());
+            hpNbeDetails.setUserResult(hpRegistrationUpdateRequestTO.getHpNbeDetails().getUserResult());
+            hpNbeDetails.setYearOfPassing(hpRegistrationUpdateRequestTO.getHpNbeDetails().getYearOfPassing());
+            hpNbeDetails.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+            hpNbeDetails.setHpProfileId(hpProfile.getId());
+        }
     }
 
     @SneakyThrows
     private void mapRegistrationRequestToEntity(HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, RegistrationDetails registrationDetail, HpProfile hpProfile) {
-        registrationDetail.setRegistrationDate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationDate());
-        registrationDetail.setRegistrationNo(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationNumber());
-        registrationDetail.setStateMedicalCouncil(iStateMedicalCouncilRepository
-                .findById(hpRegistrationUpdateRequestTO.getRegistrationDetail().getStateMedicalCouncil().getId()).get());
-
-        registrationDetail.setIsRenewable(hpRegistrationUpdateRequestTO.getRegistrationDetail().getIsRenewable());
-        registrationDetail.setRenewableRegistrationDate(
-                hpRegistrationUpdateRequestTO.getRegistrationDetail().getRenewableRegistrationDate());
-
-        registrationDetail.setIsNameChange(hpRegistrationUpdateRequestTO.getRegistrationDetail().getIsNameChange());
+        if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
+            registrationDetail.setRegistrationDate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationDate());
+            registrationDetail.setRegistrationNo(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationNumber());
+            registrationDetail.setStateMedicalCouncil(iStateMedicalCouncilRepository
+                    .findById(hpRegistrationUpdateRequestTO.getRegistrationDetail().getStateMedicalCouncil().getId()).get());
+            registrationDetail.setIsRenewable(hpRegistrationUpdateRequestTO.getRegistrationDetail().getIsRenewable());
+            registrationDetail.setRenewableRegistrationDate(
+                    hpRegistrationUpdateRequestTO.getRegistrationDetail().getRenewableRegistrationDate());
+            registrationDetail.setIsNameChange(hpRegistrationUpdateRequestTO.getRegistrationDetail().getIsNameChange());
+            registrationDetail.setCertificate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getCertificate().getBytes());
+            registrationDetail.setNameChangeProofAttachment(hpRegistrationUpdateRequestTO.getRegistrationDetail().getNameChangeProof().getBytes());
+        }
         registrationDetail.setHpProfileId(hpProfile);
-
         registrationDetail.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
         registrationDetail.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
-        registrationDetail.setCertificate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getCertificate().getBytes());
-        registrationDetail.setNameChangeProofAttachment(hpRegistrationUpdateRequestTO.getRegistrationDetail().getNameChangeProof().getBytes());
     }
 
     private void mapSuperSpecialityToEntity(BigInteger hpProfileId, SuperSpecialityTO speciality, SuperSpeciality superSpeciality) {
@@ -624,8 +628,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @SneakyThrows
     HpRegistrationUpdateRequestTO getHpRegistrationUpdateRequestTO(String hpRegistrationUpdateRequestString) {
-
-        ObjectMapper objectMapper = new ObjectMapper();
 
         HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO = objectMapper.readValue(hpRegistrationUpdateRequestString, HpRegistrationUpdateRequestTO.class);
 

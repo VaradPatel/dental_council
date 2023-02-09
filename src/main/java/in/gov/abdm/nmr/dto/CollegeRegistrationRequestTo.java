@@ -19,4 +19,5 @@ public class CollegeRegistrationRequestTo {
     private String requestId;
     private String pinCode;
     private BigInteger stateId;
+    private boolean isApproved;
 }
