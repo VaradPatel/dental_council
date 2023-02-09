@@ -24,7 +24,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.MAX_DATA_SIZE;
 /**
  * A class that implements all the methods of the interface ITrackApplicationService
  * which deals with health professional's applications and track status
- * */
+ */
 @Service
 public class TrackApplicationServiceImpl implements ITrackApplicationService {
 
@@ -91,7 +91,7 @@ public class TrackApplicationServiceImpl implements ITrackApplicationService {
      */
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(HealthProfessionalApplicationRequestTo healthProfessionalApplicationRequestTo) {
-        if(healthProfessionalApplicationRequestTo.getSmcId() == null && healthProfessionalApplicationRequestTo.getRegistrationNo() == null){
+        if (healthProfessionalApplicationRequestTo.getSmcId() == null && healthProfessionalApplicationRequestTo.getRegistrationNo() == null) {
             String userName = SecurityContextHolder.getContext().getAuthentication().getName();
             User userDetail = userDetailRepository.findByUsername(userName);
             HpProfile hpProfile = hpProfileRepository.findByUserDetail(userDetail.getId());
@@ -101,9 +101,10 @@ public class TrackApplicationServiceImpl implements ITrackApplicationService {
     }
 
     /**
-     Maps the database column name to be used for sorting based on the columnToSort name.
-     @param columnToSort - name of the column to be sorted
-     @return database column name to be used for sorting
+     * Maps the database column name to be used for sorting based on the columnToSort name.
+     *
+     * @param columnToSort - name of the column to be sorted
+     * @return database column name to be used for sorting
      */
     private String getColumnToSort(String columnToSort) {
         Map<String, String> columns;
