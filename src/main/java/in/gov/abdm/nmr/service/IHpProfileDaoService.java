@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface IHpProfileDaoService {
 
-	HpSmcDetailTO fetchSmcRegistrationDetail(SmcRegistrationDetailRequestTO smcRegistrationDetailRequestTO);
+	HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId,BigInteger registrationNumber);
 
 	HpProfileUpdateResponseTO updateHpPersonalDetails(BigInteger hpProfileId,
 			HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException;

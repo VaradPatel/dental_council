@@ -108,13 +108,10 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private BroadSpecialityRepository broadSpecialityRepository;
 
 
-    public HpSmcDetailTO fetchSmcRegistrationDetail(SmcRegistrationDetailRequestTO smcRegistrationDetailRequestTO) {
-        List<Predicate> predicates = new ArrayList<>();
+    public HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId, BigInteger registrationNumber) {
         HpSmcDetailTO hpSmcDetailTO = new HpSmcDetailTO();
 
-        Tuple hpProfile = iHpProfileRepository.fetchSmcRegistrationDetail(
-                smcRegistrationDetailRequestTO.getRegistrationNumber(),
-                smcRegistrationDetailRequestTO.getCouncilId());
+        Tuple hpProfile = iHpProfileRepository.fetchSmcRegistrationDetail(registrationNumber, councilId);
         if (hpProfile != null) {
             hpSmcDetailTO.setHpName(hpProfile.get("full_name", String.class));
             hpSmcDetailTO.setCouncilName(hpProfile.get("name", String.class));

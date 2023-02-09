@@ -95,14 +95,14 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	/**
 	 * This method fetches the SMC registration details for a given request.
 	 *
-	 * @param smcRegistrationDetailRequestTO A TO (Transfer Object) containing the details required to fetch the SMC registration information.
+	 * @param councilId
+	 * @param registrationNumber
 	 * @return SmcRegistrationDetailResponseTO A TO (Transfer Object) containing the SMC registration information that was fetched.
 	 */
 	@Override
-	public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(
-			SmcRegistrationDetailRequestTO smcRegistrationDetailRequestTO) {
+	public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(Integer councilId, BigInteger registrationNumber) {
 		return iHpProfileMapper
-				.SmcRegistrationToDto(hpProfileDaoService.fetchSmcRegistrationDetail(smcRegistrationDetailRequestTO));
+				.SmcRegistrationToDto(hpProfileDaoService.fetchSmcRegistrationDetail(councilId, registrationNumber));
 	}
 
 	private void addHpProfileInHpProfileAudit(BigInteger hpProfileId) {

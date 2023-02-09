@@ -40,13 +40,15 @@ public class HpRegistrationController {
     /**
      * This method is used to fetch SMC registration detail information.
      *
-     * @param smcRegistrationDetailRequestTO This is the request object that contains the information required to fetch the SMC registration detail.
+     * @param councilId
+     * @param registrationNumber
      * @return SmcRegistrationDetailResponseTO This returns the SMC registration detail information.
      */
-    @PostMapping(path = "/hpSmcRegistrationDetail", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/hpSmcRegistrationDetail", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(
-            @Valid @RequestBody SmcRegistrationDetailRequestTO smcRegistrationDetailRequestTO) {
-        return hpService.fetchSmcRegistrationDetail(smcRegistrationDetailRequestTO);
+            @RequestParam("councilId") Integer councilId,
+            @RequestParam("registrationNumber") BigInteger registrationNumber) {
+        return hpService.fetchSmcRegistrationDetail(councilId, registrationNumber);
     }
 
     /**
