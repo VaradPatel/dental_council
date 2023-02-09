@@ -6,6 +6,7 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NoDataFoundException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.IHpProfileMapper;
 import in.gov.abdm.nmr.repository.*;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+import static in.gov.abdm.nmr.util.NMRConstants.NO_DATA_FOUND;
 import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
 
 @Service
@@ -108,20 +110,18 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public HpSmcDetailTO fetchSmcRegistrationDetail(SmcRegistrationDetailRequestTO smcRegistrationDetailRequestTO) {
-        List<Predicate> predicates = new ArrayList<>();
+    public HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId, BigInteger registrationNumber) {
         HpSmcDetailTO hpSmcDetailTO = new HpSmcDetailTO();
 
-
-        Tuple hpProfile = iHpProfileRepository.fetchSmcRegistrationDetail(
-                smcRegistrationDetailRequestTO.getRegistrationNumber(),
-                smcRegistrationDetailRequestTO.getCouncilId());
-
-        hpSmcDetailTO.setHpName(hpProfile.get("full_name", String.class));
-        hpSmcDetailTO.setCouncilName(hpProfile.get("name", String.class));
-        hpSmcDetailTO.setRegistrationNumber(hpProfile.get("registration_no", String.class));
-        hpSmcDetailTO.setHpProfileId(hpProfile.get("hp_profile_id", BigInteger.class));
-
+        Tuple hpProfile = iHpProfileRepository.fetchSmcRegistrationDetail(registrationNumber, councilId);
+        if (hpProfile != null) {
+            hpSmcDetailTO.setHpName(hpProfile.get("full_name", String.class));
+            hpSmcDetailTO.setCouncilName(hpProfile.get("name", String.class));
+            hpSmcDetailTO.setRegistrationNumber(hpProfile.get("registration_no", String.class));
+            hpSmcDetailTO.setHpProfileId(hpProfile.get("hp_profile_id", BigInteger.class));
+        } else {
+            throw new NoDataFoundException(NO_DATA_FOUND);
+        }
         return hpSmcDetailTO;
     }
 
