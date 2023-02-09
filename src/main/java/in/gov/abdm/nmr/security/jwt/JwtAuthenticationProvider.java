@@ -14,7 +14,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.stereotype.Component;
 
-import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import in.gov.abdm.nmr.dto.UserSearchTO;
@@ -63,10 +64,15 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             }
         } catch (Exception e) {
             LOGGER.error("Exception occurred while authenticating JWT token", e);
-            if (e instanceof SignatureVerificationException) {
-                throw new InvalidBearerTokenException("Invalid token signature", e);
+
+            if (e instanceof TokenExpiredException) {
+                throw new InvalidBearerTokenException("Token expired");
             }
-            throw new AuthenticationServiceException("Exception occurred while authenticating JWT token", e);
+
+            if (e instanceof JWTVerificationException) {
+                throw new InvalidBearerTokenException("Invalid token");
+            }
+            throw new AuthenticationServiceException("Exception occurred while authenticating JWT token");
         }
         throw new AuthenticationServiceException("Unable to authenticate JWT token");
     }
