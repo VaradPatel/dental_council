@@ -21,7 +21,8 @@ public class ProtectedPaths {
     public static final String PATH_COLLEGE_PROFILE = "/college/{id}";
     public static final String PATH_COLLEGE_REGISTRAR_PROFILE = "/college/registrar/{id}";
     public static final String PATH_COLLEGE_DEAN_PROFILE = "/college/dean/{id}";
-    
+
+
     public static final String PATH_USER_ROOT = "/user";
     public static final String PATH_USER_SMSNOTIFICATIONENABLED = "/smsNotificationEnabled";
     public static final String PATH_USER_EMAILNOTIFICATIONENABLED = "/emailNotificationEnabled";
@@ -35,6 +36,8 @@ public class ProtectedPaths {
     public static final String PATH_DASHBOARD_FETCH_DETAILS = "/fetchSpecificDetails";
 
     public static final String PATH_DASHBOARD_ROOT = "/dashboard";
+
+    public static final String PATH_DASHBOARD_CARD_COUNT="/cardCount";
 
     public static final String PATH_HEALTH_PROFESSIONAL_ROOT = "/health-professional";
 
@@ -61,6 +64,7 @@ public class ProtectedPaths {
         protectedPaths.add(new AntPathRequestMatcher(PATH_USER_ROOT + PATH_NBE_PROFILE));
 
         protectedPaths.add(new AntPathRequestMatcher(PATH_DASHBOARD_ROOT + PATH_DASHBOARD_FETCH_DETAILS));
+        protectedPaths.add(new AntPathRequestMatcher(PATH_DASHBOARD_ROOT + PATH_DASHBOARD_CARD_COUNT));
 
         protectedPaths.add(new AntPathRequestMatcher(PATH_HEALTH_PROFESSIONAL_ROOT + PATH_HEALTH_PROFESSIONAL_APPLICATIONS));
 

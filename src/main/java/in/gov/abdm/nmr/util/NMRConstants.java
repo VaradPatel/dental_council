@@ -3,7 +3,6 @@ package in.gov.abdm.nmr.util;
 
 import lombok.experimental.UtilityClass;
 
-import static in.gov.abdm.nmr.enums.ApplicationType.COLLEGE_REGISTRATION;
 import static in.gov.abdm.nmr.enums.ApplicationType.HP_ACTIVATE_LICENSE;
 
 /**
@@ -133,7 +132,11 @@ public class NMRConstants {
 
     public static final String TOTAL_COLLEGE_REGISTRATION_REQUESTS = "Total College Registration Requests";
 
-    public static final String HP_PROFILE_ID = "hp_profile_id";
+    public static final String HP_PROFILE_ID = "hpProfileId";
+
+    public static final String COLLEGE_DEAN_ID="collegeDeanId";
+
+    public static final String COLLEGE_REGISTRAR_ID = "collegeRegistrarId";
 
     public static final String ID = "id";
 
@@ -162,20 +165,71 @@ public class NMRConstants {
 
     public static final String GROUP_ID = "groupId";
 
+    public static final String SMC_PROFILE_ID = "smcProfileId";
+
     public static final String GROUP_NAME = "groupName";
 
     public static final String WORK_FLOW_STATUS = "workFlowStatus";
-    public static final String FETCH_STATUS_WISE_COUNT_BY_GROUP_AND_APPLICATION_TYPE_QUERY = "SELECT ws.name as name, COUNT(w) as count " +
+    public static final String FETCH_STATUS_WISE_COUNT_QUERY = "SELECT ws.name as name, COUNT(w) as count " +
             "FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id " +
             "WHERE w.application_type_id = :" + APPLICATION_TYPE_ID + " AND  w.current_group_id = :" + GROUP_ID + " " +
             "OR ( w.previous_group_id = :" + GROUP_ID + " AND w.action_id IN ( 3,5 ) ) " +
             "GROUP BY ws.name " +
             "UNION " +
-            "SELECT ws.name as status, COUNT(wa) as count FROM work_flow_audit wa " +
-            "JOIN work_flow_status ws ON wa.work_flow_status_id = ws.id " +
+            "SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa " +
             "WHERE wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + " " +
             "AND wa.action_id = 4" +
-            "GROUP BY ws.name";
+            "GROUP BY name";
+
+    public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_HP = "SELECT ws.name as name, COUNT(w) as count " +
+            "FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id " +
+            "WHERE w.hp_profile_id=:"+HP_PROFILE_ID+" AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND  w.current_group_id = :" + GROUP_ID + " " +
+            "OR ( w.previous_group_id = :" + GROUP_ID + " AND w.action_id IN ( 3,5 ) ) " +
+            "GROUP BY ws.name " +
+            "UNION " +
+            "SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa " +
+            "WHERE w.hp_profile_id=:"+HP_PROFILE_ID+" AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + " " +
+            "AND wa.action_id = 4" +
+            "GROUP BY name";
+
+    public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_DEAN = "SELECT ws.name as name, COUNT(w) as count " +
+            "FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id " +
+            "JOIN college_dean cd ON w.user_id=cd.user_id " +
+            "WHERE cd.id=:"+COLLEGE_DEAN_ID+" AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND  w.current_group_id = :" + GROUP_ID + " " +
+            "OR ( w.previous_group_id = :" + GROUP_ID + " AND w.action_id IN ( 3,5 ) ) " +
+            "GROUP BY ws.name " +
+            "UNION " +
+            "SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa " +
+            "JOIN college_dean cd ON w.user_id=cd.user_id " +
+            "WHERE cd.id=:"+COLLEGE_DEAN_ID+" AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + " " +
+            "AND wa.action_id = 4" +
+            "GROUP BY name";
+
+    public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_REGISTRAR = "SELECT ws.name as name, COUNT(w) as count " +
+            "FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id " +
+            "JOIN college_registrar cr ON w.user_id=cr.user_id " +
+            "WHERE cd.id=:"+COLLEGE_REGISTRAR_ID+" AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND  w.current_group_id = :" + GROUP_ID + " " +
+            "OR ( w.previous_group_id = :" + GROUP_ID + " AND w.action_id IN ( 3,5 ) ) " +
+            "GROUP BY ws.name " +
+            "UNION " +
+            "SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa " +
+            "JOIN college_registrar cr ON w.user_id=cr.user_id " +
+            "WHERE cr.id=:"+COLLEGE_REGISTRAR_ID+" AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + " " +
+            "AND wa.action_id = 4" +
+            "GROUP BY name";
+
+    public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_SMC = "SELECT ws.name as name, COUNT(w) as count " +
+            "FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id " +
+            "JOIN registration_details rd ON w.request_id=rd.request_id " +
+            "WHERE rd.state_medical_council_id=:"+SMC_PROFILE_ID+" AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND  w.current_group_id = :" + GROUP_ID + " " +
+            "OR ( w.previous_group_id = :" + GROUP_ID + " AND w.action_id IN ( 3,5 ) ) " +
+            "GROUP BY ws.name " +
+            "UNION " +
+            "SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa " +
+            "JOIN registration_details rd ON wa.request_id=rd.request_id " +
+            "WHERE rd.state_medical_council_id=:"+SMC_PROFILE_ID+" AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + " " +
+            "AND wa.action_id = 4" +
+            "GROUP BY name";
 
     public static final String FETCH_DETAILS_FOR_LISTING_QUERY = "SELECT rd.registration_no as registrationNo, hp.full_name as nameOfApplicant, smc.name as nameOfStateCouncil, rd.registration_date as dateOfSubmission, g.name as groupName, ws.name as workFlowStatus " +
             "FROM work_flow w JOIN registration_details rd ON w.hp_profile_id=rd.hp_profile_id " +
