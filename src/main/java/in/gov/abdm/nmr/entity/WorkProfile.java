@@ -1,15 +1,13 @@
 package in.gov.abdm.nmr.entity;
 
-import java.math.BigInteger;
-
-import javax.persistence.*;
-
-import in.gov.abdm.nmr.entity.Address;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
+import java.math.BigInteger;
 
 @Getter
 @Setter
@@ -25,12 +23,13 @@ public class WorkProfile {
 
 //    @OneToMany(mappedBy = "subdistrict", fetch = FetchType.LAZY)
 //    private List<City> cities;
-    
+
 
     private String address;
-    private Integer facility;
+    private BigInteger facilityId;
+    private BigInteger facilityTypeId;
     private Integer isUserCurrentlyWorking;
-    @Type(type="org.hibernate.type.BinaryType")
+    @Type(type = "org.hibernate.type.BinaryType")
     private byte[] proofOfWorkAttachment;
     private String url;
     private BigInteger userId;
@@ -51,9 +50,7 @@ public class WorkProfile {
     @OneToOne
     @JoinColumn(name = "districtId", referencedColumnName = "id")
     private District district;
-    
-//    @OneToOne(mappedBy = "workProfile", fetch = FetchType.LAZY)
-    private BigInteger organizationType;
+    private String organizationType;
     private String requestId;
     private String pincode;
 }

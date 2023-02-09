@@ -30,7 +30,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.MAX_DATA_SIZE;
 /**
  * A class that implements all the methods of the interface  IActionService
  * which deals with the suspension and reactivation requests
- * */
+ */
 @Service
 @Slf4j
 public class ActionServiceImpl implements IActionService {
@@ -107,6 +107,7 @@ public class ActionServiceImpl implements IActionService {
 
     /**
      * This method is used to suspend a health professional based on the request provided.
+     *
      * @param actionRequestTo the request object containing necessary information to suspend a health professional.
      * @return a string indicating the result of the suspension request.
      * @throws WorkFlowException if there is any error while processing the suspension request.
@@ -121,6 +122,7 @@ public class ActionServiceImpl implements IActionService {
 
     /**
      * This method is used to reactivate a health professional based on the request provided.
+     *
      * @param actionRequestTo the request object containing necessary information to reactivate a health professional.
      * @return a string indicating the result of the reactivate request.
      * @throws WorkFlowException if there is any error while processing the suspension request.
@@ -137,11 +139,11 @@ public class ActionServiceImpl implements IActionService {
      * Service Implementation's method for fetching the reactivation records of the health professionals
      * for the NMC to approve or reject their reactivation request.
      *
-     * @param pageNo       - Gives the current page number
-     * @param offset        - Gives the number of records to be displayed
-     * @param search       - Gives the search criteria like HP_Id, HP_name, Submiited_Date, Remarks
-     * @param sortBy -  According to which column the sort has to happen
-     * @param sortType    -  Sorting order ASC or DESC
+     * @param pageNo   - Gives the current page number
+     * @param offset   - Gives the number of records to be displayed
+     * @param search   - Gives the search criteria like HP_Id, HP_name, Submiited_Date, Remarks
+     * @param sortBy   -  According to which column the sort has to happen
+     * @param sortType -  Sorting order ASC or DESC
      * @return the ReactivateHealthProfessionalResponseTO  response Object
      * which contains all the details related to the health professionals who have
      * raised a request to NMC to reactivate their profiles
@@ -194,9 +196,10 @@ public class ActionServiceImpl implements IActionService {
 
     /**
      * This method is used to initiate the workflow for a suspension and reactivate request.
+     *
      * @param actionRequestTo the request containing details of the action to be taken
-     * @param requestId the unique identifier for the request
-     * @param newHpProfile the new health professional profile created as a result of the request
+     * @param requestId       the unique identifier for the request
+     * @param newHpProfile    the new health professional profile created as a result of the request
      * @throws WorkFlowException if there is any error while initiating the workflow
      */
     private void initiateWorkFlow(ActionRequestTo actionRequestTo, String requestId, HpProfile newHpProfile) throws WorkFlowException {
