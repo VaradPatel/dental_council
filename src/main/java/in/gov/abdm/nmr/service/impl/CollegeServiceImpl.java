@@ -59,7 +59,9 @@ public class CollegeServiceImpl implements ICollegeService {
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.COLLEGE_REGISTRATION.getId()));
             collegeCreationRequestToResponse.setRequestId(requestId);
             collegeProfileEntity.setRequestId(requestId);
-            workFlowService.initiateCollegeRegistrationWorkFlow(requestId, ApplicationType.COLLEGE_REGISTRATION.getId(), Group.COLLEGE_ADMIN.getId(), Action.SUBMIT.getId());
+            if (!collegeProfileEntity.isApproved()) {
+                workFlowService.initiateCollegeRegistrationWorkFlow(requestId, ApplicationType.COLLEGE_REGISTRATION.getId(), Group.COLLEGE_ADMIN.getId(), Action.SUBMIT.getId());
+            }
         }
         return collegeCreationRequestToResponse;
     }

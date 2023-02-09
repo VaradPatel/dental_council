@@ -235,7 +235,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         List<QualificationDetails> indianQualifications = qualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId);
         List<ForeignQualificationDetails> internationalQualifications = customQualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId);
         HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = HpProfileRegistrationMapper.convertEntitiesToRegistrationResponseTo(registrationDetails, nbeDetails, indianQualifications, internationalQualifications);
-
+        hpProfileRegistrationResponseTO.setHpProfileId(hpProfileId);
         return hpProfileRegistrationResponseTO;
     }
 
