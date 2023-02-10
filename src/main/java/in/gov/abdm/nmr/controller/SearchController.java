@@ -16,7 +16,7 @@ import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.service.ISearchService;
 
 @RestController
-@RequestMapping("/search")
+@RequestMapping("/health-professional")
 public class SearchController {
 
     private ISearchService searchService;
@@ -25,13 +25,13 @@ public class SearchController {
         this.searchService = searchService;
     }
 
-    @GetMapping(path = "/hp", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/search", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpSearchResponseTO searchHP(@RequestBody HpSearchRequestTO hpSearchRequestTO) throws NmrException {
         return searchService.searchHP(hpSearchRequestTO);
     }
 
-    @GetMapping(path = "/hp/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HpSearchProfileTO getHpSearchProfileById(@PathVariable("id") BigInteger profileId) throws NmrException {
+    @GetMapping(path = "/{health-professionalId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public HpSearchProfileTO getHpSearchProfileById(@PathVariable("health-professionalId") BigInteger profileId) throws NmrException {
         return searchService.getHpSearchProfileById(profileId);
     }
 }

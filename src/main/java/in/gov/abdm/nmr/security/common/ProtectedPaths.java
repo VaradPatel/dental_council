@@ -11,12 +11,12 @@ public class ProtectedPaths {
     private ProtectedPaths() {
     }
 
-    public static final String PATH_LOGIN = "/login";
-    public static final String PATH_REFRESH_TOKEN = "/refreshToken";
+    public static final String PATH_LOGIN = "/user/login";
+    public static final String PATH_REFRESH_TOKEN = "/user/refreshToken";
     
     public static final String PATH_UPDATE_COLLEGE = "/college";
-    public static final String PATH_REGISTER_COLLEGE_REGISTRAR = "/college/registrar";
-    public static final String PATH_REGISTER_COLLEGE_DEAN = "/college/dean";
+    public static final String PATH_REGISTER_COLLEGE_REGISTRAR = "/college/{collegeId}/registrar";
+    public static final String PATH_REGISTER_COLLEGE_DEAN = "/college/{collegeId}/dean";
     
     public static final String PATH_COLLEGE_PROFILE = "/college/{id}";
     public static final String PATH_COLLEGE_REGISTRAR_PROFILE = "/college/registrar/{id}";
@@ -24,20 +24,20 @@ public class ProtectedPaths {
 
 
     public static final String PATH_USER_ROOT = "/user";
-    public static final String PATH_USER_SMSNOTIFICATIONENABLED = "/smsNotificationEnabled";
-    public static final String PATH_USER_EMAILNOTIFICATIONENABLED = "/emailNotificationEnabled";
+    public static final String PATH_USER_SMSNOTIFICATIONENABLED = "/enable-sms-notification";
+    public static final String PATH_USER_EMAILNOTIFICATIONENABLED = "/enable-email-notification";
     
-    public static final String PATH_SMC_PROFILE = "/smc/{id}";
-    public static final String PATH_NMC_PROFILE = "/nmc/{id}";
-    public static final String PATH_NBE_PROFILE = "/nbe/{id}";
+    public static final String PATH_SMC_PROFILE = "/smc/user/{id}";
+    public static final String PATH_NMC_PROFILE = "/nmc/user/{id}";
+    public static final String PATH_NBE_PROFILE = "/nbe/user/{id}";
 
     public static final String PATH_USER_NOTIFICATION_ENABLED = "/enable-notification";
 
-    public static final String PATH_DASHBOARD_FETCH_DETAILS = "/fetchSpecificDetails";
+    public static final String PATH_DASHBOARD_FETCH_DETAILS = "/card-detail";
 
-    public static final String PATH_DASHBOARD_ROOT = "/dashboard";
+    public static final String PATH_DASHBOARD_ROOT = "/dashboards";
 
-    public static final String PATH_DASHBOARD_CARD_COUNT="/cardCount";
+    public static final String PATH_DASHBOARD_CARD_COUNT="/cards";
 
     public static final String PATH_HEALTH_PROFESSIONAL_ROOT = "/health-professional";
 

@@ -8,7 +8,7 @@ import in.gov.abdm.nmr.exception.NmrException;
 
 public interface ICollegeRegistrarDaoService {
 
-    CollegeRegistrar saveCollegeRegistrar(CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException;
+    CollegeRegistrar saveCollegeRegistrar(BigInteger collegeId, CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException;
     
     CollegeRegistrar findCollegeRegistrarById(BigInteger id) throws NmrException;
 

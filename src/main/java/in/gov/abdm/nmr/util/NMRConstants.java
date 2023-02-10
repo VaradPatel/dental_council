@@ -38,23 +38,23 @@ public class NMRConstants {
     public static final String NOTIFICATION_DB_SERVICE_GET_TEMPLATE = "/internal/v3/notification/template/id/{id}";
     public static final String RESET_PASSWORD = "/reset-password";
     public static final String CHANGE_PASSWORD = "/change-password";
-    public static final String RAISE_QUERY = "/queries";
-    public static final String GET_QUERIES = "/queries/{hp-profile-id}";
+    public static final String RAISE_QUERY = "/health-professional/queries";
+    public static final String GET_QUERIES = "health-professional/{hp-profile-id}/queries";
     public static final String GET_RESET_PASSWORD_LINK = "/send-reset-password-link";
     public static final String SET_NEW_PASSWORD = "/set-new-password";
-    public static final String E_SIGN = "/e-sign";
+    public static final String E_SIGN = "/e-signature";
 
-    public static final String PATH_FACILITY_ROOT = "/facility";
+    public static final String PATH_FACILITY_ROOT = "/facilities";
     public static final String PATH_FACILITY_SEARCH = "/search";
 
-    public static final String PATH_COLLEGE_REGISTRATION = "/registration/colleges";
-    public static final String ACTION_REQUEST_URL = "/action";
+    public static final String PATH_COLLEGE_REGISTRATION = "/college/registration-requests";
+    public static final String ACTION_REQUEST_URL = "/health-professional/application";
 
     public static final String PATH_TRACK_APPLICATIONS_STATUS = "/applications/status";
 
     public static final String SUSPENSION_REQUEST_URL = "/suspend";
 
-    public static final String REACTIVATE_REQUEST_URL = "/reactivate";
+    public static final String REACTIVATE_REQUEST_URL = "/re-activate";
     public static final String HEALTH_PROFESSIONAL_ACTION = "/health-professional/action";
     public static final String COLLEGES_ACTION = "colleges/action";
     public static final String NOTIFICATION_SERVICE = "notification";

@@ -4,11 +4,6 @@ import java.math.BigInteger;
 
 import javax.persistence.EntityManager;
 
-import in.gov.abdm.nmr.mapper.ICollegeRegistrarMapper;
-import in.gov.abdm.nmr.repository.ICollegeRegistrarRepository;
-import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.service.IAccessControlService;
-import in.gov.abdm.nmr.service.ICollegeRegistrarDaoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,12 +11,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import in.gov.abdm.nmr.dto.CollegeRegistrarCreationRequestTo;
-import in.gov.abdm.nmr.repository.ICollegeRepository;
-import in.gov.abdm.nmr.service.IUserDaoService;
-import in.gov.abdm.nmr.dto.UserSearchTO;
+import in.gov.abdm.nmr.entity.College;
+import in.gov.abdm.nmr.entity.CollegeRegistrar;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.entity.UserGroup;
+import in.gov.abdm.nmr.entity.UserSubType;
+import in.gov.abdm.nmr.entity.UserType;
+import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.NmrException;
+import in.gov.abdm.nmr.mapper.ICollegeRegistrarMapper;
+import in.gov.abdm.nmr.repository.ICollegeRegistrarRepository;
+import in.gov.abdm.nmr.repository.ICollegeRepository;
+import in.gov.abdm.nmr.service.IAccessControlService;
+import in.gov.abdm.nmr.service.ICollegeRegistrarDaoService;
+import in.gov.abdm.nmr.service.IUserDaoService;
 
 @Service
 @Transactional
@@ -54,7 +59,7 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
     }
 
     @Override
-    public CollegeRegistrar saveCollegeRegistrar(CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException {
+    public CollegeRegistrar saveCollegeRegistrar(BigInteger collegeId, CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException {
         User collegeRegistrarUserDetail = null;
         CollegeRegistrar collegeRegistrarEntityOld = null;
         if (collegeRegistrarCreationRequestTo.getId() != null || collegeRegistrarCreationRequestTo.getUserId() != null) {
@@ -95,11 +100,18 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
         collegeRegistrarEntity.setUser(userDetail);
 
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserSearchTO userDetailSearchTO = new UserSearchTO();
-        userDetailSearchTO.setUsername(userName);
-
-        College college = collegeRepository.findByUserDetail(userDetailService.searchUserDetail(userDetailSearchTO).getId());
-        collegeRegistrarEntity.setCollege(college);
+        User loggedInUser = userDetailService.findByUsername(userName);
+        if(!Group.COLLEGE_ADMIN.getId().equals(loggedInUser.getGroup().getId())) {
+            throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
+        }
+        
+        College loggedIncollege = collegeRepository.findByUserDetail(loggedInUser.getId());
+        College inputCollege = collegeRepository.findByUserDetail(collegeId);
+        if(!loggedIncollege.getId().equals(inputCollege.getId())) {
+            throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
+        }
+        
+        collegeRegistrarEntity.setCollege(loggedIncollege);
         return collegeRegistrarRepository.saveAndFlush(collegeRegistrarEntity);
     }
 
