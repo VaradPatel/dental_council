@@ -2,22 +2,20 @@ package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IFetchCountOnCardService;
 import in.gov.abdm.nmr.service.IFetchDetailsByRegNoService;
 import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 import static in.gov.abdm.nmr.security.common.ProtectedPaths.PATH_DASHBOARD_FETCH_DETAILS;
 import static in.gov.abdm.nmr.security.common.ProtectedPaths.PATH_DASHBOARD_ROOT;
-import static in.gov.abdm.nmr.util.NMRConstants.FETCH_COUNT_ON_CARD_URL;
 import static in.gov.abdm.nmr.util.NMRConstants.FETCH_TRACK_APP_URL;
 
 /**
@@ -53,9 +51,10 @@ public class DashboardController {
      *
      * @return FetchCountOnCardResponseTO
      */
-    @PostMapping(FETCH_COUNT_ON_CARD_URL)
-    public ResponseEntity<FetchCountOnCardResponseTO> fetchCountOnCard(@RequestBody FetchCountOnCardRequestTO requestTO) throws InvalidRequestException {
-        return ResponseEntity.ok(iFetchCountOnCardService.fetchCountOnCard(requestTO.getGroupName()));
+    @GetMapping(ProtectedPaths.PATH_DASHBOARD_CARD_COUNT)
+    @SecurityRequirement(name = "bearerAuth")
+    public FetchCountOnCardResponseTO fetchCountOnCard() throws InvalidRequestException {
+        return iFetchCountOnCardService.fetchCountOnCard();
     }
 
     /**

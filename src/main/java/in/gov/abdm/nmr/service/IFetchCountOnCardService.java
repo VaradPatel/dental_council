@@ -12,5 +12,5 @@ public interface IFetchCountOnCardService {
      * This method retrieves the Count of applications according to their status
      * @return ResponseTO
      */
-    FetchCountOnCardResponseTO fetchCountOnCard(String groupName) throws InvalidRequestException;
+    FetchCountOnCardResponseTO fetchCountOnCard() throws InvalidRequestException;
 }
