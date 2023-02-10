@@ -41,6 +41,12 @@ public class FetchCountOnCardResponseTO {
     private List<StatusWiseCountTO> permanentSuspensionRequests;
 
     /**
+     * This holds the list of count of Consolidated Suspension applications
+     * according to their status at that point in time
+     */
+    private List<StatusWiseCountTO> consolidatedSuspensionRequests;
+
+    /**
      * This holds the list of count of Activate License applications
      * according to their status at that point in time
      */

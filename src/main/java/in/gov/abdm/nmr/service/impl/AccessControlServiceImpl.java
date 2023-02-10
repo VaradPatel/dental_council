@@ -15,6 +15,8 @@ public class AccessControlServiceImpl implements IAccessControlService {
 
     private IUserRepository userRepository;
 
+    private IAccessControlService accessControlService;
+
     public AccessControlServiceImpl(IUserRepository userDaoService) {
         this.userRepository = userDaoService;
     }
@@ -27,4 +29,13 @@ public class AccessControlServiceImpl implements IAccessControlService {
             throw new AccessDeniedException("Forbidden");
         }
     }
+
+    @Override
+    public User getLoggedInUser() {
+        return userRepository.findByUsername(SecurityContextHolder.getContext()
+                                                .getAuthentication()
+                                                .getName());
+    }
+
+
 }
