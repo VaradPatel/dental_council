@@ -15,7 +15,19 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
 @Repository
 public interface IFetchCountOnCardRepository extends JpaRepository<HpVerificationStatus, BigInteger> {
 
-    @Query(value = FETCH_STATUS_WISE_COUNT_BY_GROUP_AND_APPLICATION_TYPE_QUERY,nativeQuery = true)
-    List<IStatusWiseCount> fetchStatusWiseCountByGroupAndApplicationType(@Param(APPLICATION_TYPE_ID) BigInteger applicationTypeId, @Param(GROUP_ID) BigInteger groupId);
+    @Query(value = FETCH_STATUS_WISE_COUNT_QUERY,nativeQuery = true)
+    List<IStatusWiseCount> fetchStatusWiseCount(@Param(APPLICATION_TYPE_ID) BigInteger applicationTypeId, @Param(GROUP_ID) BigInteger groupId);
+
+    @Query(value = FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_HP,nativeQuery = true)
+    List<IStatusWiseCount> fetchUserSpecificStatusWiseCountForHp(@Param(APPLICATION_TYPE_ID) BigInteger applicationTypeId, @Param(GROUP_ID) BigInteger groupId, @Param(HP_PROFILE_ID) BigInteger hpProfileId);
+
+    @Query(value = FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_DEAN,nativeQuery = true)
+    List<IStatusWiseCount> fetchUserSpecificStatusWiseCountForDean(@Param(APPLICATION_TYPE_ID) BigInteger applicationTypeId, @Param(GROUP_ID) BigInteger groupId, @Param(COLLEGE_DEAN_ID) BigInteger collegeDeanId);
+
+    @Query(value = FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_REGISTRAR,nativeQuery = true)
+    List<IStatusWiseCount> fetchUserSpecificStatusWiseCountForRegistrar(@Param(APPLICATION_TYPE_ID) BigInteger applicationTypeId, @Param(GROUP_ID) BigInteger groupId, @Param(COLLEGE_REGISTRAR_ID) BigInteger collegeRegistrarId);
+
+    @Query(value = FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_SMC,nativeQuery = true)
+    List<IStatusWiseCount> fetchUserSpecificStatusWiseCountForSmc(@Param(APPLICATION_TYPE_ID) BigInteger applicationTypeId, @Param(GROUP_ID) BigInteger groupId, @Param(SMC_PROFILE_ID) BigInteger smcProfileId);
 
 }
