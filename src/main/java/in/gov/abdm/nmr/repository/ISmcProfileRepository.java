@@ -1,14 +1,15 @@
 package in.gov.abdm.nmr.repository;
 
-import in.gov.abdm.nmr.entity.SMCProfile;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import static in.gov.abdm.nmr.entity.WorkFlow_.USER_ID;
 
 import java.math.BigInteger;
 import java.util.List;
 
-import static in.gov.abdm.nmr.entity.WorkFlow_.USER_ID;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import in.gov.abdm.nmr.entity.SMCProfile;
 
 public interface ISmcProfileRepository extends JpaRepository<SMCProfile, BigInteger> {
 

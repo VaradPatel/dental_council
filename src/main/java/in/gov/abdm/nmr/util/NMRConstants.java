@@ -1,9 +1,10 @@
 package in.gov.abdm.nmr.util;
 
 
-import lombok.experimental.UtilityClass;
-
+import static in.gov.abdm.nmr.enums.ApplicationType.COLLEGE_REGISTRATION;
 import static in.gov.abdm.nmr.enums.ApplicationType.HP_ACTIVATE_LICENSE;
+
+import lombok.experimental.UtilityClass;
 
 /**
  * This class holds all the constants associated with NMR application
