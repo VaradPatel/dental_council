@@ -53,8 +53,8 @@ public class DashboardController {
      */
     @GetMapping(ProtectedPaths.PATH_DASHBOARD_CARD_COUNT)
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<FetchCountOnCardResponseTO> fetchCountOnCard() throws InvalidRequestException {
-        return ResponseEntity.ok(iFetchCountOnCardService.fetchCountOnCard());
+    public FetchCountOnCardResponseTO fetchCountOnCard() throws InvalidRequestException {
+        return iFetchCountOnCardService.fetchCountOnCard();
     }
 
     /**
