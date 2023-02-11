@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -154,8 +155,8 @@ class MasterDataControllerTest {
     @Test
     void testFacilityTypeNegative() {
         List<MasterDataTO> unexpectedResult = Arrays.asList(
-                new MasterDataTO("type1", "value1"),
-                new MasterDataTO("type2", "value2")
+                new MasterDataTO(1l, "type1", "value1"),
+                new MasterDataTO(2l,"type2", "value2")
         );
         when(masterDataService.facilityType()).thenReturn(unexpectedResult);
         List<MasterDataTO> result = masterDataController.facilityType();

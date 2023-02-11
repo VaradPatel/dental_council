@@ -19,7 +19,6 @@ import java.util.List;
  * The HpRegistrationController class is a RestController that handles requests for registration related operations.
  */
 @RestController
-@RequestMapping("/hp")
 @Validated
 public class HpRegistrationController {
 
