@@ -36,14 +36,14 @@ public class CollegeController {
 
     @PostMapping(path = ProtectedPaths.PATH_REGISTER_COLLEGE_REGISTRAR, produces = MediaType.APPLICATION_JSON_VALUE)
     @SecurityRequirement(name = "bearerAuth")
-    public CollegeRegistrarProfileTo registerRegistrar(@RequestBody CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException {
-        return collegeService.registerRegistrar(collegeRegistrarCreationRequestTo);
+    public CollegeRegistrarProfileTo registerRegistrar(@PathVariable("collegeId") BigInteger collegeId, @RequestBody CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException {
+        return collegeService.registerRegistrar(collegeId, collegeRegistrarCreationRequestTo);
     }
 
     @PostMapping(path = ProtectedPaths.PATH_REGISTER_COLLEGE_DEAN, produces = MediaType.APPLICATION_JSON_VALUE)
     @SecurityRequirement(name = "bearerAuth")
-    public CollegeDeanProfileTo registerDean(@RequestBody CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
-        return collegeService.registerDean(collegeDeanCreationRequestTo);
+    public CollegeDeanProfileTo registerDean(@PathVariable("collegeId") BigInteger collegeId, @RequestBody CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
+        return collegeService.registerDean(collegeId, collegeDeanCreationRequestTo);
     }
 
     @GetMapping(path = ProtectedPaths.PATH_COLLEGE_PROFILE)

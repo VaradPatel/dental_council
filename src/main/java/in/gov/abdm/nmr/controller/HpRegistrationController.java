@@ -44,9 +44,9 @@ public class HpRegistrationController {
      * @param registrationNumber
      * @return SmcRegistrationDetailResponseTO This returns the SMC registration detail information.
      */
-    @GetMapping(path = "/hpSmcRegistrationDetail", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "health-professional?smcId={smcId}&registrationNumber={registrationNumber}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(
-            @RequestParam("councilId") Integer councilId,
+            @RequestParam("smcId") Integer councilId,
             @RequestParam("registrationNumber") BigInteger registrationNumber) {
         return hpService.fetchSmcRegistrationDetail(councilId, registrationNumber);
     }
@@ -75,10 +75,10 @@ public class HpRegistrationController {
      * @throws InvalidRequestException when the request is invalid.
      * @throws WorkFlowException       when there's an error with the workflow.
      */
-    @PutMapping(path = "health-professional/personal/{hp_profile_id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "health-professional/personal/{healthProfessionalId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfilePersonalResponseTO updateHealthProfessionalPersonalDetail(
             @Valid @RequestBody HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO,
-            @PathVariable(name = "hp_profile_id") BigInteger hpProfileId)
+            @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId)
             throws InvalidRequestException, WorkFlowException {
         return hpService.addOrUpdateHpPersonalDetail(hpProfileId, hpPersonalUpdateRequestTO);
     }
@@ -91,8 +91,8 @@ public class HpRegistrationController {
      * @throws InvalidRequestException If the request is invalid.
      * @throws WorkFlowException       If there is a problem with the workflow.
      */
-    @GetMapping(path = "health-professional/personal/{hp_profile_id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HpProfilePersonalResponseTO getHealthProfessionalPersonalDetail(@PathVariable(name = "hp_profile_id") BigInteger hpProfileId)
+    @GetMapping(path = "health-professional/personal/{healthProfessionalId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public HpProfilePersonalResponseTO getHealthProfessionalPersonalDetail(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId)
             throws InvalidRequestException, WorkFlowException {
         return hpService.getHealthProfessionalPersonalDetail(hpProfileId);
     }
@@ -108,11 +108,11 @@ public class HpRegistrationController {
      * @throws InvalidRequestException If the provided request is invalid.
      * @throws WorkFlowException       If there is an error in the workflow.
      */
-    @PutMapping(path = "health-professional/registration/{hp_profile_id}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "health-professional/registration/{healthProfessionalId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam("certificate") MultipartFile certificate,
                                                                                       @RequestParam("proof") MultipartFile proof,
                                                                                       @RequestPart("data") String hpRegistrationUpdateRequestString,
-                                                                                      @PathVariable(name = "hp_profile_id") BigInteger hpProfileId) throws InvalidRequestException, WorkFlowException {
+                                                                                      @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, WorkFlowException {
         return hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequestString, certificate, proof);
     }
 
@@ -124,8 +124,8 @@ public class HpRegistrationController {
      * @throws InvalidRequestException if the provided profile ID is invalid or missing
      * @throws WorkFlowException       if an error occurs while processing the request
      */
-    @GetMapping(path = "health-professional/registration/{hp_profile_id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(@PathVariable(name = "hp_profile_id") BigInteger hpProfileId)
+    @GetMapping(path = "health-professional/registration/{healthProfessionalId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId)
             throws InvalidRequestException, WorkFlowException {
         return hpService.getHealthProfessionalRegistrationDetail(hpProfileId);
     }
@@ -140,9 +140,9 @@ public class HpRegistrationController {
      * @throws InvalidRequestException If the request is invalid or missing required information.
      * @throws WorkFlowException       If there is a problem with the work flow during the update process.
      */
-    @PutMapping(path = "health-professional/work-profile/{hp_profile_id}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "health-professional/work-profile/{healthProfessionalId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileWorkDetailsResponseTO updateHealthProfessionalWorkProfileDetail(@RequestPart("data") String hpWorkProfileUpdateRequestString,
-                                                                                    @PathVariable(name = "hp_profile_id") BigInteger hpProfileId,
+                                                                                    @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
                                                                                     @RequestParam("proof") MultipartFile proof)
 
             throws InvalidRequestException, WorkFlowException {
@@ -157,8 +157,8 @@ public class HpRegistrationController {
      * @throws InvalidRequestException If the provided hpProfileId is invalid or not found in the database.
      * @throws WorkFlowException       If an error occurs during the processing of the request.
      */
-    @GetMapping(path = "health-professional/work-profile/{hp_profile_id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(@PathVariable(name = "hp_profile_id") BigInteger hpProfileId)
+    @GetMapping(path = "health-professional/work-profile/{healthProfessionalId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId)
             throws InvalidRequestException, WorkFlowException {
         return hpService.getHealthProfessionalWorkDetail(hpProfileId);
     }
@@ -171,8 +171,8 @@ public class HpRegistrationController {
      * @return a string indicating the result of the operation
      * @throws WorkFlowException if there is an error during the operation
      */
-    @PostMapping(path = "/hpProfileDetail/{hp_profile_id}/qualification", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String addQualifications(@PathVariable(name = "hp_profile_id") BigInteger hpProfileId,
+    @PostMapping(path = "/health-professional/{healthProfessionalId}/qualifications", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String addQualifications(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
                                     @Valid @RequestBody List<QualificationDetailRequestTO> qualificationDetailRequestTOs) throws WorkFlowException {
         return hpService.addQualification(hpProfileId, qualificationDetailRequestTOs);
     }
@@ -185,11 +185,10 @@ public class HpRegistrationController {
      * @return A response object containing information about the uploaded profile picture
      * @throws IOException If there is an error reading the file or uploading it to the server
      */
-    @PostMapping(path = "/hpProfileDetail/profile_picture/{hp_profile_id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/health-professional/profile-picture/{healthProfessionalId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfilePictureResponseTO uploadHpProfilePhoto(
             @RequestParam(value = "file", required = true) MultipartFile file,
-            @PathVariable(name = "hp_profile_id") BigInteger hpProfileId) throws IOException {
-
+            @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws IOException {
         return hpService.uploadHpProfilePicture(file, hpProfileId);
     }
 
@@ -202,7 +201,7 @@ public class HpRegistrationController {
      * @throws InvalidRequestException If the request body is invalid.
      * @throws WorkFlowException       If there is an issue with the submission workflow.
      */
-    @PostMapping(path = "health-professional/submit", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "health-professional/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileAddResponseTO submit(@Valid @RequestBody HpSubmitRequestTO hpSubmitRequestTO)
             throws InvalidRequestException, WorkFlowException {
         return hpService.submitHpProfile(hpSubmitRequestTO);

@@ -21,17 +21,17 @@ public class CaptchaController {
         this.captchaService = captchaService;
     }
 
-    @GetMapping("/generateCaptcha")
+    @GetMapping("/generate-captcha")
     public GenerateCaptchaResponseTO generateCaptcha() throws NoSuchAlgorithmException, IOException {
         return captchaService.generateCaptcha();
     }
 
-    @PostMapping("/validateCaptcha")
+    @PostMapping("/verify-captcha")
     public ValidateCaptchaResponseTO validateCaptcha(@RequestBody ValidateCaptchaRequestTO validateCaptchaRequestTO) {
         return captchaService.validateCaptcha(validateCaptchaRequestTO);
     }
     
-    @GetMapping("/getCaptchaEnabledFlag")
+    @GetMapping("/captcha-enabled")
     public Boolean getCaptchaEnabledFlag() {
         return captchaService.getCaptchaEnabledFlag();
     }
