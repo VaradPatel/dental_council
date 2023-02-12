@@ -30,8 +30,8 @@ public class SearchController {
         return searchService.searchHP(hpSearchRequestTO);
     }
 
-    @GetMapping(path = "/{health-professionalId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HpSearchProfileTO getHpSearchProfileById(@PathVariable("health-professionalId") BigInteger profileId) throws NmrException {
-        return searchService.getHpSearchProfileById(profileId);
+    @GetMapping(path = "/{healthProfessionalId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public HpSearchProfileTO getHpSearchProfileById(@PathVariable("healthProfessionalId") BigInteger healthProfessionalId) throws NmrException {
+        return searchService.getHpSearchProfileById(healthProfessionalId);
     }
 }

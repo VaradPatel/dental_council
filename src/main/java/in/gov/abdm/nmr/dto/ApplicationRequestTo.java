@@ -6,7 +6,7 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 
 @Data
-public class ActionRequestTo {
+public class ApplicationRequestTo {
     private BigInteger hpProfileId;
     private BigInteger applicationTypeId;
     private Timestamp fromDate;

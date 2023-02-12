@@ -1,27 +1,13 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.FetchSpecificDetailsResponseTO;
-import in.gov.abdm.nmr.enums.UserSubTypeEnum;
-import in.gov.abdm.nmr.enums.UserTypeEnum;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
 import in.gov.abdm.nmr.repository.IFetchDetailsByRegNoRepository;
-import in.gov.abdm.nmr.service.IFetchDetailsByRegNoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static in.gov.abdm.nmr.util.NMRConstants.INVALID_USER_SUB_TYPE;
-import static in.gov.abdm.nmr.util.NMRConstants.INVALID_USER_TYPE;
-
 
 @Service
-public class FetchDetailsByRegNoServiceImpl implements IFetchDetailsByRegNoService {
+public class FetchDetailsByRegNoServiceImpl {
 
     /**
      * Injecting IFetchDetailsByRegNoRepository bean instead of an explicit object creation to achieve

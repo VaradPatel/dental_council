@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.security.common;
 
+import in.gov.abdm.nmr.util.NMRConstants;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -41,7 +42,7 @@ public class ProtectedPaths {
 
     public static final String PATH_HEALTH_PROFESSIONAL_ROOT = "/health-professional";
 
-    public static final String PATH_HEALTH_PROFESSIONAL_APPLICATIONS = "/applications";
+    public static final String PATH_HEALTH_PROFESSIONAL_APPLICATIONS = NMRConstants.APPLICATION_REQUEST_URL+"/{healthProfessionalId}/applications";
 
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<AntPathRequestMatcher> protectedPaths = new ArrayList<>();

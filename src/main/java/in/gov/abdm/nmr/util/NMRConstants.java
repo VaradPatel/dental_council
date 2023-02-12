@@ -39,7 +39,7 @@ public class NMRConstants {
     public static final String RESET_PASSWORD = "/reset-password";
     public static final String CHANGE_PASSWORD = "/change-password";
     public static final String RAISE_QUERY = "/health-professional/queries";
-    public static final String GET_QUERIES = "health-professional/{hp-profile-id}/queries";
+    public static final String GET_QUERIES = "health-professional/{healthProfessionalId}/queries";
     public static final String GET_RESET_PASSWORD_LINK = "/send-reset-password-link";
     public static final String SET_NEW_PASSWORD = "/set-new-password";
     public static final String E_SIGN = "/e-signature";
@@ -47,16 +47,16 @@ public class NMRConstants {
     public static final String PATH_FACILITY_ROOT = "/facilities";
     public static final String PATH_FACILITY_SEARCH = "/search";
 
-    public static final String PATH_COLLEGE_REGISTRATION = "/college/registration-requests";
-    public static final String ACTION_REQUEST_URL = "/health-professional/application";
+    public static final String PATH_COLLEGE_APPLICATIONS = "/college/applications";
+    public static final String APPLICATION_REQUEST_URL = "/health-professional/applications";
 
-    public static final String PATH_TRACK_APPLICATIONS_STATUS = "/applications/status";
+    public static final String PATH_TRACK_APPLICATIONS_STATUS = APPLICATION_REQUEST_URL+"/applications";
 
-    public static final String SUSPENSION_REQUEST_URL = "/suspend";
+    public static final String SUSPENSION_REQUEST_URL = APPLICATION_REQUEST_URL+"/suspend";
 
-    public static final String REACTIVATE_REQUEST_URL = "/re-activate";
-    public static final String HEALTH_PROFESSIONAL_ACTION = "/health-professional/action";
-    public static final String COLLEGES_ACTION = "colleges/action";
+    public static final String REACTIVATE_REQUEST_URL = APPLICATION_REQUEST_URL+"/re-activate";
+    public static final String HEALTH_PROFESSIONAL_ACTION = APPLICATION_REQUEST_URL +"/status";
+    public static final String COLLEGES_ACTION = "college/applications/status";
     public static final String NOTIFICATION_SERVICE = "notification";
     public static final String FACILITY_SERVICE = "facility";
     public static final String NOTIFICATION_DB_SERVICE = "notification-db";

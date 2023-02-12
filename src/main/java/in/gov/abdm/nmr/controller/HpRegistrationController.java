@@ -5,6 +5,9 @@ import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
+import in.gov.abdm.nmr.service.IQueriesService;
+import in.gov.abdm.nmr.util.NMRConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,16 +28,12 @@ public class HpRegistrationController {
     /**
      * The variable hpService holds an instance of IHpRegistrationService.
      */
+    @Autowired
     private IHpRegistrationService hpService;
 
-    /**
-     * Constructor for HpRegistrationController class.
-     *
-     * @param hpService an instance of IHpRegistrationService interface.
-     */
-    public HpRegistrationController(IHpRegistrationService hpService) {
-        this.hpService = hpService;
-    }
+    @Autowired
+    private IQueriesService queryService;
+
 
     /**
      * This method is used to fetch SMC registration detail information.
@@ -204,5 +203,25 @@ public class HpRegistrationController {
     public HpProfileAddResponseTO submit(@Valid @RequestBody HpSubmitRequestTO hpSubmitRequestTO)
             throws InvalidRequestException, WorkFlowException {
         return hpService.submitHpProfile(hpSubmitRequestTO);
+    }
+
+    /**
+     * Endpoint to create multiple queries at a time
+     * @param queryCreateTo coming from user
+     * @return returns created list of queries
+     */
+    @PostMapping(path = NMRConstants.RAISE_QUERY, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseMessageTo raiseQuery(@Valid @RequestBody QueryCreateTo queryCreateTo) throws WorkFlowException {
+        return queryService.createQueries(queryCreateTo);
+    }
+
+    /**
+     * Endpoint to get all the queries against hpProfileId
+     * @param healthProfessionalId	 takes hpProfileId as a input
+     * @return returns list of queries associated with hpProfileId
+     */
+    @GetMapping(path = NMRConstants.GET_QUERIES, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<QueryResponseTo> getQueries(@PathVariable("healthProfessionalId") BigInteger healthProfessionalId){
+        return queryService.getQueriesByHpProfileId(healthProfessionalId);
     }
 }
