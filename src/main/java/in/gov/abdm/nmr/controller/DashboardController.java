@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 import static in.gov.abdm.nmr.security.common.ProtectedPaths.PATH_DASHBOARD_FETCH_DETAILS;
@@ -53,7 +54,7 @@ public class DashboardController {
      */
     @GetMapping(ProtectedPaths.PATH_DASHBOARD_CARD_COUNT)
     @SecurityRequirement(name = "bearerAuth")
-    public FetchCountOnCardResponseTO fetchCountOnCard() throws InvalidRequestException {
+    public FetchCountOnCardResponseTO fetchCountOnCard() throws InvalidRequestException, AccessDeniedException {
         return iFetchCountOnCardService.fetchCountOnCard();
     }
 
