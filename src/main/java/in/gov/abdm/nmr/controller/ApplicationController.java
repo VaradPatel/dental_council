@@ -101,7 +101,7 @@ public class ApplicationController {
      * which contains all the details used to track the health professionals who have
      * raised a request
      */
-    @PostMapping(PATH_TRACK_APPLICATIONS_STATUS)
+    @PostMapping(APPLICATION_REQUEST_URL)
     public HealthProfessionalApplicationResponseTo trackStatusDetails(@RequestBody HealthProfessionalApplicationRequestTo requestTO) {
         return applicationService.fetchApplicationDetails(requestTO);
     }
