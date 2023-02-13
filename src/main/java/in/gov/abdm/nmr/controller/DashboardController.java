@@ -4,7 +4,6 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IFetchCountOnCardService;
-import in.gov.abdm.nmr.service.IFetchDetailsByRegNoService;
 import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
