@@ -8,7 +8,7 @@ import java.math.BigInteger;
 
 public interface ICollegeDeanDaoService {
 
-    CollegeDean saveCollegeDean(CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException;
+    CollegeDean saveCollegeDean(BigInteger collegeId, CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException;
 
     CollegeDean findCollegeDeanById(BigInteger id) throws NmrException;
 

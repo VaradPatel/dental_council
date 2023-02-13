@@ -3,16 +3,15 @@ package in.gov.abdm.nmr.controller;
 import java.math.BigInteger;
 import java.util.List;
 
-import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
-import in.gov.abdm.nmr.service.IMasterDataService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
+import in.gov.abdm.nmr.service.IMasterDataService;
+
 @RestController
-@RequestMapping("/md")
 public class MasterDataController {
 
     private IMasterDataService masterDataService;
@@ -22,7 +21,7 @@ public class MasterDataController {
         this.masterDataService = masterDataService;
     }
 
-    @GetMapping(path = "/smcs", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/state-medical-councils", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MasterDataTO> smcs() {
         return masterDataService.smcs();
     }
@@ -37,22 +36,22 @@ public class MasterDataController {
         return masterDataService.countries();
     }
     
-    @GetMapping(path = "country/{country_id}/states", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/countries/{country_id}/states", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MasterDataTO> states(@PathVariable(name = "country_id") BigInteger countryId) {
         return masterDataService.states(countryId);
     }
     
-    @GetMapping(path = "state/{state_id}/districts", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/countries/states/{state_id}/districts", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MasterDataTO> districts(@PathVariable(name = "state_id") BigInteger stateId) {
         return masterDataService.districts(stateId);
     }
     
-    @GetMapping(path = "district/{district_id}/sub_districts", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/countries/states/districts/{district_id}/sub_districts", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MasterDataTO> subDistricts(@PathVariable(name = "district_id") BigInteger districtId) {
         return masterDataService.subDistricts(districtId);
     }
     
-    @GetMapping(path = "sub_district/{sub_district_id}/cities", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/countries/states/districts/sub-districts/{sub_district_id}/cities", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MasterDataTO> cities(@PathVariable(name = "sub_district_id") BigInteger subDistrictId) {
         return masterDataService.cities(subDistrictId);
     }
@@ -62,7 +61,7 @@ public class MasterDataController {
         return masterDataService.universities();
     }
     
-    @GetMapping(path = "university/{university_id}/colleges", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/universities/{university_id}/colleges", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MasterDataTO> colleges(@PathVariable(name = "university_id") BigInteger universityId) {
         return masterDataService.colleges(universityId);
     }
@@ -77,12 +76,12 @@ public class MasterDataController {
         return masterDataService.courses();
     }
     
-    @GetMapping(path = "/registration_renewation_type", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/renewation-types", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MasterDataTO> registrationRenewationType() {
         return masterDataService.registrationRenewationType();
     }
     
-    @GetMapping(path = "/facility_type", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/facility-types", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MasterDataTO> facilityType() {
         return masterDataService.facilityType();
     }

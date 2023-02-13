@@ -15,8 +15,6 @@ public class AccessControlServiceImpl implements IAccessControlService {
 
     private IUserRepository userRepository;
 
-    private IAccessControlService accessControlService;
-
     public AccessControlServiceImpl(IUserRepository userDaoService) {
         this.userRepository = userDaoService;
     }

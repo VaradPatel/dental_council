@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -98,7 +99,7 @@ class MasterDataControllerTest {
     }
 
     @Test
-    public void testCities() throws Exception {
+    void testCities() {
         BigInteger subDistrictId = BigInteger.valueOf(1);
         when(masterDataService.cities(subDistrictId)).thenReturn(expectedResult);
         List<MasterDataTO> result = masterDataController.cities(subDistrictId);
@@ -106,7 +107,7 @@ class MasterDataControllerTest {
     }
 
     @Test
-    public void testUniversities() throws Exception {
+    void testUniversities() {
         when(masterDataService.universities()).thenReturn(expectedResult);
         List<MasterDataTO> result = masterDataController.universities();
         assertEquals(expectedResult, result);
@@ -114,7 +115,7 @@ class MasterDataControllerTest {
 
 
     @Test
-    public void testColleges() throws Exception {
+    void testColleges() {
         BigInteger universityId = BigInteger.valueOf(1);
         when(masterDataService.colleges(universityId)).thenReturn(expectedResult);
         List<MasterDataTO> result = masterDataController.colleges(universityId);
@@ -122,42 +123,45 @@ class MasterDataControllerTest {
     }
 
     @Test
-    public void testLanguages() throws Exception {
+    void testLanguages() throws Exception {
         when(masterDataService.languages()).thenReturn(expectedResult);
         List<MasterDataTO> result = masterDataController.languages();
         assertEquals(expectedResult, result);
     }
 
     @Test
-    public void testCourses() throws Exception {
+    void testCourses() throws Exception {
         when(masterDataService.courses()).thenReturn(expectedResult);
         List<MasterDataTO> result = masterDataController.courses();
         assertEquals(expectedResult, result);
     }
 
     @Test
-    public void testRegistrationRenewationType() {
-        List<MasterDataTO> expectedResult = Arrays.asList(
-                new MasterDataTO(1L, "RENEWAL", "Renewal"),
-                new MasterDataTO(2L, "REGISTRATION", "Registration")
-        );
+    void testRegistrationRenewationType() {
         when(masterDataService.registrationRenewationType()).thenReturn(expectedResult);
-
         List<MasterDataTO> result = masterDataController.registrationRenewationType();
         assertEquals(expectedResult, result);
         verify(masterDataService).registrationRenewationType();
     }
 
     @Test
-    public void testFacilityType() {
-        List<MasterDataTO> expectedResult = Arrays.asList(
-                new MasterDataTO(1L, "HOSPITAL", "Hospital"),
-                new MasterDataTO(2L, "CLINIC", "Clinic")
-        );
+    void testFacilityType() {
         when(masterDataService.facilityType()).thenReturn(expectedResult);
-
         List<MasterDataTO> result = masterDataController.facilityType();
         assertEquals(expectedResult, result);
         verify(masterDataService).facilityType();
     }
+
+    @Test
+    void testFacilityTypeNegative() {
+        List<MasterDataTO> unexpectedResult = Arrays.asList(
+                new MasterDataTO(1l, "type1", "value1"),
+                new MasterDataTO(2l,"type2", "value2")
+        );
+        when(masterDataService.facilityType()).thenReturn(unexpectedResult);
+        List<MasterDataTO> result = masterDataController.facilityType();
+        assertNotEquals(unexpectedResult, result);
+        verify(masterDataService).facilityType();
+    }
+
 }

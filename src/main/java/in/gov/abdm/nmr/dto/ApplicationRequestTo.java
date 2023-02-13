@@ -6,9 +6,10 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 
 @Data
-public class ActionRequestTo {
+public class ApplicationRequestTo {
     private BigInteger hpProfileId;
     private BigInteger applicationTypeId;
+    private BigInteger actionId;
     private Timestamp fromDate;
     private Timestamp toDate;
     private String remarks;

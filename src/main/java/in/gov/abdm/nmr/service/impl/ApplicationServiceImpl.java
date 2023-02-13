@@ -1,15 +1,12 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.ActionRequestTo;
-import in.gov.abdm.nmr.dto.ReactivateHealthProfessionalRequestParam;
-import in.gov.abdm.nmr.dto.ReactivateHealthProfessionalResponseTO;
-import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.repository.*;
-import in.gov.abdm.nmr.service.IActionService;
+import in.gov.abdm.nmr.service.IApplicationService;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.NMRUtil;
@@ -17,8 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +32,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.MAX_DATA_SIZE;
  */
 @Service
 @Slf4j
-public class ActionServiceImpl implements IActionService {
+public class ApplicationServiceImpl implements IApplicationService {
 
     /**
      * Injecting a IHpProfileRepository bean instead of an explicit object creation to achieve
@@ -106,32 +105,56 @@ public class ActionServiceImpl implements IActionService {
     private IWorkFlowCustomRepository iWorkFlowCustomRepository;
 
     /**
+     * Injecting a IFetchTrackApplicationDetailsCustomRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
+    @Autowired
+    private IFetchTrackApplicationDetailsCustomRepository iFetchTrackApplicationDetailsCustomRepository;
+
+    /**
+     * Injecting a IUserRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
+    @Autowired
+    private IUserRepository userDetailRepository;
+
+    /**
+     * Injecting a IHpProfileRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
+    @Autowired
+    private IHpProfileRepository hpProfileRepository;
+
+
+    private static final Map<String, String> REACTIVATION_SORT_MAPPINGS =  Map.of("id", " hp.id", "name", " hp.full_name", "createdAt", " wf.created_at", "reactivationDate", " wf.start_date", "suspensionType", " a.name", "remarks", " wf.remarks");
+
+    /**
      * This method is used to suspend a health professional based on the request provided.
      *
-     * @param actionRequestTo the request object containing necessary information to suspend a health professional.
+     * @param applicationRequestTo the request object containing necessary information to suspend a health professional.
      * @return a string indicating the result of the suspension request.
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
     @Override
-    public String suspendRequest(ActionRequestTo actionRequestTo) throws WorkFlowException {
-        String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(actionRequestTo.getApplicationTypeId()));
-        HpProfile newHpProfile = createNewHpProfile(actionRequestTo, requestId);
-        initiateWorkFlow(actionRequestTo, requestId, newHpProfile);
+    public String suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
+        String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
+        HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
+        initiateWorkFlow(applicationRequestTo, requestId, newHpProfile);
         return newHpProfile.getId().toString();
     }
 
     /**
      * This method is used to reactivate a health professional based on the request provided.
      *
-     * @param actionRequestTo the request object containing necessary information to reactivate a health professional.
+     * @param applicationRequestTo the request object containing necessary information to reactivate a health professional.
      * @return a string indicating the result of the reactivate request.
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
     @Override
-    public String reactiveRequest(ActionRequestTo actionRequestTo) throws WorkFlowException {
-        String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(actionRequestTo.getApplicationTypeId()));
-        HpProfile newHpProfile = createNewHpProfile(actionRequestTo, requestId);
-        initiateWorkFlow(actionRequestTo, requestId, newHpProfile);
+    public String reactiveRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
+        String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
+        HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
+        initiateWorkFlow(applicationRequestTo, requestId, newHpProfile);
         return newHpProfile.getId().toString();
     }
 
@@ -158,7 +181,7 @@ public class ActionServiceImpl implements IActionService {
         reactivateHealthProfessionalQueryParam.setSearch(search);
         final String sortingOrder = sortType == null ? DEFAULT_SORT_ORDER : sortType;
         reactivateHealthProfessionalQueryParam.setSortType(sortingOrder);
-        String column = getColumnToSort(sortBy);
+        String column = getReactivationSortColumn(sortBy);
         reactivateHealthProfessionalQueryParam.setSortBy(column);
         try {
             Pageable pageable = PageRequest.of(reactivateHealthProfessionalQueryParam.getPageNo(), reactivateHealthProfessionalQueryParam.getOffset());
@@ -169,12 +192,12 @@ public class ActionServiceImpl implements IActionService {
         return reactivateHealthProfessionalResponseTO;
     }
 
-    private String getColumnToSort(String columnToSort) {
-        Map<String, String> columns;
+    private String getReactivationSortColumn(String columnToSort) {
+
         if (columnToSort != null && columnToSort.length() > 0) {
-            columns = mapColumnToTable();
-            if (columns.containsKey(columnToSort)) {
-                return columns.get(columnToSort);
+
+            if (REACTIVATION_SORT_MAPPINGS.containsKey(columnToSort)) {
+                return REACTIVATION_SORT_MAPPINGS.get(columnToSort);
             } else {
                 return " wf.created_at ";
             }
@@ -183,40 +206,36 @@ public class ActionServiceImpl implements IActionService {
         }
     }
 
-    private Map<String, String> mapColumnToTable() {
-        Map<String, String> columnToSortMap = new HashMap<>();
-        columnToSortMap.put("id", " hp.id");
-        columnToSortMap.put("name", " hp.full_name");
-        columnToSortMap.put("createdAt", " wf.created_at");
-        columnToSortMap.put("reactivationDate", " wf.start_date");
-        columnToSortMap.put("suspensionType", " a.name");
-        columnToSortMap.put("remarks", " wf.remarks");
-        return columnToSortMap;
-    }
+
 
     /**
      * This method is used to initiate the workflow for a suspension and reactivate request.
      *
-     * @param actionRequestTo the request containing details of the action to be taken
+     * @param applicationRequestTo the request containing details of the action to be taken
      * @param requestId       the unique identifier for the request
      * @param newHpProfile    the new health professional profile created as a result of the request
      * @throws WorkFlowException if there is any error while initiating the workflow
      */
-    private void initiateWorkFlow(ActionRequestTo actionRequestTo, String requestId, HpProfile newHpProfile) throws WorkFlowException {
+    private void initiateWorkFlow(ApplicationRequestTo applicationRequestTo, String requestId, HpProfile newHpProfile) throws WorkFlowException {
         WorkFlowRequestTO workFlowRequestTO = new WorkFlowRequestTO();
         workFlowRequestTO.setRequestId(requestId);
-        workFlowRequestTO.setApplicationTypeId(actionRequestTo.getApplicationTypeId());
+        workFlowRequestTO.setApplicationTypeId(applicationRequestTo.getApplicationTypeId());
         workFlowRequestTO.setActionId(Action.SUBMIT.getId());
         workFlowRequestTO.setActorId(Group.HEALTH_PROFESSIONAL.getId());
+        workFlowRequestTO.setApplicationTypeId(applicationRequestTo.getApplicationTypeId());
+        workFlowRequestTO.setActionId(applicationRequestTo.getActionId());
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userDetail = userDetailRepository.findByUsername(userName);
+        workFlowRequestTO.setActorId(userDetail.getGroup().getId());
         workFlowRequestTO.setHpProfileId(newHpProfile.getId());
-        workFlowRequestTO.setStartDate(actionRequestTo.getFromDate());
-        workFlowRequestTO.setEndDate(actionRequestTo.getToDate());
-        workFlowRequestTO.setRemarks(actionRequestTo.getRemarks());
+        workFlowRequestTO.setStartDate(applicationRequestTo.getFromDate());
+        workFlowRequestTO.setEndDate(applicationRequestTo.getToDate());
+        workFlowRequestTO.setRemarks(applicationRequestTo.getRemarks());
         iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
     }
 
-    private HpProfile createNewHpProfile(ActionRequestTo actionRequestTo, String requestId) {
-        HpProfile existingHpProfile = iHpProfileRepository.findHpProfileById(actionRequestTo.getHpProfileId());
+    private HpProfile createNewHpProfile(ApplicationRequestTo applicationRequestTo, String requestId) {
+        HpProfile existingHpProfile = iHpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
         HpProfile targetedHpProfile = new HpProfile();
         org.springframework.beans.BeanUtils.copyProperties(existingHpProfile, targetedHpProfile);
         targetedHpProfile.setId(null);
@@ -282,4 +301,91 @@ public class ActionServiceImpl implements IActionService {
         superSpecialityRepository.saveAll(superSpecialities);
         return targetedHpProfile;
     }
+
+    /**
+     * Retrieves information about the status of a health professional's requests for NMC, NBE, SMC, Dean, Registrar and Admin.
+     *
+     * @param healthProfessionalApplicationRequestTo - HealthProfessionalApplicationRequestTo object representing the request
+     * @return the HealthProfessionalApplicationResponseTo object representing the response object
+     * which contains all the details used to track the health professionals who have
+     * raised a request
+     */
+    @Override
+    public HealthProfessionalApplicationResponseTo fetchApplicationDetails(HealthProfessionalApplicationRequestTo healthProfessionalApplicationRequestTo) {
+
+        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = new HealthProfessionalApplicationRequestParamsTo();
+        applicationRequestParamsTo.setSmcId(healthProfessionalApplicationRequestTo.getSmcId());
+        applicationRequestParamsTo.setRegistrationNo(healthProfessionalApplicationRequestTo.getRegistrationNo());
+        applicationRequestParamsTo.setWorkFlowStatusId(healthProfessionalApplicationRequestTo.getWorkFlowStatusId());
+        applicationRequestParamsTo.setApplicationTypeId(healthProfessionalApplicationRequestTo.getApplicationTypeId());
+
+        String sortOrder = healthProfessionalApplicationRequestTo.getSortOrder();
+        String column = getColumnToSort(healthProfessionalApplicationRequestTo.getSortBy());
+        int size = healthProfessionalApplicationRequestTo.getSize();
+        int pageNo = healthProfessionalApplicationRequestTo.getPageNo();
+
+        final String sortingOrder = sortOrder == null ? DEFAULT_SORT_ORDER : sortOrder;
+        applicationRequestParamsTo.setSortOrder(sortingOrder);
+        final int dataLimit = MAX_DATA_SIZE < size ? MAX_DATA_SIZE : size;
+        Pageable pageable = PageRequest.of(pageNo, dataLimit);
+        applicationRequestParamsTo.setSize(size);
+        applicationRequestParamsTo.setPageNo(pageNo);
+        applicationRequestParamsTo.setSortBy(column);
+        return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable);
+    }
+
+    /**
+     * Retrieves information about a health professional's application requests to track by health professional.
+     *
+     * @param healthProfessionalId  the health professional id.
+     * @param healthProfessionalApplicationRequestTo - HealthProfessionalApplicationRequestTo object representing the request
+     * @return the HealthProfessionalApplicationResponseTo object representing the response object
+     * which contains all the details used to track the health professionals who have
+     * raised a request
+     */
+    @Override
+    public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, HealthProfessionalApplicationRequestTo healthProfessionalApplicationRequestTo) {
+        HpProfile hpProfile = hpProfileRepository.findHpProfileById(healthProfessionalId);
+        healthProfessionalApplicationRequestTo.setRegistrationNo(hpProfile.getRegistrationId().toString());
+        return fetchApplicationDetails(healthProfessionalApplicationRequestTo);
+    }
+
+    /**
+     * Maps the database column name to be used for sorting based on the columnToSort name.
+     *
+     * @param columnToSort - name of the column to be sorted
+     * @return database column name to be used for sorting
+     */
+    private String getColumnToSort(String columnToSort) {
+        Map<String, String> columns;
+        if (columnToSort.length() > 0) {
+            columns = mapColumnToTable();
+            if (columns.containsKey(columnToSort)) {
+                return columns.get(columnToSort);
+            } else {
+                return "Invalid column Name to sort";
+            }
+        } else {
+            return " rd.created_at ";
+        }
+    }
+
+    private Map<String, String> mapColumnToTable() {
+        Map<String, String> columnToSortMap = new HashMap<>();
+        columnToSortMap.put("doctorStatus", " doctor_status");
+        columnToSortMap.put("smcStatus", " smc_status");
+        columnToSortMap.put("collegeDeanStatus", " college_dean_status");
+        columnToSortMap.put("collegeRegistrarStatus", " college_registrar_status");
+        columnToSortMap.put("nmcStatus", " nmc_status");
+        columnToSortMap.put("nbeStatus", " nbe_status");
+        columnToSortMap.put("hpProfileId", " calculate.hp_profile_id");
+        columnToSortMap.put("requestId", " calculate.request_id");
+        columnToSortMap.put("registrationNo", " rd.registration_no");
+        columnToSortMap.put("createdAt", " rd.created_at");
+        columnToSortMap.put("councilName", " stmc.name");
+        columnToSortMap.put("applicantFullName", " hp.full_name");
+        columnToSortMap.put("applicationTypeId", " application_type_id");
+        return columnToSortMap;
+    }
+
 }

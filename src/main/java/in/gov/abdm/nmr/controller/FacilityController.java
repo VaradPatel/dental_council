@@ -18,8 +18,9 @@ public class FacilityController {
     @Autowired
     private IFacilityService facilityService;
 
-    @PostMapping(path = NMRConstants.PATH_FACILITY_SEARCH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    //Commenting this method as its out of scope..
+    /*@PostMapping(path = NMRConstants.PATH_FACILITY_SEARCH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public FacilitySearchResponseTO searchFacility(@RequestBody FacilitySearchRequestTO facilitySearchRequestTO) {
         return facilityService.findFacility(facilitySearchRequestTO);
-    }
+    }*/
 }

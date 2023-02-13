@@ -23,7 +23,7 @@ public class CollegeController {
         this.collegeService = collegeService;
     }
 
-    @PostMapping(path = "college", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "college/applications", produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeProfileTo registerCollege(@RequestBody CollegeRegistrationRequestTo collegeRegistrationRequestTo) throws NmrException, WorkFlowException {
         return collegeService.registerCollege(collegeRegistrationRequestTo, false);
     }
@@ -36,14 +36,14 @@ public class CollegeController {
 
     @PostMapping(path = ProtectedPaths.PATH_REGISTER_COLLEGE_REGISTRAR, produces = MediaType.APPLICATION_JSON_VALUE)
     @SecurityRequirement(name = "bearerAuth")
-    public CollegeRegistrarProfileTo registerRegistrar(@RequestBody CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException {
-        return collegeService.registerRegistrar(collegeRegistrarCreationRequestTo);
+    public CollegeRegistrarProfileTo registerRegistrar(@PathVariable("collegeId") BigInteger collegeId, @RequestBody CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException {
+        return collegeService.registerRegistrar(collegeId, collegeRegistrarCreationRequestTo);
     }
 
     @PostMapping(path = ProtectedPaths.PATH_REGISTER_COLLEGE_DEAN, produces = MediaType.APPLICATION_JSON_VALUE)
     @SecurityRequirement(name = "bearerAuth")
-    public CollegeDeanProfileTo registerDean(@RequestBody CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
-        return collegeService.registerDean(collegeDeanCreationRequestTo);
+    public CollegeDeanProfileTo registerDean(@PathVariable("collegeId") BigInteger collegeId, @RequestBody CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
+        return collegeService.registerDean(collegeId, collegeDeanCreationRequestTo);
     }
 
     @GetMapping(path = ProtectedPaths.PATH_COLLEGE_PROFILE)
@@ -86,7 +86,7 @@ public class CollegeController {
      * which contains all the details related to the College submitted to NMC
      * for approval.
      */
-    @GetMapping(path = NMRConstants.PATH_COLLEGE_REGISTRATION)
+    @GetMapping(path = NMRConstants.PATH_COLLEGE_APPLICATIONS)
     public CollegeRegistrationResponseTO getCollegeRegistrationDetails(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo, @RequestParam(required = false, value = "offset", defaultValue = "2") String offset, @RequestParam(required = false, value = "search") String search, @RequestParam(required = false, value = "id") String collegeId, @RequestParam(required = false, value = "name") String collegeName, @RequestParam(required = false, value = "council") String councilName, @RequestParam(required = false, value = "sortBy") String sortBy, @RequestParam(required = false, value = "sortType") String sortType) {
         return collegeService.getCollegeRegistrationDetails(pageNo, offset, search, collegeId, collegeName, councilName, sortBy, sortType);
     }
