@@ -16,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.file.AccessDeniedException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -39,7 +41,7 @@ class DashboardControllerTest {
     }
 
     @Test
-    public void testFetchCountOnCard() throws InvalidRequestException {
+    public void testFetchCountOnCard() throws InvalidRequestException, AccessDeniedException {
         FetchCountOnCardResponseTO expected = new FetchCountOnCardResponseTO();
         when(iFetchCountOnCardService.fetchCountOnCard()).thenReturn(expected);
         FetchCountOnCardResponseTO result = dashboardController.fetchCountOnCard();
