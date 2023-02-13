@@ -4,6 +4,7 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IApplicationService;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
@@ -44,7 +45,7 @@ public class ApplicationController {
      * POST endpoint for suspension request of a health professional. This method invokes the IActionService#suspendRequest(ActionRequestTo)
      * to perform the suspension request and return the result of the process.
      */
-    @PostMapping(SUSPENSION_REQUEST_URL)
+    @PostMapping(ProtectedPaths.SUSPENSION_REQUEST_URL)
     public String suspensionHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
         return applicationService.suspendRequest(applicationRequestTo);
     }
