@@ -27,7 +27,7 @@ public class ProtectedPaths {
     public static final String PATH_USER_ROOT = "/user";
     public static final String PATH_USER_SMSNOTIFICATIONENABLED = "/enable-sms-notification";
     public static final String PATH_USER_EMAILNOTIFICATIONENABLED = "/enable-email-notification";
-    public static final String PATH_ACTION_ROOT = "/action";
+    public static final String PATH_ACTION_ROOT = "/health-professional/applications/";
 
     public static final String PATH_SMC_PROFILE = "/smc/user/{id}";
     public static final String PATH_NMC_PROFILE = "/nmc/user/{id}";
@@ -45,7 +45,8 @@ public class ProtectedPaths {
 
     public static final String PATH_HEALTH_PROFESSIONAL_APPLICATIONS = PATH_HEALTH_PROFESSIONAL_ROOT+"/{healthProfessionalId}/applications";
 
-    public static final String SUSPENSION_REQUEST_URL = "/suspend";
+    public static final String APPLICATION_REQUEST_URL = "/health-professional/applications";
+    public static final String SUSPENSION_REQUEST_URL = APPLICATION_REQUEST_URL+"/suspend";
 
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<AntPathRequestMatcher> protectedPaths = new ArrayList<>();
@@ -71,7 +72,7 @@ public class ProtectedPaths {
         protectedPaths.add(new AntPathRequestMatcher(PATH_DASHBOARD_ROOT + PATH_DASHBOARD_CARD_COUNT));
 
         protectedPaths.add(new AntPathRequestMatcher(PATH_HEALTH_PROFESSIONAL_ROOT + PATH_HEALTH_PROFESSIONAL_APPLICATIONS));
-        protectedPaths.add(new AntPathRequestMatcher(PATH_ACTION_ROOT + SUSPENSION_REQUEST_URL));
+        protectedPaths.add(new AntPathRequestMatcher(SUSPENSION_REQUEST_URL));
 
         return protectedPaths.toArray(AntPathRequestMatcher[]::new);
     }
