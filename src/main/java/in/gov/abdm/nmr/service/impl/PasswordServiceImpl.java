@@ -1,16 +1,26 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.ChangePasswordRequestTo;
-import in.gov.abdm.nmr.dto.ResetPasswordRequestTo;
-import in.gov.abdm.nmr.dto.ResponseMessageTo;
-import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.enums.UserSubTypeEnum;
+import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.repository.IUserRepository;
+import in.gov.abdm.nmr.repository.PasswordResetTokenRepository;
+import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.service.IPasswordService;
+import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  * Implementations of methods for resetting and changing password
@@ -25,6 +35,100 @@ public class PasswordServiceImpl implements IPasswordService {
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Value("${council.reset-password.url}")
+    private String resetPasswordUrl;
+
+    @Autowired
+    IUserDaoService userDaoService;
+
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Autowired
+    INotificationService notificationService;
+
+    @Autowired
+    private EntityManager entityManager;
+
+    /**
+     * Creates new unique token for reset password transaction
+     *
+     * @param setPasswordLinkTo email/mobile to send link
+     * @return ResponseMessageTo with message
+     */
+    @Override
+    public ResponseMessageTo getResetPasswordLink(GetSetPasswordLinkTo setPasswordLinkTo) {
+
+        String token = RandomString.make(30);
+
+        try {
+
+            if (!userRepository.existsByUsername(setPasswordLinkTo.getUsername())) {
+                User userDetail = new User(null, setPasswordLinkTo.getUsername(), null, null, true, true, //
+                        entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null);
+                userDaoService.saveUserDetail(userDetail);
+
+
+                passwordResetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
+                if (userRepository.existsByUsername(setPasswordLinkTo.getUsername())) {
+
+                    PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByUserName(setPasswordLinkTo.getUsername());
+
+                    if (passwordResetToken != null) {
+                        passwordResetToken.setToken(token);
+                    } else {
+                        passwordResetToken = new PasswordResetToken(token, setPasswordLinkTo.getUsername());
+                    }
+                    passwordResetTokenRepository.save(passwordResetToken);
+
+                    String resetPasswordLink = resetPasswordUrl + "/" + token;
+
+                    return notificationService.sendNotificationForResetPasswordLink(setPasswordLinkTo.getEmail(), setPasswordLinkTo.getMobile(), resetPasswordLink);
+
+                } else {
+                    return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
+                }
+            }
+            else {
+                return new ResponseMessageTo(NMRConstants.USER_ALREADY_EXISTS);
+            }
+        } catch (Exception e) {
+            return new ResponseMessageTo(e.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * find user by unique token
+     *
+     * @param newPasswordTo unique token and new password
+     * @return user object
+     */
+    @Override
+    public ResponseMessageTo setNewPassword(SetNewPasswordTo newPasswordTo) {
+        try {
+
+            PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(newPasswordTo.getToken());
+
+            User user = userDaoService.findByUsername(passwordResetToken.getUserName());
+
+            if(null==user){
+                return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
+            }
+            if (passwordResetToken.getExpiryDate().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0) {
+
+                return new ResponseMessageTo(NMRConstants.LINK_EXPIRED);
+            }
+
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String encodedPassword = passwordEncoder.encode(newPasswordTo.getPassword());
+            user.setPassword(encodedPassword);
+            userRepository.save(user);
+
+            return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
+        } catch (Exception e) {
+            return new ResponseMessageTo(e.getLocalizedMessage());
+        }
+    }
     /**
      * Changes password related to username
      *

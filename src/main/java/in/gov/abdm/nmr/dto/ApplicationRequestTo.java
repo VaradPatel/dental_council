@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 public class ApplicationRequestTo {
     private BigInteger hpProfileId;
     private BigInteger applicationTypeId;
+    private BigInteger actionId;
     private Timestamp fromDate;
     private Timestamp toDate;
     private String remarks;

@@ -164,29 +164,20 @@ public class NotificationServiceImpl implements INotificationService {
     /**
      * Sends notification on each status change
      *
-     * @param type sms/email
-     * @param receiver to send message/email
+     * @param email email
+     * @param mobile mobile
      * @param link link for reset password
      * @return success/failure
      */
     @Override
-    public ResponseMessageTo sendNotificationForResetPasswordLink(String type, String receiver, String link) {
+    public ResponseMessageTo sendNotificationForResetPasswordLink(String email, String mobile, String link) {
 
-        if (NotificationType.EMAIL.getNotificationType().equals(type)) {
-            Template template = getMessageTemplate(NMRConstants.EMAIL_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY);
-            String message = new TemplatedStringBuilder(template.getMessage())
-                    .replace(NMRConstants.TEMPLATE_VAR1, link)
-                    .finish();
-            return sendNotification(List.of(NotificationType.EMAIL.getNotificationType()), NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SET_PASSWORD_SUBJECT, message, receiver, receiver);
+        Template template = getMessageTemplate(NMRConstants.SMS_AND_EMAIL_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY);
+        String message = new TemplatedStringBuilder(template.getMessage())
+                .replace(NMRConstants.TEMPLATE_VAR1, link)
+                .finish();
+        return sendNotification(List.of(NotificationType.EMAIL.getNotificationType(),NotificationType.SMS.getNotificationType()), NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SET_PASSWORD_SUBJECT, message, mobile, email);
 
-        } else if (NotificationType.SMS.getNotificationType().equals(type)) {
-            Template template = getMessageTemplate(NMRConstants.SMS_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY);
-            String message = new TemplatedStringBuilder(template.getMessage())
-                    .replace(NMRConstants.TEMPLATE_VAR1, link)
-                    .finish();
-            return sendNotification(List.of(NotificationType.SMS.getNotificationType()), NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SET_PASSWORD_SUBJECT, message, receiver,receiver);
-        }
-        return new ResponseMessageTo(NMRConstants.NO_SUCH_TYPE);
     }
 
     @SneakyThrows

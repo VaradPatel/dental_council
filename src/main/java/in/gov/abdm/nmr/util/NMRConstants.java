@@ -40,8 +40,8 @@ public class NMRConstants {
     public static final String CHANGE_PASSWORD = "/change-password";
     public static final String RAISE_QUERY = "/health-professional/queries";
     public static final String GET_QUERIES = "health-professional/{healthProfessionalId}/queries";
-    public static final String GET_RESET_PASSWORD_LINK = "/send-reset-password-link";
-    public static final String SET_NEW_PASSWORD = "/set-new-password";
+    public static final String PASSWORD_LINK = "/password-link";
+    public static final String SET_PASSWORD = "/set-password";
     public static final String E_SIGN = "/e-signature";
 
     public static final String PATH_FACILITY_ROOT = "/facilities";
@@ -87,7 +87,8 @@ public class NMRConstants {
     public static final String CONTACT_NOT_NULL = "Contact cannot be null or empty";
     public static final String AADHAR_NOT_NULL = "AADHAR Number cannot be null or empty";
     public static final String HP_PROFILE_NOT_NULL = "HP Profile ID cannot be null or empty";
-    public static final String TYPE_NOT_NULL = "Type cannot be null or empty";
+    public static final String EMAIL_NOT_NULL = "Email cannot be null or empty";
+    public static final String MOBILE_NOT_NULL = "Mobile cannot be null or empty";
     public static final String TRANSACTION_ID_NOT_NULL = "Transaction Id cannot be null or empty";
     public static final String OTP_NOT_NULL = "OTP cannot be null or empty";
     public static final String SUCCESS_RESPONSE = "Success";
@@ -192,7 +193,7 @@ public class NMRConstants {
             GROUP BY ws.name 
             UNION 
             SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
-            WHERE w.hp_profile_id=:""" + HP_PROFILE_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """
+            WHERE wa.hp_profile_id=:""" + HP_PROFILE_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """
              \s AND wa.action_id = 4
             GROUP BY name """;
 
@@ -205,7 +206,7 @@ public class NMRConstants {
             GROUP BY ws.name 
             UNION 
             SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
-            JOIN college_dean cd ON w.user_id=cd.user_id 
+            JOIN college_dean cd ON wa.user_id=cd.user_id 
             WHERE cd.id=:""" + COLLEGE_DEAN_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """  
              \s AND wa.action_id = 4 
             GROUP BY name """;
@@ -214,12 +215,12 @@ public class NMRConstants {
             SELECT ws.name as name, COUNT(w) as count 
             FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
             JOIN college_registrar cr ON w.user_id=cr.user_id 
-            WHERE cd.id=:""" + COLLEGE_REGISTRAR_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
+            WHERE cr.id=:""" + COLLEGE_REGISTRAR_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
              \s AND w.action_id IN ( 3,5 ) ) 
             GROUP BY ws.name 
             UNION 
             SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
-            JOIN college_registrar cr ON w.user_id=cr.user_id 
+            JOIN college_registrar cr ON wa.user_id=cr.user_id 
             WHERE cr.id=:""" + COLLEGE_REGISTRAR_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """  
              \s AND wa.action_id = 4 
             GROUP BY name """;
@@ -364,8 +365,12 @@ public class NMRConstants {
             updated_at, request_id, facility_type_id, organization_type FROM work_profile where hp_profile_id =:""" + HP_PROFILE_ID;
 
     public static final int MAX_DATA_SIZE = 500;
-
     public static final String DEFAULT_SORT_ORDER  = "ASC";
-
     public static final String NO_DATA_FOUND = "No data found";
+    public static final String USER_ALREADY_EXISTS = "Username already exist";
+    public static final String SMS_AND_EMAIL_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY = "sms-email-reset";
+    public static final String TYPE_NOT_NULL = "Type cannot be null";
+    public static final String USER_REQUEST_MAPPING = "/user";
+
+    public static final String ACCESS_FORBIDDEN = "Access Forbidden.";
 }
