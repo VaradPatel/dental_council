@@ -43,7 +43,7 @@ public class ProtectedPaths {
 
     public static final String PATH_HEALTH_PROFESSIONAL_ROOT = "/health-professional";
 
-    public static final String PATH_HEALTH_PROFESSIONAL_APPLICATIONS = NMRConstants.APPLICATION_REQUEST_URL+"/{healthProfessionalId}/applications";
+    public static final String PATH_HEALTH_PROFESSIONAL_APPLICATIONS = PATH_HEALTH_PROFESSIONAL_ROOT+"/{healthProfessionalId}/applications";
 
     public static final String APPLICATION_REQUEST_URL = "/health-professional/applications";
     public static final String SUSPENSION_REQUEST_URL = APPLICATION_REQUEST_URL+"/suspend";
