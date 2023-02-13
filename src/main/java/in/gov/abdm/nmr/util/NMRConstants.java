@@ -371,4 +371,6 @@ public class NMRConstants {
     public static final String SMS_AND_EMAIL_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY = "sms-email-reset";
     public static final String TYPE_NOT_NULL = "Type cannot be null";
     public static final String USER_REQUEST_MAPPING = "/user";
+
+    public static final String ACCESS_FORBIDDEN = "Access Forbidden.";
 }
