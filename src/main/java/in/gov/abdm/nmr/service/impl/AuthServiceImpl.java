@@ -66,10 +66,11 @@ public class AuthServiceImpl implements IAuthService {
 
         if (UserTypeEnum.HEALTH_PROFESSIONAL.getCode().equals(userDetail.getUserType().getId())) {
             HpProfile hp = hpProfileService.findByUserDetail(userDetail.getId());
-            loginResponseTO.setProfileId(hp.getId());
-            loginResponseTO.setHpRegistered(StringUtils.isBlank(hp.getNmrId()));
+            if (hp != null) {
+                loginResponseTO.setProfileId(hp.getId());
+                loginResponseTO.setHpRegistered(StringUtils.isBlank(hp.getNmrId()));
+            }
             loginResponseTO.setBlacklisted(false);
-
         } else if (UserTypeEnum.COLLEGE.getCode().equals(userDetail.getUserType().getId())) {
             loginResponseTO.setUserSubType(userDetail.getUserSubType().getId());
 

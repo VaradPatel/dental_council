@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -221,6 +222,11 @@ public class ApplicationServiceImpl implements IApplicationService {
         workFlowRequestTO.setApplicationTypeId(applicationRequestTo.getApplicationTypeId());
         workFlowRequestTO.setActionId(Action.SUBMIT.getId());
         workFlowRequestTO.setActorId(Group.HEALTH_PROFESSIONAL.getId());
+        workFlowRequestTO.setApplicationTypeId(applicationRequestTo.getApplicationTypeId());
+        workFlowRequestTO.setActionId(applicationRequestTo.getActionId());
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userDetail = userDetailRepository.findByUsername(userName);
+        workFlowRequestTO.setActorId(userDetail.getGroup().getId());
         workFlowRequestTO.setHpProfileId(newHpProfile.getId());
         workFlowRequestTO.setStartDate(applicationRequestTo.getFromDate());
         workFlowRequestTO.setEndDate(applicationRequestTo.getToDate());
