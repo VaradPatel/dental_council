@@ -49,11 +49,9 @@ public class NMRConstants {
 
     public static final String PATH_COLLEGE_APPLICATIONS = "/college/applications";
     public static final String APPLICATION_REQUEST_URL = "/health-professional/applications";
-
     public static final String PATH_TRACK_APPLICATIONS_STATUS = APPLICATION_REQUEST_URL+"/applications";
 
     public static final String SUSPENSION_REQUEST_URL = APPLICATION_REQUEST_URL+"/suspend";
-
     public static final String REACTIVATE_REQUEST_URL = APPLICATION_REQUEST_URL+"/re-activate";
     public static final String HEALTH_PROFESSIONAL_ACTION = APPLICATION_REQUEST_URL +"/status";
     public static final String COLLEGES_ACTION = "college/applications/status";
