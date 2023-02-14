@@ -44,6 +44,7 @@ public class ProtectedPaths {
 
     public static final String APPLICATION_REQUEST_URL = "/health-professional/applications";
     public static final String SUSPENSION_REQUEST_URL = APPLICATION_REQUEST_URL + "/suspend";
+    public static final String REACTIVATE_REQUEST_URL = APPLICATION_REQUEST_URL + "/re-activate";
 
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<AntPathRequestMatcher> protectedPaths = new ArrayList<>();
@@ -68,6 +69,7 @@ public class ProtectedPaths {
 
         protectedPaths.add(new AntPathRequestMatcher(PATH_HEALTH_PROFESSIONAL_ROOT + PATH_HEALTH_PROFESSIONAL_APPLICATIONS));
         protectedPaths.add(new AntPathRequestMatcher(SUSPENSION_REQUEST_URL));
+        protectedPaths.add(new AntPathRequestMatcher(REACTIVATE_REQUEST_URL));
 
         return protectedPaths.toArray(AntPathRequestMatcher[]::new);
     }

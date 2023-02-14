@@ -60,7 +60,7 @@ public class ApplicationController {
      *                           POST endpoint for reactivate request of a health professional. This method invokes the IActionService#reactiveRequest(ActionRequestTo)
      *                           to perform the reactivate request and return the result of the process.
      */
-    @PostMapping(REACTIVATE_REQUEST_URL)
+    @PostMapping(ProtectedPaths.REACTIVATE_REQUEST_URL)
     public String reactivateHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
         return applicationService.reactiveRequest(applicationRequestTo);
     }
