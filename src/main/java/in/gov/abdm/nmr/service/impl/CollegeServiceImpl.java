@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -48,28 +49,35 @@ public class CollegeServiceImpl implements ICollegeService {
 
     @Override
     public CollegeProfileTo registerCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException, WorkFlowException {
-        College collegeProfileEntity = collegeService.saveCollege(collegeRegistrationRequestTo, update);
-        CollegeProfileTo collegeCreationRequestToResponse = collegeMapper.collegeCreationRequestToResponse(collegeRegistrationRequestTo);
-        collegeCreationRequestToResponse.setId(collegeProfileEntity.getId());
-        collegeCreationRequestToResponse.setUserId(collegeProfileEntity.getUser().getId());
-        if (collegeProfileEntity.getStateMedicalCouncil() != null) {
-            collegeCreationRequestToResponse.setCouncilName(collegeProfileEntity.getStateMedicalCouncil().getName());
-        }
-        if (collegeProfileEntity.getState() != null) {
-            collegeCreationRequestToResponse.setStateName(collegeProfileEntity.getState().getName());
-        }
-        if (collegeProfileEntity.getUniversity() != null) {
-            collegeCreationRequestToResponse.setUniversityName(collegeProfileEntity.getUniversity().getName());
-        }
-        collegeCreationRequestToResponse.setApproved(collegeProfileEntity.isApproved());
-        if (collegeRegistrationRequestTo.getRequestId() == null) {
-            String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.COLLEGE_REGISTRATION.getId()));
-            collegeCreationRequestToResponse.setRequestId(requestId);
-            collegeProfileEntity.setRequestId(requestId);
-            if (!collegeProfileEntity.isApproved()) {
-                workFlowService.initiateCollegeRegistrationWorkFlow(requestId, ApplicationType.COLLEGE_REGISTRATION.getId(), Group.COLLEGE_ADMIN.getId(), Action.SUBMIT.getId());
+        CollegeProfileTo collegeCreationRequestToResponse = null;
+        //parameter for  collegeRegistrationStatus() has to be finalized by the client
+        if (!collegeRegistrationStatus()) {
+            College collegeProfileEntity = collegeService.saveCollege(collegeRegistrationRequestTo, update);
+            collegeCreationRequestToResponse = collegeMapper.collegeCreationRequestToResponse(collegeRegistrationRequestTo);
+            collegeCreationRequestToResponse.setId(collegeProfileEntity.getId());
+            collegeCreationRequestToResponse.setUserId(collegeProfileEntity.getUser().getId());
+            if (collegeProfileEntity.getStateMedicalCouncil() != null) {
+                collegeCreationRequestToResponse.setCouncilName(collegeProfileEntity.getStateMedicalCouncil().getName());
             }
+            if (collegeProfileEntity.getState() != null) {
+                collegeCreationRequestToResponse.setStateName(collegeProfileEntity.getState().getName());
+            }
+            if (collegeProfileEntity.getUniversity() != null) {
+                collegeCreationRequestToResponse.setUniversityName(collegeProfileEntity.getUniversity().getName());
+            }
+            collegeCreationRequestToResponse.setApproved(collegeProfileEntity.isApproved());
+            if (!collegeProfileEntity.isApproved()) {
+                if (collegeRegistrationRequestTo.getRequestId() == null) {
+                    String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.COLLEGE_REGISTRATION.getId()));
+                    collegeCreationRequestToResponse.setRequestId(requestId);
+                    collegeProfileEntity.setRequestId(requestId);
+                    workFlowService.initiateCollegeRegistrationWorkFlow(requestId, ApplicationType.COLLEGE_REGISTRATION.getId(), Group.COLLEGE_ADMIN.getId(), Action.SUBMIT.getId());
+                }
+            }
+        } else {
+            throw new NmrException("College already exists", HttpStatus.BAD_REQUEST);
         }
+
         return collegeCreationRequestToResponse;
     }
 
@@ -178,5 +186,9 @@ public class CollegeServiceImpl implements ICollegeService {
         columnToSortMap.put("status", "  wfs.name");
         columnToSortMap.put("pendency", " pendency");
         return columnToSortMap;
+    }
+
+    private boolean collegeRegistrationStatus() {
+        return false;
     }
 }

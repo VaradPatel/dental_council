@@ -157,8 +157,8 @@ class MasterDataControllerTest {
                 new MasterDataTO(2l,"type2", "value2")
         );
         when(masterDataService.facilityType()).thenReturn(unexpectedResult);
-        List<MasterDataTO> result = masterDataController.facilityType();
-        assertNotEquals(unexpectedResult, result);
+        //List<MasterDataTO> result = masterDataController.facilityType();
+        assertEquals(unexpectedResult, masterDataController.facilityType());
         verify(masterDataService).facilityType();
     }*/
 
