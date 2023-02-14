@@ -134,6 +134,8 @@ public class NMRConstants {
 
     public static final String TOTAL_COLLEGE_REGISTRATION_REQUESTS = "Total College Registration Requests";
 
+    public static final String TOTAL_FOREIGN_HP_REGISTRATION_REQUESTS = "Total Foreign HP Registration Requests";
+
     public static final String HP_PROFILE_ID = "hpProfileId";
 
     public static final String COLLEGE_DEAN_ID="collegeDeanId";
