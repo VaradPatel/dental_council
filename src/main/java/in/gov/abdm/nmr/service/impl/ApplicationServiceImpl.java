@@ -126,7 +126,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     private IHpProfileRepository hpProfileRepository;
 
 
-    private static final Map<String, String> REACTIVATION_SORT_MAPPINGS =  Map.of("id", " hp.id", "name", " hp.full_name", "createdAt", " wf.created_at", "reactivationDate", " wf.start_date", "suspensionType", " a.name", "remarks", " wf.remarks");
+    private static final Map<String, String> REACTIVATION_SORT_MAPPINGS = Map.of("id", " hp.id", "name", " hp.full_name", "createdAt", " wf.created_at", "reactivationDate", " wf.start_date", "suspensionType", " a.name", "remarks", " wf.remarks");
 
     /**
      * This method is used to suspend a health professional based on the request provided.
@@ -207,13 +207,12 @@ public class ApplicationServiceImpl implements IApplicationService {
     }
 
 
-
     /**
      * This method is used to initiate the workflow for a suspension and reactivate request.
      *
      * @param applicationRequestTo the request containing details of the action to be taken
-     * @param requestId       the unique identifier for the request
-     * @param newHpProfile    the new health professional profile created as a result of the request
+     * @param requestId            the unique identifier for the request
+     * @param newHpProfile         the new health professional profile created as a result of the request
      * @throws WorkFlowException if there is any error while initiating the workflow
      */
     private void initiateWorkFlow(ApplicationRequestTo applicationRequestTo, String requestId, HpProfile newHpProfile) throws WorkFlowException {
@@ -305,49 +304,58 @@ public class ApplicationServiceImpl implements IApplicationService {
     /**
      * Retrieves information about the status of a health professional's requests for NMC, NBE, SMC, Dean, Registrar and Admin.
      *
-     * @param healthProfessionalApplicationRequestTo - HealthProfessionalApplicationRequestTo object representing the request
+     * @param pageNo            - Gives the current page number
+     * @param offset            - Gives the number of records to be displayed
+     * @param workFlowStatusId  - Search by work flow status Id
+     * @param applicationTypeId - Search by application type Id
+     * @param smcId             - Search by SMC Id
+     * @param registrationNo    - Search by registrationNo
+     * @param sortBy            -  According to which column the sort has to happen
+     * @param sortType          -  Sorting order ASC or DESC
      * @return the HealthProfessionalApplicationResponseTo object representing the response object
      * which contains all the details used to track the health professionals who have
      * raised a request
      */
     @Override
-    public HealthProfessionalApplicationResponseTo fetchApplicationDetails(HealthProfessionalApplicationRequestTo healthProfessionalApplicationRequestTo) {
+    public HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo) {
 
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = new HealthProfessionalApplicationRequestParamsTo();
-        applicationRequestParamsTo.setSmcId(healthProfessionalApplicationRequestTo.getSmcId());
-        applicationRequestParamsTo.setRegistrationNo(healthProfessionalApplicationRequestTo.getRegistrationNo());
-        applicationRequestParamsTo.setWorkFlowStatusId(healthProfessionalApplicationRequestTo.getWorkFlowStatusId());
-        applicationRequestParamsTo.setApplicationTypeId(healthProfessionalApplicationRequestTo.getApplicationTypeId());
-
-        String sortOrder = healthProfessionalApplicationRequestTo.getSortOrder();
-        String column = getColumnToSort(healthProfessionalApplicationRequestTo.getSortBy());
-        int size = healthProfessionalApplicationRequestTo.getSize();
-        int pageNo = healthProfessionalApplicationRequestTo.getPageNo();
-
-        final String sortingOrder = sortOrder == null ? DEFAULT_SORT_ORDER : sortOrder;
-        applicationRequestParamsTo.setSortOrder(sortingOrder);
-        final int dataLimit = MAX_DATA_SIZE < size ? MAX_DATA_SIZE : size;
-        Pageable pageable = PageRequest.of(pageNo, dataLimit);
-        applicationRequestParamsTo.setSize(size);
-        applicationRequestParamsTo.setPageNo(pageNo);
+        applicationRequestParamsTo.setSmcId(smcId);
+        applicationRequestParamsTo.setRegistrationNo(registrationNo);
+        applicationRequestParamsTo.setWorkFlowStatusId(workFlowStatusId);
+        applicationRequestParamsTo.setApplicationTypeId(applicationTypeId);
+        String column = getColumnToSort(sortBy);
+        final Integer dataLimit = MAX_DATA_SIZE < Integer.valueOf(offset) ? MAX_DATA_SIZE : Integer.valueOf(offset);
+        applicationRequestParamsTo.setSize(dataLimit);
+        applicationRequestParamsTo.setPageNo(Integer.valueOf(pageNo));
+        final String sortingOrder = sortType == null ? DEFAULT_SORT_ORDER : sortType;
         applicationRequestParamsTo.setSortBy(column);
+        applicationRequestParamsTo.setSortOrder(sortingOrder);
+        Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), dataLimit);
         return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable);
     }
 
     /**
      * Retrieves information about a health professional's application requests to track by health professional.
      *
-     * @param healthProfessionalId  the health professional id.
-     * @param healthProfessionalApplicationRequestTo - HealthProfessionalApplicationRequestTo object representing the request
+     * @param healthProfessionalId the health professional id.
+     * @param pageNo               - Gives the current page number
+     * @param offset               - Gives the number of records to be displayed
+     * @param workFlowStatusId     - Search by work flow status Id
+     * @param applicationTypeId    - Search by application type Id
+     * @param smcId                - Search by SMC Id
+     * @param registrationNo       - Search by registrationNo
+     * @param sortBy               -  According to which column the sort has to happen
+     * @param sortType             -  Sorting order ASC or DESC
      * @return the HealthProfessionalApplicationResponseTo object representing the response object
      * which contains all the details used to track the health professionals who have
      * raised a request
      */
     @Override
-    public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, HealthProfessionalApplicationRequestTo healthProfessionalApplicationRequestTo) {
+    public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo) {
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(healthProfessionalId);
-        healthProfessionalApplicationRequestTo.setRegistrationNo(hpProfile.getRegistrationId().toString());
-        return fetchApplicationDetails(healthProfessionalApplicationRequestTo);
+        registrationNo = hpProfile.getRegistrationId().toString();
+        return fetchApplicationDetails(pageNo, offset, sortBy, sortType, workFlowStatusId, applicationTypeId, smcId, registrationNo);
     }
 
     /**
@@ -358,7 +366,7 @@ public class ApplicationServiceImpl implements IApplicationService {
      */
     private String getColumnToSort(String columnToSort) {
         Map<String, String> columns;
-        if (columnToSort.length() > 0) {
+        if (columnToSort != null && columnToSort.length() > 0) {
             columns = mapColumnToTable();
             if (columns.containsKey(columnToSort)) {
                 return columns.get(columnToSort);
