@@ -29,13 +29,17 @@ public class CollegeController {
     }
 
     /**
-     * 1) Add PathVariable api
-     * PUT - /college  --> /college{id}
-     * Add ID in PathVariable from Body
+     * Updates the college with the given ID using the provided college registration request.
+     * Requires bearer authentication.
+     *
+     * @param collegeId                    the ID of the college to update
+     * @param collegeRegistrationRequestTo the college registration request containing the updated college information
+     * @return the updated college profile
+     * @throws NmrException      if there was an error with the request
+     * @throws WorkFlowException if there was an error with the workflow
      */
     @PutMapping(path = ProtectedPaths.PATH_UPDATE_COLLEGE, produces = MediaType.APPLICATION_JSON_VALUE)
     @SecurityRequirement(name = "bearerAuth")
-    //@PutMapping(path = "/college/{collegeId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeProfileTo updateCollege(@PathVariable("collegeId") BigInteger collegeId,
                                           @RequestBody CollegeRegistrationRequestTo collegeRegistrationRequestTo) throws NmrException, WorkFlowException {
         return collegeService.registerCollege(collegeId, collegeRegistrationRequestTo, true);
@@ -47,7 +51,15 @@ public class CollegeController {
         return collegeService.registerRegistrar(collegeId, collegeRegistrarCreationRequestTo);
     }
 
-    //PUT - updateRegisterRegistrar. --> done
+    /**
+     * Updates the registrar profile for a specific college.
+     *
+     * @param collegeId                         the ID of the college to update the registrar profile for
+     * @param registrarId                       the ID of the registrar to update the profile for
+     * @param collegeRegistrarCreationRequestTo the registrar profile creation request
+     * @return the updated college registrar profile
+     * @throws NmrException if an error occurs while updating the registrar profile
+     */
     @PutMapping(path = "/college/{collegeId}/registrar1/{registrarId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeRegistrarProfileTo updateRegisterRegistrar(@PathVariable("collegeId") BigInteger collegeId,
                                                              @PathVariable("registrarId") BigInteger registrarId,
@@ -61,7 +73,15 @@ public class CollegeController {
         return collegeService.registerDean(collegeId, collegeDeanCreationRequestTo);
     }
 
-    //updateRegisterDean -done
+    /**
+     * Updates and registers a dean for a college.
+     *
+     * @param collegeId                    the ID of the college to update the dean for.
+     * @param deanId                       the ID of the dean to update.
+     * @param collegeDeanCreationRequestTo the request body containing the new dean's information.
+     * @return a {@link CollegeDeanProfileTo} representing the updated dean profile.
+     * @throws NmrException if the college or dean IDs are invalid, or if there is an error registering the dean.
+     */
     @PutMapping(path = "/college/{collegeId}/dean1/{deanId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeDeanProfileTo updateRegisterDean(@PathVariable("collegeId") BigInteger collegeId,
                                                    @PathVariable("deanId") BigInteger deanId,
@@ -76,8 +96,6 @@ public class CollegeController {
     public CollegeProfileTo retrieveCollegeProfile(@PathVariable(name = "collegeId") BigInteger collegeId) throws NmrException {
         return collegeService.retrieveCollegeProfile(collegeId);
     }
-
-     //Add new param in api and query  --> Done
 
     /**
      * Retrieves the profile of a college registrar with the given ID for the specified college ID.
@@ -97,8 +115,6 @@ public class CollegeController {
                                                               @PathVariable(name = "collegeId") BigInteger collegeId) throws NmrException {
         return collegeService.retrieveRegistrarProfile(registrarId, collegeId);
     }
-
-    //Add new param in api and query  --> Done
 
     /**
      * Retrieves the College Dean's profile based on the collegeId and deanId

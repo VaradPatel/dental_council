@@ -48,7 +48,7 @@ public class CollegeServiceImpl implements ICollegeService {
     private IRequestCounterService requestCounterService;
 
     @Override
-    public CollegeProfileTo registerCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException, WorkFlowException {
+    public CollegeProfileTo registerCollege(BigInteger collegeId,CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException, WorkFlowException {
         CollegeProfileTo collegeCreationRequestToResponse = null;
         if (collegeId != null) {
             collegeRegistrationRequestTo.setId(collegeId);
@@ -77,9 +77,12 @@ public class CollegeServiceImpl implements ICollegeService {
                     workFlowService.initiateCollegeRegistrationWorkFlow(requestId, ApplicationType.COLLEGE_REGISTRATION.getId(), Group.COLLEGE_ADMIN.getId(), Action.SUBMIT.getId());
                 }
 
-        } else {
-            throw new NmrException("College already exists", HttpStatus.BAD_REQUEST);
-
+            } else {
+                throw new NmrException("College already exists", HttpStatus.BAD_REQUEST);
+            }
+        }
+        return collegeCreationRequestToResponse;
+    }
 
     @Override
     public CollegeRegistrarProfileTo registerRegistrar(BigInteger collegeId, CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException {
