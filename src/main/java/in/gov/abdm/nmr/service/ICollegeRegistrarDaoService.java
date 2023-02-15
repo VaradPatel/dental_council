@@ -9,8 +9,9 @@ import in.gov.abdm.nmr.exception.NmrException;
 public interface ICollegeRegistrarDaoService {
 
     CollegeRegistrar saveCollegeRegistrar(BigInteger collegeId, CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException;
-    
-    CollegeRegistrar findCollegeRegistrarById(BigInteger id) throws NmrException;
+    CollegeRegistrar updateRegisterRegistrar(BigInteger collegeId,BigInteger registrarId, CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException;
+
+    CollegeRegistrar findCollegeRegistrarById(BigInteger registrarId, BigInteger collegeId) throws NmrException;
 
     CollegeRegistrar findByUserDetail(BigInteger userDetailId);
 }

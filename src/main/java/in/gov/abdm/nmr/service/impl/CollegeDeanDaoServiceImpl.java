@@ -61,7 +61,8 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
     public CollegeDean saveCollegeDean(BigInteger collegeId, CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
         User collegeDeanUserDetail = null;
         CollegeDean collegeDeanEntityOld = null;
-        if (collegeDeanCreationRequestTo.getId() != null || collegeDeanCreationRequestTo.getUserId() != null) {
+
+       if (collegeDeanCreationRequestTo.getId() != null || collegeDeanCreationRequestTo.getUserId() != null) {
             accessControlService.validateUser(collegeDeanCreationRequestTo.getUserId());
             collegeDeanUserDetail = userDetailService.findById(collegeDeanCreationRequestTo.getUserId());
 
@@ -115,8 +116,46 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
         return collegeDeanRepository.saveAndFlush(collegeDeanEntity);
     }
 
-    public CollegeDean findCollegeDeanById(BigInteger id) throws NmrException {
-        CollegeDean collegeDeanEntity = collegeDeanRepository.findById(id).orElse(null);
+
+    @Override
+    public CollegeDean updateCollegeDean(BigInteger collegeId, BigInteger deanId, CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
+        User collegeDeanUserDetail;
+        CollegeDean collegeDeanEntityOld;
+        if (deanId != null || collegeDeanCreationRequestTo.getUserId() != null) {
+            collegeDeanCreationRequestTo.setId(deanId);
+            //accessControlService.validateUser(collegeDeanCreationRequestTo.getUserId());
+            collegeDeanUserDetail = userDetailService.findById(collegeDeanCreationRequestTo.getUserId());
+
+            if (!collegeDeanUserDetail.getUsername().equals(collegeDeanCreationRequestTo.getEmailId()) && userDetailService.findByUsername(collegeDeanCreationRequestTo.getEmailId()) != null) {
+                throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
+            }
+
+            collegeDeanEntityOld = findByUserDetail(collegeDeanUserDetail.getId());
+            if (!collegeDeanEntityOld.getId().equals(deanId)) {
+                throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
+            }
+
+            collegeDeanUserDetail.setUsername(collegeDeanCreationRequestTo.getEmailId());
+            if (collegeDeanCreationRequestTo.getPassword() != null) {
+                collegeDeanUserDetail.setPassword(bCryptPasswordEncoder.encode(collegeDeanCreationRequestTo.getPassword()));
+            }
+            userDetailService.saveUserDetail(collegeDeanUserDetail);
+
+            CollegeDean collegeDeanEntity = collegeDeanMapper.collegeDeanDtoToEntity(collegeDeanCreationRequestTo);
+            collegeDeanEntity.setUser(collegeDeanUserDetail);
+            collegeDeanEntity.setCreatedAt(collegeDeanEntityOld.getCreatedAt());
+            collegeDeanEntity.setCollege(collegeDeanEntityOld.getCollege());
+            return collegeDeanRepository.saveAndFlush(collegeDeanEntity);
+
+        } else if (userDetailService.findByUsername(collegeDeanCreationRequestTo.getEmailId()) != null) {
+            throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
+        }
+        return null;
+    }
+
+
+    public CollegeDean findCollegeDeanById(BigInteger collegeId, BigInteger deanId) throws NmrException {
+        CollegeDean collegeDeanEntity = collegeDeanRepository.findCollegeDeanById(collegeId, deanId);
         if (collegeDeanEntity == null) {
             throw new NmrException("Invalid college id", HttpStatus.BAD_REQUEST);
         }

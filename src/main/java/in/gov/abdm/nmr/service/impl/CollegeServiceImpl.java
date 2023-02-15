@@ -47,7 +47,10 @@ public class CollegeServiceImpl implements ICollegeService {
     private IRequestCounterService requestCounterService;
 
     @Override
-    public CollegeProfileTo registerCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException, WorkFlowException {
+    public CollegeProfileTo registerCollege(BigInteger collegeId, CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException, WorkFlowException {
+        if (collegeId != null) {
+            collegeRegistrationRequestTo.setId(collegeId);
+        }
         College collegeProfileEntity = collegeService.saveCollege(collegeRegistrationRequestTo, update);
         CollegeProfileTo collegeCreationRequestToResponse = collegeMapper.collegeCreationRequestToResponse(collegeRegistrationRequestTo);
         collegeCreationRequestToResponse.setId(collegeProfileEntity.getId());
@@ -83,8 +86,26 @@ public class CollegeServiceImpl implements ICollegeService {
     }
 
     @Override
+    public CollegeRegistrarProfileTo updateRegisterRegistrar(BigInteger collegeId, BigInteger registrarId, CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException {
+        CollegeRegistrar collegeRegistrarEntity = collegeRegistrarDaoService.updateRegisterRegistrar(collegeId, registrarId, collegeRegistrarCreationRequestTo);
+        CollegeRegistrarProfileTo collegeRegistrarProfileTo = collegeMapper.collegeRegistrarRequestToResponse(collegeRegistrarCreationRequestTo);
+        collegeRegistrarProfileTo.setId(collegeRegistrarEntity.getId());
+        collegeRegistrarProfileTo.setUserId(collegeRegistrarEntity.getUser().getId());
+        return collegeRegistrarProfileTo;
+    }
+
+    @Override
     public CollegeDeanProfileTo registerDean(BigInteger collegeId, CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
         CollegeDean collegeDeanEntity = collegeDeanDaoService.saveCollegeDean(collegeId, collegeDeanCreationRequestTo);
+        CollegeDeanProfileTo collegeDeanProfileTO = collegeMapper.collegeDeanRequestToResponse(collegeDeanCreationRequestTo);
+        collegeDeanProfileTO.setId(collegeDeanEntity.getId());
+        collegeDeanProfileTO.setUserId(collegeDeanEntity.getUser().getId());
+        return collegeDeanProfileTO;
+    }
+
+    @Override
+    public CollegeDeanProfileTo updateRegisterDean(BigInteger collegeId, BigInteger deanId, CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
+        CollegeDean collegeDeanEntity = collegeDeanDaoService.updateCollegeDean(collegeId,deanId, collegeDeanCreationRequestTo);
         CollegeDeanProfileTo collegeDeanProfileTO = collegeMapper.collegeDeanRequestToResponse(collegeDeanCreationRequestTo);
         collegeDeanProfileTO.setId(collegeDeanEntity.getId());
         collegeDeanProfileTO.setUserId(collegeDeanEntity.getUser().getId());
@@ -103,16 +124,16 @@ public class CollegeServiceImpl implements ICollegeService {
     }
 
     @Override
-    public CollegeRegistrarProfileTo retrieveRegistrarProfile(BigInteger registrarId) throws NmrException {
-        CollegeRegistrar collegeRegistrarEntity = collegeRegistrarDaoService.findCollegeRegistrarById(registrarId);
+    public CollegeRegistrarProfileTo retrieveRegistrarProfile(BigInteger registrarId, BigInteger collegeId) throws NmrException {
+        CollegeRegistrar collegeRegistrarEntity = collegeRegistrarDaoService.findCollegeRegistrarById(registrarId, collegeId);
         CollegeRegistrarProfileTo collegeRegistrarProfileTo = collegeMapper.collegeRegistrarEntityToCollegeRegistrarProfile(collegeRegistrarEntity);
         collegeRegistrarProfileTo.setUserId(collegeRegistrarEntity.getUser().getId());
         return collegeRegistrarProfileTo;
     }
 
     @Override
-    public CollegeDeanProfileTo retrieveDeanProfile(BigInteger id) throws NmrException {
-        CollegeDean collegeDeanEntity = collegeDeanDaoService.findCollegeDeanById(id);
+    public CollegeDeanProfileTo retrieveDeanProfile(BigInteger collegeId, BigInteger deanId) throws NmrException {
+        CollegeDean collegeDeanEntity = collegeDeanDaoService.findCollegeDeanById(collegeId, deanId);
         CollegeDeanProfileTo collegeDeanProfileTO = collegeMapper.collegeDeanEntityToCollegeDeanProfile(collegeDeanEntity);
         collegeDeanProfileTO.setUserId(collegeDeanEntity.getUser().getId());
         return collegeDeanProfileTO;

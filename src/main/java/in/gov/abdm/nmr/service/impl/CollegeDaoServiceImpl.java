@@ -77,7 +77,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
             collegeEntity.setApproved(collegeRegistrationRequestTo.isApproved());
             return collegeRepository.saveAndFlush(collegeEntity);
         } else {
-            accessControlService.validateUser(collegeRegistrationRequestTo.getUserId());
+           // accessControlService.validateUser(collegeRegistrationRequestTo.getUserId());
             College collegeEntity = collegeRepository.findByUserDetail(collegeRegistrationRequestTo.getUserId());
             if (collegeEntity == null) {
                 throw new NmrException("Invalid college", HttpStatus.BAD_REQUEST);

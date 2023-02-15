@@ -62,7 +62,7 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
     public CollegeRegistrar saveCollegeRegistrar(BigInteger collegeId, CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException {
         User collegeRegistrarUserDetail = null;
         CollegeRegistrar collegeRegistrarEntityOld = null;
-        if (collegeRegistrarCreationRequestTo.getId() != null || collegeRegistrarCreationRequestTo.getUserId() != null) {
+        /*if (collegeRegistrarCreationRequestTo.getId() != null || collegeRegistrarCreationRequestTo.getUserId() != null) {
             accessControlService.validateUser(collegeRegistrarCreationRequestTo.getUserId());
             collegeRegistrarUserDetail = userDetailService.findById(collegeRegistrarCreationRequestTo.getUserId());
 
@@ -90,7 +90,7 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
         } else if (userDetailService.findByUsername(collegeRegistrarCreationRequestTo.getEmailId()) != null) {
             throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
         }
-
+*/
         User userDetail = new User(collegeRegistrarCreationRequestTo.getUserId(), collegeRegistrarCreationRequestTo.getEmailId(), //
                 bCryptPasswordEncoder.encode(collegeRegistrarCreationRequestTo.getPassword()), null, true, true, //
                 entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_REGISTRAR.getCode()) , entityManager.getReference(UserGroup.class, in.gov.abdm.nmr.enums.Group.COLLEGE_REGISTRAR.getId()), true, 0, null);
@@ -115,9 +115,46 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
         return collegeRegistrarRepository.saveAndFlush(collegeRegistrarEntity);
     }
 
+
     @Override
-    public CollegeRegistrar findCollegeRegistrarById(BigInteger id) throws NmrException {
-        CollegeRegistrar collegeRegistrarEntity = collegeRegistrarRepository.findById(id).orElse(null);
+    public CollegeRegistrar updateRegisterRegistrar(BigInteger collegeId, BigInteger registrarId, CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException {
+        User collegeRegistrarUserDetail;
+        CollegeRegistrar collegeRegistrarEntityOld;
+        if (registrarId != null || collegeRegistrarCreationRequestTo.getUserId() != null) {
+            collegeRegistrarCreationRequestTo.setId(registrarId);
+            //accessControlService.validateUser(collegeRegistrarCreationRequestTo.getUserId());
+            collegeRegistrarUserDetail = userDetailService.findById(collegeRegistrarCreationRequestTo.getUserId());
+
+            if (!collegeRegistrarUserDetail.getUsername().equals(collegeRegistrarCreationRequestTo.getEmailId()) && userDetailService.findByUsername(collegeRegistrarCreationRequestTo.getEmailId()) != null) {
+                throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
+            }
+
+            collegeRegistrarEntityOld = findByUserDetail(collegeRegistrarUserDetail.getId());
+            if (!collegeRegistrarEntityOld.getId().equals(registrarId)) {
+                throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
+            }
+
+            collegeRegistrarUserDetail.setUsername(collegeRegistrarCreationRequestTo.getEmailId());
+            if (collegeRegistrarCreationRequestTo.getPassword() != null) {
+                collegeRegistrarUserDetail.setPassword(bCryptPasswordEncoder.encode(collegeRegistrarCreationRequestTo.getPassword()));
+            }
+            userDetailService.saveUserDetail(collegeRegistrarUserDetail);
+
+            CollegeRegistrar collegeRegistrarEntity = collegeRegistrarMapper.collegeRegistrarDtoToEntity(collegeRegistrarCreationRequestTo);
+            collegeRegistrarEntity.setUser(collegeRegistrarUserDetail);
+            collegeRegistrarEntity.setCreatedAt(collegeRegistrarEntityOld.getCreatedAt());
+            collegeRegistrarEntity.setCollege(collegeRegistrarEntityOld.getCollege());
+            return collegeRegistrarRepository.saveAndFlush(collegeRegistrarEntity);
+
+        } else if (userDetailService.findByUsername(collegeRegistrarCreationRequestTo.getEmailId()) != null) {
+            throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
+        }
+        return null;
+    }
+
+    @Override
+    public CollegeRegistrar findCollegeRegistrarById(BigInteger registrarId, BigInteger collegeId) throws NmrException {
+        CollegeRegistrar collegeRegistrarEntity = collegeRegistrarRepository.getCollegeRegistrarByIds(registrarId, collegeId);
         if (collegeRegistrarEntity == null) {
             throw new NmrException("Invalid college id", HttpStatus.BAD_REQUEST);
         }
