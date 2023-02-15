@@ -106,7 +106,7 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
         }
         
         College loggedIncollege = collegeRepository.findByUserDetail(loggedInUser.getId());
-        College inputCollege = collegeRepository.findByUserDetail(collegeId);
+        College inputCollege = collegeRepository.findById(collegeId).orElse(new College());
         if(!loggedIncollege.getId().equals(inputCollege.getId())) {
             throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
         }
