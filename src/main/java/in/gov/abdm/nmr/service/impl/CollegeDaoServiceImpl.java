@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.service.impl;
 import in.gov.abdm.nmr.dto.CollegeRegistrationRequestParamsTO;
 import in.gov.abdm.nmr.dto.CollegeRegistrationRequestTo;
 import in.gov.abdm.nmr.dto.CollegeRegistrationResponseTO;
+import in.gov.abdm.nmr.dto.GetSetPasswordLinkTo;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
@@ -41,6 +42,8 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
 
     @Autowired
     private ICollegeRepositoryCustom collegeRepositoryCustom;
+    @Autowired
+    private PasswordServiceImpl passwordReset;
 
     public CollegeDaoServiceImpl(ICollegeRepository collegeRepository, ICollegeDtoMapper collegeDtoMapper, EntityManager entityManager, IUserDaoService userDetailService, //
                                  IAccessControlService accessControlService) {
@@ -75,7 +78,15 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
             collegeEntity.setStateMedicalCouncil(entityManager.getReference(StateMedicalCouncil.class, collegeRegistrationRequestTo.getCouncilId()));
             collegeEntity.setUniversity(entityManager.getReference(University.class, collegeRegistrationRequestTo.getUniversityId()));
             collegeEntity.setApproved(collegeRegistrationRequestTo.isApproved());
-            return collegeRepository.saveAndFlush(collegeEntity);
+            College college = collegeRepository.saveAndFlush(collegeEntity);
+
+            GetSetPasswordLinkTo setPasswordLinkTo = new GetSetPasswordLinkTo();
+            setPasswordLinkTo.setUsername(String.valueOf(college.getId()));
+            setPasswordLinkTo.setEmail(college.getEmailId());
+            setPasswordLinkTo.setMobile(college.getPhoneNumber());
+            passwordReset.passwordReset(setPasswordLinkTo);
+
+            return college;
         } else {
            // accessControlService.validateUser(collegeRegistrationRequestTo.getUserId());
             College collegeEntity = collegeRepository.findByUserDetail(collegeRegistrationRequestTo.getUserId());
