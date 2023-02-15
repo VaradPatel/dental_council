@@ -53,7 +53,7 @@ public class CollegeServiceImpl implements ICollegeService {
         if (collegeId != null) {
             collegeRegistrationRequestTo.setId(collegeId);
         }
-        //parameter for  collegeRegistrationStatus() has to be finalized by the client
+        //parameter for  collegeRegistrationStatus() has to be finalized by the client.
         if (!collegeRegistrationStatus()) {
             College collegeProfileEntity = collegeService.saveCollege(collegeRegistrationRequestTo, update);
             collegeCreationRequestToResponse = collegeMapper.collegeCreationRequestToResponse(collegeRegistrationRequestTo);
@@ -69,18 +69,16 @@ public class CollegeServiceImpl implements ICollegeService {
                 collegeCreationRequestToResponse.setUniversityName(collegeProfileEntity.getUniversity().getName());
             }
             collegeCreationRequestToResponse.setApproved(collegeProfileEntity.isApproved());
-            if (!collegeProfileEntity.isApproved()) {
-                if (collegeRegistrationRequestTo.getRequestId() == null) {
-                    String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.COLLEGE_REGISTRATION.getId()));
-                    collegeCreationRequestToResponse.setRequestId(requestId);
-                    collegeProfileEntity.setRequestId(requestId);
-                    workFlowService.initiateCollegeRegistrationWorkFlow(requestId, ApplicationType.COLLEGE_REGISTRATION.getId(), Group.COLLEGE_ADMIN.getId(), Action.SUBMIT.getId());
-                }
-
-            } else {
-                throw new NmrException("College already exists", HttpStatus.BAD_REQUEST);
+            if ((!collegeProfileEntity.isApproved()) && (collegeRegistrationRequestTo.getRequestId() == null)) {
+                String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.COLLEGE_REGISTRATION.getId()));
+                collegeCreationRequestToResponse.setRequestId(requestId);
+                collegeProfileEntity.setRequestId(requestId);
+                workFlowService.initiateCollegeRegistrationWorkFlow(requestId, ApplicationType.COLLEGE_REGISTRATION.getId(), Group.COLLEGE_ADMIN.getId(), Action.SUBMIT.getId());
             }
+        } else {
+            throw new NmrException("College already exists", HttpStatus.BAD_REQUEST);
         }
+
         return collegeCreationRequestToResponse;
     }
 

@@ -58,43 +58,41 @@ public class PasswordServiceImpl implements IPasswordService {
      */
     @Override
     public ResponseMessageTo getResetPasswordLink(GetSetPasswordLinkTo setPasswordLinkTo) {
-
-        String token = RandomString.make(30);
-
         try {
-
             if (!userRepository.existsByUsername(setPasswordLinkTo.getUsername())) {
                 User userDetail = new User(null, setPasswordLinkTo.getUsername(), null, null, true, true, //
                         entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null);
                 userDaoService.saveUserDetail(userDetail);
 
-
                 passwordResetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
+
                 if (userRepository.existsByUsername(setPasswordLinkTo.getUsername())) {
-
-                    PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByUserName(setPasswordLinkTo.getUsername());
-
-                    if (passwordResetToken != null) {
-                        passwordResetToken.setToken(token);
-                    } else {
-                        passwordResetToken = new PasswordResetToken(token, setPasswordLinkTo.getUsername());
-                    }
-                    passwordResetTokenRepository.save(passwordResetToken);
-
-                    String resetPasswordLink = resetPasswordUrl + "/" + token;
-
-                    return notificationService.sendNotificationForResetPasswordLink(setPasswordLinkTo.getEmail(), setPasswordLinkTo.getMobile(), resetPasswordLink);
-
+                    return passwordReset(setPasswordLinkTo);
                 } else {
                     return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
                 }
-            }
-            else {
+            } else {
                 return new ResponseMessageTo(NMRConstants.USER_ALREADY_EXISTS);
             }
         } catch (Exception e) {
             return new ResponseMessageTo(e.getLocalizedMessage());
         }
+    }
+
+    public ResponseMessageTo passwordReset(GetSetPasswordLinkTo setPasswordLinkTo) {
+        String token = RandomString.make(30);
+        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByUserName(setPasswordLinkTo.getUsername());
+
+        if (passwordResetToken != null) {
+            passwordResetToken.setToken(token);
+        } else {
+            passwordResetToken = new PasswordResetToken(token, setPasswordLinkTo.getUsername());
+        }
+        passwordResetTokenRepository.save(passwordResetToken);
+
+        String resetPasswordLink = resetPasswordUrl + "/" + token;
+
+        return notificationService.sendNotificationForResetPasswordLink(setPasswordLinkTo.getEmail(), setPasswordLinkTo.getMobile(), resetPasswordLink);
     }
 
     /**
@@ -111,7 +109,7 @@ public class PasswordServiceImpl implements IPasswordService {
 
             User user = userDaoService.findByUsername(passwordResetToken.getUserName());
 
-            if(null==user){
+            if (null == user) {
                 return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
             }
             if (passwordResetToken.getExpiryDate().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0) {
@@ -129,6 +127,7 @@ public class PasswordServiceImpl implements IPasswordService {
             return new ResponseMessageTo(e.getLocalizedMessage());
         }
     }
+
     /**
      * Changes password related to username
      *
@@ -156,6 +155,7 @@ public class PasswordServiceImpl implements IPasswordService {
 
     /**
      * After confirming old password, new password is created
+     *
      * @param changePasswordRequestTo coming from controller
      * @return Success or failure message
      */
