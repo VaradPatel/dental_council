@@ -58,5 +58,11 @@ public class FetchCountOnCardResponseTO {
      */
     private List<StatusWiseCountTO> collegeRegistrationRequests;
 
+    /**
+     * This holds the list of count of New Foreign applications
+     * according to their status at that point in time
+     */
+    private List<StatusWiseCountTO> foreignHpRegistrationRequests;
+
 
 }
