@@ -7,17 +7,19 @@ import in.gov.abdm.nmr.exception.WorkFlowException;
 import java.math.BigInteger;
 
 public interface ICollegeService {
-    CollegeProfileTo registerCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException, WorkFlowException;
+    CollegeProfileTo registerCollege(BigInteger collegeId, CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException, WorkFlowException;
 
     CollegeRegistrarProfileTo registerRegistrar(BigInteger collegeId, CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException;
+    CollegeRegistrarProfileTo updateRegisterRegistrar(BigInteger collegeId,BigInteger registrarId, CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException;
 
     CollegeDeanProfileTo registerDean(BigInteger collegeId, CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException;
+    CollegeDeanProfileTo updateRegisterDean(BigInteger collegeId, BigInteger deanId, CollegeDeanCreationRequestTo collegeDeanCreationRequestTo)throws NmrException;
 
     CollegeProfileTo retrieveCollegeProfile(BigInteger collegeId) throws NmrException;
 
-    CollegeRegistrarProfileTo retrieveRegistrarProfile(BigInteger registrarId) throws NmrException;
+    CollegeRegistrarProfileTo retrieveRegistrarProfile(BigInteger registrarId,BigInteger collegeId) throws NmrException;
 
-    CollegeDeanProfileTo retrieveDeanProfile(BigInteger id) throws NmrException;
+    CollegeDeanProfileTo retrieveDeanProfile(BigInteger collegeId, BigInteger deanId) throws NmrException;
 
     /**
      * Service for fetching the College registration records
@@ -33,4 +35,5 @@ public interface ICollegeService {
      * for approval
      */
     CollegeRegistrationResponseTO getCollegeRegistrationDetails(String pageNo, String offset, String search, String collegeId, String collegeName, String councilName, String sortBy, String sortType);
+
 }

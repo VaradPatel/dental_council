@@ -45,7 +45,7 @@ class CollegeControllerTest {
     public void testRegisterCollege() throws Exception {
         CollegeRegistrationRequestTo collegeRegistrationRequestTo = new CollegeRegistrationRequestTo();
         CollegeProfileTo expected = new CollegeProfileTo();
-        when(collegeService.registerCollege(collegeRegistrationRequestTo, false)).thenReturn(expected);
+        when(collegeService.registerCollege(BigInteger.ONE, collegeRegistrationRequestTo, false)).thenReturn(expected);
         CollegeProfileTo result = collegeController.registerCollege(collegeRegistrationRequestTo);
         assertEquals(expected, result);
     }
