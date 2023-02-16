@@ -37,6 +37,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
     /**
      * Represents a functional interface to generates a dynamic WHERE clause based on the HealthProfessionalApplicationRequestParamsTo
      * object passed as a parameter.
+     *
      * @param healthProfessionalApplicationRequestParamsTo - object that contains the criteria for the query.
      * @return a string query with appended WHERE clause for the query.
      */
@@ -59,11 +60,13 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
 
     /**
      * Represents a functional interface to sort the results based on the parameters specified in HealthProfessionalApplicationRequestParamsTo.
+     *
      * @param healthProfessionalApplicationRequestParamsTo - which holds the parameters.
      * @return A query string with appended sort order in the format "ORDER BY column_name sort_order"
      */
     private static final Function<HealthProfessionalApplicationRequestParamsTo, String> SORT_RECORDS = healthProfessionalApplicationRequestParamsTo -> {
         StringBuilder sb = new StringBuilder();
+        sb.append("  ");
         sb.append("ORDER BY  ");
         sb.append(healthProfessionalApplicationRequestParamsTo.getSortBy());
         sb.append("  ");
@@ -74,6 +77,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
     /**
      * Represents a functional interface to generates a dynamic WHERE clause based on the HealthProfessionalApplicationRequestParamsTo
      * object passed as a parameter.
+     *
      * @param healthProfessionalApplicationRequestParamsTo - an object that contains parameters for the function
      * @return a string query to get the status of the Health Professional's application requests.
      */
@@ -171,6 +175,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
 
     /**
      * This method is used to retrieve the count of health professional application records based on the provided parameters.
+     *
      * @param healthProfessionalApplicationRequestParamsTo - the parameters used to retrieve the health professional application records count
      * @return totalRecords the count of health professional application requests
      */
@@ -189,6 +194,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
     /**
      * Represents a functional interface to generates a dynamic WHERE clause based on the HealthProfessionalApplicationRequestParamsTo
      * object passed as a parameter.
+     *
      * @param healthProfessionalApplicationRequestParamsTo - an object that contains parameters for the function
      * @return a query to get the count of the Health Professional's application requests.
      */
@@ -282,6 +288,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
 
     /**
      * Retrieves the details of health professional applications requests based on the provided parameters.
+     *
      * @param healthProfessionalApplicationRequestParamsTo - object containing the filter criteria for fetching application details
      * @param pagination                                   - object for pagination
      * @return the HealthProfessionalApplicationResponseTo object representing the response object

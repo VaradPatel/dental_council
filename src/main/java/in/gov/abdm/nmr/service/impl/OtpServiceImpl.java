@@ -1,4 +1,5 @@
 package in.gov.abdm.nmr.service.impl;
+
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.Otp;
 import in.gov.abdm.nmr.exception.OtpException;
@@ -8,9 +9,11 @@ import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.service.IOtpService;
 import in.gov.abdm.nmr.util.NMRConstants;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
@@ -20,6 +23,7 @@ import java.time.LocalDateTime;
  * Implementation of methods to generate and validate OTP
  */
 @Service
+@Slf4j
 public class OtpServiceImpl implements IOtpService {
 
     @Autowired
@@ -67,8 +71,10 @@ public class OtpServiceImpl implements IOtpService {
      */
     @Override
     public OtpValidateResponseTo validateOtp(OtpValidateRequestTo otpValidateRequestTo) throws OtpException, GeneralSecurityException {
+        String decryptedOtp = rsaUtil.decrypt(otpValidateRequestTo.getOtp());
+        log.info(decryptedOtp);
         Otp otpDetails = otpRepository.findOneByExpiredIsFalseAndContactIsAndOtpHashIs(otpValidateRequestTo.getContact(),
-                DigestUtils.sha256Hex(rsaUtil.decrypt(otpValidateRequestTo.getOtp())));
+                DigestUtils.sha256Hex(decryptedOtp));
         if (otpDetails != null) {
             if (otpDetails.getExpiresAt().before(Timestamp.valueOf(LocalDateTime.now()))) {
                 otpDetails.setExpired(true);

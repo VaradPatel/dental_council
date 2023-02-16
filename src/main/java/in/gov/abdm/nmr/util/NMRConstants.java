@@ -1,10 +1,10 @@
 package in.gov.abdm.nmr.util;
 
 
+import lombok.experimental.UtilityClass;
+
 import static in.gov.abdm.nmr.enums.ApplicationType.COLLEGE_REGISTRATION;
 import static in.gov.abdm.nmr.enums.ApplicationType.HP_ACTIVATE_LICENSE;
-
-import lombok.experimental.UtilityClass;
 
 /**
  * This class holds all the constants associated with NMR application
@@ -336,13 +336,12 @@ public class NMRConstants {
     public static final String INDIA = "India";
     public static final String INTERNATIONAL = "International";
     public static final String FETCH_REACTIVATION_RECORDS = """
-            SELECT hp.id AS Profile_Id ,hp.full_name AS Display_Name, wf.created_at AS Date_of_Submission,
-            wf.start_date AS Reactivation_date,
+            SELECT hp.id ,hp.registration_id ,hp.full_name , wf.created_at, wf.start_date,
             (
             SELECT b.name FROM main.application_type b WHERE b.id = (SELECT wol.application_type_id FROM main.work_flow wol
             WHERE wol.hp_profile_id = (
             SELECT hpPr.id FROM main.hp_profile hpPr where hpPr.registration_id = hp.registration_id ORDER BY id DESC LIMIT 1 OFFSET 1)
-            )) AS Type_Of_Suspension,wf.remarks
+            )) ,wf.remarks
             FROM main.work_flow wf  INNER JOIN main.hp_profile hp ON wf.hp_profile_id=hp.id
             JOIN main.application_type a ON wf.application_type_id=a.id WHERE wf.application_type_id="""
             + HP_ACTIVATE_LICENSE.getId();
