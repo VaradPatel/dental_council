@@ -11,9 +11,10 @@ import java.util.Date;
 @Data
 public class ReactivateHealthProfessionalTO {
     private BigInteger healthProfessionalId;
+    private String registrationId;
     private String healthProfessionalName;
     private Date submittedDate;
     private Date reactivation;
-    private String suspensionType;
+    private String typeOfSuspension;
     private String remarks;
 }

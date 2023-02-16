@@ -318,7 +318,6 @@ public class ApplicationServiceImpl implements IApplicationService {
      */
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo) {
-
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = new HealthProfessionalApplicationRequestParamsTo();
         applicationRequestParamsTo.setSmcId(smcId);
         applicationRequestParamsTo.setRegistrationNo(registrationNo);
@@ -354,7 +353,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo) {
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(healthProfessionalId);
-        registrationNo = hpProfile.getRegistrationId().toString();
+        registrationNo = String.valueOf(hpProfile.getRegistrationId());
         return fetchApplicationDetails(pageNo, offset, sortBy, sortType, workFlowStatusId, applicationTypeId, smcId, registrationNo);
     }
 

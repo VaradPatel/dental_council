@@ -44,6 +44,7 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
     };
     private static final Function<ReactivateHealthProfessionalRequestParam, String> SORT_RECORDS = reactivateHealthProfessionalQueryParam -> {
         StringBuilder sb = new StringBuilder();
+        sb.append("  ");
         sb.append("ORDER BY  ");
         sb.append(reactivateHealthProfessionalQueryParam.getSortBy());
         sb.append("  ");
@@ -103,18 +104,19 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
         List<ReactivateHealthProfessionalTO> reactivateHealthProfessionalTOList = new ArrayList<>();
         Query query = entityManager.createNativeQuery(REACTIVATE_HEALTH_PROFESSIONAL.apply(reactivateHealthProfessionalQueryParam));
 
-       query.setFirstResult((pageable.getPageNumber() - 1) * pageable.getPageSize());
-       query.setMaxResults(pageable.getPageSize());
+        query.setFirstResult((pageable.getPageNumber() - 1) * pageable.getPageSize());
+        query.setMaxResults(pageable.getPageSize());
 
         List<Object[]> results = query.getResultList();
         results.forEach(result -> {
             ReactivateHealthProfessionalTO reactivateHealthProfessionalTO = new ReactivateHealthProfessionalTO();
             reactivateHealthProfessionalTO.setHealthProfessionalId((BigInteger) result[0]);
-            reactivateHealthProfessionalTO.setHealthProfessionalName((String) result[1]);
-            reactivateHealthProfessionalTO.setSubmittedDate((Date) result[2]);
-            reactivateHealthProfessionalTO.setReactivation((Date) result[3]);
-            reactivateHealthProfessionalTO.setSuspensionType((String) result[4]);
-            reactivateHealthProfessionalTO.setRemarks((String) result[5]);
+            reactivateHealthProfessionalTO.setRegistrationId((String) result[1]);
+            reactivateHealthProfessionalTO.setHealthProfessionalName((String) result[2]);
+            reactivateHealthProfessionalTO.setSubmittedDate((Date) result[3]);
+            reactivateHealthProfessionalTO.setReactivation((Date) result[4]);
+            reactivateHealthProfessionalTO.setTypeOfSuspension((String) result[5]);
+            reactivateHealthProfessionalTO.setRemarks((String) result[6]);
             reactivateHealthProfessionalTOList.add(reactivateHealthProfessionalTO);
         });
         reactivateHealthProfessionalResponseTO.setHealthProfessionalDetails(reactivateHealthProfessionalTOList);
