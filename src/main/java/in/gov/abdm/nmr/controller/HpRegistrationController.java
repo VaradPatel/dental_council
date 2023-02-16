@@ -45,7 +45,7 @@ public class HpRegistrationController {
     @GetMapping(path = "health-professional", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(
             @RequestParam("smcId") Integer councilId,
-            @RequestParam("registrationNumber") BigInteger registrationNumber) {
+            @RequestParam("registrationNumber") String registrationNumber) {
         return hpService.fetchSmcRegistrationDetail(councilId, registrationNumber);
     }
 

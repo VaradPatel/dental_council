@@ -109,7 +109,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId, BigInteger registrationNumber) {
+    public HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) {
         HpSmcDetailTO hpSmcDetailTO = new HpSmcDetailTO();
 
         Tuple hpProfile = iHpProfileRepository.fetchSmcRegistrationDetail(registrationNumber, councilId);
@@ -522,7 +522,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         hpProfile.setGender(hpPersonalUpdateRequestTO.getPersonalDetails().getGender());
         hpProfile.setDateOfBirth(hpPersonalUpdateRequestTO.getPersonalDetails().getDateOfBirth());
         hpProfile.setRequestId(hpPersonalUpdateRequestTO.getRequestId());
-        hpProfile.setRegistrationId(hpPersonalUpdateRequestTO.getImrDetails().getRegistrationNumber());
+        hpProfile.setRegistrationId(hpPersonalUpdateRequestTO.getImrDetails().getRegistrationNumber().toString());
         hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
 
         Schedule schedule = iScheduleRepository
