@@ -60,7 +60,7 @@ public class CollegeController {
      * @return the updated college registrar profile
      * @throws NmrException if an error occurs while updating the registrar profile
      */
-    @PutMapping(path = "/college/{collegeId}/registrar1/{registrarId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/college/{collegeId}/registrar/{registrarId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeRegistrarProfileTo updateRegisterRegistrar(@PathVariable("collegeId") BigInteger collegeId,
                                                              @PathVariable("registrarId") BigInteger registrarId,
                                                              @RequestBody CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException {
@@ -82,7 +82,7 @@ public class CollegeController {
      * @return a {@link CollegeDeanProfileTo} representing the updated dean profile.
      * @throws NmrException if the college or dean IDs are invalid, or if there is an error registering the dean.
      */
-    @PutMapping(path = "/college/{collegeId}/dean1/{deanId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/college/{collegeId}/dean/{deanId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeDeanProfileTo updateRegisterDean(@PathVariable("collegeId") BigInteger collegeId,
                                                    @PathVariable("deanId") BigInteger deanId,
                                                    @RequestBody CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
