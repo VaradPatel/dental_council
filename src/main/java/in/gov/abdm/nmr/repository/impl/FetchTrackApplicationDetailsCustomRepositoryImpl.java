@@ -45,7 +45,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         StringBuilder sb = new StringBuilder();
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId()) && !healthProfessionalApplicationRequestParamsTo.getApplicationTypeId().isEmpty()) {
-            sb.append("AND calculate.application_type_id = '" + healthProfessionalApplicationRequestParamsTo.getApplicationTypeId() + "' ");
+            sb.append("AND calculate.application_type_id IN (" + healthProfessionalApplicationRequestParamsTo.getApplicationTypeId() + ") ");
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getRegistrationNo()) && !healthProfessionalApplicationRequestParamsTo.getRegistrationNo().isEmpty()) {

@@ -122,7 +122,7 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
         CollegeRegistrar collegeRegistrarEntityOld;
         if (registrarId != null || collegeRegistrarCreationRequestTo.getUserId() != null) {
             collegeRegistrarCreationRequestTo.setId(registrarId);
-            //accessControlService.validateUser(collegeRegistrarCreationRequestTo.getUserId());
+            accessControlService.validateUser(collegeRegistrarCreationRequestTo.getUserId());
             collegeRegistrarUserDetail = userDetailService.findById(collegeRegistrarCreationRequestTo.getUserId());
 
             if (!collegeRegistrarUserDetail.getUsername().equals(collegeRegistrarCreationRequestTo.getEmailId()) && userDetailService.findByUsername(collegeRegistrarCreationRequestTo.getEmailId()) != null) {
