@@ -26,7 +26,7 @@ public class SearchController {
         this.searchService = searchService;
     }
 
-    @GetMapping(path = "/search", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public HpSearchResponseTO searchHP(HpSearchRequestTO hpSearchRequestTO, @PageableDefault(page = 0, size = 10) Pageable pageable) throws NmrException {
         return searchService.searchHP(hpSearchRequestTO, pageable);
     }
