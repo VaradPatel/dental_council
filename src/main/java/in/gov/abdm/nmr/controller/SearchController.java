@@ -2,10 +2,11 @@ package in.gov.abdm.nmr.controller;
 
 import java.math.BigInteger;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,8 +27,8 @@ public class SearchController {
     }
 
     @GetMapping(path = "/search", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public HpSearchResponseTO searchHP(@RequestBody HpSearchRequestTO hpSearchRequestTO) throws NmrException {
-        return searchService.searchHP(hpSearchRequestTO);
+    public HpSearchResponseTO searchHP(HpSearchRequestTO hpSearchRequestTO, @PageableDefault(page = 0, size = 10) Pageable pageable) throws NmrException {
+        return searchService.searchHP(hpSearchRequestTO, pageable);
     }
 
     @GetMapping(path = "/{healthProfessionalId}", produces = MediaType.APPLICATION_JSON_VALUE)
