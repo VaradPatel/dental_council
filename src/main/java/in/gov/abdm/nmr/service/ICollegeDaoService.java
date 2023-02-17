@@ -19,7 +19,7 @@ public interface ICollegeDaoService {
 
     College findById(BigInteger collegeId) throws NmrException;
 
-    College findByUserDetail(BigInteger userDetailId);
+    College findByUserId(BigInteger userId);
 
     /**
      * Service for fetching the College registration records

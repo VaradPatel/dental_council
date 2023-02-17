@@ -19,7 +19,7 @@ public class NmcDaoServiceImpl implements INmcDaoService {
     }
 
     @Override
-    public NmcProfile findByUserDetail(BigInteger userDetailId) {
-        return nmcProfileRepository.findByUserDetail(userDetailId);
+    public NmcProfile findByUserId(BigInteger userId) {
+        return nmcProfileRepository.findByUserId(userId);
     }
 }

@@ -172,13 +172,13 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         dashboardRequestParamsTO.setUserGroupId(groupId);
         dashboardRequestParamsTO.setUserGroupStatus(dashboardRequestTO.getUserGroupStatus());
         if (groupId.equals(Group.SMC.getId())) {
-            SMCProfile smcProfile = smcProfileRepository.findByUserDetail(userId);
+            SMCProfile smcProfile = smcProfileRepository.findByUserId(userId);
             dashboardRequestParamsTO.setCouncilId(smcProfile.getStateMedicalCouncil().getId().toString());
         } else if (groupId.equals(Group.COLLEGE_DEAN.getId())) {
-            CollegeDean collegeDean = collegeDeanRepository.findByUserDetail(userId);
+            CollegeDean collegeDean = collegeDeanRepository.findByUserId(userId);
             dashboardRequestParamsTO.setCollegeId(collegeDean.getCollege().getId().toString());
         } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
-            CollegeRegistrar collegeRegistrar = collegeRegistrarRepository.findByUserDetail(userId);
+            CollegeRegistrar collegeRegistrar = collegeRegistrarRepository.findByUserId(userId);
             dashboardRequestParamsTO.setCollegeId(collegeRegistrar.getCollege().getId().toString());
         }
         if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())

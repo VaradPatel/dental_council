@@ -6,6 +6,6 @@ import java.math.BigInteger;
 
 public interface INmcDaoService {
 
-    NmcProfile findByUserDetail(BigInteger userDetailId);
+    NmcProfile findByUserId(BigInteger userId);
 
 }

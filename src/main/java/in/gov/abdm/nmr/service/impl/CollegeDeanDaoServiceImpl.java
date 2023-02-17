@@ -70,7 +70,7 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
                 throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
             }
 
-            collegeDeanEntityOld = findByUserDetail(collegeDeanUserDetail.getId());
+            collegeDeanEntityOld = findByUserId(collegeDeanUserDetail.getId());
             if (!collegeDeanEntityOld.getId().equals(collegeDeanCreationRequestTo.getId())) {
                 throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
             }
@@ -106,7 +106,7 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
             throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
         }
         
-        College loggedIncollege = collegeRepository.findByUserDetail(loggedInUser.getId());
+        College loggedIncollege = collegeRepository.findByUserId(loggedInUser.getId());
         College inputCollege = collegeRepository.findById(collegeId).orElse(new College());
         if(!loggedIncollege.getId().equals(inputCollege.getId())) {
             throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
@@ -130,7 +130,7 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
                 throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
             }
 
-            collegeDeanEntityOld = findByUserDetail(collegeDeanUserDetail.getId());
+            collegeDeanEntityOld = findByUserId(collegeDeanUserDetail.getId());
             if (!collegeDeanEntityOld.getId().equals(deanId)) {
                 throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
             }
@@ -164,8 +164,8 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
     }
 
     @Override
-    public CollegeDean findByUserDetail(BigInteger userDetailId) {
-        return collegeDeanRepository.findByUserDetail(userDetailId);
+    public CollegeDean findByUserId(BigInteger userId) {
+        return collegeDeanRepository.findByUserId(userId);
     }
 
 }
