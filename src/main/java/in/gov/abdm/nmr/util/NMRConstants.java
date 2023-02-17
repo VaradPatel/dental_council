@@ -336,12 +336,12 @@ public class NMRConstants {
     public static final String INDIA = "India";
     public static final String INTERNATIONAL = "International";
     public static final String FETCH_REACTIVATION_RECORDS = """
-            SELECT hp.id ,hp.registration_id ,hp.full_name , wf.created_at, wf.start_date, 
+            SELECT hp.id ,hp.registration_id ,wf.request_id,hp.full_name , wf.created_at, wf.start_date,
             (
             SELECT b.name FROM main.application_type b WHERE b.id = (SELECT wol.application_type_id FROM main.work_flow wol
             WHERE wol.hp_profile_id = (
             SELECT hpPr.id FROM main.hp_profile hpPr where hpPr.registration_id = hp.registration_id ORDER BY id DESC LIMIT 1 OFFSET 1)
-            )) ,wf.remarks,wf.request_id
+            )) ,wf.remarks
             FROM main.work_flow wf  INNER JOIN main.hp_profile hp ON wf.hp_profile_id=hp.id
             JOIN main.application_type a ON wf.application_type_id=a.id WHERE wf.application_type_id="""
             + HP_ACTIVATE_LICENSE.getId();
@@ -362,7 +362,7 @@ public class NMRConstants {
             updated_at, request_id, facility_type_id, organization_type FROM work_profile where hp_profile_id =:""" + HP_PROFILE_ID;
 
     public static final int MAX_DATA_SIZE = 500;
-    public static final String DEFAULT_SORT_ORDER  = "ASC";
+    public static final String DEFAULT_SORT_ORDER = "ASC";
     public static final String NO_DATA_FOUND = "No data found";
     public static final String USER_ALREADY_EXISTS = "Username already exist";
     public static final String SMS_AND_EMAIL_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY = "sms-email-reset";

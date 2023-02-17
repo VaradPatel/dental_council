@@ -12,10 +12,10 @@ import java.util.Date;
 public class ReactivateHealthProfessionalTO {
     private BigInteger healthProfessionalId;
     private String registrationId;
+    private String requestId;
     private String healthProfessionalName;
     private Date submittedDate;
     private Date reactivation;
     private String typeOfSuspension;
     private String remarks;
-    private String requestId;
 }
