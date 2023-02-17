@@ -117,6 +117,7 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
             reactivateHealthProfessionalTO.setReactivation((Date) result[4]);
             reactivateHealthProfessionalTO.setTypeOfSuspension((String) result[5]);
             reactivateHealthProfessionalTO.setRemarks((String) result[6]);
+            reactivateHealthProfessionalTO.setRequestId((String) result[7]);
             reactivateHealthProfessionalTOList.add(reactivateHealthProfessionalTO);
         });
         reactivateHealthProfessionalResponseTO.setHealthProfessionalDetails(reactivateHealthProfessionalTOList);
