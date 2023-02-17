@@ -84,7 +84,8 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
     private static final Function<HealthProfessionalApplicationRequestParamsTo, String> TRACK_APPLICATION = (healthProfessionalApplicationRequestParamsTo) -> {
         StringBuilder sb = new StringBuilder();
         sb.append(
-                "select doctor_status, smc_status, college_dean_status, college_registrar_status, nmc_status, nbe_status, calculate.hp_profile_id, calculate.request_id, rd.registration_no, rd.created_at,stmc.name, hp.full_name, application_type_id from " +
+                "select doctor_status, smc_status, college_dean_status, college_registrar_status, nmc_status, nbe_status, calculate.hp_profile_id, calculate.request_id, rd.registration_no, rd.created_at,stmc.name, hp.full_name, application_type_id," +
+                        " DATE_PART('day', (now() - TO_TIMESTAMP(rd.created_at, 'YYYY-MM-DD HH24:MI:SS'))) as pendency  from " +
                         "( " +
                         "select     " +
                         "rank() over (PARTITION BY hp_profile_id order by wf.id desc) as current_status,   " +
@@ -321,6 +322,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setCouncilName((String) result[10]);
             healthProfessionalApplicationTo.setApplicantFullName((String) result[11]);
             healthProfessionalApplicationTo.setApplicationTypeId((BigInteger) result[12]);
+            healthProfessionalApplicationTo.setPendency((Double) result[13]);
             healthProfessionalApplicationToList.add(healthProfessionalApplicationTo);
         });
         healthProfessionalApplicationResponseTo.setHealthProfessionalApplications(healthProfessionalApplicationToList);
