@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.persistence.Tuple;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -120,8 +121,8 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
 //	HpProfile getByHpProfileId(BigInteger hpProfileId);
 	
 	   
-    @Query(value = "SELECT hp FROM hpProfile hp join hp.user usr where usr.id=:userDetailId")
-    HpProfile findByUserDetail(BigInteger userDetailId);
+    @Query(value = "SELECT hp FROM hpProfile hp JOIN hp.user usr WHERE usr.id=:userId ORDER BY hp.updatedAt DESC")
+    List<HpProfile> findLatestEntryByUserid(BigInteger userId, Pageable pageable);
 
 	HpProfile findHpProfileById(BigInteger id);
 

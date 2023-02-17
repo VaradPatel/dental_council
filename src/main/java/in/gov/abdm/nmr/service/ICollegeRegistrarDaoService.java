@@ -13,5 +13,5 @@ public interface ICollegeRegistrarDaoService {
 
     CollegeRegistrar findCollegeRegistrarById(BigInteger registrarId, BigInteger collegeId) throws NmrException;
 
-    CollegeRegistrar findByUserDetail(BigInteger userDetailId);
+    CollegeRegistrar findByUserId(BigInteger userId);
 }

@@ -8,6 +8,6 @@ import java.math.BigInteger;
 
 public interface INbeProfileRepository extends JpaRepository<NbeProfile, BigInteger> {
 
-    @Query(value = "SELECT nbe FROM nbeProfile nbe join nbe.user usr where usr.id=:userDetailId")
-    NbeProfile findByUserDetail(BigInteger userDetailId);
+    @Query(value = "SELECT nbe FROM nbeProfile nbe join nbe.user usr where usr.id=:userId")
+    NbeProfile findByUserId(BigInteger userId);
 }

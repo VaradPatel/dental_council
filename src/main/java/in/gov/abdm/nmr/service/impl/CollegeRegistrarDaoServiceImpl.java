@@ -105,7 +105,7 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
             throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
         }
         
-        College loggedIncollege = collegeRepository.findByUserDetail(loggedInUser.getId());
+        College loggedIncollege = collegeRepository.findByUserId(loggedInUser.getId());
         College inputCollege = collegeRepository.findById(collegeId).orElse(new College());
         if(!loggedIncollege.getId().equals(inputCollege.getId())) {
             throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
@@ -129,7 +129,7 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
                 throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
             }
 
-            collegeRegistrarEntityOld = findByUserDetail(collegeRegistrarUserDetail.getId());
+            collegeRegistrarEntityOld = findByUserId(collegeRegistrarUserDetail.getId());
             if (!collegeRegistrarEntityOld.getId().equals(registrarId)) {
                 throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
             }
@@ -163,7 +163,7 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
     }
 
     @Override
-    public CollegeRegistrar findByUserDetail(BigInteger userDetailId) {
-        return collegeRegistrarRepository.findByUserDetail(userDetailId);
+    public CollegeRegistrar findByUserId(BigInteger userId) {
+        return collegeRegistrarRepository.findByUserId(userId);
     }
 }

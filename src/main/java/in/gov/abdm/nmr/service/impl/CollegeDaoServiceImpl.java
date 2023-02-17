@@ -1,11 +1,30 @@
 package in.gov.abdm.nmr.service.impl;
 
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import in.gov.abdm.nmr.dto.CollegeRegistrationRequestParamsTO;
 import in.gov.abdm.nmr.dto.CollegeRegistrationRequestTo;
 import in.gov.abdm.nmr.dto.CollegeRegistrationResponseTO;
 import in.gov.abdm.nmr.dto.GetSetPasswordLinkTo;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
-import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.entity.College;
+import in.gov.abdm.nmr.entity.State;
+import in.gov.abdm.nmr.entity.StateMedicalCouncil;
+import in.gov.abdm.nmr.entity.University;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.entity.UserGroup;
+import in.gov.abdm.nmr.entity.UserSubType;
+import in.gov.abdm.nmr.entity.UserType;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.NmrException;
@@ -15,16 +34,6 @@ import in.gov.abdm.nmr.repository.ICollegeRepositoryCustom;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.ICollegeDaoService;
 import in.gov.abdm.nmr.service.IUserDaoService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.util.List;
 
 @Service
 @Transactional
@@ -89,7 +98,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
             return college;
         } else {
            // accessControlService.validateUser(collegeRegistrationRequestTo.getUserId());
-            College collegeEntity = collegeRepository.findByUserDetail(collegeRegistrationRequestTo.getUserId());
+            College collegeEntity = collegeRepository.findByUserId(collegeRegistrationRequestTo.getUserId());
             if (collegeEntity == null) {
                 throw new NmrException("Invalid college", HttpStatus.BAD_REQUEST);
             }
@@ -123,8 +132,8 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
     }
 
     @Override
-    public College findByUserDetail(BigInteger userDetailId) {
-        return collegeRepository.findByUserDetail(userDetailId);
+    public College findByUserId(BigInteger userId) {
+        return collegeRepository.findByUserId(userId);
     }
 
     /**
