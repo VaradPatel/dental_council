@@ -10,6 +10,7 @@ import in.gov.abdm.nmr.entity.RegistrationDetailsMaster;
 import in.gov.abdm.nmr.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
@@ -59,7 +60,7 @@ public class ElasticsearchDaoServiceImpl implements IElasticsearchDaoService {
     }
 
     @Override
-    public SearchResponse<HpSearchResultTO> searchHP(HpSearchRequestTO hpSearchRequestTO) throws ElasticsearchException, IOException {
+    public SearchResponse<HpSearchResultTO> searchHP(HpSearchRequestTO hpSearchRequestTO, Pageable pageable) throws ElasticsearchException, IOException {
         BoolQuery.Builder queryBuilder = QueryBuilders.bool();
 
         if (hpSearchRequestTO.getFullName() != null && !hpSearchRequestTO.getFullName().isBlank()) {
@@ -87,7 +88,7 @@ public class ElasticsearchDaoServiceImpl implements IElasticsearchDaoService {
             queryBuilder.filter(m -> m.match(mq -> mq.field("profile_status_id").query(hpSearchRequestTO.getProfileStatusId().longValueExact())));
         }
 
-        return elasticsearchRepository.searchHP(queryBuilder.build(), hpSearchRequestTO.getPage(), hpSearchRequestTO.getSize());
+        return elasticsearchRepository.searchHP(queryBuilder.build(), pageable.getPageNumber(), pageable.getPageSize());
     }
 
     @Override
