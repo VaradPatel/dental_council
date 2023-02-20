@@ -27,6 +27,5 @@ public class StatusWiseCountTO {
      */
     private BigInteger count;
 
-    private BigInteger applicationTypeId;
 
 }
