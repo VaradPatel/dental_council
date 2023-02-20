@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.Tuple;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -23,7 +24,13 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
 			+ " from hp_profile INNER JOIN registration_details on hp_profile_id = hp_profile.id"
 			+ " INNER JOIN state_medical_council ON state_medical_council.id = :councilId"
 			+ " where registration_id = :registrationNo", nativeQuery = true)
-	Tuple fetchSmcRegistrationDetail(BigInteger registrationNo, Integer councilId);
+	Tuple fetchSmcRegistrationDetail1(BigInteger registrationNo, Integer councilId);
+
+	@Query(value = "select rd.hp_profile_id, rd.registration_no, smc.name, hp.full_name , smc.id " +
+			"from main.hp_profile hp INNER JOIN main.registration_details rd on rd.registration_no = hp.registration_id " +
+			"INNER JOIN main.state_medical_council smc ON smc.id = rd.state_medical_council_id " +
+			"where registration_id = :registrationNo and smc.id =:councilId order by rd.hp_profile_id desc limit 1", nativeQuery = true)
+	Tuple fetchSmcRegistrationDetail(String registrationNo, Integer councilId);
 
 	@Query(value = "select registration_details.id as registration_id, hp_profile.request_id, registration_details.hp_profile_id, full_name, nmr_id, year_of_info,transaction_id, e_sign_status ,registration_no, registration_date,"
 			+ " state_medical_council.name as state_medical_council_name, state_medical_council.id as state_medical_council_id, state_medical_council_status.id as state_medical_council_status_id, state_medical_council_status.name as state_medical_council_status_name, first_name, father_name,"
@@ -111,8 +118,8 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
 //	HpProfile getByHpProfileId(BigInteger hpProfileId);
 	
 	   
-    @Query(value = "SELECT hp FROM hpProfile hp join hp.user usr where usr.id=:userDetailId")
-    HpProfile findByUserDetail(BigInteger userDetailId);
+    @Query(value = "SELECT hp FROM hpProfile hp JOIN hp.user usr WHERE usr.id=:userId ORDER BY hp.updatedAt DESC")
+    List<HpProfile> findLatestEntryByUserid(BigInteger userId, Pageable pageable);
 
 	HpProfile findHpProfileById(BigInteger id);
 
@@ -120,6 +127,6 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
 	HpProfile findByRegistrationId(BigInteger registrationId);
 
 	@Query(value = "SELECT * FROM hp_profile where registration_id =:registrationId ORDER BY id DESC LIMIT 1 OFFSET 1", nativeQuery = true)
-	HpProfile findSecondLastHpProfile(BigInteger registrationId);
+	HpProfile findSecondLastHpProfile(String registrationId);
 
 }

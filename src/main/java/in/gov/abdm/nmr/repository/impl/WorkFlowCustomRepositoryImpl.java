@@ -44,6 +44,7 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
     };
     private static final Function<ReactivateHealthProfessionalRequestParam, String> SORT_RECORDS = reactivateHealthProfessionalQueryParam -> {
         StringBuilder sb = new StringBuilder();
+        sb.append("  ");
         sb.append("ORDER BY  ");
         sb.append(reactivateHealthProfessionalQueryParam.getSortBy());
         sb.append("  ");
@@ -110,11 +111,13 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
         results.forEach(result -> {
             ReactivateHealthProfessionalTO reactivateHealthProfessionalTO = new ReactivateHealthProfessionalTO();
             reactivateHealthProfessionalTO.setHealthProfessionalId((BigInteger) result[0]);
-            reactivateHealthProfessionalTO.setHealthProfessionalName((String) result[1]);
-            reactivateHealthProfessionalTO.setSubmittedDate((Date) result[2]);
-            reactivateHealthProfessionalTO.setReactivation((Date) result[3]);
-            reactivateHealthProfessionalTO.setSuspensionType((String) result[4]);
-            reactivateHealthProfessionalTO.setRemarks((String) result[5]);
+            reactivateHealthProfessionalTO.setRegistrationId((String) result[1]);
+            reactivateHealthProfessionalTO.setRequestId((String) result[2]);
+            reactivateHealthProfessionalTO.setHealthProfessionalName((String) result[3]);
+            reactivateHealthProfessionalTO.setSubmittedDate((Date) result[4]);
+            reactivateHealthProfessionalTO.setReactivation((Date) result[5]);
+            reactivateHealthProfessionalTO.setTypeOfSuspension((String) result[6]);
+            reactivateHealthProfessionalTO.setRemarks((String) result[7]);
             reactivateHealthProfessionalTOList.add(reactivateHealthProfessionalTO);
         });
         reactivateHealthProfessionalResponseTO.setHealthProfessionalDetails(reactivateHealthProfessionalTOList);

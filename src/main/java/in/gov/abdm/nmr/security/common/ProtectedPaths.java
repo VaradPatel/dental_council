@@ -15,13 +15,16 @@ public class ProtectedPaths {
     public static final String PATH_LOGIN = "/user/login";
     public static final String PATH_REFRESH_TOKEN = "/user/refreshToken";
 
-    public static final String PATH_UPDATE_COLLEGE = "/college";
+    public static final String PATH_UPDATE_COLLEGE = "/college/{collegeId}";
     public static final String PATH_REGISTER_COLLEGE_REGISTRAR = "/college/{collegeId}/registrar";
     public static final String PATH_REGISTER_COLLEGE_DEAN = "/college/{collegeId}/dean";
+    
+    public static final String PATH_COLLEGE_PROFILE = "/college/{collegeId}";
+    public static final String PATH_COLLEGE_REGISTRAR_PROFILE = "/college/{collegeId}/registrar/{registrarId}";
+    public static final String PATH_COLLEGE_DEAN_PROFILE = "/college/{collegeId}/dean/{deanId}";
 
-    public static final String PATH_COLLEGE_PROFILE = "/college/{id}";
-    public static final String PATH_COLLEGE_REGISTRAR_PROFILE = "/college/registrar/{id}";
-    public static final String PATH_COLLEGE_DEAN_PROFILE = "/college/dean/{id}";
+
+    public static final String PATH_USER_ROOT = "/user";
     public static final String PATH_USER_SMSNOTIFICATIONENABLED = "/enable-sms-notification";
     public static final String PATH_USER_EMAILNOTIFICATIONENABLED = "/enable-email-notification";
     public static final String PATH_ACTION_ROOT = "/health-professional/applications/";
@@ -69,7 +72,7 @@ public class ProtectedPaths {
 
         protectedPaths.add(new AntPathRequestMatcher(PATH_HEALTH_PROFESSIONAL_ROOT + PATH_HEALTH_PROFESSIONAL_APPLICATIONS));
         protectedPaths.add(new AntPathRequestMatcher(SUSPENSION_REQUEST_URL));
-        protectedPaths.add(new AntPathRequestMatcher(REACTIVATE_REQUEST_URL));
+        protectedPaths.add(new AntPathRequestMatcher(REACTIVATE_REQUEST_URL, HttpMethod.POST.name()));
 
         return protectedPaths.toArray(AntPathRequestMatcher[]::new);
     }

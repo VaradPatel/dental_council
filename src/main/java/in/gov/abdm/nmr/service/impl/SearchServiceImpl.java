@@ -7,17 +7,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.persistence.Tuple;
-
-import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.repository.IForeignQualificationDetailMasterRepository;
-import in.gov.abdm.nmr.repository.IHpProfileMasterRepository;
-import in.gov.abdm.nmr.repository.IQualificationDetailMasterRepository;
-import in.gov.abdm.nmr.repository.RegistrationDetailMasterRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +22,15 @@ import in.gov.abdm.nmr.dto.HpSearchProfileTO;
 import in.gov.abdm.nmr.dto.HpSearchRequestTO;
 import in.gov.abdm.nmr.dto.HpSearchResponseTO;
 import in.gov.abdm.nmr.dto.HpSearchResultTO;
+import in.gov.abdm.nmr.entity.ForeignQualificationDetailsMaster;
+import in.gov.abdm.nmr.entity.HpProfileMaster;
+import in.gov.abdm.nmr.entity.QualificationDetailsMaster;
+import in.gov.abdm.nmr.entity.RegistrationDetailsMaster;
 import in.gov.abdm.nmr.exception.NmrException;
+import in.gov.abdm.nmr.repository.IForeignQualificationDetailMasterRepository;
+import in.gov.abdm.nmr.repository.IHpProfileMasterRepository;
+import in.gov.abdm.nmr.repository.IQualificationDetailMasterRepository;
+import in.gov.abdm.nmr.repository.RegistrationDetailMasterRepository;
 import in.gov.abdm.nmr.service.IElasticsearchDaoService;
 import in.gov.abdm.nmr.service.IQualificationDetailDaoService;
 import in.gov.abdm.nmr.service.IRegistrationDetailDaoService;
@@ -39,30 +40,34 @@ import in.gov.abdm.nmr.service.ISearchService;
 public class SearchServiceImpl implements ISearchService {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    @Autowired
+    
     private IElasticsearchDaoService elasticsearchDaoService;
-    @Autowired
+    
     private IHpProfileMasterRepository iHpProfileMasterRepository;
-    @Autowired
+    
     private RegistrationDetailMasterRepository registrationDetailMasterRepository;
-    @Autowired
+    
     private IQualificationDetailMasterRepository qualificationDetailMasterRepository;
-    @Autowired
+    
     private IForeignQualificationDetailMasterRepository foreignQualificationDetailMasterRepository;
-    @Autowired
-    private IQualificationDetailDaoService qualificationDetailDaoService;
-    @Autowired
-    private IRegistrationDetailDaoService registrationDetailDaoService;
 
     private static final List<BigInteger> PROFILE_STATUS_CODES = Arrays.asList(BigInteger.valueOf(2l), BigInteger.valueOf(5l), BigInteger.valueOf(6l));
 
+    public SearchServiceImpl(IElasticsearchDaoService elasticsearchDaoService, IHpProfileMasterRepository iHpProfileMasterRepository, RegistrationDetailMasterRepository registrationDetailMasterRepository, IQualificationDetailMasterRepository qualificationDetailMasterRepository, IForeignQualificationDetailMasterRepository foreignQualificationDetailMasterRepository, IQualificationDetailDaoService qualificationDetailDaoService, IRegistrationDetailDaoService registrationDetailDaoService) {
+        this.elasticsearchDaoService = elasticsearchDaoService;
+        this.iHpProfileMasterRepository = iHpProfileMasterRepository;
+        this.registrationDetailMasterRepository = registrationDetailMasterRepository;
+        this.qualificationDetailMasterRepository = qualificationDetailMasterRepository;
+        this.foreignQualificationDetailMasterRepository = foreignQualificationDetailMasterRepository;
+    }
+
     @Override
-    public HpSearchResponseTO searchHP(HpSearchRequestTO hpSearchRequestTO) throws NmrException {
+    public HpSearchResponseTO searchHP(HpSearchRequestTO hpSearchRequestTO, Pageable pageable) throws NmrException {
         try {
             if (hpSearchRequestTO != null && hpSearchRequestTO.getProfileStatusId() != null && !PROFILE_STATUS_CODES.contains(hpSearchRequestTO.getProfileStatusId())) {
                 throw new NmrException("Invalid profile status code", HttpStatus.BAD_REQUEST);
             }
-            SearchResponse<HpSearchResultTO> results = elasticsearchDaoService.searchHP(hpSearchRequestTO);
+            SearchResponse<HpSearchResultTO> results = elasticsearchDaoService.searchHP(hpSearchRequestTO, pageable);
             return new HpSearchResponseTO(results.hits().hits().stream().map(Hit::source).toList(), results.hits().total().value());
 
         } catch (ElasticsearchException | IOException e) {

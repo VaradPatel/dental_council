@@ -68,9 +68,11 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
         }
 
+       /*
         if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
             sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
         }
+
 
         if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
             sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
@@ -78,23 +80,25 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
 
         if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
             sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
-        }
+        }*/
         if (Objects.nonNull(dashboardRequestParamsTO.getUserGroupId())){
             BigInteger groupId = dashboardRequestParamsTO.getUserGroupId();
             String userGroupStatus = dashboardRequestParamsTO.getUserGroupStatus().toUpperCase();
-            if(groupId.equals(Group.SMC.getId())){
-                sb.append("AND smc_status = '" + userGroupStatus + "' ");
-            } else if(groupId.equals(Group.COLLEGE_DEAN.getId())){
-                sb.append("AND college_dean_status = '" + userGroupStatus + "' ");
-            } else if(groupId.equals(Group.COLLEGE_REGISTRAR.getId())){
-                sb.append("AND college_registrar_status = '" + userGroupStatus + "' ");
-            } else if(groupId.equals(Group.NMC.getId())){
-                sb.append("AND nmc_status = '" + userGroupStatus + "' ");
-            } else if(groupId.equals(Group.NBE.getId())){
-                sb.append("AND nbe_status = '" + userGroupStatus + "' ");
-            } else if(groupId.equals(Group.COLLEGE_ADMIN.getId())){
-                sb.append("AND college_registrar_status = '" + userGroupStatus + "' ");
-                sb.append("AND college_dean_status = '" + userGroupStatus + "' ");
+            if (!dashboardRequestParamsTO.getUserGroupStatus().contains("Total")) {
+                if (groupId.equals(Group.SMC.getId())) {
+                    sb.append("AND smc_status = '" + userGroupStatus + "' ");
+                } else if (groupId.equals(Group.COLLEGE_DEAN.getId())) {
+                    sb.append("AND college_dean_status = '" + userGroupStatus + "' ");
+                } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
+                    sb.append("AND college_registrar_status = '" + userGroupStatus + "' ");
+                } else if (groupId.equals(Group.NMC.getId())) {
+                    sb.append("AND nmc_status = '" + userGroupStatus + "' ");
+                } else if (groupId.equals(Group.NBE.getId())) {
+                    sb.append("AND nbe_status = '" + userGroupStatus + "' ");
+                } else if (groupId.equals(Group.COLLEGE_ADMIN.getId())) {
+                    sb.append("AND college_registrar_status = '" + userGroupStatus + "' ");
+                    sb.append("AND college_dean_status = '" + userGroupStatus + "' ");
+                }
             }
         }
         return sb.toString();
@@ -203,7 +207,8 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                         "INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id " +
                         "INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id " +
                         "INNER JOIN main.qualification_details as qd on qd.hp_profile_id = hp.id AND qd.request_id = hp.request_id " +
-                        "WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 AND calculate.application_type_id = " + dashboardRequestParamsTO.getApplicationTypeId() + " ");
+                        "WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 " +
+                        "AND calculate.application_type_id IN ( " + dashboardRequestParamsTO.getApplicationTypeId() + ") ");
 
         String parameters = DASHBOARD_PARAMETERS.apply(dashboardRequestParamsTO);
 

@@ -17,4 +17,6 @@ public interface INbeProfileRepository extends JpaRepository<NbeProfile, BigInte
 
     @Query(value = "SELECT nbe.id FROM nbeProfile nbe WHERE nbe.user.id =:userId")
     List<BigInteger> getNbeProfileIdByUserId(@Param(USER_ID) BigInteger userId);
+    @Query(value = "SELECT nbe FROM nbeProfile nbe join nbe.user usr where usr.id=:userId")
+    NbeProfile findByUserId(BigInteger userId);
 }

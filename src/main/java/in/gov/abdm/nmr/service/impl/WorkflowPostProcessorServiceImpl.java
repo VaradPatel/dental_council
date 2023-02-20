@@ -174,7 +174,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         }
     }
 
-    private HpProfileMaster updateHpProfileToMaster(BigInteger transactionHpProfileId, BigInteger hpRegistrationId) {
+    private HpProfileMaster updateHpProfileToMaster(BigInteger transactionHpProfileId, String hpRegistrationId) {
 
         HpProfileMaster masterHpProfileDetails = hpProfileMasterRepository.findByRegistrationId(hpRegistrationId);
 

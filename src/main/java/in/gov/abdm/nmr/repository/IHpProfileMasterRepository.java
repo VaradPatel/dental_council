@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface IHpProfileMasterRepository extends JpaRepository<HpProfileMaster, BigInteger> {
 
     @Query(value = "SELECT hp FROM hp_profile_master hp where registration_id=:registrationId", nativeQuery = true)
-    HpProfileMaster findByRegistrationId(BigInteger registrationId);
+    HpProfileMaster findByRegistrationId(String registrationId);
 
     HpProfileMaster findHpProfileMasterById(BigInteger hpProfileId);
 

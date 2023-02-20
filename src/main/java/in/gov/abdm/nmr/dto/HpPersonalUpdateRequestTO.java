@@ -30,6 +30,5 @@ public class HpPersonalUpdateRequestTO {
     @NotNull(message = NOT_NULL_ERROR_MSG)
     private IMRDetailsTO imrDetails;
 
-    @NotBlank(message = NOT_NULL_ERROR_MSG)
     private String requestId;
 }

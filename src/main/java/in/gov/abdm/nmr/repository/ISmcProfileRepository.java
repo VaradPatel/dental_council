@@ -13,8 +13,8 @@ import in.gov.abdm.nmr.entity.SMCProfile;
 
 public interface ISmcProfileRepository extends JpaRepository<SMCProfile, BigInteger> {
 
-    @Query(value = "SELECT smc FROM smcProfile smc join smc.user usr where usr.id=:userDetailId")
-    SMCProfile findByUserDetail(BigInteger userDetailId);
+    @Query(value = "SELECT smc FROM smcProfile smc join smc.user usr where usr.id=:userId")
+    SMCProfile findByUserId(BigInteger userId);
 
     @Query(value = "SELECT smc.stateMedicalCouncil.id FROM smcProfile smc WHERE smc.user.id =:userId")
     List<BigInteger> getSmcIdByUserId(@Param(USER_ID) BigInteger userId);

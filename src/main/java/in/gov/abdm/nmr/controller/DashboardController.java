@@ -10,11 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
-import java.util.List;
 
 import static in.gov.abdm.nmr.security.common.ProtectedPaths.PATH_DASHBOARD_FETCH_DETAILS;
 import static in.gov.abdm.nmr.security.common.ProtectedPaths.PATH_DASHBOARD_ROOT;
-import static in.gov.abdm.nmr.util.NMRConstants.FETCH_TRACK_APP_URL;
 
 /**
  * Presentation Layer to expose the endpoints of Dashboard
@@ -62,6 +60,23 @@ public class DashboardController {
     @PostMapping(PATH_DASHBOARD_FETCH_DETAILS)
     public DashboardResponseTO DashBoardResponseTO(@RequestBody DashboardRequestTO requestTO) throws InvalidRequestException {
         return iFetchSpecificDetailsService.fetchDashboardData(requestTO);
+    }
+
+    @GetMapping(PATH_DASHBOARD_FETCH_DETAILS)
+    public DashboardResponseTO DashBoardResponseTO1(
+            @RequestParam(required = false, value = "workFlowStatusId") String workFlowStatusId,
+            @RequestParam(required = false, value = "applicationTypeId") String applicationTypeId,
+            @RequestParam(required = false, value = "userGroupStatus") String userGroupStatus,
+            @RequestParam(required = false, value = "smcId") String smcId,
+            @RequestParam(required = false, value = "name") String name,
+            @RequestParam(required = false, value = "nmrId") String nmrId,
+            @RequestParam(required = false, value = "search") String search,
+            @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+            @RequestParam(required = false, value = "size", defaultValue = "2") int size,
+            @RequestParam(required = false, value = "sortBy") String sortBy,
+            @RequestParam(required = false, value = "sortOrder") String sortOrder) throws InvalidRequestException {
+        return iFetchSpecificDetailsService.fetchDashboardData1(workFlowStatusId, applicationTypeId,
+                userGroupStatus, smcId, name, nmrId, search, pageNo, size, sortBy, sortOrder);
     }
 
 }

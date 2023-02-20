@@ -6,5 +6,5 @@ import in.gov.abdm.nmr.entity.SMCProfile;
 
 public interface ISmcProfileDaoService {
 
-    SMCProfile findByUserDetail(BigInteger userDetailId);
+    SMCProfile findByUserId(BigInteger userId);
 }

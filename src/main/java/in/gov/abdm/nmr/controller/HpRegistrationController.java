@@ -42,10 +42,10 @@ public class HpRegistrationController {
      * @param registrationNumber
      * @return SmcRegistrationDetailResponseTO This returns the SMC registration detail information.
      */
-    @GetMapping(path = "health-professional?smcId={smcId}&registrationNumber={registrationNumber}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "health-professional", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(
             @RequestParam("smcId") Integer councilId,
-            @RequestParam("registrationNumber") BigInteger registrationNumber) {
+            @RequestParam("registrationNumber") String registrationNumber) {
         return hpService.fetchSmcRegistrationDetail(councilId, registrationNumber);
     }
 
@@ -107,8 +107,8 @@ public class HpRegistrationController {
      * @throws WorkFlowException       If there is an error in the workflow.
      */
     @PutMapping(path = "health-professional/{healthProfessionalId}/registration", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam("certificate") MultipartFile certificate,
-                                                                                      @RequestParam("proof") MultipartFile proof,
+    public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam(value = "certificate", required = false) MultipartFile certificate,
+                                                                                      @RequestParam(value = "proof",required = false) MultipartFile proof,
                                                                                       @RequestPart("data") String hpRegistrationUpdateRequestString,
                                                                                       @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, WorkFlowException {
         return hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequestString, certificate, proof);
@@ -141,7 +141,7 @@ public class HpRegistrationController {
     @PutMapping(path = "health-professional/{healthProfessionalId}/work-profile", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileWorkDetailsResponseTO updateHealthProfessionalWorkProfileDetail(@RequestPart("data") String hpWorkProfileUpdateRequestString,
                                                                                     @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
-                                                                                    @RequestParam("proof") MultipartFile proof)
+                                                                                    @RequestParam(value = "proof",required = false) MultipartFile proof)
 
             throws InvalidRequestException, WorkFlowException {
         return hpService.addOrUpdateWorkProfileDetail(hpProfileId, hpWorkProfileUpdateRequestString, proof);
