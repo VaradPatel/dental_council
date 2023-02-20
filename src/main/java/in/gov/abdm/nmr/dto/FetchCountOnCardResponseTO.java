@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 /**
  * Final Response Structure of fetchCountOnCard API
  */
@@ -20,43 +18,44 @@ public class FetchCountOnCardResponseTO {
      * This holds the list of count of New applications
      * according to their status at that point in time
      */
-    private List<StatusWiseCountTO> hpRegistrationRequests;
+    private FetchCountOnCardInnerResponseTO hpRegistrationRequest;
 
     /**
      * This holds the list of count of Existing applications
      * according to their status at that point in time
      */
-    private List<StatusWiseCountTO> hpModificationRequests;
+    private FetchCountOnCardInnerResponseTO hpModificationRequest;
 
     /**
      * This holds the list of count of Temporary Suspension applications
      * according to their status at that point in time
      */
-    private List<StatusWiseCountTO> temporarySuspensionRequests;
+    private FetchCountOnCardInnerResponseTO temporarySuspensionRequest;
 
     /**
      * This holds the list of count of Permanent Suspension applications
      * according to their status at that point in time
      */
-    private List<StatusWiseCountTO> permanentSuspensionRequests;
+    private FetchCountOnCardInnerResponseTO permanentSuspensionRequest;
 
     /**
      * This holds the list of count of Consolidated Suspension applications
      * according to their status at that point in time
      */
-    private List<StatusWiseCountTO> consolidatedSuspensionRequests;
+    private FetchCountOnCardInnerResponseTO consolidatedSuspensionRequest;
 
     /**
      * This holds the list of count of Activate License applications
      * according to their status at that point in time
      */
-    private List<StatusWiseCountTO> activateLicenseRequests;
+    private FetchCountOnCardInnerResponseTO activateLicenseRequest;
 
     /**
      * This holds the list of count of College Registration applications
      * according to their status at that point in time
      */
-    private List<StatusWiseCountTO> collegeRegistrationRequests;
+    private FetchCountOnCardInnerResponseTO collegeRegistrationRequest;
+
 
     /**
      * This holds the list of count of New Foreign applications

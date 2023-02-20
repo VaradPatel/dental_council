@@ -1,7 +1,5 @@
 package in.gov.abdm.nmr.repository;
 
-import static in.gov.abdm.nmr.entity.WorkFlow_.USER_ID;
-
 import java.math.BigInteger;
 import java.util.List;
 
@@ -10,7 +8,6 @@ import javax.persistence.Tuple;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import in.gov.abdm.nmr.entity.HpProfile;
 
@@ -132,6 +129,4 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
 	@Query(value = "SELECT * FROM hp_profile where registration_id =:registrationId ORDER BY id DESC LIMIT 1 OFFSET 1", nativeQuery = true)
 	HpProfile findSecondLastHpProfile(String registrationId);
 
-	@Query(value = "SELECT hp.id FROM hpProfile hp WHERE hp.user.id =:userId")
-	List<BigInteger> getHpProfileIdByUserId(@Param(USER_ID) BigInteger userId);
 }

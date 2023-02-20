@@ -140,6 +140,8 @@ public class NMRConstants {
 
     public static final String COLLEGE_REGISTRAR_ID = "collegeRegistrarId";
 
+    public static final String COLLEGE_ID = "collegeId";
+
     public static final String ID = "id";
 
     public static final String HP_PROFILE_STATUS_ID = "hp_profile_status_id";
@@ -169,6 +171,8 @@ public class NMRConstants {
 
     public static final String SMC_PROFILE_ID = "smcProfileId";
 
+    public static final String NBE_PROFILE_ID = "nbeProfileId";
+
     public static final String GROUP_NAME = "groupName";
 
     public static final String WORK_FLOW_STATUS = "workFlowStatus";
@@ -184,18 +188,6 @@ public class NMRConstants {
             WHERE wa.application_type_id = :""" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """
              \s AND wa.action_id = 4
             GROUP BY name""";
-
-    public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_HP = """
-            SELECT ws.name as name, COUNT(w) as count 
-            FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
-            WHERE w.hp_profile_id=:""" + HP_PROFILE_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """
-             \s AND w.action_id IN ( 3,5 ) ) 
-            GROUP BY ws.name 
-            UNION 
-            SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
-            WHERE wa.hp_profile_id=:""" + HP_PROFILE_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """
-             \s AND wa.action_id = 4
-            GROUP BY name """;
 
     public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_DEAN = """
             SELECT ws.name as name, COUNT(w) as count 
@@ -224,6 +216,35 @@ public class NMRConstants {
             WHERE cr.id=:""" + COLLEGE_REGISTRAR_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """  
              \s AND wa.action_id = 4 
             GROUP BY name """;
+
+    public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_ADMIN = """
+            SELECT ws.name as name, COUNT(w) as count 
+            FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
+            JOIN colleges c ON w.request_id=c.request_id 
+            WHERE c.id=:""" + COLLEGE_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND  w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
+             \s AND w.action_id IN ( 3,5 ) ) 
+            GROUP BY ws.name 
+            UNION 
+            SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
+            JOIN colleges c ON wa.request_id=c.request_id 
+            WHERE c.id=:""" + COLLEGE_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """  
+             \s AND wa.action_id = 4 
+            GROUP BY name """;
+
+    public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_NBE = """
+            SELECT ws.name as name, COUNT(w) as count 
+            FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
+            JOIN nbe_profile nbe ON nbe.user_id=nbe.user_id 
+            WHERE nbe.id=:""" + NBE_PROFILE_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND  w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
+             \s AND w.action_id IN ( 3,5 ) ) 
+            GROUP BY ws.name 
+            UNION 
+            SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
+            JOIN nbe_profile nbe ON wa.user_id=nbe.user_id 
+            WHERE nbe.id=:""" + NBE_PROFILE_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """  
+             \s AND wa.action_id = 4 
+            GROUP BY name """;
+
 
     public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_SMC = """
             SELECT ws.name as name, COUNT(w) as count 
@@ -306,6 +327,8 @@ public class NMRConstants {
     public static final String INVALID_USER_TYPE = "Invalid User type. Expected: Health Professional, College, State Medical Council or National Medical Council";
 
     public static final String INVALID_GROUP = "Invalid Group. Expected: Health Professional, State Medical Council, National Medical Council, College Dean, College Registrar or College Admin";
+
+    public static final String INVALID_DASHBOARD_GROUP = "Invalid Group. Expected: State Medical Council, National Medical Council, NBE, College Dean, College Registrar or College Admin";
     public static final String INVALID_WORK_FLOW_STATUS = "Invalid Workflow Status. Expected: Pending, Approved, Query Raised, Rejected, Suspended or Blacklisted";
     public static final String INVALID_APPLICATION_TYPE = "Invalid Application Type. Expected: HP Registration, HP Modification, Temporary Suspension, Permanent Suspension, Activate License, College Registration ";
     public static final String STATE_MEDICAL_COUNCIL_ID = "state_medical_council_id";
@@ -370,4 +393,6 @@ public class NMRConstants {
     public static final String USER_REQUEST_MAPPING = "/user";
 
     public static final String ACCESS_FORBIDDEN = "Access Forbidden.";
+
+    public static final String COMMA_SEPARATOR = ",";
 }

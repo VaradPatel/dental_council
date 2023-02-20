@@ -34,6 +34,7 @@ public class HpProfile {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private BigInteger id;
+
 	private String aadhaarToken;
 	private String categoryName;
 	private String changedName;
