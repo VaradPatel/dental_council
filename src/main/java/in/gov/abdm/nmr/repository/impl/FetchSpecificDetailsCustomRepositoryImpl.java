@@ -68,11 +68,13 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
         }
 
+       /*
         if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
             sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
         }
 
-    /*    if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
+
+        if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
             sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
         }
 

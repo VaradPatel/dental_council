@@ -62,7 +62,7 @@ public class DashboardController {
         return iFetchSpecificDetailsService.fetchDashboardData(requestTO);
     }
 
-    @GetMapping("/card-detail1")
+    @GetMapping(PATH_DASHBOARD_FETCH_DETAILS)
     public DashboardResponseTO DashBoardResponseTO1(
             @RequestParam(required = false, value = "workFlowStatusId") String workFlowStatusId,
             @RequestParam(required = false, value = "applicationTypeId") String applicationTypeId,
