@@ -143,6 +143,46 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         }
     }
 
+    @Override
+    public DashboardResponseTO fetchDashboardData1(String workFlowStatusId, String applicationTypeId, String userGroupStatus,
+                                                   String smcId, String name, String nmrId, String search, int pageNo, int size,
+                                                   String sortBy, String sortOrder) throws InvalidRequestException {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userDetail = userDetailRepository.findByUsername(userName);
+        BigInteger groupId = userDetail.getGroup().getId();
+        BigInteger userId = userDetail.getId();
+        DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
+        dashboardRequestParamsTO.setWorkFlowStatusId(workFlowStatusId);
+        dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
+        dashboardRequestParamsTO.setName(name);
+        dashboardRequestParamsTO.setNmrId(nmrId);
+        dashboardRequestParamsTO.setSearch(search);
+        dashboardRequestParamsTO.setPageNo(pageNo);
+        dashboardRequestParamsTO.setSize(size);
+        dashboardRequestParamsTO.setSortBy(sortBy);
+        dashboardRequestParamsTO.setUserGroupId(groupId);
+        dashboardRequestParamsTO.setUserGroupStatus(userGroupStatus);
+        if (groupId.equals(Group.SMC.getId())) {
+            SMCProfile smcProfile = smcProfileRepository.findByUserId(userId);
+            dashboardRequestParamsTO.setCouncilId(smcProfile.getStateMedicalCouncil().getId().toString());
+        } else if (groupId.equals(Group.COLLEGE_DEAN.getId())) {
+            CollegeDean collegeDean = collegeDeanRepository.findByUserId(userId);
+            dashboardRequestParamsTO.setCollegeId(collegeDean.getCollege().getId().toString());
+        } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
+            CollegeRegistrar collegeRegistrar = collegeRegistrarRepository.findByUserId(userId);
+            dashboardRequestParamsTO.setCollegeId(collegeRegistrar.getCollege().getId().toString());
+        }
+        if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
+                || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
+            dashboardRequestParamsTO.setSmcId(smcId);
+        }
+        final String sortingOrder = sortOrder == null ? DEFAULT_SORT_ORDER : sortOrder;
+        dashboardRequestParamsTO.setSortOrder(sortingOrder);
+        final int dataLimit = MAX_DATA_SIZE < size ? MAX_DATA_SIZE : size;
+        Pageable pageable = PageRequest.of(pageNo, dataLimit);
+        return iFetchSpecificDetailsCustomRepository.fetchDashboardData(dashboardRequestParamsTO, pageable);
+    }
+
     /**
      * This method fetches the dashboard data based on the input request.
      *
