@@ -85,6 +85,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         StringBuilder sb = new StringBuilder();
         sb.append(
                 "select doctor_status, smc_status, college_dean_status, college_registrar_status, nmc_status, nbe_status, calculate.hp_profile_id, calculate.request_id, rd.registration_no, rd.created_at,stmc.name, hp.full_name, application_type_id," +
+                        "  (SELECT a.name FROM main.application_type a WHERE a.id=application_type_id) as application_type_name,  " +
                         " DATE_PART('day', (now() - TO_TIMESTAMP(rd.created_at, 'YYYY-MM-DD HH24:MI:SS'))) as pendency  from " +
                         "( " +
                         "select     " +
@@ -322,7 +323,8 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setCouncilName((String) result[10]);
             healthProfessionalApplicationTo.setApplicantFullName((String) result[11]);
             healthProfessionalApplicationTo.setApplicationTypeId((BigInteger) result[12]);
-            healthProfessionalApplicationTo.setPendency((Double) result[13]);
+            healthProfessionalApplicationTo.setApplicationTypeName((String) result[13]);
+            healthProfessionalApplicationTo.setPendency((Double) result[14]);
             healthProfessionalApplicationToList.add(healthProfessionalApplicationTo);
         });
         healthProfessionalApplicationResponseTo.setHealthProfessionalApplications(healthProfessionalApplicationToList);

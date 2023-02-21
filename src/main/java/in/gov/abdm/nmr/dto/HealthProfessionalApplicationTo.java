@@ -19,5 +19,6 @@ public class HealthProfessionalApplicationTo {
     private String councilName;
     private String applicantFullName;
     private BigInteger applicationTypeId;
+    private String applicationTypeName;
     private Double pendency;
 }
