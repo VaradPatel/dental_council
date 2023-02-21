@@ -330,7 +330,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                         "INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id " +
                         "INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id " +
                         "INNER JOIN main.qualification_details as qd on qd.hp_profile_id = hp.id AND qd.request_id = hp.request_id " +
-                        "WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 AND calculate.application_type_id = " + dashboardRequestParamsTO.getApplicationTypeId() + " ");
+                        "WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 AND calculate.application_type_id IN (" + dashboardRequestParamsTO.getApplicationTypeId() + ") ");
 
         String parameters = DASHBOARD_PARAMETERS.apply(dashboardRequestParamsTO);
 
