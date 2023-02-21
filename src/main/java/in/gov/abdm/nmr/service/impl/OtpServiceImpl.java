@@ -52,9 +52,9 @@ public class OtpServiceImpl implements IOtpService {
         if (nmrOtpRepository.findOtpGeneratedInLast10MinutesWithExceededAttempts(otpGenerateRequestTo.getContact()) > 0) {
             throw new OtpException(NMRConstants.OTP_ATTEMPTS_EXCEEDED);
         }
-        String otp = String.valueOf(new SecureRandom().nextInt(999999));
+        String otp = String.valueOf(new SecureRandom().nextInt(899999) + 100000);
         if (nmrOtpRepository.doesValidDuplicateOtpExists(DigestUtils.sha256Hex(otp), otpGenerateRequestTo.getContact())) {
-            otp = String.valueOf(new SecureRandom().nextInt(999999));
+            otp = String.valueOf(new SecureRandom().nextInt(899999) + 100000);
         }
 
         nmrOtpRepository.saveOtpDetails(DigestUtils.sha256Hex(otp), otpGenerateRequestTo.getContact());
