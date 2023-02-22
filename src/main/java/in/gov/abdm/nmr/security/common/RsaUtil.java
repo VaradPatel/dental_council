@@ -43,6 +43,7 @@ public class RsaUtil {
         }
         try {
             Cipher decryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            //Cipher decryptCipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
             decryptCipher.init(Cipher.DECRYPT_MODE, keyUtil.getPrivateKey(KEY_ALIAS, privateKeyPass));
             return new String(decryptCipher.doFinal(Base64.getDecoder().decode(encrypted)), StandardCharsets.UTF_8);
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException | NoSuchAlgorithmException |

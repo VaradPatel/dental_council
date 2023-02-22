@@ -228,7 +228,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 WorkProfile newWorkProfile = new WorkProfile();
                 org.springframework.beans.BeanUtils.copyProperties(workProfile, newWorkProfile);
                 newWorkProfile.setId(null);
-                newWorkProfile.setHpProfileId(targetedHpProfile.getId());
+                if (targetedHpProfile.getId() != null) {
+                    newWorkProfile.setHpProfileId(targetedHpProfile.getId());
+                }
                 workProfileRepository.save(newWorkProfile);
 
                 List<LanguagesKnown> languagesKnownList = new ArrayList<>();
