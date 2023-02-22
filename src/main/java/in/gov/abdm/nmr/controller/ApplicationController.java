@@ -34,9 +34,6 @@ public class ApplicationController {
     @Autowired
     private IRequestCounterService requestCounterService;
 
-    private static final List<BigInteger> REQUEST_ID_CREATION_STATUSES = List.of(HpProfileStatus.REJECTED.getId(),
-            HpProfileStatus.APPROVED.getId(), HpProfileStatus.SUSPENDED.getId(), HpProfileStatus.BLACKLISTED.getId());
-
     /**
      * This API endpoint is used to Suspend a health professional.
      *

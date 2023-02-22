@@ -199,7 +199,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                         "from main.work_flow  " +
                         "order by hp_profile_id desc " +
                         ") latest_wf on request_id = lat_request_id " +
-                        "WHERE  work_flow_status_id = " + dashboardRequestParamsTO.getWorkFlowStatusId() + " " +
+                        //"WHERE  work_flow_status_id = " + dashboardRequestParamsTO.getWorkFlowStatusId() + " " +
                         "order by lat_hp_profile_id desc, wf.id asc " +
                         ")  " +
                         "calculate " +
@@ -322,7 +322,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                         "from main.work_flow  " +
                         "order by hp_profile_id desc " +
                         ") latest_wf on request_id = lat_request_id " +
-                        "WHERE  work_flow_status_id = " + dashboardRequestParamsTO.getWorkFlowStatusId() + " " +
+                        //"WHERE  work_flow_status_id = " + dashboardRequestParamsTO.getWorkFlowStatusId() + " " +
                         "order by lat_hp_profile_id desc, wf.id asc " +
                         ")  " +
                         "calculate " +
