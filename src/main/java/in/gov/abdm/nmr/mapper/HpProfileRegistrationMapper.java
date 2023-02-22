@@ -71,7 +71,9 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
         hpProfileRegistrationResponseTO.setRegistrationDetailTO(registrationDetailsTo);
         hpProfileRegistrationResponseTO.setNbeResponseTo(nbeResponseTo);
         hpProfileRegistrationResponseTO.setQualificationDetailResponseTos(qualifications);
-        hpProfileRegistrationResponseTO.setRequestId(registrationDetails.getRequestId());
+        if (registrationDetails != null) {
+            hpProfileRegistrationResponseTO.setRequestId(registrationDetails.getRequestId());
+        }
         return  hpProfileRegistrationResponseTO;
     }
 }
