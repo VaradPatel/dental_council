@@ -149,17 +149,4 @@ class MasterDataControllerTest {
         assertEquals(expectedResult, result);
         verify(masterDataService).facilityType();
     }
-
-/*    @Test
-    void testFacilityTypeNegative() {
-        List<MasterDataTO> unexpectedResult = Arrays.asList(
-                new MasterDataTO(1l, "type1", "value1"),
-                new MasterDataTO(2l,"type2", "value2")
-        );
-        when(masterDataService.facilityType()).thenReturn(unexpectedResult);
-        //List<MasterDataTO> result = masterDataController.facilityType();
-        assertEquals(unexpectedResult, masterDataController.facilityType());
-        verify(masterDataService).facilityType();
-    }*/
-
 }

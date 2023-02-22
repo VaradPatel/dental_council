@@ -27,23 +27,31 @@ class CollegeControllerTest {
 
     @InjectMocks
     CollegeController collegeController;
-
     @Mock
     private ICollegeService collegeService;
+    CollegeRegistrationRequestTo collegeRegistrationRequestTo;
+    CollegeDeanCreationRequestTo collegeDeanCreationRequestTo;
+    BigInteger collegeId;
+    CollegeDeanProfileTo expectedResponse;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        MockMvc mockMvc = standaloneSetup(collegeController).build();
+        collegeRegistrationRequestTo = new CollegeRegistrationRequestTo();
+        collegeDeanCreationRequestTo = new CollegeDeanCreationRequestTo();
+        collegeId = BigInteger.valueOf(1);
+        expectedResponse = new CollegeDeanProfileTo();
     }
 
     @AfterEach
     void tearDown() {
+        collegeRegistrationRequestTo = null;
+        collegeDeanCreationRequestTo = null;
+        expectedResponse = null;
     }
 
     @Test
-    public void testRegisterCollege() throws Exception {
-        CollegeRegistrationRequestTo collegeRegistrationRequestTo = new CollegeRegistrationRequestTo();
+    void testRegisterCollege() throws Exception {
         CollegeProfileTo expected = new CollegeProfileTo();
         when(collegeService.registerCollege(null, collegeRegistrationRequestTo, false)).thenReturn(expected);
         CollegeProfileTo result = collegeController.registerCollege(collegeRegistrationRequestTo);
@@ -52,10 +60,7 @@ class CollegeControllerTest {
 
 
     @Test
-    public void testRegisterDean() throws NmrException {
-        BigInteger collegeId = new BigInteger("1");
-        CollegeDeanCreationRequestTo collegeDeanCreationRequestTo = new CollegeDeanCreationRequestTo();
-        CollegeDeanProfileTo expectedResponse = new CollegeDeanProfileTo();
+    void testRegisterDean() throws NmrException {
         when(collegeService.registerDean(collegeId, collegeDeanCreationRequestTo)).thenReturn(expectedResponse);
         CollegeDeanProfileTo response = collegeController.registerDean(collegeId, collegeDeanCreationRequestTo);
         assertEquals(expectedResponse, response);

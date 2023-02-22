@@ -55,13 +55,6 @@ class CaptchaControllerTest {
         assertEquals(expectedResponse, actualResponse);
     }
 
-/*    @Test
-    public void generateCaptchaTest() throws Exception {
-        when(captchaService.generateCaptcha()).thenReturn(responseTO);
-        mockMvc.perform(MockMvcRequestBuilders.get("/generateCaptcha")
-                .contentType(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isOk());
-    }*/
-
     @Test
     void testValidateCaptcha() {
         when(captchaService.validateCaptcha(request)).thenReturn(expectedResponse);
