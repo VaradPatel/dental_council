@@ -62,8 +62,25 @@ public class DashboardController {
         return iFetchSpecificDetailsService.fetchDashboardData(requestTO);
     }
 
+    /**
+     * Retrieves dashboard data based on the provided parameters.
+     *
+     * @param workFlowStatusId  the workflow status ID to filter by
+     * @param applicationTypeId the application type ID to filter by
+     * @param userGroupStatus   the user group status to filter by
+     * @param smcId             the SMC ID to filter by
+     * @param name              the name to filter by
+     * @param nmrId             the NMR ID to filter by
+     * @param search            the search string to filter by
+     * @param pageNo            the page number to retrieve
+     * @param size              the number of results per page
+     * @param sortBy            the field to sort by
+     * @param sortOrder         the sort order ("asc" or "desc")
+     * @return a DashboardResponseTO object containing the retrieved data
+     * @throws InvalidRequestException if the provided request parameters are invalid
+     */
     @GetMapping(PATH_DASHBOARD_FETCH_DETAILS)
-    public DashboardResponseTO DashBoardResponseTO1(
+    public DashboardResponseTO FetchCardDetails(
             @RequestParam(required = false, value = "workFlowStatusId") String workFlowStatusId,
             @RequestParam(required = false, value = "applicationTypeId") String applicationTypeId,
             @RequestParam(required = false, value = "userGroupStatus") String userGroupStatus,
@@ -75,7 +92,7 @@ public class DashboardController {
             @RequestParam(required = false, value = "size", defaultValue = "2") int size,
             @RequestParam(required = false, value = "sortBy") String sortBy,
             @RequestParam(required = false, value = "sortOrder") String sortOrder) throws InvalidRequestException {
-        return iFetchSpecificDetailsService.fetchDashboardData1(workFlowStatusId, applicationTypeId,
+        return iFetchSpecificDetailsService.FetchCardDetails(workFlowStatusId, applicationTypeId,
                 userGroupStatus, smcId, name, nmrId, search, pageNo, size, sortBy, sortOrder);
     }
 

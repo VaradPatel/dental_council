@@ -143,8 +143,25 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         }
     }
 
+    /**
+     * Fetches card details for a given set of parameters.
+     *
+     * @param workFlowStatusId the workflow status ID
+     * @param applicationTypeId the application type ID
+     * @param userGroupStatus the user group status
+     * @param smcId the SMC ID
+     * @param name the name
+     * @param nmrId the NMR ID
+     * @param search the search parameter
+     * @param pageNo the page number
+     * @param size the size of the page
+     * @param sortBy the sort parameter
+     * @param sortOrder the sort order
+     * @return the DashboardResponseTO containing the card details
+     * @throws InvalidRequestException if the request is invalid
+     */
     @Override
-    public DashboardResponseTO fetchDashboardData1(String workFlowStatusId, String applicationTypeId, String userGroupStatus,
+    public DashboardResponseTO FetchCardDetails(String workFlowStatusId, String applicationTypeId, String userGroupStatus,
                                                    String smcId, String name, String nmrId, String search, int pageNo, int size,
                                                    String sortBy, String sortOrder) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
