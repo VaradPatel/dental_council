@@ -31,18 +31,24 @@ class DashboardControllerTest {
     @Mock
     IFetchSpecificDetailsService iFetchSpecificDetailsService;
 
+    FetchCountOnCardResponseTO expected;
+    DashboardRequestTO requestTO;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
+        expected = new FetchCountOnCardResponseTO();
+        requestTO = new DashboardRequestTO();
     }
 
     @AfterEach
     void tearDown() {
+        expected = null;
+        requestTO = null;
     }
 
     @Test
-    public void testFetchCountOnCard() throws InvalidRequestException, AccessDeniedException {
-        FetchCountOnCardResponseTO expected = new FetchCountOnCardResponseTO();
+    void testFetchCountOnCard() throws InvalidRequestException, AccessDeniedException {
         when(iFetchCountOnCardService.fetchCountOnCard()).thenReturn(expected);
         FetchCountOnCardResponseTO result = dashboardController.fetchCountOnCard();
         assertEquals(expected, result);
@@ -50,8 +56,7 @@ class DashboardControllerTest {
 
 
     @Test
-    public void testDashBoardResponseTO() throws InvalidRequestException {
-        DashboardRequestTO requestTO = new DashboardRequestTO();
+    void testDashBoardResponseTO() throws InvalidRequestException {
         DashboardResponseTO expectedResponseTO = new DashboardResponseTO();
         when(iFetchSpecificDetailsService.fetchDashboardData(requestTO)).thenReturn(expectedResponseTO);
         DashboardResponseTO actualResponseTO = dashboardController.DashBoardResponseTO(requestTO);
