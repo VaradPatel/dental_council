@@ -17,6 +17,6 @@ import static in.gov.abdm.nmr.util.NMRConstants.NOTIFICATION_SERVICE_SEND_MESSAG
 public interface NotificationFClient {
 
     @PostMapping(value = NOTIFICATION_SERVICE_SEND_MESSAGE)
-    NotificationResponseTo sendNotification(@RequestBody NotificationRequestTo req, @RequestHeader Timestamp timeStamp, @RequestHeader String requestId);
+    NotificationResponseTo sendNotification(@RequestBody NotificationRequestTo req, @RequestHeader("TIMESTAMP") Timestamp timeStamp, @RequestHeader("REQUEST_ID") String requestId);
 
 }

@@ -198,11 +198,11 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                         "select  request_id as lat_request_id, hp_profile_id as lat_hp_profile_id " +
                         "from main.work_flow  " +
                         "order by hp_profile_id desc " +
-                        ") latest_wf on request_id = lat_request_id " +
-                        //"WHERE  work_flow_status_id = " + dashboardRequestParamsTO.getWorkFlowStatusId() + " " +
-                        "order by lat_hp_profile_id desc, wf.id asc " +
-                        ")  " +
-                        "calculate " +
+                        ") latest_wf on request_id = lat_request_id " );
+                        if (Objects.nonNull(dashboardRequestParamsTO.getWorkFlowStatusId()) && !dashboardRequestParamsTO.getWorkFlowStatusId().isEmpty()) {
+                            sb.append(" WHERE  work_flow_status_id = '" + dashboardRequestParamsTO.getWorkFlowStatusId() + "' ");
+                        }
+                        sb.append("order by lat_hp_profile_id desc, wf.id asc " + ")  " +"calculate " +
                         "INNER JOIN main.registration_details as rd on rd.hp_profile_id = calculate.hp_profile_id " +
                         "INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id " +
                         "INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id " +
@@ -321,11 +321,11 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                         "select  request_id as lat_request_id, hp_profile_id as lat_hp_profile_id " +
                         "from main.work_flow  " +
                         "order by hp_profile_id desc " +
-                        ") latest_wf on request_id = lat_request_id " +
-                        //"WHERE  work_flow_status_id = " + dashboardRequestParamsTO.getWorkFlowStatusId() + " " +
-                        "order by lat_hp_profile_id desc, wf.id asc " +
-                        ")  " +
-                        "calculate " +
+                        ") latest_wf on request_id = lat_request_id " );
+                       if (Objects.nonNull(dashboardRequestParamsTO.getWorkFlowStatusId()) && !dashboardRequestParamsTO.getWorkFlowStatusId().isEmpty()) {
+                           sb.append(" WHERE  work_flow_status_id = '" + dashboardRequestParamsTO.getWorkFlowStatusId() + "' ");
+                       }
+                        sb.append("order by lat_hp_profile_id desc, wf.id asc ) calculate " +
                         "INNER JOIN main.registration_details as rd on rd.hp_profile_id = calculate.hp_profile_id " +
                         "INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id " +
                         "INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id " +
