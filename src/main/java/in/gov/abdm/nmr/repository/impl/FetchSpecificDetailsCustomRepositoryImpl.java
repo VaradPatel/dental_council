@@ -41,7 +41,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
      * @param dashboardRequestParamsTO - object that contains the criteria for the query.
      * @return a string query with appended WHERE clause for the query.
      */
-    private static final Function<DashboardRequestParamsTO, String> DASHBOARD_PARAMETERS = (dashboardRequestParamsTO) -> {
+    private static final Function<DashboardRequestParamsTO, String> DASHBOARD_PARAMETERS = dashboardRequestParamsTO -> {
         StringBuilder sb = new StringBuilder();
 
         if (Objects.nonNull(dashboardRequestParamsTO.getSearch()) && !dashboardRequestParamsTO.getSearch().isEmpty()) {
@@ -68,19 +68,6 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
         }
 
-       /*
-        if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
-            sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
-        }
-
-
-        if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
-            sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
-        }
-
-        if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
-            sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
-        }*/
         if (Objects.nonNull(dashboardRequestParamsTO.getUserGroupId())){
             BigInteger groupId = dashboardRequestParamsTO.getUserGroupId();
             String userGroupStatus = dashboardRequestParamsTO.getUserGroupStatus().toUpperCase();
@@ -124,7 +111,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
      * @param dashboardRequestParamsTO - an object that contains parameters for the function
      * @return a string query to get the request details.
      */
-    private static final Function<DashboardRequestParamsTO, String> DASHBOARD = (dashboardRequestParamsTO) -> {
+    private static final Function<DashboardRequestParamsTO, String> DASHBOARD = dashboardRequestParamsTO -> {
         StringBuilder sb = new StringBuilder();
         sb.append(
                 "select doctor_status, smc_status, college_dean_status, college_registrar_status, nmc_status, nbe_status, calculate.hp_profile_id, calculate.request_id, rd.registration_no, rd.created_at, stmc.name, hp.full_name " +
@@ -247,7 +234,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
      * @param dashboardRequestParamsTO - an object that contains parameters for the function
      * @return a query to get the count of the Dashboard records list.
      */
-    private static final Function<DashboardRequestParamsTO, String> GET_RECORD_COUNT = (dashboardRequestParamsTO) -> {
+    private static final Function<DashboardRequestParamsTO, String> GET_RECORD_COUNT = dashboardRequestParamsTO -> {
         StringBuilder sb = new StringBuilder();
         sb.append(
                 "select count(*) " +

@@ -273,7 +273,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
         /**
          * Data retrieval - Activate License
          */
-        List<StatusWiseCountTO> activateLicenseRequests = new ArrayList<>();
+        List<StatusWiseCountTO> activateLicenseRequests;
         List<String> filteredStatusListForLicenseRequests = new ArrayList<>();
         responseTO.setActivateLicenseRequest(FetchCountOnCardInnerResponseTO.builder()
                 .applicationTypeIds(ApplicationType.HP_ACTIVATE_LICENSE.getId().toString())
@@ -313,7 +313,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
         /**
          * Data retrieval - College Registration
          */
-        List<StatusWiseCountTO> collegeRegistrationRequests = new ArrayList<>();
+        List<StatusWiseCountTO> collegeRegistrationRequests;
         List<String> filteredStatusListForCollegeRegRequests = new ArrayList<>();
         responseTO.setCollegeRegistrationRequest(FetchCountOnCardInnerResponseTO.builder()
                 .applicationTypeIds(ApplicationType.COLLEGE_REGISTRATION.getId().toString())

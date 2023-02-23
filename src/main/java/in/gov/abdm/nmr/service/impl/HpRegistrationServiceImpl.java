@@ -103,24 +103,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 				.SmcRegistrationToDto(hpProfileDaoService.fetchSmcRegistrationDetail(councilId, registrationNumber));
 	}
 
-    private void addHpProfileInHpProfileAudit(BigInteger hpProfileId) {
-        HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
-        HpProfileMaster hpProfileMaster = iHpProfileAuditMapper.hpProfileToHpProfileMaster(hpProfile);
-        iHpProfileAuditRepository.save(hpProfileMaster);
-    }
-
-    private void addRegistrationDetailsInRegistrationAudit(BigInteger hpProfileId) {
-        RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId);
-        RegistrationDetailsMaster registrationDetailsAudit = iHpProfileAuditMapper.registrationDetailsToRegistrationDetailsMaster(registrationDetails);
-        registrationDetailAuditRepository.save(registrationDetailsAudit);
-    }
-
-    private void addWorkProfileToWorkProfileAudit(BigInteger hpProfileId) {
-        WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(hpProfileId);
-        WorkProfileMaster workProfileAudit = iHpProfileAuditMapper.workProfileToWorkProfileMaster(workProfile);
-        workProfileAuditRepository.save(workProfileAudit);
-    }
-
 
     @Override
     public HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException {
@@ -237,11 +219,5 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = HpProfileRegistrationMapper.convertEntitiesToRegistrationResponseTo(registrationDetails, nbeDetails, indianQualifications, internationalQualifications);
         hpProfileRegistrationResponseTO.setHpProfileId(hpProfileId);
         return hpProfileRegistrationResponseTO;
-    }
-
-    private BigInteger getSecondLastHpProfile(BigInteger hpProfileId) {
-        HpProfile secondLastHpProfile = iHpProfileRepository.findSecondLastHpProfile(iHpProfileRepository.findById(hpProfileId).get().getRegistrationId());
-        final BigInteger secondLastProfileId = secondLastHpProfile != null ? secondLastHpProfile.getId() : BigInteger.ZERO;
-        return secondLastProfileId;
     }
 }

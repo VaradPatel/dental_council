@@ -41,7 +41,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      * @param healthProfessionalApplicationRequestParamsTo - object that contains the criteria for the query.
      * @return a string query with appended WHERE clause for the query.
      */
-    private static final Function<HealthProfessionalApplicationRequestParamsTo, String> TRACK_APPLICATION_PARAMETERS = (healthProfessionalApplicationRequestParamsTo) -> {
+    private static final Function<HealthProfessionalApplicationRequestParamsTo, String> TRACK_APPLICATION_PARAMETERS = healthProfessionalApplicationRequestParamsTo -> {
         StringBuilder sb = new StringBuilder();
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId()) && !healthProfessionalApplicationRequestParamsTo.getApplicationTypeId().isEmpty()) {
@@ -81,7 +81,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      * @param healthProfessionalApplicationRequestParamsTo - an object that contains parameters for the function
      * @return a string query to get the status of the Health Professional's application requests.
      */
-    private static final Function<HealthProfessionalApplicationRequestParamsTo, String> TRACK_APPLICATION = (healthProfessionalApplicationRequestParamsTo) -> {
+    private static final Function<HealthProfessionalApplicationRequestParamsTo, String> TRACK_APPLICATION = healthProfessionalApplicationRequestParamsTo -> {
         StringBuilder sb = new StringBuilder();
         sb.append(
                 "select doctor_status, smc_status, college_dean_status, college_registrar_status, nmc_status, nbe_status, calculate.hp_profile_id, calculate.request_id, rd.registration_no, rd.created_at,stmc.name, hp.full_name, application_type_id," +
@@ -200,7 +200,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      * @param healthProfessionalApplicationRequestParamsTo - an object that contains parameters for the function
      * @return a query to get the count of the Health Professional's application requests.
      */
-    private static final Function<HealthProfessionalApplicationRequestParamsTo, String> GET_RECORD_COUNT = (healthProfessionalApplicationRequestParamsTo) -> {
+    private static final Function<HealthProfessionalApplicationRequestParamsTo, String> GET_RECORD_COUNT = healthProfessionalApplicationRequestParamsTo -> {
         StringBuilder sb = new StringBuilder();
         sb.append(
                 "select count(*) from " +

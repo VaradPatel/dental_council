@@ -49,7 +49,7 @@ public class PasswordResetToken {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.HOUR, expiryTimeInMinutes);
-        Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
-        return timestamp;
+        return new Timestamp(calendar.getTimeInMillis());
+
     }
 }

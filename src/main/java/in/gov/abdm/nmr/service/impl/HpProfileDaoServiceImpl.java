@@ -157,10 +157,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         }
         languagesKnownRepository.saveAll(languagesKnowns);
 
-
-        if (copiedExistingHpProfile != null) {
-
-            if (HpProfileStatus.APPROVED.getId().equals(copiedExistingHpProfile.getHpProfileStatus().getId())) {
+        if (copiedExistingHpProfile != null && HpProfileStatus.APPROVED.getId().equals(copiedExistingHpProfile.getHpProfileStatus().getId())) {
 
                 RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(copiedExistingHpProfile.getId());
                 RegistrationDetails newRegistrationDetails = new RegistrationDetails();
@@ -217,12 +214,13 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                     SuperSpeciality newSuperSpeciality = new SuperSpeciality();
                     org.springframework.beans.BeanUtils.copyProperties(superSpeciality, newSuperSpeciality);
                     newSuperSpeciality.setId(null);
-                    newSuperSpeciality.setHpProfileId(targetedHpProfile.getId());
+                    if (targetedHpProfile != null && targetedHpProfile.getId() != null) {
+                        newSuperSpeciality.setHpProfileId(targetedHpProfile.getId());
+                    }
                     superSpecialities.add(newSuperSpeciality);
                 }
                 superSpecialityRepository.saveAll(superSpecialities);
             }
-        }
 
         return new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", updatedHpProfileId);
     }
@@ -331,7 +329,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         byte[] fileContent = file.getBytes();
 
-        String encodedHpProfilePhoto = Base64.getEncoder().encodeToString(fileContent);
+
         hpProfile.setProfilePhoto(fileContent);
         hpProfile.setPicName(file.getOriginalFilename());
         HpProfile insertedData = iHpProfileRepository.save(hpProfile);
@@ -446,7 +444,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private void saveInternationalQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
                                                        List<QualificationDetailRequestTO> qualificationDetailRequestTOS) {
         if (qualificationDetailRequestTOS.size() > 0) {
-            List<ForeignQualificationDetails> internationQualifications = new ArrayList<ForeignQualificationDetails>();
+            List<ForeignQualificationDetails> internationQualifications = new ArrayList<>();
             for (QualificationDetailRequestTO internationQualification : qualificationDetailRequestTOS) {
                 ForeignQualificationDetails customQualification = new ForeignQualificationDetails();
                 if (internationQualification.getId() != null) {
