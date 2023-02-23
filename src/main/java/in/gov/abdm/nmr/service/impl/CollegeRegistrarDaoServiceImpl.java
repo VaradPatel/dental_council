@@ -1,22 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.math.BigInteger;
-
-import javax.persistence.EntityManager;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import in.gov.abdm.nmr.dto.CollegeRegistrarCreationRequestTo;
-import in.gov.abdm.nmr.entity.College;
-import in.gov.abdm.nmr.entity.CollegeRegistrar;
-import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.entity.UserGroup;
-import in.gov.abdm.nmr.entity.UserSubType;
-import in.gov.abdm.nmr.entity.UserType;
+import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
@@ -27,6 +12,14 @@ import in.gov.abdm.nmr.repository.ICollegeRepository;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.ICollegeRegistrarDaoService;
 import in.gov.abdm.nmr.service.IUserDaoService;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import java.math.BigInteger;
 
 @Service
 @Transactional
@@ -60,38 +53,7 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
 
     @Override
     public CollegeRegistrar saveCollegeRegistrar(BigInteger collegeId, CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException {
-        User collegeRegistrarUserDetail = null;
-        CollegeRegistrar collegeRegistrarEntityOld = null;
-        /*if (collegeRegistrarCreationRequestTo.getId() != null || collegeRegistrarCreationRequestTo.getUserId() != null) {
-            accessControlService.validateUser(collegeRegistrarCreationRequestTo.getUserId());
-            collegeRegistrarUserDetail = userDetailService.findById(collegeRegistrarCreationRequestTo.getUserId());
-
-            if (!collegeRegistrarUserDetail.getUsername().equals(collegeRegistrarCreationRequestTo.getEmailId()) && userDetailService.findByUsername(collegeRegistrarCreationRequestTo.getEmailId()) != null) {
-                throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
-            }
-
-            collegeRegistrarEntityOld = findByUserDetail(collegeRegistrarUserDetail.getId());
-            if (!collegeRegistrarEntityOld.getId().equals(collegeRegistrarCreationRequestTo.getId())) {
-                throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
-            }
-            
-            collegeRegistrarUserDetail.setUsername(collegeRegistrarCreationRequestTo.getEmailId());
-            if (collegeRegistrarCreationRequestTo.getPassword() != null) {
-                collegeRegistrarUserDetail.setPassword(bCryptPasswordEncoder.encode(collegeRegistrarCreationRequestTo.getPassword()));
-            }
-            userDetailService.saveUserDetail(collegeRegistrarUserDetail);
-
-            CollegeRegistrar collegeRegistrarEntity = collegeRegistrarMapper.collegeRegistrarDtoToEntity(collegeRegistrarCreationRequestTo);
-            collegeRegistrarEntity.setUser(collegeRegistrarUserDetail);
-            collegeRegistrarEntity.setCreatedAt(collegeRegistrarEntityOld.getCreatedAt());
-            collegeRegistrarEntity.setCollege(collegeRegistrarEntityOld.getCollege());
-            return collegeRegistrarRepository.saveAndFlush(collegeRegistrarEntity);
-            
-        } else if (userDetailService.findByUsername(collegeRegistrarCreationRequestTo.getEmailId()) != null) {
-            throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
-        }
-*/
-        User userDetail = new User(collegeRegistrarCreationRequestTo.getUserId(), collegeRegistrarCreationRequestTo.getEmailId(), //
+        User userDetail = new User(collegeRegistrarCreationRequestTo.getUserId(), collegeRegistrarCreationRequestTo.getEmailId(),
                 bCryptPasswordEncoder.encode(collegeRegistrarCreationRequestTo.getPassword()), null, true, true, //
                 entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_REGISTRAR.getCode()) , entityManager.getReference(UserGroup.class, in.gov.abdm.nmr.enums.Group.COLLEGE_REGISTRAR.getId()), true, 0, null);
         userDetailService.saveUserDetail(userDetail);

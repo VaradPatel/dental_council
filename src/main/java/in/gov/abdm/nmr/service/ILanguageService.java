@@ -6,6 +6,5 @@ import java.util.List;
 
 public interface ILanguageService {
 
-//	CountryTO getCountryData();
     List<LanguageTO> getLanguageData();
 }

@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.service;
 
-import javax.servlet.http.HttpServletResponse;
-
 import in.gov.abdm.nmr.dto.LoginResponseTO;
+
+import javax.servlet.http.HttpServletResponse;
 
 public interface IAuthService {
 

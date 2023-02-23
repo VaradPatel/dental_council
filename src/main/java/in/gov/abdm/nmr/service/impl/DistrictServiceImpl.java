@@ -1,15 +1,14 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.math.BigInteger;
-import java.util.List;
-
-import javax.transaction.Transactional;
-
 import in.gov.abdm.nmr.dto.DistrictTO;
-import in.gov.abdm.nmr.service.IDistrictService;
 import in.gov.abdm.nmr.mapper.DistrictDtoMapper;
 import in.gov.abdm.nmr.repository.DistrictRepository;
+import in.gov.abdm.nmr.service.IDistrictService;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.math.BigInteger;
+import java.util.List;
 
 @Service
 @Transactional

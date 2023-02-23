@@ -10,7 +10,7 @@ public enum NotificationType {
         this.notificaionType = notificationType;
     }
 
-    public String getNotificationType(){
+    public String getNotificationType() {
         return this.notificaionType;
     }
 }

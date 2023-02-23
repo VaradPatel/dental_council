@@ -1,18 +1,13 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.math.BigInteger;
-import java.util.List;
-
 import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
 import in.gov.abdm.nmr.mapper.CourseMasterToMapper;
-import in.gov.abdm.nmr.service.IMasterDataService;
+import in.gov.abdm.nmr.mapper.IMasterDataMapper;
+import in.gov.abdm.nmr.service.*;
 import org.springframework.stereotype.Service;
 
-import in.gov.abdm.nmr.mapper.IMasterDataMapper;
-import in.gov.abdm.nmr.service.ICollegeDaoService;
-import in.gov.abdm.nmr.service.ICourseService;
-import in.gov.abdm.nmr.service.IFacilityTypeService;
-import in.gov.abdm.nmr.service.IRegistrationRenewationTypeService;
+import java.math.BigInteger;
+import java.util.List;
 
 @Service
 public class MasterDataServiceImpl implements IMasterDataService {

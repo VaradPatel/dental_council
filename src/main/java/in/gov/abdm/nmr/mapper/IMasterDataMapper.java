@@ -1,24 +1,12 @@
 package in.gov.abdm.nmr.mapper;
 
-import java.util.List;
-
+import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
 
-import in.gov.abdm.nmr.dto.BroadSpecialityTO;
-import in.gov.abdm.nmr.dto.college.CollegeTO;
-import in.gov.abdm.nmr.dto.CountryTO;
-import in.gov.abdm.nmr.dto.CourseTO;
-import in.gov.abdm.nmr.dto.DistrictTO;
-import in.gov.abdm.nmr.dto.FacilityTypeTO;
-import in.gov.abdm.nmr.dto.LanguageTO;
-import in.gov.abdm.nmr.dto.RegistrationRenewationTypeTO;
-import in.gov.abdm.nmr.dto.StateTO;
-import in.gov.abdm.nmr.dto.StateMedicalCouncilTO;
-import in.gov.abdm.nmr.dto.SubDistrictTO;
-import in.gov.abdm.nmr.dto.UniversityTO;
-import in.gov.abdm.nmr.dto.VillagesTO;
+import java.util.List;
 
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface IMasterDataMapper {

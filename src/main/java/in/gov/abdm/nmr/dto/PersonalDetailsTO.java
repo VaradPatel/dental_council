@@ -1,18 +1,12 @@
 package in.gov.abdm.nmr.dto;
 
-import java.math.BigInteger;
-import java.sql.Date;
-import java.util.List;
-
-import in.gov.abdm.nmr.dto.LanguageTO;
-import in.gov.abdm.nmr.dto.NationalityTO;
-import in.gov.abdm.nmr.dto.ScheduleTO;
 import lombok.Data;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import java.sql.Date;
+import java.util.List;
 
 import static in.gov.abdm.nmr.util.NMRConstants.NOT_BLANK_ERROR_MSG;
 import static in.gov.abdm.nmr.util.NMRConstants.NOT_NULL_ERROR_MSG;

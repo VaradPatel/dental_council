@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.dto;
 
-import java.math.BigInteger;
-
 import lombok.Value;
+
+import java.math.BigInteger;
 
 @Value
 public class HpProfileAddResponseTO {

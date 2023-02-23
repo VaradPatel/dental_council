@@ -1,7 +1,8 @@
 package in.gov.abdm.nmr.security.username_password;
 
-import java.util.Collections;
-
+import in.gov.abdm.nmr.dto.UserSearchTO;
+import in.gov.abdm.nmr.dto.UserTO;
+import in.gov.abdm.nmr.service.IUserDaoService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import in.gov.abdm.nmr.dto.UserSearchTO;
-import in.gov.abdm.nmr.dto.UserTO;
-import in.gov.abdm.nmr.service.IUserDaoService;
+
+import java.util.Collections;
 
 @Component
 public class UserPasswordDetailsService implements UserDetailsService {

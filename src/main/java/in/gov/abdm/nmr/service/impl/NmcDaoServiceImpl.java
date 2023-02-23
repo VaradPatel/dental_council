@@ -1,12 +1,12 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.math.BigInteger;
-
 import in.gov.abdm.nmr.entity.NmcProfile;
 import in.gov.abdm.nmr.repository.INmcProfileRepository;
 import in.gov.abdm.nmr.service.INmcDaoService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigInteger;
 
 @Service
 @Transactional

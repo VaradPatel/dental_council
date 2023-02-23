@@ -1,6 +1,9 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.dto.QueryCreateTo;
+import in.gov.abdm.nmr.dto.QueryResponseTo;
+import in.gov.abdm.nmr.dto.ResponseMessageTo;
+import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.entity.Queries;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;

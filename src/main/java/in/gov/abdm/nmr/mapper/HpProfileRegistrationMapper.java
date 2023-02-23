@@ -2,7 +2,10 @@ package in.gov.abdm.nmr.mapper;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
-import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.entity.ForeignQualificationDetails;
+import in.gov.abdm.nmr.entity.HpNbeDetails;
+import in.gov.abdm.nmr.entity.QualificationDetails;
+import in.gov.abdm.nmr.entity.RegistrationDetails;
 import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.experimental.UtilityClass;
 

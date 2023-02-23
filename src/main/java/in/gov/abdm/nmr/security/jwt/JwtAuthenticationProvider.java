@@ -1,7 +1,10 @@
 package in.gov.abdm.nmr.security.jwt;
 
-import java.util.List;
-
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import in.gov.abdm.nmr.dto.UserSearchTO;
+import in.gov.abdm.nmr.service.IUserDaoService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,12 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.stereotype.Component;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.auth0.jwt.interfaces.DecodedJWT;
-
-import in.gov.abdm.nmr.dto.UserSearchTO;
-import in.gov.abdm.nmr.service.IUserDaoService;
+import java.util.List;
 
 @Component
 public class JwtAuthenticationProvider implements AuthenticationProvider {

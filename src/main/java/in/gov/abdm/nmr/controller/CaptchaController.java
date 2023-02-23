@@ -1,8 +1,5 @@
 package in.gov.abdm.nmr.controller;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-
 import in.gov.abdm.nmr.dto.GenerateCaptchaResponseTO;
 import in.gov.abdm.nmr.dto.ValidateCaptchaRequestTO;
 import in.gov.abdm.nmr.dto.ValidateCaptchaResponseTO;
@@ -11,6 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 @RestController
 public class CaptchaController {

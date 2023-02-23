@@ -1,14 +1,12 @@
 package in.gov.abdm.nmr.repository;
 
-import java.math.BigInteger;
-
-import in.gov.abdm.nmr.dto.NextGroupTO;
+import in.gov.abdm.nmr.entity.NmrWorkFlowConfiguration;
 import in.gov.abdm.nmr.mapper.INextGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import in.gov.abdm.nmr.entity.NmrWorkFlowConfiguration;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.math.BigInteger;
 
 public interface INMRWorkFlowConfigurationRepository extends JpaRepository<NmrWorkFlowConfiguration, BigInteger> {
 

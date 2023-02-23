@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.dto;
 
-import in.gov.abdm.nmr.dto.UserTO;
 import lombok.Data;
 
 @Data

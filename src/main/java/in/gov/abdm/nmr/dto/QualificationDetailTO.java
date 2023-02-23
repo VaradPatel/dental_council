@@ -15,5 +15,4 @@ public class QualificationDetailTO {
     private String qualificationMonth;
     private Integer isNameChange;
     private Integer isVerified;
-//    private QualificationStatusTO qualificationStatus;
 }

@@ -1,13 +1,13 @@
 package in.gov.abdm.nmr.dto;
 
-import java.math.BigInteger;
-import java.util.List;
-
 import in.gov.abdm.nmr.entity.District;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigInteger;
+import java.util.List;
 
 @Data
 @Builder

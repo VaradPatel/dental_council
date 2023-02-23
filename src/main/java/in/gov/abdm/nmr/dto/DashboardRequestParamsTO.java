@@ -1,8 +1,6 @@
 package in.gov.abdm.nmr.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
 

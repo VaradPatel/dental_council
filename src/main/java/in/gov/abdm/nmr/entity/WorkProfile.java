@@ -20,11 +20,6 @@ public class WorkProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private BigInteger id;
-
-//    @OneToMany(mappedBy = "subdistrict", fetch = FetchType.LAZY)
-//    private List<City> cities;
-
-
     private String address;
     private BigInteger facilityId;
     private BigInteger facilityTypeId;

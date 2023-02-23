@@ -53,7 +53,6 @@ public class CollegeServiceImpl implements ICollegeService {
         if (collegeId != null) {
             collegeRegistrationRequestTo.setId(collegeId);
         }
-        //parameter for  collegeRegistrationStatus() has to be finalized by the client.
         if (!collegeRegistrationStatus()) {
             College collegeProfileEntity = collegeService.saveCollege(collegeRegistrationRequestTo, update);
             collegeCreationRequestToResponse = collegeMapper.collegeCreationRequestToResponse(collegeRegistrationRequestTo);

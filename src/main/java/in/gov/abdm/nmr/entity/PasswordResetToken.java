@@ -2,7 +2,11 @@ package in.gov.abdm.nmr.entity;
 
 import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.Data;
-import javax.persistence.*;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Calendar;

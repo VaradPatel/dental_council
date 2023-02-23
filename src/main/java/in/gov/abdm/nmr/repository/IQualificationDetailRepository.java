@@ -1,14 +1,12 @@
 package in.gov.abdm.nmr.repository;
 
-import java.math.BigInteger;
-import java.util.List;
-
-import javax.persistence.Tuple;
-
+import in.gov.abdm.nmr.entity.QualificationDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import in.gov.abdm.nmr.entity.QualificationDetails;
+import javax.persistence.Tuple;
+import java.math.BigInteger;
+import java.util.List;
 
 public interface IQualificationDetailRepository extends JpaRepository<QualificationDetails, BigInteger> {
 

@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.dto;
 
-import java.util.List;
-
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class HpSearchProfileTO {

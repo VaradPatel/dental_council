@@ -1,5 +1,8 @@
 package in.gov.abdm.nmr.security.config;
 
+import brave.Tracer;
+import in.gov.abdm.nmr.entity.SecurityAuditTrail;
+import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.actuate.audit.AuditEvent;
@@ -7,10 +10,6 @@ import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
-
-import brave.Tracer;
-import in.gov.abdm.nmr.entity.SecurityAuditTrail;
-import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 
 @Configuration
 public class SecurityAuditConfig {

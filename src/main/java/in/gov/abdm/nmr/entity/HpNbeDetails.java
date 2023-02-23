@@ -1,28 +1,16 @@
 package in.gov.abdm.nmr.entity;
 
-import static in.gov.abdm.nmr.util.NMRConstants.HP_PROFILE_STATUS_ID;
-import static in.gov.abdm.nmr.util.NMRConstants.ID;
-import static in.gov.abdm.nmr.util.NMRConstants.SCHEDULE_ID;
-
-import java.math.BigInteger;
-import java.sql.Date;
-import java.sql.Timestamp;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-
-import org.hibernate.annotations.Type;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.math.BigInteger;
+import java.sql.Timestamp;
 
 @Getter
 @Setter

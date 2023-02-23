@@ -1,15 +1,5 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import cn.apiclub.captcha.servlet.CaptchaServletUtil;
 import cn.apiclub.captcha.text.renderer.DefaultWordRenderer;
 import in.gov.abdm.nmr.dto.GenerateCaptchaResponseTO;
@@ -18,6 +8,14 @@ import in.gov.abdm.nmr.dto.ValidateCaptchaResponseTO;
 import in.gov.abdm.nmr.entity.Captcha;
 import in.gov.abdm.nmr.service.ICaptchaDaoService;
 import in.gov.abdm.nmr.service.ICaptchaService;
+import org.springframework.stereotype.Service;
+
+import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import java.util.List;
 
 @Service
 public class CaptchaServiceImpl implements ICaptchaService {

@@ -1,6 +1,6 @@
 package in.gov.abdm.nmr.mapper;
 
-import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.dto.CourseTO;
 import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
 import lombok.experimental.UtilityClass;
 

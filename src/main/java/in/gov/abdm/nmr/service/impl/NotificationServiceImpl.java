@@ -1,15 +1,12 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Locale;
 import in.gov.abdm.nmr.client.NotificationDBFClient;
 import in.gov.abdm.nmr.client.NotificationFClient;
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.enums.NotificationType;
 import in.gov.abdm.nmr.exception.TemplateException;
 import in.gov.abdm.nmr.service.INotificationService;
+import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.TemplatedStringBuilder;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +14,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Service;
-import in.gov.abdm.nmr.util.NMRConstants;
-import in.gov.abdm.nmr.enums.NotificationType;
+
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Implementation of methods to generate and validate OTP

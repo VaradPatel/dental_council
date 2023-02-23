@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.security.common;
 
-import in.gov.abdm.nmr.util.NMRConstants;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
