@@ -228,7 +228,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 WorkProfile newWorkProfile = new WorkProfile();
                 org.springframework.beans.BeanUtils.copyProperties(workProfile, newWorkProfile);
                 newWorkProfile.setId(null);
-                if (targetedHpProfile.getId() != null) {
+                if (targetedHpProfile != null && targetedHpProfile.getId() != null) {
                     newWorkProfile.setHpProfileId(targetedHpProfile.getId());
                 }
                 workProfileRepository.save(newWorkProfile);
