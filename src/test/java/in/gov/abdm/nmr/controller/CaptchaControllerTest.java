@@ -11,8 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -33,7 +31,6 @@ class CaptchaControllerTest {
 
     @BeforeEach
     void setUp() {
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(captchaController).build();
         responseTO = new GenerateCaptchaResponseTO();
         request = new ValidateCaptchaRequestTO();
         expectedResponse = new ValidateCaptchaResponseTO();

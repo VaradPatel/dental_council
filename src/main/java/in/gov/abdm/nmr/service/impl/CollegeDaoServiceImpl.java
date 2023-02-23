@@ -88,7 +88,6 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
 
             return college;
         } else {
-           // accessControlService.validateUser(collegeRegistrationRequestTo.getUserId());
             College collegeEntity = collegeRepository.findByUserId(collegeRegistrationRequestTo.getUserId());
             if (collegeEntity == null) {
                 throw new NmrException("Invalid college", HttpStatus.BAD_REQUEST);

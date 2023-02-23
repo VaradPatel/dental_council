@@ -116,7 +116,6 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
         CollegeDean collegeDeanEntityOld;
         if (deanId != null || collegeDeanCreationRequestTo.getUserId() != null) {
             collegeDeanCreationRequestTo.setId(deanId);
-            //accessControlService.validateUser(collegeDeanCreationRequestTo.getUserId());
             collegeDeanUserDetail = userDetailService.findById(collegeDeanCreationRequestTo.getUserId());
 
             if (!collegeDeanUserDetail.getUsername().equals(collegeDeanCreationRequestTo.getEmailId()) && userDetailService.findByUsername(collegeDeanCreationRequestTo.getEmailId()) != null) {

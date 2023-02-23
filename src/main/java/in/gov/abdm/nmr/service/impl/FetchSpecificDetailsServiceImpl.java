@@ -161,7 +161,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
      * @throws InvalidRequestException if the request is invalid
      */
     @Override
-    public DashboardResponseTO FetchCardDetails(String workFlowStatusId, String applicationTypeId, String userGroupStatus,
+    public DashboardResponseTO fetchCardDetails(String workFlowStatusId, String applicationTypeId, String userGroupStatus,
                                                    String smcId, String name, String nmrId, String search, int pageNo, int size,
                                                    String sortBy, String sortOrder) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();

@@ -250,10 +250,8 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
             List<LanguagesKnownMaster> fetchedFromMasters = languagesKnownMasterRepository.getLanguagesKnownByHpProfileId(masterHpProfile.getId());
 
             for (int i = 0; i < languagesKnownMasters.size(); i++) {
-                if (!fetchedFromMasters.isEmpty()) {
-                    if (fetchedFromMasters.get(i) != null) {
+                if (!fetchedFromMasters.isEmpty() && fetchedFromMasters.get(i) != null) {
                         languagesKnownMasters.get(i).setId(fetchedFromMasters.get(i).getId());
-                    }
                 }
                 languagesKnownMasters.get(i).setHpProfileMaster(masterHpProfile);
             }
@@ -285,10 +283,8 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
             List<QualificationDetailsMaster> fetchedFromMasters = qualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId());
 
             for (int i = 0; i < qualificationDetailsMasters.size(); i++) {
-                if (!fetchedFromMasters.isEmpty()) {
-                    if (fetchedFromMasters.get(i) != null) {
+                if (!fetchedFromMasters.isEmpty() && fetchedFromMasters.get(i) != null) {
                         qualificationDetailsMasters.get(i).setId(fetchedFromMasters.get(i).getId());
-                    }
                 }
                 qualificationDetailsMasters.get(i).setHpProfileMaster(masterHpProfile);
             }
@@ -305,10 +301,8 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
             List<SuperSpecialityMaster> fetchedFromMasters = superSpecialityMasterRepository.getSuperSpecialityFromHpProfileId(masterHpProfileId);
 
             for (int i = 0; i < superSpecialityMasters.size(); i++) {
-                if (!fetchedFromMasters.isEmpty()) {
-                    if (fetchedFromMasters.get(i) != null) {
+                if (!fetchedFromMasters.isEmpty()&& fetchedFromMasters.get(i) != null) {
                         superSpecialityMasters.get(i).setId(fetchedFromMasters.get(i).getId());
-                    }
                 }
                 superSpecialityMasters.get(i).setHpProfileId(masterHpProfileId);
             }

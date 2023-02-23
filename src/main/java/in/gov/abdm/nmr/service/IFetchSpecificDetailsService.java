@@ -26,7 +26,7 @@ public interface IFetchSpecificDetailsService {
      */
     DashboardResponseTO fetchDashboardData(DashboardRequestTO dashboardRequestTO) throws InvalidRequestException;
 
-    DashboardResponseTO FetchCardDetails(String workFlowStatusId, String applicationTypeId, String userGroupStatus, String smcId,
+    DashboardResponseTO fetchCardDetails(String workFlowStatusId, String applicationTypeId, String userGroupStatus, String smcId,
                                             String name, String nmrId, String search, int pageNo, int size, String sortBy,
                                             String sortOrder)throws InvalidRequestException;
 }
