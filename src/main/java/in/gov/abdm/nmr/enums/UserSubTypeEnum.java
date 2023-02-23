@@ -1,9 +1,9 @@
 package in.gov.abdm.nmr.enums;
 
-import java.math.BigInteger;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.math.BigInteger;
 
 @AllArgsConstructor
 @Getter

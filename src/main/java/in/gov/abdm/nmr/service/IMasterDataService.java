@@ -1,9 +1,9 @@
 package in.gov.abdm.nmr.service;
 
+import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
+
 import java.math.BigInteger;
 import java.util.List;
-
-import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
 
 public interface IMasterDataService {
 

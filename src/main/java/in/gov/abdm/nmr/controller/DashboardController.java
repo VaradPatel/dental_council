@@ -1,6 +1,8 @@
 package in.gov.abdm.nmr.controller;
 
-import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.dto.DashboardRequestTO;
+import in.gov.abdm.nmr.dto.DashboardResponseTO;
+import in.gov.abdm.nmr.dto.FetchCountOnCardResponseTO;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IFetchCountOnCardService;

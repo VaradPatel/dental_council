@@ -1,12 +1,11 @@
 package in.gov.abdm.nmr.repository;
 
-import java.math.BigInteger;
-import java.util.List;
-
-import in.gov.abdm.nmr.entity.QualificationDetails;
+import in.gov.abdm.nmr.entity.ForeignQualificationDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import in.gov.abdm.nmr.entity.ForeignQualificationDetails;
+
+import java.math.BigInteger;
+import java.util.List;
 
 public interface IForeignQualificationDetailRepository extends JpaRepository<ForeignQualificationDetails, BigInteger> {
 

@@ -1,17 +1,16 @@
 package in.gov.abdm.nmr.security.username_password;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.service.impl.UserDaoServiceImpl;
+import in.gov.abdm.nmr.util.NMRConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.stereotype.Component;
 
-import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.service.impl.UserDaoServiceImpl;
-import in.gov.abdm.nmr.util.NMRConstants;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Component
 public class AuthenticationLockingService {

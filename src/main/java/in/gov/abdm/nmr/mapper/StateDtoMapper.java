@@ -1,14 +1,13 @@
 package in.gov.abdm.nmr.mapper;
 
-import java.util.List;
-
-import in.gov.abdm.nmr.entity.State;
+import in.gov.abdm.nmr.dto.DistrictTO;
 import in.gov.abdm.nmr.dto.StateTO;
+import in.gov.abdm.nmr.entity.State;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
 
-import in.gov.abdm.nmr.dto.DistrictTO;
+import java.util.List;
 
 
 @Mapper(componentModel = ComponentModel.SPRING, uses = {CountryDtoMapper.class, DistrictDtoMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)

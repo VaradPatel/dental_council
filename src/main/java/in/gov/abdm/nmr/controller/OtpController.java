@@ -1,15 +1,20 @@
 package in.gov.abdm.nmr.controller;
-import javax.validation.Valid;
-import in.gov.abdm.nmr.dto.*;
+
+import in.gov.abdm.nmr.dto.OtpGenerateRequestTo;
+import in.gov.abdm.nmr.dto.OtpValidateRequestTo;
+import in.gov.abdm.nmr.dto.OtpValidateResponseTo;
+import in.gov.abdm.nmr.dto.ResponseMessageTo;
+import in.gov.abdm.nmr.exception.OtpException;
 import in.gov.abdm.nmr.service.IOtpService;
+import in.gov.abdm.nmr.util.NMRConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import in.gov.abdm.nmr.util.NMRConstants;
-import in.gov.abdm.nmr.exception.OtpException;
+
+import javax.validation.Valid;
 import java.security.GeneralSecurityException;
 
 /**

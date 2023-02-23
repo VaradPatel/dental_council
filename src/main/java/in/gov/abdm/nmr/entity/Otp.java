@@ -1,11 +1,10 @@
 package in.gov.abdm.nmr.entity;
 
-import java.sql.Timestamp;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.sql.Timestamp;
 
 @Entity(name = "otp")
 @Table(name = "otp")

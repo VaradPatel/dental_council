@@ -19,7 +19,7 @@ public enum Action {
     private final BigInteger id;
     private final String description;
 
-    Action(BigInteger id, String description){
+    Action(BigInteger id, String description) {
         this.id = id;
         this.description = description;
     }

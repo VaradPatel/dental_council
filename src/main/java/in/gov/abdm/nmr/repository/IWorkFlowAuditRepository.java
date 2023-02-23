@@ -1,13 +1,12 @@
 package in.gov.abdm.nmr.repository;
 
-import java.math.BigInteger;
-import java.util.List;
-
+import in.gov.abdm.nmr.entity.WorkFlow;
 import in.gov.abdm.nmr.entity.WorkFlowAudit;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import in.gov.abdm.nmr.entity.WorkFlow;
 import org.springframework.data.jpa.repository.Query;
+
+import java.math.BigInteger;
+import java.util.List;
 
 public interface IWorkFlowAuditRepository extends JpaRepository<WorkFlowAudit, BigInteger> {
 

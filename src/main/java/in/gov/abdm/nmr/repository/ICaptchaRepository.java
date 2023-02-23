@@ -1,10 +1,10 @@
 package in.gov.abdm.nmr.repository;
 
-import java.math.BigInteger;
-import java.sql.Timestamp;
-
 import in.gov.abdm.nmr.entity.Captcha;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.math.BigInteger;
+import java.sql.Timestamp;
 
 public interface ICaptchaRepository extends JpaRepository<Captcha, BigInteger> {
 

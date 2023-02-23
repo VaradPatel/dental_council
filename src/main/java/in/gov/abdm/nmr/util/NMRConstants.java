@@ -9,8 +9,6 @@ import static in.gov.abdm.nmr.enums.ApplicationType.HP_ACTIVATE_LICENSE;
 /**
  * This class holds all the constants associated with NMR application
  */
-
-
 @UtilityClass
 public class NMRConstants {
 

@@ -1,11 +1,10 @@
 package in.gov.abdm.nmr.repository;
 
-import java.math.BigInteger;
-
-import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.HpProfileMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
+import java.math.BigInteger;
 
 public interface IHpProfileMasterRepository extends JpaRepository<HpProfileMaster, BigInteger> {
 

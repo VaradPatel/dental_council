@@ -2,13 +2,13 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.client.AadhaarFClient;
 import in.gov.abdm.nmr.dto.AadhaarOtpGenerateRequestTo;
+import in.gov.abdm.nmr.dto.AadhaarOtpValidateRequestTo;
 import in.gov.abdm.nmr.dto.AadhaarResponseTo;
 import in.gov.abdm.nmr.service.AadhaarOtpService;
 import in.gov.abdm.nmr.service.IHpProfileDaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import in.gov.abdm.nmr.dto.AadhaarOtpValidateRequestTo;
 
 /**
  * Implementations of methods to send and validate Aadhaar OTP

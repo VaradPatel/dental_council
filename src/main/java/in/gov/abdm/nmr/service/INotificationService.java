@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.service;
-import in.gov.abdm.nmr.dto.*;
+
+import in.gov.abdm.nmr.dto.ResponseMessageTo;
 
 /**
  * Interface to declare methods

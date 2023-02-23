@@ -1,15 +1,13 @@
 package in.gov.abdm.nmr.entity;
 
-import java.math.BigInteger;
-import java.sql.Timestamp;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
-import in.gov.abdm.nmr.entity.CommonAuditEntity;
-import lombok.*;
+import java.math.BigInteger;
+import java.sql.Timestamp;
 
 @Getter
 @Setter

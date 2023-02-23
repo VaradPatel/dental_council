@@ -1,14 +1,13 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.util.List;
-
-import javax.transaction.Transactional;
-
 import in.gov.abdm.nmr.dto.FacilityTypeTO;
 import in.gov.abdm.nmr.mapper.FacilityTypeDtoMapper;
 import in.gov.abdm.nmr.repository.FacilityTypeRepository;
 import in.gov.abdm.nmr.service.IFacilityTypeService;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @Transactional

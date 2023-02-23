@@ -1,6 +1,8 @@
 package in.gov.abdm.nmr.service;
 
-import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.dto.DashboardRequestTO;
+import in.gov.abdm.nmr.dto.DashboardResponseTO;
+import in.gov.abdm.nmr.dto.FetchSpecificDetailsResponseTO;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 
 import java.util.List;

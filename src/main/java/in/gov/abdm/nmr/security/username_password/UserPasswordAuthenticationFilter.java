@@ -1,13 +1,13 @@
 package in.gov.abdm.nmr.security.username_password;
 
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import brave.Tracer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import in.gov.abdm.nmr.dto.LoginRequestTO;
+import in.gov.abdm.nmr.entity.SecurityAuditTrail;
+import in.gov.abdm.nmr.security.common.ProtectedPaths;
+import in.gov.abdm.nmr.security.common.RsaUtil;
+import in.gov.abdm.nmr.service.ICaptchaDaoService;
+import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,15 +22,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import brave.Tracer;
-import in.gov.abdm.nmr.dto.LoginRequestTO;
-import in.gov.abdm.nmr.entity.SecurityAuditTrail;
-import in.gov.abdm.nmr.security.common.ProtectedPaths;
-import in.gov.abdm.nmr.security.common.RsaUtil;
-import in.gov.abdm.nmr.service.ICaptchaDaoService;
-import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Component
 public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
