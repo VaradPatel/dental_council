@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 
+import static in.gov.abdm.nmr.util.NMRConstants.FORBIDDEN;
+
 @Service
 public class AccessControlServiceImpl implements IAccessControlService {
 
@@ -23,7 +25,7 @@ public class AccessControlServiceImpl implements IAccessControlService {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedInUser = userRepository.findByUsername(userName);
         if (loggedInUser == null || !loggedInUser.getId().equals(userId)) {
-            throw new AccessDeniedException("Forbidden");
+            throw new AccessDeniedException(FORBIDDEN);
         }
     }
 

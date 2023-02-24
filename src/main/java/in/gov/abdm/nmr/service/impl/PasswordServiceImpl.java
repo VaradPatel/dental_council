@@ -72,7 +72,7 @@ public class PasswordServiceImpl implements IPasswordService {
                     return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
                 }
             } else {
-                return new ResponseMessageTo(NMRConstants.USER_ALREADY_EXISTS);
+                return new ResponseMessageTo(NMRConstants.USER_NAME_ALREADY_EXISTS);
             }
         } catch (Exception e) {
             return new ResponseMessageTo(e.getLocalizedMessage());

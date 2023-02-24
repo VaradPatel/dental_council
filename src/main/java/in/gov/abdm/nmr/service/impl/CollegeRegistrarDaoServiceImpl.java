@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.math.BigInteger;
 
+import static in.gov.abdm.nmr.util.NMRConstants.*;
+
 @Service
 @Transactional
 public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoService {
@@ -64,13 +66,13 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedInUser = userDetailService.findByUsername(userName);
         if(!Group.COLLEGE_ADMIN.getId().equals(loggedInUser.getGroup().getId())) {
-            throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
+            throw new NmrException(FORBIDDEN, HttpStatus.FORBIDDEN);
         }
         
         College loggedIncollege = collegeRepository.findByUserId(loggedInUser.getId());
         College inputCollege = collegeRepository.findById(collegeId).orElse(new College());
         if(!loggedIncollege.getId().equals(inputCollege.getId())) {
-            throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
+            throw new NmrException(FORBIDDEN, HttpStatus.FORBIDDEN);
         }
         
         collegeRegistrarEntity.setCollege(loggedIncollege);
@@ -88,12 +90,12 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
             collegeRegistrarUserDetail = userDetailService.findById(collegeRegistrarCreationRequestTo.getUserId());
 
             if (!collegeRegistrarUserDetail.getUsername().equals(collegeRegistrarCreationRequestTo.getEmailId()) && userDetailService.findByUsername(collegeRegistrarCreationRequestTo.getEmailId()) != null) {
-                throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
+                throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
             }
 
             collegeRegistrarEntityOld = findByUserId(collegeRegistrarUserDetail.getId());
             if (!collegeRegistrarEntityOld.getId().equals(registrarId)) {
-                throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
+                throw new NmrException(FORBIDDEN, HttpStatus.FORBIDDEN);
             }
 
             collegeRegistrarUserDetail.setUsername(collegeRegistrarCreationRequestTo.getEmailId());
@@ -109,7 +111,7 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
             return collegeRegistrarRepository.saveAndFlush(collegeRegistrarEntity);
 
         } else if (userDetailService.findByUsername(collegeRegistrarCreationRequestTo.getEmailId()) != null) {
-            throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
+            throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
         return null;
     }
@@ -118,7 +120,7 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
     public CollegeRegistrar findCollegeRegistrarById(BigInteger registrarId, BigInteger collegeId) throws NmrException {
         CollegeRegistrar collegeRegistrarEntity = collegeRegistrarRepository.getCollegeRegistrarByIds(registrarId, collegeId);
         if (collegeRegistrarEntity == null) {
-            throw new NmrException("Invalid college id", HttpStatus.BAD_REQUEST);
+            throw new NmrException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
         }
         accessControlService.validateUser(collegeRegistrarEntity.getUser().getId());
         return collegeRegistrarEntity;
