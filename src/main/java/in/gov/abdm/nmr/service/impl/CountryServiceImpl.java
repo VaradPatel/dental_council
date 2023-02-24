@@ -13,7 +13,7 @@ import java.util.List;
 @Transactional
 public class CountryServiceImpl implements ICountryService {
 
-    public CountryRepository countryRepository;
+    private CountryRepository countryRepository;
 
     private CountryDtoMapper countryDtoMapper;
 
@@ -25,6 +25,5 @@ public class CountryServiceImpl implements ICountryService {
     @Override
     public List<CountryTO> getCountryData() {
         return countryDtoMapper.CountryDataToDto(countryRepository.getCountry());
-
     }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 @Transactional
 public class FacilityTypeServiceImpl implements IFacilityTypeService {
 
-    public FacilityTypeRepository facilityTypeRepository;
+    private FacilityTypeRepository facilityTypeRepository;
 
     private FacilityTypeDtoMapper facilityTypeDtoMapper;
 
@@ -25,7 +25,6 @@ public class FacilityTypeServiceImpl implements IFacilityTypeService {
     @Override
     public List<FacilityTypeTO> getFacilityType() {
         return facilityTypeDtoMapper.FacilityTypeDataToDto(facilityTypeRepository.getFacilityType());
-
     }
 
 }

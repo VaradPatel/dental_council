@@ -13,7 +13,7 @@ import java.util.List;
 @Transactional
 public class CourseServiceImpl implements ICourseService {
 
-    public CourseRepository courseRepository;
+    private CourseRepository courseRepository;
 
     private CourseDtoMapper courseDtoMapper;
 
@@ -25,6 +25,5 @@ public class CourseServiceImpl implements ICourseService {
     @Override
     public List<CourseTO> getCourseData() {
         return courseDtoMapper.CourseDataToDto(courseRepository.getCourse());
-
     }
 }

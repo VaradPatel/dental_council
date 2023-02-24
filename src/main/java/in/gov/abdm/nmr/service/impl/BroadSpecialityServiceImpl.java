@@ -13,7 +13,7 @@ import java.util.List;
 @Transactional
 public class BroadSpecialityServiceImpl implements IBroadSpecialityService {
 
-    public BroadSpecialityRepository broadSpecialityRepository;
+    private BroadSpecialityRepository broadSpecialityRepository;
 
     private BroadSpecialityDtoMapper broadSpecialityDtoMapper;
 
@@ -25,6 +25,5 @@ public class BroadSpecialityServiceImpl implements IBroadSpecialityService {
     @Override
     public List<BroadSpecialityTO> getSpecialityData() {
         return broadSpecialityDtoMapper.SpecialityDataToDto(broadSpecialityRepository.getSpeciality());
-
     }
 }

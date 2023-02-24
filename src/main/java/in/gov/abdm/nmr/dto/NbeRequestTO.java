@@ -7,9 +7,9 @@ import java.math.BigInteger;
 @Data
 public class NbeRequestTO {
     private BigInteger id;
-    private String roll_no;
+    private String rollNo;
     private String result;
     private String year;
     private String month;
-    private Integer marks_obtained;
+    private Integer marksObtained;
 }

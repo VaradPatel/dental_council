@@ -13,7 +13,7 @@ import java.util.List;
 @Transactional
 public class SuperSpecialityServiceImpl implements ISuperSpecialityService {
 
-    public SuperSpecialityRepository superSpecialityRepository;
+    private SuperSpecialityRepository superSpecialityRepository;
 
     private SuperSpecialityDtoMapper superSpecialityDtoMapper;
 

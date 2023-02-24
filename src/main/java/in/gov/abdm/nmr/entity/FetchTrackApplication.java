@@ -16,7 +16,6 @@ import java.util.Date;
 @Entity
 @Builder
 public class FetchTrackApplication {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
