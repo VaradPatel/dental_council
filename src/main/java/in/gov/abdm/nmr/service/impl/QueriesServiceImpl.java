@@ -68,7 +68,7 @@ public class QueriesServiceImpl implements IQueriesService {
                 .actorId(queryCreateTo.getGroupId())
                 .build();
         workFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
-        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
+        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE, null);
     }
 
     /**
@@ -95,7 +95,7 @@ public class QueriesServiceImpl implements IQueriesService {
             queries.setQueryStatus(NMRConstants.CLOSED_STATUS);
             queriesRepository.save(queries);
         });
-        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
+        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE, null);
     }
 }
 

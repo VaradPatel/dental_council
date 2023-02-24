@@ -55,7 +55,7 @@ class CaptchaControllerTest {
 
     @Test
     void testValidateCaptcha() {
-        when(captchaService.validateCaptcha(request)).thenReturn(expectedResponse);
+        when(captchaService.verifyCaptcha(request)).thenReturn(expectedResponse);
         ValidateCaptchaResponseTO actualResponse = captchaController.validateCaptcha(request);
         assertEquals(expectedResponse, actualResponse);
     }
@@ -63,8 +63,8 @@ class CaptchaControllerTest {
     @Test
     void testGetCaptchaEnabledFlag() {
         Boolean expectedFlag = true;
-        when(captchaService.getCaptchaEnabledFlag()).thenReturn(expectedFlag);
-        Boolean actualFlag = captchaController.getCaptchaEnabledFlag();
+        when(captchaService.isCaptchaEnabled()).thenReturn(expectedFlag);
+        Boolean actualFlag = captchaController.isCaptchaEnabled();
         assertEquals(expectedFlag, actualFlag);
     }
 }

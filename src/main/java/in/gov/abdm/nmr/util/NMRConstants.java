@@ -108,7 +108,7 @@ public class NMRConstants {
     public static final int RESET_PASSWORD_LINK_EXPIRY_HOURS = 24;
     public static final String OTP_INVALID = "Invalid OTP";
     public static final String OTP_NOT_FOUND = "OTP Not Found";
-    public static final String OTP_EXPIRED = "OTP Expired";
+    public static final String OTP_EXPIRED = "OTP Expired Or Not Found";
     public static final String TEMPLATE_ID = "templateId";
     public static final String SUBJECT = "subject";
     public static final String CONTENT = "content";
