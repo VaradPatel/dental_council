@@ -22,7 +22,6 @@ public final class CourseMasterToMapper {
         MasterDataTO masterDataTO = new MasterDataTO();
         masterDataTO.setId(courseTO.getId().longValue());
         masterDataTO.setName(courseTO.getCourseName());
-        System.out.println(masterDataTO);
         return masterDataTO;
     }
 

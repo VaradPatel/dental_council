@@ -45,9 +45,9 @@ class AuthControllerTest {
 
     @Test
     void testLoginSuccessfulAuth() {
-        AuthServiceImpl authService = mock(AuthServiceImpl.class);
-        when(authService.successfulAuth(response)).thenReturn(expectedResponse);
-        AuthController loginController = new AuthController(authService);
+        AuthServiceImpl service = mock(AuthServiceImpl.class);
+        when(service.successfulAuth(response)).thenReturn(expectedResponse);
+        AuthController loginController = new AuthController(service);
         LoginResponseTO actualResponse = loginController.login(loginRequestTO, response);
         assertEquals(expectedResponse, actualResponse);
     }

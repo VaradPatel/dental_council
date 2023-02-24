@@ -28,12 +28,14 @@ class CaptchaControllerTest {
     GenerateCaptchaResponseTO responseTO;
     ValidateCaptchaRequestTO request;
     ValidateCaptchaResponseTO expectedResponse;
+    GenerateCaptchaResponseTO generateCaptchaResponseTO;
 
     @BeforeEach
     void setUp() {
         responseTO = new GenerateCaptchaResponseTO();
         request = new ValidateCaptchaRequestTO();
         expectedResponse = new ValidateCaptchaResponseTO();
+        generateCaptchaResponseTO = new GenerateCaptchaResponseTO();
     }
 
     @AfterEach
@@ -45,11 +47,10 @@ class CaptchaControllerTest {
 
 
     @Test
-    public void testGenerateCaptcha() throws NoSuchAlgorithmException, IOException {
-        GenerateCaptchaResponseTO expectedResponse = new GenerateCaptchaResponseTO();
-        when(captchaService.generateCaptcha()).thenReturn(expectedResponse);
+    void testGenerateCaptcha() throws NoSuchAlgorithmException, IOException {
+        when(captchaService.generateCaptcha()).thenReturn(generateCaptchaResponseTO);
         GenerateCaptchaResponseTO actualResponse = captchaController.generateCaptcha();
-        assertEquals(expectedResponse, actualResponse);
+        assertEquals(generateCaptchaResponseTO, actualResponse);
     }
 
     @Test
