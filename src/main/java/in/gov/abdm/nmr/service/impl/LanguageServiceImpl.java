@@ -13,7 +13,7 @@ import java.util.List;
 @Transactional
 public class LanguageServiceImpl implements ILanguageService {
 
-    public LanguageRepository languageRepository;
+    private LanguageRepository languageRepository;
 
     private LanguageDtoMapper languageDtoMapper;
 

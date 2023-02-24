@@ -14,7 +14,7 @@ import java.util.List;
 @Transactional
 public class VillagesServiceImpl implements IVillagesService {
 
-    public VillagesRepository villagesRepository;
+    private VillagesRepository villagesRepository;
 
     private VillagesDtoMapper villagesDtoMapper;
 

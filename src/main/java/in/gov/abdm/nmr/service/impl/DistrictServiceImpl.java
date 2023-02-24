@@ -14,7 +14,7 @@ import java.util.List;
 @Transactional
 public class DistrictServiceImpl implements IDistrictService {
 
-    public DistrictRepository districtRepository;
+    private DistrictRepository districtRepository;
 
     private DistrictDtoMapper districtDtoMapper;
 

@@ -13,7 +13,7 @@ import java.util.List;
 @Transactional
 public class RegistrationRenewationTypeServiceImpl implements IRegistrationRenewationTypeService {
 
-    public RegistrationRenewationTypeRepository registrationRenewationTypeRepository;
+    private RegistrationRenewationTypeRepository registrationRenewationTypeRepository;
 
     private RegistrationRenewationTypeDtoMapper registrationRenewationTypeDtoMapper;
 

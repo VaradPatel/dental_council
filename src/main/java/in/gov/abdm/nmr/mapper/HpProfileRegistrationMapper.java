@@ -33,8 +33,8 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
             nbeResponseTo.setResult(nbeDetails.getUserResult());
             nbeResponseTo.setId(nbeDetails.getId());
             nbeResponseTo.setMonth(nbeDetails.getMonthOfPassing());
-            nbeResponseTo.setMarks_obtained(nbeDetails.getMarksObtained());
-            nbeResponseTo.setRoll_no(nbeDetails.getRollNo());
+            nbeResponseTo.setMarksObtained(nbeDetails.getMarksObtained());
+            nbeResponseTo.setRollNo(nbeDetails.getRollNo());
             nbeResponseTo.setYear(nbeDetails.getYearOfPassing());
         }
         if(!indianQualifications.isEmpty()) {

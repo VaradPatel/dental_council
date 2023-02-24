@@ -13,7 +13,7 @@ import java.util.List;
 @Transactional
 public class UniversityServiceImpl implements IUniversityService {
 
-    public IUniversityRepository universityRepository;
+    private IUniversityRepository universityRepository;
 
     private UniversityDtoMapper universityDtoMapper;
 

@@ -14,7 +14,7 @@ import java.util.List;
 @Transactional
 public class SubDistrictServiceImpl implements ISubDistrictService {
 
-    public SubDistrictRepository subDistrictRepository;
+    private SubDistrictRepository subDistrictRepository;
 
     private SubDistrictDtoMapper subDistrictDtoMapper;
 

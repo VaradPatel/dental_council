@@ -14,7 +14,7 @@ import java.util.List;
 @Transactional
 public class StateServiceImpl implements IStateService {
 
-    public IStateRepository stateRepository;
+    private IStateRepository stateRepository;
 
     private StateDtoMapper stateDtoMapper;
 
