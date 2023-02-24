@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OtpGenerateRequestTo{
-
+    
     @NotBlank(message = NMRConstants.CONTACT_NOT_NULL)
     String contact;
 

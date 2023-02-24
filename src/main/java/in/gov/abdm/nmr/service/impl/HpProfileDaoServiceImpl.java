@@ -399,9 +399,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             address.setMobile(userKycTo.getPhone());
             iAddressRepository.save(address);
         } catch (Exception e) {
-            return new ResponseMessageTo(NMRConstants.FAILURE_RESPONSE);
+            return new ResponseMessageTo(NMRConstants.FAILURE_RESPONSE, null);
         }
-        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
+        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE, null);
     }
 
     private void saveIndianQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
