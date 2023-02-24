@@ -26,6 +26,8 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.List;
 
+import static in.gov.abdm.nmr.util.NMRConstants.*;
+
 @Service
 @Transactional
 public class CollegeDaoServiceImpl implements ICollegeDaoService {
@@ -63,7 +65,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
     public College saveCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException {
         if (!update) {
             if (userDetailService.findByUsername(collegeRegistrationRequestTo.getEmailId()) != null) {
-                throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
+                throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
             }
 
             User userDetail = new User(null, collegeRegistrationRequestTo.getEmailId(), null, null, true, true, //
@@ -93,7 +95,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
                 throw new NmrException("Invalid college", HttpStatus.BAD_REQUEST);
             }
             if (!collegeEntity.getId().equals(collegeRegistrationRequestTo.getId())) {
-                throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
+                throw new NmrException(FORBIDDEN, HttpStatus.FORBIDDEN);
             }
 
             User collegeUserDetail = userDetailService.findById(collegeRegistrationRequestTo.getUserId());
@@ -116,7 +118,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
     public College findById(BigInteger collegeId) throws NmrException {
         College collegeEntity = collegeRepository.findById(collegeId).orElse(null);
         if (collegeEntity == null) {
-            throw new NmrException("Invalid college id", HttpStatus.BAD_REQUEST);
+            throw new NmrException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
         }
         return collegeEntity;
     }

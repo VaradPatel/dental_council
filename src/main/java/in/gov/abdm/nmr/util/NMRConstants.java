@@ -91,6 +91,11 @@ public class NMRConstants {
     public static final String FAILURE_RESPONSE = "Fail";
     public static final String SENT_RESPONSE = "sent";
     public static final String USER_NOT_FOUND = "User not found";
+    public static final String COLLEGE_CONSTANT = "College";
+    public static final String USER_ALREADY_EXISTS = "User already exists";
+    public static final String FORBIDDEN = "Forbidden";
+    public static final String INVALID_COLLEGE_ID = "Invalid college id";
+    public static final String INVALID_PROFILE_ID = "Invalid profile id";
     public static final String LINK_EXPIRED = "Link expired";
     public static final String WORKFLOW_STATUS_NOT_FOUND = "Workflow status not found";
     public static final String TEMPLATE_ID_NOT_FOUND_IN_PROPERTIES = "Template id not found in properties";
@@ -385,7 +390,7 @@ public class NMRConstants {
     public static final int MAX_DATA_SIZE = 500;
     public static final String DEFAULT_SORT_ORDER = "ASC";
     public static final String NO_DATA_FOUND = "No data found";
-    public static final String USER_ALREADY_EXISTS = "Username already exist";
+    public static final String USER_NAME_ALREADY_EXISTS = "Username already exist";
     public static final String SMS_AND_EMAIL_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY = "sms-email-reset";
     public static final String TYPE_NOT_NULL = "Type cannot be null";
     public static final String USER_REQUEST_MAPPING = "/user";

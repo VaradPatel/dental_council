@@ -38,6 +38,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
     /**
      * Represents a functional interface to generates a dynamic WHERE clause based on the DashboardRequestParamsTO
      * object passed as a parameter.
+     *
      * @param dashboardRequestParamsTO - object that contains the criteria for the query.
      * @return a string query with appended WHERE clause for the query.
      */
@@ -45,46 +46,46 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         StringBuilder sb = new StringBuilder();
 
         if (Objects.nonNull(dashboardRequestParamsTO.getSearch()) && !dashboardRequestParamsTO.getSearch().isEmpty()) {
-            sb.append("AND ( rd.registration_no ILIKE '%" + dashboardRequestParamsTO.getSearch() + "%' OR stmc.name ILIKE '%" + dashboardRequestParamsTO.getSearch() + "%' OR hp.full_name ILIKE '%" + dashboardRequestParamsTO.getSearch() + "%') ");
+            sb.append("AND ( rd.registration_no ILIKE '%").append(dashboardRequestParamsTO.getSearch()).append("%' OR stmc.name ILIKE '%").append(dashboardRequestParamsTO.getSearch()).append("%' OR hp.full_name ILIKE '%").append(dashboardRequestParamsTO.getSearch()).append("%') ");
         }
 
         if (Objects.nonNull(dashboardRequestParamsTO.getName()) && !dashboardRequestParamsTO.getName().isEmpty()) {
-            sb.append("AND stmc.name ILIKE '%" + dashboardRequestParamsTO.getName() + "%' ");
+            sb.append("AND stmc.name ILIKE '%").append(dashboardRequestParamsTO.getName()).append("%' ");
         }
 
         if (Objects.nonNull(dashboardRequestParamsTO.getNmrId()) && !dashboardRequestParamsTO.getNmrId().isEmpty()) {
-            sb.append("AND rd.registration_no ILIKE '%" + dashboardRequestParamsTO.getNmrId() + "%' ");
+            sb.append("AND rd.registration_no ILIKE '%").append(dashboardRequestParamsTO.getNmrId()).append("%' ");
         }
 
         if (Objects.nonNull(dashboardRequestParamsTO.getCouncilId()) && !dashboardRequestParamsTO.getCouncilId().isEmpty()) {
-            sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getCouncilId() + " ");
+            sb.append("AND rd.state_medical_council_id = ").append(dashboardRequestParamsTO.getCouncilId()).append(" ");
         }
 
         if (Objects.nonNull(dashboardRequestParamsTO.getCollegeId()) && !dashboardRequestParamsTO.getCollegeId().isEmpty()) {
-            sb.append("AND qd.college_id = " + dashboardRequestParamsTO.getCollegeId() + " ");
+            sb.append("AND qd.college_id = ").append(dashboardRequestParamsTO.getCollegeId()).append(" ");
         }
 
         if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
-            sb.append("AND rd.state_medical_council_id = " + dashboardRequestParamsTO.getSmcId() + " ");
+            sb.append("AND rd.state_medical_council_id = ").append(dashboardRequestParamsTO.getSmcId()).append(" ");
         }
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getUserGroupId())){
+        if (Objects.nonNull(dashboardRequestParamsTO.getUserGroupId())) {
             BigInteger groupId = dashboardRequestParamsTO.getUserGroupId();
             String userGroupStatus = dashboardRequestParamsTO.getUserGroupStatus().toUpperCase();
             if (!dashboardRequestParamsTO.getUserGroupStatus().contains("Total")) {
                 if (groupId.equals(Group.SMC.getId())) {
-                    sb.append("AND smc_status = '" + userGroupStatus + "' ");
+                    sb.append("AND smc_status = '").append(userGroupStatus).append("' ");
                 } else if (groupId.equals(Group.COLLEGE_DEAN.getId())) {
-                    sb.append("AND college_dean_status = '" + userGroupStatus + "' ");
+                    sb.append("AND college_dean_status = '").append(userGroupStatus).append("' ");
                 } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
-                    sb.append("AND college_registrar_status = '" + userGroupStatus + "' ");
+                    sb.append("AND college_registrar_status = '").append(userGroupStatus).append("' ");
                 } else if (groupId.equals(Group.NMC.getId())) {
-                    sb.append("AND nmc_status = '" + userGroupStatus + "' ");
+                    sb.append("AND nmc_status = '").append(userGroupStatus).append("' ");
                 } else if (groupId.equals(Group.NBE.getId())) {
-                    sb.append("AND nbe_status = '" + userGroupStatus + "' ");
+                    sb.append("AND nbe_status = '").append(userGroupStatus).append("' ");
                 } else if (groupId.equals(Group.COLLEGE_ADMIN.getId())) {
-                    sb.append("AND college_registrar_status = '" + userGroupStatus + "' ");
-                    sb.append("AND college_dean_status = '" + userGroupStatus + "' ");
+                    sb.append("AND college_registrar_status = '").append(userGroupStatus).append("' ");
+                    sb.append("AND college_dean_status = '").append(userGroupStatus).append("' ");
                 }
             }
         }
@@ -93,6 +94,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
 
     /**
      * Represents a functional interface to sort the results based on the parameters specified in DashboardRequestParamsTO.
+     *
      * @param dashboardRequestParamsTO - which holds the parameters.
      * @return A query string with appended sort order in the format "ORDER BY column_name sort_order"
      */
@@ -108,94 +110,17 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
     /**
      * Represents a functional interface to generates a dynamic WHERE clause based on the DashboardRequestParamsTO
      * object passed as a parameter.
+     *
      * @param dashboardRequestParamsTO - an object that contains parameters for the function
      * @return a string query to get the request details.
      */
     private static final Function<DashboardRequestParamsTO, String> DASHBOARD = dashboardRequestParamsTO -> {
         StringBuilder sb = new StringBuilder();
-        sb.append(
-                "select doctor_status, smc_status, college_dean_status, college_registrar_status, nmc_status, nbe_status, calculate.hp_profile_id, calculate.request_id, rd.registration_no, rd.created_at, stmc.name, hp.full_name " +
-                        "from " +
-                        "( " +
-                        "select     " +
-                        "rank() over (PARTITION BY hp_profile_id order by wf.id desc) as current_status,   " +
-                        "CASE " +
-                        "when wf.previous_group_id IN (2,3,4) and wf.action_id = 5 THEN 'SUBMITTED' " +
-                        "when wf.previous_group_id = 1 and wf.action_id = 1 THEN 'SUBMITTED' " +
-                        "when wf.current_group_id = 1 and wf.action_id = 3 THEN 'PENDING' " +
-                        "when wf.previous_group_id IN (2,3,4,5) and wf.action_id IN (2,4,5) THEN 'SUBMITTED' " +
-                        "END as doctor_status, " +
-                        "CASE " +
-                        "when wf.current_group_id = 2 and wf.action_id IN (1,3,4) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 2 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id = 2 THEN 'FORWARDED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "when wf.previous_group_id IN (4,5) and wf.action_id IN (3,4,5) THEN 'FORWARDED' " +
-                        "when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
-                        "END as smc_status, " +
-                        "CASE " +
-                        "when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
-                        "when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and " +
-                        "lag(wf.action_id) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' " +
-                        "when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and " +
-                        "lag(wf.action_id,2) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
-                        "when wf.current_group_id = 4 and wf.action_id IN (1,2,3) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 4 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 4 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as college_dean_status, " +
-                        "CASE " +
-                        "when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
-                        "when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and " +
-                        "lag(wf.action_id) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' " +
-                        "when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and " +
-                        "lag(wf.action_id,2) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.current_group_id = 5 and wf.action_id IN (4,3) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 5 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 5 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 5 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as college_registrar_status, " +
-                        "CASE " +
-                        "when wf.current_group_id = 7 and wf.action_id IN (1,3,4) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 7 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 7 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 7 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
-                        "END as nbe_status, " +
-                        "CASE " +
-                        "when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.current_group_id = 3 and wf.action_id IN (4,3) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 3 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 3 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 3 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as nmc_status, " +
-                        "wf.id,request_id, hp_profile_id, previous_group_id, current_group_id, action_id, wf.application_type_id " +
-                        "from main.work_flow_audit as wf " +
-                        "INNER JOIN " +
-                        "( " +
-                        "select  request_id as lat_request_id, hp_profile_id as lat_hp_profile_id " +
-                        "from main.work_flow  " +
-                        "order by hp_profile_id desc " +
-                        ") latest_wf on request_id = lat_request_id " );
-                        if (Objects.nonNull(dashboardRequestParamsTO.getWorkFlowStatusId()) && !dashboardRequestParamsTO.getWorkFlowStatusId().isEmpty()) {
-                            sb.append(" WHERE  work_flow_status_id = '" + dashboardRequestParamsTO.getWorkFlowStatusId() + "' ");
-                        }
-                        sb.append("order by lat_hp_profile_id desc, wf.id asc " + ")  " +"calculate " +
-                        "INNER JOIN main.registration_details as rd on rd.hp_profile_id = calculate.hp_profile_id " +
-                        "INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id " +
-                        "INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id " +
-                        "INNER JOIN main.qualification_details as qd on qd.hp_profile_id = hp.id AND qd.request_id = hp.request_id " +
-                        "WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 " +
-                        "AND calculate.application_type_id IN ( " + dashboardRequestParamsTO.getApplicationTypeId() + ") ");
+        sb.append("select doctor_status, smc_status, college_dean_status, college_registrar_status, nmc_status, nbe_status, calculate.hp_profile_id, calculate.request_id, rd.registration_no, rd.created_at, stmc.name, hp.full_name from ( select rank() over (PARTITION BY hp_profile_id order by wf.id desc) as current_status, CASE when wf.previous_group_id IN (2,3,4) and wf.action_id = 5 THEN 'SUBMITTED' when wf.previous_group_id = 1 and wf.action_id = 1 THEN 'SUBMITTED' when wf.current_group_id = 1 and wf.action_id = 3 THEN 'PENDING' when wf.previous_group_id IN (2,3,4,5) and wf.action_id IN (2,4,5) THEN 'SUBMITTED' END as doctor_status, CASE when wf.current_group_id = 2 and wf.action_id IN (1,3,4) THEN 'PENDING' when wf.previous_group_id = 2 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 2 and wf.action_id = 2 THEN 'FORWARDED' when wf.previous_group_id = 2 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 2 and wf.action_id = 3 THEN 'QUERY RAISED' when wf.previous_group_id IN (4,5) and wf.action_id IN (3,4,5) THEN 'FORWARDED' when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' END as smc_status, CASE when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'APPROVED' when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and lag(wf.action_id) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and lag(wf.action_id,2) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' when wf.previous_group_id = 2 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' when wf.current_group_id = 4 and wf.action_id IN (1,2,3) THEN 'PENDING' when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 4 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 4 and wf.action_id = 3 THEN 'QUERY RAISED' END as college_dean_status, CASE when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and lag(wf.action_id) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and lag(wf.action_id,2) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' when wf.current_group_id = 5 and wf.action_id IN (4,3) THEN 'PENDING' when wf.previous_group_id = 5 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 5 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 5 and wf.action_id = 3 THEN 'QUERY RAISED' END as college_registrar_status, CASE when wf.current_group_id = 7 and wf.action_id IN (1,3,4) THEN 'PENDING' when wf.previous_group_id = 7 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 7 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 7 and wf.action_id = 3 THEN 'QUERY RAISED' when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' END as nbe_status, CASE when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'NOT YET RECEIVED' when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'NOT YET RECEIVED' when wf.current_group_id = 3 and wf.action_id IN (4,3) THEN 'PENDING' when wf.previous_group_id = 3 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 3 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 3 and wf.action_id = 3 THEN 'QUERY RAISED' END as nmc_status, wf.id,request_id, hp_profile_id, previous_group_id, current_group_id, action_id, wf.application_type_id from main.work_flow_audit as wf INNER JOIN ( select request_id as lat_request_id, hp_profile_id as lat_hp_profile_id from main.work_flow order by hp_profile_id desc ) latest_wf on request_id = lat_request_id ");
+        if (Objects.nonNull(dashboardRequestParamsTO.getWorkFlowStatusId()) && !dashboardRequestParamsTO.getWorkFlowStatusId().isEmpty()) {
+            sb.append(" WHERE  work_flow_status_id = '").append(dashboardRequestParamsTO.getWorkFlowStatusId()).append("' ");
+        }
+        sb.append("order by lat_hp_profile_id desc, wf.id asc " + ")  " + "calculate " + "INNER JOIN main.registration_details as rd on rd.hp_profile_id = calculate.hp_profile_id " + "INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id " + "INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id " + "INNER JOIN main.qualification_details as qd on qd.hp_profile_id = hp.id AND qd.request_id = hp.request_id " + "WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 " + "AND calculate.application_type_id IN ( ").append(dashboardRequestParamsTO.getApplicationTypeId()).append(") ");
 
         String parameters = DASHBOARD_PARAMETERS.apply(dashboardRequestParamsTO);
 
@@ -236,88 +161,16 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
      */
     private static final Function<DashboardRequestParamsTO, String> GET_RECORD_COUNT = dashboardRequestParamsTO -> {
         StringBuilder sb = new StringBuilder();
-        sb.append(
-                "select count(*) " +
-                        "from " +
-                        "( " +
-                        "select     " +
-                        "rank() over (PARTITION BY hp_profile_id order by wf.id desc) as current_status,   " +
-                        "CASE " +
-                        "when wf.previous_group_id IN (2,3,4) and wf.action_id = 5 THEN 'SUBMITTED' " +
-                        "when wf.previous_group_id = 1 and wf.action_id = 1 THEN 'SUBMITTED' " +
-                        "when wf.current_group_id = 1 and wf.action_id = 3 THEN 'PENDING' " +
-                        "when wf.previous_group_id IN (2,3,4,5) and wf.action_id IN (2,4,5) THEN 'SUBMITTED' " +
-                        "END as doctor_status, " +
-                        "CASE " +
-                        "when wf.current_group_id = 2 and wf.action_id IN (1,3,4) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 2 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id = 2 THEN 'FORWARDED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "when wf.previous_group_id IN (4,5) and wf.action_id IN (3,4,5) THEN 'FORWARDED' " +
-                        "when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
-                        "END as smc_status, " +
-                        "CASE " +
-                        "when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
-                        "when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and " +
-                        "lag(wf.action_id) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' " +
-                        "when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and " +
-                        "lag(wf.action_id,2) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
-                        "when wf.current_group_id = 4 and wf.action_id IN (1,2,3) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 4 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 4 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as college_dean_status, " +
-                        "CASE " +
-                        "when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
-                        "when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and " +
-                        "lag(wf.action_id) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' " +
-                        "when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and " +
-                        "lag(wf.action_id,2) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.current_group_id = 5 and wf.action_id IN (4,3) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 5 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 5 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 5 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as college_registrar_status, " +
-                        "CASE " +
-                        "when wf.current_group_id = 7 and wf.action_id IN (1,3,4) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 7 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 7 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 7 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
-                        "END as nbe_status, " +
-                        "CASE " +
-                        "when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.current_group_id = 3 and wf.action_id IN (4,3) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 3 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 3 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 3 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as nmc_status, " +
-                        "wf.id,request_id, hp_profile_id, previous_group_id, current_group_id, action_id, wf.application_type_id " +
-                        "from main.work_flow_audit as wf " +
-                        "INNER JOIN " +
-                        "( " +
-                        "select  request_id as lat_request_id, hp_profile_id as lat_hp_profile_id " +
-                        "from main.work_flow  " +
-                        "order by hp_profile_id desc " +
-                        ") latest_wf on request_id = lat_request_id " );
-                       if (Objects.nonNull(dashboardRequestParamsTO.getWorkFlowStatusId()) && !dashboardRequestParamsTO.getWorkFlowStatusId().isEmpty()) {
-                           sb.append(" WHERE  work_flow_status_id = '" + dashboardRequestParamsTO.getWorkFlowStatusId() + "' ");
-                       }
-                        sb.append("order by lat_hp_profile_id desc, wf.id asc ) calculate " +
-                        "INNER JOIN main.registration_details as rd on rd.hp_profile_id = calculate.hp_profile_id " +
-                        "INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id " +
-                        "INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id " +
-                        "INNER JOIN main.qualification_details as qd on qd.hp_profile_id = hp.id AND qd.request_id = hp.request_id " +
-                        "WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 AND calculate.application_type_id IN (" + dashboardRequestParamsTO.getApplicationTypeId() + ") ");
+        sb.append("select count(*) from ( select rank() over (PARTITION BY hp_profile_id order by wf.id desc) as current_status, CASE when wf.previous_group_id IN (2,3,4) and wf.action_id = 5 THEN 'SUBMITTED' when wf.previous_group_id = 1 and wf.action_id = 1 THEN 'SUBMITTED' when wf.current_group_id = 1 and wf.action_id = 3 THEN 'PENDING' when wf.previous_group_id IN (2,3,4,5) and wf.action_id IN (2,4,5) THEN 'SUBMITTED' END as doctor_status, CASE when wf.current_group_id = 2 and wf.action_id IN (1,3,4) THEN 'PENDING' when wf.previous_group_id = 2 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 2 and wf.action_id = 2 THEN 'FORWARDED' when wf.previous_group_id = 2 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 2 and wf.action_id = 3 THEN 'QUERY RAISED' when wf.previous_group_id IN (4,5) and wf.action_id IN (3,4,5) THEN 'FORWARDED' when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' END as smc_status, CASE when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'APPROVED' when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and lag(wf.action_id) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and lag(wf.action_id,2) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' when wf.previous_group_id = 2 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' when wf.current_group_id = 4 and wf.action_id IN (1,2,3) THEN 'PENDING' when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 4 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 4 and wf.action_id = 3 THEN 'QUERY RAISED' END as college_dean_status, CASE when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and lag(wf.action_id) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and lag(wf.action_id,2) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' when wf.current_group_id = 5 and wf.action_id IN (4,3) THEN 'PENDING' when wf.previous_group_id = 5 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 5 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 5 and wf.action_id = 3 THEN 'QUERY RAISED' END as college_registrar_status, CASE when wf.current_group_id = 7 and wf.action_id IN (1,3,4) THEN 'PENDING' when wf.previous_group_id = 7 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 7 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 7 and wf.action_id = 3 THEN 'QUERY RAISED' when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' END as nbe_status, CASE when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'NOT YET RECEIVED' when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'NOT YET RECEIVED' when wf.current_group_id = 3 and wf.action_id IN (4,3) THEN 'PENDING' when wf.previous_group_id = 3 and wf.action_id = 4 THEN 'APPROVED' when wf.previous_group_id = 3 and wf.action_id = 5 THEN 'REJECTED' when wf.previous_group_id = 3 and wf.action_id = 3 THEN 'QUERY RAISED' END as nmc_status, wf.id,request_id, hp_profile_id, previous_group_id, current_group_id, action_id, wf.application_type_id from main.work_flow_audit as wf INNER JOIN ( select request_id as lat_request_id, hp_profile_id as lat_hp_profile_id from main.work_flow order by hp_profile_id desc ) latest_wf on request_id = lat_request_id ");
+        if (Objects.nonNull(dashboardRequestParamsTO.getWorkFlowStatusId()) && !dashboardRequestParamsTO.getWorkFlowStatusId().isEmpty()) {
+            sb.append(" WHERE  work_flow_status_id = '").append(dashboardRequestParamsTO.getWorkFlowStatusId()).append("' ");
+        }
+        sb.append("order by lat_hp_profile_id desc, wf.id asc ) calculate " +
+                "INNER JOIN main.registration_details as rd on rd.hp_profile_id = calculate.hp_profile_id " +
+                "INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id " +
+                "INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id " +
+                "INNER JOIN main.qualification_details as qd on qd.hp_profile_id = hp.id AND qd.request_id = hp.request_id " +
+                "WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 AND calculate.application_type_id IN (" + dashboardRequestParamsTO.getApplicationTypeId() + ") ");
 
         String parameters = DASHBOARD_PARAMETERS.apply(dashboardRequestParamsTO);
 
@@ -329,8 +182,9 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
 
     /**
      * Retrieves the details of Dashboard records list based on the provided parameters.
+     *
      * @param dashboardRequestParamsTO - object containing the filter criteria for fetching request details
-     * @param pagination                                   - object for pagination
+     * @param pagination               - object for pagination
      * @return the DashboardResponseTO object representing the response object
      * which contains all the Dashboard records list
      */
@@ -339,12 +193,12 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         DashboardResponseTO dashBoardResponseTO = new DashboardResponseTO();
         List<DashboardTO> dashboardTOList = new ArrayList<>();
 
-        Query query  = entityManager.createNativeQuery(DASHBOARD.apply(dashboardRequestParamsTO));
+        Query query = entityManager.createNativeQuery(DASHBOARD.apply(dashboardRequestParamsTO));
 
         query.setFirstResult((pagination.getPageNumber() - 1) * pagination.getPageSize());
         query.setMaxResults(pagination.getPageSize());
 
-        List<Object[]> results =query.getResultList();
+        List<Object[]> results = query.getResultList();
         results.forEach(result -> {
             DashboardTO dashBoardTO = new DashboardTO();
             dashBoardTO.setDoctorStatus((String) result[0]);
