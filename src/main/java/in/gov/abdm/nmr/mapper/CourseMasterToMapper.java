@@ -12,9 +12,7 @@ public final class CourseMasterToMapper {
 
     public static List<MasterDataTO> courseToListToCourseMasterToList(List<CourseTO> course) {
         List<MasterDataTO> list = new ArrayList<>();
-        course.forEach(c -> {
-            list.add(courseToMaster(c));
-        });
+        course.forEach(c -> list.add(courseToMaster(c)));
         return list;
     }
 
