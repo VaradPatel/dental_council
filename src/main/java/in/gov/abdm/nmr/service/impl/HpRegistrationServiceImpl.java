@@ -204,10 +204,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) {
         List<SuperSpeciality> superSpecialities = NMRUtil.coalesceCollection(superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId), superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId));
         List<WorkProfile> workProfileList = workProfileRepository.getWorkProfileDetailsByHPId(hpProfileId);
-        HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(superSpecialities, workProfileList);
-
-        return hpProfileWorkDetailsResponseTO;
-    }
+        return HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(superSpecialities, workProfileList);
+}
 
     @Override
     public HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(BigInteger hpProfileId) {

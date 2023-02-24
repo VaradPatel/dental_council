@@ -266,9 +266,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO = getUpdateWorkProfileDetailsTo(hpWorkProfileUpdateRequestString);
 
-        hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().stream().forEach(currentWorkDetailsTO -> {
-            currentWorkDetailsTO.setProof(proof);
-        });
+        hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().stream().forEach(currentWorkDetailsTO ->
+                currentWorkDetailsTO.setProof(proof));
 
         List<WorkProfile> workProfile = workProfileRepository.getWorkProfileDetailsByHPId(hpProfileId);
         if (workProfile == null) {
@@ -630,18 +629,12 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @SneakyThrows
     HpRegistrationUpdateRequestTO getHpRegistrationUpdateRequestTO(String hpRegistrationUpdateRequestString) {
-
-        HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO = objectMapper.readValue(hpRegistrationUpdateRequestString, HpRegistrationUpdateRequestTO.class);
-
-        return hpRegistrationUpdateRequestTO;
+        return objectMapper.readValue(hpRegistrationUpdateRequestString, HpRegistrationUpdateRequestTO.class);
     }
 
     @SneakyThrows
     HpWorkProfileUpdateRequestTO getUpdateWorkProfileDetailsTo(String getUpdateWorkProfileDetailsString) {
-
-        HpWorkProfileUpdateRequestTO hpRegistrationUpdateRequestTO = objectMapper.readValue(getUpdateWorkProfileDetailsString, HpWorkProfileUpdateRequestTO.class);
-
-        return hpRegistrationUpdateRequestTO;
-    }
+        return objectMapper.readValue(getUpdateWorkProfileDetailsString, HpWorkProfileUpdateRequestTO.class);
+}
 
 }

@@ -12,9 +12,7 @@ public final class CourseMasterToMapper {
 
     public static List<MasterDataTO> courseToListToCourseMasterToList(List<CourseTO> course) {
         List<MasterDataTO> list = new ArrayList<>();
-        course.forEach(c -> {
-            list.add(courseToMaster(c));
-        });
+        course.forEach(c -> list.add(courseToMaster(c)));
         return list;
     }
 
@@ -22,7 +20,6 @@ public final class CourseMasterToMapper {
         MasterDataTO masterDataTO = new MasterDataTO();
         masterDataTO.setId(courseTO.getId().longValue());
         masterDataTO.setName(courseTO.getCourseName());
-        System.out.println(masterDataTO);
         return masterDataTO;
     }
 
