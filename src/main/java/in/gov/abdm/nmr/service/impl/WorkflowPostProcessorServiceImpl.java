@@ -213,10 +213,8 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
             List<ForeignQualificationDetailsMaster> fetchedFromMasters = customQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId());
 
             for (int i = 0; i < qualificationDetailsMasters.size(); i++) {
-                if (!fetchedFromMasters.isEmpty()) {
-                    if (fetchedFromMasters.get(i) != null) {
+                if (!fetchedFromMasters.isEmpty() && fetchedFromMasters.get(i) != null) {
                         qualificationDetailsMasters.get(i).setId(fetchedFromMasters.get(i).getId());
-                    }
                 }
                 qualificationDetailsMasters.get(i).setHpProfileMaster(masterHpProfile);
             }

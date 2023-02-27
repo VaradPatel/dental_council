@@ -19,10 +19,10 @@ public class FetchTrackApplication {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
-    private String request_id;
-    private BigInteger application_type_id;
-    private Date created_at;
-    private BigInteger work_flow_status_id;
-    private BigInteger current_group_id;
-    private Integer pendency_days;
+    private String requestId;
+    private BigInteger applicationTypeId;
+    private Date createdAt;
+    private BigInteger workFlowStatusId;
+    private BigInteger currentGroupId;
+    private Integer pendencyDays;
 }

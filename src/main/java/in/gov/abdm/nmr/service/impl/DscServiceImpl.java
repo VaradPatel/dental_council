@@ -7,8 +7,6 @@ import in.gov.abdm.nmr.dto.dsc.*;
 import in.gov.abdm.nmr.enums.TemplateEnum;
 import in.gov.abdm.nmr.service.IDscService;
 import in.gov.abdm.nmr.util.NMRConstants;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +17,6 @@ public class DscServiceImpl implements IDscService {
 
     @Autowired
     DscFClient dscFClient;
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
     public DscResponseTo invokeDSCGenEspRequest(DscRequestTo dscRequestTo) throws JsonProcessingException {
