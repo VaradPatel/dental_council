@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface VillagesRepository extends JpaRepository<Villages, BigInteger> {
 
-    @Query(value = "SELECT * FROM villages where sub_districts_code=:sub_district", nativeQuery = true)
-    List<Villages> getVillage(BigInteger sub_district);
+    @Query(value = "SELECT * FROM villages where sub_districts_code=:subDistrict", nativeQuery = true)
+    List<Villages> getVillage(BigInteger subDistrict);
 
     Villages findByName(String name);
 }

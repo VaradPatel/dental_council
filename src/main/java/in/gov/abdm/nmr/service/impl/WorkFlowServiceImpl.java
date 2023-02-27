@@ -11,8 +11,6 @@ import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,8 +24,6 @@ import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
 
 @Service
 public class WorkFlowServiceImpl implements IWorkFlowService {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * Injecting IWorkFlowRepository bean instead of an explicit object creation to achieve

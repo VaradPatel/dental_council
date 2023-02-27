@@ -52,28 +52,28 @@ class MasterDataControllerTest {
     }
 
     @Test
-    public void testSmcs() {
+    void testSmcs() {
         when(masterDataService.smcs()).thenReturn(expected);
         List<MasterDataTO> actual = masterDataController.smcs();
         assertEquals(expected, actual);
     }
 
     @Test
-    public void testSpecialities() {
+    void testSpecialities() {
         when(masterDataService.specialities()).thenReturn(expected);
         List<MasterDataTO> actual = masterDataController.specialities();
         assertEquals(expected, actual);
     }
 
     @Test
-    public void testCountries() {
+    void testCountries() {
         when(masterDataService.countries()).thenReturn(expected);
         List<MasterDataTO> actual = masterDataController.countries();
         assertEquals(expected, actual);
     }
 
     @Test
-    public void testStates() {
+    void testStates() {
         BigInteger countryId = BigInteger.ONE;
         when(masterDataService.states(countryId)).thenReturn(expected);
         List<MasterDataTO> actual = masterDataController.states(countryId);
@@ -81,7 +81,7 @@ class MasterDataControllerTest {
     }
 
     @Test
-    public void testDistricts() {
+    void testDistricts() {
         BigInteger stateId = BigInteger.ONE;
         when(masterDataService.districts(stateId)).thenReturn(expected);
         List<MasterDataTO> actual = masterDataController.districts(stateId);
@@ -89,7 +89,7 @@ class MasterDataControllerTest {
     }
 
     @Test
-    public void testSubDistricts() {
+    void testSubDistricts() {
         BigInteger districtId = BigInteger.ONE;
         when(masterDataService.subDistricts(districtId)).thenReturn(expected);
         List<MasterDataTO> actual = masterDataController.subDistricts(districtId);

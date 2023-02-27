@@ -175,8 +175,8 @@ public class ApplicationServiceImpl implements IApplicationService {
     public ReactivateHealthProfessionalResponseTO getReactivationRecordsOfHealthProfessionalsToNmc(String pageNo, String offset, String search, String sortBy, String sortType) {
         ReactivateHealthProfessionalResponseTO reactivateHealthProfessionalResponseTO = null;
         ReactivateHealthProfessionalRequestParam reactivateHealthProfessionalQueryParam = new ReactivateHealthProfessionalRequestParam();
-        reactivateHealthProfessionalQueryParam.setPageNo(Integer.valueOf(pageNo));
-        final Integer dataLimit = MAX_DATA_SIZE < Integer.valueOf(offset) ? MAX_DATA_SIZE : Integer.valueOf(offset);
+        reactivateHealthProfessionalQueryParam.setPageNo(Integer.parseInt(pageNo));
+        final int dataLimit = Math.min(MAX_DATA_SIZE, Integer.parseInt(offset));
         reactivateHealthProfessionalQueryParam.setOffset(dataLimit);
         reactivateHealthProfessionalQueryParam.setSearch(search);
         final String sortingOrder = sortType == null ? DEFAULT_SORT_ORDER : sortType;
@@ -195,12 +195,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     private String getReactivationSortColumn(String columnToSort) {
 
         if (columnToSort != null && columnToSort.length() > 0) {
-
-            if (REACTIVATION_SORT_MAPPINGS.containsKey(columnToSort)) {
-                return REACTIVATION_SORT_MAPPINGS.get(columnToSort);
-            } else {
-                return " wf.created_at ";
-            }
+            return REACTIVATION_SORT_MAPPINGS.getOrDefault(columnToSort, " wf.created_at ");
         } else {
             return " wf.created_at ";
         }
@@ -324,9 +319,9 @@ public class ApplicationServiceImpl implements IApplicationService {
         applicationRequestParamsTo.setWorkFlowStatusId(workFlowStatusId);
         applicationRequestParamsTo.setApplicationTypeId(applicationTypeId);
         String column = getColumnToSort(sortBy);
-        final Integer dataLimit = MAX_DATA_SIZE < Integer.valueOf(offset) ? MAX_DATA_SIZE : Integer.valueOf(offset);
+        final int dataLimit = Math.min(MAX_DATA_SIZE, Integer.parseInt(offset));
         applicationRequestParamsTo.setSize(dataLimit);
-        applicationRequestParamsTo.setPageNo(Integer.valueOf(pageNo));
+        applicationRequestParamsTo.setPageNo(Integer.parseInt(pageNo));
         final String sortingOrder = sortType == null ? DEFAULT_SORT_ORDER : sortType;
         applicationRequestParamsTo.setSortBy(column);
         applicationRequestParamsTo.setSortOrder(sortingOrder);
@@ -367,11 +362,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         Map<String, String> columns;
         if (columnToSort != null && columnToSort.length() > 0) {
             columns = mapColumnToTable();
-            if (columns.containsKey(columnToSort)) {
-                return columns.get(columnToSort);
-            } else {
-                return "Invalid column Name to sort";
-            }
+            return columns.getOrDefault(columnToSort, "Invalid column Name to sort");
         } else {
             return " rd.created_at ";
         }

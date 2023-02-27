@@ -47,7 +47,7 @@ public class OtpServiceImpl implements IOtpService {
      */
     @Override
     public ResponseMessageTo generateOtp(OtpGenerateRequestTo otpGenerateRequestTo) throws OtpException {
-        List<Otp> previousOtps = otpDaoService.findAllBycontact(otpGenerateRequestTo.getContact());
+        List<Otp> previousOtps = otpDaoService.findAllByContact(otpGenerateRequestTo.getContact());
         if (previousOtps.size() >= NMRConstants.OTP_GENERATION_MAX_ATTEMPTS) {
             throw new OtpException(NMRConstants.OTP_ATTEMPTS_EXCEEDED);
         } else {

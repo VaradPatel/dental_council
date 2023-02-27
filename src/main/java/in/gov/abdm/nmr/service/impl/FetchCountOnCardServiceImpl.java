@@ -22,7 +22,6 @@ import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 
@@ -95,8 +94,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                         counter = counter.add(statusWiseCountTO.getCount());
                         filteredStatusListForRegistration.add(statusWiseCountTO.getName());
                         return statusWiseCountTO;
-                    })
-                    .collect(Collectors.toList());
+                    }).toList();
 
             List<StatusWiseCountTO> tempHpRegistrationRequests = hpRegistrationRequests;
             Arrays.stream(WorkflowStatus.values()).forEach(workflowStatus -> {
@@ -132,7 +130,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                         filteredStatusListForModification.add(statusWiseCountTO.getName());
                         return statusWiseCountTO;
                     })
-                    .collect(Collectors.toList());
+                    .toList();
 
             List<StatusWiseCountTO> tempHpModificationRequests = hpModificationRequests;
             Arrays.stream(WorkflowStatus.values()).forEach(workflowStatus -> {
@@ -169,7 +167,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                         filteredStatusListForTemporarySuspension.add(statusWiseCountTO.getName());
                         return statusWiseCountTO;
                     })
-                    .collect(Collectors.toList());
+                    .toList();
 
             List<StatusWiseCountTO> tempTemporarySuspensionRequests = temporarySuspensionRequests;
             Arrays.stream(WorkflowStatus.values()).forEach(workflowStatus -> {
@@ -209,7 +207,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                         filteredStatusListForPermanentSuspension.add(statusWiseCountTO.getName());
                         return statusWiseCountTO;
                     })
-                    .collect(Collectors.toList());
+                    .toList();
 
             List<StatusWiseCountTO> tempPermanentSuspensionRequests = permanentSuspensionRequests;
             Arrays.stream(WorkflowStatus.values()).forEach(workflowStatus -> {
@@ -288,7 +286,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                         filteredStatusListForLicenseRequests.add(statusWiseCountTO.getName());
                         return statusWiseCountTO;
                     })
-                    .collect(Collectors.toList());
+                    .toList();
 
             List<StatusWiseCountTO> tempActivateLicenseRequests = activateLicenseRequests;
             Arrays.stream(WorkflowStatus.values()).forEach(workflowStatus -> {
@@ -327,7 +325,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                         filteredStatusListForCollegeRegRequests.add(statusWiseCountTO.getName());
                         return statusWiseCountTO;
                     })
-                    .collect(Collectors.toList());
+                    .toList();
 
             List<StatusWiseCountTO> tempCollegeRegistrationRequests = collegeRegistrationRequests;
             Arrays.stream(WorkflowStatus.values()).forEach(workflowStatus -> {
@@ -371,7 +369,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                 List<IStatusWiseCount> foreignHpStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForDean(ApplicationType.FOREIGN_HP_MODIFICATION.getId(), groupId, collegeDeanId);
                 return fetchCountConsideringForeignUsers(indianHpStatusWiseCount,foreignHpStatusWiseCount);
             }
-            return indianHpStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).collect(Collectors.toList());
+            return indianHpStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).toList();
         }
 
         /**
@@ -389,7 +387,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                 List<IStatusWiseCount> foreignHpStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForAdmin(ApplicationType.FOREIGN_HP_MODIFICATION.getId(), groupId, collegeId);
                 return fetchCountConsideringForeignUsers(indianHpStatusWiseCount,foreignHpStatusWiseCount);
             }
-            return indianHpStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).collect(Collectors.toList());
+            return indianHpStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).toList();
         }
 
         /**
@@ -407,7 +405,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                 List<IStatusWiseCount> foreignHpStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForRegistrar(ApplicationType.FOREIGN_HP_MODIFICATION.getId(), groupId, collegeRegistrarId);
                 return fetchCountConsideringForeignUsers(indianHpStatusWiseCount,foreignHpStatusWiseCount);
             }
-            return indianHpStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).collect(Collectors.toList());
+            return indianHpStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).toList();
         }
 
         /**
@@ -425,7 +423,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                 List<IStatusWiseCount> foreignHpStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForSmc(ApplicationType.FOREIGN_HP_MODIFICATION.getId(), groupId, smcProfileId);
                 return fetchCountConsideringForeignUsers(indianHpStatusWiseCount,foreignHpStatusWiseCount);
             }
-            return indianHpStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).collect(Collectors.toList());
+            return indianHpStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).toList();
         }
 
         /**
@@ -442,7 +440,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                 List<IStatusWiseCount> foreignHpStatusWiseCount = iFetchCountOnCardRepository.fetchStatusWiseCount(ApplicationType.FOREIGN_HP_MODIFICATION.getId(), groupId);
                 return fetchCountConsideringForeignUsers(indianHpStatusWiseCount,foreignHpStatusWiseCount);
             }
-            return indianHpStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).collect(Collectors.toList());
+            return indianHpStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).toList();
         }
 
         /**
@@ -460,14 +458,14 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                 List<IStatusWiseCount> foreignHpStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForNbe(ApplicationType.FOREIGN_HP_MODIFICATION.getId(), groupId, nbeProfileId);
                 return fetchCountConsideringForeignUsers(indianHpStatusWiseCount,foreignHpStatusWiseCount);
             }
-            return indianHpStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).collect(Collectors.toList());
+            return indianHpStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).toList();
         }
 
         throw new InvalidRequestException(INVALID_DASHBOARD_GROUP);
     }
 
     private List<StatusWiseCountTO> fetchCountConsideringForeignUsers(List<IStatusWiseCount> indianHpStatusWiseCount, List<IStatusWiseCount> foreignHpStatusWiseCount){
-        List<StatusWiseCountTO> tempForeignHpStatusWiseCount=foreignHpStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).collect(Collectors.toList());
+        List<StatusWiseCountTO> tempForeignHpStatusWiseCount= foreignHpStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).toList();
         return indianHpStatusWiseCount.stream().map(iStatusWiseCount -> {
             StatusWiseCountTO statusWiseCountTO = iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount);
             statusWiseCountTO.setCount(statusWiseCountTO.getCount().add(
@@ -477,7 +475,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                             .orElse(StatusWiseCountTO.builder().count(BigInteger.ZERO).build())
                             .getCount()));
             return statusWiseCountTO;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
 
