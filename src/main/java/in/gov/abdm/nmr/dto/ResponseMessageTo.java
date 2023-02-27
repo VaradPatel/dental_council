@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ResponseMessageTo {
 
+    String transactionId;
     String message;
-
 }

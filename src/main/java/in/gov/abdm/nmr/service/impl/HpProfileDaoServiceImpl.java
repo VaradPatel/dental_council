@@ -31,7 +31,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.Objects;
 
 import static in.gov.abdm.nmr.util.NMRConstants.NO_DATA_FOUND;
 import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
@@ -160,68 +159,68 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         if (copiedExistingHpProfile != null && HpProfileStatus.APPROVED.getId().equals(copiedExistingHpProfile.getHpProfileStatus().getId())) {
 
-                RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(copiedExistingHpProfile.getId());
-                RegistrationDetails newRegistrationDetails = new RegistrationDetails();
-                org.springframework.beans.BeanUtils.copyProperties(registrationDetails, newRegistrationDetails);
-                newRegistrationDetails.setId(null);
-                newRegistrationDetails.setHpProfileId(targetedHpProfile);
-                iRegistrationDetailRepository.save(newRegistrationDetails);
+            RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(copiedExistingHpProfile.getId());
+            RegistrationDetails newRegistrationDetails = new RegistrationDetails();
+            org.springframework.beans.BeanUtils.copyProperties(registrationDetails, newRegistrationDetails);
+            newRegistrationDetails.setId(null);
+            newRegistrationDetails.setHpProfileId(targetedHpProfile);
+            iRegistrationDetailRepository.save(newRegistrationDetails);
 
-                WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(copiedExistingHpProfile.getId());
-                WorkProfile newWorkProfile = new WorkProfile();
-                org.springframework.beans.BeanUtils.copyProperties(workProfile, newWorkProfile);
-                newWorkProfile.setId(null);
-                if (targetedHpProfile != null && targetedHpProfile.getId() != null) {
-                    newWorkProfile.setHpProfileId(targetedHpProfile.getId());
-                }
-                workProfileRepository.save(newWorkProfile);
-
-                List<LanguagesKnown> languagesKnownList = new ArrayList<>();
-                List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(copiedExistingHpProfile.getId());
-                for (LanguagesKnown languageKnown : languagesKnown) {
-                    LanguagesKnown newLanguagesKnown = new LanguagesKnown();
-                    org.springframework.beans.BeanUtils.copyProperties(languageKnown, newLanguagesKnown);
-                    newLanguagesKnown.setId(null);
-                    newLanguagesKnown.setHpProfile(targetedHpProfile);
-                    languagesKnownList.add(newLanguagesKnown);
-                }
-                languagesKnownRepository.saveAll(languagesKnownList);
-
-                List<QualificationDetails> qualificationDetails = new ArrayList<>();
-                List<QualificationDetails> qualificationDetailsList = iQualificationDetailRepository.getQualificationDetailsByHpProfileId(copiedExistingHpProfile.getId());
-                for (QualificationDetails qualificationDetail : qualificationDetailsList) {
-                    QualificationDetails newQualificationDetails = new QualificationDetails();
-                    org.springframework.beans.BeanUtils.copyProperties(qualificationDetail, newQualificationDetails);
-                    newQualificationDetails.setId(null);
-                    newQualificationDetails.setHpProfile(targetedHpProfile);
-                    qualificationDetails.add(newQualificationDetails);
-                }
-                iQualificationDetailRepository.saveAll(qualificationDetails);
-
-                List<ForeignQualificationDetails> customQualificationDetailsList = new ArrayList<>();
-                List<ForeignQualificationDetails> customQualificationDetails = iForeignQualificationDetailRepository.getQualificationDetailsByHpProfileId(copiedExistingHpProfile.getId());
-                for (ForeignQualificationDetails customQualificationDetail : customQualificationDetails) {
-                    ForeignQualificationDetails newCustomQualificationDetails = new ForeignQualificationDetails();
-                    org.springframework.beans.BeanUtils.copyProperties(customQualificationDetail, newCustomQualificationDetails);
-                    newCustomQualificationDetails.setId(null);
-                    newCustomQualificationDetails.setHpProfile(targetedHpProfile);
-                    customQualificationDetailsList.add(newCustomQualificationDetails);
-                }
-                iForeignQualificationDetailRepository.saveAll(customQualificationDetailsList);
-
-                List<SuperSpeciality> superSpecialities = new ArrayList<>();
-                List<SuperSpeciality> superSpecialityList = superSpecialityRepository.getSuperSpecialityFromHpProfileId(copiedExistingHpProfile.getId());
-                for (SuperSpeciality superSpeciality : superSpecialityList) {
-                    SuperSpeciality newSuperSpeciality = new SuperSpeciality();
-                    org.springframework.beans.BeanUtils.copyProperties(superSpeciality, newSuperSpeciality);
-                    newSuperSpeciality.setId(null);
-                    if (targetedHpProfile != null && targetedHpProfile.getId() != null) {
-                        newSuperSpeciality.setHpProfileId(targetedHpProfile.getId());
-                    }
-                    superSpecialities.add(newSuperSpeciality);
-                }
-                superSpecialityRepository.saveAll(superSpecialities);
+            WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(copiedExistingHpProfile.getId());
+            WorkProfile newWorkProfile = new WorkProfile();
+            org.springframework.beans.BeanUtils.copyProperties(workProfile, newWorkProfile);
+            newWorkProfile.setId(null);
+            if (targetedHpProfile != null && targetedHpProfile.getId() != null) {
+                newWorkProfile.setHpProfileId(targetedHpProfile.getId());
             }
+            workProfileRepository.save(newWorkProfile);
+
+            List<LanguagesKnown> languagesKnownList = new ArrayList<>();
+            List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(copiedExistingHpProfile.getId());
+            for (LanguagesKnown languageKnown : languagesKnown) {
+                LanguagesKnown newLanguagesKnown = new LanguagesKnown();
+                org.springframework.beans.BeanUtils.copyProperties(languageKnown, newLanguagesKnown);
+                newLanguagesKnown.setId(null);
+                newLanguagesKnown.setHpProfile(targetedHpProfile);
+                languagesKnownList.add(newLanguagesKnown);
+            }
+            languagesKnownRepository.saveAll(languagesKnownList);
+
+            List<QualificationDetails> qualificationDetails = new ArrayList<>();
+            List<QualificationDetails> qualificationDetailsList = iQualificationDetailRepository.getQualificationDetailsByHpProfileId(copiedExistingHpProfile.getId());
+            for (QualificationDetails qualificationDetail : qualificationDetailsList) {
+                QualificationDetails newQualificationDetails = new QualificationDetails();
+                org.springframework.beans.BeanUtils.copyProperties(qualificationDetail, newQualificationDetails);
+                newQualificationDetails.setId(null);
+                newQualificationDetails.setHpProfile(targetedHpProfile);
+                qualificationDetails.add(newQualificationDetails);
+            }
+            iQualificationDetailRepository.saveAll(qualificationDetails);
+
+            List<ForeignQualificationDetails> customQualificationDetailsList = new ArrayList<>();
+            List<ForeignQualificationDetails> customQualificationDetails = iForeignQualificationDetailRepository.getQualificationDetailsByHpProfileId(copiedExistingHpProfile.getId());
+            for (ForeignQualificationDetails customQualificationDetail : customQualificationDetails) {
+                ForeignQualificationDetails newCustomQualificationDetails = new ForeignQualificationDetails();
+                org.springframework.beans.BeanUtils.copyProperties(customQualificationDetail, newCustomQualificationDetails);
+                newCustomQualificationDetails.setId(null);
+                newCustomQualificationDetails.setHpProfile(targetedHpProfile);
+                customQualificationDetailsList.add(newCustomQualificationDetails);
+            }
+            iForeignQualificationDetailRepository.saveAll(customQualificationDetailsList);
+
+            List<SuperSpeciality> superSpecialities = new ArrayList<>();
+            List<SuperSpeciality> superSpecialityList = superSpecialityRepository.getSuperSpecialityFromHpProfileId(copiedExistingHpProfile.getId());
+            for (SuperSpeciality superSpeciality : superSpecialityList) {
+                SuperSpeciality newSuperSpeciality = new SuperSpeciality();
+                org.springframework.beans.BeanUtils.copyProperties(superSpeciality, newSuperSpeciality);
+                newSuperSpeciality.setId(null);
+                if (targetedHpProfile != null && targetedHpProfile.getId() != null) {
+                    newSuperSpeciality.setHpProfileId(targetedHpProfile.getId());
+                }
+                superSpecialities.add(newSuperSpeciality);
+            }
+            superSpecialityRepository.saveAll(superSpecialities);
+        }
 
         return new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", updatedHpProfileId);
     }
@@ -267,14 +266,13 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO = getUpdateWorkProfileDetailsTo(hpWorkProfileUpdateRequestString);
 
-        hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO ->
+        hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().stream().forEach(currentWorkDetailsTO ->
                 currentWorkDetailsTO.setProof(proof));
 
         List<WorkProfile> workProfile = workProfileRepository.getWorkProfileDetailsByHPId(hpProfileId);
-        if (workProfile == null) {
+        if (workProfile.size() == 0) {
             workProfile = new ArrayList<>();
             mapWorkRequestToEntity(hpWorkProfileUpdateRequestTO, workProfile, hpProfileId);
-            workProfileRepository.saveAll(workProfile);
         } else {
             mapWorkRequestToEntity(hpWorkProfileUpdateRequestTO, workProfile, hpProfileId);
         }
@@ -401,14 +399,14 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             address.setMobile(userKycTo.getPhone());
             iAddressRepository.save(address);
         } catch (Exception e) {
-            return new ResponseMessageTo(NMRConstants.FAILURE_RESPONSE);
+            return new ResponseMessageTo(NMRConstants.FAILURE_RESPONSE, null);
         }
-        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
+        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE, null);
     }
 
     private void saveIndianQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
                                                 List<QualificationDetailRequestTO> qualificationDetailRequestTOS) {
-        if (!qualificationDetailRequestTOS.isEmpty()) {
+        if (qualificationDetailRequestTOS.size() > 0) {
             List<QualificationDetails> qualificationDetails = new ArrayList<>();
             for (QualificationDetailRequestTO indianQualification : qualificationDetailRequestTOS) {
                 QualificationDetails qualification = new QualificationDetails();
@@ -443,7 +441,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     private void saveInternationalQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
                                                        List<QualificationDetailRequestTO> qualificationDetailRequestTOS) {
-        if (!qualificationDetailRequestTOS.isEmpty()) {
+        if (qualificationDetailRequestTOS.size() > 0) {
             List<ForeignQualificationDetails> internationQualifications = new ArrayList<>();
             for (QualificationDetailRequestTO internationQualification : qualificationDetailRequestTOS) {
                 ForeignQualificationDetails customQualification = new ForeignQualificationDetails();
@@ -524,7 +522,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         hpProfile.setGender(hpPersonalUpdateRequestTO.getPersonalDetails().getGender());
         hpProfile.setDateOfBirth(hpPersonalUpdateRequestTO.getPersonalDetails().getDateOfBirth());
         hpProfile.setRequestId(hpPersonalUpdateRequestTO.getRequestId());
-        hpProfile.setRegistrationId(hpPersonalUpdateRequestTO.getImrDetails().getRegistrationNumber());
+        hpProfile.setRegistrationId(hpPersonalUpdateRequestTO.getImrDetails().getRegistrationNumber().toString());
         hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
 
         Schedule schedule = iScheduleRepository
@@ -582,15 +580,30 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @SneakyThrows
     private void mapWorkRequestToEntity(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> addWorkProfiles, BigInteger hpProfileId) {
-        addWorkProfiles.forEach(addWorkProfile -> {
-            addWorkProfile.setBroadSpeciality(broadSpecialityRepository.findById(hpWorkProfileUpdateRequestTO.getSpecialityDetails().getBroadSpeciality().getId()).get());
+        List<WorkProfile> workProfileDetailsList = new ArrayList<>();
+        if (addWorkProfiles.size() > 0) {
+            updateWorkProfileRecords(hpWorkProfileUpdateRequestTO, addWorkProfiles, hpProfileId);
+        } else {
+            saveWorkProfileRecords(hpWorkProfileUpdateRequestTO, hpProfileId);
+        }
+    }
 
-            addWorkProfile.setWorkNature(workNatureRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature().getId()).get());
-            addWorkProfile.setWorkStatus(workStatusRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus().getId()).get());
-            addWorkProfile.setIsUserCurrentlyWorking(
-                    hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking());
-            List<CurrentWorkDetailsTO> currentWorkDetailsTOList = hpWorkProfileUpdateRequestTO.getCurrentWorkDetails();
-            currentWorkDetailsTOList.stream().filter(currentWorkDetailsTOFilter -> Objects.equals(currentWorkDetailsTOFilter.getFacilityId(), addWorkProfile.getFacilityId())).forEach(currentWorkDetailsTO -> {
+    private void updateWorkProfileRecords(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> addWorkProfiles, BigInteger hpProfileId) {
+        List<WorkProfile> workProfileDetailsList = new ArrayList<>();
+        addWorkProfiles.stream().forEach(addWorkProfile -> {
+            addWorkProfile.setRequestId(hpWorkProfileUpdateRequestTO.getRequestId());
+            addWorkProfile.setHpProfileId(hpProfileId);
+            if (hpWorkProfileUpdateRequestTO.getSpecialityDetails().getBroadSpeciality() != null) {
+                addWorkProfile.setBroadSpeciality(broadSpecialityRepository.findById(hpWorkProfileUpdateRequestTO.getSpecialityDetails().getBroadSpeciality().getId()).get());
+            }
+            if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature() != null) {
+                addWorkProfile.setWorkNature(workNatureRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature().getId()).get());
+            }
+            if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus() != null) {
+                addWorkProfile.setWorkStatus(workStatusRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus().getId()).get());
+            }
+            addWorkProfile.setIsUserCurrentlyWorking(hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking());
+            hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().stream().filter(currentWorkDetails -> addWorkProfile.getFacilityId() == currentWorkDetails.getFacilityId()).forEach(currentWorkDetailsTO -> {
                 addWorkProfile.setFacilityId(currentWorkDetailsTO.getFacilityId());
                 addWorkProfile.setFacilityTypeId(currentWorkDetailsTO.getFacilityTypeId());
                 addWorkProfile.setUrl(currentWorkDetailsTO.getUrl());
@@ -608,11 +621,48 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+                workProfileDetailsList.add(addWorkProfile);
             });
+        });
+        workProfileRepository.saveAll(workProfileDetailsList);
+    }
 
+    private void saveWorkProfileRecords(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, BigInteger hpProfileId) {
+        List<WorkProfile> workProfileDetailsList = new ArrayList<>();
+        hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().stream().forEach(currentWorkDetailsTO -> {
+            WorkProfile addWorkProfile = new WorkProfile();
             addWorkProfile.setRequestId(hpWorkProfileUpdateRequestTO.getRequestId());
             addWorkProfile.setHpProfileId(hpProfileId);
+            if (hpWorkProfileUpdateRequestTO.getSpecialityDetails().getBroadSpeciality() != null) {
+                addWorkProfile.setBroadSpeciality(broadSpecialityRepository.findById(hpWorkProfileUpdateRequestTO.getSpecialityDetails().getBroadSpeciality().getId()).get());
+            }
+            if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature() != null) {
+                addWorkProfile.setWorkNature(workNatureRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature().getId()).get());
+            }
+            if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus() != null) {
+                addWorkProfile.setWorkStatus(workStatusRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus().getId()).get());
+            }
+            addWorkProfile.setIsUserCurrentlyWorking(hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking());
+            addWorkProfile.setFacilityId(currentWorkDetailsTO.getFacilityId());
+            addWorkProfile.setFacilityTypeId(currentWorkDetailsTO.getFacilityTypeId());
+            addWorkProfile.setUrl(currentWorkDetailsTO.getUrl());
+            addWorkProfile
+                    .setWorkOrganization(currentWorkDetailsTO.getWorkOrganization());
+            addWorkProfile.setOrganizationType(currentWorkDetailsTO.getOrganizationType());
+            if (currentWorkDetailsTO.getAddress() != null) {
+                addWorkProfile.setAddress(currentWorkDetailsTO.getAddress().getAddressLine1());
+                addWorkProfile.setState(stateRepository.findById(currentWorkDetailsTO.getAddress().getState().getId()).get());
+                addWorkProfile.setDistrict(districtRepository.findById(currentWorkDetailsTO.getAddress().getDistrict().getId()).get());
+                addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
+            }
+            try {
+                addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof().getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            workProfileDetailsList.add(addWorkProfile);
         });
+        workProfileRepository.saveAll(workProfileDetailsList);
     }
 
     private String checkIsNullAndAddSeparator(String string) {

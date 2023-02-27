@@ -11,7 +11,9 @@ public interface ICaptchaService {
 
     GenerateCaptchaResponseTO generateCaptcha() throws NoSuchAlgorithmException, IOException;
 
-    ValidateCaptchaResponseTO validateCaptcha(ValidateCaptchaRequestTO validateCaptchaRequestTO);
+    ValidateCaptchaResponseTO verifyCaptcha(ValidateCaptchaRequestTO validateCaptchaRequestTO);
 
-    Boolean getCaptchaEnabledFlag();
+    Boolean isCaptchaEnabled();
+
+    boolean isCaptchaVerified(String id);
 }

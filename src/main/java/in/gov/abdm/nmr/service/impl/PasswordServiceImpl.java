@@ -69,13 +69,13 @@ public class PasswordServiceImpl implements IPasswordService {
                 if (userRepository.existsByUsername(setPasswordLinkTo.getUsername())) {
                     return passwordReset(setPasswordLinkTo);
                 } else {
-                    return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
+                    return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND, null);
                 }
             } else {
-                return new ResponseMessageTo(NMRConstants.USER_NAME_ALREADY_EXISTS);
+                return new ResponseMessageTo(NMRConstants.USER_ALREADY_EXISTS, null);
             }
         } catch (Exception e) {
-            return new ResponseMessageTo(e.getLocalizedMessage());
+            return new ResponseMessageTo(e.getLocalizedMessage(), null);
         }
     }
 
@@ -110,11 +110,11 @@ public class PasswordServiceImpl implements IPasswordService {
             User user = userDaoService.findByUsername(passwordResetToken.getUserName());
 
             if (null == user) {
-                return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
+                return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND, null);
             }
             if (passwordResetToken.getExpiryDate().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0) {
 
-                return new ResponseMessageTo(NMRConstants.LINK_EXPIRED);
+                return new ResponseMessageTo(NMRConstants.LINK_EXPIRED, null);
             }
 
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -122,9 +122,9 @@ public class PasswordServiceImpl implements IPasswordService {
             user.setPassword(encodedPassword);
             userRepository.save(user);
 
-            return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
+            return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE, null);
         } catch (Exception e) {
-            return new ResponseMessageTo(e.getLocalizedMessage());
+            return new ResponseMessageTo(e.getLocalizedMessage(), null);
         }
     }
 
@@ -143,12 +143,12 @@ public class PasswordServiceImpl implements IPasswordService {
             user.setPassword(bCryptPasswordEncoder.encode(resetPasswordRequestTo.getPassword()));
             try {
                 userRepository.save(user);
-                return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
+                return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE, null);
             } catch (Exception e) {
-                return new ResponseMessageTo(NMRConstants.PROBLEM_OCCURRED);
+                return new ResponseMessageTo(NMRConstants.PROBLEM_OCCURRED, null);
             }
         } else {
-            return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
+            return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND, null);
         }
 
     }
@@ -169,15 +169,15 @@ public class PasswordServiceImpl implements IPasswordService {
                 user.setPassword(bCryptPasswordEncoder.encode(changePasswordRequestTo.getNewPassword()));
                 try {
                     userRepository.save(user);
-                    return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
+                    return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE, null);
                 } catch (Exception e) {
-                    return new ResponseMessageTo(NMRConstants.PROBLEM_OCCURRED);
+                    return new ResponseMessageTo(NMRConstants.PROBLEM_OCCURRED, null);
                 }
             } else {
-                return new ResponseMessageTo(NMRConstants.OLD_PASSWORD_NOT_MATCHING);
+                return new ResponseMessageTo(NMRConstants.OLD_PASSWORD_NOT_MATCHING, null);
             }
         } else {
-            return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
+            return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND, null);
         }
 
     }

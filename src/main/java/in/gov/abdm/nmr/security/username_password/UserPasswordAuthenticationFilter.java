@@ -1,13 +1,13 @@
 package in.gov.abdm.nmr.security.username_password;
 
-import brave.Tracer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import in.gov.abdm.nmr.dto.LoginRequestTO;
-import in.gov.abdm.nmr.entity.SecurityAuditTrail;
-import in.gov.abdm.nmr.security.common.ProtectedPaths;
-import in.gov.abdm.nmr.security.common.RsaUtil;
-import in.gov.abdm.nmr.service.ICaptchaDaoService;
-import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
+import java.io.IOException;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,12 +22,15 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import brave.Tracer;
+import in.gov.abdm.nmr.dto.LoginRequestTO;
+import in.gov.abdm.nmr.entity.SecurityAuditTrail;
+import in.gov.abdm.nmr.security.common.ProtectedPaths;
+import in.gov.abdm.nmr.security.common.RsaUtil;
+import in.gov.abdm.nmr.service.ICaptchaService;
+import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 
 @Component
 public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -40,7 +43,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
 
     private RsaUtil rsaUtil;
 
-    private ICaptchaDaoService captchaDaoService;
+    private ICaptchaService captchaService;
 
     private AuthenticationEventPublisher authEventPublisher;
     
@@ -51,7 +54,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
     @Autowired
     AuthenticationLockingService authenticationHandler;
 
-    public UserPasswordAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper, RsaUtil rsaUtil, ICaptchaDaoService captchaDaoService, //
+    public UserPasswordAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper, RsaUtil rsaUtil, ICaptchaService captchaService, //
                                             AuthenticationEventPublisher authEventPublisher, ISecurityAuditTrailDaoService securityAuditTrailDaoService, Tracer tracer) {
         super();
         this.setRequiresAuthenticationRequestMatcher(ProtectedPaths.getLoginPathMatcher());
@@ -61,7 +64,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
         this.setAuthenticationFailureHandler((request, response, exception) -> response.sendError(HttpStatus.UNAUTHORIZED.value(), exception.getMessage()));
         this.objectMapper = objectMapper;
         this.rsaUtil = rsaUtil;
-        this.captchaDaoService = captchaDaoService;
+        this.captchaService = captchaService;
         this.authEventPublisher = authEventPublisher;
         this.securityAuditTrailDaoService = securityAuditTrailDaoService;
         this.tracer = tracer;
@@ -77,7 +80,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
                     rsaUtil.decrypt(requestBodyTO.getPassword()), requestBodyTO.getUserType());
             authRequest.setDetails(createSecurityAuditTrail(request));
 
-            if (!captchaDaoService.isCaptchaValidated(requestBodyTO.getCaptchaTransId())) {
+            if (!captchaService.isCaptchaVerified(requestBodyTO.getCaptchaTransId())) {
                 throw new AuthenticationServiceException("Invalid captcha");
             }
         } catch (AuthenticationException e) {
