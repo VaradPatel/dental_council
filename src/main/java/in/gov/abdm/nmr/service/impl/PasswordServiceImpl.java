@@ -126,7 +126,7 @@ public class PasswordServiceImpl implements IPasswordService {
 
                 return new ResponseMessageTo(NMRConstants.LINK_EXPIRED, null);
             }
-
+            user.setPassword(bCryptPasswordEncoder.encode(rsaUtil.decrypt(newPasswordTo.getPassword())));
             userRepository.save(user);
 
             return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE, null);
@@ -141,21 +141,22 @@ public class PasswordServiceImpl implements IPasswordService {
      * @param resetPasswordRequestTo coming from Service
      * @return ResetPasswordResponseTo Object
      */
+    @SneakyThrows
     @Override
     public ResponseMessageTo resetPassword(ResetPasswordRequestTo resetPasswordRequestTo) {
 
         User user = userRepository.findByUsername(resetPasswordRequestTo.getUsername());
 
         if (null != user) {
-            user.setPassword(resetPasswordRequestTo.getPassword());
+            user.setPassword(bCryptPasswordEncoder.encode(rsaUtil.decrypt(resetPasswordRequestTo.getPassword())));
             try {
                 userRepository.save(user);
-                return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE, null);
+                return new ResponseMessageTo(null,NMRConstants.SUCCESS_RESPONSE );
             } catch (Exception e) {
-                return new ResponseMessageTo(NMRConstants.PROBLEM_OCCURRED, null);
+                return new ResponseMessageTo(null,NMRConstants.PROBLEM_OCCURRED);
             }
         } else {
-            return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND, null);
+            return new ResponseMessageTo(null,NMRConstants.USER_NOT_FOUND);
         }
 
     }
@@ -176,7 +177,7 @@ public class PasswordServiceImpl implements IPasswordService {
             if (userName.equalsIgnoreCase(user.getUsername())) {
 
                 if (bCryptPasswordEncoder.matches(rsaUtil.decrypt(changePasswordRequestTo.getOldPassword()), user.getPassword())) {
-                    user.setPassword(changePasswordRequestTo.getNewPassword());
+                    user.setPassword(bCryptPasswordEncoder.encode(rsaUtil.decrypt(changePasswordRequestTo.getNewPassword())));
                     try {
                         userRepository.save(user);
                         return new ResponseMessageTo(null, NMRConstants.SUCCESS_RESPONSE);
