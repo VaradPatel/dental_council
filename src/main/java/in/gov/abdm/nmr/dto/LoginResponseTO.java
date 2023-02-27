@@ -8,6 +8,7 @@ import java.math.BigInteger;
 public class LoginResponseTO {
 
     private BigInteger profileId;
+    private BigInteger userId;
     private BigInteger userType;
     private BigInteger userSubType;
     private BigInteger userGroupId;

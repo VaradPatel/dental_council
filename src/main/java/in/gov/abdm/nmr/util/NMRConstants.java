@@ -34,12 +34,12 @@ public class NMRConstants {
     public static final String AADHAR_SERVICE_VERIFY_OTP = "/api/v3/aadhaar/verifyOtp";
     public static final String NOTIFICATION_SERVICE_SEND_MESSAGE = "/internal/v3/notification/message";
     public static final String NOTIFICATION_DB_SERVICE_GET_TEMPLATE = "/internal/v3/notification/template/id/{id}";
-    public static final String RESET_PASSWORD = "/reset-password";
-    public static final String CHANGE_PASSWORD = "/change-password";
+    public static final String RESET_PASSWORD = "/user/reset-password";
+
     public static final String RAISE_QUERY = "/health-professional/queries";
     public static final String GET_QUERIES = "health-professional/{healthProfessionalId}/queries";
-    public static final String PASSWORD_LINK = "/password-link";
-    public static final String SET_PASSWORD = "/set-password";
+    public static final String PASSWORD_LINK = "/user/password-link";
+    public static final String SET_PASSWORD = "/user/set-password";
     public static final String E_SIGN = "/e-signature";
 
     public static final String PATH_FACILITY_ROOT = "/facilities";
@@ -102,6 +102,7 @@ public class NMRConstants {
     public static final String TEMPLATE_NOT_FOUND = "Template not found";
     public static final String OLD_PASSWORD_NOT_MATCHING = "Old password not matching";
     public static final String PROBLEM_OCCURRED = "Problem Occurred";
+    public static final String USER_ID_NOT_NULL = "User Id cannot be null or empty";
     public static final String USERNAME_NOT_NULL = "Username cannot be null or empty";
     public static final String PASSWORD_NOT_NULL = "Password cannot be null or empty";
     public static final String TOKEN_NOT_NULL = "Token cannot be null or empty";
