@@ -195,7 +195,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         }
         final String sortingOrder = sortOrder == null ? DEFAULT_SORT_ORDER : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
-        final int dataLimit = MAX_DATA_SIZE < size ? MAX_DATA_SIZE : size;
+        final int dataLimit = Math.min(MAX_DATA_SIZE, size);
         Pageable pageable = PageRequest.of(pageNo, dataLimit);
         return iFetchSpecificDetailsCustomRepository.fetchDashboardData(dashboardRequestParamsTO, pageable);
     }
@@ -244,7 +244,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         }
         final String sortingOrder = sortOrder == null ? DEFAULT_SORT_ORDER : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
-        final int dataLimit = MAX_DATA_SIZE < size ? MAX_DATA_SIZE : size;
+        final int dataLimit = Math.min(MAX_DATA_SIZE, size);
         Pageable pageable = PageRequest.of(pageNo, dataLimit);
         return iFetchSpecificDetailsCustomRepository.fetchDashboardData(dashboardRequestParamsTO, pageable);
     }
@@ -259,11 +259,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         Map<String, String> columns;
         if (columnToSort.length() > 0) {
             columns = mapColumnToTable();
-            if (columns.containsKey(columnToSort)) {
-                return columns.get(columnToSort);
-            } else {
-                return "Invalid column Name to sort";
-            }
+            return columns.getOrDefault(columnToSort, "Invalid column Name to sort");
         } else {
             return " rd.created_at ";
         }
