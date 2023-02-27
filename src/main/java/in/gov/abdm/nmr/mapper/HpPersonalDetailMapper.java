@@ -61,9 +61,7 @@ public final class HpPersonalDetailMapper {
     }
 
     private List<LanguageTO> convertLanguageEntityToLanguageDto(List<LanguagesKnown> languagesKnowns, List<Language> languages) {
-        return languagesKnowns.stream().map(language -> {
-            return LanguageTO.builder().id(language.getLanguageId()).name(languages.stream().filter(l->l.getId().equals(language.getLanguageId())).findFirst().get().getName()).build();
-        }).toList();
+        return languagesKnowns.stream().map(language -> LanguageTO.builder().id(language.getLanguageId()).name(languages.stream().filter(l->l.getId().equals(language.getLanguageId())).findFirst().get().getName()).build()).toList();
     }
 
 }

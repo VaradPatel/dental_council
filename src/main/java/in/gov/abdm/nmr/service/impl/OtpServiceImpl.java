@@ -53,7 +53,7 @@ public class OtpServiceImpl implements IOtpService {
             throw new OtpException(NMRConstants.OTP_ATTEMPTS_EXCEEDED);
         }
         String otp = String.valueOf(new SecureRandom().nextInt(899999) + 100000);
-        if (nmrOtpRepository.doesValidDuplicateOtpExists(DigestUtils.sha256Hex(otp), otpGenerateRequestTo.getContact())) {
+        if (Boolean.TRUE.equals(nmrOtpRepository.doesValidDuplicateOtpExists(DigestUtils.sha256Hex(otp), otpGenerateRequestTo.getContact()))) {
             otp = String.valueOf(new SecureRandom().nextInt(899999) + 100000);
         }
 

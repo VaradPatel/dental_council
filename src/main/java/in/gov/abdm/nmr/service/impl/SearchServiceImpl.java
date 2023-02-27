@@ -14,8 +14,6 @@ import in.gov.abdm.nmr.repository.IHpProfileMasterRepository;
 import in.gov.abdm.nmr.repository.IQualificationDetailMasterRepository;
 import in.gov.abdm.nmr.repository.RegistrationDetailMasterRepository;
 import in.gov.abdm.nmr.service.IElasticsearchDaoService;
-import in.gov.abdm.nmr.service.IQualificationDetailDaoService;
-import in.gov.abdm.nmr.service.IRegistrationDetailDaoService;
 import in.gov.abdm.nmr.service.ISearchService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -48,7 +46,7 @@ public class SearchServiceImpl implements ISearchService {
 
     private static final List<BigInteger> PROFILE_STATUS_CODES = Arrays.asList(BigInteger.valueOf(2l), BigInteger.valueOf(5l), BigInteger.valueOf(6l));
 
-    public SearchServiceImpl(IElasticsearchDaoService elasticsearchDaoService, IHpProfileMasterRepository iHpProfileMasterRepository, RegistrationDetailMasterRepository registrationDetailMasterRepository, IQualificationDetailMasterRepository qualificationDetailMasterRepository, IForeignQualificationDetailMasterRepository foreignQualificationDetailMasterRepository, IQualificationDetailDaoService qualificationDetailDaoService, IRegistrationDetailDaoService registrationDetailDaoService) {
+    public SearchServiceImpl(IElasticsearchDaoService elasticsearchDaoService, IHpProfileMasterRepository iHpProfileMasterRepository, RegistrationDetailMasterRepository registrationDetailMasterRepository, IQualificationDetailMasterRepository qualificationDetailMasterRepository, IForeignQualificationDetailMasterRepository foreignQualificationDetailMasterRepository) {
         this.elasticsearchDaoService = elasticsearchDaoService;
         this.iHpProfileMasterRepository = iHpProfileMasterRepository;
         this.registrationDetailMasterRepository = registrationDetailMasterRepository;

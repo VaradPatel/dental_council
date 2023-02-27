@@ -25,7 +25,7 @@ public interface IHpProfileDaoService {
 													   String hpWorkProfileUpdateRequestString, MultipartFile proof);
 
 	HpProfilePictureResponseTO uploadHpProfilePhoto(MultipartFile file, BigInteger hpProfileId)
-			throws InvalidRequestException, IOException;
+			throws IOException;
 
 	HpProfile findLatestEntryByUserid(BigInteger userId);
 

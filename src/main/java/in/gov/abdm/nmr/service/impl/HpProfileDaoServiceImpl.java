@@ -31,6 +31,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 
 import static in.gov.abdm.nmr.util.NMRConstants.NO_DATA_FOUND;
 import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
@@ -266,7 +267,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO = getUpdateWorkProfileDetailsTo(hpWorkProfileUpdateRequestString);
 
-        hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().stream().forEach(currentWorkDetailsTO ->
+        hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO ->
                 currentWorkDetailsTO.setProof(proof));
 
         List<WorkProfile> workProfile = workProfileRepository.getWorkProfileDetailsByHPId(hpProfileId);
@@ -407,7 +408,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     private void saveIndianQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
                                                 List<QualificationDetailRequestTO> qualificationDetailRequestTOS) {
-        if (qualificationDetailRequestTOS.size() > 0) {
+        if (!qualificationDetailRequestTOS.isEmpty()) {
             List<QualificationDetails> qualificationDetails = new ArrayList<>();
             for (QualificationDetailRequestTO indianQualification : qualificationDetailRequestTOS) {
                 QualificationDetails qualification = new QualificationDetails();
@@ -442,7 +443,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     private void saveInternationalQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
                                                        List<QualificationDetailRequestTO> qualificationDetailRequestTOS) {
-        if (qualificationDetailRequestTOS.size() > 0) {
+        if (!qualificationDetailRequestTOS.isEmpty()) {
             List<ForeignQualificationDetails> internationQualifications = new ArrayList<>();
             for (QualificationDetailRequestTO internationQualification : qualificationDetailRequestTOS) {
                 ForeignQualificationDetails customQualification = new ForeignQualificationDetails();
@@ -523,7 +524,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         hpProfile.setGender(hpPersonalUpdateRequestTO.getPersonalDetails().getGender());
         hpProfile.setDateOfBirth(hpPersonalUpdateRequestTO.getPersonalDetails().getDateOfBirth());
         hpProfile.setRequestId(hpPersonalUpdateRequestTO.getRequestId());
-        hpProfile.setRegistrationId(hpPersonalUpdateRequestTO.getImrDetails().getRegistrationNumber().toString());
+        hpProfile.setRegistrationId(hpPersonalUpdateRequestTO.getImrDetails().getRegistrationNumber());
         hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
 
         Schedule schedule = iScheduleRepository
@@ -581,7 +582,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @SneakyThrows
     private void mapWorkRequestToEntity(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> addWorkProfiles, BigInteger hpProfileId) {
-        addWorkProfiles.stream().forEach(addWorkProfile -> {
+        addWorkProfiles.forEach(addWorkProfile -> {
             addWorkProfile.setBroadSpeciality(broadSpecialityRepository.findById(hpWorkProfileUpdateRequestTO.getSpecialityDetails().getBroadSpeciality().getId()).get());
 
             addWorkProfile.setWorkNature(workNatureRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature().getId()).get());
@@ -589,7 +590,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             addWorkProfile.setIsUserCurrentlyWorking(
                     hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking());
             List<CurrentWorkDetailsTO> currentWorkDetailsTOList = hpWorkProfileUpdateRequestTO.getCurrentWorkDetails();
-            currentWorkDetailsTOList.stream().filter(currentWorkDetailsTOFilter -> currentWorkDetailsTOFilter.getFacilityId() == addWorkProfile.getFacilityId()).forEach(currentWorkDetailsTO -> {
+            currentWorkDetailsTOList.stream().filter(currentWorkDetailsTOFilter -> Objects.equals(currentWorkDetailsTOFilter.getFacilityId(), addWorkProfile.getFacilityId())).forEach(currentWorkDetailsTO -> {
                 addWorkProfile.setFacilityId(currentWorkDetailsTO.getFacilityId());
                 addWorkProfile.setFacilityTypeId(currentWorkDetailsTO.getFacilityTypeId());
                 addWorkProfile.setUrl(currentWorkDetailsTO.getUrl());

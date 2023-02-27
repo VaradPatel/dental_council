@@ -12,7 +12,6 @@ import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.mapper.ICollegeDtoMapper;
 import in.gov.abdm.nmr.repository.ICollegeRepository;
 import in.gov.abdm.nmr.repository.ICollegeRepositoryCustom;
-import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.ICollegeDaoService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,20 +39,16 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
 
     private IUserDaoService userDetailService;
 
-    private IAccessControlService accessControlService;
-
     @Autowired
     private ICollegeRepositoryCustom collegeRepositoryCustom;
     @Autowired
     private PasswordServiceImpl passwordReset;
 
-    public CollegeDaoServiceImpl(ICollegeRepository collegeRepository, ICollegeDtoMapper collegeDtoMapper, EntityManager entityManager, IUserDaoService userDetailService, //
-                                 IAccessControlService accessControlService) {
+    public CollegeDaoServiceImpl(ICollegeRepository collegeRepository, ICollegeDtoMapper collegeDtoMapper, EntityManager entityManager, IUserDaoService userDetailService) {
         this.collegeRepository = collegeRepository;
         this.collegeDtoMapper = collegeDtoMapper;
         this.entityManager = entityManager;
         this.userDetailService = userDetailService;
-        this.accessControlService = accessControlService;
     }
 
     @Override

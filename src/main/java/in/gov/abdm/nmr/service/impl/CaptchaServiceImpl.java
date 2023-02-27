@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.List;
@@ -35,7 +34,7 @@ public class CaptchaServiceImpl implements ICaptchaService {
     }
 
     @Override
-    public GenerateCaptchaResponseTO generateCaptcha() throws NoSuchAlgorithmException, IOException {
+    public GenerateCaptchaResponseTO generateCaptcha() throws NoSuchAlgorithmException {
         Captcha captchaEntity = captchaDaoService.generateCaptcha();
 
         cn.apiclub.captcha.Captcha captcha = new cn.apiclub.captcha.Captcha.Builder(1300, 575) //
