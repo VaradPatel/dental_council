@@ -17,7 +17,7 @@ public class ProtectedPaths {
     public static final String PATH_UPDATE_COLLEGE = "/college/{collegeId}";
     public static final String PATH_REGISTER_COLLEGE_REGISTRAR = "/college/{collegeId}/registrar";
     public static final String PATH_REGISTER_COLLEGE_DEAN = "/college/{collegeId}/dean";
-    
+
     public static final String PATH_COLLEGE_PROFILE = "/college/{collegeId}";
     public static final String PATH_COLLEGE_REGISTRAR_PROFILE = "/college/{collegeId}/registrar/{registrarId}";
     public static final String PATH_COLLEGE_DEAN_PROFILE = "/college/{collegeId}/dean/{deanId}";
@@ -47,6 +47,7 @@ public class ProtectedPaths {
     public static final String APPLICATION_REQUEST_URL = "/health-professional/applications";
     public static final String SUSPENSION_REQUEST_URL = APPLICATION_REQUEST_URL + "/suspend";
     public static final String REACTIVATE_REQUEST_URL = APPLICATION_REQUEST_URL + "/re-activate";
+    public static final String CHANGE_PASSWORD = "/user/change-password";
 
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<AntPathRequestMatcher> protectedPaths = new ArrayList<>();
@@ -72,6 +73,7 @@ public class ProtectedPaths {
         protectedPaths.add(new AntPathRequestMatcher(PATH_HEALTH_PROFESSIONAL_ROOT + PATH_HEALTH_PROFESSIONAL_APPLICATIONS));
         protectedPaths.add(new AntPathRequestMatcher(SUSPENSION_REQUEST_URL));
         protectedPaths.add(new AntPathRequestMatcher(REACTIVATE_REQUEST_URL, HttpMethod.POST.name()));
+        protectedPaths.add(new AntPathRequestMatcher(CHANGE_PASSWORD));
 
         return protectedPaths.toArray(AntPathRequestMatcher[]::new);
     }

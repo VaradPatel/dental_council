@@ -7,20 +7,27 @@ import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.repository.IUserRepository;
 import in.gov.abdm.nmr.repository.PasswordResetTokenRepository;
+import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.service.IPasswordService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
+import lombok.SneakyThrows;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.security.GeneralSecurityException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+
+import static in.gov.abdm.nmr.util.NMRConstants.FORBIDDEN;
 
 /**
  * Implementations of methods for resetting and changing password
@@ -49,6 +56,9 @@ public class PasswordServiceImpl implements IPasswordService {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    RsaUtil rsaUtil;
 
     /**
      * Creates new unique token for reset password transaction
@@ -117,9 +127,6 @@ public class PasswordServiceImpl implements IPasswordService {
                 return new ResponseMessageTo(NMRConstants.LINK_EXPIRED, null);
             }
 
-            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            String encodedPassword = passwordEncoder.encode(newPasswordTo.getPassword());
-            user.setPassword(encodedPassword);
             userRepository.save(user);
 
             return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE, null);
@@ -140,7 +147,7 @@ public class PasswordServiceImpl implements IPasswordService {
         User user = userRepository.findByUsername(resetPasswordRequestTo.getUsername());
 
         if (null != user) {
-            user.setPassword(bCryptPasswordEncoder.encode(resetPasswordRequestTo.getPassword()));
+            user.setPassword(resetPasswordRequestTo.getPassword());
             try {
                 userRepository.save(user);
                 return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE, null);
@@ -159,24 +166,32 @@ public class PasswordServiceImpl implements IPasswordService {
      * @param changePasswordRequestTo coming from controller
      * @return Success or failure message
      */
+    @SneakyThrows
     @Override
     public ResponseMessageTo changePassword(ChangePasswordRequestTo changePasswordRequestTo) {
 
-        User user = userRepository.findByUsername(changePasswordRequestTo.getUsername());
+        User user = userRepository.findById(changePasswordRequestTo.getUserId()).get();
+        if (user != null) {
+            String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+            if (userName.equalsIgnoreCase(user.getUsername())) {
 
-        if (null != user) {
-            if (bCryptPasswordEncoder.matches(changePasswordRequestTo.getOldPassword(), user.getPassword())) {
-                user.setPassword(bCryptPasswordEncoder.encode(changePasswordRequestTo.getNewPassword()));
-                try {
-                    userRepository.save(user);
-                    return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE, null);
-                } catch (Exception e) {
-                    return new ResponseMessageTo(NMRConstants.PROBLEM_OCCURRED, null);
+                if (bCryptPasswordEncoder.matches(rsaUtil.decrypt(changePasswordRequestTo.getOldPassword()), user.getPassword())) {
+                    user.setPassword(changePasswordRequestTo.getNewPassword());
+                    try {
+                        userRepository.save(user);
+                        return new ResponseMessageTo(null, NMRConstants.SUCCESS_RESPONSE);
+                    } catch (Exception e) {
+                        return new ResponseMessageTo(null, NMRConstants.PROBLEM_OCCURRED);
+                    }
+                } else {
+                    return new ResponseMessageTo(null, NMRConstants.OLD_PASSWORD_NOT_MATCHING);
                 }
             } else {
-                return new ResponseMessageTo(NMRConstants.OLD_PASSWORD_NOT_MATCHING, null);
+
+                throw new AccessDeniedException(FORBIDDEN);
             }
         } else {
+
             return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND, null);
         }
 

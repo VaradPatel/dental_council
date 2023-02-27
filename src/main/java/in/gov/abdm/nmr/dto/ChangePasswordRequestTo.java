@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import java.math.BigInteger;
 
 /**
  * Request TO for change password
@@ -15,9 +16,8 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class ChangePasswordRequestTo {
 
-    @JsonProperty("username")
-    @NotBlank(message = NMRConstants.USERNAME_NOT_NULL)
-    String username;
+    @JsonProperty("userId")
+    BigInteger userId;
 
     @JsonProperty("oldPassword")
     @NotBlank(message = NMRConstants.PASSWORD_NOT_NULL)
