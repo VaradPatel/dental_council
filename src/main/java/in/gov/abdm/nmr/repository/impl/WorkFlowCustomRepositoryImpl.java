@@ -33,12 +33,13 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
     private static final Function<ReactivateHealthProfessionalRequestParam, String> REACTIVATION_SEARCH_PARAMETERS = reactivateHealthProfessionalQueryParam -> {
         StringBuilder sb = new StringBuilder();
         if (Objects.nonNull(reactivateHealthProfessionalQueryParam.getSearch()) && (!reactivateHealthProfessionalQueryParam.getSearch().isEmpty())) {
-            sb.append("  AND (cast(hp.id as varchar) LIKE '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
-            sb.append(" OR hp.full_name ILIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
-            sb.append(" OR cast(wf.created_at as varchar) LIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
-            sb.append(" OR cast(wf.start_date as varchar) LIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
-            sb.append(" OR wf.remarks ILIKE '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
-            sb.append(" OR a.name ILIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%')");
+            sb.append("  AND (cast(r.id as varchar) LIKE '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
+            sb.append(" OR r.full_name ILIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
+            sb.append(" OR cast(r.created_at as varchar) LIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
+            sb.append(" OR cast(r.start_date as varchar) LIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
+            sb.append(" OR r.remarks ILIKE '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
+            sb.append(" OR r.suspension_type ILIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
+            sb.append("  OR r.registration_id ILIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%') ");
         }
         return sb.toString();
     };
