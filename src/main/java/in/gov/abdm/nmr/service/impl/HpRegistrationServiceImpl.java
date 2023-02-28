@@ -206,7 +206,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = null;
         List<SuperSpeciality> superSpecialities = NMRUtil.coalesceCollection(superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId), superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId));
         List<WorkProfile> workProfileList = workProfileRepository.getWorkProfileDetailsByHPId(hpProfileId);
-        if (workProfileList.size() > 0) {
+        if (!workProfileList.isEmpty()) {
             hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(superSpecialities, workProfileList);
         } else {
             throw new NmrException("Invalid HP profile ID", HttpStatus.valueOf(404));

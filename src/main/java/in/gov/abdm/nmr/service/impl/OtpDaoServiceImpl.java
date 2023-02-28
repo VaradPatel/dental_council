@@ -26,12 +26,12 @@ public class OtpDaoServiceImpl implements IOtpDaoService {
     }
 
     @Override
-    public List<Otp> findAllBycontact(String contact) {
+    public List<Otp> findAllByContact(String contact) {
         return otpRepository.findAllBycontact(contact);
     }
 
     @Override
     public void deleteById(String id) {
-        otpRepository.deleteById(id);;
+        otpRepository.deleteById(id);
     }
 }

@@ -15,5 +15,5 @@ public interface IOtpDaoService {
 
     void deleteById(String id);
 
-    List<Otp> findAllBycontact(String contact);
+    List<Otp> findAllByContact(String contact);
 }
