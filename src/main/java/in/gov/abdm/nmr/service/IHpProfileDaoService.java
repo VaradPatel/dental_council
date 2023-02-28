@@ -36,4 +36,7 @@ public interface IHpProfileDaoService {
 
 	ResponseMessageTo setHpProfilePhotoAndAddressThroughAadhaar(BigInteger id, AadhaarUserKycTo userKycTo);
 
-    }
+	List<QualificationDetailRequestTO> getQualificationDetailRequestTO(String qualificationDetailRequestTOString);
+
+
+}

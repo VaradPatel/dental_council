@@ -29,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -166,14 +167,19 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             newRegistrationDetails.setHpProfileId(targetedHpProfile);
             iRegistrationDetailRepository.save(newRegistrationDetails);
 
-            WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(copiedExistingHpProfile.getId());
-            WorkProfile newWorkProfile = new WorkProfile();
-            org.springframework.beans.BeanUtils.copyProperties(workProfile, newWorkProfile);
-            newWorkProfile.setId(null);
-            if (targetedHpProfile != null && targetedHpProfile.getId() != null) {
-                newWorkProfile.setHpProfileId(targetedHpProfile.getId());
-            }
-            workProfileRepository.save(newWorkProfile);
+            List<WorkProfile> workProfileList =new ArrayList<>();
+            List<WorkProfile> workProfiles = workProfileRepository.getWorkProfileDetailsByHPId(copiedExistingHpProfile.getId());
+            HpProfile finalTargetedHpProfile = targetedHpProfile;
+            workProfiles.forEach(workProfile -> {
+                WorkProfile newWorkProfile = new WorkProfile();
+                org.springframework.beans.BeanUtils.copyProperties(workProfile, newWorkProfile);
+                newWorkProfile.setId(null);
+                if (finalTargetedHpProfile != null && finalTargetedHpProfile.getId() != null) {
+                    newWorkProfile.setHpProfileId(finalTargetedHpProfile.getId());
+                }
+                workProfileList.add(newWorkProfile);
+            });
+            workProfileRepository.saveAll(workProfileList);
 
             List<LanguagesKnown> languagesKnownList = new ArrayList<>();
             List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(copiedExistingHpProfile.getId());
@@ -425,7 +431,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private void mapIndianQualificationRequestToEntity(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, QualificationDetailRequestTO indianQualification, QualificationDetails qualification) {
         qualification.setCountry(countryRepository.findById(indianQualification.getCountry().getId()).get());
         qualification.setState(stateRepository.findById(indianQualification.getState().getId()).get());
-        qualification.setCollege(collegeRepository.findById(indianQualification.getCollege().getId()).get());
+        qualification.setCollege(collegeRepository.findCollegeById(indianQualification.getCollege().getId()));
         qualification.setUniversity(universityRepository.findById(indianQualification.getUniversity().getId()).get());
         qualification.setCourse(courseRepository.findById(indianQualification.getCourse().getId()).get());
         qualification.setIsVerified(indianQualification.getIsVerified());
@@ -580,7 +586,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @SneakyThrows
     private void mapWorkRequestToEntity(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> addWorkProfiles, BigInteger hpProfileId) {
-        List<WorkProfile> workProfileDetailsList = new ArrayList<>();
         if (addWorkProfiles.size() > 0) {
             updateWorkProfileRecords(hpWorkProfileUpdateRequestTO, addWorkProfiles, hpProfileId);
         } else {
@@ -687,5 +692,11 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     HpWorkProfileUpdateRequestTO getUpdateWorkProfileDetailsTo(String getUpdateWorkProfileDetailsString) {
         return objectMapper.readValue(getUpdateWorkProfileDetailsString, HpWorkProfileUpdateRequestTO.class);
 }
+
+    @Override
+    @SneakyThrows
+    public List<QualificationDetailRequestTO> getQualificationDetailRequestTO(String qualificationDetailRequestTOString) {
+        return Arrays.asList(objectMapper.readValue(qualificationDetailRequestTOString, QualificationDetailRequestTO[].class));
+    }
 
 }
