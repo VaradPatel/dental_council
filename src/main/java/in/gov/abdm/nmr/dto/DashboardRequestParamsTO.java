@@ -14,10 +14,10 @@ public class DashboardRequestParamsTO {
     private String name;
     private String nmrId;
     private String search;
-    private String councilId;
+    private String  councilId;
     private String collegeId;
-    private int pageNo;
-    private int size;
+    private String collegeDeanId;
+    private String collegeRegistrarId;
     private String sortBy;
     private String sortOrder;
 }

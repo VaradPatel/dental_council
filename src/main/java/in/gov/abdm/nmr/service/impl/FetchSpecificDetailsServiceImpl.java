@@ -168,32 +168,35 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         User userDetail = userDetailRepository.findByUsername(userName);
         BigInteger groupId = userDetail.getGroup().getId();
         BigInteger userId = userDetail.getId();
+        String column = getColumnToSort(sortBy);
         DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
         dashboardRequestParamsTO.setWorkFlowStatusId(workFlowStatusId);
         dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
         dashboardRequestParamsTO.setName(name);
         dashboardRequestParamsTO.setNmrId(nmrId);
         dashboardRequestParamsTO.setSearch(search);
-        dashboardRequestParamsTO.setPageNo(pageNo);
-        dashboardRequestParamsTO.setSize(size);
-        dashboardRequestParamsTO.setSortBy(sortBy);
+        dashboardRequestParamsTO.setSortBy(column);
         dashboardRequestParamsTO.setUserGroupId(groupId);
         dashboardRequestParamsTO.setUserGroupStatus(userGroupStatus);
         if (groupId.equals(Group.SMC.getId())) {
             SMCProfile smcProfile = smcProfileRepository.findByUserId(userId);
             dashboardRequestParamsTO.setCouncilId(smcProfile.getStateMedicalCouncil().getId().toString());
         } else if (groupId.equals(Group.COLLEGE_DEAN.getId())) {
+            String collegeDeanId = collegeDeanRepository.getCollegeDeanIdByUserId(userId).get(0).toString();
             CollegeDean collegeDean = collegeDeanRepository.findByUserId(userId);
             dashboardRequestParamsTO.setCollegeId(collegeDean.getCollege().getId().toString());
+            dashboardRequestParamsTO.setCollegeDeanId(collegeDeanId);
         } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
+            String collegeRegistrarId = collegeRegistrarRepository.getCollegeRegistrarIdByUserId(userId).get(0).toString();
             CollegeRegistrar collegeRegistrar = collegeRegistrarRepository.findByUserId(userId);
             dashboardRequestParamsTO.setCollegeId(collegeRegistrar.getCollege().getId().toString());
+            dashboardRequestParamsTO.setCollegeRegistrarId(collegeRegistrarId);
         }
         if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
                 || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
             dashboardRequestParamsTO.setSmcId(smcId);
         }
-        final String sortingOrder = sortOrder == null ? DEFAULT_SORT_ORDER : sortOrder;
+        final String sortingOrder = (sortOrder == null || sortOrder.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
         final int dataLimit = Math.min(MAX_DATA_SIZE, size);
         Pageable pageable = PageRequest.of(pageNo, dataLimit);
@@ -223,8 +226,6 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         dashboardRequestParamsTO.setName(dashboardRequestTO.getName());
         dashboardRequestParamsTO.setNmrId(dashboardRequestTO.getNmrId());
         dashboardRequestParamsTO.setSearch(dashboardRequestTO.getSearch());
-        dashboardRequestParamsTO.setPageNo(pageNo);
-        dashboardRequestParamsTO.setSize(size);
         dashboardRequestParamsTO.setSortBy(column);
         dashboardRequestParamsTO.setUserGroupId(groupId);
         dashboardRequestParamsTO.setUserGroupStatus(dashboardRequestTO.getUserGroupStatus());
@@ -242,7 +243,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                 || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
             dashboardRequestParamsTO.setSmcId(dashboardRequestTO.getSmcId());
         }
-        final String sortingOrder = sortOrder == null ? DEFAULT_SORT_ORDER : sortOrder;
+        final String sortingOrder = (sortOrder == null || sortOrder.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
         final int dataLimit = Math.min(MAX_DATA_SIZE, size);
         Pageable pageable = PageRequest.of(pageNo, dataLimit);
