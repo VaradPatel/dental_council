@@ -430,7 +430,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private void mapIndianQualificationRequestToEntity(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, QualificationDetailRequestTO indianQualification, QualificationDetails qualification) {
         qualification.setCountry(countryRepository.findById(indianQualification.getCountry().getId()).get());
         qualification.setState(stateRepository.findById(indianQualification.getState().getId()).get());
-        qualification.setCollege(collegeRepository.findById(indianQualification.getCollege().getId()).get());
+        qualification.setCollege(collegeRepository.findCollegeById(indianQualification.getCollege().getId()));
         qualification.setUniversity(universityRepository.findById(indianQualification.getUniversity().getId()).get());
         qualification.setCourse(courseRepository.findById(indianQualification.getCourse().getId()).get());
         qualification.setIsVerified(indianQualification.getIsVerified());
@@ -691,5 +691,11 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     HpWorkProfileUpdateRequestTO getUpdateWorkProfileDetailsTo(String getUpdateWorkProfileDetailsString) {
         return objectMapper.readValue(getUpdateWorkProfileDetailsString, HpWorkProfileUpdateRequestTO.class);
 }
+
+    @Override
+    @SneakyThrows
+    public List<QualificationDetailRequestTO> getQualificationDetailRequestTO(String qualificationDetailRequestTOString) {
+        return Arrays.asList(objectMapper.readValue(qualificationDetailRequestTOString, QualificationDetailRequestTO[].class));
+    }
 
 }

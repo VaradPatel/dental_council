@@ -170,10 +170,10 @@ public class HpRegistrationController {
      * @return a string indicating the result of the operation
      * @throws WorkFlowException if there is an error during the operation
      */
-    @PostMapping(path = "/health-professional/{healthProfessionalId}/qualifications", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/health-professional/{healthProfessionalId}/qualifications", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String addQualifications(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
-                                    @Valid @RequestBody List<QualificationDetailRequestTO> qualificationDetailRequestTOs) throws WorkFlowException {
-        return hpService.addQualification(hpProfileId, qualificationDetailRequestTOs);
+                                    @RequestPart("data") String qualificationDetailRequestTOsString) throws WorkFlowException {
+        return hpService.addQualification(hpProfileId, qualificationDetailRequestTOsString);
     }
 
     /**
