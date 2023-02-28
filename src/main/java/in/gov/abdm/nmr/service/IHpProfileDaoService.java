@@ -1,22 +1,15 @@
 package in.gov.abdm.nmr.service;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.List;
-
-import org.springframework.web.multipart.MultipartFile;
-
-import in.gov.abdm.nmr.dto.AadhaarUserKycTo;
-import in.gov.abdm.nmr.dto.HpPersonalUpdateRequestTO;
-import in.gov.abdm.nmr.dto.HpProfilePictureResponseTO;
-import in.gov.abdm.nmr.dto.HpProfileUpdateResponseTO;
-import in.gov.abdm.nmr.dto.HpSmcDetailTO;
-import in.gov.abdm.nmr.dto.QualificationDetailRequestTO;
-import in.gov.abdm.nmr.dto.ResponseMessageTo;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.RegistrationDetails;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.List;
 
 public interface IHpProfileDaoService {
 
@@ -43,4 +36,7 @@ public interface IHpProfileDaoService {
 
 	ResponseMessageTo setHpProfilePhotoAndAddressThroughAadhaar(BigInteger id, AadhaarUserKycTo userKycTo);
 
-    }
+	List<QualificationDetailRequestTO> getQualificationDetailRequestTO(String qualificationDetailRequestTOString);
+
+
+}

@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.List;
 
 /**
  * The IHpRegistrationService interface defines the methods that must be implemented by a service
@@ -43,7 +42,7 @@ public interface IHpRegistrationService {
      * @return A string indicating the status of the operation.
      * @throws WorkFlowException If an error occurs during the qualification addition process.
      */
-    String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs) throws WorkFlowException;
+    String addQualification(BigInteger hpProfileId, String qualificationDetailRequestTOsString) throws WorkFlowException;
 
     /**
      * Adds or updates the personal details for a given HP profile.
