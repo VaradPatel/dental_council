@@ -6,6 +6,5 @@ import java.util.List;
 
 public interface ICountryService {
 
-//	CountryTO getCountryData();
     List<CountryTO> getCountryData();
 }

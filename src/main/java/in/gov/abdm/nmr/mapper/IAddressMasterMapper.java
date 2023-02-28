@@ -1,10 +1,9 @@
 package in.gov.abdm.nmr.mapper;
 
-import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.entity.Address;
+import in.gov.abdm.nmr.entity.AddressMaster;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
-
-import java.util.List;
 
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface IAddressMasterMapper {

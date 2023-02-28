@@ -1,8 +1,6 @@
 package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.enums.HpProfileStatus;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IApplicationService;
@@ -15,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.List;
 
 import static in.gov.abdm.nmr.security.common.ProtectedPaths.PATH_HEALTH_PROFESSIONAL_APPLICATIONS;
 import static in.gov.abdm.nmr.util.NMRConstants.*;
@@ -140,7 +137,7 @@ public class ApplicationController {
      * @return
      */
     @PatchMapping(HEALTH_PROFESSIONAL_ACTION)
-    public ResponseEntity<ResponseMessageTo> executeActionOnHealthProfessional(@RequestBody WorkFlowRequestTO requestTO) throws InvalidRequestException, WorkFlowException {
+    public ResponseEntity<ResponseMessageTo> executeActionOnHealthProfessional(@RequestBody WorkFlowRequestTO requestTO) throws WorkFlowException {
         if (iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(requestTO.getHpProfileId(), requestTO.getApplicationTypeId())) {
             if (requestTO.getRequestId() == null || !iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(requestTO.getHpProfileId())) {
                 requestTO.setRequestId(NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(requestTO.getApplicationTypeId())));
@@ -158,7 +155,7 @@ public class ApplicationController {
      * @return
      */
     @PatchMapping(COLLEGES_ACTION)
-    public ResponseEntity<ResponseMessageTo> executeActionOnCollege(@RequestBody WorkFlowRequestTO requestTO) throws InvalidRequestException, WorkFlowException {
+    public ResponseEntity<ResponseMessageTo> executeActionOnCollege(@RequestBody WorkFlowRequestTO requestTO) throws WorkFlowException {
         iWorkFlowService.initiateCollegeRegistrationWorkFlow(requestTO.getRequestId(), requestTO.getApplicationTypeId(), requestTO.getActorId(), requestTO.getActionId());
         return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
     }

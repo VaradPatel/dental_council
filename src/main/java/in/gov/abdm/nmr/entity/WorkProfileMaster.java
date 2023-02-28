@@ -18,10 +18,6 @@ public class WorkProfileMaster {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private BigInteger id;
-
-//    @OneToMany(mappedBy = "subdistrict", fetch = FetchType.LAZY)
-//    private List<City> cities;
-
     private String address;
 
     private BigInteger facilityId;
@@ -36,10 +32,7 @@ public class WorkProfileMaster {
     private BigInteger workStatusId;
     private BigInteger hpProfileId;
     private String workOrganization;
-
-    //    @OneToOne(mappedBy = "workProfile", fetch = FetchType.LAZY)
     private String organizationType;
-
     private String requestId;
 
 }

@@ -1,15 +1,13 @@
 package in.gov.abdm.nmr.repository;
 
-import java.math.BigInteger;
-import java.util.List;
-
-import javax.persistence.Tuple;
-
+import in.gov.abdm.nmr.entity.HpProfile;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import in.gov.abdm.nmr.entity.HpProfile;
+import javax.persistence.Tuple;
+import java.math.BigInteger;
+import java.util.List;
 
 public interface IHpProfileRepository extends JpaRepository<HpProfile, BigInteger> {
 
@@ -113,11 +111,7 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
 			+ " LEFT JOIN language on languages_known.language_id = language.id"
 			+ " where languages_known.hp_profile_id = :hpProfileId", nativeQuery = true)
 	List<Tuple> fetchLanguageDetails(BigInteger hpProfileId);
-	
-//	@Query(value = "select * from hp_profile where id = :hpProfileId", nativeQuery = true)
-//	HpProfile getByHpProfileId(BigInteger hpProfileId);
-	
-	   
+
     @Query(value = "SELECT hp FROM hpProfile hp JOIN hp.user usr WHERE usr.id=:userId ORDER BY hp.updatedAt DESC")
     List<HpProfile> findLatestEntryByUserid(BigInteger userId, Pageable pageable);
 

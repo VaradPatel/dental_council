@@ -1,15 +1,13 @@
 package in.gov.abdm.nmr.entity;
 
-import java.util.Date;
-
-import javax.persistence.*;
-
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
+import java.util.Date;
 
 import static in.gov.abdm.nmr.util.NMRConstants.ID;
 import static in.gov.abdm.nmr.util.NMRConstants.STATE_MEDICAL_COUNCIL_ID;
@@ -33,7 +31,6 @@ public class RegistrationDetailsMaster extends CommonAuditEntity {
     @JoinColumn(name = STATE_MEDICAL_COUNCIL_ID,referencedColumnName = ID)
     private StateMedicalCouncil stateMedicalCouncil;
 
-    //    private String createdAt;
     private String createdBy;
     private String dueDate;
     private String fromDate;
@@ -55,8 +52,6 @@ public class RegistrationDetailsMaster extends CommonAuditEntity {
     private Date renewableRegistrationFromDate;
     private Date renewableRegistrationToDate;
 
-    //    @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "state")
     private String state;
     private String status;
     private String systemOfMedicine;
@@ -66,14 +61,6 @@ public class RegistrationDetailsMaster extends CommonAuditEntity {
     private String verifiedBy;
     private String verifiedTime;
     private String whetherRegisteredWithOthers;
-
-//    @OneToMany(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "registration_details_id", referencedColumnName = "id")
-//    private List<QualificationDetails> qualificationDetails;
-
-    //    @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "councilStatus", referencedColumnName = "id")
-//    private BigInteger councilStatus;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "councilStatus", referencedColumnName = "id")

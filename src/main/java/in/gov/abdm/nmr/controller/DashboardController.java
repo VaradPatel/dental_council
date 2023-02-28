@@ -1,6 +1,8 @@
 package in.gov.abdm.nmr.controller;
 
-import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.dto.DashboardRequestTO;
+import in.gov.abdm.nmr.dto.DashboardResponseTO;
+import in.gov.abdm.nmr.dto.FetchCountOnCardResponseTO;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IFetchCountOnCardService;
@@ -58,7 +60,7 @@ public class DashboardController {
      * @throws InvalidRequestException when the request is invalid.
      */
     @PostMapping(PATH_DASHBOARD_FETCH_DETAILS)
-    public DashboardResponseTO DashBoardResponseTO(@RequestBody DashboardRequestTO requestTO) throws InvalidRequestException {
+    public DashboardResponseTO fetchDashboardData(@RequestBody DashboardRequestTO requestTO) throws InvalidRequestException {
         return iFetchSpecificDetailsService.fetchDashboardData(requestTO);
     }
 
@@ -80,7 +82,7 @@ public class DashboardController {
      * @throws InvalidRequestException if the provided request parameters are invalid
      */
     @GetMapping(PATH_DASHBOARD_FETCH_DETAILS)
-    public DashboardResponseTO FetchCardDetails(
+    public DashboardResponseTO fetchCardDetails(
             @RequestParam(required = false, value = "workFlowStatusId") String workFlowStatusId,
             @RequestParam(required = false, value = "applicationTypeId") String applicationTypeId,
             @RequestParam(required = false, value = "userGroupStatus") String userGroupStatus,
@@ -92,7 +94,7 @@ public class DashboardController {
             @RequestParam(required = false, value = "size", defaultValue = "2") int size,
             @RequestParam(required = false, value = "sortBy") String sortBy,
             @RequestParam(required = false, value = "sortOrder") String sortOrder) throws InvalidRequestException {
-        return iFetchSpecificDetailsService.FetchCardDetails(workFlowStatusId, applicationTypeId,
+        return iFetchSpecificDetailsService.fetchCardDetails(workFlowStatusId, applicationTypeId,
                 userGroupStatus, smcId, name, nmrId, search, pageNo, size, sortBy, sortOrder);
     }
 

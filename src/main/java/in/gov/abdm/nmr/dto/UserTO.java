@@ -1,10 +1,8 @@
 package in.gov.abdm.nmr.dto;
 
-import java.math.BigInteger;
-
-import in.gov.abdm.nmr.dto.UserSubTypeTO;
-import in.gov.abdm.nmr.dto.UserTypeTO;
 import lombok.Data;
+
+import java.math.BigInteger;
 
 @Data
 public class UserTO {

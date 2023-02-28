@@ -3,7 +3,6 @@ package in.gov.abdm.nmr.mapper;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.Address;
 import in.gov.abdm.nmr.entity.HpProfile;
-import in.gov.abdm.nmr.entity.Language;
 import in.gov.abdm.nmr.entity.LanguagesKnown;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;

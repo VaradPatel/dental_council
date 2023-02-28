@@ -2,7 +2,10 @@ package in.gov.abdm.nmr.mapper;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
-import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.entity.ForeignQualificationDetails;
+import in.gov.abdm.nmr.entity.HpNbeDetails;
+import in.gov.abdm.nmr.entity.QualificationDetails;
+import in.gov.abdm.nmr.entity.RegistrationDetails;
 import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.experimental.UtilityClass;
 
@@ -30,8 +33,8 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
             nbeResponseTo.setResult(nbeDetails.getUserResult());
             nbeResponseTo.setId(nbeDetails.getId());
             nbeResponseTo.setMonth(nbeDetails.getMonthOfPassing());
-            nbeResponseTo.setMarks_obtained(nbeDetails.getMarksObtained());
-            nbeResponseTo.setRoll_no(nbeDetails.getRollNo());
+            nbeResponseTo.setMarksObtained(nbeDetails.getMarksObtained());
+            nbeResponseTo.setRollNo(nbeDetails.getRollNo());
             nbeResponseTo.setYear(nbeDetails.getYearOfPassing());
         }
         if(!indianQualifications.isEmpty()) {

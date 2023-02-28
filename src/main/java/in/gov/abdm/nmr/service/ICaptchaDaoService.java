@@ -1,16 +1,12 @@
 package in.gov.abdm.nmr.service;
 
-import in.gov.abdm.nmr.entity.Captcha;
-
-import java.security.NoSuchAlgorithmException;
+import in.gov.abdm.nmr.redis.hash.Captcha;
 
 public interface ICaptchaDaoService {
 
-    Captcha generateCaptcha() throws NoSuchAlgorithmException;
+    Captcha save(Captcha captcha);
 
-    boolean validateCaptcha(String transId, Integer result);
+    void deleteById(String id);
 
-    boolean isCaptchaValidated(String transId);
-
-    Boolean getCaptchaEnabledFlag();
+    Captcha findById(String id);
 }

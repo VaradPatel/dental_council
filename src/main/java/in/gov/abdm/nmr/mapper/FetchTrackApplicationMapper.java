@@ -9,7 +9,6 @@ import org.mapstruct.MappingConstants;
 import java.util.List;
 
 
-//@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = {}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface FetchTrackApplicationMapper {
 

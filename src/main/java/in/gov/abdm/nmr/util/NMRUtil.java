@@ -2,7 +2,6 @@ package in.gov.abdm.nmr.util;
 
 import in.gov.abdm.nmr.entity.RequestCounter;
 import lombok.experimental.UtilityClass;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collection;
 

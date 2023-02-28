@@ -1,16 +1,8 @@
 package in.gov.abdm.nmr.dto;
 
-import java.sql.Date;
-import java.util.List;
-
-import in.gov.abdm.nmr.dto.LanguageTO;
-import in.gov.abdm.nmr.dto.NationalityTO;
-import in.gov.abdm.nmr.dto.ScheduleTO;
 import lombok.Data;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import static in.gov.abdm.nmr.util.NMRConstants.NOT_NULL_ERROR_MSG;

@@ -17,7 +17,7 @@ public enum Group {
     private final BigInteger id;
     private final String description;
 
-    Group(BigInteger id, String description){
+    Group(BigInteger id, String description) {
         this.id = id;
         this.description = description;
     }

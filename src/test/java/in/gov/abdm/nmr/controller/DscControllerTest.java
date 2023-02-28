@@ -38,7 +38,7 @@ class DscControllerTest {
     }
 
     @Test
-    public void testInvokeDSCGenEspRequest() throws JsonProcessingException {
+    void testInvokeDSCGenEspRequest() throws JsonProcessingException {
         when(dscService.invokeDSCGenEspRequest(dscRequestTo)).thenReturn(expectedResponse);
         DscResponseTo actualResponse = dscController.invokeDSCGenEspRequest(dscRequestTo);
         assertEquals(expectedResponse, actualResponse);

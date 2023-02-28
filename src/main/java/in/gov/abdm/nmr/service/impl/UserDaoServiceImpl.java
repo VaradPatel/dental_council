@@ -4,7 +4,10 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.mapper.IUserMapper;
-import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.repository.INbeProfileRepository;
+import in.gov.abdm.nmr.repository.INmcProfileRepository;
+import in.gov.abdm.nmr.repository.ISmcProfileRepository;
+import in.gov.abdm.nmr.repository.IUserRepository;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -20,6 +23,9 @@ import javax.transaction.Transactional;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+
+import static in.gov.abdm.nmr.util.NMRConstants.INVALID_COLLEGE_ID;
+import static in.gov.abdm.nmr.util.NMRConstants.INVALID_PROFILE_ID;
 
 @Service
 @Transactional
@@ -140,7 +146,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public SMCProfile findSmcProfile(BigInteger id) throws NmrException {
         SMCProfile smcProfileEntity = smcProfileRepository.findById(id).orElse(null);
         if (smcProfileEntity == null) {
-            throw new NmrException("Invalid college id", HttpStatus.BAD_REQUEST);
+            throw new NmrException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
         }
         accessControlService.validateUser(smcProfileEntity.getUser().getId());
         return smcProfileEntity;
@@ -150,7 +156,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NmcProfile findNmcProfile(BigInteger id) throws NmrException {
         NmcProfile nmcProfileEntity = nmcProfileRepository.findById(id).orElse(null);
         if (nmcProfileEntity == null) {
-            throw new NmrException("Invalid college id", HttpStatus.BAD_REQUEST);
+            throw new NmrException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
         }
         accessControlService.validateUser(nmcProfileEntity.getUser().getId());
         return nmcProfileEntity;
@@ -160,7 +166,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NbeProfile findNbeProfile(BigInteger id) throws NmrException {
         NbeProfile nbeProfileEntity = nbeProfileRepository.findById(id).orElse(null);
         if (nbeProfileEntity == null) {
-            throw new NmrException("Invalid college id", HttpStatus.BAD_REQUEST);
+            throw new NmrException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
         }
         accessControlService.validateUser(nbeProfileEntity.getUser().getId());
         return nbeProfileEntity;
@@ -170,7 +176,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException {
         SMCProfile smcProfile = smcProfileRepository.findById(id).orElse(null);
         if (smcProfile == null) {
-            throw new NmrException("Invalid profile id", HttpStatus.BAD_REQUEST);
+            throw new NmrException(INVALID_PROFILE_ID, HttpStatus.BAD_REQUEST);
         }
         smcProfile.setId(id);
         smcProfile.setFirstName(smcProfileTO.getFirstName());
@@ -191,7 +197,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException {
         NmcProfile nmcProfile = nmcProfileRepository.findById(id).orElse(null);
         if (nmcProfile == null) {
-            throw new NmrException("Invalid profile id", HttpStatus.BAD_REQUEST);
+            throw new NmrException(INVALID_PROFILE_ID, HttpStatus.BAD_REQUEST);
         }
         nmcProfile.setId(id);
         nmcProfile.setFirstName(nmcProfileTO.getFirstName());
@@ -209,13 +215,9 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException {
         NbeProfile nbeProfile = nbeProfileRepository.findById(id).orElse(null);
         if (nbeProfile == null) {
-            throw new NmrException("Invalid profile id", HttpStatus.BAD_REQUEST);
+            throw new NmrException(INVALID_PROFILE_ID, HttpStatus.BAD_REQUEST);
         }
         nbeProfile.setId(id);
-        nbeProfile.setFirstName(nbeProfileTO.getFirstName());
-        nbeProfile.setMiddleName(nbeProfileTO.getMiddleName());
-        nbeProfile.setLastName(nbeProfileTO.getLastName());
-        nbeProfile.setDisplayName(nbeProfileTO.getDisplayName());
         nbeProfile.setEmailId(nbeProfileTO.getEmailId());
         nbeProfile.setMobileNo(nbeProfileTO.getMobileNo());
         return nbeProfileRepository.saveAndFlush(nbeProfile);

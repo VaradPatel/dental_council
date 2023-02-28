@@ -1,22 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.math.BigInteger;
-
-import javax.persistence.EntityManager;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import in.gov.abdm.nmr.dto.CollegeDeanCreationRequestTo;
-import in.gov.abdm.nmr.entity.College;
-import in.gov.abdm.nmr.entity.CollegeDean;
-import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.entity.UserGroup;
-import in.gov.abdm.nmr.entity.UserSubType;
-import in.gov.abdm.nmr.entity.UserType;
+import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
@@ -27,6 +12,16 @@ import in.gov.abdm.nmr.repository.ICollegeRepository;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.ICollegeDeanDaoService;
 import in.gov.abdm.nmr.service.IUserDaoService;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import java.math.BigInteger;
+
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @Service
 @Transactional
@@ -67,12 +62,12 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
             collegeDeanUserDetail = userDetailService.findById(collegeDeanCreationRequestTo.getUserId());
 
             if (!collegeDeanUserDetail.getUsername().equals(collegeDeanCreationRequestTo.getEmailId()) && userDetailService.findByUsername(collegeDeanCreationRequestTo.getEmailId()) != null) {
-                throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
+                throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
             }
 
             collegeDeanEntityOld = findByUserId(collegeDeanUserDetail.getId());
             if (!collegeDeanEntityOld.getId().equals(collegeDeanCreationRequestTo.getId())) {
-                throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
+                throw new NmrException(FORBIDDEN, HttpStatus.FORBIDDEN);
             }
 
             collegeDeanUserDetail.setUsername(collegeDeanCreationRequestTo.getEmailId());
@@ -88,7 +83,7 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
             return collegeDeanRepository.saveAndFlush(collegeDeanEntity);
 
         } else if (userDetailService.findByUsername(collegeDeanCreationRequestTo.getEmailId()) != null) {
-            throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
+            throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 
 
@@ -103,13 +98,13 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedInUser = userDetailService.findByUsername(userName);
         if(!Group.COLLEGE_ADMIN.getId().equals(loggedInUser.getGroup().getId())) {
-            throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
+            throw new NmrException(FORBIDDEN, HttpStatus.FORBIDDEN);
         }
         
         College loggedIncollege = collegeRepository.findByUserId(loggedInUser.getId());
         College inputCollege = collegeRepository.findById(collegeId).orElse(new College());
         if(!loggedIncollege.getId().equals(inputCollege.getId())) {
-            throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
+            throw new NmrException(FORBIDDEN, HttpStatus.FORBIDDEN);
         }
         
         collegeDeanEntity.setCollege(loggedIncollege);
@@ -123,16 +118,15 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
         CollegeDean collegeDeanEntityOld;
         if (deanId != null || collegeDeanCreationRequestTo.getUserId() != null) {
             collegeDeanCreationRequestTo.setId(deanId);
-            //accessControlService.validateUser(collegeDeanCreationRequestTo.getUserId());
             collegeDeanUserDetail = userDetailService.findById(collegeDeanCreationRequestTo.getUserId());
 
             if (!collegeDeanUserDetail.getUsername().equals(collegeDeanCreationRequestTo.getEmailId()) && userDetailService.findByUsername(collegeDeanCreationRequestTo.getEmailId()) != null) {
-                throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
+                throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
             }
 
             collegeDeanEntityOld = findByUserId(collegeDeanUserDetail.getId());
             if (!collegeDeanEntityOld.getId().equals(deanId)) {
-                throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
+                throw new NmrException(FORBIDDEN, HttpStatus.FORBIDDEN);
             }
 
             collegeDeanUserDetail.setUsername(collegeDeanCreationRequestTo.getEmailId());
@@ -148,7 +142,7 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
             return collegeDeanRepository.saveAndFlush(collegeDeanEntity);
 
         } else if (userDetailService.findByUsername(collegeDeanCreationRequestTo.getEmailId()) != null) {
-            throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
+            throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
         return null;
     }
@@ -157,7 +151,7 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
     public CollegeDean findCollegeDeanById(BigInteger collegeId, BigInteger deanId) throws NmrException {
         CollegeDean collegeDeanEntity = collegeDeanRepository.findCollegeDeanById(collegeId, deanId);
         if (collegeDeanEntity == null) {
-            throw new NmrException("Invalid college id", HttpStatus.BAD_REQUEST);
+            throw new NmrException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
         }
         accessControlService.validateUser(collegeDeanEntity.getUser().getId());
         return collegeDeanEntity;

@@ -1,10 +1,10 @@
 package in.gov.abdm.nmr.service;
 
-import java.math.BigInteger;
-
 import in.gov.abdm.nmr.dto.CollegeDeanCreationRequestTo;
 import in.gov.abdm.nmr.entity.CollegeDean;
 import in.gov.abdm.nmr.exception.NmrException;
+
+import java.math.BigInteger;
 
 public interface ICollegeDeanDaoService {
 

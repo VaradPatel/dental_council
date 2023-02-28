@@ -1,21 +1,20 @@
 package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IPasswordService;
 import in.gov.abdm.nmr.util.NMRConstants;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 
 /**
  * Controller for resetting and changing user password
  */
 @RestController
-@RequestMapping(NMRConstants.USER_REQUEST_MAPPING)
 public class PasswordController {
 
     @Autowired
@@ -64,7 +63,8 @@ public class PasswordController {
      * @param changePasswordRequestTo coming from user
      * @return Response message Success/Fail
      */
-    @PostMapping(path = NMRConstants.CHANGE_PASSWORD, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = ProtectedPaths.CHANGE_PASSWORD, produces = MediaType.APPLICATION_JSON_VALUE)
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseMessageTo changePassword(@Valid @RequestBody ChangePasswordRequestTo changePasswordRequestTo) {
         return passwordService.changePassword(changePasswordRequestTo);
     }

@@ -1,13 +1,14 @@
 package in.gov.abdm.nmr.dto;
 
-import java.math.BigInteger;
-
 import lombok.Data;
+
+import java.math.BigInteger;
 
 @Data
 public class LoginResponseTO {
 
     private BigInteger profileId;
+    private BigInteger userId;
     private BigInteger userType;
     private BigInteger userSubType;
     private BigInteger userGroupId;

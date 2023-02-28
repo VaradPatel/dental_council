@@ -1,15 +1,14 @@
 package in.gov.abdm.nmr.controller;
 
-import java.math.BigInteger;
-import java.util.List;
-
+import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
+import in.gov.abdm.nmr.service.IMasterDataService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
-import in.gov.abdm.nmr.service.IMasterDataService;
+import java.math.BigInteger;
+import java.util.List;
 
 @RestController
 public class MasterDataController {

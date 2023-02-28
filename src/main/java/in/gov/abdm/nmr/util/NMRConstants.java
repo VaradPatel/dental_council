@@ -9,8 +9,6 @@ import static in.gov.abdm.nmr.enums.ApplicationType.HP_ACTIVATE_LICENSE;
 /**
  * This class holds all the constants associated with NMR application
  */
-
-
 @UtilityClass
 public class NMRConstants {
 
@@ -36,12 +34,12 @@ public class NMRConstants {
     public static final String AADHAR_SERVICE_VERIFY_OTP = "/api/v3/aadhaar/verifyOtp";
     public static final String NOTIFICATION_SERVICE_SEND_MESSAGE = "/internal/v3/notification/message";
     public static final String NOTIFICATION_DB_SERVICE_GET_TEMPLATE = "/internal/v3/notification/template/id/{id}";
-    public static final String RESET_PASSWORD = "/reset-password";
-    public static final String CHANGE_PASSWORD = "/change-password";
+    public static final String RESET_PASSWORD = "/user/reset-password";
+
     public static final String RAISE_QUERY = "/health-professional/queries";
     public static final String GET_QUERIES = "health-professional/{healthProfessionalId}/queries";
-    public static final String PASSWORD_LINK = "/password-link";
-    public static final String SET_PASSWORD = "/set-password";
+    public static final String PASSWORD_LINK = "/user/password-link";
+    public static final String SET_PASSWORD = "/user/set-password";
     public static final String E_SIGN = "/e-signature";
 
     public static final String PATH_FACILITY_ROOT = "/facilities";
@@ -93,19 +91,25 @@ public class NMRConstants {
     public static final String FAILURE_RESPONSE = "Fail";
     public static final String SENT_RESPONSE = "sent";
     public static final String USER_NOT_FOUND = "User not found";
+    public static final String COLLEGE_CONSTANT = "College";
+    public static final String USER_ALREADY_EXISTS = "User already exists";
+    public static final String FORBIDDEN = "Forbidden";
+    public static final String INVALID_COLLEGE_ID = "Invalid college id";
+    public static final String INVALID_PROFILE_ID = "Invalid profile id";
     public static final String LINK_EXPIRED = "Link expired";
     public static final String WORKFLOW_STATUS_NOT_FOUND = "Workflow status not found";
     public static final String TEMPLATE_ID_NOT_FOUND_IN_PROPERTIES = "Template id not found in properties";
     public static final String TEMPLATE_NOT_FOUND = "Template not found";
     public static final String OLD_PASSWORD_NOT_MATCHING = "Old password not matching";
     public static final String PROBLEM_OCCURRED = "Problem Occurred";
+    public static final String USER_ID_NOT_NULL = "User Id cannot be null or empty";
     public static final String USERNAME_NOT_NULL = "Username cannot be null or empty";
     public static final String PASSWORD_NOT_NULL = "Password cannot be null or empty";
     public static final String TOKEN_NOT_NULL = "Token cannot be null or empty";
     public static final int RESET_PASSWORD_LINK_EXPIRY_HOURS = 24;
     public static final String OTP_INVALID = "Invalid OTP";
     public static final String OTP_NOT_FOUND = "OTP Not Found";
-    public static final String OTP_EXPIRED = "OTP Expired";
+    public static final String OTP_EXPIRED = "OTP Expired Or Not Found";
     public static final String TEMPLATE_ID = "templateId";
     public static final String SUBJECT = "subject";
     public static final String CONTENT = "content";
@@ -346,7 +350,7 @@ public class NMRConstants {
     public static final String DSC_SERVICE_ENDPOINT = "${dsc.endpoint.url}";
     public static final String GEN_ESP_REQUEST_URL = "/digiSign/genEspRequest";
     public static final String VERIFY_ESP_REQUEST_URL = "/digiSign/pdf/{tansactionId}";
-    public final int MAX_FAILED_ATTEMPTS = 3;
+    public static final int MAX_FAILED_ATTEMPTS = 3;
     public static final long LOCK_TIME_DURATION = 3; // hours
     public static final String ACCOUNT_LOCKED_MESSAGE = "Your account has been locked for " + LOCK_TIME_DURATION + " hours due to " + MAX_FAILED_ATTEMPTS + " failed attempts";
     public static final String ACCOUNT_UNLOCKED_MESSAGE = "Your account has been unlocked. Please try to login again";
@@ -387,7 +391,7 @@ public class NMRConstants {
     public static final int MAX_DATA_SIZE = 500;
     public static final String DEFAULT_SORT_ORDER = "ASC";
     public static final String NO_DATA_FOUND = "No data found";
-    public static final String USER_ALREADY_EXISTS = "Username already exist";
+    public static final String USER_NAME_ALREADY_EXISTS = "Username already exist";
     public static final String SMS_AND_EMAIL_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY = "sms-email-reset";
     public static final String TYPE_NOT_NULL = "Type cannot be null";
     public static final String USER_REQUEST_MAPPING = "/user";

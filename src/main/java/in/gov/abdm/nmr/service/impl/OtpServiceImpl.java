@@ -1,41 +1,42 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.entity.Otp;
-import in.gov.abdm.nmr.exception.OtpException;
-import in.gov.abdm.nmr.repository.NmrOtpRepository;
-import in.gov.abdm.nmr.repository.OtpRepository;
-import in.gov.abdm.nmr.security.common.RsaUtil;
-import in.gov.abdm.nmr.service.INotificationService;
-import in.gov.abdm.nmr.service.IOtpService;
-import in.gov.abdm.nmr.util.NMRConstants;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
+import in.gov.abdm.nmr.dto.OtpGenerateRequestTo;
+import in.gov.abdm.nmr.dto.OtpValidateMessageTo;
+import in.gov.abdm.nmr.dto.OtpValidateRequestTo;
+import in.gov.abdm.nmr.dto.OtpValidateResponseTo;
+import in.gov.abdm.nmr.dto.ResponseMessageTo;
+import in.gov.abdm.nmr.exception.OtpException;
+import in.gov.abdm.nmr.redis.hash.Otp;
+import in.gov.abdm.nmr.security.common.RsaUtil;
+import in.gov.abdm.nmr.service.INotificationService;
+import in.gov.abdm.nmr.service.IOtpDaoService;
+import in.gov.abdm.nmr.service.IOtpService;
+import in.gov.abdm.nmr.util.NMRConstants;
 
 /**
  * Implementation of methods to generate and validate OTP
  */
 @Service
-@Slf4j
 public class OtpServiceImpl implements IOtpService {
 
-    @Autowired
-    NmrOtpRepository nmrOtpRepository;
+    IOtpDaoService otpDaoService;
 
-    @Autowired
-    OtpRepository otpRepository;
-
-    @Autowired
     INotificationService notificationService;
-    @Autowired
+
     RsaUtil rsaUtil;
+
+    public OtpServiceImpl(IOtpDaoService nmrOtpRepository, INotificationService notificationService, RsaUtil rsaUtil) {
+        this.otpDaoService = nmrOtpRepository;
+        this.notificationService = notificationService;
+        this.rsaUtil = rsaUtil;
+    }
 
     /**
      * Generates OTP by validating with repository
@@ -46,20 +47,23 @@ public class OtpServiceImpl implements IOtpService {
      */
     @Override
     public ResponseMessageTo generateOtp(OtpGenerateRequestTo otpGenerateRequestTo) throws OtpException {
-        if (nmrOtpRepository.findOtpGeneratedInLast15Minutes(otpGenerateRequestTo.getContact()) >= NMRConstants.OTP_GENERATION_MAX_ATTEMPTS) {
-            throw new OtpException(NMRConstants.OTP_GENERATION_EXCEEDED);
-        }
-        if (nmrOtpRepository.findOtpGeneratedInLast10MinutesWithExceededAttempts(otpGenerateRequestTo.getContact()) > 0) {
+        List<Otp> previousOtps = otpDaoService.findAllByContact(otpGenerateRequestTo.getContact());
+        if (previousOtps.size() >= NMRConstants.OTP_GENERATION_MAX_ATTEMPTS) {
             throw new OtpException(NMRConstants.OTP_ATTEMPTS_EXCEEDED);
+        } else {
+            for (Otp previousOtp : previousOtps) {
+                previousOtp.setExpired(true);
+                otpDaoService.save(previousOtp);
+                if (previousOtp.getAttempts() >= NMRConstants.OTP_MAX_ATTEMPTS) {
+                    throw new OtpException(NMRConstants.OTP_ATTEMPTS_EXCEEDED);
+                }
+            }
         }
+
         String otp = String.valueOf(new SecureRandom().nextInt(899999) + 100000);
-        if (nmrOtpRepository.doesValidDuplicateOtpExists(DigestUtils.sha256Hex(otp), otpGenerateRequestTo.getContact())) {
-            otp = String.valueOf(new SecureRandom().nextInt(899999) + 100000);
-        }
-
-        nmrOtpRepository.saveOtpDetails(DigestUtils.sha256Hex(otp), otpGenerateRequestTo.getContact());
-
-        return notificationService.sendNotificationForOTP(otpGenerateRequestTo.getType(), otp, otpGenerateRequestTo.getContact());
+        Otp otpEntity = new Otp(UUID.randomUUID().toString(), otp, 0, otpGenerateRequestTo.getContact(), false, 10);
+        otpDaoService.save(otpEntity);
+        return notificationService.sendNotificationForOTP(otpGenerateRequestTo.getType(), otp, otpGenerateRequestTo.getContact(), otpEntity.getId());
     }
 
     /**
@@ -71,40 +75,29 @@ public class OtpServiceImpl implements IOtpService {
      */
     @Override
     public OtpValidateResponseTo validateOtp(OtpValidateRequestTo otpValidateRequestTo) throws OtpException, GeneralSecurityException {
-        String decryptedOtp = rsaUtil.decrypt(otpValidateRequestTo.getOtp());
-        log.info(decryptedOtp);
-        Otp otpDetails = otpRepository.findOneByExpiredIsFalseAndContactIsAndOtpHashIs(otpValidateRequestTo.getContact(),
-                DigestUtils.sha256Hex(decryptedOtp));
-        if (otpDetails != null) {
-            if (otpDetails.getExpiresAt().before(Timestamp.valueOf(LocalDateTime.now()))) {
-                otpDetails.setExpired(true);
-                otpRepository.flush();
-                throw new OtpException(NMRConstants.OTP_EXPIRED);
-            } else {
-                if (otpDetails.getAttempts() >= NMRConstants.OTP_MAX_ATTEMPTS) {
-                    otpDetails.setExpired(true);
-                    otpRepository.flush();
-                    throw new OtpException(NMRConstants.OTP_ATTEMPTS_EXCEEDED);
-                }
-                otpDetails.setExpired(true);
-                otpRepository.flush();
+        String transactionId = otpValidateRequestTo.getTransactionId();
+        Otp otpDetails = otpDaoService.findById(transactionId);
 
-                notificationService.sendNotificationForVerifiedOTP(otpValidateRequestTo.getType(), otpValidateRequestTo.getContact());
-
-                return new OtpValidateResponseTo(new OtpValidateMessageTo(NMRConstants.SUCCESS_RESPONSE, otpDetails.getId(), otpValidateRequestTo.getType()));
-            }
+        if (otpDetails == null || otpDetails.isExpired()) {
+            throw new OtpException(NMRConstants.OTP_EXPIRED);
         }
-        Otp validOtpForContact = otpRepository.findOneByExpiredIsFalseAndContactIs(otpValidateRequestTo.getContact());
-        if (validOtpForContact != null) {
-            if (validOtpForContact.getAttempts() >= NMRConstants.OTP_MAX_ATTEMPTS) {
-                validOtpForContact.setExpired(true);
-                otpRepository.flush();
-                throw new OtpException(NMRConstants.OTP_ATTEMPTS_EXCEEDED);
-            }
-            validOtpForContact.setAttempts(validOtpForContact.getAttempts() + 1);
-            otpRepository.flush();
+
+        if (otpDetails.getAttempts() >= NMRConstants.OTP_MAX_ATTEMPTS) {
+            otpDetails.setExpired(true);
+            otpDaoService.save(otpDetails);
+            throw new OtpException(NMRConstants.OTP_ATTEMPTS_EXCEEDED);
+        }
+
+        String decryptedOtp = rsaUtil.decrypt(otpValidateRequestTo.getOtp());
+        if (decryptedOtp.equals(otpDetails.getOtp())) {
+            otpDetails.setExpired(true);
+            otpDaoService.save(otpDetails);
+            notificationService.sendNotificationForVerifiedOTP(otpValidateRequestTo.getType(), otpValidateRequestTo.getContact(), transactionId);
+            return new OtpValidateResponseTo(new OtpValidateMessageTo(NMRConstants.SUCCESS_RESPONSE, otpDetails.getId(), otpValidateRequestTo.getType()));
+        } else {
+            otpDetails.setAttempts(otpDetails.getAttempts() + 1);
+            otpDaoService.save(otpDetails);
             throw new OtpException(NMRConstants.OTP_INVALID);
         }
-        throw new OtpException(NMRConstants.OTP_NOT_FOUND);
     }
 }

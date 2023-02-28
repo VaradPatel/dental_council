@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.controller;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IQueriesService;
@@ -108,7 +109,7 @@ public class HpRegistrationController {
      */
     @PutMapping(path = "health-professional/{healthProfessionalId}/registration", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam(value = "certificate", required = false) MultipartFile certificate,
-                                                                                      @RequestParam(value = "proof",required = false) MultipartFile proof,
+                                                                                      @RequestParam(value = "proof", required = false) MultipartFile proof,
                                                                                       @RequestPart("data") String hpRegistrationUpdateRequestString,
                                                                                       @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, WorkFlowException {
         return hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequestString, certificate, proof);
@@ -141,9 +142,9 @@ public class HpRegistrationController {
     @PutMapping(path = "health-professional/{healthProfessionalId}/work-profile", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileWorkDetailsResponseTO updateHealthProfessionalWorkProfileDetail(@RequestPart("data") String hpWorkProfileUpdateRequestString,
                                                                                     @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
-                                                                                    @RequestParam(value = "proof",required = false) MultipartFile proof)
+                                                                                    @RequestParam(value = "proof", required = false) MultipartFile proof)
 
-            throws InvalidRequestException, WorkFlowException {
+            throws InvalidRequestException, WorkFlowException, NmrException {
         return hpService.addOrUpdateWorkProfileDetail(hpProfileId, hpWorkProfileUpdateRequestString, proof);
     }
 
@@ -157,7 +158,7 @@ public class HpRegistrationController {
      */
     @GetMapping(path = "health-professional/{healthProfessionalId}/work-profile", produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId)
-            throws InvalidRequestException, WorkFlowException {
+            throws InvalidRequestException, WorkFlowException, NmrException {
         return hpService.getHealthProfessionalWorkDetail(hpProfileId);
     }
 
@@ -207,6 +208,7 @@ public class HpRegistrationController {
 
     /**
      * Endpoint to create multiple queries at a time
+     *
      * @param queryCreateTo coming from user
      * @return returns created list of queries
      */
@@ -217,11 +219,12 @@ public class HpRegistrationController {
 
     /**
      * Endpoint to get all the queries against hpProfileId
-     * @param healthProfessionalId	 takes hpProfileId as a input
+     *
+     * @param healthProfessionalId takes hpProfileId as a input
      * @return returns list of queries associated with hpProfileId
      */
     @GetMapping(path = NMRConstants.GET_QUERIES, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<QueryResponseTo> getQueries(@PathVariable("healthProfessionalId") BigInteger healthProfessionalId){
+    public List<QueryResponseTo> getQueries(@PathVariable("healthProfessionalId") BigInteger healthProfessionalId) {
         return queryService.getQueriesByHpProfileId(healthProfessionalId);
     }
 }

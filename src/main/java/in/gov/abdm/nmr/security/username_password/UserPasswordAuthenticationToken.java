@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.security.username_password;
 
-import java.util.Objects;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
+import java.util.Objects;
 
 public class UserPasswordAuthenticationToken extends UsernamePasswordAuthenticationToken {
 

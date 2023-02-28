@@ -1,9 +1,5 @@
 package in.gov.abdm.nmr.config;
 
-import static in.gov.abdm.nmr.common.CustomHeaders.ACCESS_TOKEN;
-import static in.gov.abdm.nmr.common.CustomHeaders.CORRELATION_ID;
-import static in.gov.abdm.nmr.common.CustomHeaders.REFRESH_TOKEN;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import static in.gov.abdm.nmr.common.CustomHeaders.*;
 
 
 @Configuration

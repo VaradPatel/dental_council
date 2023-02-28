@@ -1,39 +1,31 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
 import in.gov.abdm.nmr.dto.CollegeRegistrationRequestParamsTO;
 import in.gov.abdm.nmr.dto.CollegeRegistrationRequestTo;
 import in.gov.abdm.nmr.dto.CollegeRegistrationResponseTO;
 import in.gov.abdm.nmr.dto.GetSetPasswordLinkTo;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
-import in.gov.abdm.nmr.entity.College;
-import in.gov.abdm.nmr.entity.State;
-import in.gov.abdm.nmr.entity.StateMedicalCouncil;
-import in.gov.abdm.nmr.entity.University;
-import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.entity.UserGroup;
-import in.gov.abdm.nmr.entity.UserSubType;
-import in.gov.abdm.nmr.entity.UserType;
+import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.mapper.ICollegeDtoMapper;
 import in.gov.abdm.nmr.repository.ICollegeRepository;
 import in.gov.abdm.nmr.repository.ICollegeRepositoryCustom;
-import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.ICollegeDaoService;
 import in.gov.abdm.nmr.service.IUserDaoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.util.List;
+
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @Service
 @Transactional
@@ -47,20 +39,16 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
 
     private IUserDaoService userDetailService;
 
-    private IAccessControlService accessControlService;
-
     @Autowired
     private ICollegeRepositoryCustom collegeRepositoryCustom;
     @Autowired
     private PasswordServiceImpl passwordReset;
 
-    public CollegeDaoServiceImpl(ICollegeRepository collegeRepository, ICollegeDtoMapper collegeDtoMapper, EntityManager entityManager, IUserDaoService userDetailService, //
-                                 IAccessControlService accessControlService) {
+    public CollegeDaoServiceImpl(ICollegeRepository collegeRepository, ICollegeDtoMapper collegeDtoMapper, EntityManager entityManager, IUserDaoService userDetailService) {
         this.collegeRepository = collegeRepository;
         this.collegeDtoMapper = collegeDtoMapper;
         this.entityManager = entityManager;
         this.userDetailService = userDetailService;
-        this.accessControlService = accessControlService;
     }
 
     @Override
@@ -72,7 +60,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
     public College saveCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException {
         if (!update) {
             if (userDetailService.findByUsername(collegeRegistrationRequestTo.getEmailId()) != null) {
-                throw new NmrException("User already exists", HttpStatus.BAD_REQUEST);
+                throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
             }
 
             User userDetail = new User(null, collegeRegistrationRequestTo.getEmailId(), null, null, true, true, //
@@ -97,13 +85,12 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
 
             return college;
         } else {
-           // accessControlService.validateUser(collegeRegistrationRequestTo.getUserId());
             College collegeEntity = collegeRepository.findByUserId(collegeRegistrationRequestTo.getUserId());
             if (collegeEntity == null) {
                 throw new NmrException("Invalid college", HttpStatus.BAD_REQUEST);
             }
             if (!collegeEntity.getId().equals(collegeRegistrationRequestTo.getId())) {
-                throw new NmrException("Forbidden", HttpStatus.FORBIDDEN);
+                throw new NmrException(FORBIDDEN, HttpStatus.FORBIDDEN);
             }
 
             User collegeUserDetail = userDetailService.findById(collegeRegistrationRequestTo.getUserId());
@@ -126,7 +113,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
     public College findById(BigInteger collegeId) throws NmrException {
         College collegeEntity = collegeRepository.findById(collegeId).orElse(null);
         if (collegeEntity == null) {
-            throw new NmrException("Invalid college id", HttpStatus.BAD_REQUEST);
+            throw new NmrException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
         }
         return collegeEntity;
     }

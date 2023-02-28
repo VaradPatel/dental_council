@@ -11,8 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -30,13 +28,14 @@ class CaptchaControllerTest {
     GenerateCaptchaResponseTO responseTO;
     ValidateCaptchaRequestTO request;
     ValidateCaptchaResponseTO expectedResponse;
+    GenerateCaptchaResponseTO generateCaptchaResponseTO;
 
     @BeforeEach
     void setUp() {
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(captchaController).build();
         responseTO = new GenerateCaptchaResponseTO();
         request = new ValidateCaptchaRequestTO();
         expectedResponse = new ValidateCaptchaResponseTO();
+        generateCaptchaResponseTO = new GenerateCaptchaResponseTO();
     }
 
     @AfterEach
@@ -48,16 +47,15 @@ class CaptchaControllerTest {
 
 
     @Test
-    public void testGenerateCaptcha() throws NoSuchAlgorithmException, IOException {
-        GenerateCaptchaResponseTO expectedResponse = new GenerateCaptchaResponseTO();
-        when(captchaService.generateCaptcha()).thenReturn(expectedResponse);
+    void testGenerateCaptcha() throws NoSuchAlgorithmException, IOException {
+        when(captchaService.generateCaptcha()).thenReturn(generateCaptchaResponseTO);
         GenerateCaptchaResponseTO actualResponse = captchaController.generateCaptcha();
-        assertEquals(expectedResponse, actualResponse);
+        assertEquals(generateCaptchaResponseTO, actualResponse);
     }
 
     @Test
     void testValidateCaptcha() {
-        when(captchaService.validateCaptcha(request)).thenReturn(expectedResponse);
+        when(captchaService.verifyCaptcha(request)).thenReturn(expectedResponse);
         ValidateCaptchaResponseTO actualResponse = captchaController.validateCaptcha(request);
         assertEquals(expectedResponse, actualResponse);
     }
@@ -65,8 +63,8 @@ class CaptchaControllerTest {
     @Test
     void testGetCaptchaEnabledFlag() {
         Boolean expectedFlag = true;
-        when(captchaService.getCaptchaEnabledFlag()).thenReturn(expectedFlag);
-        Boolean actualFlag = captchaController.getCaptchaEnabledFlag();
+        when(captchaService.isCaptchaEnabled()).thenReturn(expectedFlag);
+        Boolean actualFlag = captchaController.isCaptchaEnabled();
         assertEquals(expectedFlag, actualFlag);
     }
 }

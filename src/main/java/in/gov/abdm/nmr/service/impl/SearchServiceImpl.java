@@ -1,27 +1,9 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-import in.gov.abdm.nmr.dto.HpSearchProfileQualificationTO;
-import in.gov.abdm.nmr.dto.HpSearchProfileTO;
-import in.gov.abdm.nmr.dto.HpSearchRequestTO;
-import in.gov.abdm.nmr.dto.HpSearchResponseTO;
-import in.gov.abdm.nmr.dto.HpSearchResultTO;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.ForeignQualificationDetailsMaster;
 import in.gov.abdm.nmr.entity.HpProfileMaster;
 import in.gov.abdm.nmr.entity.QualificationDetailsMaster;
@@ -32,9 +14,20 @@ import in.gov.abdm.nmr.repository.IHpProfileMasterRepository;
 import in.gov.abdm.nmr.repository.IQualificationDetailMasterRepository;
 import in.gov.abdm.nmr.repository.RegistrationDetailMasterRepository;
 import in.gov.abdm.nmr.service.IElasticsearchDaoService;
-import in.gov.abdm.nmr.service.IQualificationDetailDaoService;
-import in.gov.abdm.nmr.service.IRegistrationDetailDaoService;
 import in.gov.abdm.nmr.service.ISearchService;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class SearchServiceImpl implements ISearchService {
@@ -53,7 +46,7 @@ public class SearchServiceImpl implements ISearchService {
 
     private static final List<BigInteger> PROFILE_STATUS_CODES = Arrays.asList(BigInteger.valueOf(2l), BigInteger.valueOf(5l), BigInteger.valueOf(6l));
 
-    public SearchServiceImpl(IElasticsearchDaoService elasticsearchDaoService, IHpProfileMasterRepository iHpProfileMasterRepository, RegistrationDetailMasterRepository registrationDetailMasterRepository, IQualificationDetailMasterRepository qualificationDetailMasterRepository, IForeignQualificationDetailMasterRepository foreignQualificationDetailMasterRepository, IQualificationDetailDaoService qualificationDetailDaoService, IRegistrationDetailDaoService registrationDetailDaoService) {
+    public SearchServiceImpl(IElasticsearchDaoService elasticsearchDaoService, IHpProfileMasterRepository iHpProfileMasterRepository, RegistrationDetailMasterRepository registrationDetailMasterRepository, IQualificationDetailMasterRepository qualificationDetailMasterRepository, IForeignQualificationDetailMasterRepository foreignQualificationDetailMasterRepository) {
         this.elasticsearchDaoService = elasticsearchDaoService;
         this.iHpProfileMasterRepository = iHpProfileMasterRepository;
         this.registrationDetailMasterRepository = registrationDetailMasterRepository;

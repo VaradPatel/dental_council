@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.service;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -76,7 +77,7 @@ public interface IHpRegistrationService {
      * @throws Exception In case of any error during the update process.
      */
     HpProfileWorkDetailsResponseTO addOrUpdateWorkProfileDetail(BigInteger hpProfileId,
-                                                                String hpWorkProfileUpdateRequestTO, MultipartFile proof);
+                                                                String hpWorkProfileUpdateRequestTO, MultipartFile proof) throws NmrException;
 
     /**
      * Submit the HP profile using the provided request data.
@@ -103,7 +104,7 @@ public interface IHpRegistrationService {
      * @param hpProfileId The unique identifier for the health professional's profile.
      * @return An instance of {@link HpProfileWorkDetailsResponseTO} containing the work details of the health professional.
      */
-    HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId);
+    HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) throws NmrException;
 
     /**
      * This method is used to retrieve the registration details of a health professional based on their profile ID.

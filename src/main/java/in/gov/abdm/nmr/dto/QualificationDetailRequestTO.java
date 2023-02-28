@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.dto;
 
-import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.annotation.NotNullBlank;
+import in.gov.abdm.nmr.dto.college.CollegeTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,6 @@ public class QualificationDetailRequestTO {
      */
     @NotNullBlank
     private CountryTO country;
-//    private QualificationStatusTO qualificationStatus;
 
     /**
      * State of the qualification request.

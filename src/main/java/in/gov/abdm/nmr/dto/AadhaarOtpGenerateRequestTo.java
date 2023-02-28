@@ -1,12 +1,12 @@
 package in.gov.abdm.nmr.dto;
-import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.NotBlank;
 
 /**
  * Request TO for generate API

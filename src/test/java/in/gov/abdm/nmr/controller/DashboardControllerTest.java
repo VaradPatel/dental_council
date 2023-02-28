@@ -59,7 +59,7 @@ class DashboardControllerTest {
     void testDashBoardResponseTO() throws InvalidRequestException {
         DashboardResponseTO expectedResponseTO = new DashboardResponseTO();
         when(iFetchSpecificDetailsService.fetchDashboardData(requestTO)).thenReturn(expectedResponseTO);
-        DashboardResponseTO actualResponseTO = dashboardController.DashBoardResponseTO(requestTO);
+        DashboardResponseTO actualResponseTO = dashboardController.fetchDashboardData(requestTO);
         Assertions.assertEquals(expectedResponseTO, actualResponseTO);
     }
 }

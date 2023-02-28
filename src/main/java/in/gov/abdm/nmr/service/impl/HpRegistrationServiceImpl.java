@@ -8,6 +8,7 @@ import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.*;
 import in.gov.abdm.nmr.repository.*;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -103,24 +105,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 				.SmcRegistrationToDto(hpProfileDaoService.fetchSmcRegistrationDetail(councilId, registrationNumber));
 	}
 
-    private void addHpProfileInHpProfileAudit(BigInteger hpProfileId) {
-        HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
-        HpProfileMaster hpProfileMaster = iHpProfileAuditMapper.hpProfileToHpProfileMaster(hpProfile);
-        iHpProfileAuditRepository.save(hpProfileMaster);
-    }
-
-    private void addRegistrationDetailsInRegistrationAudit(BigInteger hpProfileId) {
-        RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId);
-        RegistrationDetailsMaster registrationDetailsAudit = iHpProfileAuditMapper.registrationDetailsToRegistrationDetailsMaster(registrationDetails);
-        registrationDetailAuditRepository.save(registrationDetailsAudit);
-    }
-
-    private void addWorkProfileToWorkProfileAudit(BigInteger hpProfileId) {
-        WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(hpProfileId);
-        WorkProfileMaster workProfileAudit = iHpProfileAuditMapper.workProfileToWorkProfileMaster(workProfile);
-        workProfileAuditRepository.save(workProfileAudit);
-    }
-
 
     @Override
     public HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException {
@@ -170,7 +154,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Override
     public HpProfileWorkDetailsResponseTO addOrUpdateWorkProfileDetail(BigInteger hpProfileId,
-                                                                       String hpWorkProfileUpdateRequestString, MultipartFile proof) {
+                                                                       String hpWorkProfileUpdateRequestString, MultipartFile proof) throws NmrException {
         HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateWorkProfileDetails(hpProfileId, hpWorkProfileUpdateRequestString, proof);
         return getHealthProfessionalWorkDetail(hpProfileUpdateResponseTO.getHpProfileId());
     }
@@ -201,10 +185,16 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
             RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
             registrationDetails.setRequestId(requestId);
-            WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(hpSubmitRequestTO.getHpProfileId());
-            workProfile.setRequestId(requestId);
+
+            List<WorkProfile> workProfileList =new ArrayList<>();
+            List<WorkProfile> workProfiles =workProfileRepository.getWorkProfileDetailsByHPId(hpSubmitRequestTO.getHpProfileId());
+            String finalRequestId = requestId;
+            workProfiles.forEach(workProfile -> {
+                workProfile.setRequestId(finalRequestId);
+                workProfileList.add(workProfile);
+            });
             registrationDetailRepository.save(registrationDetails);
-            workProfileRepository.save(workProfile);
+            workProfileRepository.saveAll(workProfileList);
             iHpProfileRepository.save(hpProfileById);
         }
         return new HpProfileAddResponseTO(201, "Hp Profile Submitted Successfully!", hpSubmitRequestTO.getHpProfileId(), requestId);
@@ -220,11 +210,15 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     @Override
-    public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) {
+    public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) throws NmrException {
+        HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = null;
         List<SuperSpeciality> superSpecialities = NMRUtil.coalesceCollection(superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId), superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId));
         List<WorkProfile> workProfileList = workProfileRepository.getWorkProfileDetailsByHPId(hpProfileId);
-        HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(superSpecialities, workProfileList);
-
+        if (!workProfileList.isEmpty()) {
+            hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(superSpecialities, workProfileList);
+        } else {
+            throw new NmrException("Invalid HP profile ID", HttpStatus.valueOf(404));
+        }
         return hpProfileWorkDetailsResponseTO;
     }
 
@@ -238,11 +232,5 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = HpProfileRegistrationMapper.convertEntitiesToRegistrationResponseTo(registrationDetails, nbeDetails, indianQualifications, internationalQualifications);
         hpProfileRegistrationResponseTO.setHpProfileId(hpProfileId);
         return hpProfileRegistrationResponseTO;
-    }
-
-    private BigInteger getSecondLastHpProfile(BigInteger hpProfileId) {
-        HpProfile secondLastHpProfile = iHpProfileRepository.findSecondLastHpProfile(iHpProfileRepository.findById(hpProfileId).get().getRegistrationId());
-        final BigInteger secondLastProfileId = secondLastHpProfile != null ? secondLastHpProfile.getId() : BigInteger.ZERO;
-        return secondLastProfileId;
     }
 }

@@ -1,14 +1,13 @@
 package in.gov.abdm.nmr.entity;
 
-import java.math.BigInteger;
-import java.util.List;
-
-import javax.persistence.*;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import javax.persistence.*;
+import java.math.BigInteger;
+import java.util.List;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 

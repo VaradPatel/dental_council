@@ -1,9 +1,9 @@
 package in.gov.abdm.nmr.service;
 
+import in.gov.abdm.nmr.entity.SecurityAuditTrail;
+
 import java.sql.Timestamp;
 import java.util.List;
-
-import in.gov.abdm.nmr.entity.SecurityAuditTrail;
 
 public interface ISecurityAuditTrailDaoService {
 

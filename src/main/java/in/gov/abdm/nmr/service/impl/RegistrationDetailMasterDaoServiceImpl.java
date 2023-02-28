@@ -5,6 +5,7 @@ import in.gov.abdm.nmr.repository.RegistrationDetailMasterRepository;
 import in.gov.abdm.nmr.service.IRegistrationDetailMasterDaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
 import java.math.BigInteger;
 
