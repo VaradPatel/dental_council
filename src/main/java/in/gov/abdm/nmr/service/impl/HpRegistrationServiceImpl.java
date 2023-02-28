@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -183,10 +184,16 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
             RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
             registrationDetails.setRequestId(requestId);
-            WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(hpSubmitRequestTO.getHpProfileId());
-            workProfile.setRequestId(requestId);
+
+            List<WorkProfile> workProfileList =new ArrayList<>();
+            List<WorkProfile> workProfiles =workProfileRepository.getWorkProfileDetailsByHPId(hpSubmitRequestTO.getHpProfileId());
+            String finalRequestId = requestId;
+            workProfiles.forEach(workProfile -> {
+                workProfile.setRequestId(finalRequestId);
+                workProfileList.add(workProfile);
+            });
             registrationDetailRepository.save(registrationDetails);
-            workProfileRepository.save(workProfile);
+            workProfileRepository.saveAll(workProfileList);
             iHpProfileRepository.save(hpProfileById);
         }
         return new HpProfileAddResponseTO(201, "Hp Profile Submitted Successfully!", hpSubmitRequestTO.getHpProfileId(), requestId);
