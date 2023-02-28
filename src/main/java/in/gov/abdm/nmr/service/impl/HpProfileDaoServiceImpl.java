@@ -166,14 +166,19 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             newRegistrationDetails.setHpProfileId(targetedHpProfile);
             iRegistrationDetailRepository.save(newRegistrationDetails);
 
-            WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(copiedExistingHpProfile.getId());
-            WorkProfile newWorkProfile = new WorkProfile();
-            org.springframework.beans.BeanUtils.copyProperties(workProfile, newWorkProfile);
-            newWorkProfile.setId(null);
-            if (targetedHpProfile != null && targetedHpProfile.getId() != null) {
-                newWorkProfile.setHpProfileId(targetedHpProfile.getId());
-            }
-            workProfileRepository.save(newWorkProfile);
+            List<WorkProfile> workProfileList =new ArrayList<>();
+            List<WorkProfile> workProfiles = workProfileRepository.getWorkProfileDetailsByHPId(copiedExistingHpProfile.getId());
+            HpProfile finalTargetedHpProfile = targetedHpProfile;
+            workProfiles.forEach(workProfile -> {
+                WorkProfile newWorkProfile = new WorkProfile();
+                org.springframework.beans.BeanUtils.copyProperties(workProfile, newWorkProfile);
+                newWorkProfile.setId(null);
+                if (finalTargetedHpProfile != null && finalTargetedHpProfile.getId() != null) {
+                    newWorkProfile.setHpProfileId(finalTargetedHpProfile.getId());
+                }
+                workProfileList.add(newWorkProfile);
+            });
+            workProfileRepository.saveAll(workProfileList);
 
             List<LanguagesKnown> languagesKnownList = new ArrayList<>();
             List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(copiedExistingHpProfile.getId());
@@ -580,7 +585,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @SneakyThrows
     private void mapWorkRequestToEntity(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> addWorkProfiles, BigInteger hpProfileId) {
-        List<WorkProfile> workProfileDetailsList = new ArrayList<>();
         if (addWorkProfiles.size() > 0) {
             updateWorkProfileRecords(hpWorkProfileUpdateRequestTO, addWorkProfiles, hpProfileId);
         } else {
