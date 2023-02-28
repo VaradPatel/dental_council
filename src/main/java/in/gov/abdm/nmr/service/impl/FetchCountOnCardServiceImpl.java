@@ -22,6 +22,7 @@ import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 
@@ -94,7 +95,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                         counter = counter.add(statusWiseCountTO.getCount());
                         filteredStatusListForRegistration.add(statusWiseCountTO.getName());
                         return statusWiseCountTO;
-                    }).toList();
+                    }).collect(Collectors.toList());
 
             List<StatusWiseCountTO> tempHpRegistrationRequests = hpRegistrationRequests;
             Arrays.stream(WorkflowStatus.values()).forEach(workflowStatus -> {
@@ -130,7 +131,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                         filteredStatusListForModification.add(statusWiseCountTO.getName());
                         return statusWiseCountTO;
                     })
-                    .toList();
+                    .collect(Collectors.toList());
 
             List<StatusWiseCountTO> tempHpModificationRequests = hpModificationRequests;
             Arrays.stream(WorkflowStatus.values()).forEach(workflowStatus -> {
@@ -167,7 +168,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                         filteredStatusListForTemporarySuspension.add(statusWiseCountTO.getName());
                         return statusWiseCountTO;
                     })
-                    .toList();
+                    .collect(Collectors.toList());
 
             List<StatusWiseCountTO> tempTemporarySuspensionRequests = temporarySuspensionRequests;
             Arrays.stream(WorkflowStatus.values()).forEach(workflowStatus -> {
@@ -207,7 +208,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                         filteredStatusListForPermanentSuspension.add(statusWiseCountTO.getName());
                         return statusWiseCountTO;
                     })
-                    .toList();
+                    .collect(Collectors.toList());
 
             List<StatusWiseCountTO> tempPermanentSuspensionRequests = permanentSuspensionRequests;
             Arrays.stream(WorkflowStatus.values()).forEach(workflowStatus -> {
@@ -286,7 +287,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                         filteredStatusListForLicenseRequests.add(statusWiseCountTO.getName());
                         return statusWiseCountTO;
                     })
-                    .toList();
+                    .collect(Collectors.toList());
 
             List<StatusWiseCountTO> tempActivateLicenseRequests = activateLicenseRequests;
             Arrays.stream(WorkflowStatus.values()).forEach(workflowStatus -> {
@@ -325,7 +326,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                         filteredStatusListForCollegeRegRequests.add(statusWiseCountTO.getName());
                         return statusWiseCountTO;
                     })
-                    .toList();
+                    .collect(Collectors.toList());
 
             List<StatusWiseCountTO> tempCollegeRegistrationRequests = collegeRegistrationRequests;
             Arrays.stream(WorkflowStatus.values()).forEach(workflowStatus -> {
@@ -475,7 +476,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                             .orElse(StatusWiseCountTO.builder().count(BigInteger.ZERO).build())
                             .getCount()));
             return statusWiseCountTO;
-        }).toList();
+        }).collect(Collectors.toList());
     }
 
 
