@@ -126,7 +126,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     private IHpProfileRepository hpProfileRepository;
 
 
-    private static final Map<String, String> REACTIVATION_SORT_MAPPINGS = Map.of("id", " hp.id", "name", " hp.full_name", "createdAt", " wf.created_at", "reactivationDate", " wf.start_date", "suspensionType", " a.name", "remarks", " wf.remarks");
+    private static final Map<String, String> REACTIVATION_SORT_MAPPINGS = Map.of("id", " r.id", "name", " r.full_name", "createdAt", " r.created_at", "reactivationDate", " r.start_date", "suspensionType", " r.suspension_type", "remarks", " r.remarks");
 
     /**
      * This method is used to suspend a health professional based on the request provided.
@@ -195,9 +195,9 @@ public class ApplicationServiceImpl implements IApplicationService {
     private String getReactivationSortColumn(String columnToSort) {
 
         if (columnToSort != null && columnToSort.length() > 0) {
-            return REACTIVATION_SORT_MAPPINGS.getOrDefault(columnToSort, " wf.created_at ");
+            return REACTIVATION_SORT_MAPPINGS.getOrDefault(columnToSort, " r.created_at ");
         } else {
-            return " wf.created_at ";
+            return " r.created_at ";
         }
     }
 
