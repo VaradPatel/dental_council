@@ -84,6 +84,13 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
     @Autowired
     private ICollegeRegistrarRepository collegeRegistrarRepository;
 
+    /**
+     * Injecting ICollegeRepository bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
+    @Autowired
+    private ICollegeRepository collegeRepository;
+
     @Override
     public List<FetchSpecificDetailsResponseTO> fetchSpecificDetails(String groupName, String applicationType, String workFlowStatus) throws InvalidRequestException {
         validateGroupName(groupName);
@@ -168,29 +175,22 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         User userDetail = userDetailRepository.findByUsername(userName);
         BigInteger groupId = userDetail.getGroup().getId();
         BigInteger userId = userDetail.getId();
-        String column = getColumnToSort(sortBy);
         DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
         dashboardRequestParamsTO.setWorkFlowStatusId(workFlowStatusId);
         dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
         dashboardRequestParamsTO.setName(name);
         dashboardRequestParamsTO.setNmrId(nmrId);
         dashboardRequestParamsTO.setSearch(search);
-        dashboardRequestParamsTO.setSortBy(column);
         dashboardRequestParamsTO.setUserGroupId(groupId);
         dashboardRequestParamsTO.setUserGroupStatus(userGroupStatus);
         if (groupId.equals(Group.SMC.getId())) {
-            SMCProfile smcProfile = smcProfileRepository.findByUserId(userId);
-            dashboardRequestParamsTO.setCouncilId(smcProfile.getStateMedicalCouncil().getId().toString());
+            dashboardRequestParamsTO.setCouncilId(smcProfileRepository.findByUserId(userId).getStateMedicalCouncil().getId().toString());
         } else if (groupId.equals(Group.COLLEGE_DEAN.getId())) {
-            String collegeDeanId = collegeDeanRepository.getCollegeDeanIdByUserId(userId).get(0).toString();
-            CollegeDean collegeDean = collegeDeanRepository.findByUserId(userId);
-            dashboardRequestParamsTO.setCollegeId(collegeDean.getCollege().getId().toString());
-            dashboardRequestParamsTO.setCollegeDeanId(collegeDeanId);
+            dashboardRequestParamsTO.setCollegeId(collegeDeanRepository.findByUserId(userId).getCollege().getId().toString());
         } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
-            String collegeRegistrarId = collegeRegistrarRepository.getCollegeRegistrarIdByUserId(userId).get(0).toString();
-            CollegeRegistrar collegeRegistrar = collegeRegistrarRepository.findByUserId(userId);
-            dashboardRequestParamsTO.setCollegeId(collegeRegistrar.getCollege().getId().toString());
-            dashboardRequestParamsTO.setCollegeRegistrarId(collegeRegistrarId);
+            dashboardRequestParamsTO.setCollegeId(collegeRegistrarRepository.findByUserId(userId).getCollege().getId().toString());
+        } else if (groupId.equals(Group.COLLEGE_ADMIN.getId())) {
+            dashboardRequestParamsTO.setCollegeId(collegeRepository.findByUserId(userId).getId().toString());
         }
         if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
                 || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
@@ -217,16 +217,13 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         BigInteger groupId = userDetail.getGroup().getId();
         BigInteger userId = userDetail.getId();
         String sortOrder = dashboardRequestTO.getSortOrder();
-        String column = getColumnToSort(dashboardRequestTO.getSortBy());
-        int size = dashboardRequestTO.getSize();
-        int pageNo = dashboardRequestTO.getPageNo();
         DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
         dashboardRequestParamsTO.setWorkFlowStatusId(dashboardRequestTO.getWorkFlowStatusId());
         dashboardRequestParamsTO.setApplicationTypeId(dashboardRequestTO.getApplicationTypeId());
         dashboardRequestParamsTO.setName(dashboardRequestTO.getName());
         dashboardRequestParamsTO.setNmrId(dashboardRequestTO.getNmrId());
         dashboardRequestParamsTO.setSearch(dashboardRequestTO.getSearch());
-        dashboardRequestParamsTO.setSortBy(column);
+        dashboardRequestParamsTO.setSortBy(mapColumnToTable(dashboardRequestTO.getSortBy()));
         dashboardRequestParamsTO.setUserGroupId(groupId);
         dashboardRequestParamsTO.setUserGroupStatus(dashboardRequestTO.getUserGroupStatus());
         if (groupId.equals(Group.SMC.getId())) {
@@ -245,28 +242,12 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         }
         final String sortingOrder = (sortOrder == null || sortOrder.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
-        final int dataLimit = Math.min(MAX_DATA_SIZE, size);
-        Pageable pageable = PageRequest.of(pageNo, dataLimit);
+        final int dataLimit = Math.min(MAX_DATA_SIZE, dashboardRequestTO.getSize());
+        Pageable pageable = PageRequest.of(dashboardRequestTO.getPageNo(), dataLimit);
         return iFetchSpecificDetailsCustomRepository.fetchDashboardData(dashboardRequestParamsTO, pageable);
     }
 
-    /**
-     * Maps the database column name to be used for sorting based on the columnToSort name.
-     *
-     * @param columnToSort - name of the column to be sorted
-     * @return database column name to be used for sorting
-     */
-    private String getColumnToSort(String columnToSort) {
-        Map<String, String> columns;
-        if (columnToSort.length() > 0) {
-            columns = mapColumnToTable();
-            return columns.getOrDefault(columnToSort, "Invalid column Name to sort");
-        } else {
-            return " rd.created_at ";
-        }
-    }
-
-    private Map<String, String> mapColumnToTable() {
+    private String mapColumnToTable(String columnToSort) {
         Map<String, String> columnToSortMap = new HashMap<>();
         columnToSortMap.put("doctorStatus", " doctor_status");
         columnToSortMap.put("smcStatus", " smc_status");
@@ -280,6 +261,6 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         columnToSortMap.put("createdAt", " rd.created_at");
         columnToSortMap.put("councilName", " stmc.name");
         columnToSortMap.put("applicantFullName", " hp.full_name");
-        return columnToSortMap;
+        return columnToSortMap.getOrDefault(columnToSort, " rd.created_at ");
     }
 }
