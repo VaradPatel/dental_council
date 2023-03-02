@@ -27,6 +27,9 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import static in.gov.abdm.nmr.util.NMRUtil.validateQualificationDetailsAndProofs;
+import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetails;
+
 @Service
 public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Autowired
@@ -115,13 +118,13 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
      * Adds a list of qualification details to the specified health professional's profile.
      *
      * @param hpProfileId                   The ID of the health professional's profile.
-     * @param qualificationDetailRequestTOsString A list of qualification detail requests as a string.
+     * @param qualificationDetailRequestTOs A list of qualification detail requests as a string.
      * @return The string "Success" if the operation is successful.
      * @throws WorkFlowException If an error occurs while initiating the submission workflow.
      */
     @Override
-    public String addQualification(BigInteger hpProfileId, String qualificationDetailRequestTOsString) throws WorkFlowException {
-        List<QualificationDetailRequestTO> qualificationDetailRequestTOs = hpProfileDaoService.getQualificationDetailRequestTO(qualificationDetailRequestTOsString);
+    public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws WorkFlowException, InvalidRequestException {
+        validateQualificationDetailsAndProofs(qualificationDetailRequestTOs,proofs);
         for (QualificationDetailRequestTO qualificationDetailRequestTO : qualificationDetailRequestTOs) {
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.QUALIFICATION_ADDITION.getId()));
             WorkFlowRequestTO workFlowRequestTO = new WorkFlowRequestTO();
@@ -133,9 +136,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             qualificationDetailRequestTO.setRequestId(requestId);
             iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
         }
-        hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs);
+        hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs);
         return "Success";
     }
+
 
 
     @Override
@@ -147,15 +151,16 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Override
     public HpProfileRegistrationResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
-                                                                           String hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof) {
-        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(hpProfileId, hpRegistrationUpdateRequestTO, certificate, proof);
+                                                                           HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof, List<MultipartFile> proofOfQualifications) {
+        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(hpProfileId, hpRegistrationUpdateRequestTO, certificate, proof, proofOfQualifications);
         return getHealthProfessionalRegistrationDetail(hpProfileUpdateResponseTO.getHpProfileId());
     }
 
     @Override
     public HpProfileWorkDetailsResponseTO addOrUpdateWorkProfileDetail(BigInteger hpProfileId,
-                                                                       String hpWorkProfileUpdateRequestString, MultipartFile proof) throws NmrException {
-        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateWorkProfileDetails(hpProfileId, hpWorkProfileUpdateRequestString, proof);
+                                                                       HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws NmrException, InvalidRequestException {
+        validateWorkProfileDetails(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails());
+        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateWorkProfileDetails(hpProfileId, hpWorkProfileUpdateRequestTO, proofs);
         return getHealthProfessionalWorkDetail(hpProfileUpdateResponseTO.getHpProfileId());
     }
 

@@ -19,10 +19,10 @@ public interface IHpProfileDaoService {
 			HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException;
 
 	HpProfileUpdateResponseTO updateHpRegistrationDetails(BigInteger hpProfileId,
-																 String hpRegistrationUpdateRequestTO,MultipartFile certificate, MultipartFile proof);
+														  HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof, List<MultipartFile> proofOfQualifications);
 
 	HpProfileUpdateResponseTO updateWorkProfileDetails(BigInteger hpProfileId,
-													   String hpWorkProfileUpdateRequestString, MultipartFile proof);
+													   HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws InvalidRequestException;
 
 	HpProfilePictureResponseTO uploadHpProfilePhoto(MultipartFile file, BigInteger hpProfileId)
 			throws IOException;
@@ -32,11 +32,10 @@ public interface IHpProfileDaoService {
     HpProfile findById(BigInteger id);
 
     void saveQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
-								  List<QualificationDetailRequestTO> qualificationDetailRequestTOS);
+								  List<QualificationDetailRequestTO> qualificationDetailRequestTOS,
+								  List<MultipartFile> proofs);
 
 	ResponseMessageTo setHpProfilePhotoAndAddressThroughAadhaar(BigInteger id, AadhaarUserKycTo userKycTo);
-
-	List<QualificationDetailRequestTO> getQualificationDetailRequestTO(String qualificationDetailRequestTOString);
 
 
 }

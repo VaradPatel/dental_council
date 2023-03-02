@@ -101,7 +101,7 @@ public class HpRegistrationController {
      *
      * @param certificate                       The health professional's certificate file.
      * @param proof                             The health professional's proof file.
-     * @param hpRegistrationUpdateRequestString The health professional registration update request in string format.
+     * @param hpRegistrationUpdateRequest The health professional registration update request in string format.
      * @param hpProfileId                       The health professional profile id.
      * @return The updated health professional registration response in a transfer object.
      * @throws InvalidRequestException If the provided request is invalid.
@@ -110,9 +110,10 @@ public class HpRegistrationController {
     @PutMapping(path = "health-professional/{healthProfessionalId}/registration", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam(value = "certificate", required = false) MultipartFile certificate,
                                                                                       @RequestParam(value = "proof", required = false) MultipartFile proof,
-                                                                                      @RequestPart("data") String hpRegistrationUpdateRequestString,
+                                                                                      @RequestParam(value = "proofOfQualification") List<MultipartFile> proofOfQualifications,
+                                                                                      @RequestPart("data") HpRegistrationUpdateRequestTO hpRegistrationUpdateRequest,
                                                                                       @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, WorkFlowException {
-        return hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequestString, certificate, proof);
+        return hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequest, certificate, proof, proofOfQualifications);
     }
 
     /**
@@ -132,20 +133,19 @@ public class HpRegistrationController {
     /**
      * Updates the work details of a health professional in the system.
      *
-     * @param hpWorkProfileUpdateRequestString The updated work details of the health professional, in JSON format.
+     * @param hpWorkProfileUpdateRequestTO The updated work details of the health professional, in JSON format.
      * @param hpProfileId                      The ID of the health professional's profile.
-     * @param proof                            The proof of the updated work details, as a file.
+     * @param proofs                            The proof of the updated work details, as a file.
      * @return A {@link HpProfileWorkDetailsResponseTO} object containing the updated work details.
      * @throws InvalidRequestException If the request is invalid or missing required information.
      * @throws WorkFlowException       If there is a problem with the work flow during the update process.
      */
     @PutMapping(path = "health-professional/{healthProfessionalId}/work-profile", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public HpProfileWorkDetailsResponseTO updateHealthProfessionalWorkProfileDetail(@RequestPart("data") String hpWorkProfileUpdateRequestString,
+    public HpProfileWorkDetailsResponseTO updateHealthProfessionalWorkProfileDetail(@RequestPart("data") HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO,
                                                                                     @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
-                                                                                    @RequestParam(value = "proof", required = false) MultipartFile proof)
-
+                                                                                    @RequestParam(value = "proof", required = false) List<MultipartFile> proofs)
             throws InvalidRequestException, WorkFlowException, NmrException {
-        return hpService.addOrUpdateWorkProfileDetail(hpProfileId, hpWorkProfileUpdateRequestString, proof);
+        return hpService.addOrUpdateWorkProfileDetail(hpProfileId, hpWorkProfileUpdateRequestTO, proofs);
     }
 
     /**
@@ -166,14 +166,16 @@ public class HpRegistrationController {
      * Adds qualifications to a healthcare provider's profile.
      *
      * @param hpProfileId                   the id of the healthcare provider's profile
-     * @param qualificationDetailRequestTOs the list of qualifications to be added
+     * @param qualificationDetailRequestTO the list of qualifications to be added
      * @return a string indicating the result of the operation
      * @throws WorkFlowException if there is an error during the operation
      */
     @PostMapping(path = "/health-professional/{healthProfessionalId}/qualifications", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String addQualifications(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
-                                    @RequestPart("data") String qualificationDetailRequestTOsString) throws WorkFlowException {
-        return hpService.addQualification(hpProfileId, qualificationDetailRequestTOsString);
+                                    @RequestPart("data") QualificationRequestTempTO qualificationDetailRequestTO,
+                                    @RequestParam(value = "proof") List<MultipartFile> proofs
+                                    ) throws WorkFlowException, InvalidRequestException {
+        return hpService.addQualification(hpProfileId, qualificationDetailRequestTO.getQualificationDetailRequestTos(), proofs);
     }
 
     /**
