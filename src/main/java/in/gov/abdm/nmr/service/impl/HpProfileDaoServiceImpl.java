@@ -314,6 +314,12 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     @Override
+    public HpProfile findLatestEntryByUseridNew(BigInteger userId) {
+        HpProfile latestEntryList = iHpProfileRepository.findLatestEntryByUseridNew(userId);
+        return latestEntryList;
+    }
+
+    @Override
     public HpProfilePictureResponseTO uploadHpProfilePhoto(MultipartFile file, BigInteger hpProfileId)
             throws IOException {
 

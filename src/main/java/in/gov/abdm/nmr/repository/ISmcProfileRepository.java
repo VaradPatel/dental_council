@@ -17,4 +17,6 @@ public interface ISmcProfileRepository extends JpaRepository<SMCProfile, BigInte
 
     @Query(value = "SELECT smc.stateMedicalCouncil.id FROM smcProfile smc WHERE smc.user.id =:userId")
     List<BigInteger> getSmcIdByUserId(@Param(USER_ID) BigInteger userId);
+
+    SMCProfile findSmcProfileById(BigInteger id);
 }
