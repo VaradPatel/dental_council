@@ -115,6 +115,9 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
     @Query(value = "SELECT hp FROM hpProfile hp JOIN hp.user usr WHERE usr.id=:userId ORDER BY hp.updatedAt DESC")
     List<HpProfile> findLatestEntryByUserid(BigInteger userId, Pageable pageable);
 
+	@Query(value = "SELECT * FROM hp_profile WHERE id=(SELECT MAX(id) FROM hp_profile WHERE user_id=:userId)",nativeQuery = true)
+	HpProfile findLatestEntryByUseridNew(BigInteger userId);
+
 	HpProfile findHpProfileById(BigInteger id);
 
 	@Query(value = "SELECT hp FROM hp_profile hp where registration_id=:registrationId", nativeQuery = true)
