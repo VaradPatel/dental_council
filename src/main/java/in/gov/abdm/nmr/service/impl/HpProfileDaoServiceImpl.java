@@ -309,14 +309,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @Override
     public HpProfile findLatestEntryByUserid(BigInteger userId) {
-        List<HpProfile> latestEntryList = iHpProfileRepository.findLatestEntryByUserid(userId, PageRequest.of(0, 1));
-        return latestEntryList.size() == 1 ? latestEntryList.get(0) : null;
-    }
+        return iHpProfileRepository.findLatestEntryByUserid(userId);
 
-    @Override
-    public HpProfile findLatestEntryByUseridNew(BigInteger userId) {
-        HpProfile latestEntryList = iHpProfileRepository.findLatestEntryByUseridNew(userId);
-        return latestEntryList;
     }
 
     @Override
@@ -546,8 +540,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 .orElse(null);
         hpProfile.setCountryNationality(countryNationality);
 
-        hpProfile.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
-        hpProfile.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         hpProfile.setNmrId(hpPersonalUpdateRequestTO.getImrDetails().getNmrId());
         hpProfile.setYearOfInfo(hpPersonalUpdateRequestTO.getImrDetails().getYearOfInfo());
 

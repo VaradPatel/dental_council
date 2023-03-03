@@ -112,11 +112,8 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
 			+ " where languages_known.hp_profile_id = :hpProfileId", nativeQuery = true)
 	List<Tuple> fetchLanguageDetails(BigInteger hpProfileId);
 
-    @Query(value = "SELECT hp FROM hpProfile hp JOIN hp.user usr WHERE usr.id=:userId ORDER BY hp.updatedAt DESC")
-    List<HpProfile> findLatestEntryByUserid(BigInteger userId, Pageable pageable);
-
 	@Query(value = "SELECT * FROM hp_profile WHERE id=(SELECT MAX(id) FROM hp_profile WHERE user_id=:userId)",nativeQuery = true)
-	HpProfile findLatestEntryByUseridNew(BigInteger userId);
+	HpProfile findLatestEntryByUserid(BigInteger userId);
 
 	HpProfile findHpProfileById(BigInteger id);
 
