@@ -29,8 +29,6 @@ public interface IHpProfileDaoService {
 
 	HpProfile findLatestEntryByUserid(BigInteger userId);
 
-	public HpProfile findLatestEntryByUseridNew(BigInteger userId);
-
     HpProfile findById(BigInteger id);
 
     void saveQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
