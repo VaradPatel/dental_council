@@ -11,19 +11,15 @@ import java.math.BigInteger;
 
 public interface IUserDaoService {
 
-    UserTO searchUserDetail(UserSearchTO userDetailSearchTO);
-
-    String findRefreshTokenId(UserSearchTO userDetailSearchTO);
-
     Integer updateRefreshTokenId(UpdateRefreshTokenIdRequestTO refreshTokenRequestTO);
 
     User findById(BigInteger id);
 
-    User saveUserDetail(User userDetail);
-
-    User searchUserDetailInternal(UserSearchTO userDetailSearchTO);
+    User save(User user);
 
     User findByUsername(String username);
+    
+    boolean existsByUsername(String username);
 
     User toggleSmsNotification(boolean isSmsNotificationEnabled);
 

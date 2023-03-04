@@ -62,10 +62,14 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
             if (userDetailService.findByUsername(collegeRegistrationRequestTo.getEmailId()) != null) {
                 throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
             }
+            
+            if (userDetailService.findByUsername(collegeRegistrationRequestTo.getPhoneNumber()) != null) {
+                throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
+            }
 
-            User userDetail = new User(null, collegeRegistrationRequestTo.getEmailId(), null, null, true, true, //
+            User userDetail = new User(null, collegeRegistrationRequestTo.getEmailId(), collegeRegistrationRequestTo.getPinCode(), null, null, null, null, true, true, //
                     entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserGroup.class, in.gov.abdm.nmr.enums.Group.COLLEGE_REGISTRAR.getId()), true, 0, null);
-            userDetailService.saveUserDetail(userDetail);
+            userDetailService.save(userDetail);
 
             College collegeEntity = collegeDtoMapper.collegeRegistartionDtoToEntity(collegeRegistrationRequestTo);
             collegeEntity.setId(null);
@@ -94,8 +98,9 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
             }
 
             User collegeUserDetail = userDetailService.findById(collegeRegistrationRequestTo.getUserId());
-            collegeUserDetail.setUsername(collegeRegistrationRequestTo.getEmailId());
-            userDetailService.saveUserDetail(collegeUserDetail);
+            collegeUserDetail.setEmail(collegeRegistrationRequestTo.getEmailId());
+            collegeUserDetail.setMobileNumber(collegeRegistrationRequestTo.getPhoneNumber());
+            userDetailService.save(collegeUserDetail);
 
             Timestamp createdAt = collegeEntity.getCreatedAt();
             collegeEntity = collegeDtoMapper.collegeRegistartionDtoToEntity(collegeRegistrationRequestTo);

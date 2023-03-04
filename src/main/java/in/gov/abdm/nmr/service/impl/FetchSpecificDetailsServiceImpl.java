@@ -1,5 +1,25 @@
 package in.gov.abdm.nmr.service.impl;
 
+import static in.gov.abdm.nmr.util.NMRConstants.DEFAULT_SORT_ORDER;
+import static in.gov.abdm.nmr.util.NMRConstants.INVALID_APPLICATION_TYPE;
+import static in.gov.abdm.nmr.util.NMRConstants.INVALID_GROUP;
+import static in.gov.abdm.nmr.util.NMRConstants.INVALID_WORK_FLOW_STATUS;
+import static in.gov.abdm.nmr.util.NMRConstants.MAX_DATA_SIZE;
+
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
 import in.gov.abdm.nmr.dto.DashboardRequestParamsTO;
 import in.gov.abdm.nmr.dto.DashboardRequestTO;
 import in.gov.abdm.nmr.dto.DashboardResponseTO;
@@ -14,19 +34,14 @@ import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetails;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
-import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.repository.ICollegeDeanRepository;
+import in.gov.abdm.nmr.repository.ICollegeRegistrarRepository;
+import in.gov.abdm.nmr.repository.ICollegeRepository;
+import in.gov.abdm.nmr.repository.IFetchSpecificDetailsCustomRepository;
+import in.gov.abdm.nmr.repository.IFetchSpecificDetailsRepository;
+import in.gov.abdm.nmr.repository.ISmcProfileRepository;
 import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.math.BigInteger;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
-import static in.gov.abdm.nmr.util.NMRConstants.*;
+import in.gov.abdm.nmr.service.IUserDaoService;
 
 /**
  * A class that implements all the methods of the interface IFetchSpecificDetailsService
@@ -61,7 +76,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
      * Singleton principle
      */
     @Autowired
-    private IUserRepository iUserRepository;
+    private IUserDaoService userDaoService;
 
     /**
      * Injecting ISmcProfileRepository bean instead of an explicit object creation to achieve
@@ -172,7 +187,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                                                 String smcId, String name, String nmrId, String search, int pageNo, int size,
                                                 String sortBy, String sortOrder) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = iUserRepository.findByUsername(userName);
+        User userDetail = userDaoService.findByUsername(userName);
         BigInteger groupId = userDetail.getGroup().getId();
         BigInteger userId = userDetail.getId();
         DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
@@ -215,7 +230,8 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
     @Override
     public DashboardResponseTO fetchDashboardData(DashboardRequestTO dashboardRequestTO) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = iUserRepository.findByUsername(userName);
+        User userDetail = userDaoService.findByUsername(userName);
+
         BigInteger groupId = userDetail.getGroup().getId();
         BigInteger userId = userDetail.getId();
         String sortOrder = dashboardRequestTO.getSortOrder();

@@ -1,19 +1,12 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.enums.Group;
-import in.gov.abdm.nmr.enums.UserSubTypeEnum;
-import in.gov.abdm.nmr.enums.UserTypeEnum;
-import in.gov.abdm.nmr.repository.IUserRepository;
-import in.gov.abdm.nmr.repository.PasswordResetTokenRepository;
-import in.gov.abdm.nmr.security.common.RsaUtil;
-import in.gov.abdm.nmr.service.INotificationService;
-import in.gov.abdm.nmr.service.IPasswordService;
-import in.gov.abdm.nmr.service.IUserDaoService;
-import in.gov.abdm.nmr.util.NMRConstants;
-import lombok.SneakyThrows;
-import net.bytebuddy.utility.RandomString;
+import static in.gov.abdm.nmr.util.NMRConstants.FORBIDDEN;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
+import javax.persistence.EntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
@@ -22,12 +15,27 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import java.security.GeneralSecurityException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
-import static in.gov.abdm.nmr.util.NMRConstants.FORBIDDEN;
+import in.gov.abdm.nmr.dto.ChangePasswordRequestTo;
+import in.gov.abdm.nmr.dto.GetSetPasswordLinkTo;
+import in.gov.abdm.nmr.dto.ResetPasswordRequestTo;
+import in.gov.abdm.nmr.dto.ResponseMessageTo;
+import in.gov.abdm.nmr.dto.SetNewPasswordTo;
+import in.gov.abdm.nmr.entity.PasswordResetToken;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.entity.UserGroup;
+import in.gov.abdm.nmr.entity.UserSubType;
+import in.gov.abdm.nmr.entity.UserType;
+import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.enums.UserSubTypeEnum;
+import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.repository.PasswordResetTokenRepository;
+import in.gov.abdm.nmr.security.common.RsaUtil;
+import in.gov.abdm.nmr.service.INotificationService;
+import in.gov.abdm.nmr.service.IPasswordService;
+import in.gov.abdm.nmr.service.IUserDaoService;
+import in.gov.abdm.nmr.util.NMRConstants;
+import lombok.SneakyThrows;
+import net.bytebuddy.utility.RandomString;
 
 /**
  * Implementations of methods for resetting and changing password
@@ -35,9 +43,6 @@ import static in.gov.abdm.nmr.util.NMRConstants.FORBIDDEN;
 @Service
 @Transactional
 public class PasswordServiceImpl implements IPasswordService {
-
-    @Autowired
-    IUserRepository userRepository;
 
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -69,14 +74,14 @@ public class PasswordServiceImpl implements IPasswordService {
     @Override
     public ResponseMessageTo getResetPasswordLink(GetSetPasswordLinkTo setPasswordLinkTo) {
         try {
-            if (!userRepository.existsByUsername(setPasswordLinkTo.getUsername())) {
-                User userDetail = new User(null, setPasswordLinkTo.getUsername(), null, null, true, true, //
+            if (!userDaoService.existsByUsername(setPasswordLinkTo.getUsername())) {
+                User userDetail = new User(null, setPasswordLinkTo.getEmail(), setPasswordLinkTo.getMobile(), setPasswordLinkTo.getUsername(), null, null, null, true, true, //
                         entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null);
-                userDaoService.saveUserDetail(userDetail);
+                userDaoService.save(userDetail);
 
                 passwordResetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
 
-                if (userRepository.existsByUsername(setPasswordLinkTo.getUsername())) {
+                if (userDaoService.existsByUsername(setPasswordLinkTo.getUsername())) {
                     return passwordReset(setPasswordLinkTo);
                 } else {
                     return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND, null);
@@ -127,7 +132,7 @@ public class PasswordServiceImpl implements IPasswordService {
                 return new ResponseMessageTo(NMRConstants.LINK_EXPIRED, null);
             }
             user.setPassword(bCryptPasswordEncoder.encode(rsaUtil.decrypt(newPasswordTo.getPassword())));
-            userRepository.save(user);
+            userDaoService.save(user);
 
             return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE, null);
         } catch (Exception e) {
@@ -145,12 +150,12 @@ public class PasswordServiceImpl implements IPasswordService {
     @Override
     public ResponseMessageTo resetPassword(ResetPasswordRequestTo resetPasswordRequestTo) {
 
-        User user = userRepository.findByUsername(resetPasswordRequestTo.getUsername());
+        User user = userDaoService.findByUsername(resetPasswordRequestTo.getUsername());
 
         if (null != user) {
             user.setPassword(bCryptPasswordEncoder.encode(rsaUtil.decrypt(resetPasswordRequestTo.getPassword())));
             try {
-                userRepository.save(user);
+                userDaoService.save(user);
                 return new ResponseMessageTo(null,NMRConstants.SUCCESS_RESPONSE );
             } catch (Exception e) {
                 return new ResponseMessageTo(null,NMRConstants.PROBLEM_OCCURRED);
@@ -171,15 +176,16 @@ public class PasswordServiceImpl implements IPasswordService {
     @Override
     public ResponseMessageTo changePassword(ChangePasswordRequestTo changePasswordRequestTo) {
 
-        User user = userRepository.findById(changePasswordRequestTo.getUserId()).get();
+        User user = userDaoService.findById(changePasswordRequestTo.getUserId());
         if (user != null) {
             String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-            if (userName.equalsIgnoreCase(user.getUsername())) {
+            User loggedInUser = userDaoService.findByUsername(userName);
+            if (loggedInUser.getId().equals(user.getId())) {
 
                 if (bCryptPasswordEncoder.matches(rsaUtil.decrypt(changePasswordRequestTo.getOldPassword()), user.getPassword())) {
                     user.setPassword(bCryptPasswordEncoder.encode(rsaUtil.decrypt(changePasswordRequestTo.getNewPassword())));
                     try {
-                        userRepository.save(user);
+                        userDaoService.save(user);
                         return new ResponseMessageTo(null, NMRConstants.SUCCESS_RESPONSE);
                     } catch (Exception e) {
                         return new ResponseMessageTo(null, NMRConstants.PROBLEM_OCCURRED);

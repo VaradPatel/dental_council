@@ -48,6 +48,6 @@ public class OtpController {
 	@PostMapping(path = NMRConstants.VERIFY_OTP, produces = MediaType.APPLICATION_JSON_VALUE)
 	public OtpValidateResponseTo validateOtp(@Valid @RequestBody OtpValidateRequestTo otpValidateRequestTo)
 			throws OtpException, GeneralSecurityException {
-		return otpService.validateOtp(otpValidateRequestTo);
+		return otpService.validateOtp(otpValidateRequestTo, false);
 	}
 }

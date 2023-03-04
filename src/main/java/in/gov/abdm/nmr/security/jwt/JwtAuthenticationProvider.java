@@ -1,10 +1,7 @@
 package in.gov.abdm.nmr.security.jwt;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import in.gov.abdm.nmr.dto.UserSearchTO;
-import in.gov.abdm.nmr.service.IUserDaoService;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +14,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+
+import in.gov.abdm.nmr.service.IUserDaoService;
 
 @Component
 public class JwtAuthenticationProvider implements AuthenticationProvider {
@@ -48,10 +49,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             if (JwtTypeEnum.REFRESH_TOKEN.equals(jwtAuthtoken.getType())) {
                 DecodedJWT verifiedToken = jwtUtil.verifyToken(jwtAuthtoken.getCredentials(), JwtTypeEnum.REFRESH_TOKEN);
 
-                UserSearchTO userDetailSearchTO = new UserSearchTO();
-                userDetailSearchTO.setUsername(verifiedToken.getSubject());
-                String refreshTokenId = userDetailService.findRefreshTokenId(userDetailSearchTO);
-
+                String refreshTokenId = userDetailService.findByUsername(verifiedToken.getSubject()).getRefreshTokenId();
                 if (StringUtils.isBlank(verifiedToken.getId()) || StringUtils.isBlank(refreshTokenId) || !refreshTokenId.equals(verifiedToken.getId())) {
                     throw new AuthenticationServiceException("Unable to authenticate token");
                 }
