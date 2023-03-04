@@ -95,10 +95,10 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
                 "INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id " +
                 "INNER JOIN main.qualification_details as qd on qd.hp_profile_id = hp.id AND qd.request_id = hp.request_id " +
                 "where calculate.hp_profile_id IS NOT NULL and current_status = 1 ");
-
+/*
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getHpProfileId()) && !healthProfessionalApplicationRequestParamsTo.getHpProfileId().toString().isEmpty()) {
             sb.append("AND rd.hp_profile_id = ").append(healthProfessionalApplicationRequestParamsTo.getHpProfileId());
-        }
+        }*/
 
         String parameters = TRACK_APPLICATION_PARAMETERS.apply(healthProfessionalApplicationRequestParamsTo);
 
@@ -151,10 +151,10 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
                 "INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id " +
                 "INNER JOIN main.qualification_details as qd on qd.hp_profile_id = hp.id AND qd.request_id = hp.request_id " +
                 "where calculate.hp_profile_id IS NOT NULL and current_status = 1 ");
-
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getHpProfileId()) && !healthProfessionalApplicationRequestParamsTo.getHpProfileId().toString().isEmpty()) {
-            sb.append("AND rd.hp_profile_id = ").append(healthProfessionalApplicationRequestParamsTo.getHpProfileId());
-        }
+/*
+      if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getHpProfileId()) && !healthProfessionalApplicationRequestParamsTo.getHpProfileId().toString().isEmpty()) {
+          sb.append("AND rd.hp_profile_id = ").append(healthProfessionalApplicationRequestParamsTo.getHpProfileId());
+        }*/
 
         String parameters = TRACK_APPLICATION_PARAMETERS.apply(healthProfessionalApplicationRequestParamsTo);
 
