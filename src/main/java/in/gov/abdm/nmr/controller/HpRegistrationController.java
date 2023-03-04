@@ -110,9 +110,10 @@ public class HpRegistrationController {
     @PutMapping(path = "health-professional/{healthProfessionalId}/registration", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam(value = "certificate", required = false) MultipartFile certificate,
                                                                                       @RequestParam(value = "proof", required = false) MultipartFile proof,
-                                                                                      @RequestParam(value = "proofOfQualification") List<MultipartFile> proofOfQualifications,
+                                                                                      @RequestParam(value = "proofOfQualification", required = false) List<MultipartFile> proofOfQualifications,
                                                                                       @RequestPart("data") HpRegistrationUpdateRequestTO hpRegistrationUpdateRequest,
                                                                                       @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, WorkFlowException {
+
         return hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequest, certificate, proof, proofOfQualifications);
     }
 

@@ -29,13 +29,11 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
 import static in.gov.abdm.nmr.util.NMRConstants.NO_DATA_FOUND;
-import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
-import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetailsAndProofs;
+import static in.gov.abdm.nmr.util.NMRUtil.*;
 
 @Service
 public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
@@ -234,13 +232,16 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @Override
     public HpProfileUpdateResponseTO updateHpRegistrationDetails(BigInteger hpProfileId,
-                                                                 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof, List<MultipartFile> proofOfQualifications) {
+                                                                 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof, List<MultipartFile> proofOfQualifications) throws InvalidRequestException {
 
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
-            hpRegistrationUpdateRequestTO.getRegistrationDetail().setCertificate(certificate);
-            hpRegistrationUpdateRequestTO.getRegistrationDetail().setNameChangeProof(proof);
+            try {
+                hpRegistrationUpdateRequestTO.getRegistrationDetail().setCertificate(certificate != null ? certificate.getBytes() : null);
+                hpRegistrationUpdateRequestTO.getRegistrationDetail().setNameChangeProof(proof != null ? proof.getBytes() : null);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-
 
         RegistrationDetails registrationDetail = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId);
         HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
@@ -252,7 +253,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         } else {
             mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile);
         }
-        saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetail(), proofOfQualifications);
+        validateQualificationDetailsAndProofs(hpRegistrationUpdateRequestTO.getQualificationDetails(),proofOfQualifications);
+        saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), proofOfQualifications);
         HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByHpProfileId(hpProfileId);
         if (hpNbeDetails == null) {
             hpNbeDetails = new HpNbeDetails();
@@ -271,11 +273,17 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                                                               HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws InvalidRequestException {
         if(proofs != null){
             validateWorkProfileDetailsAndProofs(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails(), proofs);
-            hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().stream().forEach(currentWorkDetailsTO ->
-                    currentWorkDetailsTO.setProof(proofs.get(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().indexOf(currentWorkDetailsTO))));
+            hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().stream().forEach(currentWorkDetailsTO -> {
+                MultipartFile file = proofs.get(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().indexOf(currentWorkDetailsTO));
+                try {
+                    currentWorkDetailsTO.setProof(file != null ? file.getBytes() : null);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
         }
         List<WorkProfile> workProfile = workProfileRepository.getWorkProfileDetailsByHPId(hpProfileId);
-        if (workProfile.size() == 0) {
+        if (workProfile.isEmpty()) {
             workProfile = new ArrayList<>();
             mapWorkRequestToEntity(hpWorkProfileUpdateRequestTO, workProfile, hpProfileId);
         } else {
@@ -535,7 +543,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         hpProfile.setGender(hpPersonalUpdateRequestTO.getPersonalDetails().getGender());
         hpProfile.setDateOfBirth(hpPersonalUpdateRequestTO.getPersonalDetails().getDateOfBirth());
         hpProfile.setRequestId(hpPersonalUpdateRequestTO.getRequestId());
-        hpProfile.setRegistrationId(hpPersonalUpdateRequestTO.getImrDetails().getRegistrationNumber().toString());
+        hpProfile.setRegistrationId(hpPersonalUpdateRequestTO.getImrDetails().getRegistrationNumber());
         hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
 
         Schedule schedule = iScheduleRepository
@@ -578,8 +586,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             registrationDetail.setRenewableRegistrationDate(
                     hpRegistrationUpdateRequestTO.getRegistrationDetail().getRenewableRegistrationDate());
             registrationDetail.setIsNameChange(hpRegistrationUpdateRequestTO.getRegistrationDetail().getIsNameChange());
-            registrationDetail.setCertificate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getCertificate().getBytes());
-            registrationDetail.setNameChangeProofAttachment(hpRegistrationUpdateRequestTO.getRegistrationDetail().getNameChangeProof().getBytes());
+            registrationDetail.setCertificate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getCertificate());
+            registrationDetail.setNameChangeProofAttachment(hpRegistrationUpdateRequestTO.getRegistrationDetail().getNameChangeProof());
         }
         registrationDetail.setHpProfileId(hpProfile);
         registrationDetail.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
@@ -593,7 +601,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @SneakyThrows
     private void mapWorkRequestToEntity(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> addWorkProfiles, BigInteger hpProfileId) {
-        if (addWorkProfiles.size() > 0) {
+        if (!addWorkProfiles.isEmpty()) {
             updateWorkProfileRecords(hpWorkProfileUpdateRequestTO, addWorkProfiles, hpProfileId);
         } else {
             saveWorkProfileRecords(hpWorkProfileUpdateRequestTO, hpProfileId);
@@ -628,11 +636,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                     addWorkProfile.setDistrict(districtRepository.findById(currentWorkDetailsTO.getAddress().getDistrict().getId()).get());
                     addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
                 }
-                try {
-                    addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof() != null ? currentWorkDetailsTO.getProof().getBytes() : null);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());
                 workProfileDetailsList.add(addWorkProfile);
             });
         });
@@ -667,11 +671,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 addWorkProfile.setDistrict(districtRepository.findById(currentWorkDetailsTO.getAddress().getDistrict().getId()).get());
                 addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
             }
-            try {
-                addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof() != null ? currentWorkDetailsTO.getProof().getBytes() : null);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());
             workProfileDetailsList.add(addWorkProfile);
         });
         workProfileRepository.saveAll(workProfileDetailsList);

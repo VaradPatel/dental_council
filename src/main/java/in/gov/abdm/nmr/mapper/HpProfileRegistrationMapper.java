@@ -28,6 +28,8 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
             registrationDetailsTo.setRegistrationNumber(registrationDetails.getRegistrationNo());
             registrationDetailsTo.setStateMedicalCouncil(StateMedicalCouncilTO.builder().code(registrationDetails.getStateMedicalCouncil().getCode()).name(registrationDetails.getStateMedicalCouncil().getName()).build());
             registrationDetailsTo.setIsRenewable(registrationDetails.getIsRenewable());
+            registrationDetailsTo.setCertificate(registrationDetails.getCertificate());
+            registrationDetailsTo.setNameChangeProof(registrationDetails.getNameChangeProofAttachment());
         }
         if(nbeDetails != null) {
             nbeResponseTo.setResult(nbeDetails.getUserResult());

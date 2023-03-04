@@ -3,7 +3,6 @@ package in.gov.abdm.nmr.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigInteger;
 
@@ -17,6 +16,6 @@ public class CurrentWorkDetailsTO {
     private String workOrganization;
     private String url;
     private AddressTO address;
-    private MultipartFile proof;
+    private byte[] proof;
 
 }

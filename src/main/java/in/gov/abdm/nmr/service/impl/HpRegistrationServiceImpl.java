@@ -151,7 +151,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Override
     public HpProfileRegistrationResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
-                                                                           HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof, List<MultipartFile> proofOfQualifications) {
+                                                                           HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof, List<MultipartFile> proofOfQualifications) throws InvalidRequestException {
         HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(hpProfileId, hpRegistrationUpdateRequestTO, certificate, proof, proofOfQualifications);
         return getHealthProfessionalRegistrationDetail(hpProfileUpdateResponseTO.getHpProfileId());
     }
