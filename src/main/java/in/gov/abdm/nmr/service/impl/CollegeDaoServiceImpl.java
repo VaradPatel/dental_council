@@ -67,8 +67,9 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
                 throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
             }
 
-            User userDetail = new User(null, collegeRegistrationRequestTo.getEmailId(), collegeRegistrationRequestTo.getPinCode(), null, null, null, null, true, true, //
-                    entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserGroup.class, in.gov.abdm.nmr.enums.Group.COLLEGE_REGISTRAR.getId()), true, 0, null);
+            User userDetail = new User(null, collegeRegistrationRequestTo.getEmailId(), collegeRegistrationRequestTo.getPhoneNumber(), null, null, null, null, true, true, //
+                    entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), //
+                    entityManager.getReference(UserGroup.class, in.gov.abdm.nmr.enums.Group.COLLEGE_REGISTRAR.getId()), true, 0, null);
             userDetailService.save(userDetail);
 
             College collegeEntity = collegeDtoMapper.collegeRegistartionDtoToEntity(collegeRegistrationRequestTo);
