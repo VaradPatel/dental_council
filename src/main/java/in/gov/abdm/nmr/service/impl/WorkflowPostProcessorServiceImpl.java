@@ -136,8 +136,6 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         updateLanguagesKnownToMaster(transactionHpProfile.getId(), masterHpProfileDetails);
         updateNmrHprLinkageToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
         updateQualificationDetailsToMaster(transactionHpProfile.getId(), masterHpProfileDetails);
-        updateSuperSpecialityToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
-        updateWorkflowToMaster(transactionHpProfile.getId(), masterHpProfileDetails);
 
         try {
             updateElasticDB(iNextGroup, masterHpProfileDetails);
@@ -150,6 +148,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
         if (!ApplicationType.QUALIFICATION_ADDITION.getId().equals(requestTO.getApplicationTypeId())) {
             hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
+            hpProfile.setNmrId(generateNmrId());
         }
         List<QualificationDetails> qualificationDetails = qualificationDetailRepository.findByRequestId(requestTO.getRequestId());
         qualificationDetails.forEach(qualificationDetail -> qualificationDetail.setIsVerified(1));
@@ -215,7 +214,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
             for (int i = 0; i < qualificationDetailsMasters.size(); i++) {
                 if (!fetchedFromMasters.isEmpty() && fetchedFromMasters.get(i) != null) {
-                        qualificationDetailsMasters.get(i).setId(fetchedFromMasters.get(i).getId());
+                    qualificationDetailsMasters.get(i).setId(fetchedFromMasters.get(i).getId());
                 }
                 qualificationDetailsMasters.get(i).setHpProfileMaster(masterHpProfile);
             }
@@ -339,7 +338,8 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     }
 
     @Override
-    public void generateNmrId() {
-
+    public String generateNmrId() {
+        String nmrId = "";
+        return nmrId;
     }
 }

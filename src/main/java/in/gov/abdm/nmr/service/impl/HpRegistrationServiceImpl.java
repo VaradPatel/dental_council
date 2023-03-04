@@ -95,18 +95,18 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Autowired
     private BroadSpecialityRepository broadSpecialityRepository;
 
-	/**
-	 * This method fetches the SMC registration details for a given request.
-	 *
-	 * @param councilId
-	 * @param registrationNumber
-	 * @return SmcRegistrationDetailResponseTO A TO (Transfer Object) containing the SMC registration information that was fetched.
-	 */
-	@Override
-	public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) {
-		return iHpProfileMapper
-				.smcRegistrationToDto(hpProfileDaoService.fetchSmcRegistrationDetail(councilId, registrationNumber));
-	}
+    /**
+     * This method fetches the SMC registration details for a given request.
+     *
+     * @param councilId
+     * @param registrationNumber
+     * @return SmcRegistrationDetailResponseTO A TO (Transfer Object) containing the SMC registration information that was fetched.
+     */
+    @Override
+    public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) {
+        return iHpProfileMapper
+                .smcRegistrationToDto(hpProfileDaoService.fetchSmcRegistrationDetail(councilId, registrationNumber));
+    }
 
 
     @Override
@@ -136,7 +136,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             qualificationDetailRequestTO.setRequestId(requestId);
             iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
         }
-        hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs);
+        hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs);
         return "Success";
     }
 
@@ -191,8 +191,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
             registrationDetails.setRequestId(requestId);
 
-            List<WorkProfile> workProfileList =new ArrayList<>();
-            List<WorkProfile> workProfiles =workProfileRepository.getWorkProfileDetailsByHPId(hpSubmitRequestTO.getHpProfileId());
+            List<WorkProfile> workProfileList = new ArrayList<>();
+            List<WorkProfile> workProfiles = workProfileRepository.getWorkProfileDetailsByHPId(hpSubmitRequestTO.getHpProfileId());
             String finalRequestId = requestId;
             workProfiles.forEach(workProfile -> {
                 workProfile.setRequestId(finalRequestId);
