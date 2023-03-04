@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * The IHpRegistrationService interface defines the methods that must be implemented by a service
@@ -39,11 +40,11 @@ public interface IHpRegistrationService {
      * Adds qualifications to a HP profile.
      *
      * @param hpProfileId                   The ID of the HP profile to which the qualifications will be added.
-     * @param qualificationDetailRequestTOsString A list of qualification details to be added to the HP profile.
+     * @param qualificationDetailRequestTOs A list of qualification details to be added to the HP profile.
      * @return A string indicating the status of the operation.
      * @throws WorkFlowException If an error occurs during the qualification addition process.
      */
-    String addQualification(BigInteger hpProfileId, String qualificationDetailRequestTOsString) throws WorkFlowException;
+    String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws WorkFlowException, InvalidRequestException;
 
     /**
      * Adds or updates the personal details for a given HP profile.
@@ -60,24 +61,25 @@ public interface IHpRegistrationService {
     /**
      * Adds or updates the HP profile registration details.
      *
-     * @param hpProfileId The unique identifier of the HP profile.
+     * @param hpProfileId           The unique identifier of the HP profile.
+     * @param proofOfQualifications
      * @return The response object that contains the status of the operation.
      * @throws Exception If any error occurs during the operation.
      */
     HpProfileRegistrationResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
-                                                                    String hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof) throws NmrException;
+                                                                    HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof, List<MultipartFile> proofOfQualifications) throws InvalidRequestException, NmrException;
 
     /**
      * Adds or updates work profile details for a given health professional profile.
      *
      * @param hpProfileId                  The unique identifier of the health professional profile.
      * @param hpWorkProfileUpdateRequestTO A string representation of the update request object, containing the work profile information.
-     * @param proof                        A multipart file containing proof of work experience.
+     * @param proofs                        A multipart file containing proof of work experience.
      * @return An object containing the updated work profile details.
      * @throws Exception In case of any error during the update process.
      */
     HpProfileWorkDetailsResponseTO addOrUpdateWorkProfileDetail(BigInteger hpProfileId,
-                                                                String hpWorkProfileUpdateRequestTO, MultipartFile proof) throws NmrException;
+                                                                HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws NmrException, InvalidRequestException;
 
     /**
      * Submit the HP profile using the provided request data.

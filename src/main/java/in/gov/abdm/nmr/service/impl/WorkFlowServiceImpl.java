@@ -106,7 +106,6 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             }
             if (isLastStepOfWorkFlow(iNextGroup)) {
                 workflowPostProcessorService.performPostWorkflowUpdates(requestTO,hpProfile,iNextGroup);
-
             }
             iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
             notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());

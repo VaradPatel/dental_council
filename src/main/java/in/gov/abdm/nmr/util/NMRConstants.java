@@ -411,4 +411,28 @@ public class NMRConstants {
     public static final String ACCESS_FORBIDDEN = "Access Forbidden.";
 
     public static final String COMMA_SEPARATOR = ",";
+
+    public static final String QUALIFICATION_DETAILS_NULL_ERROR = "The field 'qualificationDetailRequestTOs' is mandatory. ";
+
+    public static final String QUALIFICATION_DETAILS_EMPTY_ERROR = "Please provide at-least one qualification to be added. ";
+
+    public static final String PROOFS_NULL_ERROR = "The field 'proofs' is mandatory. ";
+
+    public static final String PROOFS_EMPTY_ERROR = "Please provide at-least one proof document. ";
+
+    public static final String MISSING_PROOFS_ERROR="Please provide proofs for all the qualification details provided. ";
+
+    public static final String EXCESS_PROOFS_ERROR="Please remove excess proofs to sync with the qualification details provided. ";
+
+    public static final String QUALIFICATION_DETAILS_LIMIT_EXCEEDED="Please provide less than or equal to 6 qualifications at a time.";
+
+    public static final String WORK_PROFILE_DETAILS_NULL_ERROR = "The field 'currentWorkDetails' is mandatory. ";
+
+    public static final String WORK_PROFILE_DETAILS_EMPTY_ERROR = "Please provide at-least one work profile detail to be added. ";
+
+    public static final String MISSING_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR="Please provide proofs for all the work profile details provided. ";
+
+    public static final String EXCESS_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR="Please remove excess proofs to sync with the work profile details provided. ";
+
+    public static final String WORK_PROFILE_DETAILS_LIMIT_EXCEEDED="Please provide less than or equal to 6 work profiles at a time.";
 }
