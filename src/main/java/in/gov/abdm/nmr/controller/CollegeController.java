@@ -71,7 +71,12 @@ public class CollegeController {
     }
 
     @GetMapping(path = NMRConstants.PATH_COLLEGE_REGISTRATION)
-    public CollegeRegistrationResponseTO getCollegeRegistrationDetails(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo, @RequestParam(required = false, value = "limit", defaultValue = "2") String limit, @RequestParam(required = false, value = "search") String search, @RequestParam(required = false, value = "id") String collegeId, @RequestParam(required = false, value = "name") String collegeName, @RequestParam(required = false, value = "council") String councilName, @RequestParam(required = false, value = "sort") String columnToSort, @RequestParam(required = false, value = "sortingOrder") String sortOrder) {
-        return collegeService.getCollegeRegistrationDetails(pageNo, limit, search, collegeId, collegeName, councilName, columnToSort, sortOrder);
+    public CollegeRegistrationResponseTO getCollegeRegistrationDetails(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
+                                                                       @RequestParam(required = false, value = "limit", defaultValue = "2") String limit,
+                                                                       @RequestParam(required = false, value = "filterCriteria") String filterCriteria,
+                                                                       @RequestParam(required = false, value = "filterValue") String filterValue,
+                                                                       @RequestParam(required = false, value = "sort") String columnToSort,
+                                                                       @RequestParam(required = false, value = "sortingOrder") String sortOrder) {
+        return collegeService.getCollegeRegistrationDetails(pageNo, limit, filterCriteria, filterValue, columnToSort, sortOrder);
     }
 }

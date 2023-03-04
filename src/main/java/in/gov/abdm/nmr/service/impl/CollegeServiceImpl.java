@@ -23,6 +23,8 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
+import static in.gov.abdm.nmr.util.NMRConstants.*;
+
 @Service
 @Slf4j
 public class CollegeServiceImpl implements ICollegeService {
@@ -111,15 +113,20 @@ public class CollegeServiceImpl implements ICollegeService {
     }
 
     @Override
-    public CollegeRegistrationResponseTO getCollegeRegistrationDetails(String pageNo, String limit, String search, String collegeId, String collegeName, String councilName, String columnToSort, String sortOrder) {
+    public CollegeRegistrationResponseTO getCollegeRegistrationDetails(String pageNo, String limit, String filterCriteria, String filterValue, String columnToSort, String sortOrder) {
         CollegeRegistrationResponseTO collegeRegistrationResponseTO = null;
         CollegeRegistrationRequestParamsTO collegeRegistrationRequestParams = new CollegeRegistrationRequestParamsTO();
         collegeRegistrationRequestParams.setLimit(Integer.valueOf(limit));
         collegeRegistrationRequestParams.setPageNo(Integer.valueOf(pageNo));
-        collegeRegistrationRequestParams.setCollegeId(collegeId);
-        collegeRegistrationRequestParams.setCollegeName(collegeName);
-        collegeRegistrationRequestParams.setCouncilName(councilName);
-        collegeRegistrationRequestParams.setSearch(search);
+        switch (filterCriteria.toLowerCase()){
+            case COLLEGE_ID_IN_LOWER_CASE: collegeRegistrationRequestParams.setCollegeId(filterValue);
+            break;
+            case COLLEGE_NAME_IN_LOWER_CASE: collegeRegistrationRequestParams.setCollegeName(filterValue);
+            break;
+            case COUNCIL_NAME_IN_LOWER_CASE: collegeRegistrationRequestParams.setCouncilName(filterValue);
+            break;
+            case SEARCH_IN_LOWER_CASE: collegeRegistrationRequestParams.setSearch(filterValue);
+        }
         String column = getColumnToSort(columnToSort);
         collegeRegistrationRequestParams.setColumnToSort(column);
         final String sortingOrder = sortOrder == null ? defaultSortOrder : sortOrder;

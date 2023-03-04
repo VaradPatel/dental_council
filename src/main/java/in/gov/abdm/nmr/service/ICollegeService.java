@@ -19,5 +19,5 @@ public interface ICollegeService {
 
     CollegeDeanProfileTo retrieveDeanProfile(BigInteger id) throws NmrException;
 
-    CollegeRegistrationResponseTO getCollegeRegistrationDetails(String pageNo, String limit, String search, String collegeId, String collegeName, String councilName, String columnToSort, String sortOrder);
+    CollegeRegistrationResponseTO getCollegeRegistrationDetails(String pageNo, String limit, String filterCriteria, String filterValue, String columnToSort, String sortOrder);
 }
