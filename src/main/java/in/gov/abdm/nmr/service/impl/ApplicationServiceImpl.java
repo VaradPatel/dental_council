@@ -4,6 +4,7 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.repository.*;
@@ -153,14 +154,14 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
     @Override
-    public String reactiveRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException,NmrException {
-        HpProfile hpProfile=hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
-        if(hpProfile.getHpProfileStatus().getId()==(BigInteger.valueOf(5))){
+    public String reactiveRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
+        HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
+        if ((HpProfileStatus.SUSPENDED.getId()) == hpProfile.getHpProfileStatus().getId()) {
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
             HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
             initiateWorkFlow(applicationRequestTo, requestId, newHpProfile);
             return newHpProfile.getId().toString();
-        }else{
+        } else {
             throw new NmrException("Suspended profile can only be reactivated", HttpStatus.FORBIDDEN);
         }
     }
@@ -250,7 +251,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         newRegistrationDetails.setHpProfileId(targetedHpProfile);
         iRegistrationDetailRepository.save(newRegistrationDetails);
 
-        List<WorkProfile> workProfileList =new ArrayList<>();
+        List<WorkProfile> workProfileList = new ArrayList<>();
         List<WorkProfile> workProfiles = workProfileRepository.getWorkProfileDetailsByHPId(existingHpProfile.getId());
         workProfiles.forEach(workProfile -> {
             WorkProfile newWorkProfile = new WorkProfile();
@@ -324,12 +325,12 @@ public class ApplicationServiceImpl implements IApplicationService {
      */
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo) {
-        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo =setHPRequestParamInToObject( pageNo,  offset,  sortBy,  sortType,  workFlowStatusId,  applicationTypeId,  smcId,  registrationNo, null);
+        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, workFlowStatusId, applicationTypeId, smcId, registrationNo, null);
         Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getSize());
         return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable);
     }
 
-    private HealthProfessionalApplicationRequestParamsTo setHPRequestParamInToObject(String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo,BigInteger hpProfileId){
+    private HealthProfessionalApplicationRequestParamsTo setHPRequestParamInToObject(String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo, BigInteger hpProfileId) {
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = new HealthProfessionalApplicationRequestParamsTo();
         applicationRequestParamsTo.setSmcId(smcId);
         applicationRequestParamsTo.setRegistrationNo(registrationNo);
@@ -364,7 +365,9 @@ public class ApplicationServiceImpl implements IApplicationService {
      */
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo) {
-        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo =setHPRequestParamInToObject( pageNo,  offset,  sortBy,  sortType,  workFlowStatusId,  applicationTypeId,  smcId,  registrationNo, healthProfessionalId);
+        RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(healthProfessionalId);
+        List<HpProfile> hpProfiles = iHpProfileRepository.findByRegistrationId(new BigInteger(registrationDetails.getRegistrationNo()));
+        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, workFlowStatusId, applicationTypeId, smcId, registrationNo, healthProfessionalId);
         Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getSize());
         return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable);
     }

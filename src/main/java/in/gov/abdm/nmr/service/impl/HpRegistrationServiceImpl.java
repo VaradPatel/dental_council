@@ -124,7 +124,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
      */
     @Override
     public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws WorkFlowException, InvalidRequestException {
-        validateQualificationDetailsAndProofs(qualificationDetailRequestTOs,proofs);
+        validateQualificationDetailsAndProofs(qualificationDetailRequestTOs, proofs);
         for (QualificationDetailRequestTO qualificationDetailRequestTO : qualificationDetailRequestTOs) {
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.QUALIFICATION_ADDITION.getId()));
             WorkFlowRequestTO workFlowRequestTO = new WorkFlowRequestTO();
@@ -136,10 +136,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             qualificationDetailRequestTO.setRequestId(requestId);
             iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
         }
-        hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs);
+        hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs);
         return "Success";
     }
-
 
 
     @Override
