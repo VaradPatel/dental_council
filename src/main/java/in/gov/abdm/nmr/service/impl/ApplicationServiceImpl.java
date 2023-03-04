@@ -4,6 +4,7 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.IApplicationService;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -151,11 +153,16 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
     @Override
-    public String reactiveRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
-        String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
-        HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
-        initiateWorkFlow(applicationRequestTo, requestId, newHpProfile);
-        return newHpProfile.getId().toString();
+    public String reactiveRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException,NmrException {
+        HpProfile hpProfile=hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
+        if(hpProfile.getHpProfileStatus().getId()==(BigInteger.valueOf(5))){
+            String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
+            HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
+            initiateWorkFlow(applicationRequestTo, requestId, newHpProfile);
+            return newHpProfile.getId().toString();
+        }else{
+            throw new NmrException("Suspended profile can only be reactivated", HttpStatus.FORBIDDEN);
+        }
     }
 
     /**
@@ -317,6 +324,12 @@ public class ApplicationServiceImpl implements IApplicationService {
      */
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo) {
+        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo =setHPRequestParamInToObject( pageNo,  offset,  sortBy,  sortType,  workFlowStatusId,  applicationTypeId,  smcId,  registrationNo, null);
+        Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getSize());
+        return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable);
+    }
+
+    private HealthProfessionalApplicationRequestParamsTo setHPRequestParamInToObject(String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo,BigInteger hpProfileId){
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = new HealthProfessionalApplicationRequestParamsTo();
         applicationRequestParamsTo.setSmcId(smcId);
         applicationRequestParamsTo.setRegistrationNo(registrationNo);
@@ -329,8 +342,8 @@ public class ApplicationServiceImpl implements IApplicationService {
         final String sortingOrder = sortType == null ? DEFAULT_SORT_ORDER : sortType;
         applicationRequestParamsTo.setSortBy(column);
         applicationRequestParamsTo.setSortOrder(sortingOrder);
-        Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), dataLimit);
-        return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable);
+        applicationRequestParamsTo.setHpProfileId(hpProfileId);
+        return applicationRequestParamsTo;
     }
 
     /**
@@ -351,9 +364,9 @@ public class ApplicationServiceImpl implements IApplicationService {
      */
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo) {
-        HpProfile hpProfile = hpProfileRepository.findHpProfileById(healthProfessionalId);
-        String registrationId = String.valueOf(hpProfile.getRegistrationId());
-        return fetchApplicationDetails(pageNo, offset, sortBy, sortType, workFlowStatusId, applicationTypeId, smcId, registrationId);
+        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo =setHPRequestParamInToObject( pageNo,  offset,  sortBy,  sortType,  workFlowStatusId,  applicationTypeId,  smcId,  registrationNo, healthProfessionalId);
+        Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getSize());
+        return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable);
     }
 
     /**

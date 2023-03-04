@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IApplicationService;
@@ -55,7 +56,7 @@ public class ApplicationController {
      *                           to perform the reactivate request and return the result of the process.
      */
     @PostMapping(ProtectedPaths.REACTIVATE_REQUEST_URL)
-    public String reactivateHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
+    public String reactivateHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
         return applicationService.reactiveRequest(applicationRequestTo);
     }
 

@@ -30,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -248,8 +249,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
 
         if (registrationDetail == null) {
-            registrationDetail = new RegistrationDetails();
             if (hpRegistrationUpdateRequestTO.getQualificationDetails().size() == 1) {
+                registrationDetail = new RegistrationDetails();
                 mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile);
                 registrationDetailRepository.save(registrationDetail);
             } else {
@@ -288,7 +289,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             });
         }
         List<WorkProfile> workProfile = workProfileRepository.getWorkProfileDetailsByHPId(hpProfileId);
-        if (workProfile.isEmpty()) {
+        if (workProfile.size() == 0) {
             workProfile = new ArrayList<>();
             mapWorkRequestToEntity(hpWorkProfileUpdateRequestTO, workProfile, hpProfileId);
         } else {
@@ -548,7 +549,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         hpProfile.setGender(hpPersonalUpdateRequestTO.getPersonalDetails().getGender());
         hpProfile.setDateOfBirth(hpPersonalUpdateRequestTO.getPersonalDetails().getDateOfBirth());
         hpProfile.setRequestId(hpPersonalUpdateRequestTO.getRequestId());
-        hpProfile.setRegistrationId(hpPersonalUpdateRequestTO.getImrDetails().getRegistrationNumber());
         hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
 
         Schedule schedule = iScheduleRepository
@@ -559,10 +559,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 .findById(hpPersonalUpdateRequestTO.getPersonalDetails().getCountryNationality().getId())
                 .orElse(null);
         hpProfile.setCountryNationality(countryNationality);
-
-        hpProfile.setNmrId(hpPersonalUpdateRequestTO.getImrDetails().getNmrId());
-        hpProfile.setYearOfInfo(hpPersonalUpdateRequestTO.getImrDetails().getYearOfInfo());
-
         hpProfile.setFullName(hpPersonalUpdateRequestTO.getCommunicationAddress().getFullName());
     }
 
@@ -698,5 +694,15 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         return objectMapper.readValue(hpRegistrationUpdateRequestString, HpRegistrationUpdateRequestTO.class);
     }
 
+    @SneakyThrows
+    HpWorkProfileUpdateRequestTO getUpdateWorkProfileDetailsTo(String getUpdateWorkProfileDetailsString) {
+        return objectMapper.readValue(getUpdateWorkProfileDetailsString, HpWorkProfileUpdateRequestTO.class);
+    }
+
+
+    @SneakyThrows
+    public List<QualificationDetailRequestTO> getQualificationDetailRequestTO(String qualificationDetailRequestTOString) {
+        return Arrays.asList(objectMapper.readValue(qualificationDetailRequestTOString, QualificationDetailRequestTO[].class));
+    }
 
 }
