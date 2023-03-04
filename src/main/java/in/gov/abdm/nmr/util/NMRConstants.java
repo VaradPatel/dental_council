@@ -273,5 +273,11 @@ public class NMRConstants {
 
     public static final String SEARCH_IN_LOWER_CASE = "search";
 
+    public static final String NAME_IN_LOWER_CASE = "name";
+
+    public static final String NMR_ID_IN_LOWER_CASE = "nmrid";
+
+    public static final String SMC_ID_IN_LOWER_CASE = "smcid";
+
 
 }

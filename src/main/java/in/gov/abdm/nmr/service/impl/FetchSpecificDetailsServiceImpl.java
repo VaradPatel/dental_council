@@ -138,9 +138,19 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
         dashboardRequestParamsTO.setWorkFlowStatusId(dashboardRequestTO.getWorkFlowStatusId());
         dashboardRequestParamsTO.setApplicationTypeId(dashboardRequestTO.getApplicationTypeId());
-        dashboardRequestParamsTO.setName(dashboardRequestTO.getName());
-        dashboardRequestParamsTO.setNmrId(dashboardRequestTO.getNmrId());
-        dashboardRequestParamsTO.setSearch(dashboardRequestTO.getSearch());
+
+        switch (dashboardRequestTO.getFilterCriteria().toLowerCase()){
+            case COLLEGE_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setCollegeId(dashboardRequestTO.getFilterValue());
+                break;
+            case NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setName(dashboardRequestTO.getFilterValue());
+                break;
+            case NMR_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setNmrId(dashboardRequestTO.getFilterValue());
+                break;
+            case SMC_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setSmcId(dashboardRequestTO.getFilterValue());
+                break;
+            case SEARCH_IN_LOWER_CASE: dashboardRequestParamsTO.setSearch(dashboardRequestTO.getFilterValue());
+        }
+
         dashboardRequestParamsTO.setPageNo(pageNo);
         dashboardRequestParamsTO.setSize(size);
         dashboardRequestParamsTO.setSortBy(column);
