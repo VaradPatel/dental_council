@@ -61,35 +61,35 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
      * Singleton principle
      */
     @Autowired
-    private IUserRepository userDetailRepository;
+    private IUserRepository iUserRepository;
 
     /**
      * Injecting ISmcProfileRepository bean instead of an explicit object creation to achieve
      * Singleton principle
      */
     @Autowired
-    private ISmcProfileRepository smcProfileRepository;
+    private ISmcProfileRepository iSmcProfileRepository;
 
     /**
      * Injecting ICollegeDeanRepository bean instead of an explicit object creation to achieve
      * Singleton principle
      */
     @Autowired
-    private ICollegeDeanRepository collegeDeanRepository;
+    private ICollegeDeanRepository iCollegeDeanRepository;
 
     /**
      * Injecting ICollegeRegistrarRepository bean instead of an explicit object creation to achieve
      * Singleton principle
      */
     @Autowired
-    private ICollegeRegistrarRepository collegeRegistrarRepository;
+    private ICollegeRegistrarRepository iCollegeRegistrarRepository;
 
     /**
      * Injecting ICollegeRepository bean instead of an explicit object creation to achieve
      * Singleton principle
      */
     @Autowired
-    private ICollegeRepository collegeRepository;
+    private ICollegeRepository iCollegeRepository;
 
     @Override
     public List<FetchSpecificDetailsResponseTO> fetchSpecificDetails(String groupName, String applicationType, String workFlowStatus) throws InvalidRequestException {
@@ -153,26 +153,26 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
     /**
      * Fetches card details for a given set of parameters.
      *
-     * @param workFlowStatusId the workflow status ID
+     * @param workFlowStatusId  the workflow status ID
      * @param applicationTypeId the application type ID
-     * @param userGroupStatus the user group status
-     * @param smcId the SMC ID
-     * @param name the name
-     * @param nmrId the NMR ID
-     * @param search the search parameter
-     * @param pageNo the page number
-     * @param size the size of the page
-     * @param sortBy the sort parameter
-     * @param sortOrder the sort order
+     * @param userGroupStatus   the user group status
+     * @param smcId             the SMC ID
+     * @param name              the name
+     * @param nmrId             the NMR ID
+     * @param search            the search parameter
+     * @param pageNo            the page number
+     * @param size              the size of the page
+     * @param sortBy            the sort parameter
+     * @param sortOrder         the sort order
      * @return the DashboardResponseTO containing the card details
      * @throws InvalidRequestException if the request is invalid
      */
     @Override
     public DashboardResponseTO fetchCardDetails(String workFlowStatusId, String applicationTypeId, String userGroupStatus,
-                                                   String smcId, String name, String nmrId, String search, int pageNo, int size,
-                                                   String sortBy, String sortOrder) throws InvalidRequestException {
+                                                String smcId, String name, String nmrId, String search, int pageNo, int size,
+                                                String sortBy, String sortOrder) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userDetailRepository.findByUsername(userName);
+        User userDetail = iUserRepository.findByUsername(userName);
         BigInteger groupId = userDetail.getGroup().getId();
         BigInteger userId = userDetail.getId();
         DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
@@ -181,16 +181,18 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         dashboardRequestParamsTO.setName(name);
         dashboardRequestParamsTO.setNmrId(nmrId);
         dashboardRequestParamsTO.setSearch(search);
+        String column = mapColumnToTable(sortBy);
+        dashboardRequestParamsTO.setSortBy(column);
         dashboardRequestParamsTO.setUserGroupId(groupId);
         dashboardRequestParamsTO.setUserGroupStatus(userGroupStatus);
         if (groupId.equals(Group.SMC.getId())) {
-            dashboardRequestParamsTO.setCouncilId(smcProfileRepository.findByUserId(userId).getStateMedicalCouncil().getId().toString());
+            dashboardRequestParamsTO.setCouncilId(iSmcProfileRepository.findByUserId(userId).getStateMedicalCouncil().getId().toString());
         } else if (groupId.equals(Group.COLLEGE_DEAN.getId())) {
-            dashboardRequestParamsTO.setCollegeId(collegeDeanRepository.findByUserId(userId).getCollege().getId().toString());
+            dashboardRequestParamsTO.setCollegeId(iCollegeDeanRepository.findByUserId(userId).getCollege().getId().toString());
         } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
-            dashboardRequestParamsTO.setCollegeId(collegeRegistrarRepository.findByUserId(userId).getCollege().getId().toString());
+            dashboardRequestParamsTO.setCollegeId(iCollegeRegistrarRepository.findByUserId(userId).getCollege().getId().toString());
         } else if (groupId.equals(Group.COLLEGE_ADMIN.getId())) {
-            dashboardRequestParamsTO.setCollegeId(collegeRepository.findByUserId(userId).getId().toString());
+            dashboardRequestParamsTO.setCollegeId(iCollegeRepository.findByUserId(userId).getId().toString());
         }
         if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
                 || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
@@ -213,7 +215,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
     @Override
     public DashboardResponseTO fetchDashboardData(DashboardRequestTO dashboardRequestTO) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userDetailRepository.findByUsername(userName);
+        User userDetail = iUserRepository.findByUsername(userName);
         BigInteger groupId = userDetail.getGroup().getId();
         BigInteger userId = userDetail.getId();
         String sortOrder = dashboardRequestTO.getSortOrder();
@@ -227,13 +229,13 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         dashboardRequestParamsTO.setUserGroupId(groupId);
         dashboardRequestParamsTO.setUserGroupStatus(dashboardRequestTO.getUserGroupStatus());
         if (groupId.equals(Group.SMC.getId())) {
-            SMCProfile smcProfile = smcProfileRepository.findByUserId(userId);
+            SMCProfile smcProfile = iSmcProfileRepository.findByUserId(userId);
             dashboardRequestParamsTO.setCouncilId(smcProfile.getStateMedicalCouncil().getId().toString());
         } else if (groupId.equals(Group.COLLEGE_DEAN.getId())) {
-            CollegeDean collegeDean = collegeDeanRepository.findByUserId(userId);
+            CollegeDean collegeDean = iCollegeDeanRepository.findByUserId(userId);
             dashboardRequestParamsTO.setCollegeId(collegeDean.getCollege().getId().toString());
         } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
-            CollegeRegistrar collegeRegistrar = collegeRegistrarRepository.findByUserId(userId);
+            CollegeRegistrar collegeRegistrar = iCollegeRegistrarRepository.findByUserId(userId);
             dashboardRequestParamsTO.setCollegeId(collegeRegistrar.getCollege().getId().toString());
         }
         if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
