@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface RegistrationRenewationTypeDtoMapper {
 
-    List<RegistrationRenewationTypeTO> RegistrationRenewationTypeDataToDto(List<RegistrationRenewationType> registrationRenewationType);
+    List<RegistrationRenewationTypeTO> registrationRenewationTypeDataToDto(List<RegistrationRenewationType> registrationRenewationType);
 
 
 }

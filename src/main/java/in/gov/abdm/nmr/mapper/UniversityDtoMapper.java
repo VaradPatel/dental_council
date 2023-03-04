@@ -10,5 +10,5 @@ import java.util.List;
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface UniversityDtoMapper {
 
-    List<UniversityTO> UniversityDataToDto(List<University> universities);
+    List<UniversityTO> universityDataToDto(List<University> universities);
 }

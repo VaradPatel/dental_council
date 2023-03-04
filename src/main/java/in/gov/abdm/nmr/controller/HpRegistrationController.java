@@ -111,7 +111,7 @@ public class HpRegistrationController {
     public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam(value = "certificate", required = false) MultipartFile certificate,
                                                                                       @RequestParam(value = "proof", required = false) MultipartFile proof,
                                                                                       @RequestPart("data") String hpRegistrationUpdateRequestString,
-                                                                                      @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, WorkFlowException {
+                                                                                      @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, WorkFlowException,NmrException {
         return hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequestString, certificate, proof);
     }
 
@@ -166,7 +166,7 @@ public class HpRegistrationController {
      * Adds qualifications to a healthcare provider's profile.
      *
      * @param hpProfileId                   the id of the healthcare provider's profile
-     * @param qualificationDetailRequestTOs the list of qualifications to be added
+     * @param qualificationDetailRequestTOsString the list of qualifications to be added
      * @return a string indicating the result of the operation
      * @throws WorkFlowException if there is an error during the operation
      */

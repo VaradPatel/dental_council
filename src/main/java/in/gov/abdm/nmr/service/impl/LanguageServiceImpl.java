@@ -24,7 +24,7 @@ public class LanguageServiceImpl implements ILanguageService {
 
     @Override
     public List<LanguageTO> getLanguageData() {
-        return languageDtoMapper.LanguageDataToDto(languageRepository.getLanguage());
+        return languageDtoMapper.languageDataToDto(languageRepository.getLanguage());
 
     }
 }
