@@ -6,6 +6,7 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.NoDataFoundException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.IHpProfileMapper;
@@ -16,7 +17,7 @@ import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -166,7 +167,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             newRegistrationDetails.setHpProfileId(targetedHpProfile);
             iRegistrationDetailRepository.save(newRegistrationDetails);
 
-            List<WorkProfile> workProfileList =new ArrayList<>();
+            List<WorkProfile> workProfileList = new ArrayList<>();
             List<WorkProfile> workProfiles = workProfileRepository.getWorkProfileDetailsByHPId(copiedExistingHpProfile.getId());
             HpProfile finalTargetedHpProfile = targetedHpProfile;
             workProfiles.forEach(workProfile -> {
@@ -232,7 +233,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @Override
     public HpProfileUpdateResponseTO updateHpRegistrationDetails(BigInteger hpProfileId,
-                                                                 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof, List<MultipartFile> proofOfQualifications) throws InvalidRequestException {
+                                                                 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof, List<MultipartFile> proofOfQualifications) throws NmrException,InvalidRequestException {
 
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
             try {
@@ -248,8 +249,12 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         if (registrationDetail == null) {
             registrationDetail = new RegistrationDetails();
-            mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile);
-            registrationDetailRepository.save(registrationDetail);
+            if (hpRegistrationUpdateRequestTO.getQualificationDetails().size() == 1) {
+                mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile);
+                registrationDetailRepository.save(registrationDetail);
+            } else {
+                throw new NmrException("Highest Qualification can only be added while registering", HttpStatus.FORBIDDEN);
+            }
         } else {
             mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile);
         }
@@ -316,8 +321,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @Override
     public HpProfile findLatestEntryByUserid(BigInteger userId) {
-        List<HpProfile> latestEntryList = iHpProfileRepository.findLatestEntryByUserid(userId, PageRequest.of(0, 1));
-        return latestEntryList.size() == 1 ? latestEntryList.get(0) : null;
+        return iHpProfileRepository.findLatestEntryByUserid(userId);
+
     }
 
     @Override
@@ -555,8 +560,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 .orElse(null);
         hpProfile.setCountryNationality(countryNationality);
 
-        hpProfile.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
-        hpProfile.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         hpProfile.setNmrId(hpPersonalUpdateRequestTO.getImrDetails().getNmrId());
         hpProfile.setYearOfInfo(hpPersonalUpdateRequestTO.getImrDetails().getYearOfInfo());
 

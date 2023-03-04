@@ -112,7 +112,7 @@ public class HpRegistrationController {
                                                                                       @RequestParam(value = "proof", required = false) MultipartFile proof,
                                                                                       @RequestParam(value = "proofOfQualification", required = false) List<MultipartFile> proofOfQualifications,
                                                                                       @RequestPart("data") HpRegistrationUpdateRequestTO hpRegistrationUpdateRequest,
-                                                                                      @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, WorkFlowException {
+                                                                                      @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, WorkFlowException, NmrException {
 
         return hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequest, certificate, proof, proofOfQualifications);
     }

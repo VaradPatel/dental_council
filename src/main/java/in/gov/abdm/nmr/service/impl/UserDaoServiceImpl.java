@@ -187,8 +187,9 @@ public class UserDaoServiceImpl implements IUserDaoService {
         smcProfile.setNdhmEnrollment(smcProfileTO.getNdhmEnrollment());
         smcProfile.setMobileNo(smcProfileTO.getMobileNo());
         smcProfile.setEmailId(smcProfileTO.getEmailId());
-        StateMedicalCouncil stateMedicalCouncil = new StateMedicalCouncil();
+        StateMedicalCouncil stateMedicalCouncil = smcProfile.getStateMedicalCouncil();
         stateMedicalCouncil.setId(smcProfileTO.getStateMedicalCouncil().getId());
+        stateMedicalCouncil.setName(smcProfileTO.getStateMedicalCouncil().getName());
         smcProfile.setStateMedicalCouncil(stateMedicalCouncil);
         return smcProfileRepository.save(smcProfile);
     }

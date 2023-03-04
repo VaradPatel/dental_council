@@ -18,7 +18,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "hpProfile")
-public class HpProfile {
+public class HpProfile extends CommonAuditEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,6 @@ public class HpProfile {
 	private String aadhaarToken;
 	private String categoryName;
 	private String changedName;
-	private Timestamp createdAt;
 	private String createdBy;
 	private Date dateOfBirth;
 	private String emailId;
@@ -59,7 +58,6 @@ public class HpProfile {
 	private String signature;
 	private String spouseName;
 	private String systemOfMedicine;
-	private Timestamp updatedAt;
 	private String updatedBy;
 	private String workExperienceInYear;
 	private String yearOfInfo;
