@@ -24,6 +24,6 @@ public class CountryServiceImpl implements ICountryService {
 
     @Override
     public List<CountryTO> getCountryData() {
-        return countryDtoMapper.CountryDataToDto(countryRepository.getCountry());
+        return countryDtoMapper.countryDataToDto(countryRepository.getCountry());
     }
 }

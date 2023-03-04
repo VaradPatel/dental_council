@@ -12,15 +12,15 @@ import java.util.List;
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface IHpProfileMapper {
 
-	SmcRegistrationDetailResponseTO SmcRegistrationToDto(HpSmcDetailTO hpSmcDetailTO);
+	SmcRegistrationDetailResponseTO smcRegistrationToDto(HpSmcDetailTO hpSmcDetailTO);
 
-	HpProfileDetailResponseTO HpProfileDetailToDto(HpProfileDetailTO hpProfileDetailTO);
+	HpProfileDetailResponseTO hpProfileDetailToDto(HpProfileDetailTO hpProfileDetailTO);
 
-	HpProfileUpdateResponseTO HpProfileUpdateToDto(HpProfileUpdateResponseTO hpProfileUpdateResponseTO);
+	HpProfileUpdateResponseTO hpProfileUpdateToDto(HpProfileUpdateResponseTO hpProfileUpdateResponseTO);
 
-	HpProfileAddResponseTO HpProfileAddToDto(HpProfileAddResponseTO hpProfileAddResponseTO);
+	HpProfileAddResponseTO hpProfileAddToDto(HpProfileAddResponseTO hpProfileAddResponseTO);
 
-	HpProfilePictureResponseTO HpProfilePictureUploadToDto(HpProfilePictureResponseTO hpProfilePictureResponseTO);
+	HpProfilePictureResponseTO hpProfilePictureUploadToDto(HpProfilePictureResponseTO hpProfilePictureResponseTO);
 
 	HpProfilePersonalResponseTO convertEntitiesToPersonalResponseTo(HpProfile hpProfile, Address address, List<LanguagesKnown> languages);
 

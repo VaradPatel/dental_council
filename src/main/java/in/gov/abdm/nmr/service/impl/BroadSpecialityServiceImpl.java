@@ -24,6 +24,6 @@ public class BroadSpecialityServiceImpl implements IBroadSpecialityService {
 
     @Override
     public List<BroadSpecialityTO> getSpecialityData() {
-        return broadSpecialityDtoMapper.SpecialityDataToDto(broadSpecialityRepository.getSpeciality());
+        return broadSpecialityDtoMapper.specialityDataToDto(broadSpecialityRepository.getSpeciality());
     }
 }

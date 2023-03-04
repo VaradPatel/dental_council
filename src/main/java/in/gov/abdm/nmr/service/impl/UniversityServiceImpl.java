@@ -24,7 +24,7 @@ public class UniversityServiceImpl implements IUniversityService {
 
     @Override
     public List<UniversityTO> getUniversityData() {
-        return universityDtoMapper.UniversityDataToDto(universityRepository.getUniversity());
+        return universityDtoMapper.universityDataToDto(universityRepository.getUniversity());
 
     }
 }

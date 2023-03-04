@@ -4,6 +4,7 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.RegistrationDetails;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +20,7 @@ public interface IHpProfileDaoService {
 			HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException;
 
 	HpProfileUpdateResponseTO updateHpRegistrationDetails(BigInteger hpProfileId,
-																 String hpRegistrationUpdateRequestTO,MultipartFile certificate, MultipartFile proof);
+																 String hpRegistrationUpdateRequestTO,MultipartFile certificate, MultipartFile proof) throws NmrException;
 
 	HpProfileUpdateResponseTO updateWorkProfileDetails(BigInteger hpProfileId,
 													   String hpWorkProfileUpdateRequestString, MultipartFile proof);

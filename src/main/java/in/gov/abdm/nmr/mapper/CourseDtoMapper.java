@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface CourseDtoMapper {
 
-    List<CourseTO> CourseDataToDto(List<Course> course);
+    List<CourseTO> courseDataToDto(List<Course> course);
 
 
 }
