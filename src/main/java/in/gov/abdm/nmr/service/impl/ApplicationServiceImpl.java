@@ -366,7 +366,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         Map<String, String> columns;
         if (columnToSort != null && columnToSort.length() > 0) {
             columns = mapColumnToTable();
-            return columns.getOrDefault(columnToSort, "Invalid column Name to sort");
+            return columns.getOrDefault(columnToSort, " rd.created_at ");
         } else {
             return " rd.created_at ";
         }
