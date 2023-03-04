@@ -16,8 +16,6 @@ public class DashboardRequestParamsTO {
     private String search;
     private String councilId;
     private String collegeId;
-    private int pageNo;
-    private int size;
     private String sortBy;
     private String sortOrder;
 }
