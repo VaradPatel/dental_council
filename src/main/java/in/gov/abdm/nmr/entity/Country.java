@@ -1,17 +1,15 @@
 package in.gov.abdm.nmr.entity;
 
-import java.math.BigInteger;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
-import in.gov.abdm.nmr.entity.CommonAuditEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.math.BigInteger;
 
 @Getter
 @Setter
@@ -27,7 +25,4 @@ public class Country extends CommonAuditEntity {
 	private String name;
 	private String nationality;
 
-//	@OneToMany(cascade = CascadeType.ALL)
-//	@JoinColumn(name = "country", referencedColumnName = "id")
-//	private List<State> state;
 }

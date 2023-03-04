@@ -1,12 +1,5 @@
 package in.gov.abdm.nmr.exception;
 
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpHeaders;
@@ -20,11 +13,25 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.util.*;
+
+import static in.gov.abdm.nmr.util.NMRConstants.*;
+
+/**
+ * NmrExceptionAdvice is a class that provides advice for handling exceptions in a RESTful service.
+ */
 @RestControllerAdvice
 public class NmrExceptionAdvice {
 
+    /**
+     * The LOGGER is a private static final logger object that is used to log messages and events
+     * in the application. It is initialized using the LogManager.getLogger() method.
+     */
     private static final Logger LOGGER = LogManager.getLogger();
-
 
     /**
      * Constant for Timestamp of generated response
@@ -55,7 +62,7 @@ public class NmrExceptionAdvice {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, headers, nmrException.getStatus());
     }
-    
+
     @ExceptionHandler({AccessDeniedException.class})
     public ResponseEntity<ErrorTO> handleSecurityException(HttpServletRequest req, Throwable ex) {
         ErrorTO error = new ErrorTO(new Date(), HttpStatus.FORBIDDEN.value(), ex.getMessage(), req.getServletPath());
@@ -66,7 +73,7 @@ public class NmrExceptionAdvice {
     }
 
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<ErrorTO> handleException(HttpServletRequest req, Throwable ex){
+    public ResponseEntity<ErrorTO> handleException(HttpServletRequest req, Throwable ex) {
         LOGGER.error("Unexpected error occured", ex);
         ErrorTO error = new ErrorTO(new Date(), HttpStatus.INTERNAL_SERVER_ERROR.value(), "Unexpected error occured", req.getServletPath());
 
@@ -75,7 +82,7 @@ public class NmrExceptionAdvice {
         return new ResponseEntity<>(error, headers, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler({ InvalidRequestException.class })
+    @ExceptionHandler({InvalidRequestException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorTO> invalidRequest(HttpServletRequest req, Throwable ex) {
         LOGGER.error(ex);
@@ -88,7 +95,7 @@ public class NmrExceptionAdvice {
     }
 
 
-    @ExceptionHandler({ WorkFlowException.class })
+    @ExceptionHandler({WorkFlowException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorTO> workflowExceptionHandler(HttpServletRequest req, Throwable ex) {
         LOGGER.error(ex);
@@ -102,26 +109,66 @@ public class NmrExceptionAdvice {
 
 
     /**
-     * <p>
-     * MethodArgumentNotValidException exception is thrown after data binding
-     * and validation failure.
-     * This method returns BindingResult from MethodArgumentNotValidException and then
-     * compose list of error messages based on all rejected fields
-     * </p>
+     * Exception handler for {@link MethodArgumentNotValidException}.
      *
-     * @param ex
-     * @return list of error messages after analysis of binding and validation errors.
+     * @param ex the exception to be handled
+     * @return ErrorInfo object containing the error information
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
+    public ErrorInfo handleValidationExceptions(MethodArgumentNotValidException ex) {
+        ErrorInfo errorInfo = new ErrorInfo();
+        errorInfo.setCode(INPUT_VALIDATION_ERROR_CODE);
+        errorInfo.setMessage(HttpStatus.BAD_REQUEST.toString());
+        List<DetailsTO> details = new ArrayList<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
+            DetailsTO detailsTO = new DetailsTO();
+            detailsTO.setCode(INPUT_VALIDATION_INTERNAL_ERROR_CODE);
+            detailsTO.setMessage(INVALID_INPUT_ERROR_MSG);
+            AttributeTO attributeTO = new AttributeTO();
+            String field = ((FieldError) error).getField();
+            String defaultMessage = error.getDefaultMessage();
+            attributeTO.setKey(field);
+            String formattedMessage = MessageFormat.format(defaultMessage, field);
+            attributeTO.setValue(formattedMessage);
+            detailsTO.setAttribute(attributeTO);
+            details.add(detailsTO);
         });
-        return errors;
+        errorInfo.setDetails(details);
+        return errorInfo;
+    }
+
+    /**
+     * This class provides a handler for ConstraintViolationException and returns a detailed error response with input validation error codes and messages.
+     *
+     * @param ex This parameter is of type ConstraintViolationException, which represents the exception thrown when input validation fails.
+     * @return ErrorInfo This method returns an ErrorInfo object, which contains a detailed error response with code, message, and attribute details.
+     * @author [Author Name]
+     * @ResponseStatus This method is annotated with the ResponseStatus annotation, which sets the HTTP status code to BAD_REQUEST (400).
+     * @ExceptionHandler This method is annotated with the ExceptionHandler annotation, which specifies that this method will handle ConstraintViolationException.
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ErrorInfo handleGlobalValidationException(ConstraintViolationException ex) {
+        ErrorInfo errorInfo = new ErrorInfo();
+        errorInfo.setCode(INPUT_VALIDATION_ERROR_CODE);
+        errorInfo.setMessage(HttpStatus.BAD_REQUEST.toString());
+        List<DetailsTO> details = new ArrayList<>();
+        ex.getConstraintViolations().forEach(error -> {
+            DetailsTO detailsTO = new DetailsTO();
+            detailsTO.setCode(INPUT_VALIDATION_INTERNAL_ERROR_CODE);
+            detailsTO.setMessage(INVALID_INPUT_ERROR_MSG);
+            AttributeTO attributeTO = new AttributeTO();
+            String field = error.getPropertyPath().toString();
+            String defaultMessage = error.getMessage();
+            String formattedMessage = MessageFormat.format(defaultMessage, field);
+            attributeTO.setValue(formattedMessage);
+            attributeTO.setKey(field);
+            detailsTO.setAttribute(attributeTO);
+            details.add(detailsTO);
+        });
+        errorInfo.setDetails(details);
+        return errorInfo;
     }
 
     /**
@@ -137,7 +184,7 @@ public class NmrExceptionAdvice {
         errorMap.put(RESPONSE_TIMESTAMP, LocalDate.now());
         LOGGER.error(e.getMessage());
         errorMap.put(MESSAGE, e.getMessage());
-        return errorMap ;
+        return errorMap;
     }
 
     /**
@@ -153,6 +200,22 @@ public class NmrExceptionAdvice {
         errorMap.put(RESPONSE_TIMESTAMP, LocalDate.now());
         LOGGER.error(e.getMessage());
         errorMap.put(MESSAGE, e.getMessage());
-        return errorMap ;
+        return errorMap;
+    }
+
+    /**
+     * Handles the {@link NoDataFoundException} and returns a response with HTTP status code 404 (Not Found) and an error message.
+     *
+     * @param ex the {@link NoDataFoundException} to be handled
+     * @return a map containing the error response timestamp and message
+     */
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NoDataFoundException.class)
+    public Map<String, Object> handleNoDataFoundException(NoDataFoundException ex) {
+        Map<String, Object> errorMap = new HashMap<>();
+        errorMap.put(RESPONSE_TIMESTAMP, LocalDate.now());
+        LOGGER.error(ex.getMessage());
+        errorMap.put(MESSAGE, ex.getMessage());
+        return errorMap;
     }
 }

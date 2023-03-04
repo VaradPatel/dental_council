@@ -1,6 +1,9 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.dto.QueryCreateTo;
+import in.gov.abdm.nmr.dto.QueryResponseTo;
+import in.gov.abdm.nmr.dto.ResponseMessageTo;
+import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.entity.Queries;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
@@ -65,7 +68,7 @@ public class QueriesServiceImpl implements IQueriesService {
                 .actorId(queryCreateTo.getGroupId())
                 .build();
         workFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
-        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
+        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE, null);
     }
 
     /**
@@ -92,7 +95,7 @@ public class QueriesServiceImpl implements IQueriesService {
             queries.setQueryStatus(NMRConstants.CLOSED_STATUS);
             queriesRepository.save(queries);
         });
-        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
+        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE, null);
     }
 }
 

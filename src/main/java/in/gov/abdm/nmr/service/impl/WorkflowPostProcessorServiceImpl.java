@@ -10,6 +10,7 @@ import in.gov.abdm.nmr.mapper.*;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.IElasticsearchDaoService;
 import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;
+import in.gov.abdm.nmr.util.NMRUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -119,6 +121,9 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     @Autowired
     IHpProfileStatusRepository hpProfileStatusRepository;
 
+    @Autowired
+    IUserRepository userRepository;
+
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
@@ -135,8 +140,6 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         updateLanguagesKnownToMaster(transactionHpProfile.getId(), masterHpProfileDetails);
         updateNmrHprLinkageToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
         updateQualificationDetailsToMaster(transactionHpProfile.getId(), masterHpProfileDetails);
-        updateSuperSpecialityToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
-        updateWorkflowToMaster(transactionHpProfile.getId(), masterHpProfileDetails);
 
         try {
             updateElasticDB(iNextGroup, masterHpProfileDetails);
@@ -149,6 +152,11 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
         if (!ApplicationType.QUALIFICATION_ADDITION.getId().equals(requestTO.getApplicationTypeId())) {
             hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
+            if(hpProfile.getNmrId() == null) {
+                hpProfile.setNmrId(generateNmrId());
+                User user = userRepository.findById(hpProfile.getUser().getId()).get();
+                user.setNmrId(hpProfile.getNmrId());
+            }
         }
         List<QualificationDetails> qualificationDetails = qualificationDetailRepository.findByRequestId(requestTO.getRequestId());
         qualificationDetails.forEach(qualificationDetail -> qualificationDetail.setIsVerified(1));
@@ -174,7 +182,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         }
     }
 
-    private HpProfileMaster updateHpProfileToMaster(BigInteger transactionHpProfileId, BigInteger hpRegistrationId) {
+    private HpProfileMaster updateHpProfileToMaster(BigInteger transactionHpProfileId, String hpRegistrationId) {
 
         HpProfileMaster masterHpProfileDetails = hpProfileMasterRepository.findByRegistrationId(hpRegistrationId);
 
@@ -213,10 +221,8 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
             List<ForeignQualificationDetailsMaster> fetchedFromMasters = customQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId());
 
             for (int i = 0; i < qualificationDetailsMasters.size(); i++) {
-                if (!fetchedFromMasters.isEmpty()) {
-                    if (fetchedFromMasters.get(i) != null) {
-                        qualificationDetailsMasters.get(i).setId(fetchedFromMasters.get(i).getId());
-                    }
+                if (!fetchedFromMasters.isEmpty() && fetchedFromMasters.get(i) != null) {
+                    qualificationDetailsMasters.get(i).setId(fetchedFromMasters.get(i).getId());
                 }
                 qualificationDetailsMasters.get(i).setHpProfileMaster(masterHpProfile);
             }
@@ -250,10 +256,8 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
             List<LanguagesKnownMaster> fetchedFromMasters = languagesKnownMasterRepository.getLanguagesKnownByHpProfileId(masterHpProfile.getId());
 
             for (int i = 0; i < languagesKnownMasters.size(); i++) {
-                if (!fetchedFromMasters.isEmpty()) {
-                    if (fetchedFromMasters.get(i) != null) {
-                        languagesKnownMasters.get(i).setId(fetchedFromMasters.get(i).getId());
-                    }
+                if (!fetchedFromMasters.isEmpty() && fetchedFromMasters.get(i) != null) {
+                    languagesKnownMasters.get(i).setId(fetchedFromMasters.get(i).getId());
                 }
                 languagesKnownMasters.get(i).setHpProfileMaster(masterHpProfile);
             }
@@ -285,10 +289,8 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
             List<QualificationDetailsMaster> fetchedFromMasters = qualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId());
 
             for (int i = 0; i < qualificationDetailsMasters.size(); i++) {
-                if (!fetchedFromMasters.isEmpty()) {
-                    if (fetchedFromMasters.get(i) != null) {
-                        qualificationDetailsMasters.get(i).setId(fetchedFromMasters.get(i).getId());
-                    }
+                if (!fetchedFromMasters.isEmpty() && fetchedFromMasters.get(i) != null) {
+                    qualificationDetailsMasters.get(i).setId(fetchedFromMasters.get(i).getId());
                 }
                 qualificationDetailsMasters.get(i).setHpProfileMaster(masterHpProfile);
             }
@@ -305,10 +307,8 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
             List<SuperSpecialityMaster> fetchedFromMasters = superSpecialityMasterRepository.getSuperSpecialityFromHpProfileId(masterHpProfileId);
 
             for (int i = 0; i < superSpecialityMasters.size(); i++) {
-                if (!fetchedFromMasters.isEmpty()) {
-                    if (fetchedFromMasters.get(i) != null) {
-                        superSpecialityMasters.get(i).setId(fetchedFromMasters.get(i).getId());
-                    }
+                if (!fetchedFromMasters.isEmpty() && fetchedFromMasters.get(i) != null) {
+                    superSpecialityMasters.get(i).setId(fetchedFromMasters.get(i).getId());
                 }
                 superSpecialityMasters.get(i).setHpProfileId(masterHpProfileId);
             }
@@ -317,20 +317,21 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     }
 
     private void updateWorkflowToMaster(BigInteger transactionHpProfileId, HpProfileMaster hpProfileMaster) {
+        List<WorkProfileMaster> workProfileMasterList = new ArrayList<>();
+        List<WorkProfile> workProfiles = workProfileRepository.getWorkProfileDetailsByHPId(transactionHpProfileId);
+        workProfiles.forEach(workProfile -> {
+            if (workProfile != null) {
+                WorkProfileMaster workProfileAudit = workProfileMasterMapper.workProfileToWorkProfileMaster(workProfile);
+                WorkProfileMaster fetchedFromMaster = workProfileAuditRepository.getWorkProfileByHpProfileId(hpProfileMaster.getId());
 
-        WorkProfile workProfile = workProfileRepository.getWorkProfileByHpProfileId(transactionHpProfileId);
-
-        if (workProfile != null) {
-            WorkProfileMaster workProfileAudit = workProfileMasterMapper.workProfileToWorkProfileMaster(workProfile);
-            WorkProfileMaster fetchedFromMaster = workProfileAuditRepository.getWorkProfileByHpProfileId(hpProfileMaster.getId());
-
-            if (fetchedFromMaster != null) {
-                workProfileAudit.setId(fetchedFromMaster.getId());
+                if (fetchedFromMaster != null) {
+                    workProfileAudit.setId(fetchedFromMaster.getId());
+                }
+                workProfileAudit.setHpProfileId(hpProfileMaster.getId());
+                workProfileMasterList.add(workProfileAudit);
             }
-            workProfileAudit.setHpProfileId(hpProfileMaster.getId());
-            workProfileAuditRepository.save(workProfileAudit);
-
-        }
+        });
+        workProfileAuditRepository.saveAll(workProfileMasterList);
     }
 
     @Override
@@ -345,7 +346,8 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     }
 
     @Override
-    public void generateNmrId() {
-
+    public String generateNmrId() {
+        return String.valueOf(NMRUtil.generateRandom(12));
     }
+
 }

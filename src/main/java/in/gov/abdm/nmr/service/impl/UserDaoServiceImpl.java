@@ -1,31 +1,47 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.exception.NmrException;
-import in.gov.abdm.nmr.mapper.IUserMapper;
-import in.gov.abdm.nmr.repository.*;
-import in.gov.abdm.nmr.service.IAccessControlService;
-import in.gov.abdm.nmr.service.IUserDaoService;
-import in.gov.abdm.nmr.util.NMRConstants;
+import static in.gov.abdm.nmr.util.NMRConstants.INVALID_COLLEGE_ID;
+import static in.gov.abdm.nmr.util.NMRConstants.INVALID_PROFILE_ID;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.criteria.*;
-import javax.transaction.Transactional;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
+import in.gov.abdm.nmr.dto.NbeProfileTO;
+import in.gov.abdm.nmr.dto.NmcProfileTO;
+import in.gov.abdm.nmr.dto.NotificationToggleRequestTO;
+import in.gov.abdm.nmr.dto.SMCProfileTO;
+import in.gov.abdm.nmr.dto.UpdateRefreshTokenIdRequestTO;
+import in.gov.abdm.nmr.entity.NbeProfile;
+import in.gov.abdm.nmr.entity.NmcProfile;
+import in.gov.abdm.nmr.entity.SMCProfile;
+import in.gov.abdm.nmr.entity.StateMedicalCouncil;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.entity.User_;
+import in.gov.abdm.nmr.exception.NmrException;
+import in.gov.abdm.nmr.repository.INbeProfileRepository;
+import in.gov.abdm.nmr.repository.INmcProfileRepository;
+import in.gov.abdm.nmr.repository.ISmcProfileRepository;
+import in.gov.abdm.nmr.repository.IUserRepository;
+import in.gov.abdm.nmr.service.IAccessControlService;
+import in.gov.abdm.nmr.service.IUserDaoService;
+import in.gov.abdm.nmr.util.NMRConstants;
 
 @Service
 @Transactional
 public class UserDaoServiceImpl implements IUserDaoService {
-
-    private IUserMapper userDetailMapper;
 
     private IUserRepository userDetailRepository;
     private ISmcProfileRepository smcProfileRepository;
@@ -35,44 +51,15 @@ public class UserDaoServiceImpl implements IUserDaoService {
     private EntityManager entityManager;
 
     private IAccessControlService accessControlService;
-    public UserDaoServiceImpl(IUserMapper userDetailMapper, IUserRepository userDetailRepository, EntityManager entityManager, ISmcProfileRepository smcProfileRepository, //
+    public UserDaoServiceImpl(IUserRepository userDetailRepository, EntityManager entityManager, ISmcProfileRepository smcProfileRepository, //
                               INmcProfileRepository nmcProfileRepository, INbeProfileRepository nbeProfileRepository, IAccessControlService accessControlService) {
         super();
-        this.userDetailMapper = userDetailMapper;
         this.userDetailRepository = userDetailRepository;
         this.entityManager = entityManager;
         this.smcProfileRepository = smcProfileRepository;
         this.nmcProfileRepository = nmcProfileRepository;
         this.nbeProfileRepository = nbeProfileRepository;
         this.accessControlService = accessControlService;
-    }
-
-    @Override
-    public UserTO searchUserDetail(UserSearchTO userDetailSearchTO) {
-        User userDetail = searchUserDetailInternal(userDetailSearchTO);
-        return userDetailMapper.userToDto(userDetail);
-    }
-
-    @Override
-    public User searchUserDetailInternal(UserSearchTO userDetailSearchTO) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<User> criteria = builder.createQuery(User.class);
-        Root<User> root = criteria.from(User.class);
-
-        List<Predicate> predicates = new ArrayList<>();
-
-        predicates.add(builder.equal(root.get("username"), userDetailSearchTO.getUsername()));
-        criteria.select(root).where(predicates.toArray(new Predicate[0]));
-        try {
-            return entityManager.createQuery(criteria).getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
-
-    @Override
-    public String findRefreshTokenId(UserSearchTO userDetailSearchTO) {
-        return searchUserDetailInternal(userDetailSearchTO).getRefreshTokenId();
     }
 
     @Override
@@ -84,7 +71,9 @@ public class UserDaoServiceImpl implements IUserDaoService {
         List<Predicate> predicates = new ArrayList<>();
 
         if (StringUtils.isNotBlank(refreshTokenRequestTO.getUsername())) {
-            predicates.add(builder.equal(root.get(User_.USERNAME), refreshTokenRequestTO.getUsername()));
+            predicates.add(builder.or(builder.equal(root.get(User_.EMAIL), refreshTokenRequestTO.getUsername()), builder.equal(root.get(User_.MOBILE_NUMBER), //
+                    refreshTokenRequestTO.getUsername()), builder.equal(root.get(User_.HPR_ID), refreshTokenRequestTO.getUsername()), //
+                    builder.equal(root.get(User_.NMR_ID), refreshTokenRequestTO.getUsername())));
         }
 
         criteria.set(root.get(User_.REFRESH_TOKEN_ID), refreshTokenRequestTO.getRefreshTokenId()).where(predicates.toArray(new Predicate[0]));
@@ -93,17 +82,22 @@ public class UserDaoServiceImpl implements IUserDaoService {
 
     @Override
     public User findById(BigInteger id) {
-        return userDetailRepository.findById(id).get();
+        return userDetailRepository.findById(id).orElse(new User());
     }
 
     @Override
-    public User saveUserDetail(User userDetail) {
-        return userDetailRepository.saveAndFlush(userDetail);
+    public User save(User user) {
+        return userDetailRepository.saveAndFlush(user);
     }
 
     @Override
     public User findByUsername(String username) {
         return userDetailRepository.findByUsername(username);
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return findByUsername(username) != null;
     }
 
     @Override
@@ -140,7 +134,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public SMCProfile findSmcProfile(BigInteger id) throws NmrException {
         SMCProfile smcProfileEntity = smcProfileRepository.findById(id).orElse(null);
         if (smcProfileEntity == null) {
-            throw new NmrException("Invalid college id", HttpStatus.BAD_REQUEST);
+            throw new NmrException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
         }
         accessControlService.validateUser(smcProfileEntity.getUser().getId());
         return smcProfileEntity;
@@ -150,7 +144,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NmcProfile findNmcProfile(BigInteger id) throws NmrException {
         NmcProfile nmcProfileEntity = nmcProfileRepository.findById(id).orElse(null);
         if (nmcProfileEntity == null) {
-            throw new NmrException("Invalid college id", HttpStatus.BAD_REQUEST);
+            throw new NmrException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
         }
         accessControlService.validateUser(nmcProfileEntity.getUser().getId());
         return nmcProfileEntity;
@@ -160,7 +154,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NbeProfile findNbeProfile(BigInteger id) throws NmrException {
         NbeProfile nbeProfileEntity = nbeProfileRepository.findById(id).orElse(null);
         if (nbeProfileEntity == null) {
-            throw new NmrException("Invalid college id", HttpStatus.BAD_REQUEST);
+            throw new NmrException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
         }
         accessControlService.validateUser(nbeProfileEntity.getUser().getId());
         return nbeProfileEntity;
@@ -170,7 +164,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException {
         SMCProfile smcProfile = smcProfileRepository.findById(id).orElse(null);
         if (smcProfile == null) {
-            throw new NmrException("Invalid profile id", HttpStatus.BAD_REQUEST);
+            throw new NmrException(INVALID_PROFILE_ID, HttpStatus.BAD_REQUEST);
         }
         smcProfile.setId(id);
         smcProfile.setFirstName(smcProfileTO.getFirstName());
@@ -181,8 +175,9 @@ public class UserDaoServiceImpl implements IUserDaoService {
         smcProfile.setNdhmEnrollment(smcProfileTO.getNdhmEnrollment());
         smcProfile.setMobileNo(smcProfileTO.getMobileNo());
         smcProfile.setEmailId(smcProfileTO.getEmailId());
-        StateMedicalCouncil stateMedicalCouncil = new StateMedicalCouncil();
+        StateMedicalCouncil stateMedicalCouncil = smcProfile.getStateMedicalCouncil();
         stateMedicalCouncil.setId(smcProfileTO.getStateMedicalCouncil().getId());
+        stateMedicalCouncil.setName(smcProfileTO.getStateMedicalCouncil().getName());
         smcProfile.setStateMedicalCouncil(stateMedicalCouncil);
         return smcProfileRepository.save(smcProfile);
     }
@@ -191,7 +186,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException {
         NmcProfile nmcProfile = nmcProfileRepository.findById(id).orElse(null);
         if (nmcProfile == null) {
-            throw new NmrException("Invalid profile id", HttpStatus.BAD_REQUEST);
+            throw new NmrException(INVALID_PROFILE_ID, HttpStatus.BAD_REQUEST);
         }
         nmcProfile.setId(id);
         nmcProfile.setFirstName(nmcProfileTO.getFirstName());
@@ -209,13 +204,9 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException {
         NbeProfile nbeProfile = nbeProfileRepository.findById(id).orElse(null);
         if (nbeProfile == null) {
-            throw new NmrException("Invalid profile id", HttpStatus.BAD_REQUEST);
+            throw new NmrException(INVALID_PROFILE_ID, HttpStatus.BAD_REQUEST);
         }
         nbeProfile.setId(id);
-        nbeProfile.setFirstName(nbeProfileTO.getFirstName());
-        nbeProfile.setMiddleName(nbeProfileTO.getMiddleName());
-        nbeProfile.setLastName(nbeProfileTO.getLastName());
-        nbeProfile.setDisplayName(nbeProfileTO.getDisplayName());
         nbeProfile.setEmailId(nbeProfileTO.getEmailId());
         nbeProfile.setMobileNo(nbeProfileTO.getMobileNo());
         return nbeProfileRepository.saveAndFlush(nbeProfile);

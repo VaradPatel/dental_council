@@ -1,13 +1,5 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.text.SimpleDateFormat;
-import java.util.Base64;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
@@ -16,40 +8,50 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import in.gov.abdm.nmr.dto.HpElasticDocumentTO;
 import in.gov.abdm.nmr.dto.HpSearchRequestTO;
 import in.gov.abdm.nmr.dto.HpSearchResultTO;
-import in.gov.abdm.nmr.entity.HpProfile;
-import in.gov.abdm.nmr.entity.RegistrationDetails;
+import in.gov.abdm.nmr.entity.HpProfileMaster;
+import in.gov.abdm.nmr.entity.RegistrationDetailsMaster;
 import in.gov.abdm.nmr.repository.IElasticsearchRepository;
 import in.gov.abdm.nmr.service.IElasticsearchDaoService;
-import in.gov.abdm.nmr.service.IHpProfileDaoService;
-import in.gov.abdm.nmr.service.IRegistrationDetailDaoService;
+import in.gov.abdm.nmr.service.IHpProfileMasterDaoService;
+import in.gov.abdm.nmr.service.IRegistrationDetailMasterDaoService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.Base64;
 
 @Service
 public class ElasticsearchDaoServiceImpl implements IElasticsearchDaoService {
 
     private IElasticsearchRepository elasticsearchRepository;
+    @Autowired
+    private IHpProfileMasterDaoService iHpProfileMasterDaoService;
+    @Autowired
+    private IRegistrationDetailMasterDaoService iRegistrationDetailMasterDaoService;
 
-    private IHpProfileDaoService hpProfileDaoService;
-
-    private IRegistrationDetailDaoService registrationDetailDaoService;
-
-    public ElasticsearchDaoServiceImpl(IElasticsearchRepository elasticsearchRepository, IHpProfileDaoService hpProfileDaoService, IRegistrationDetailDaoService registrationDetailDaoService) {
+    public ElasticsearchDaoServiceImpl(IElasticsearchRepository elasticsearchRepository, IHpProfileMasterDaoService hpProfileMasterDaoService, IRegistrationDetailMasterDaoService registrationDetailMasterDaoService) {
         this.elasticsearchRepository = elasticsearchRepository;
-        this.hpProfileDaoService = hpProfileDaoService;
-        this.registrationDetailDaoService = registrationDetailDaoService;
+        this.iHpProfileMasterDaoService = hpProfileMasterDaoService;
+        this.iRegistrationDetailMasterDaoService = registrationDetailMasterDaoService;
     }
 
     @Override
     public void indexHP(BigInteger hpProfileId) throws ElasticsearchException, IOException {
-        HpProfile hpprofile = hpProfileDaoService.findById(hpProfileId);
+
+        HpProfileMaster hpProfile = iHpProfileMasterDaoService.findHpProfileMasterById(hpProfileId);
 
         HpElasticDocumentTO elasticDocumentTO = new HpElasticDocumentTO();
-        elasticDocumentTO.setProfileId(hpprofile.getId());
-        elasticDocumentTO.setFullName(hpprofile.getFullName());
-        elasticDocumentTO.setSalutation(hpprofile.getSalutation());
-        elasticDocumentTO.setProfileStatusId(hpprofile.getHpProfileStatus().getId());
-        elasticDocumentTO.setProfilePhoto(hpprofile.getProfilePhoto() != null ? Base64.getEncoder().encodeToString(hpprofile.getProfilePhoto()) : null);
+        elasticDocumentTO.setProfileId(hpProfile.getId());
+        elasticDocumentTO.setFullName(hpProfile.getFullName());
+        elasticDocumentTO.setSalutation(hpProfile.getSalutation());
+        elasticDocumentTO.setProfileStatusId(hpProfile.getHpProfileStatus().getId());
+        elasticDocumentTO.setProfilePhoto(hpProfile.getProfilePhoto() != null ? Base64.getEncoder().encodeToString(hpProfile.getProfilePhoto()) : null);
 
-        RegistrationDetails registrationDetails = registrationDetailDaoService.findByHpProfileId(hpProfileId);
+        RegistrationDetailsMaster registrationDetails = iRegistrationDetailMasterDaoService.findByHpProfileId(hpProfileId);
         elasticDocumentTO.setRegistrationNumber(registrationDetails.getRegistrationNo());
         elasticDocumentTO.setRegistrationYear(new SimpleDateFormat("yyyy").format(registrationDetails.getRegistrationDate()));
         elasticDocumentTO.setStateMedicalCouncil(registrationDetails.getStateMedicalCouncil().getName());
@@ -59,7 +61,7 @@ public class ElasticsearchDaoServiceImpl implements IElasticsearchDaoService {
     }
 
     @Override
-    public SearchResponse<HpSearchResultTO> searchHP(HpSearchRequestTO hpSearchRequestTO) throws ElasticsearchException, IOException {
+    public SearchResponse<HpSearchResultTO> searchHP(HpSearchRequestTO hpSearchRequestTO, Pageable pageable) throws ElasticsearchException, IOException {
         BoolQuery.Builder queryBuilder = QueryBuilders.bool();
 
         if (hpSearchRequestTO.getFullName() != null && !hpSearchRequestTO.getFullName().isBlank()) {
@@ -87,7 +89,7 @@ public class ElasticsearchDaoServiceImpl implements IElasticsearchDaoService {
             queryBuilder.filter(m -> m.match(mq -> mq.field("profile_status_id").query(hpSearchRequestTO.getProfileStatusId().longValueExact())));
         }
 
-        return elasticsearchRepository.searchHP(queryBuilder.build(), hpSearchRequestTO.getPage(), hpSearchRequestTO.getSize());
+        return elasticsearchRepository.searchHP(queryBuilder.build(), pageable.getPageNumber(), pageable.getPageSize());
     }
 
     @Override

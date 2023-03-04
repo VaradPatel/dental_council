@@ -11,12 +11,15 @@ public enum Action {
     FORWARD(BigInteger.valueOf(2), "Forwarded"),
     QUERY_RAISE(BigInteger.valueOf(3), "Raise a Query"),
     APPROVED(BigInteger.valueOf(4), "Approved"),
-    REJECT(BigInteger.valueOf(5), "Rejected");
+    REJECT(BigInteger.valueOf(5), "Rejected"),
+    TEMPORARY_SUSPEND(BigInteger.valueOf(6), "Temporary Suspend"),
+    PERMANENT_SUSPEND(BigInteger.valueOf(5), "Permanent Suspend");
+
 
     private final BigInteger id;
     private final String description;
 
-    Action(BigInteger id, String description){
+    Action(BigInteger id, String description) {
         this.id = id;
         this.description = description;
     }

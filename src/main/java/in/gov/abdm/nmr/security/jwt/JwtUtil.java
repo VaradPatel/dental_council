@@ -1,22 +1,20 @@
 package in.gov.abdm.nmr.security.jwt;
 
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.UUID;
-
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.Verification;
+import in.gov.abdm.nmr.dto.UpdateRefreshTokenIdRequestTO;
+import in.gov.abdm.nmr.security.common.KeyUtil;
+import in.gov.abdm.nmr.service.IUserDaoService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.interfaces.Verification;
-
-import in.gov.abdm.nmr.security.common.KeyUtil;
-import in.gov.abdm.nmr.service.IUserDaoService;
-import in.gov.abdm.nmr.dto.UpdateRefreshTokenIdRequestTO;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.UUID;
 
 @Component
 public class JwtUtil {

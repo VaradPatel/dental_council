@@ -1,9 +1,8 @@
 package in.gov.abdm.nmr.service;
 
+import javax.persistence.Tuple;
 import java.math.BigInteger;
 import java.util.List;
-
-import javax.persistence.Tuple;
 
 public interface IQualificationDetailDaoService {
 

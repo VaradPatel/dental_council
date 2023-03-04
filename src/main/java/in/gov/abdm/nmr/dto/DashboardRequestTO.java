@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class DashboardRequestTO {
     private String workFlowStatusId;
     private String applicationTypeId;
+    private String userGroupStatus;
     private String filterCriteria;
     private String filterValue;
     private int pageNo;

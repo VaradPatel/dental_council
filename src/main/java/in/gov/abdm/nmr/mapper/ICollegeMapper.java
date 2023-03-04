@@ -1,18 +1,12 @@
 package in.gov.abdm.nmr.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants.ComponentModel;
-
-import in.gov.abdm.nmr.dto.CollegeDeanCreationRequestTo;
-import in.gov.abdm.nmr.dto.CollegeDeanProfileTo;
-import in.gov.abdm.nmr.dto.CollegeProfileTo;
-import in.gov.abdm.nmr.dto.CollegeRegistrarCreationRequestTo;
-import in.gov.abdm.nmr.dto.CollegeRegistrarProfileTo;
-import in.gov.abdm.nmr.dto.CollegeRegistrationRequestTo;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.College;
 import in.gov.abdm.nmr.entity.CollegeDean;
 import in.gov.abdm.nmr.entity.CollegeRegistrar;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants.ComponentModel;
 
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface ICollegeMapper {

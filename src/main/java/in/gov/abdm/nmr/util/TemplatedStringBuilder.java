@@ -5,8 +5,8 @@ import java.util.Map;
 
 public class TemplatedStringBuilder {
 
-    private final static String TEMPLATE_START_TOKEN = "{#";
-    private final static String TEMPLATE_CLOSE_TOKEN = "#}";
+    private static final String TEMPLATE_START_TOKEN = "{#";
+    private static final String TEMPLATE_CLOSE_TOKEN = "#}";
 
     private final String template;
     private final Map<String, String> parameters = new HashMap<>();

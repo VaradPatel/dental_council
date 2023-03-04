@@ -9,7 +9,7 @@ public class HealthProfessionalApplicationTo {
     private String doctorStatus;
     private String smcStatus;
     private String collegeDeanStatus;
-    private String CollegeRegistrarStatus;
+    private String collegeRegistrarStatus;
     private String nmcStatus;
     private String nbeStatus;
     private BigInteger hpProfileId;
@@ -19,4 +19,7 @@ public class HealthProfessionalApplicationTo {
     private String councilName;
     private String applicantFullName;
     private BigInteger applicationTypeId;
+    private String applicationTypeName;
+    private Double pendency;
+    private BigInteger workFlowStatusId;
 }

@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.dto;
 
-import java.util.List;
-
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class HpSearchProfileTO {
@@ -18,6 +18,5 @@ public class HpSearchProfileTO {
     private String yearOfInfo;
     private String registrationNumber;
     private String dateOfRegistration;
-    private String uprnNumber;
     private String nmrId;
 }

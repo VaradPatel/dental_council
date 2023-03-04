@@ -1,14 +1,12 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.math.BigInteger;
-
-import javax.transaction.Transactional;
-
-import org.springframework.stereotype.Service;
-
 import in.gov.abdm.nmr.entity.RegistrationDetails;
 import in.gov.abdm.nmr.repository.IRegistrationDetailRepository;
 import in.gov.abdm.nmr.service.IRegistrationDetailDaoService;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.math.BigInteger;
 
 @Service
 @Transactional

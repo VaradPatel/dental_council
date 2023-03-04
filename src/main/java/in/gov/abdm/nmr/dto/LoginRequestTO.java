@@ -1,5 +1,7 @@
 package in.gov.abdm.nmr.dto;
 
+import java.math.BigInteger;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
@@ -10,6 +12,8 @@ public class LoginRequestTO {
 
     private String username;
     private String password;
-    private String userType;
+    private BigInteger userType;
+    private BigInteger loginType;
     private String captchaTransId;
+    private String otpTransId;
 }

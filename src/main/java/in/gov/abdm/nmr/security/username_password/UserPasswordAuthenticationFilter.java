@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -26,9 +27,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import brave.Tracer;
 import in.gov.abdm.nmr.dto.LoginRequestTO;
 import in.gov.abdm.nmr.entity.SecurityAuditTrail;
+import in.gov.abdm.nmr.enums.LoginTypeEnum;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.security.common.RsaUtil;
-import in.gov.abdm.nmr.service.ICaptchaDaoService;
+import in.gov.abdm.nmr.service.ICaptchaService;
 import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 
 @Component
@@ -42,7 +44,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
 
     private RsaUtil rsaUtil;
 
-    private ICaptchaDaoService captchaDaoService;
+    private ICaptchaService captchaService;
 
     private AuthenticationEventPublisher authEventPublisher;
     
@@ -53,16 +55,17 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
     @Autowired
     AuthenticationLockingService authenticationHandler;
 
-    public UserPasswordAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper, RsaUtil rsaUtil, ICaptchaDaoService captchaDaoService, //
+    public UserPasswordAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper, RsaUtil rsaUtil, ICaptchaService captchaService, //
                                             AuthenticationEventPublisher authEventPublisher, ISecurityAuditTrailDaoService securityAuditTrailDaoService, Tracer tracer) {
         super();
         this.setRequiresAuthenticationRequestMatcher(ProtectedPaths.getLoginPathMatcher());
         this.setAuthenticationManager(authenticationManager);
         this.setAuthenticationSuccessHandler((request, response, authentication) -> {
         });
+        this.setAuthenticationFailureHandler((request, response, exception) -> response.sendError(HttpStatus.UNAUTHORIZED.value(), exception.getMessage()));
         this.objectMapper = objectMapper;
         this.rsaUtil = rsaUtil;
-        this.captchaDaoService = captchaDaoService;
+        this.captchaService = captchaService;
         this.authEventPublisher = authEventPublisher;
         this.securityAuditTrailDaoService = securityAuditTrailDaoService;
         this.tracer = tracer;
@@ -70,20 +73,27 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        UserPasswordAuthenticationToken authRequest = UserPasswordAuthenticationToken.unauthenticated(null, null, null);
+        UserPasswordAuthenticationToken authRequest = UserPasswordAuthenticationToken.unauthenticated(null, null, null, null, null);
         try {
             requestBodyString = readRequestBody(request);
             LoginRequestTO requestBodyTO = objectMapper.readValue(requestBodyString, LoginRequestTO.class);
+            
+            if((LoginTypeEnum.MOBILE_OTP.getCode().equals(requestBodyTO.getLoginType()) || LoginTypeEnum.NMR_ID_OTP.getCode().equals(requestBodyTO.getLoginType())) //
+                    && (requestBodyTO.getOtpTransId() == null || requestBodyTO.getOtpTransId().isBlank())) {
+                throw new AuthenticationServiceException("Invalid request");
+            }
             authRequest = UserPasswordAuthenticationToken.unauthenticated(requestBodyTO.getUsername(), //
-                    rsaUtil.decrypt(requestBodyTO.getPassword()), requestBodyTO.getUserType());
+                    rsaUtil.decrypt(requestBodyTO.getPassword()), requestBodyTO.getUserType(), requestBodyTO.getLoginType(), requestBodyTO.getOtpTransId());
             authRequest.setDetails(createSecurityAuditTrail(request));
 
-            if (!captchaDaoService.isCaptchaValidated(requestBodyTO.getCaptchaTransId())) {
+            if (!captchaService.isCaptchaVerified(requestBodyTO.getCaptchaTransId())) {
                 throw new AuthenticationServiceException("Invalid captcha");
             }
+        } catch (AuthenticationException e) {
+            throw e;
         } catch (Exception e) {
             LOGGER.error("Exception occured while parsing username-password login request", e);
-            throw new AuthenticationServiceException("Exception occured while parsing username-password login request", e);
+            throw new AuthenticationServiceException("Exception occured while parsing username-password login request");
         }
         return this.getAuthenticationManager().authenticate(authRequest);
     }
@@ -142,6 +152,8 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
         super.unsuccessfulAuthentication(request, response, failed);
         publishAuthenticationFailure(request, failed);
 
-        authenticationHandler.updateFailedAttemptsAndLockStatus(objectMapper.readValue(requestBodyString, LoginRequestTO.class).getUsername());
+        if (requestBodyString != null && !requestBodyString.isBlank()) {
+            authenticationHandler.updateFailedAttemptsAndLockStatus(objectMapper.readValue(requestBodyString, LoginRequestTO.class).getUsername());
+        }
     }
 }

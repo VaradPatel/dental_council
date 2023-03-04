@@ -5,7 +5,9 @@ import lombok.Data;
 import java.math.BigInteger;
 import java.util.Date;
 
-
+/**
+ * A class with the college details that would be shared with the NMC
+ */
 @Data
 public class CollegeRegistrationTO {
     private BigInteger id;

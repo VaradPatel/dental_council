@@ -1,7 +1,5 @@
 package in.gov.abdm.nmr.enums;
 
-import java.math.BigInteger;
-
 /**
  * Enums defining different address types used in nmr.
  */
@@ -15,7 +13,7 @@ public enum AddressType {
     private final Integer id;
     private final String description;
 
-    AddressType(Integer id, String description){
+    AddressType(Integer id, String description) {
         this.id = id;
         this.description = description;
     }

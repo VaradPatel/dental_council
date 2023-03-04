@@ -12,7 +12,8 @@ public enum HpProfileStatus {
     DRAFT(BigInteger.valueOf(7));
 
     private BigInteger id;
-    HpProfileStatus(BigInteger id){
+
+    HpProfileStatus(BigInteger id) {
         this.id = id;
     }
 

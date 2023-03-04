@@ -1,11 +1,7 @@
 package in.gov.abdm.nmr.security.config;
 
-import java.io.IOException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-
+import in.gov.abdm.nmr.security.jwt.JwtAuthenticationProvider;
+import in.gov.abdm.nmr.security.username_password.UserPasswordAuthenticationProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,8 +18,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import in.gov.abdm.nmr.security.jwt.JwtAuthenticationProvider;
-import in.gov.abdm.nmr.security.username_password.UserPasswordAuthenticationProvider;
+import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)

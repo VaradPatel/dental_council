@@ -1,11 +1,10 @@
 package in.gov.abdm.nmr.dto.hpprofile;
 
+import in.gov.abdm.nmr.dto.*;
+import lombok.Value;
+
 import java.math.BigInteger;
 import java.util.List;
-
-import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.entity.ApplicationType;
-import lombok.Value;
 
 @Value
 public class HpProfileAddRequestTO {

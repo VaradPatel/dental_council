@@ -1,16 +1,15 @@
 package in.gov.abdm.nmr.security.jwt;
 
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import brave.Tracer;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
+import in.gov.abdm.nmr.entity.SecurityAuditTrail;
+import in.gov.abdm.nmr.security.common.ProtectedPaths;
+import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -22,12 +21,11 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.stereotype.Component;
 
-import com.auth0.jwt.exceptions.SignatureVerificationException;
-
-import brave.Tracer;
-import in.gov.abdm.nmr.entity.SecurityAuditTrail;
-import in.gov.abdm.nmr.security.common.ProtectedPaths;
-import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
@@ -47,6 +45,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
         super(new OrRequestMatcher(ProtectedPaths.getProtectedPathsMatchers()), authenticationManager);
         this.setAuthenticationSuccessHandler((request, response, authentication) -> {
         });
+        this.setAuthenticationFailureHandler((request, response, exception) -> response.sendError(HttpStatus.UNAUTHORIZED.value(), exception.getMessage()));
         this.authEventPublisher = authEventPublisher;
         this.jwtUtil = jwtUtil;
         this.securityAuditTrailDaoService = securityAuditTrailDaoService;
@@ -75,9 +74,12 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
                 LOGGER.error("No bearer token was passed");
                 throw new AuthenticationServiceException("No bearer token was passed");
             }
+            
+        } catch (AuthenticationException e) {
+            throw e;
         } catch (Exception e) {
             LOGGER.error("Exception occured while parsing bearer token", e);
-            throw new AuthenticationServiceException("Exception occured while parsing bearer token", e);
+            throw new AuthenticationServiceException("Exception occured while parsing bearer token");
         }
         return this.getAuthenticationManager().authenticate(authRequest);
     }

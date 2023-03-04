@@ -2,6 +2,8 @@ package in.gov.abdm.nmr.dto;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class HealthProfessionalApplicationRequestParamsTo {
     private String smcId;
@@ -12,4 +14,5 @@ public class HealthProfessionalApplicationRequestParamsTo {
     private int size;
     private String sortBy;
     private String sortOrder;
+    private BigInteger hpProfileId;
 }

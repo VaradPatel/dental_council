@@ -1,21 +1,10 @@
 package in.gov.abdm.nmr.entity;
 
-import java.math.BigInteger;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
+import java.math.BigInteger;
 
 @Getter
 @Setter
@@ -29,15 +18,12 @@ public class WorkProfileMaster {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private BigInteger id;
-
-//    @OneToMany(mappedBy = "subdistrict", fetch = FetchType.LAZY)
-//    private List<City> cities;
-
     private String address;
-    
-    private Integer facility;
+
+    private BigInteger facilityId;
+    private BigInteger facilityTypeId;
     private Integer isUserCurrentlyWorking;
-    @Type(type="org.hibernate.type.BinaryType")
+    @Type(type = "org.hibernate.type.BinaryType")
     private byte[] proofOfWorkAttachment;
     private String url;
     private BigInteger userId;
@@ -46,10 +32,7 @@ public class WorkProfileMaster {
     private BigInteger workStatusId;
     private BigInteger hpProfileId;
     private String workOrganization;
-    
-//    @OneToOne(mappedBy = "workProfile", fetch = FetchType.LAZY)
-    private BigInteger organizationType;
-    
+    private String organizationType;
     private String requestId;
 
 }

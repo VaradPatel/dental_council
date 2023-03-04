@@ -1,28 +1,22 @@
 package in.gov.abdm.nmr.controller;
 
-import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestTo;
-import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
-import in.gov.abdm.nmr.service.ITrackApplicationService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static in.gov.abdm.nmr.security.common.ProtectedPaths.PATH_HEALTH_PROFESSIONAL_ROOT;
+
+/**
+ * Presentation Layer to expose the endpoints of Health Professional Track Applications
+ */
 @RestController
-@RequestMapping("/health-professional")
+@RequestMapping(PATH_HEALTH_PROFESSIONAL_ROOT)
 public class TrackController {
 
-    @Autowired
-    ITrackApplicationService iTrackApplicationService;
+    /**
+     * Injecting a ITrackApplicationService bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
 
-    @PostMapping("/applications")
-    public HealthProfessionalApplicationResponseTo trackApplicationDetails(@RequestBody HealthProfessionalApplicationRequestTo requestTO) {
-        return iTrackApplicationService.fetchApplicationDetailsForHealthProfessional(requestTO);
-    }
 
-    @PostMapping("/applications/status")
-    public HealthProfessionalApplicationResponseTo trackStatusDetails(@RequestBody HealthProfessionalApplicationRequestTo requestTO) {
-        return iTrackApplicationService.fetchApplicationDetails(requestTO);
-    }
+
 }

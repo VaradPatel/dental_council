@@ -1,11 +1,10 @@
 package in.gov.abdm.nmr.entity;
 
-import java.math.BigInteger;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-
-import lombok.*;
+import java.math.BigInteger;
 
 @Getter
 @Setter

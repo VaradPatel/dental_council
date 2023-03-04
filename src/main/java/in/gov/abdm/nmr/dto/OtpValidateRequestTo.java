@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.dto;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -12,6 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OtpValidateRequestTo{
 
+    @NotBlank
+    String transactionId;
+    
     @NotEmpty(message = NMRConstants.CONTACT_NOT_NULL)
     String contact;
 

@@ -19,8 +19,8 @@ public enum ApplicationType {
     private final BigInteger id;
     private final String description;
 
-    ApplicationType(BigInteger id, String description){
-        this.id= id;
+    ApplicationType(BigInteger id, String description) {
+        this.id = id;
         this.description = description;
     }
 

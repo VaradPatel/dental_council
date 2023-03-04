@@ -1,20 +1,19 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.util.List;
-
-import javax.transaction.Transactional;
-
+import in.gov.abdm.nmr.dto.RegistrationRenewationTypeTO;
 import in.gov.abdm.nmr.mapper.RegistrationRenewationTypeDtoMapper;
 import in.gov.abdm.nmr.repository.RegistrationRenewationTypeRepository;
-import in.gov.abdm.nmr.dto.RegistrationRenewationTypeTO;
 import in.gov.abdm.nmr.service.IRegistrationRenewationTypeService;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @Transactional
 public class RegistrationRenewationTypeServiceImpl implements IRegistrationRenewationTypeService {
 
-    public RegistrationRenewationTypeRepository registrationRenewationTypeRepository;
+    private RegistrationRenewationTypeRepository registrationRenewationTypeRepository;
 
     private RegistrationRenewationTypeDtoMapper registrationRenewationTypeDtoMapper;
 
@@ -25,7 +24,7 @@ public class RegistrationRenewationTypeServiceImpl implements IRegistrationRenew
 
     @Override
     public List<RegistrationRenewationTypeTO> getRegistrationRenewationType() {
-        return registrationRenewationTypeDtoMapper.RegistrationRenewationTypeDataToDto(registrationRenewationTypeRepository.getRegistrationRenewationType());
+        return registrationRenewationTypeDtoMapper.registrationRenewationTypeDataToDto(registrationRenewationTypeRepository.getRegistrationRenewationType());
 
     }
 

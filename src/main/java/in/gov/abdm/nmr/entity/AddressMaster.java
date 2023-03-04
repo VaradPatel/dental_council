@@ -47,16 +47,10 @@ public class AddressMaster extends CommonAuditEntity {
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "addressTypeId", referencedColumnName = "id")
 	private AddressType addressTypeId;
-
-//    @ManyToOne
-//    @JoinColumn(name = "hpProfile")
-//    private HpProfile hpProfile;
-
 	private BigInteger hpProfileId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workProfileId", referencedColumnName = "id")
     private WorkProfile workProfile;
 
-//	private workProfile;
 }

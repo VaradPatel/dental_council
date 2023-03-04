@@ -1,43 +1,32 @@
 package in.gov.abdm.nmr.entity;
 
-import static in.gov.abdm.nmr.util.NMRConstants.HP_PROFILE_STATUS_ID;
-import static in.gov.abdm.nmr.util.NMRConstants.ID;
-import static in.gov.abdm.nmr.util.NMRConstants.SCHEDULE_ID;
-
-import java.math.BigInteger;
-import java.sql.Date;
-import java.sql.Timestamp;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-
-import org.hibernate.annotations.Type;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
+import java.math.BigInteger;
+import java.sql.Date;
+import java.sql.Timestamp;
+
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "hpProfile")
-public class HpProfile {
+public class HpProfile extends CommonAuditEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private BigInteger id;
+
 	private String aadhaarToken;
 	private String categoryName;
 	private String changedName;
-	private Timestamp createdAt;
 	private String createdBy;
 	private Date dateOfBirth;
 	private String emailId;
@@ -69,7 +58,6 @@ public class HpProfile {
 	private String signature;
 	private String spouseName;
 	private String systemOfMedicine;
-	private Timestamp updatedAt;
 	private String updatedBy;
 	private String workExperienceInYear;
 	private String yearOfInfo;
@@ -95,5 +83,5 @@ public class HpProfile {
 	//eSignChange
 	private String transactionId;
 	private String eSignStatus;
-	private BigInteger registrationId;
+	private String registrationId;
 }

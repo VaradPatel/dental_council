@@ -1,15 +1,13 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.math.BigInteger;
-import java.util.List;
+import in.gov.abdm.nmr.repository.IQualificationDetailRepository;
+import in.gov.abdm.nmr.service.IQualificationDetailDaoService;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.Tuple;
 import javax.transaction.Transactional;
-
-import org.springframework.stereotype.Service;
-
-import in.gov.abdm.nmr.repository.IQualificationDetailRepository;
-import in.gov.abdm.nmr.service.IQualificationDetailDaoService;
+import java.math.BigInteger;
+import java.util.List;
 
 @Service
 @Transactional

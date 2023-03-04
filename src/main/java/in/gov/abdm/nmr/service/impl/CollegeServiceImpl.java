@@ -14,24 +14,21 @@ import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-import static in.gov.abdm.nmr.util.NMRConstants.*;
+import static in.gov.abdm.nmr.util.NMRConstants.DEFAULT_SORT_ORDER;
+import static in.gov.abdm.nmr.util.NMRConstants.MAX_DATA_SIZE;
 
 @Service
 @Slf4j
 public class CollegeServiceImpl implements ICollegeService {
-    @Value("${max.data.size}")
-    private Integer maxSize;
-    @Value("${sort.order}")
-    private String defaultSortOrder;
     @Autowired
     private ICollegeDaoService collegeService;
 
@@ -51,26 +48,42 @@ public class CollegeServiceImpl implements ICollegeService {
     private IRequestCounterService requestCounterService;
 
     @Override
-    public CollegeProfileTo registerCollege(CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException, WorkFlowException {
-        College collegeProfileEntity = collegeService.saveCollege(collegeRegistrationRequestTo, update);
-        CollegeProfileTo collegeCreationRequestToResponse = collegeMapper.collegeCreationRequestToResponse(collegeRegistrationRequestTo);
-        collegeCreationRequestToResponse.setId(collegeProfileEntity.getId());
-        collegeCreationRequestToResponse.setUserId(collegeProfileEntity.getUser().getId());
-        collegeCreationRequestToResponse.setCouncilName(collegeProfileEntity.getStateMedicalCouncil().getName());
-        collegeCreationRequestToResponse.setStateName(collegeProfileEntity.getState().getName());
-        collegeCreationRequestToResponse.setUniversityName(collegeProfileEntity.getUniversity().getName());
-        if (collegeRegistrationRequestTo.getRequestId() == null) {
-            String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.COLLEGE_REGISTRATION.getId()));
-            collegeCreationRequestToResponse.setRequestId(requestId);
-            collegeProfileEntity.setRequestId(requestId);
-            workFlowService.initiateCollegeRegistrationWorkFlow(requestId, ApplicationType.COLLEGE_REGISTRATION.getId(), Group.COLLEGE_ADMIN.getId(), Action.SUBMIT.getId());
+    public CollegeProfileTo registerCollege(BigInteger collegeId,CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException, WorkFlowException {
+        CollegeProfileTo collegeCreationRequestToResponse = null;
+        if (collegeId != null) {
+            collegeRegistrationRequestTo.setId(collegeId);
         }
+        if (!collegeRegistrationStatus()) {
+            College collegeProfileEntity = collegeService.saveCollege(collegeRegistrationRequestTo, update);
+            collegeCreationRequestToResponse = collegeMapper.collegeCreationRequestToResponse(collegeRegistrationRequestTo);
+            collegeCreationRequestToResponse.setId(collegeProfileEntity.getId());
+            collegeCreationRequestToResponse.setUserId(collegeProfileEntity.getUser().getId());
+            if (collegeProfileEntity.getStateMedicalCouncil() != null) {
+                collegeCreationRequestToResponse.setCouncilName(collegeProfileEntity.getStateMedicalCouncil().getName());
+            }
+            if (collegeProfileEntity.getState() != null) {
+                collegeCreationRequestToResponse.setStateName(collegeProfileEntity.getState().getName());
+            }
+            if (collegeProfileEntity.getUniversity() != null) {
+                collegeCreationRequestToResponse.setUniversityName(collegeProfileEntity.getUniversity().getName());
+            }
+            collegeCreationRequestToResponse.setApproved(collegeProfileEntity.isApproved());
+            if ((!collegeProfileEntity.isApproved()) && (collegeRegistrationRequestTo.getRequestId() == null)) {
+                String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.COLLEGE_REGISTRATION.getId()));
+                collegeCreationRequestToResponse.setRequestId(requestId);
+                collegeProfileEntity.setRequestId(requestId);
+                workFlowService.initiateCollegeRegistrationWorkFlow(requestId, ApplicationType.COLLEGE_REGISTRATION.getId(), Group.COLLEGE_ADMIN.getId(), Action.SUBMIT.getId());
+            }
+        } else {
+            throw new NmrException("College already exists", HttpStatus.BAD_REQUEST);
+        }
+
         return collegeCreationRequestToResponse;
     }
 
     @Override
-    public CollegeRegistrarProfileTo registerRegistrar(CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException {
-        CollegeRegistrar collegeRegistrarEntity = collegeRegistrarDaoService.saveCollegeRegistrar(collegeRegistrarCreationRequestTo);
+    public CollegeRegistrarProfileTo registerRegistrar(BigInteger collegeId, CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException {
+        CollegeRegistrar collegeRegistrarEntity = collegeRegistrarDaoService.saveCollegeRegistrar(collegeId, collegeRegistrarCreationRequestTo);
         CollegeRegistrarProfileTo collegeRegistrarProfileTo = collegeMapper.collegeRegistrarRequestToResponse(collegeRegistrarCreationRequestTo);
         collegeRegistrarProfileTo.setId(collegeRegistrarEntity.getId());
         collegeRegistrarProfileTo.setUserId(collegeRegistrarEntity.getUser().getId());
@@ -78,8 +91,26 @@ public class CollegeServiceImpl implements ICollegeService {
     }
 
     @Override
-    public CollegeDeanProfileTo registerDean(CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
-        CollegeDean collegeDeanEntity = collegeDeanDaoService.saveCollegeDean(collegeDeanCreationRequestTo);
+    public CollegeRegistrarProfileTo updateRegisterRegistrar(BigInteger collegeId, BigInteger registrarId, CollegeRegistrarCreationRequestTo collegeRegistrarCreationRequestTo) throws NmrException {
+        CollegeRegistrar collegeRegistrarEntity = collegeRegistrarDaoService.updateRegisterRegistrar(collegeId, registrarId, collegeRegistrarCreationRequestTo);
+        CollegeRegistrarProfileTo collegeRegistrarProfileTo = collegeMapper.collegeRegistrarRequestToResponse(collegeRegistrarCreationRequestTo);
+        collegeRegistrarProfileTo.setId(collegeRegistrarEntity.getId());
+        collegeRegistrarProfileTo.setUserId(collegeRegistrarEntity.getUser().getId());
+        return collegeRegistrarProfileTo;
+    }
+
+    @Override
+    public CollegeDeanProfileTo registerDean(BigInteger collegeId, CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
+        CollegeDean collegeDeanEntity = collegeDeanDaoService.saveCollegeDean(collegeId, collegeDeanCreationRequestTo);
+        CollegeDeanProfileTo collegeDeanProfileTO = collegeMapper.collegeDeanRequestToResponse(collegeDeanCreationRequestTo);
+        collegeDeanProfileTO.setId(collegeDeanEntity.getId());
+        collegeDeanProfileTO.setUserId(collegeDeanEntity.getUser().getId());
+        return collegeDeanProfileTO;
+    }
+
+    @Override
+    public CollegeDeanProfileTo updateRegisterDean(BigInteger collegeId, BigInteger deanId, CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
+        CollegeDean collegeDeanEntity = collegeDeanDaoService.updateCollegeDean(collegeId,deanId, collegeDeanCreationRequestTo);
         CollegeDeanProfileTo collegeDeanProfileTO = collegeMapper.collegeDeanRequestToResponse(collegeDeanCreationRequestTo);
         collegeDeanProfileTO.setId(collegeDeanEntity.getId());
         collegeDeanProfileTO.setUserId(collegeDeanEntity.getUser().getId());
@@ -93,30 +124,45 @@ public class CollegeServiceImpl implements ICollegeService {
         collegeProfileTO.setCouncilName(collegeEntity.getStateMedicalCouncil().getName());
         collegeProfileTO.setStateName(collegeEntity.getState().getName());
         collegeProfileTO.setUniversityName(collegeEntity.getUniversity().getName());
+        collegeProfileTO.setUserId(collegeEntity.getUser().getId());
         return collegeProfileTO;
     }
 
     @Override
-    public CollegeRegistrarProfileTo retrieveRegistrarProfile(BigInteger registrarId) throws NmrException {
-        CollegeRegistrar collegeRegistrarEntity = collegeRegistrarDaoService.findCollegeRegistrarById(registrarId);
+    public CollegeRegistrarProfileTo retrieveRegistrarProfile(BigInteger registrarId, BigInteger collegeId) throws NmrException {
+        CollegeRegistrar collegeRegistrarEntity = collegeRegistrarDaoService.findCollegeRegistrarById(registrarId, collegeId);
         CollegeRegistrarProfileTo collegeRegistrarProfileTo = collegeMapper.collegeRegistrarEntityToCollegeRegistrarProfile(collegeRegistrarEntity);
         collegeRegistrarProfileTo.setUserId(collegeRegistrarEntity.getUser().getId());
         return collegeRegistrarProfileTo;
     }
 
     @Override
-    public CollegeDeanProfileTo retrieveDeanProfile(BigInteger id) throws NmrException {
-        CollegeDean collegeDeanEntity = collegeDeanDaoService.findCollegeDeanById(id);
+    public CollegeDeanProfileTo retrieveDeanProfile(BigInteger collegeId, BigInteger deanId) throws NmrException {
+        CollegeDean collegeDeanEntity = collegeDeanDaoService.findCollegeDeanById(collegeId, deanId);
         CollegeDeanProfileTo collegeDeanProfileTO = collegeMapper.collegeDeanEntityToCollegeDeanProfile(collegeDeanEntity);
         collegeDeanProfileTO.setUserId(collegeDeanEntity.getUser().getId());
         return collegeDeanProfileTO;
     }
 
+    /**
+     * Service Implementation's method for fetching the College registration records
+     * for the NMC that has been submitted for approval
+     *
+     * @param pageNo   - Gives the current page number
+     * @param offset   - Gives the number of records to be displayed
+     * @param search   - Gives the search criteria like HP_Id, HP_name, Submiited_Date, Remarks
+     * @param sortBy   -  According to which column the sort has to happen
+     * @param sortType -  Sorting order ASC or DESC
+     * @return the CollegeRegistrationResponseTO  response Object
+     * which contains all the details related to the College submitted to NMC
+     * for approval
+     */
     @Override
     public CollegeRegistrationResponseTO getCollegeRegistrationDetails(String pageNo, String limit, String filterCriteria, String filterValue, String columnToSort, String sortOrder) {
         CollegeRegistrationResponseTO collegeRegistrationResponseTO = null;
         CollegeRegistrationRequestParamsTO collegeRegistrationRequestParams = new CollegeRegistrationRequestParamsTO();
-        collegeRegistrationRequestParams.setLimit(Integer.valueOf(limit));
+        final Integer dataLimit = MAX_DATA_SIZE < Integer.valueOf(offset) ? MAX_DATA_SIZE : Integer.valueOf(offset);
+        collegeRegistrationRequestParams.setOffset(dataLimit);
         collegeRegistrationRequestParams.setPageNo(Integer.valueOf(pageNo));
         switch (filterCriteria.toLowerCase()){
             case COLLEGE_ID_IN_LOWER_CASE: collegeRegistrationRequestParams.setCollegeId(filterValue);
@@ -131,9 +177,16 @@ public class CollegeServiceImpl implements ICollegeService {
         collegeRegistrationRequestParams.setColumnToSort(column);
         final String sortingOrder = sortOrder == null ? defaultSortOrder : sortOrder;
         collegeRegistrationRequestParams.setSortOrder(sortingOrder);
+        collegeRegistrationRequestParams.setCollegeId(collegeId);
+        collegeRegistrationRequestParams.setCollegeName(collegeName);
+        collegeRegistrationRequestParams.setCouncilName(councilName);
+        collegeRegistrationRequestParams.setSearch(search);
+        String column = getColumnToSort(sortBy);
+        collegeRegistrationRequestParams.setSortBy(column);
+        final String sortingOrder = sortType == null ? DEFAULT_SORT_ORDER : sortType;
+        collegeRegistrationRequestParams.setSortType(sortingOrder);
         try {
-            final Integer dataLimit = maxSize < Integer.valueOf(limit) ? maxSize : Integer.valueOf(limit);
-            Pageable pageable = PageRequest.of(Integer.valueOf(pageNo), dataLimit);
+            Pageable pageable = PageRequest.of(collegeRegistrationRequestParams.getPageNo(), collegeRegistrationRequestParams.getOffset());
             collegeRegistrationResponseTO = collegeService.getCollegeRegistrationData(collegeRegistrationRequestParams, pageable);
         } catch (Exception e) {
             log.error("Service exception " + e.getMessage());
@@ -148,7 +201,7 @@ public class CollegeServiceImpl implements ICollegeService {
             if (columns.containsKey(columnToSort)) {
                 return columns.get(columnToSort);
             } else {
-                return "Invalid column Name to sort";
+                return " wf.created_at ";
             }
         } else {
             return " wf.created_at ";
@@ -164,5 +217,9 @@ public class CollegeServiceImpl implements ICollegeService {
         columnToSortMap.put("status", "  wfs.name");
         columnToSortMap.put("pendency", " pendency");
         return columnToSortMap;
+    }
+
+    private boolean collegeRegistrationStatus() {
+        return false;
     }
 }

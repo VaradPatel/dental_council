@@ -3,9 +3,9 @@ package in.gov.abdm.nmr.repository.impl;
 import in.gov.abdm.nmr.dto.CollegeRegistrationRequestParamsTO;
 import in.gov.abdm.nmr.dto.CollegeRegistrationResponseTO;
 import in.gov.abdm.nmr.dto.CollegeRegistrationTO;
+import in.gov.abdm.nmr.enums.Status;
 import in.gov.abdm.nmr.repository.ICollegeRepositoryCustom;
 import in.gov.abdm.nmr.util.NMRConstants;
-import in.gov.abdm.nmr.enums.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -21,6 +21,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+/**
+ * A class for the customized college repository that implements the methods in the customized repository interface
+ * ICollegeRepositoryCustom with the help of customized query.
+ */
 @Repository
 @Transactional
 @Slf4j
@@ -50,9 +54,9 @@ public class CollegeRegistrationImpl implements ICollegeRepositoryCustom {
     private static final Function<CollegeRegistrationRequestParamsTO, String> SORT_RECORDS = collegeRegistrationRequestParamsTO -> {
         StringBuilder sb = new StringBuilder();
         sb.append("ORDER BY  ");
-        sb.append(collegeRegistrationRequestParamsTO.getColumnToSort());
+        sb.append(collegeRegistrationRequestParamsTO.getSortBy());
         sb.append("  ");
-        sb.append(collegeRegistrationRequestParamsTO.getSortOrder());
+        sb.append(collegeRegistrationRequestParamsTO.getSortType());
         return sb.toString();
     };
     private static final Function<CollegeRegistrationRequestParamsTO, String> COLLEGE_REGISTRATION = collegeRegistrationRequestParamsTO -> {
@@ -62,7 +66,7 @@ public class CollegeRegistrationImpl implements ICollegeRepositoryCustom {
         if (Objects.nonNull(parameters) && !parameters.isEmpty()) {
             sb.append(parameters);
         }
-        if (Objects.nonNull(collegeRegistrationRequestParamsTO.getColumnToSort()) && !collegeRegistrationRequestParamsTO.getColumnToSort().isEmpty()) {
+        if (Objects.nonNull(collegeRegistrationRequestParamsTO.getSortBy()) && !collegeRegistrationRequestParamsTO.getSortBy().isEmpty()) {
             String sortRecords = SORT_RECORDS.apply(collegeRegistrationRequestParamsTO);
             sb.append(sortRecords);
         }
@@ -95,6 +99,16 @@ public class CollegeRegistrationImpl implements ICollegeRepositoryCustom {
         return totalRecords;
     }
 
+    /**
+     * Customized College Repository class's with a method for fetching the records
+     * of the college for the NMC
+     *
+     * @param collegeRegistrationRequestParamsTO - Object that has the query params that has been passed to search, sort and pagination
+     * @param pageable                           - Object of Pageable that helps in pagination
+     * @return the CollegeRegistrationResponseTO  response Object
+     * which contains all the details related to the college who have
+     * raised a request to NMC for approval.
+     */
     @Override
     public CollegeRegistrationResponseTO getCollegeRegistrationData(CollegeRegistrationRequestParamsTO collegeRegistrationRequestParamsTO, Pageable pageable) {
         CollegeRegistrationResponseTO collegeRegistrationResponseTO = new CollegeRegistrationResponseTO();

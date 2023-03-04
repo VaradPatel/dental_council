@@ -1,6 +1,9 @@
 package in.gov.abdm.nmr.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigInteger;
@@ -12,7 +15,6 @@ import static in.gov.abdm.nmr.util.NMRConstants.ID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-//@Builder
 public class LanguagesKnownMaster extends CommonAuditEntity {
 
 	@Id

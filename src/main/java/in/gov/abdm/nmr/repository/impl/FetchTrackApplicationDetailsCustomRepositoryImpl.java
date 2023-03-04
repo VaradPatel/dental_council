@@ -18,33 +18,63 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import static in.gov.abdm.nmr.util.NMRConstants.FETCH_TRACK_DETAILS_COUNT_QUERY;
+import static in.gov.abdm.nmr.util.NMRConstants.FETCH_TRACK_DETAILS_QUERY;
+
+/**
+ * A class that implements all the methods of the Custom Repository interface IFetchTrackApplicationDetailsCustomRepository
+ * which deals with health professional's applications and track status
+ */
 @Repository
 @Transactional
 @Slf4j
 public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchTrackApplicationDetailsCustomRepository {
 
+    /**
+     * Injecting a EntityManager bean instead of an explicit object creation to achieve
+     * Singleton principle
+     */
     @PersistenceContext
     private EntityManager entityManager;
 
-    private static final Function<HealthProfessionalApplicationRequestParamsTo, String> TRACK_APPLICATION_PARAMETERS = (healthProfessionalApplicationRequestParamsTo) -> {
+    /**
+     * Represents a functional interface to generates a dynamic WHERE clause based on the HealthProfessionalApplicationRequestParamsTo
+     * object passed as a parameter.
+     *
+     * @param healthProfessionalApplicationRequestParamsTo - object that contains the criteria for the query.
+     * @return a string query with appended WHERE clause for the query.
+     */
+    private static final Function<HealthProfessionalApplicationRequestParamsTo, String> TRACK_APPLICATION_PARAMETERS = healthProfessionalApplicationRequestParamsTo -> {
         StringBuilder sb = new StringBuilder();
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId()) && !healthProfessionalApplicationRequestParamsTo.getApplicationTypeId().isEmpty()) {
-            sb.append("AND calculate.application_type_id = '" + healthProfessionalApplicationRequestParamsTo.getApplicationTypeId() + "' ");
+            sb.append("AND calculate.application_type_id IN (").append(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId()).append(") ");
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getRegistrationNo()) && !healthProfessionalApplicationRequestParamsTo.getRegistrationNo().isEmpty()) {
-            sb.append("AND rd.registration_no ILIKE '%" + healthProfessionalApplicationRequestParamsTo.getRegistrationNo() + "%' ");
+            sb.append("AND rd.registration_no ILIKE '%").append(healthProfessionalApplicationRequestParamsTo.getRegistrationNo()).append("%' ");
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getSmcId()) && !healthProfessionalApplicationRequestParamsTo.getSmcId().isEmpty()) {
-            sb.append("AND rd.state_medical_council_id = '" + healthProfessionalApplicationRequestParamsTo.getSmcId() + "' ");
+            sb.append("AND rd.state_medical_council_id = '").append(healthProfessionalApplicationRequestParamsTo.getSmcId()).append("' ");
         }
+
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId()) && !healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId().isEmpty()) {
+            sb.append("AND  work_flow_status_id = '").append(healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId()).append("' ");
+        }
+
         return sb.toString();
     };
 
+    /**
+     * Represents a functional interface to sort the results based on the parameters specified in HealthProfessionalApplicationRequestParamsTo.
+     *
+     * @param healthProfessionalApplicationRequestParamsTo - which holds the parameters.
+     * @return A query string with appended sort order in the format "ORDER BY column_name sort_order"
+     */
     private static final Function<HealthProfessionalApplicationRequestParamsTo, String> SORT_RECORDS = healthProfessionalApplicationRequestParamsTo -> {
         StringBuilder sb = new StringBuilder();
+        sb.append("  ");
         sb.append("ORDER BY  ");
         sb.append(healthProfessionalApplicationRequestParamsTo.getSortBy());
         sb.append("  ");
@@ -52,85 +82,21 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         return sb.toString();
     };
 
-    private static final Function<HealthProfessionalApplicationRequestParamsTo, String> TRACK_APPLICATION = (healthProfessionalApplicationRequestParamsTo) -> {
+    /**
+     * Represents a functional interface to generates a dynamic WHERE clause based on the HealthProfessionalApplicationRequestParamsTo
+     * object passed as a parameter.
+     *
+     * @param healthProfessionalApplicationRequestParamsTo - an object that contains parameters for the function
+     * @return a string query to get the status of the Health Professional's application requests.
+     */
+    private static final Function<HealthProfessionalApplicationRequestParamsTo, String> TRACK_APPLICATION = healthProfessionalApplicationRequestParamsTo -> {
         StringBuilder sb = new StringBuilder();
-        sb.append(
-                "select doctor_status, smc_status, college_dean_status, college_registrar_status, nmc_status, nbe_status, calculate.hp_profile_id, calculate.request_id, rd.registration_no, rd.created_at,stmc.name, hp.full_name, application_type_id from " +
-                        "( " +
-                        "select     " +
-                        "rank() over (PARTITION BY hp_profile_id order by wf.id desc) as current_status,   " +
-                        "CASE " +
-                        "when wf.previous_group_id IN (2,3,4) and wf.action_id = 5 THEN 'SUBMITTED' " +
-                        "when wf.previous_group_id = 1 and wf.action_id = 1 THEN 'SUBMITTED' " +
-                        "when wf.current_group_id = 1 and wf.action_id = 3 THEN 'PENDING' " +
-                        "when wf.previous_group_id IN (2,3,4,5) and wf.action_id IN (2,4,5) THEN 'SUBMITTED' " +
-                        "END as doctor_status, " +
-                        "CASE " +
-                        "when wf.current_group_id = 2 and wf.action_id IN (1,3,4) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 2 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id = 2 THEN 'FORWARDED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "when wf.previous_group_id IN (4,5) and wf.action_id IN (3,4,5) THEN 'FORWARDED' " +
-                        "when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
-                        "END as smc_status, " +
-                        "CASE " +
-                        "when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
-                        "when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and " +
-                        "lag(wf.action_id) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' " +
-                        "when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and " +
-                        "lag(wf.action_id,2) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
-                        "when wf.current_group_id = 4 and wf.action_id IN (1,2,3) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 4 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 4 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as college_dean_status, " +
-                        "CASE " +
-                        "when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
-                        "when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and " +
-                        "lag(wf.action_id) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' " +
-                        "when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and " +
-                        "lag(wf.action_id,2) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.current_group_id = 5 and wf.action_id IN (4,3) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 5 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 5 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 5 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as college_registrar_status, " +
-                        "CASE " +
-                        "when wf.current_group_id = 7 and wf.action_id IN (1,3,4) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 7 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 7 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 7 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
-                        "END as nbe_status,    " +
-                        "CASE " +
-                        "when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.current_group_id = 3 and wf.action_id IN (4,3) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 3 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 3 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 3 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as nmc_status, " +
-                        "wf.id, request_id, hp_profile_id, previous_group_id, current_group_id, action_id, wf.application_type_id " +
-                        "from main.work_flow_audit as wf ");
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId()) && !healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId().isEmpty()) {
-            sb.append("WHERE  work_flow_status_id = '" + healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId() + "' ");
-        }
-        sb.append("order by wf.hp_profile_id desc, wf.id asc " +
-                ")  " +
-                "calculate " +
-                "INNER JOIN main.registration_details as rd on rd.hp_profile_id = calculate.hp_profile_id " +
-                "INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id " +
-                "INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id " +
-                "INNER JOIN main.qualification_details as qd on qd.hp_profile_id = hp.id AND qd.request_id = hp.request_id " +
-                "where calculate.hp_profile_id IS NOT NULL and current_status = 1 ");
+
+        sb.append(FETCH_TRACK_DETAILS_QUERY);
+
+//        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getHpProfileId()) && !healthProfessionalApplicationRequestParamsTo.getHpProfileId().toString().isEmpty()) {
+//            sb.append("AND rd.hp_profile_id = ").append(healthProfessionalApplicationRequestParamsTo.getHpProfileId());
+//        }
 
         String parameters = TRACK_APPLICATION_PARAMETERS.apply(healthProfessionalApplicationRequestParamsTo);
 
@@ -144,6 +110,12 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         return sb.toString();
     };
 
+    /**
+     * This method is used to retrieve the count of health professional application records based on the provided parameters.
+     *
+     * @param healthProfessionalApplicationRequestParamsTo - the parameters used to retrieve the health professional application records count
+     * @return totalRecords the count of health professional application requests
+     */
     private BigInteger getCount(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo) {
         BigInteger totalRecords = null;
         try {
@@ -156,85 +128,21 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         return totalRecords;
     }
 
-    private static final Function<HealthProfessionalApplicationRequestParamsTo, String> GET_RECORD_COUNT = (healthProfessionalApplicationRequestParamsTo) -> {
+    /**
+     * Represents a functional interface to generates a dynamic WHERE clause based on the HealthProfessionalApplicationRequestParamsTo
+     * object passed as a parameter.
+     *
+     * @param healthProfessionalApplicationRequestParamsTo - an object that contains parameters for the function
+     * @return a query to get the count of the Health Professional's application requests.
+     */
+    private static final Function<HealthProfessionalApplicationRequestParamsTo, String> GET_RECORD_COUNT = healthProfessionalApplicationRequestParamsTo -> {
         StringBuilder sb = new StringBuilder();
-        sb.append(
-                "select count(*) from " +
-                        "( " +
-                        "select     " +
-                        "rank() over (PARTITION BY hp_profile_id order by wf.id desc) as current_status,   " +
-                        "CASE " +
-                        "when wf.previous_group_id IN (2,3,4) and wf.action_id = 5 THEN 'SUBMITTED' " +
-                        "when wf.previous_group_id = 1 and wf.action_id = 1 THEN 'SUBMITTED' " +
-                        "when wf.current_group_id = 1 and wf.action_id = 3 THEN 'PENDING' " +
-                        "when wf.previous_group_id IN (2,3,4,5) and wf.action_id IN (2,4,5) THEN 'SUBMITTED' " +
-                        "END as doctor_status, " +
-                        "CASE " +
-                        "when wf.current_group_id = 2 and wf.action_id IN (1,3,4) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 2 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id = 2 THEN 'FORWARDED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "when wf.previous_group_id IN (4,5) and wf.action_id IN (3,4,5) THEN 'FORWARDED' " +
-                        "when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
-                        "END as smc_status, " +
-                        "CASE " +
-                        "when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
-                        "when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and " +
-                        "lag(wf.action_id) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' " +
-                        "when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and " +
-                        "lag(wf.action_id,2) over (partition by hp_profile_id order by id) IN (3,4,5) THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
-                        "when wf.current_group_id = 4 and wf.action_id IN (1,2,3) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 4 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 4 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as college_dean_status, " +
-                        "CASE " +
-                        "when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
-                        "when lag(wf.previous_group_id) over (partition by hp_profile_id order by id) = 5 and " +
-                        "lag(wf.action_id) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' " +
-                        "when lag(wf.previous_group_id,2) over (partition by hp_profile_id order by id) = 5 and " +
-                        "lag(wf.action_id,2) over (partition by hp_profile_id order by id) = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.current_group_id = 5 and wf.action_id IN (4,3) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 5 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 5 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 5 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as college_registrar_status, " +
-                        "CASE " +
-                        "when wf.current_group_id = 7 and wf.action_id IN (1,3,4) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 7 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 7 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 7 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "when wf.previous_group_id = 3 and wf.action_id IN (3,4,5) THEN 'APPROVED' " +
-                        "END as nbe_status,    " +
-                        "CASE " +
-                        "when wf.previous_group_id = 4 and wf.action_id IN (3,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 2 and wf.action_id IN (2,3,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 1 and wf.action_id IN (1,3) THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 4 and wf.action_id = 4 THEN 'NOT YET RECEIVED' " +
-                        "when wf.previous_group_id = 5 and wf.action_id IN (3,4,5) THEN 'NOT YET RECEIVED' " +
-                        "when wf.current_group_id = 3 and wf.action_id IN (4,3) THEN 'PENDING' " +
-                        "when wf.previous_group_id = 3 and wf.action_id = 4 THEN 'APPROVED' " +
-                        "when wf.previous_group_id = 3 and wf.action_id = 5 THEN 'REJECTED' " +
-                        "when wf.previous_group_id = 3 and wf.action_id = 3 THEN 'QUERY RAISED' " +
-                        "END as nmc_status, " +
-                        "wf.id, request_id, hp_profile_id, previous_group_id, current_group_id, action_id, wf.application_type_id " +
-                        "from main.work_flow_audit as wf ");
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId()) && !healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId().isEmpty()) {
-            sb.append("WHERE  work_flow_status_id = '" + healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId() + "' ");
-        }
-        sb.append("order by wf.hp_profile_id desc, wf.id asc " +
-                ")  " +
-                "calculate " +
-                "INNER JOIN main.registration_details as rd on rd.hp_profile_id = calculate.hp_profile_id " +
-                "INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id " +
-                "INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id " +
-                "INNER JOIN main.qualification_details as qd on qd.hp_profile_id = hp.id AND qd.request_id = hp.request_id " +
-                "where calculate.hp_profile_id IS NOT NULL and current_status = 1 ");
+
+        sb.append(FETCH_TRACK_DETAILS_COUNT_QUERY);
+
+//      if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getHpProfileId()) && !healthProfessionalApplicationRequestParamsTo.getHpProfileId().toString().isEmpty()) {
+//          sb.append("AND rd.hp_profile_id = ").append(healthProfessionalApplicationRequestParamsTo.getHpProfileId());
+//        }
 
         String parameters = TRACK_APPLICATION_PARAMETERS.apply(healthProfessionalApplicationRequestParamsTo);
 
@@ -244,6 +152,15 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         return sb.toString();
     };
 
+    /**
+     * Retrieves the details of health professional applications requests based on the provided parameters.
+     *
+     * @param healthProfessionalApplicationRequestParamsTo - object containing the filter criteria for fetching application details
+     * @param pagination                                   - object for pagination
+     * @return the HealthProfessionalApplicationResponseTo object representing the response object
+     * which contains all the details used to track the health professionals who have
+     * raised a request
+     */
     @Override
     public HealthProfessionalApplicationResponseTo fetchTrackApplicationDetails(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, Pageable pagination) {
         HealthProfessionalApplicationResponseTo healthProfessionalApplicationResponseTo = new HealthProfessionalApplicationResponseTo();
@@ -270,6 +187,9 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setCouncilName((String) result[10]);
             healthProfessionalApplicationTo.setApplicantFullName((String) result[11]);
             healthProfessionalApplicationTo.setApplicationTypeId((BigInteger) result[12]);
+            healthProfessionalApplicationTo.setApplicationTypeName((String) result[13]);
+            healthProfessionalApplicationTo.setPendency((Double) result[14]);
+            healthProfessionalApplicationTo.setWorkFlowStatusId((BigInteger) result[15]);
             healthProfessionalApplicationToList.add(healthProfessionalApplicationTo);
         });
         healthProfessionalApplicationResponseTo.setHealthProfessionalApplications(healthProfessionalApplicationToList);

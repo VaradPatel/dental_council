@@ -1,7 +1,5 @@
 package in.gov.abdm.nmr.mapper;
 
-import in.gov.abdm.nmr.entity.Address;
-import in.gov.abdm.nmr.entity.AddressMaster;
 import in.gov.abdm.nmr.entity.QualificationDetails;
 import in.gov.abdm.nmr.entity.QualificationDetailsMaster;
 import org.mapstruct.Mapper;

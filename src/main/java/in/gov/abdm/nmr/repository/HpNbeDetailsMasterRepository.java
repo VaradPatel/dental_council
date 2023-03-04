@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.repository;
 
-import in.gov.abdm.nmr.entity.HpNbeDetails;
 import in.gov.abdm.nmr.entity.HpNbeDetailsMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

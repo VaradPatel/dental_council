@@ -1,13 +1,12 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.math.BigInteger;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import in.gov.abdm.nmr.entity.SMCProfile;
 import in.gov.abdm.nmr.repository.ISmcProfileRepository;
 import in.gov.abdm.nmr.service.ISmcProfileDaoService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigInteger;
 
 @Service
 @Transactional
@@ -20,8 +19,8 @@ public class SmcProfileDaoServiceImpl implements ISmcProfileDaoService {
     }
 
     @Override
-    public SMCProfile findByUserDetail(BigInteger userDetailId) {
-        return smcProfileRepository.findByUserDetail(userDetailId);
+    public SMCProfile findByUserId(BigInteger userId) {
+        return smcProfileRepository.findByUserId(userId);
     }
 
 }

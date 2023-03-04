@@ -1,17 +1,16 @@
 package in.gov.abdm.nmr.security.username_password;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.service.impl.UserDaoServiceImpl;
+import in.gov.abdm.nmr.util.NMRConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.stereotype.Component;
 
-import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.service.impl.UserDaoServiceImpl;
-import in.gov.abdm.nmr.util.NMRConstants;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Component
 public class AuthenticationLockingService {
@@ -73,7 +72,7 @@ public class AuthenticationLockingService {
      */
     public void increaseFailedAttempts(User user) {
         user.setFailedAttempt(user.getFailedAttempt() + 1);
-        userDaoService.saveUserDetail(user);
+        userDaoService.save(user);
     }
 
     /**
@@ -85,7 +84,7 @@ public class AuthenticationLockingService {
 
         user.setAccountNonLocked(false);
         user.setLockTime(Timestamp.valueOf(LocalDateTime.now()));
-        userDaoService.saveUserDetail(user);
+        userDaoService.save(user);
     }
 
     /**
@@ -102,7 +101,7 @@ public class AuthenticationLockingService {
             user.setAccountNonLocked(true);
             user.setLockTime(null);
             user.setFailedAttempt(0);
-            userDaoService.saveUserDetail(user);
+            userDaoService.save(user);
             return true;
         }
         return false;

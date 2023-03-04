@@ -1,17 +1,22 @@
 package in.gov.abdm.nmr.dto;
 
-import java.sql.Date;
-import java.util.List;
-
-import in.gov.abdm.nmr.dto.LanguageTO;
-import in.gov.abdm.nmr.dto.NationalityTO;
-import in.gov.abdm.nmr.dto.ScheduleTO;
 import lombok.Data;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import static in.gov.abdm.nmr.util.NMRConstants.NOT_NULL_ERROR_MSG;
 
 @Data
 public class HpPersonalUpdateRequestTO {
-	private PersonalDetailsTO personalDetails;
+
+    @Valid
+    @NotNull(message = NOT_NULL_ERROR_MSG)
+    private PersonalDetailsTO personalDetails;
+
+    @Valid
+    @NotNull(message = NOT_NULL_ERROR_MSG)
     private CommunicationAddressTO communicationAddress;
-    private IMRDetailsTO imrDetails;
+
     private String requestId;
 }

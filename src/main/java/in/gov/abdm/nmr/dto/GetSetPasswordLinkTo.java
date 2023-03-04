@@ -12,10 +12,15 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class GetSetPasswordLinkTo {
 
-    @NotBlank(message = NMRConstants.CONTACT_NOT_NULL)
-    String contact;
+    @NotBlank(message = NMRConstants.EMAIL_NOT_NULL)
+    String email;
 
-    @NotBlank(message = NMRConstants.TYPE_NOT_NULL)
-    String type;
+    @NotBlank(message = NMRConstants.MOBILE_NOT_NULL)
+    String mobile;
+
+    @NotBlank(message = NMRConstants.USERNAME_NOT_NULL)
+    String username;
+
+
 
 }

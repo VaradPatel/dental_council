@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.dto;
 
-import java.math.BigInteger;
-
 import lombok.Data;
+
+import java.math.BigInteger;
 
 @Data
 public class CollegeProfileTo {
@@ -19,4 +19,5 @@ public class CollegeProfileTo {
     private String address;
     private String pinCode;
     private String requestId;
+    private boolean isApproved;
 }

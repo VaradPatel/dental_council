@@ -2,9 +2,17 @@ package in.gov.abdm.nmr.dto;
 
 import lombok.Value;
 
+import javax.validation.constraints.NotNull;
+import java.math.BigInteger;
+
+import static in.gov.abdm.nmr.util.NMRConstants.NOT_NULL_ERROR_MSG;
+
 @Value
 public class SmcRegistrationDetailRequestTO {
 
+    @NotNull(message = NOT_NULL_ERROR_MSG)
     private Integer councilId;
-    private Integer registrationNumber;
+
+    @NotNull(message = NOT_NULL_ERROR_MSG)
+    private BigInteger registrationNumber;
 }

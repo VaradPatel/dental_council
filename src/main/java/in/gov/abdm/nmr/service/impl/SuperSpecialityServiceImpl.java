@@ -1,20 +1,19 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.util.List;
-
-import javax.transaction.Transactional;
-
+import in.gov.abdm.nmr.dto.SuperSpecialityTO;
 import in.gov.abdm.nmr.mapper.SuperSpecialityDtoMapper;
 import in.gov.abdm.nmr.repository.SuperSpecialityRepository;
-import in.gov.abdm.nmr.dto.SuperSpecialityTO;
 import in.gov.abdm.nmr.service.ISuperSpecialityService;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @Transactional
 public class SuperSpecialityServiceImpl implements ISuperSpecialityService {
 
-    public SuperSpecialityRepository superSpecialityRepository;
+    private SuperSpecialityRepository superSpecialityRepository;
 
     private SuperSpecialityDtoMapper superSpecialityDtoMapper;
 
@@ -25,7 +24,7 @@ public class SuperSpecialityServiceImpl implements ISuperSpecialityService {
 
     @Override
     public List<SuperSpecialityTO> getSpecialityData() {
-        return superSpecialityDtoMapper.SpecialityDataToDto(superSpecialityRepository.getSpeciality());
+        return superSpecialityDtoMapper.specialityDataToDto(superSpecialityRepository.getSpeciality());
 
     }
 }

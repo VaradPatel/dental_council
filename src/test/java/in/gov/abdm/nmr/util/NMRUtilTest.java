@@ -1,5 +1,7 @@
 package in.gov.abdm.nmr.util;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
@@ -8,14 +10,25 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class NMRUtilTest {
 
+    private String name;
+
+    @BeforeEach
+    public void init() {
+        name = "John Doe";
+    }
+
+    @AfterEach
+    void tearDown() {
+        name = null;
+    }
     @Test
     void testCoalescingWithString(){
-        assertEquals("John Doe", coalesce("John Doe", null));
+        assertEquals(name, coalesce(name, null));
     }
 
     @Test
     void testCoalescingWithStringWithDefaultValue(){
-        assertEquals("John Doe", coalesce(null, "John Doe"));
+        assertEquals(name, coalesce(null, name));
     }
 
     @Test

@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.service.impl;
 import in.gov.abdm.nmr.dto.LoginResponseTO;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.security.common.RoleConstants;
@@ -63,34 +64,36 @@ public class AuthServiceImpl implements IAuthService {
         LoginResponseTO loginResponseTO = new LoginResponseTO();
         loginResponseTO.setUserType(userDetail.getUserType().getId());
         loginResponseTO.setUserGroupId(userDetail.getGroup().getId());
-
+        loginResponseTO.setUserId(userDetail.getId());
         if (UserTypeEnum.HEALTH_PROFESSIONAL.getCode().equals(userDetail.getUserType().getId())) {
-            HpProfile hp = hpProfileService.findByUserDetail(userDetail.getId());
-            loginResponseTO.setProfileId(hp.getId());
-            loginResponseTO.setHpRegistered(StringUtils.isBlank(hp.getNmrId()));
-            loginResponseTO.setBlacklisted(false);
-
+            HpProfile hp = hpProfileService.findLatestEntryByUserid(userDetail.getId());
+            if (hp != null) {
+                loginResponseTO.setProfileId(hp.getId());
+                loginResponseTO.setHpRegistered(StringUtils.isBlank(hp.getNmrId()));
+                loginResponseTO.setBlacklisted(HpProfileStatus.BLACKLISTED.getId() == hp.getHpProfileStatus().getId() ||
+                        HpProfileStatus.SUSPENDED.getId() == hp.getHpProfileStatus().getId());
+            }
         } else if (UserTypeEnum.COLLEGE.getCode().equals(userDetail.getUserType().getId())) {
             loginResponseTO.setUserSubType(userDetail.getUserSubType().getId());
 
             if (UserSubTypeEnum.COLLEGE.getCode().equals(userDetail.getUserSubType().getId())) {
-                loginResponseTO.setProfileId(collegeDaoService.findByUserDetail(userDetail.getId()).getId());
+                loginResponseTO.setProfileId(collegeDaoService.findByUserId(userDetail.getId()).getId());
 
             } else if (UserSubTypeEnum.COLLEGE_DEAN.getCode().equals(userDetail.getUserSubType().getId())) {
-                loginResponseTO.setProfileId(collegeDeanDaoService.findByUserDetail(userDetail.getId()).getId());
+                loginResponseTO.setProfileId(collegeDeanDaoService.findByUserId(userDetail.getId()).getId());
 
             } else if (UserSubTypeEnum.COLLEGE_REGISTRAR.getCode().equals(userDetail.getUserSubType().getId())) {
-                loginResponseTO.setProfileId(collegeRegistrarDaoService.findByUserDetail(userDetail.getId()).getId());
+                loginResponseTO.setProfileId(collegeRegistrarDaoService.findByUserId(userDetail.getId()).getId());
 
             }
 
         } else if (UserTypeEnum.STATE_MEDICAL_COUNCIL.getCode().equals(userDetail.getUserType().getId())) {
-            loginResponseTO.setProfileId(smcProfileDaoService.findByUserDetail(userDetail.getId()).getId());
+            loginResponseTO.setProfileId(smcProfileDaoService.findByUserId(userDetail.getId()).getId());
 
         } else if (UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode().equals(userDetail.getUserType().getId())) {
-            loginResponseTO.setProfileId(nmcDaoService.findByUserDetail(userDetail.getId()).getId());
+            loginResponseTO.setProfileId(nmcDaoService.findByUserId(userDetail.getId()).getId());
         } else if (UserTypeEnum.NBE.getCode().equals(userDetail.getUserType().getId())) {
-            loginResponseTO.setProfileId(nbeDaoService.findByUserDetail(userDetail.getId()).getId());
+            loginResponseTO.setProfileId(nbeDaoService.findByUserId(userDetail.getId()).getId());
         }
         return loginResponseTO;
     }

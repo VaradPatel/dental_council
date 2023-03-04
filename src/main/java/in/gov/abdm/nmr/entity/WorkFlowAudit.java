@@ -1,11 +1,10 @@
 package in.gov.abdm.nmr.entity;
 
-import java.math.BigInteger;
-import java.sql.Timestamp;
+import lombok.*;
 
 import javax.persistence.*;
-
-import lombok.*;
+import java.math.BigInteger;
+import java.sql.Timestamp;
 
 @Getter
 @Setter

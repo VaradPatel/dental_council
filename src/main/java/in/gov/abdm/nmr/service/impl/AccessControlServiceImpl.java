@@ -1,14 +1,15 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.math.BigInteger;
-
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.repository.IUserRepository;
+import in.gov.abdm.nmr.service.IAccessControlService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.repository.IUserRepository;
-import in.gov.abdm.nmr.service.IAccessControlService;
+import java.math.BigInteger;
+
+import static in.gov.abdm.nmr.util.NMRConstants.FORBIDDEN;
 
 @Service
 public class AccessControlServiceImpl implements IAccessControlService {
@@ -24,7 +25,16 @@ public class AccessControlServiceImpl implements IAccessControlService {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedInUser = userRepository.findByUsername(userName);
         if (loggedInUser == null || !loggedInUser.getId().equals(userId)) {
-            throw new AccessDeniedException("Forbidden");
+            throw new AccessDeniedException(FORBIDDEN);
         }
     }
+
+    @Override
+    public User getLoggedInUser() {
+        return userRepository.findByUsername(SecurityContextHolder.getContext()
+                                                .getAuthentication()
+                                                .getName());
+    }
+
+
 }

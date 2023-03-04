@@ -1,22 +1,37 @@
 package in.gov.abdm.nmr.security.username_password;
 
-import java.util.Objects;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
+import java.math.BigInteger;
+import java.util.Objects;
 
 public class UserPasswordAuthenticationToken extends UsernamePasswordAuthenticationToken {
 
     private static final long serialVersionUID = -9000569283665023427L;
 
-    private final String userType;
+    private final BigInteger userType;
+    
+    private final BigInteger loginType;
+    
+    private final String otpTransactionId;
 
-    public UserPasswordAuthenticationToken(Object principal, Object credentials, String userType) {
+    public UserPasswordAuthenticationToken(Object principal, Object credentials, BigInteger userType, BigInteger loginType, String otpTransactionId) {
         super(principal, credentials);
         this.userType = userType;
+        this.loginType = loginType;
+        this.otpTransactionId = otpTransactionId;
     }
 
-    public String getUserType() {
+    public BigInteger getUserType() {
         return userType;
+    }
+
+    public BigInteger getLoginType() {
+        return loginType;
+    }
+
+    public String getOtpTransactionId() {
+        return otpTransactionId;
     }
 
     @Override
@@ -36,7 +51,7 @@ public class UserPasswordAuthenticationToken extends UsernamePasswordAuthenticat
         return Objects.equals(userType, other.userType);
     }
 
-    public static UserPasswordAuthenticationToken unauthenticated(Object principal, Object credentials, String userType) {
-        return new UserPasswordAuthenticationToken(principal, credentials, userType);
+    public static UserPasswordAuthenticationToken unauthenticated(Object principal, Object credentials, BigInteger userType, BigInteger loginType, String otpTransactionId) {
+        return new UserPasswordAuthenticationToken(principal, credentials, userType, loginType, otpTransactionId);
     }
 }
