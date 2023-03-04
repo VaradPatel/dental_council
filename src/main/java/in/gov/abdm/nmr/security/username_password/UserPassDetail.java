@@ -1,24 +1,33 @@
 package in.gov.abdm.nmr.security.username_password;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Objects;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 
 public class UserPassDetail extends User {
 
     private static final long serialVersionUID = 3325160730962409090L;
 
-    private final String userType;
+    private final BigInteger userType;
+    
+    private final String mobileNumber;
 
-    public UserPassDetail(String username, String password, Collection<? extends GrantedAuthority> authorities, String userType,boolean accountNonLocked) {
-        super(username, password, true,true,true,accountNonLocked,authorities);
+    public UserPassDetail(String username, String mobileNumber, String password, //
+                          Collection<? extends GrantedAuthority> authorities, BigInteger userType, boolean accountNonLocked) {
+        super(username, password, true, true, true, accountNonLocked, authorities);
         this.userType = userType;
+        this.mobileNumber = mobileNumber;
     }
 
-    public String getUserType() {
+    public BigInteger getUserType() {
         return userType;
+    }
+
+    public String getMobileNumber() {
+        return mobileNumber;
     }
 
     @Override

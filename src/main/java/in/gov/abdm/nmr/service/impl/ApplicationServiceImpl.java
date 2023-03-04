@@ -1,24 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.enums.Action;
-import in.gov.abdm.nmr.enums.Group;
-import in.gov.abdm.nmr.enums.HpProfileStatus;
-import in.gov.abdm.nmr.exception.NmrException;
-import in.gov.abdm.nmr.exception.WorkFlowException;
-import in.gov.abdm.nmr.repository.*;
-import in.gov.abdm.nmr.service.IApplicationService;
-import in.gov.abdm.nmr.service.IRequestCounterService;
-import in.gov.abdm.nmr.service.IWorkFlowService;
-import in.gov.abdm.nmr.util.NMRUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
+import static in.gov.abdm.nmr.util.NMRConstants.DEFAULT_SORT_ORDER;
+import static in.gov.abdm.nmr.util.NMRConstants.MAX_DATA_SIZE;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -26,8 +9,47 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static in.gov.abdm.nmr.util.NMRConstants.DEFAULT_SORT_ORDER;
-import static in.gov.abdm.nmr.util.NMRConstants.MAX_DATA_SIZE;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import in.gov.abdm.nmr.dto.ApplicationRequestTo;
+import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestParamsTo;
+import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
+import in.gov.abdm.nmr.dto.ReactivateHealthProfessionalRequestParam;
+import in.gov.abdm.nmr.dto.ReactivateHealthProfessionalResponseTO;
+import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
+import in.gov.abdm.nmr.entity.ForeignQualificationDetails;
+import in.gov.abdm.nmr.entity.HpProfile;
+import in.gov.abdm.nmr.entity.LanguagesKnown;
+import in.gov.abdm.nmr.entity.QualificationDetails;
+import in.gov.abdm.nmr.entity.RegistrationDetails;
+import in.gov.abdm.nmr.entity.SuperSpeciality;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.entity.WorkProfile;
+import in.gov.abdm.nmr.enums.Action;
+import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.enums.HpProfileStatus;
+import in.gov.abdm.nmr.exception.NmrException;
+import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;
+import in.gov.abdm.nmr.repository.IForeignQualificationDetailRepository;
+import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.IQualificationDetailRepository;
+import in.gov.abdm.nmr.repository.IRegistrationDetailRepository;
+import in.gov.abdm.nmr.repository.IWorkFlowCustomRepository;
+import in.gov.abdm.nmr.repository.LanguagesKnownRepository;
+import in.gov.abdm.nmr.repository.SuperSpecialityRepository;
+import in.gov.abdm.nmr.repository.WorkProfileRepository;
+import in.gov.abdm.nmr.service.IApplicationService;
+import in.gov.abdm.nmr.service.IRequestCounterService;
+import in.gov.abdm.nmr.service.IUserDaoService;
+import in.gov.abdm.nmr.service.IWorkFlowService;
+import in.gov.abdm.nmr.util.NMRUtil;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * A class that implements all the methods of the interface  IActionService
@@ -119,7 +141,7 @@ public class ApplicationServiceImpl implements IApplicationService {
      * Singleton principle
      */
     @Autowired
-    private IUserRepository userDetailRepository;
+    private IUserDaoService userDaoService;
 
     /**
      * Injecting a IHpProfileRepository bean instead of an explicit object creation to achieve
@@ -227,7 +249,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         workFlowRequestTO.setApplicationTypeId(applicationRequestTo.getApplicationTypeId());
         workFlowRequestTO.setActionId(applicationRequestTo.getActionId());
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userDetailRepository.findByUsername(userName);
+        User userDetail = userDaoService.findByUsername(userName);
         workFlowRequestTO.setActorId(userDetail.getGroup().getId());
         workFlowRequestTO.setHpProfileId(newHpProfile.getId());
         workFlowRequestTO.setStartDate(applicationRequestTo.getFromDate());

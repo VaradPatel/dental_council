@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import brave.Tracer;
 import in.gov.abdm.nmr.dto.LoginRequestTO;
 import in.gov.abdm.nmr.entity.SecurityAuditTrail;
+import in.gov.abdm.nmr.enums.LoginTypeEnum;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.ICaptchaService;
@@ -72,12 +73,17 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        UserPasswordAuthenticationToken authRequest = UserPasswordAuthenticationToken.unauthenticated(null, null, null);
+        UserPasswordAuthenticationToken authRequest = UserPasswordAuthenticationToken.unauthenticated(null, null, null, null, null);
         try {
             requestBodyString = readRequestBody(request);
             LoginRequestTO requestBodyTO = objectMapper.readValue(requestBodyString, LoginRequestTO.class);
+            
+            if((LoginTypeEnum.MOBILE_OTP.getCode().equals(requestBodyTO.getLoginType()) || LoginTypeEnum.NMR_ID_OTP.getCode().equals(requestBodyTO.getLoginType())) //
+                    && (requestBodyTO.getOtpTransId() == null || requestBodyTO.getOtpTransId().isBlank())) {
+                throw new AuthenticationServiceException("Invalid request");
+            }
             authRequest = UserPasswordAuthenticationToken.unauthenticated(requestBodyTO.getUsername(), //
-                    rsaUtil.decrypt(requestBodyTO.getPassword()), requestBodyTO.getUserType());
+                    rsaUtil.decrypt(requestBodyTO.getPassword()), requestBodyTO.getUserType(), requestBodyTO.getLoginType(), requestBodyTO.getOtpTransId());
             authRequest.setDetails(createSecurityAuditTrail(request));
 
             if (!captchaService.isCaptchaVerified(requestBodyTO.getCaptchaTransId())) {

@@ -54,43 +54,19 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
     }
 
     public CollegeDean saveCollegeDean(BigInteger collegeId, CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
-        User collegeDeanUserDetail = null;
-        CollegeDean collegeDeanEntityOld = null;
-
-       if (collegeDeanCreationRequestTo.getId() != null || collegeDeanCreationRequestTo.getUserId() != null) {
-            accessControlService.validateUser(collegeDeanCreationRequestTo.getUserId());
-            collegeDeanUserDetail = userDetailService.findById(collegeDeanCreationRequestTo.getUserId());
-
-            if (!collegeDeanUserDetail.getUsername().equals(collegeDeanCreationRequestTo.getEmailId()) && userDetailService.findByUsername(collegeDeanCreationRequestTo.getEmailId()) != null) {
-                throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
-            }
-
-            collegeDeanEntityOld = findByUserId(collegeDeanUserDetail.getId());
-            if (!collegeDeanEntityOld.getId().equals(collegeDeanCreationRequestTo.getId())) {
-                throw new NmrException(FORBIDDEN, HttpStatus.FORBIDDEN);
-            }
-
-            collegeDeanUserDetail.setUsername(collegeDeanCreationRequestTo.getEmailId());
-            if (collegeDeanCreationRequestTo.getPassword() != null) {
-                collegeDeanUserDetail.setPassword(bCryptPasswordEncoder.encode(collegeDeanCreationRequestTo.getPassword()));
-            }
-            userDetailService.saveUserDetail(collegeDeanUserDetail);
-
-            CollegeDean collegeDeanEntity = collegeDeanMapper.collegeDeanDtoToEntity(collegeDeanCreationRequestTo);
-            collegeDeanEntity.setUser(collegeDeanUserDetail);
-            collegeDeanEntity.setCreatedAt(collegeDeanEntityOld.getCreatedAt());
-            collegeDeanEntity.setCollege(collegeDeanEntityOld.getCollege());
-            return collegeDeanRepository.saveAndFlush(collegeDeanEntity);
-
-        } else if (userDetailService.findByUsername(collegeDeanCreationRequestTo.getEmailId()) != null) {
+        if (userDetailService.findByUsername(collegeDeanCreationRequestTo.getEmailId()) != null) {
             throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 
+        if (userDetailService.findByUsername(collegeDeanCreationRequestTo.getPhoneNumber()) != null) {
+            throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
+        }
 
-        User userDetail = new User(collegeDeanCreationRequestTo.getUserId(), collegeDeanCreationRequestTo.getEmailId(), //
-                bCryptPasswordEncoder.encode(collegeDeanCreationRequestTo.getPassword()), null, true, true, //
-                entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_DEAN.getCode()), entityManager.getReference(UserGroup.class, in.gov.abdm.nmr.enums.Group.COLLEGE_DEAN.getId()), true, 0, null);
-        userDetailService.saveUserDetail(userDetail);
+        User userDetail = new User(collegeDeanCreationRequestTo.getUserId(), collegeDeanCreationRequestTo.getEmailId(), collegeDeanCreationRequestTo.getPhoneNumber(), null, null,//
+                bCryptPasswordEncoder.encode(collegeDeanCreationRequestTo.getPassword()), null, true, true, entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), //
+                entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_DEAN.getCode()), entityManager.getReference(UserGroup.class, in.gov.abdm.nmr.enums.Group.COLLEGE_DEAN.getId()), // 
+                true, 0, null);
+        userDetailService.save(userDetail);
 
         CollegeDean collegeDeanEntity = collegeDeanMapper.collegeDeanDtoToEntity(collegeDeanCreationRequestTo);
         collegeDeanEntity.setUser(userDetail);
@@ -120,7 +96,11 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
             collegeDeanCreationRequestTo.setId(deanId);
             collegeDeanUserDetail = userDetailService.findById(collegeDeanCreationRequestTo.getUserId());
 
-            if (!collegeDeanUserDetail.getUsername().equals(collegeDeanCreationRequestTo.getEmailId()) && userDetailService.findByUsername(collegeDeanCreationRequestTo.getEmailId()) != null) {
+            if (!collegeDeanUserDetail.getEmail().equals(collegeDeanCreationRequestTo.getEmailId()) && userDetailService.findByUsername(collegeDeanCreationRequestTo.getEmailId()) != null) {
+                throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
+            }
+            
+            if (!collegeDeanUserDetail.getMobileNumber().equals(collegeDeanCreationRequestTo.getPhoneNumber()) && userDetailService.findByUsername(collegeDeanCreationRequestTo.getPhoneNumber()) != null) {
                 throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
             }
 
@@ -129,11 +109,12 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
                 throw new NmrException(FORBIDDEN, HttpStatus.FORBIDDEN);
             }
 
-            collegeDeanUserDetail.setUsername(collegeDeanCreationRequestTo.getEmailId());
+            collegeDeanUserDetail.setEmail(collegeDeanCreationRequestTo.getEmailId());
+            collegeDeanUserDetail.setMobileNumber(collegeDeanCreationRequestTo.getPhoneNumber());
             if (collegeDeanCreationRequestTo.getPassword() != null) {
                 collegeDeanUserDetail.setPassword(bCryptPasswordEncoder.encode(collegeDeanCreationRequestTo.getPassword()));
             }
-            userDetailService.saveUserDetail(collegeDeanUserDetail);
+            userDetailService.save(collegeDeanUserDetail);
 
             CollegeDean collegeDeanEntity = collegeDeanMapper.collegeDeanDtoToEntity(collegeDeanCreationRequestTo);
             collegeDeanEntity.setUser(collegeDeanUserDetail);
@@ -142,6 +123,8 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
             return collegeDeanRepository.saveAndFlush(collegeDeanEntity);
 
         } else if (userDetailService.findByUsername(collegeDeanCreationRequestTo.getEmailId()) != null) {
+            throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
+        } else if (userDetailService.findByUsername(collegeDeanCreationRequestTo.getPhoneNumber()) != null) {
             throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
         return null;

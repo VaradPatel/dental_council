@@ -1,8 +1,7 @@
 package in.gov.abdm.nmr.security.username_password;
 
-import in.gov.abdm.nmr.dto.UserSearchTO;
-import in.gov.abdm.nmr.dto.UserTO;
-import in.gov.abdm.nmr.service.IUserDaoService;
+import java.util.Collections;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import in.gov.abdm.nmr.dto.UserSearchTO;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.service.IUserDaoService;
 
 @Component
 public class UserPasswordDetailsService implements UserDetailsService {
@@ -21,10 +22,10 @@ public class UserPasswordDetailsService implements UserDetailsService {
     @Autowired
     AuthenticationLockingService authenticationHandler;
 
-    private IUserDaoService userDetailService;
+    private IUserDaoService userDaoService;
 
-    public UserPasswordDetailsService(IUserDaoService userDetailService) {
-        this.userDetailService = userDetailService;
+    public UserPasswordDetailsService(IUserDaoService userDaoService) {
+        this.userDaoService = userDaoService;
     }
 
     @Override
@@ -32,13 +33,13 @@ public class UserPasswordDetailsService implements UserDetailsService {
         UserSearchTO userDetailSearchTO = new UserSearchTO();
         userDetailSearchTO.setUsername(username);
 
-        UserTO userDetail = userDetailService.searchUserDetail(userDetailSearchTO);
-        if (userDetail == null) {
+        User user = userDaoService.findByUsername(username);
+        if (user == null) {
             LOGGER.error("Invalid username");
             throw new UsernameNotFoundException("Invalid username");
         }
 
-        boolean isAccountNonLocked= authenticationHandler.checkAndUpdateLockStatus(username);
-        return new UserPassDetail(userDetail.getUsername(), userDetail.getPassword(), Collections.emptyList(), userDetail.getUserType().getId(),isAccountNonLocked);
+        boolean isAccountNonLocked = authenticationHandler.checkAndUpdateLockStatus(username);
+        return new UserPassDetail(username, user.getMobileNumber(), user.getPassword(), Collections.emptyList(), user.getUserType().getId(), isAccountNonLocked);
     }
 }
