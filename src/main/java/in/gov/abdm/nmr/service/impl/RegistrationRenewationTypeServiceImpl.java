@@ -24,7 +24,7 @@ public class RegistrationRenewationTypeServiceImpl implements IRegistrationRenew
 
     @Override
     public List<RegistrationRenewationTypeTO> getRegistrationRenewationType() {
-        return registrationRenewationTypeDtoMapper.RegistrationRenewationTypeDataToDto(registrationRenewationTypeRepository.getRegistrationRenewationType());
+        return registrationRenewationTypeDtoMapper.registrationRenewationTypeDataToDto(registrationRenewationTypeRepository.getRegistrationRenewationType());
 
     }
 

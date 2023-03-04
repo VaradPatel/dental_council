@@ -174,7 +174,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
 
     @Override
     public SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException {
-        SMCProfile smcProfile = smcProfileRepository.findSmcProfileById(id);
+        SMCProfile smcProfile = smcProfileRepository.findById(id).orElse(null);
         if (smcProfile == null) {
             throw new NmrException(INVALID_PROFILE_ID, HttpStatus.BAD_REQUEST);
         }
@@ -187,7 +187,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
         smcProfile.setNdhmEnrollment(smcProfileTO.getNdhmEnrollment());
         smcProfile.setMobileNo(smcProfileTO.getMobileNo());
         smcProfile.setEmailId(smcProfileTO.getEmailId());
-        StateMedicalCouncil stateMedicalCouncil = new StateMedicalCouncil();
+        StateMedicalCouncil stateMedicalCouncil = smcProfile.getStateMedicalCouncil();
         stateMedicalCouncil.setId(smcProfileTO.getStateMedicalCouncil().getId());
         stateMedicalCouncil.setName(smcProfileTO.getStateMedicalCouncil().getName());
         smcProfile.setStateMedicalCouncil(stateMedicalCouncil);

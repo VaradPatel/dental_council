@@ -102,13 +102,13 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 	@Override
 	public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) {
 		return iHpProfileMapper
-				.SmcRegistrationToDto(hpProfileDaoService.fetchSmcRegistrationDetail(councilId, registrationNumber));
+				.smcRegistrationToDto(hpProfileDaoService.fetchSmcRegistrationDetail(councilId, registrationNumber));
 	}
 
 
     @Override
     public HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException {
-        return iHpProfileMapper.HpProfilePictureUploadToDto(hpProfileDaoService.uploadHpProfilePhoto(file, hpProfileId));
+        return iHpProfileMapper.hpProfilePictureUploadToDto(hpProfileDaoService.uploadHpProfilePhoto(file, hpProfileId));
     }
 
     /**
@@ -147,7 +147,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Override
     public HpProfileRegistrationResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
-                                                                           String hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof) {
+                                                                           String hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof) throws NmrException {
         HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(hpProfileId, hpRegistrationUpdateRequestTO, certificate, proof);
         return getHealthProfessionalRegistrationDetail(hpProfileUpdateResponseTO.getHpProfileId());
     }

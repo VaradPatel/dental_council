@@ -10,6 +10,6 @@ import java.util.List;
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface CountryDtoMapper {
 
-    List<CountryTO> CountryDataToDto(List<Country> country);
+    List<CountryTO> countryDataToDto(List<Country> country);
 
 }

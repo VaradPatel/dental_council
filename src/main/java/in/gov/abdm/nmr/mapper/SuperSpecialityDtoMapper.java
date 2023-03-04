@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface SuperSpecialityDtoMapper {
 
-    List<SuperSpecialityTO> SpecialityDataToDto(List<SuperSpeciality> superSpeciality);
+    List<SuperSpecialityTO> specialityDataToDto(List<SuperSpeciality> superSpeciality);
 
 
 }

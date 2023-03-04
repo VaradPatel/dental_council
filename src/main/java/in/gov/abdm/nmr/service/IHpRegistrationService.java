@@ -39,7 +39,7 @@ public interface IHpRegistrationService {
      * Adds qualifications to a HP profile.
      *
      * @param hpProfileId                   The ID of the HP profile to which the qualifications will be added.
-     * @param qualificationDetailRequestTOs A list of qualification details to be added to the HP profile.
+     * @param qualificationDetailRequestTOsString A list of qualification details to be added to the HP profile.
      * @return A string indicating the status of the operation.
      * @throws WorkFlowException If an error occurs during the qualification addition process.
      */
@@ -65,7 +65,7 @@ public interface IHpRegistrationService {
      * @throws Exception If any error occurs during the operation.
      */
     HpProfileRegistrationResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
-                                                                    String hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof);
+                                                                    String hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof) throws NmrException;
 
     /**
      * Adds or updates work profile details for a given health professional profile.
