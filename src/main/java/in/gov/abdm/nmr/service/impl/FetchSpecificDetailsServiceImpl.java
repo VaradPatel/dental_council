@@ -231,7 +231,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
     public DashboardResponseTO fetchDashboardData(DashboardRequestTO dashboardRequestTO) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User userDetail = userDaoService.findByUsername(userName);
-
+        String column = mapColumnToTable(dashboardRequestTO.getSortBy());
         BigInteger groupId = userDetail.getGroup().getId();
         BigInteger userId = userDetail.getId();
         String sortOrder = dashboardRequestTO.getSortOrder();
@@ -241,7 +241,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         dashboardRequestParamsTO.setName(dashboardRequestTO.getName());
         dashboardRequestParamsTO.setNmrId(dashboardRequestTO.getNmrId());
         dashboardRequestParamsTO.setSearch(dashboardRequestTO.getSearch());
-        dashboardRequestParamsTO.setSortBy(mapColumnToTable(dashboardRequestTO.getSortBy()));
+        dashboardRequestParamsTO.setSortBy(column);
         dashboardRequestParamsTO.setUserGroupId(groupId);
         dashboardRequestParamsTO.setUserGroupStatus(dashboardRequestTO.getUserGroupStatus());
         if (groupId.equals(Group.SMC.getId())) {
@@ -265,6 +265,12 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         return iFetchSpecificDetailsCustomRepository.fetchDashboardData(dashboardRequestParamsTO, pageable);
     }
 
+    /**
+     * Maps the database column name to be used for sorting based on the columnToSort name.
+     *
+     * @param columnToSort - name of the column to be sorted
+     * @return database column name to be used for sorting
+     */
     private String mapColumnToTable(String columnToSort) {
         Map<String, String> columnToSortMap = new HashMap<>();
         columnToSortMap.put("doctorStatus", " doctor_status");

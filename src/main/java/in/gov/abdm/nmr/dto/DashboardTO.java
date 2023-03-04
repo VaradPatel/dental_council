@@ -18,4 +18,5 @@ public class DashboardTO {
     private String createdAt;
     private String councilName;
     private String applicantFullName;
+    private BigInteger workFlowStatusId;
 }

@@ -21,4 +21,5 @@ public class HealthProfessionalApplicationTo {
     private BigInteger applicationTypeId;
     private String applicationTypeName;
     private Double pendency;
+    private BigInteger workFlowStatusId;
 }
