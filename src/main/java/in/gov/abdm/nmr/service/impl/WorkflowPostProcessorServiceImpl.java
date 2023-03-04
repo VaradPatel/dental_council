@@ -10,6 +10,7 @@ import in.gov.abdm.nmr.mapper.*;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.IElasticsearchDaoService;
 import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;
+import in.gov.abdm.nmr.util.NMRUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,6 +121,9 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     @Autowired
     IHpProfileStatusRepository hpProfileStatusRepository;
 
+    @Autowired
+    IUserRepository userRepository;
+
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
@@ -148,7 +152,11 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
         if (!ApplicationType.QUALIFICATION_ADDITION.getId().equals(requestTO.getApplicationTypeId())) {
             hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
-            hpProfile.setNmrId(generateNmrId());
+            if(hpProfile.getNmrId() == null) {
+                hpProfile.setNmrId(generateNmrId());
+                User user = userRepository.findById(hpProfile.getUser().getId()).get();
+                user.setNmrId(hpProfile.getNmrId());
+            }
         }
         List<QualificationDetails> qualificationDetails = qualificationDetailRepository.findByRequestId(requestTO.getRequestId());
         qualificationDetails.forEach(qualificationDetail -> qualificationDetail.setIsVerified(1));
@@ -339,7 +347,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
     @Override
     public String generateNmrId() {
-        String nmrId = "";
-        return nmrId;
+        return String.valueOf(NMRUtil.generateRandom(12));
     }
+
 }
