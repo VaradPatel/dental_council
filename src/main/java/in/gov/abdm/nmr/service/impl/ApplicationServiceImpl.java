@@ -358,11 +358,11 @@ public class ApplicationServiceImpl implements IApplicationService {
         applicationRequestParamsTo.setRegistrationNo(registrationNo);
         applicationRequestParamsTo.setWorkFlowStatusId(workFlowStatusId);
         applicationRequestParamsTo.setApplicationTypeId(applicationTypeId);
-        String column = getColumnToSort(sortBy);
         final int dataLimit = Math.min(MAX_DATA_SIZE, Integer.parseInt(offset));
         applicationRequestParamsTo.setSize(dataLimit);
         applicationRequestParamsTo.setPageNo(Integer.parseInt(pageNo));
-        final String sortingOrder = sortType == null ? DEFAULT_SORT_ORDER : sortType;
+        final String sortingOrder = (sortType == null || sortType.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortType;
+        String column = mapColumnToTable(sortBy);
         applicationRequestParamsTo.setSortBy(column);
         applicationRequestParamsTo.setSortOrder(sortingOrder);
         applicationRequestParamsTo.setHpProfileId(hpProfileId);
@@ -400,17 +400,7 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @param columnToSort - name of the column to be sorted
      * @return database column name to be used for sorting
      */
-    private String getColumnToSort(String columnToSort) {
-        Map<String, String> columns;
-        if (columnToSort != null && columnToSort.length() > 0) {
-            columns = mapColumnToTable();
-            return columns.getOrDefault(columnToSort, " rd.created_at ");
-        } else {
-            return " rd.created_at ";
-        }
-    }
-
-    private Map<String, String> mapColumnToTable() {
+    private String mapColumnToTable(String columnToSort) {
         Map<String, String> columnToSortMap = new HashMap<>();
         columnToSortMap.put("doctorStatus", " doctor_status");
         columnToSortMap.put("smcStatus", " smc_status");
@@ -425,7 +415,6 @@ public class ApplicationServiceImpl implements IApplicationService {
         columnToSortMap.put("councilName", " stmc.name");
         columnToSortMap.put("applicantFullName", " hp.full_name");
         columnToSortMap.put("applicationTypeId", " application_type_id");
-        return columnToSortMap;
+        return columnToSortMap.getOrDefault(columnToSort, " rd.created_at ");
     }
-
 }

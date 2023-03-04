@@ -72,6 +72,10 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             sb.append("AND rd.state_medical_council_id = ").append(dashboardRequestParamsTO.getSmcId()).append(" ");
         }
 
+        if (Objects.nonNull(dashboardRequestParamsTO.getWorkFlowStatusId()) && !dashboardRequestParamsTO.getWorkFlowStatusId().isEmpty()) {
+            sb.append(" AND  work_flow_status_id = '").append(dashboardRequestParamsTO.getWorkFlowStatusId()).append("' ");
+        }
+
         if (Objects.nonNull(dashboardRequestParamsTO.getUserGroupId())) {
             BigInteger groupId = dashboardRequestParamsTO.getUserGroupId();
             String userGroupStatus = dashboardRequestParamsTO.getUserGroupStatus().toUpperCase();
@@ -123,12 +127,6 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
 
         sb.append(FETCH_CARD_DETAILS_QUERY);
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getWorkFlowStatusId()) && !dashboardRequestParamsTO.getWorkFlowStatusId().isEmpty()) {
-            sb.append(" WHERE  work_flow_status_id = '").append(dashboardRequestParamsTO.getWorkFlowStatusId()).append("' ");
-        }
-
-        sb.append("order by lat_hp_profile_id desc, wf.id asc " + ")  " + "calculate " + "INNER JOIN main.registration_details as rd on rd.hp_profile_id = calculate.hp_profile_id " + "INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id " + "INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id ");
-
         if (Objects.nonNull(dashboardRequestParamsTO.getCollegeId()) && !dashboardRequestParamsTO.getCollegeId().isEmpty()) {
             sb.append("INNER JOIN main.qualification_details as qd on qd.hp_profile_id = rd.hp_profile_id AND qd.request_id = rd.request_id ");
         }
@@ -137,7 +135,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             sb.append("INNER JOIN main.foreign_qualification_details as fqd on fqd.hp_profile_id = rd.hp_profile_id AND fqd.request_id = rd.request_id ");
         }
 
-        sb.append(" WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 " + "AND calculate.application_type_id IN ( ").append(dashboardRequestParamsTO.getApplicationTypeId()).append( ") ");
+        sb.append(" WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 " + "AND calculate.application_type_id IN ( ").append(dashboardRequestParamsTO.getApplicationTypeId()).append( " ) ");
 
         String parameters = DASHBOARD_PARAMETERS.apply(dashboardRequestParamsTO);
 
@@ -182,12 +180,6 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
 
         sb.append(FETCH_CARD_DETAILS_COUNT_QUERY);
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getWorkFlowStatusId()) && !dashboardRequestParamsTO.getWorkFlowStatusId().isEmpty()) {
-            sb.append(" WHERE  work_flow_status_id = '").append(dashboardRequestParamsTO.getWorkFlowStatusId()).append("' ");
-        }
-
-        sb.append("order by lat_hp_profile_id desc, wf.id asc " + ")  " + "calculate " + "INNER JOIN main.registration_details as rd on rd.hp_profile_id = calculate.hp_profile_id " + "INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id " + "INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id ");
-
         if (Objects.nonNull(dashboardRequestParamsTO.getCollegeId()) && !dashboardRequestParamsTO.getCollegeId().isEmpty()) {
             sb.append("INNER JOIN main.qualification_details as qd on qd.hp_profile_id = rd.hp_profile_id AND qd.request_id = rd.request_id ");
         }
@@ -196,7 +188,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             sb.append("INNER JOIN main.foreign_qualification_details as fqd on fqd.hp_profile_id = rd.hp_profile_id AND fqd.request_id = rd.request_id ");
         }
 
-        sb.append(" WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 " + "AND calculate.application_type_id IN ( ").append(dashboardRequestParamsTO.getApplicationTypeId()).append( ") ");
+        sb.append(" WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 " + "AND calculate.application_type_id IN ( ").append(dashboardRequestParamsTO.getApplicationTypeId()).append( " ) ");
 
         String parameters = DASHBOARD_PARAMETERS.apply(dashboardRequestParamsTO);
 
@@ -239,6 +231,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setCreatedAt((String) result[9]);
             dashBoardTO.setCouncilName((String) result[10]);
             dashBoardTO.setApplicantFullName((String) result[11]);
+            dashBoardTO.setWorkFlowStatusId((BigInteger) result[12]);
             dashboardTOList.add(dashBoardTO);
         });
         dashBoardResponseTO.setDashboardTOList(dashboardTOList);
