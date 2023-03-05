@@ -13,10 +13,11 @@ import java.util.List;
 @UtilityClass
 public final class HpPersonalDetailMapper {
 
-    public static HpProfilePersonalResponseTO convertEntitiesToPersonalResponseTo(HpProfile hpProfile, Address address, List<LanguagesKnown> languageKnowns, List<Language> languages, BigInteger applicationTypeId){
+    public static HpProfilePersonalResponseTO convertEntitiesToPersonalResponseTo(HpProfile hpProfile, Address address, Address kycAddress, List<LanguagesKnown> languageKnowns, List<Language> languages, BigInteger applicationTypeId) {
         HpProfilePersonalResponseTO hpProfilePersonalResponseTO = new HpProfilePersonalResponseTO();
         PersonalDetailsTO personalDetailsTO = new PersonalDetailsTO();
-        AddressTO addressTO =  new AddressTO();
+        AddressTO addressTO = new AddressTO();
+        AddressTO kycAddressTo = new AddressTO();
         IMRDetailsTO imrDetailsTO = new IMRDetailsTO();
 
         personalDetailsTO.setAadhaarToken(hpProfile.getAadhaarToken());
@@ -25,7 +26,7 @@ public final class HpPersonalDetailMapper {
         personalDetailsTO.setProfilePhoto(hpProfile.getProfilePhoto());
         personalDetailsTO.setFatherName(hpProfile.getFatherName());
         personalDetailsTO.setGender(hpProfile.getGender());
-        personalDetailsTO.setLanguage(convertLanguageEntityToLanguageDto(languageKnowns,languages));
+        personalDetailsTO.setLanguage(convertLanguageEntityToLanguageDto(languageKnowns, languages));
         personalDetailsTO.setFirstName(hpProfile.getFirstName());
         personalDetailsTO.setMiddleName(hpProfile.getMiddleName());
         personalDetailsTO.setLastName(hpProfile.getLastName());
@@ -51,6 +52,32 @@ public final class HpPersonalDetailMapper {
         addressTO.setLandmark(address.getLandmark());
         addressTO.setIsSameAddress(hpProfile.getIsSameAddress());
 
+        if (kycAddress != null) {
+            kycAddressTo.setAddressLine1(kycAddress.getAddressLine1());
+            if(kycAddress.getCountry()!=null) {
+                kycAddressTo.setCountry(CountryTO.builder().id(kycAddress.getCountry().getId()).name(kycAddress.getCountry().getName()).nationality(kycAddress.getCountry().getNationality()).build());
+            }
+            if(kycAddress.getDistrict()!=null) {
+                kycAddressTo.setDistrict(DistrictTO.builder().id(kycAddress.getDistrict().getId()).name(kycAddress.getDistrict().getName()).isoCode(kycAddress.getDistrict().getIsoCode()).build());
+            }
+            if(kycAddress.getSubDistrict()!=null) {
+                kycAddressTo.setSubDistrict(SubDistrictTO.builder().id(kycAddress.getSubDistrict().getId()).name(kycAddress.getSubDistrict().getName()).isoCode(kycAddress.getSubDistrict().getIsoCode()).build());
+            }
+            if(kycAddress.getState()!=null) {
+                kycAddressTo.setState(StateTO.builder().id(kycAddress.getState().getId()).name(kycAddress.getState().getName()).build());
+            }
+            if (kycAddress.getVillage() != null) {
+                kycAddressTo.setVillage(VillagesTO.builder().id(kycAddress.getVillage().getId()).name(kycAddress.getVillage().getName()).build());
+            }
+            kycAddressTo.setEmail(kycAddress.getEmail());
+            kycAddressTo.setMobile(kycAddress.getMobile());
+            kycAddressTo.setId(kycAddress.getId());
+            kycAddressTo.setPincode(kycAddress.getPincode());
+            kycAddressTo.setHouse(kycAddress.getHouse());
+            kycAddressTo.setStreet(kycAddress.getStreet());
+            kycAddressTo.setLocality(kycAddress.getLocality());
+            kycAddressTo.setLandmark(kycAddress.getLandmark());
+        }
 
         imrDetailsTO.setRegistrationNumber(hpProfile.getRegistrationId());
         imrDetailsTO.setYearOfInfo(hpProfile.getYearOfInfo());
@@ -59,6 +86,7 @@ public final class HpPersonalDetailMapper {
         hpProfilePersonalResponseTO.setHpProfileId(hpProfile.getId());
         hpProfilePersonalResponseTO.setPersonalDetails(personalDetailsTO);
         hpProfilePersonalResponseTO.setCommunicationAddress(addressTO);
+        hpProfilePersonalResponseTO.setKycAddress(kycAddressTo);
         hpProfilePersonalResponseTO.setRequestId(hpProfile.getRequestId());
         hpProfilePersonalResponseTO.setApplicationTypeId(applicationTypeId);
 
@@ -66,7 +94,7 @@ public final class HpPersonalDetailMapper {
     }
 
     private List<LanguageTO> convertLanguageEntityToLanguageDto(List<LanguagesKnown> languagesKnowns, List<Language> languages) {
-        return languagesKnowns.stream().map(language -> LanguageTO.builder().id(language.getLanguageId()).name(languages.stream().filter(l->l.getId().equals(language.getLanguageId())).findFirst().get().getName()).build()).toList();
+        return languagesKnowns.stream().map(language -> LanguageTO.builder().id(language.getLanguageId()).name(languages.stream().filter(l -> l.getId().equals(language.getLanguageId())).findFirst().get().getName()).build()).toList();
     }
 
 }

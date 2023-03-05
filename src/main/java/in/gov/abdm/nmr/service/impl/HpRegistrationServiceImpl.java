@@ -230,14 +230,15 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public HpProfilePersonalResponseTO getHealthProfessionalPersonalDetail(BigInteger hpProfileId) {
         HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
         Address communicationAddressByHpProfileId = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfileId, AddressType.COMMUNICATION.getId());
+        Address KycAddressByHpProfileId = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfileId, AddressType.KYC.getId());
         BigInteger applicationTypeId = null;
-        if(hpProfile.getRequestId() != null){
+        if (hpProfile.getRequestId() != null) {
             WorkFlow workFlow = workFlowRepository.findByRequestId(hpProfile.getRequestId());
             applicationTypeId = workFlow.getApplicationType().getId();
         }
         List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(hpProfileId);
         List<Language> languages = languageRepository.getLanguage();
-        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, languagesKnown, languages, applicationTypeId);
+        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, KycAddressByHpProfileId, languagesKnown, languages, applicationTypeId);
     }
 
     @Override
@@ -279,7 +280,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         address.setLocality(userKycTo.getLocality());
         address.setLandmark(userKycTo.getLandmark());
         address.setHpProfileId(userKycTo.getHpProfileId());
-        address.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.KYC.getId(), AddressType.COMMUNICATION.name()));
+        address.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.KYC.getId(), AddressType.KYC.name()));
         address.setVillage(villagesRepository.findByName(userKycTo.getLocality()));
         address.setSubDistrict(subDistrictRepository.findByName(userKycTo.getSubDist()));
         address.setState(stateRepository.findByName(userKycTo.getState()));

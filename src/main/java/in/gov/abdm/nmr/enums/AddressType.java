@@ -10,7 +10,7 @@ public enum AddressType {
     PERMANENT(3, "Permanent"),
     COMMUNICATION(4, "Communication"),
 
-    KYC(4, "KYC");
+    KYC(5, "KYC");
 
     private final Integer id;
     private final String description;
