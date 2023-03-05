@@ -66,7 +66,6 @@ public class ApplicationController {
      *
      * @param pageNo   - Gives the current page number
      * @param offset   - Gives the number of records to be displayed in a page
-     * @param search   - Gives the search criteria like HP_Id, HP_name, Submitted_Date, Remarks
      * @param sortBy   -  According to which column the sort has to happen
      * @param sortType -  Sorting order ASC or DESC
      * @return the ReactivateHealthProfessionalResponseTO  response Object
@@ -74,8 +73,13 @@ public class ApplicationController {
      * raised a request to NMC to reactivate their profiles
      */
     @GetMapping(REACTIVATE_REQUEST_URL)
-    public ReactivateHealthProfessionalResponseTO reactivationRecordsOfHealthProfessionalsToNmc(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo, @RequestParam(required = false, value = "offset", defaultValue = "2") String offset, @RequestParam(required = false, value = "search") String search, @RequestParam(required = false, value = "sortBy") String sortBy, @RequestParam(required = false, value = "sortType") String sortType) {
-        return applicationService.getReactivationRecordsOfHealthProfessionalsToNmc(pageNo, offset, search, sortBy, sortType);
+    public ReactivateHealthProfessionalResponseTO reactivationRecordsOfHealthProfessionalsToNmc(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
+                                                                                                @RequestParam(required = false, value = "offset", defaultValue = "2") String offset,
+                                                                                                @RequestParam(required = false, value = "filterCriteria") String filterCriteria,
+                                                                                                @RequestParam(required = false, value = "filterValue") String filterValue,
+                                                                                                @RequestParam(required = false, value = "sortBy") String sortBy,
+                                                                                                @RequestParam(required = false, value = "sortType") String sortType) {
+        return applicationService.getReactivationRecordsOfHealthProfessionalsToNmc(pageNo, offset, filterCriteria, filterValue, sortBy, sortType);
     }
 
     /**
@@ -83,10 +87,6 @@ public class ApplicationController {
      *
      * @param pageNo            - Gives the current page number
      * @param offset            - Gives the number of records to be displayed
-     * @param workFlowStatusId  - Search by work flow status Id
-     * @param applicationTypeId - Search by application type Id
-     * @param smcId             - Search by SMC Id
-     * @param registrationNo    - Search by registrationNo
      * @param sortBy            -  According to which column the sort has to happen
      * @param sortType          -  Sorting order ASC or DESC
      * @return the HealthProfessionalApplicationResponseTo object representing the response object
@@ -98,11 +98,9 @@ public class ApplicationController {
                                                                            @RequestParam(required = false, value = "offset", defaultValue = "2") String offset,
                                                                            @RequestParam(required = false, value = "sortBy") String sortBy,
                                                                            @RequestParam(required = false, value = "sortType") String sortType,
-                                                                           @RequestParam(required = false, value = "workFlowStatusId") String workFlowStatusId,
-                                                                           @RequestParam(required = false, value = "applicationTypeId") String applicationTypeId,
-                                                                           @RequestParam(required = false, value = "smcId") String smcId,
-                                                                           @RequestParam(required = false, value = "registrationNo") String registrationNo) {
-        return applicationService.fetchApplicationDetailsForHealthProfessional(healthProfessionalId, pageNo, offset, sortBy, sortType, workFlowStatusId, applicationTypeId, smcId, registrationNo);
+                                                                           @RequestParam(required = false, value = "filterCriteria") String filterCriteria,
+                                                                           @RequestParam(required = false, value = "filterValue") String filterValue) {
+        return applicationService.fetchApplicationDetailsForHealthProfessional(healthProfessionalId, pageNo, offset, sortBy, sortType, filterCriteria, filterValue);
     }
 
     /**
@@ -110,10 +108,6 @@ public class ApplicationController {
      *
      * @param pageNo            - Gives the current page number
      * @param offset            - Gives the number of records to be displayed
-     * @param workFlowStatusId  - Search by work flow status Id
-     * @param applicationTypeId - Search by application type Id
-     * @param smcId             - Search by SMC Id
-     * @param registrationNo    - Search by registrationNo
      * @param sortBy            -  According to which column the sort has to happen
      * @param sortType          -  Sorting order ASC or DESC
      * @return the HealthProfessionalApplicationResponseTo object representing the response object
@@ -125,11 +119,9 @@ public class ApplicationController {
                                                                       @RequestParam(required = false, value = "offset", defaultValue = "2") String offset,
                                                                       @RequestParam(required = false, value = "sortBy") String sortBy,
                                                                       @RequestParam(required = false, value = "sortType") String sortType,
-                                                                      @RequestParam(required = false, value = "workFlowStatusId") String workFlowStatusId,
-                                                                      @RequestParam(required = false, value = "applicationTypeId") String applicationTypeId,
-                                                                      @RequestParam(required = false, value = "smcId") String smcId,
-                                                                      @RequestParam(required = false, value = "registrationNo") String registrationNo) {
-        return applicationService.fetchApplicationDetails(pageNo, offset, sortBy, sortType, workFlowStatusId, applicationTypeId, smcId, registrationNo);
+                                                                      @RequestParam(required = false, value = "filterCriteria") String filterCriteria,
+                                                                      @RequestParam(required = false, value = "filterValue") String filterValue) {
+        return applicationService.fetchApplicationDetails(pageNo, offset, sortBy, sortType, filterCriteria, filterValue);
     }
 
     /**

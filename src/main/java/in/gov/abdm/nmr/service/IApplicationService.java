@@ -37,31 +37,26 @@ public interface IApplicationService {
      *
      * @param pageNo   - Gives the current page number
      * @param offset   - Gives the number of records to be displayed
-     * @param search   - Gives the search criteria like HP_Id, HP_name, Submiited_Date, Remarks
      * @param sortBy   -  According to which column the sort has to happen
      * @param sortType -  Sorting order ASC or DESC
      * @return the ReactivateHealthProfessionalResponseTO  response Object
      * which contains all the details related to the health professionals who have
      * raised a request to NMC to reactivate their profiles
      */
-    ReactivateHealthProfessionalResponseTO getReactivationRecordsOfHealthProfessionalsToNmc(String pageNo, String offset, String search, String sortBy, String sortType);
+    ReactivateHealthProfessionalResponseTO getReactivationRecordsOfHealthProfessionalsToNmc(String pageNo, String offset, String filterCriteria, String filterValue, String sortBy, String sortType);
 
     /**
      * Retrieves information about the status of a health professional's requests for NMC, NBE, SMC, Dean, Registrar and Admin.
      *
      * @param pageNo            - Gives the current page number
      * @param offset            - Gives the number of records to be displayed
-     * @param workFlowStatusId  - Search by work flow status Id
-     * @param applicationTypeId - Search by application type Id
-     * @param smcId             - Search by SMC Id
-     * @param registrationNo    - Search by registrationNo
      * @param sortBy            -  According to which column the sort has to happen
      * @param sortType          -  Sorting order ASC or DESC
      * @return the HealthProfessionalApplicationResponseTo object representing the response object
      * which contains all the details used to track the health professionals who have
      * raised a request
      */
-    HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo);
+    HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String filterCriteria, String filterValue);
 
     /**
      * Retrieves information about a health professional's application requests to track by health professional.
@@ -69,16 +64,12 @@ public interface IApplicationService {
      * @param healthProfessionalId - the health professional id.
      * @param pageNo               - Gives the current page number
      * @param offset               - Gives the number of records to be displayed
-     * @param workFlowStatusId     - Search by work flow status Id
-     * @param applicationTypeId    - Search by application type Id
-     * @param smcId                - Search by SMC Id
-     * @param registrationNo       - Search by registrationNo
      * @param sortBy               -  According to which column the sort has to happen
      * @param sortType             -  Sorting order ASC or DESC
      * @return the HealthProfessionalApplicationResponseTo object representing the response object
      * which contains all the details used to track the health professionals who have
      * raised a request
      */
-    HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo);
+    HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String filterCriteria, String filterValue);
 
 }

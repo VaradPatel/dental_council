@@ -378,9 +378,16 @@ public class NMRConstants {
 
     public static final String NAME_IN_LOWER_CASE = "name";
 
+    public static final String APPLICATION_TYPE_ID_IN_LOWER_CASE = "applicationtypeid";
+
+    public static final String REGISTRATION_NUMBER_IN_LOWER_CASE = "registrationnumber";
+
+
     public static final String NMR_ID_IN_LOWER_CASE = "nmrid";
 
     public static final String SMC_ID_IN_LOWER_CASE = "smcid";
+
+    public static final String WORK_FLOW_STATUS_IN_LOWER_CASE = "workflowstatus";
 
 
 

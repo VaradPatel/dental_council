@@ -70,10 +70,6 @@ public class DashboardController {
      * @param workFlowStatusId  the workflow status ID to filter by
      * @param applicationTypeId the application type ID to filter by
      * @param userGroupStatus   the user group status to filter by
-     * @param smcId             the SMC ID to filter by
-     * @param name              the name to filter by
-     * @param nmrId             the NMR ID to filter by
-     * @param search            the search string to filter by
      * @param pageNo            the page number to retrieve
      * @param size              the number of results per page
      * @param sortBy            the field to sort by
@@ -86,16 +82,14 @@ public class DashboardController {
             @RequestParam(required = false, value = "workFlowStatusId") String workFlowStatusId,
             @RequestParam(required = false, value = "applicationTypeId") String applicationTypeId,
             @RequestParam(required = false, value = "userGroupStatus") String userGroupStatus,
-            @RequestParam(required = false, value = "smcId") String smcId,
-            @RequestParam(required = false, value = "name") String name,
-            @RequestParam(required = false, value = "nmrId") String nmrId,
-            @RequestParam(required = false, value = "search") String search,
+            @RequestParam(required = false, value = "filterCriteria") String filterCriteria,
+            @RequestParam(required = false, value = "filterValue") String filterValue,
             @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(required = false, value = "size", defaultValue = "2") int size,
             @RequestParam(required = false, value = "sortBy") String sortBy,
             @RequestParam(required = false, value = "sortOrder") String sortOrder) throws InvalidRequestException {
         return iFetchSpecificDetailsService.fetchCardDetails(workFlowStatusId, applicationTypeId,
-                userGroupStatus, smcId, name, nmrId, search, pageNo, size, sortBy, sortOrder);
+                userGroupStatus, filterCriteria, filterValue, pageNo, size, sortBy, sortOrder);
     }
 
 }

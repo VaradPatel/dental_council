@@ -23,8 +23,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-import static in.gov.abdm.nmr.util.NMRConstants.DEFAULT_SORT_ORDER;
-import static in.gov.abdm.nmr.util.NMRConstants.MAX_DATA_SIZE;
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @Service
 @Slf4j
@@ -149,10 +148,11 @@ public class CollegeServiceImpl implements ICollegeService {
      * for the NMC that has been submitted for approval
      *
      * @param pageNo   - Gives the current page number
-     * @param offset   - Gives the number of records to be displayed
-     * @param search   - Gives the search criteria like HP_Id, HP_name, Submiited_Date, Remarks
-     * @param sortBy   -  According to which column the sort has to happen
-     * @param sortType -  Sorting order ASC or DESC
+     * @param limit   - Gives the number of records to be displayed
+     * @param filterCriteria
+     * @param filterValue
+     * @param columnToSort   -  According to which column the sort has to happen
+     * @param sortOrder -  Sorting order ASC or DESC
      * @return the CollegeRegistrationResponseTO  response Object
      * which contains all the details related to the College submitted to NMC
      * for approval
@@ -161,7 +161,7 @@ public class CollegeServiceImpl implements ICollegeService {
     public CollegeRegistrationResponseTO getCollegeRegistrationDetails(String pageNo, String limit, String filterCriteria, String filterValue, String columnToSort, String sortOrder) {
         CollegeRegistrationResponseTO collegeRegistrationResponseTO = null;
         CollegeRegistrationRequestParamsTO collegeRegistrationRequestParams = new CollegeRegistrationRequestParamsTO();
-        final Integer dataLimit = MAX_DATA_SIZE < Integer.valueOf(offset) ? MAX_DATA_SIZE : Integer.valueOf(offset);
+        final Integer dataLimit = MAX_DATA_SIZE < Integer.valueOf(limit) ? MAX_DATA_SIZE : Integer.valueOf(limit);
         collegeRegistrationRequestParams.setOffset(dataLimit);
         collegeRegistrationRequestParams.setPageNo(Integer.valueOf(pageNo));
         switch (filterCriteria.toLowerCase()){
@@ -174,16 +174,8 @@ public class CollegeServiceImpl implements ICollegeService {
             case SEARCH_IN_LOWER_CASE: collegeRegistrationRequestParams.setSearch(filterValue);
         }
         String column = getColumnToSort(columnToSort);
-        collegeRegistrationRequestParams.setColumnToSort(column);
-        final String sortingOrder = sortOrder == null ? defaultSortOrder : sortOrder;
-        collegeRegistrationRequestParams.setSortOrder(sortingOrder);
-        collegeRegistrationRequestParams.setCollegeId(collegeId);
-        collegeRegistrationRequestParams.setCollegeName(collegeName);
-        collegeRegistrationRequestParams.setCouncilName(councilName);
-        collegeRegistrationRequestParams.setSearch(search);
-        String column = getColumnToSort(sortBy);
         collegeRegistrationRequestParams.setSortBy(column);
-        final String sortingOrder = sortType == null ? DEFAULT_SORT_ORDER : sortType;
+        final String sortingOrder = sortOrder == null ? DEFAULT_SORT_ORDER : sortOrder;
         collegeRegistrationRequestParams.setSortType(sortingOrder);
         try {
             Pageable pageable = PageRequest.of(collegeRegistrationRequestParams.getPageNo(), collegeRegistrationRequestParams.getOffset());
