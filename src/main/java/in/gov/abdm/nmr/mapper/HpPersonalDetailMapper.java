@@ -34,7 +34,6 @@ public final class HpPersonalDetailMapper {
         personalDetailsTO.setSalutation(hpProfile.getSalutation());
         personalDetailsTO.setSchedule(ScheduleTO.builder().id(hpProfile.getSchedule().getId()).name(hpProfile.getSchedule().getName()).build());
 
-
         addressTO.setAddressLine1(address.getAddressLine1());
         addressTO.setCountry(CountryTO.builder().id(address.getCountry().getId()).name(address.getCountry().getName()).nationality(address.getCountry().getNationality()).build());
         addressTO.setDistrict(DistrictTO.builder().id(address.getDistrict().getId()).name(address.getDistrict().getName()).isoCode(address.getDistrict().getIsoCode()).build());
@@ -45,6 +44,11 @@ public final class HpPersonalDetailMapper {
         addressTO.setMobile(address.getMobile());
         addressTO.setId(address.getId());
         addressTO.setPincode(address.getPincode());
+        addressTO.setHouse(address.getHouse());
+        addressTO.setStreet(address.getStreet());
+        addressTO.setLocality(address.getLocality());
+        addressTO.setLandmark(address.getLandmark());
+        addressTO.setIsSameAddress(hpProfile.getIsSameAddress());
 
 
         imrDetailsTO.setRegistrationNumber(hpProfile.getRegistrationId());

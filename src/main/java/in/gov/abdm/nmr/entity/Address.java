@@ -44,6 +44,11 @@ public class Address extends CommonAuditEntity {
 	private String email;
 	private String mobile;
 
+	private String house;
+	private String street;
+	private String landmark;
+	private String locality;
+
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "addressTypeId", referencedColumnName = "id")
 	private AddressType addressTypeId;

@@ -8,7 +8,9 @@ public enum AddressType {
     BUSINESS(1, "Business"),
     CURRENT(2, "Current"),
     PERMANENT(3, "Permanent"),
-    COMMUNICATION(4, "Communication");
+    COMMUNICATION(4, "Communication"),
+
+    KYC(4, "KYC");
 
     private final Integer id;
     private final String description;
