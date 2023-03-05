@@ -176,7 +176,7 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
     @Override
-    public String reactiveRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
+    public String reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
         if ((HpProfileStatus.SUSPENDED.getId()) == hpProfile.getHpProfileStatus().getId()) {
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));

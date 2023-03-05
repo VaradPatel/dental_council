@@ -29,7 +29,7 @@ public interface IApplicationService {
      * @return a string indicating the result of the reactivate request.
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
-    String reactiveRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException;
+    String reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException;
 
     /**
      * Service for fetching the reactivation records of the health professionals
