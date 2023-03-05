@@ -20,7 +20,7 @@ public interface IHpProfileDaoService {
 			HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException;
 
 	HpProfileUpdateResponseTO updateHpRegistrationDetails(BigInteger hpProfileId,
-														  HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof, List<MultipartFile> proofOfQualifications) throws NmrException, InvalidRequestException;
+														  HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, MultipartFile degreeCertificate) throws NmrException, InvalidRequestException;
 
 	HpProfileUpdateResponseTO updateWorkProfileDetails(BigInteger hpProfileId,
 													   HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws InvalidRequestException;
