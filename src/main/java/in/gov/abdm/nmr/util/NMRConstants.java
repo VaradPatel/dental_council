@@ -369,6 +369,29 @@ public class NMRConstants {
     public static final String INDIA = "India";
     public static final String INTERNATIONAL = "International";
 
+    public static final String COLLEGE_ID_IN_LOWER_CASE = "collegeid";
+
+    public static final String COLLEGE_NAME_IN_LOWER_CASE = "collegename";
+
+    public static final String COUNCIL_NAME_IN_LOWER_CASE = "councilname";
+
+    public static final String SEARCH_IN_LOWER_CASE = "search";
+
+    public static final String NAME_IN_LOWER_CASE = "name";
+
+    public static final String APPLICATION_TYPE_ID_IN_LOWER_CASE = "applicationtypeid";
+
+    public static final String REGISTRATION_NUMBER_IN_LOWER_CASE = "registrationnumber";
+
+
+    public static final String NMR_ID_IN_LOWER_CASE = "nmrid";
+
+    public static final String SMC_ID_IN_LOWER_CASE = "smcid";
+
+    public static final String WORK_FLOW_STATUS_IN_LOWER_CASE = "workflowstatus";
+
+
+
     public static  final String REACTIVATION_RECORDS= """
             WITH reactivate AS(
             SELECT hp.id ,hp.registration_id ,wf.request_id,hp.full_name , wf.created_at, wf.start_date,
@@ -437,4 +460,16 @@ public class NMRConstants {
     public static final String EXCESS_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR="Please remove excess proofs to sync with the work profile details provided. ";
 
     public static final String WORK_PROFILE_DETAILS_LIMIT_EXCEEDED="Please provide less than or equal to 6 work profiles at a time.";
+
+    public static final String INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION = "Invalid Search Criteria. Expected: registrationnumber or smcid ";
+
+    public static final String INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE = "Invalid Search Criteria. Expected: search";
+
+    public static final String INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL = "Invalid Search Criteria. Expected: name, nmrid, smcid or search";
+
+    public static final String INVALID_SEARCH_CRITERIA_FOR_POST_CARD_DETAIL = "Invalid Search Criteria. Expected: collegeid, name, nmrid, smcid, workflowstatus or search";
+
+    public static final String INVALID_SEARCH_CRITERIA_FOR_COLLEGE_APPLICATIONS = "Invalid Search Criteria. Expected: collegeid, collegename, councilname or search";
+
+    public static final String MISSING_SEARCH_VALUE = "Please Enter a search value.";
 }

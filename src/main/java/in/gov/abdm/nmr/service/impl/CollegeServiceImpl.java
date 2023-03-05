@@ -7,6 +7,7 @@ import in.gov.abdm.nmr.entity.CollegeRegistrar;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.ICollegeMapper;
@@ -23,8 +24,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-import static in.gov.abdm.nmr.util.NMRConstants.DEFAULT_SORT_ORDER;
-import static in.gov.abdm.nmr.util.NMRConstants.MAX_DATA_SIZE;
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @Service
 @Slf4j
@@ -149,28 +149,36 @@ public class CollegeServiceImpl implements ICollegeService {
      * for the NMC that has been submitted for approval
      *
      * @param pageNo   - Gives the current page number
-     * @param offset   - Gives the number of records to be displayed
-     * @param search   - Gives the search criteria like HP_Id, HP_name, Submiited_Date, Remarks
-     * @param sortBy   -  According to which column the sort has to happen
-     * @param sortType -  Sorting order ASC or DESC
+     * @param limit   - Gives the number of records to be displayed
+     * @param search
+     * @param value
+     * @param columnToSort   -  According to which column the sort has to happen
+     * @param sortOrder -  Sorting order ASC or DESC
      * @return the CollegeRegistrationResponseTO  response Object
      * which contains all the details related to the College submitted to NMC
      * for approval
      */
     @Override
-    public CollegeRegistrationResponseTO getCollegeRegistrationDetails(String pageNo, String offset, String search, String collegeId, String collegeName, String councilName, String sortBy, String sortType) {
+    public CollegeRegistrationResponseTO getCollegeRegistrationDetails(String pageNo, String limit, String search, String value, String columnToSort, String sortOrder) throws InvalidRequestException {
         CollegeRegistrationResponseTO collegeRegistrationResponseTO = null;
         CollegeRegistrationRequestParamsTO collegeRegistrationRequestParams = new CollegeRegistrationRequestParamsTO();
-        final Integer dataLimit = MAX_DATA_SIZE < Integer.valueOf(offset) ? MAX_DATA_SIZE : Integer.valueOf(offset);
+        final Integer dataLimit = MAX_DATA_SIZE < Integer.valueOf(limit) ? MAX_DATA_SIZE : Integer.valueOf(limit);
         collegeRegistrationRequestParams.setOffset(dataLimit);
         collegeRegistrationRequestParams.setPageNo(Integer.valueOf(pageNo));
-        collegeRegistrationRequestParams.setCollegeId(collegeId);
-        collegeRegistrationRequestParams.setCollegeName(collegeName);
-        collegeRegistrationRequestParams.setCouncilName(councilName);
-        collegeRegistrationRequestParams.setSearch(search);
-        String column = getColumnToSort(sortBy);
+        switch (search.toLowerCase()){
+            case COLLEGE_ID_IN_LOWER_CASE: collegeRegistrationRequestParams.setCollegeId(value);
+                break;
+            case COLLEGE_NAME_IN_LOWER_CASE: collegeRegistrationRequestParams.setCollegeName(value);
+                break;
+            case COUNCIL_NAME_IN_LOWER_CASE: collegeRegistrationRequestParams.setCouncilName(value);
+                break;
+            case SEARCH_IN_LOWER_CASE: collegeRegistrationRequestParams.setSearch(value);
+                break;
+            default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_COLLEGE_APPLICATIONS);
+        }
+        String column = getColumnToSort(columnToSort);
         collegeRegistrationRequestParams.setSortBy(column);
-        final String sortingOrder = sortType == null ? DEFAULT_SORT_ORDER : sortType;
+        final String sortingOrder = sortOrder == null ? DEFAULT_SORT_ORDER : sortOrder;
         collegeRegistrationRequestParams.setSortType(sortingOrder);
         try {
             Pageable pageable = PageRequest.of(collegeRegistrationRequestParams.getPageNo(), collegeRegistrationRequestParams.getOffset());

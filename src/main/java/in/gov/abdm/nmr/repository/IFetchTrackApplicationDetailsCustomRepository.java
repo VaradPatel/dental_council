@@ -2,7 +2,10 @@ package in.gov.abdm.nmr.repository;
 
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestParamsTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
+import in.gov.abdm.nmr.entity.HpProfile;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 /**
  * An interface for the customized repository of Track Application Details repository
@@ -17,5 +20,5 @@ public interface IFetchTrackApplicationDetailsCustomRepository {
      * which contains all the details used to track the health professionals who have
      * raised a request
      */
-    HealthProfessionalApplicationResponseTo fetchTrackApplicationDetails(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, Pageable pagination);
+    HealthProfessionalApplicationResponseTo fetchTrackApplicationDetails(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, Pageable pagination, List<HpProfile> hpProfiles);
 }
