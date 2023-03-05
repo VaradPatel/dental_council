@@ -226,6 +226,16 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 superSpecialities.add(newSuperSpeciality);
             }
             superSpecialityRepository.saveAll(superSpecialities);
+
+            Address address=iAddressRepository.getCommunicationAddressByHpProfileId(copiedExistingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId());
+            Address newAddress = new Address();
+            org.springframework.beans.BeanUtils.copyProperties(address, newAddress);
+            newAddress.setId(null);
+            if (targetedHpProfile != null && targetedHpProfile.getId() != null) {
+                newAddress.setHpProfileId(targetedHpProfile.getId());
+            }
+            iAddressRepository.save(newAddress);
+
         }
 
         return new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", updatedHpProfileId);
