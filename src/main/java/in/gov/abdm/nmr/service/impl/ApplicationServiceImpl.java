@@ -377,7 +377,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String search, String value) throws InvalidRequestException {
         RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(healthProfessionalId);
-        List<HpProfile> hpProfiles = iHpProfileRepository.findByRegistrationId(registrationDetails.getRegistrationNo());
+        List<HpProfile> hpProfiles = iHpProfileRepository.findHpProfileByRegistrationId(registrationDetails.getRegistrationNo());
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, search, value, healthProfessionalId);
         Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getSize());
         return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable,hpProfiles);

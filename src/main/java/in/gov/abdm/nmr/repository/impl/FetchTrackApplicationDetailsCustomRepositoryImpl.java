@@ -102,9 +102,11 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
                 if(hpProfiles.indexOf(hpProfile) == hpProfiles.size()-1){
                     hpIds.append(hpProfile.getId());
                 }
-                hpIds.append(hpProfile.getId()).append(",");
+                else{
+                    hpIds.append(hpProfile.getId()).append(",");
+                }
             });
-            sb.append("AND rd.hp_profile_id IN  (").append(hpIds).append(")");
+            sb.append("AND rd.hp_profile_id IN (").append(hpIds).append(")");
         }
 
         String parameters = TRACK_APPLICATION_PARAMETERS.apply(healthProfessionalApplicationRequestParamsTo);
@@ -156,7 +158,9 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
                 if(hpProfiles.indexOf(hpProfile) == hpProfiles.size()-1){
                     hpIds.append(hpProfile.getId());
                 }
-                hpIds.append(hpProfile.getId()).append(",");
+                else {
+                    hpIds.append(hpProfile.getId()).append(",");
+                }
             });
             sb.append("AND rd.hp_profile_id IN  (").append(hpIds).append(")");
         }
