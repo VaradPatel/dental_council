@@ -37,6 +37,7 @@ public class NMRConstants {
     public static final String RESET_PASSWORD = "/user/reset-password";
 
     public static final String RAISE_QUERY = "/health-professional/queries";
+    public static final String SAVE_KYC_DETAILS = "/health-professional/kyc";
     public static final String GET_QUERIES = "health-professional/{healthProfessionalId}/queries";
     public static final String PASSWORD_LINK = "/user/password-link";
     public static final String SET_PASSWORD = "/user/set-password";

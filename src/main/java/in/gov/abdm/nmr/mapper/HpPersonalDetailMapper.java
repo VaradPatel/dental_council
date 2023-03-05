@@ -7,12 +7,13 @@ import in.gov.abdm.nmr.entity.Language;
 import in.gov.abdm.nmr.entity.LanguagesKnown;
 import lombok.experimental.UtilityClass;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @UtilityClass
 public final class HpPersonalDetailMapper {
 
-    public static HpProfilePersonalResponseTO convertEntitiesToPersonalResponseTo(HpProfile hpProfile, Address address, List<LanguagesKnown> languageKnowns, List<Language> languages){
+    public static HpProfilePersonalResponseTO convertEntitiesToPersonalResponseTo(HpProfile hpProfile, Address address, List<LanguagesKnown> languageKnowns, List<Language> languages, BigInteger applicationTypeId){
         HpProfilePersonalResponseTO hpProfilePersonalResponseTO = new HpProfilePersonalResponseTO();
         PersonalDetailsTO personalDetailsTO = new PersonalDetailsTO();
         AddressTO addressTO =  new AddressTO();
@@ -55,6 +56,7 @@ public final class HpPersonalDetailMapper {
         hpProfilePersonalResponseTO.setPersonalDetails(personalDetailsTO);
         hpProfilePersonalResponseTO.setCommunicationAddress(addressTO);
         hpProfilePersonalResponseTO.setRequestId(hpProfile.getRequestId());
+        hpProfilePersonalResponseTO.setApplicationTypeId(applicationTypeId);
 
         return hpProfilePersonalResponseTO;
     }

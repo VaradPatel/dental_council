@@ -168,20 +168,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             newRegistrationDetails.setHpProfileId(targetedHpProfile);
             iRegistrationDetailRepository.save(newRegistrationDetails);
 
-            List<WorkProfile> workProfileList = new ArrayList<>();
-            List<WorkProfile> workProfiles = workProfileRepository.getWorkProfileDetailsByHPId(copiedExistingHpProfile.getId());
-            HpProfile finalTargetedHpProfile = targetedHpProfile;
-            workProfiles.forEach(workProfile -> {
-                WorkProfile newWorkProfile = new WorkProfile();
-                org.springframework.beans.BeanUtils.copyProperties(workProfile, newWorkProfile);
-                newWorkProfile.setId(null);
-                if (finalTargetedHpProfile != null && finalTargetedHpProfile.getId() != null) {
-                    newWorkProfile.setHpProfileId(finalTargetedHpProfile.getId());
-                }
-                workProfileList.add(newWorkProfile);
-            });
-            workProfileRepository.saveAll(workProfileList);
-
             List<LanguagesKnown> languagesKnownList = new ArrayList<>();
             List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(copiedExistingHpProfile.getId());
             for (LanguagesKnown languageKnown : languagesKnown) {
@@ -215,18 +201,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             }
             iForeignQualificationDetailRepository.saveAll(customQualificationDetailsList);
 
-            List<SuperSpeciality> superSpecialities = new ArrayList<>();
-            List<SuperSpeciality> superSpecialityList = superSpecialityRepository.getSuperSpecialityFromHpProfileId(copiedExistingHpProfile.getId());
-            for (SuperSpeciality superSpeciality : superSpecialityList) {
-                SuperSpeciality newSuperSpeciality = new SuperSpeciality();
-                org.springframework.beans.BeanUtils.copyProperties(superSpeciality, newSuperSpeciality);
-                newSuperSpeciality.setId(null);
-                if (targetedHpProfile != null && targetedHpProfile.getId() != null) {
-                    newSuperSpeciality.setHpProfileId(targetedHpProfile.getId());
-                }
-                superSpecialities.add(newSuperSpeciality);
-            }
-            superSpecialityRepository.saveAll(superSpecialities);
         }
 
         return new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", updatedHpProfileId);
@@ -234,33 +208,27 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @Override
     public HpProfileUpdateResponseTO updateHpRegistrationDetails(BigInteger hpProfileId,
-                                                                 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof, List<MultipartFile> proofOfQualifications) throws NmrException,InvalidRequestException {
+                                                                 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, MultipartFile degreeCertificate) throws NmrException,InvalidRequestException {
 
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
             try {
-                hpRegistrationUpdateRequestTO.getRegistrationDetail().setCertificate(certificate != null ? certificate.getBytes() : null);
-                hpRegistrationUpdateRequestTO.getRegistrationDetail().setNameChangeProof(proof != null ? proof.getBytes() : null);
+                hpRegistrationUpdateRequestTO.getRegistrationDetail().setRegistrationCertificate(registrationCertificate != null ? registrationCertificate.getBytes() : null);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-
         RegistrationDetails registrationDetail = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId);
         HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
 
         if (registrationDetail == null) {
-            if (hpRegistrationUpdateRequestTO.getQualificationDetails().size() == 1) {
                 registrationDetail = new RegistrationDetails();
                 mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile);
                 registrationDetailRepository.save(registrationDetail);
-            } else {
-                throw new NmrException("Highest Qualification can only be added while registering", HttpStatus.FORBIDDEN);
-            }
         } else {
             mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile);
         }
-        validateQualificationDetailsAndProofs(hpRegistrationUpdateRequestTO.getQualificationDetails(),proofOfQualifications);
-        saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), proofOfQualifications);
+        validateQualificationDetailsAndProofs(hpRegistrationUpdateRequestTO.getQualificationDetails(),List.of(degreeCertificate));
+        saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), List.of(degreeCertificate));
         HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByHpProfileId(hpProfileId);
         if (hpNbeDetails == null) {
             hpNbeDetails = new HpNbeDetails();
@@ -585,8 +553,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             registrationDetail.setRenewableRegistrationDate(
                     hpRegistrationUpdateRequestTO.getRegistrationDetail().getRenewableRegistrationDate());
             registrationDetail.setIsNameChange(hpRegistrationUpdateRequestTO.getRegistrationDetail().getIsNameChange());
-            registrationDetail.setCertificate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getCertificate());
-            registrationDetail.setNameChangeProofAttachment(hpRegistrationUpdateRequestTO.getRegistrationDetail().getNameChangeProof());
+            registrationDetail.setCertificate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationCertificate());
         }
         registrationDetail.setHpProfileId(hpProfile);
         registrationDetail.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));

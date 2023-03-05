@@ -43,7 +43,7 @@ public class HpRegistrationController {
      * @param registrationNumber
      * @return SmcRegistrationDetailResponseTO This returns the SMC registration detail information.
      */
-    @GetMapping(path = "health-professional", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "health-professional", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(
             @RequestParam("smcId") Integer councilId,
             @RequestParam("registrationNumber") String registrationNumber) {
@@ -99,8 +99,8 @@ public class HpRegistrationController {
     /**
      * This method updates the health professional registration details.
      *
-     * @param certificate                       The health professional's certificate file.
-     * @param proof                             The health professional's proof file.
+     * @param registrationCertificate                       The health professional's certificate file.
+     * @param degreeCertificate                             The health professional's proof file.
      * @param hpRegistrationUpdateRequest The health professional registration update request in string format.
      * @param hpProfileId                       The health professional profile id.
      * @return The updated health professional registration response in a transfer object.
@@ -108,13 +108,12 @@ public class HpRegistrationController {
      * @throws WorkFlowException       If there is an error in the workflow.
      */
     @PutMapping(path = "health-professional/{healthProfessionalId}/registration", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam(value = "certificate", required = false) MultipartFile certificate,
-                                                                                      @RequestParam(value = "proof", required = false) MultipartFile proof,
-                                                                                      @RequestParam(value = "proofOfQualification", required = false) List<MultipartFile> proofOfQualifications,
+    public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam(value = "registrationCertificate", required = false) MultipartFile registrationCertificate,
+                                                                                      @RequestParam(value = "degreeCertificate", required = false) MultipartFile degreeCertificate,
                                                                                       @RequestPart("data") HpRegistrationUpdateRequestTO hpRegistrationUpdateRequest,
                                                                                       @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, WorkFlowException, NmrException {
 
-        return hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequest, certificate, proof, proofOfQualifications);
+        return hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequest, registrationCertificate, degreeCertificate);
     }
 
     /**
@@ -229,5 +228,10 @@ public class HpRegistrationController {
     @GetMapping(path = NMRConstants.GET_QUERIES, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<QueryResponseTo> getQueries(@PathVariable("healthProfessionalId") BigInteger healthProfessionalId) {
         return queryService.getQueriesByHpProfileId(healthProfessionalId);
+    }
+
+    @PostMapping(path = NMRConstants.SAVE_KYC_DETAILS, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseMessageTo saveUserKycDetails(@RequestBody UserKycTo userKycTo){
+        return hpService.saveUserKycDetails(userKycTo);
     }
 }

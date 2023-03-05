@@ -62,12 +62,11 @@ public interface IHpRegistrationService {
      * Adds or updates the HP profile registration details.
      *
      * @param hpProfileId           The unique identifier of the HP profile.
-     * @param proofOfQualifications
      * @return The response object that contains the status of the operation.
      * @throws Exception If any error occurs during the operation.
      */
     HpProfileRegistrationResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
-                                                                    HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof, List<MultipartFile> proofOfQualifications) throws InvalidRequestException, NmrException;
+                                                                    HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, MultipartFile degreeCertificate) throws InvalidRequestException, NmrException;
 
     /**
      * Adds or updates work profile details for a given health professional profile.
@@ -115,4 +114,6 @@ public interface IHpRegistrationService {
      * @return HpProfileRegistrationResponseTO object containing the registration details of the health professional.
      */
     HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(BigInteger hpProfileId);
+
+    ResponseMessageTo saveUserKycDetails(UserKycTo userKycTo);
 }

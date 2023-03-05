@@ -52,7 +52,14 @@ public class OtpServiceImpl implements IOtpService {
      */
     @Override
     public ResponseMessageTo generateOtp(OtpGenerateRequestTo otpGenerateRequestTo) throws OtpException {
-        List<Otp> previousOtps = otpDaoService.findAllByContact(otpGenerateRequestTo.getContact());
+        String notificationType = otpGenerateRequestTo.getType();
+        String contact = otpGenerateRequestTo.getContact();
+        if (NotificationType.NMR_ID.getNotificationType().equals(otpGenerateRequestTo.getType())) {
+            notificationType = NotificationType.SMS.getNotificationType();
+            contact = userDaoService.findByUsername(otpGenerateRequestTo.getContact()).getMobileNumber();
+        }
+        
+        List<Otp> previousOtps = otpDaoService.findAllByContact(contact);
         if (previousOtps.size() >= NMRConstants.OTP_GENERATION_MAX_ATTEMPTS) {
             throw new OtpException(NMRConstants.OTP_ATTEMPTS_EXCEEDED);
         } else {
@@ -67,14 +74,7 @@ public class OtpServiceImpl implements IOtpService {
 
         String otp = String.valueOf(new SecureRandom().nextInt(899999) + 100000);
         
-        String notificationType = otpGenerateRequestTo.getType();
-        String contact = otpGenerateRequestTo.getContact();
-        if (NotificationType.NMR_ID.getNotificationType().equals(otpGenerateRequestTo.getType())) {
-            notificationType = NotificationType.SMS.getNotificationType();
-            contact = userDaoService.findByUsername(otpGenerateRequestTo.getContact()).getMobileNumber();
-        }
-
-        Otp otpEntity = new Otp(UUID.randomUUID().toString(), otp, 0, otpGenerateRequestTo.getContact(), false, 10);
+        Otp otpEntity = new Otp(UUID.randomUUID().toString(), otp, 0, contact, false, 10);
         otpDaoService.save(otpEntity);
         return notificationService.sendNotificationForOTP(notificationType, otp, contact, otpEntity.getId());
     }
