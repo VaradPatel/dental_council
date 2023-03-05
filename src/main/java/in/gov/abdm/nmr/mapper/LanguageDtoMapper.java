@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface LanguageDtoMapper {
 
-    List<LanguageTO> LanguageDataToDto(List<Language> language);
+    List<LanguageTO> languageDataToDto(List<Language> language);
 
 
 }

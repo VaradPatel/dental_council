@@ -72,7 +72,7 @@ public class AuthenticationLockingService {
      */
     public void increaseFailedAttempts(User user) {
         user.setFailedAttempt(user.getFailedAttempt() + 1);
-        userDaoService.saveUserDetail(user);
+        userDaoService.save(user);
     }
 
     /**
@@ -84,7 +84,7 @@ public class AuthenticationLockingService {
 
         user.setAccountNonLocked(false);
         user.setLockTime(Timestamp.valueOf(LocalDateTime.now()));
-        userDaoService.saveUserDetail(user);
+        userDaoService.save(user);
     }
 
     /**
@@ -101,7 +101,7 @@ public class AuthenticationLockingService {
             user.setAccountNonLocked(true);
             user.setLockTime(null);
             user.setFailedAttempt(0);
-            userDaoService.saveUserDetail(user);
+            userDaoService.save(user);
             return true;
         }
         return false;

@@ -12,12 +12,14 @@ import in.gov.abdm.nmr.dto.OtpValidateMessageTo;
 import in.gov.abdm.nmr.dto.OtpValidateRequestTo;
 import in.gov.abdm.nmr.dto.OtpValidateResponseTo;
 import in.gov.abdm.nmr.dto.ResponseMessageTo;
+import in.gov.abdm.nmr.enums.NotificationType;
 import in.gov.abdm.nmr.exception.OtpException;
 import in.gov.abdm.nmr.redis.hash.Otp;
 import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.service.IOtpDaoService;
 import in.gov.abdm.nmr.service.IOtpService;
+import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
 
 /**
@@ -26,14 +28,17 @@ import in.gov.abdm.nmr.util.NMRConstants;
 @Service
 public class OtpServiceImpl implements IOtpService {
 
-    IOtpDaoService otpDaoService;
+    private IOtpDaoService otpDaoService;
+    
+    private IUserDaoService userDaoService;
 
-    INotificationService notificationService;
+    private INotificationService notificationService;
 
-    RsaUtil rsaUtil;
+    private RsaUtil rsaUtil;
 
-    public OtpServiceImpl(IOtpDaoService nmrOtpRepository, INotificationService notificationService, RsaUtil rsaUtil) {
-        this.otpDaoService = nmrOtpRepository;
+    public OtpServiceImpl(IOtpDaoService otpDaoService, IUserDaoService userDaoService, INotificationService notificationService, RsaUtil rsaUtil) {
+        this.otpDaoService = otpDaoService;
+        this.userDaoService = userDaoService;
         this.notificationService = notificationService;
         this.rsaUtil = rsaUtil;
     }
@@ -47,7 +52,14 @@ public class OtpServiceImpl implements IOtpService {
      */
     @Override
     public ResponseMessageTo generateOtp(OtpGenerateRequestTo otpGenerateRequestTo) throws OtpException {
-        List<Otp> previousOtps = otpDaoService.findAllByContact(otpGenerateRequestTo.getContact());
+        String notificationType = otpGenerateRequestTo.getType();
+        String contact = otpGenerateRequestTo.getContact();
+        if (NotificationType.NMR_ID.getNotificationType().equals(otpGenerateRequestTo.getType())) {
+            notificationType = NotificationType.SMS.getNotificationType();
+            contact = userDaoService.findByUsername(otpGenerateRequestTo.getContact()).getMobileNumber();
+        }
+        
+        List<Otp> previousOtps = otpDaoService.findAllByContact(contact);
         if (previousOtps.size() >= NMRConstants.OTP_GENERATION_MAX_ATTEMPTS) {
             throw new OtpException(NMRConstants.OTP_ATTEMPTS_EXCEEDED);
         } else {
@@ -61,9 +73,10 @@ public class OtpServiceImpl implements IOtpService {
         }
 
         String otp = String.valueOf(new SecureRandom().nextInt(899999) + 100000);
-        Otp otpEntity = new Otp(UUID.randomUUID().toString(), otp, 0, otpGenerateRequestTo.getContact(), false, 10);
+        
+        Otp otpEntity = new Otp(UUID.randomUUID().toString(), otp, 0, contact, false, 10);
         otpDaoService.save(otpEntity);
-        return notificationService.sendNotificationForOTP(otpGenerateRequestTo.getType(), otp, otpGenerateRequestTo.getContact(), otpEntity.getId());
+        return notificationService.sendNotificationForOTP(notificationType, otp, contact, otpEntity.getId());
     }
 
     /**
@@ -74,7 +87,7 @@ public class OtpServiceImpl implements IOtpService {
      * @throws OtpException with message
      */
     @Override
-    public OtpValidateResponseTo validateOtp(OtpValidateRequestTo otpValidateRequestTo) throws OtpException, GeneralSecurityException {
+    public OtpValidateResponseTo validateOtp(OtpValidateRequestTo otpValidateRequestTo, boolean callInternal) throws OtpException, GeneralSecurityException {
         String transactionId = otpValidateRequestTo.getTransactionId();
         Otp otpDetails = otpDaoService.findById(transactionId);
 
@@ -88,7 +101,7 @@ public class OtpServiceImpl implements IOtpService {
             throw new OtpException(NMRConstants.OTP_ATTEMPTS_EXCEEDED);
         }
 
-        String decryptedOtp = rsaUtil.decrypt(otpValidateRequestTo.getOtp());
+        String decryptedOtp = callInternal ? otpValidateRequestTo.getOtp() : rsaUtil.decrypt(otpValidateRequestTo.getOtp());
         if (decryptedOtp.equals(otpDetails.getOtp())) {
             otpDetails.setExpired(true);
             otpDaoService.save(otpDetails);

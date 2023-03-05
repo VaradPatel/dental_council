@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.service.impl;
 import in.gov.abdm.nmr.dto.LoginResponseTO;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.security.common.RoleConstants;
@@ -69,8 +70,9 @@ public class AuthServiceImpl implements IAuthService {
             if (hp != null) {
                 loginResponseTO.setProfileId(hp.getId());
                 loginResponseTO.setHpRegistered(StringUtils.isBlank(hp.getNmrId()));
+                loginResponseTO.setBlacklisted(HpProfileStatus.BLACKLISTED.getId() == hp.getHpProfileStatus().getId() ||
+                        HpProfileStatus.SUSPENDED.getId() == hp.getHpProfileStatus().getId());
             }
-            loginResponseTO.setBlacklisted(false);
         } else if (UserTypeEnum.COLLEGE.getCode().equals(userDetail.getUserType().getId())) {
             loginResponseTO.setUserSubType(userDetail.getUserSubType().getId());
 

@@ -24,6 +24,6 @@ public class CourseServiceImpl implements ICourseService {
 
     @Override
     public List<CourseTO> getCourseData() {
-        return courseDtoMapper.CourseDataToDto(courseRepository.getCourse());
+        return courseDtoMapper.courseDataToDto(courseRepository.getCourse());
     }
 }

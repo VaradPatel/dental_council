@@ -24,7 +24,7 @@ public class SuperSpecialityServiceImpl implements ISuperSpecialityService {
 
     @Override
     public List<SuperSpecialityTO> getSpecialityData() {
-        return superSpecialityDtoMapper.SpecialityDataToDto(superSpecialityRepository.getSpeciality());
+        return superSpecialityDtoMapper.specialityDataToDto(superSpecialityRepository.getSpeciality());
 
     }
 }

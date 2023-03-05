@@ -1,21 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.enums.Action;
-import in.gov.abdm.nmr.enums.Group;
-import in.gov.abdm.nmr.exception.WorkFlowException;
-import in.gov.abdm.nmr.repository.*;
-import in.gov.abdm.nmr.service.IApplicationService;
-import in.gov.abdm.nmr.service.IRequestCounterService;
-import in.gov.abdm.nmr.service.IWorkFlowService;
-import in.gov.abdm.nmr.util.NMRUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
+import static in.gov.abdm.nmr.util.NMRConstants.DEFAULT_SORT_ORDER;
+import static in.gov.abdm.nmr.util.NMRConstants.MAX_DATA_SIZE;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -23,8 +9,47 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static in.gov.abdm.nmr.util.NMRConstants.DEFAULT_SORT_ORDER;
-import static in.gov.abdm.nmr.util.NMRConstants.MAX_DATA_SIZE;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import in.gov.abdm.nmr.dto.ApplicationRequestTo;
+import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestParamsTo;
+import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
+import in.gov.abdm.nmr.dto.ReactivateHealthProfessionalRequestParam;
+import in.gov.abdm.nmr.dto.ReactivateHealthProfessionalResponseTO;
+import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
+import in.gov.abdm.nmr.entity.ForeignQualificationDetails;
+import in.gov.abdm.nmr.entity.HpProfile;
+import in.gov.abdm.nmr.entity.LanguagesKnown;
+import in.gov.abdm.nmr.entity.QualificationDetails;
+import in.gov.abdm.nmr.entity.RegistrationDetails;
+import in.gov.abdm.nmr.entity.SuperSpeciality;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.entity.WorkProfile;
+import in.gov.abdm.nmr.enums.Action;
+import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.enums.HpProfileStatus;
+import in.gov.abdm.nmr.exception.NmrException;
+import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;
+import in.gov.abdm.nmr.repository.IForeignQualificationDetailRepository;
+import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.IQualificationDetailRepository;
+import in.gov.abdm.nmr.repository.IRegistrationDetailRepository;
+import in.gov.abdm.nmr.repository.IWorkFlowCustomRepository;
+import in.gov.abdm.nmr.repository.LanguagesKnownRepository;
+import in.gov.abdm.nmr.repository.SuperSpecialityRepository;
+import in.gov.abdm.nmr.repository.WorkProfileRepository;
+import in.gov.abdm.nmr.service.IApplicationService;
+import in.gov.abdm.nmr.service.IRequestCounterService;
+import in.gov.abdm.nmr.service.IUserDaoService;
+import in.gov.abdm.nmr.service.IWorkFlowService;
+import in.gov.abdm.nmr.util.NMRUtil;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * A class that implements all the methods of the interface  IActionService
@@ -116,7 +141,7 @@ public class ApplicationServiceImpl implements IApplicationService {
      * Singleton principle
      */
     @Autowired
-    private IUserRepository userDetailRepository;
+    private IUserDaoService userDaoService;
 
     /**
      * Injecting a IHpProfileRepository bean instead of an explicit object creation to achieve
@@ -151,11 +176,16 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
     @Override
-    public String reactiveRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
-        String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
-        HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
-        initiateWorkFlow(applicationRequestTo, requestId, newHpProfile);
-        return newHpProfile.getId().toString();
+    public String reactiveRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
+        HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
+        if ((HpProfileStatus.SUSPENDED.getId()) == hpProfile.getHpProfileStatus().getId()) {
+            String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
+            HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
+            initiateWorkFlow(applicationRequestTo, requestId, newHpProfile);
+            return newHpProfile.getId().toString();
+        } else {
+            throw new NmrException("Suspended profile can only be reactivated", HttpStatus.FORBIDDEN);
+        }
     }
 
     /**
@@ -219,7 +249,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         workFlowRequestTO.setApplicationTypeId(applicationRequestTo.getApplicationTypeId());
         workFlowRequestTO.setActionId(applicationRequestTo.getActionId());
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userDetailRepository.findByUsername(userName);
+        User userDetail = userDaoService.findByUsername(userName);
         workFlowRequestTO.setActorId(userDetail.getGroup().getId());
         workFlowRequestTO.setHpProfileId(newHpProfile.getId());
         workFlowRequestTO.setStartDate(applicationRequestTo.getFromDate());
@@ -243,7 +273,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         newRegistrationDetails.setHpProfileId(targetedHpProfile);
         iRegistrationDetailRepository.save(newRegistrationDetails);
 
-        List<WorkProfile> workProfileList =new ArrayList<>();
+        List<WorkProfile> workProfileList = new ArrayList<>();
         List<WorkProfile> workProfiles = workProfileRepository.getWorkProfileDetailsByHPId(existingHpProfile.getId());
         workProfiles.forEach(workProfile -> {
             WorkProfile newWorkProfile = new WorkProfile();
@@ -317,20 +347,26 @@ public class ApplicationServiceImpl implements IApplicationService {
      */
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo) {
+        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, workFlowStatusId, applicationTypeId, smcId, registrationNo, null);
+        Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getSize());
+        return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable);
+    }
+
+    private HealthProfessionalApplicationRequestParamsTo setHPRequestParamInToObject(String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo, BigInteger hpProfileId) {
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = new HealthProfessionalApplicationRequestParamsTo();
         applicationRequestParamsTo.setSmcId(smcId);
         applicationRequestParamsTo.setRegistrationNo(registrationNo);
         applicationRequestParamsTo.setWorkFlowStatusId(workFlowStatusId);
         applicationRequestParamsTo.setApplicationTypeId(applicationTypeId);
-        String column = getColumnToSort(sortBy);
         final int dataLimit = Math.min(MAX_DATA_SIZE, Integer.parseInt(offset));
         applicationRequestParamsTo.setSize(dataLimit);
         applicationRequestParamsTo.setPageNo(Integer.parseInt(pageNo));
-        final String sortingOrder = sortType == null ? DEFAULT_SORT_ORDER : sortType;
+        final String sortingOrder = (sortType == null || sortType.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortType;
+        String column = mapColumnToTable(sortBy);
         applicationRequestParamsTo.setSortBy(column);
         applicationRequestParamsTo.setSortOrder(sortingOrder);
-        Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), dataLimit);
-        return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable);
+        applicationRequestParamsTo.setHpProfileId(hpProfileId);
+        return applicationRequestParamsTo;
     }
 
     /**
@@ -351,9 +387,11 @@ public class ApplicationServiceImpl implements IApplicationService {
      */
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo) {
-        HpProfile hpProfile = hpProfileRepository.findHpProfileById(healthProfessionalId);
-        String registrationId = String.valueOf(hpProfile.getRegistrationId());
-        return fetchApplicationDetails(pageNo, offset, sortBy, sortType, workFlowStatusId, applicationTypeId, smcId, registrationId);
+        RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(healthProfessionalId);
+        List<HpProfile> hpProfiles = iHpProfileRepository.findByRegistrationId(new BigInteger(registrationDetails.getRegistrationNo()));
+        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, workFlowStatusId, applicationTypeId, smcId, registrationNo, healthProfessionalId);
+        Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getSize());
+        return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable);
     }
 
     /**
@@ -362,17 +400,7 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @param columnToSort - name of the column to be sorted
      * @return database column name to be used for sorting
      */
-    private String getColumnToSort(String columnToSort) {
-        Map<String, String> columns;
-        if (columnToSort != null && columnToSort.length() > 0) {
-            columns = mapColumnToTable();
-            return columns.getOrDefault(columnToSort, "Invalid column Name to sort");
-        } else {
-            return " rd.created_at ";
-        }
-    }
-
-    private Map<String, String> mapColumnToTable() {
+    private String mapColumnToTable(String columnToSort) {
         Map<String, String> columnToSortMap = new HashMap<>();
         columnToSortMap.put("doctorStatus", " doctor_status");
         columnToSortMap.put("smcStatus", " smc_status");
@@ -387,7 +415,6 @@ public class ApplicationServiceImpl implements IApplicationService {
         columnToSortMap.put("councilName", " stmc.name");
         columnToSortMap.put("applicantFullName", " hp.full_name");
         columnToSortMap.put("applicationTypeId", " application_type_id");
-        return columnToSortMap;
+        return columnToSortMap.getOrDefault(columnToSort, " rd.created_at ");
     }
-
 }

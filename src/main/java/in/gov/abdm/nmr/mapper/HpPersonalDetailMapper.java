@@ -54,7 +54,6 @@ public final class HpPersonalDetailMapper {
         hpProfilePersonalResponseTO.setHpProfileId(hpProfile.getId());
         hpProfilePersonalResponseTO.setPersonalDetails(personalDetailsTO);
         hpProfilePersonalResponseTO.setCommunicationAddress(addressTO);
-        hpProfilePersonalResponseTO.setImrDetails(imrDetailsTO);
         hpProfilePersonalResponseTO.setRequestId(hpProfile.getRequestId());
 
         return hpProfilePersonalResponseTO;

@@ -12,6 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 public class HpRegistrationUpdateRequestTO {
 	private RegistrationDetailTO registrationDetail;
-	private List<QualificationDetailRequestTO> qualificationDetail;
+	private List<QualificationDetailRequestTO> qualificationDetails;
     private HpNbeDetails hpNbeDetails;
 }

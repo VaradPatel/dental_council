@@ -21,8 +21,19 @@ public class User extends CommonAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger id;
-    @Column(name = "user_name")
-    private String username;
+    
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "mobile_number")
+    private String mobileNumber;
+
+    @Column(name = "hpr_id")
+    private String hprId;
+    
+    @Column(name = "nmr_id")
+    private String nmrId;
+    
     private String password;
     private String refreshTokenId;
     private boolean isSmsNotificationEnabled;

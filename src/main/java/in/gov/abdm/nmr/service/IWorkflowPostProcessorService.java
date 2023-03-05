@@ -12,6 +12,6 @@ public interface IWorkflowPostProcessorService {
 
     void updateElasticDB(INextGroup iNextGroup, HpProfileMaster hpProfile) throws WorkFlowException;
 
-    void generateNmrId();
+    String generateNmrId();
 
 }

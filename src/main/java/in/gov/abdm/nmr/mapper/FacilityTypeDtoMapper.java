@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface FacilityTypeDtoMapper {
 
-    List<FacilityTypeTO> FacilityTypeDataToDto(List<FacilityType> facilityType);
+    List<FacilityTypeTO> facilityTypeDataToDto(List<FacilityType> facilityType);
 
 
 }
