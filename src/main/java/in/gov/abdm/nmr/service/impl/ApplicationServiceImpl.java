@@ -1,14 +1,20 @@
 package in.gov.abdm.nmr.service.impl;
 
-import static in.gov.abdm.nmr.util.NMRConstants.DEFAULT_SORT_ORDER;
-import static in.gov.abdm.nmr.util.NMRConstants.MAX_DATA_SIZE;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.enums.Action;
+import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.enums.HpProfileStatus;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NmrException;
+import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.service.IApplicationService;
+import in.gov.abdm.nmr.service.IRequestCounterService;
+import in.gov.abdm.nmr.service.IUserDaoService;
+import in.gov.abdm.nmr.service.IWorkFlowService;
+import in.gov.abdm.nmr.util.NMRUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,40 +22,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import in.gov.abdm.nmr.dto.ApplicationRequestTo;
-import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestParamsTo;
-import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
-import in.gov.abdm.nmr.dto.ReactivateHealthProfessionalRequestParam;
-import in.gov.abdm.nmr.dto.ReactivateHealthProfessionalResponseTO;
-import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
-import in.gov.abdm.nmr.entity.ForeignQualificationDetails;
-import in.gov.abdm.nmr.entity.HpProfile;
-import in.gov.abdm.nmr.entity.LanguagesKnown;
-import in.gov.abdm.nmr.entity.QualificationDetails;
-import in.gov.abdm.nmr.entity.RegistrationDetails;
-import in.gov.abdm.nmr.entity.SuperSpeciality;
-import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.entity.WorkProfile;
-import in.gov.abdm.nmr.enums.Action;
-import in.gov.abdm.nmr.enums.Group;
-import in.gov.abdm.nmr.enums.HpProfileStatus;
-import in.gov.abdm.nmr.exception.NmrException;
-import in.gov.abdm.nmr.exception.WorkFlowException;
-import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;
-import in.gov.abdm.nmr.repository.IForeignQualificationDetailRepository;
-import in.gov.abdm.nmr.repository.IHpProfileRepository;
-import in.gov.abdm.nmr.repository.IQualificationDetailRepository;
-import in.gov.abdm.nmr.repository.IRegistrationDetailRepository;
-import in.gov.abdm.nmr.repository.IWorkFlowCustomRepository;
-import in.gov.abdm.nmr.repository.LanguagesKnownRepository;
-import in.gov.abdm.nmr.repository.SuperSpecialityRepository;
-import in.gov.abdm.nmr.repository.WorkProfileRepository;
-import in.gov.abdm.nmr.service.IApplicationService;
-import in.gov.abdm.nmr.service.IRequestCounterService;
-import in.gov.abdm.nmr.service.IUserDaoService;
-import in.gov.abdm.nmr.service.IWorkFlowService;
-import in.gov.abdm.nmr.util.NMRUtil;
-import lombok.extern.slf4j.Slf4j;
+import java.math.BigInteger;
+import java.util.*;
+
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 /**
  * A class that implements all the methods of the interface  IActionService
@@ -194,7 +170,6 @@ public class ApplicationServiceImpl implements IApplicationService {
      *
      * @param pageNo   - Gives the current page number
      * @param offset   - Gives the number of records to be displayed
-     * @param search   - Gives the search criteria like HP_Id, HP_name, Submiited_Date, Remarks
      * @param sortBy   -  According to which column the sort has to happen
      * @param sortType -  Sorting order ASC or DESC
      * @return the ReactivateHealthProfessionalResponseTO  response Object
@@ -202,13 +177,24 @@ public class ApplicationServiceImpl implements IApplicationService {
      * raised a request to NMC to reactivate their profiles
      */
     @Override
-    public ReactivateHealthProfessionalResponseTO getReactivationRecordsOfHealthProfessionalsToNmc(String pageNo, String offset, String search, String sortBy, String sortType) {
+    public ReactivateHealthProfessionalResponseTO getReactivationRecordsOfHealthProfessionalsToNmc(String pageNo, String offset, String search, String value, String sortBy, String sortType) throws InvalidRequestException {
         ReactivateHealthProfessionalResponseTO reactivateHealthProfessionalResponseTO = null;
         ReactivateHealthProfessionalRequestParam reactivateHealthProfessionalQueryParam = new ReactivateHealthProfessionalRequestParam();
         reactivateHealthProfessionalQueryParam.setPageNo(Integer.parseInt(pageNo));
         final int dataLimit = Math.min(MAX_DATA_SIZE, Integer.parseInt(offset));
         reactivateHealthProfessionalQueryParam.setOffset(dataLimit);
-        reactivateHealthProfessionalQueryParam.setSearch(search);
+        if(search!=null){
+            if(value !=null && !value.isBlank()){
+                switch (search.toLowerCase()){
+                    case SEARCH_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setSearch(value);
+                        break;
+                    default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE);
+                }
+            }
+            else{
+                throw new InvalidRequestException(MISSING_SEARCH_VALUE);
+            }
+        }
         final String sortingOrder = sortType == null ? DEFAULT_SORT_ORDER : sortType;
         reactivateHealthProfessionalQueryParam.setSortType(sortingOrder);
         String column = getReactivationSortColumn(sortBy);
@@ -335,10 +321,6 @@ public class ApplicationServiceImpl implements IApplicationService {
      *
      * @param pageNo            - Gives the current page number
      * @param offset            - Gives the number of records to be displayed
-     * @param workFlowStatusId  - Search by work flow status Id
-     * @param applicationTypeId - Search by application type Id
-     * @param smcId             - Search by SMC Id
-     * @param registrationNo    - Search by registrationNo
      * @param sortBy            -  According to which column the sort has to happen
      * @param sortType          -  Sorting order ASC or DESC
      * @return the HealthProfessionalApplicationResponseTo object representing the response object
@@ -346,18 +328,29 @@ public class ApplicationServiceImpl implements IApplicationService {
      * raised a request
      */
     @Override
-    public HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo) {
-        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, workFlowStatusId, applicationTypeId, smcId, registrationNo, null);
+    public HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String search, String value) throws InvalidRequestException {
+        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, search, value, null);
         Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getSize());
-        return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable);
+        return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable, Collections.emptyList());
     }
 
-    private HealthProfessionalApplicationRequestParamsTo setHPRequestParamInToObject(String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo, BigInteger hpProfileId) {
+    private HealthProfessionalApplicationRequestParamsTo setHPRequestParamInToObject(String pageNo, String offset, String sortBy, String sortType, String search, String value, BigInteger hpProfileId) throws InvalidRequestException {
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = new HealthProfessionalApplicationRequestParamsTo();
-        applicationRequestParamsTo.setSmcId(smcId);
-        applicationRequestParamsTo.setRegistrationNo(registrationNo);
-        applicationRequestParamsTo.setWorkFlowStatusId(workFlowStatusId);
-        applicationRequestParamsTo.setApplicationTypeId(applicationTypeId);
+
+        if(search !=null ){
+            if(value !=null && !value.isBlank()){
+                switch (search.toLowerCase()){
+                    case REGISTRATION_NUMBER_IN_LOWER_CASE: applicationRequestParamsTo.setRegistrationNo(value);
+                        break;
+                    case SMC_ID_IN_LOWER_CASE: applicationRequestParamsTo.setSmcId(value);
+                        break;
+                    default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION);
+                }
+            }
+            else{
+                throw new InvalidRequestException(MISSING_SEARCH_VALUE);
+            }
+        }
         final int dataLimit = Math.min(MAX_DATA_SIZE, Integer.parseInt(offset));
         applicationRequestParamsTo.setSize(dataLimit);
         applicationRequestParamsTo.setPageNo(Integer.parseInt(pageNo));
@@ -375,10 +368,6 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @param healthProfessionalId the health professional id.
      * @param pageNo               - Gives the current page number
      * @param offset               - Gives the number of records to be displayed
-     * @param workFlowStatusId     - Search by work flow status Id
-     * @param applicationTypeId    - Search by application type Id
-     * @param smcId                - Search by SMC Id
-     * @param registrationNo       - Search by registrationNo
      * @param sortBy               -  According to which column the sort has to happen
      * @param sortType             -  Sorting order ASC or DESC
      * @return the HealthProfessionalApplicationResponseTo object representing the response object
@@ -386,12 +375,12 @@ public class ApplicationServiceImpl implements IApplicationService {
      * raised a request
      */
     @Override
-    public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String workFlowStatusId, String applicationTypeId, String smcId, String registrationNo) {
+    public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String search, String value) throws InvalidRequestException {
         RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(healthProfessionalId);
-        List<HpProfile> hpProfiles = iHpProfileRepository.findByRegistrationId(new BigInteger(registrationDetails.getRegistrationNo()));
-        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, workFlowStatusId, applicationTypeId, smcId, registrationNo, healthProfessionalId);
+        List<HpProfile> hpProfiles = iHpProfileRepository.findHpProfileByRegistrationId(registrationDetails.getRegistrationNo());
+        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, search, value, healthProfessionalId);
         Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getSize());
-        return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable);
+        return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable,hpProfiles);
     }
 
     /**

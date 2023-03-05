@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
@@ -137,20 +138,23 @@ public class CollegeController {
      * Endpoint for fetching the College registration records
      * for the NMC that has been submitted for approval
      *
-     * @param pageNo       - Gives the current page number
-     * @param offset        - Gives the number of records to be displayed in a page
-     * @param search       - Gives the search criteria
-     * @param sortBy -  According to which column the sort has to happen
-     * @param sortType    -  Sorting order ASC or DESC
-     * @param collegeId    - Search by collegeId
-     * @param collegeName  - Search by collegeName
-     * @param councilName  - Search by councilName
+     * @param pageNo
+     * @param limit
+     * @param search
+     * @param value
+     * @param columnToSort
+     * @param sortOrder
      * @return the CollegeRegistrationResponseTO  response Object
      * which contains all the details related to the College submitted to NMC
      * for approval.
      */
     @GetMapping(path = NMRConstants.PATH_COLLEGE_APPLICATIONS)
-    public CollegeRegistrationResponseTO getCollegeRegistrationDetails(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo, @RequestParam(required = false, value = "offset", defaultValue = "2") String offset, @RequestParam(required = false, value = "search") String search, @RequestParam(required = false, value = "id") String collegeId, @RequestParam(required = false, value = "name") String collegeName, @RequestParam(required = false, value = "council") String councilName, @RequestParam(required = false, value = "sortBy") String sortBy, @RequestParam(required = false, value = "sortType") String sortType) {
-        return collegeService.getCollegeRegistrationDetails(pageNo, offset, search, collegeId, collegeName, councilName, sortBy, sortType);
+    public CollegeRegistrationResponseTO getCollegeRegistrationDetails(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
+                                                                       @RequestParam(required = false, value = "limit", defaultValue = "2") String limit,
+                                                                       @RequestParam(required = false, value = "search") String search,
+                                                                       @RequestParam(required = false, value = "value") String value,
+                                                                       @RequestParam(required = false, value = "sort") String columnToSort,
+                                                                       @RequestParam(required = false, value = "sortingOrder") String sortOrder) throws InvalidRequestException {
+        return collegeService.getCollegeRegistrationDetails(pageNo, limit, search, value, columnToSort, sortOrder);
     }
 }

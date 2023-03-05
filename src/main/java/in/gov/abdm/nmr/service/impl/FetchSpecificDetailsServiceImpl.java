@@ -1,25 +1,5 @@
 package in.gov.abdm.nmr.service.impl;
 
-import static in.gov.abdm.nmr.util.NMRConstants.DEFAULT_SORT_ORDER;
-import static in.gov.abdm.nmr.util.NMRConstants.INVALID_APPLICATION_TYPE;
-import static in.gov.abdm.nmr.util.NMRConstants.INVALID_GROUP;
-import static in.gov.abdm.nmr.util.NMRConstants.INVALID_WORK_FLOW_STATUS;
-import static in.gov.abdm.nmr.util.NMRConstants.MAX_DATA_SIZE;
-
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-
 import in.gov.abdm.nmr.dto.DashboardRequestParamsTO;
 import in.gov.abdm.nmr.dto.DashboardRequestTO;
 import in.gov.abdm.nmr.dto.DashboardResponseTO;
@@ -34,14 +14,20 @@ import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetails;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
-import in.gov.abdm.nmr.repository.ICollegeDeanRepository;
-import in.gov.abdm.nmr.repository.ICollegeRegistrarRepository;
-import in.gov.abdm.nmr.repository.ICollegeRepository;
-import in.gov.abdm.nmr.repository.IFetchSpecificDetailsCustomRepository;
-import in.gov.abdm.nmr.repository.IFetchSpecificDetailsRepository;
-import in.gov.abdm.nmr.repository.ISmcProfileRepository;
+import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
 import in.gov.abdm.nmr.service.IUserDaoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.math.BigInteger;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 /**
  * A class that implements all the methods of the interface IFetchSpecificDetailsService
@@ -171,10 +157,6 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
      * @param workFlowStatusId  the workflow status ID
      * @param applicationTypeId the application type ID
      * @param userGroupStatus   the user group status
-     * @param smcId             the SMC ID
-     * @param name              the name
-     * @param nmrId             the NMR ID
-     * @param search            the search parameter
      * @param pageNo            the page number
      * @param size              the size of the page
      * @param sortBy            the sort parameter
@@ -184,7 +166,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
      */
     @Override
     public DashboardResponseTO fetchCardDetails(String workFlowStatusId, String applicationTypeId, String userGroupStatus,
-                                                String smcId, String name, String nmrId, String search, int pageNo, int size,
+                                                String search, String value, int pageNo, int size,
                                                 String sortBy, String sortOrder) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User userDetail = userDaoService.findByUsername(userName);
@@ -193,9 +175,30 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
         dashboardRequestParamsTO.setWorkFlowStatusId(workFlowStatusId);
         dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
-        dashboardRequestParamsTO.setName(name);
-        dashboardRequestParamsTO.setNmrId(nmrId);
-        dashboardRequestParamsTO.setSearch(search);
+        if(search !=null){
+            if(value !=null && !value.isBlank()){
+                switch (search.toLowerCase()){
+                    case NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setName(value);
+                        break;
+                    case NMR_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setNmrId(value);
+                        break;
+                    case SMC_ID_IN_LOWER_CASE: {
+                        if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
+                                || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
+                            dashboardRequestParamsTO.setSmcId(value);
+                        }
+                    }
+                    break;
+                    case SEARCH_IN_LOWER_CASE: dashboardRequestParamsTO.setSearch(value);
+                        break;
+                    default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL);
+                }
+            }
+            else{
+                throw new InvalidRequestException(MISSING_SEARCH_VALUE);
+            }
+        }
+
         String column = mapColumnToTable(sortBy);
         dashboardRequestParamsTO.setSortBy(column);
         dashboardRequestParamsTO.setUserGroupId(groupId);
@@ -209,10 +212,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         } else if (groupId.equals(Group.COLLEGE_ADMIN.getId())) {
             dashboardRequestParamsTO.setCollegeId(iCollegeRepository.findByUserId(userId).getId().toString());
         }
-        if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
-                || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
-            dashboardRequestParamsTO.setSmcId(smcId);
-        }
+
         final String sortingOrder = (sortOrder == null || sortOrder.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
         final int dataLimit = Math.min(MAX_DATA_SIZE, size);
@@ -238,9 +238,34 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
         dashboardRequestParamsTO.setWorkFlowStatusId(dashboardRequestTO.getWorkFlowStatusId());
         dashboardRequestParamsTO.setApplicationTypeId(dashboardRequestTO.getApplicationTypeId());
-        dashboardRequestParamsTO.setName(dashboardRequestTO.getName());
-        dashboardRequestParamsTO.setNmrId(dashboardRequestTO.getNmrId());
-        dashboardRequestParamsTO.setSearch(dashboardRequestTO.getSearch());
+        if(dashboardRequestTO.getSearch() !=null){
+            if(dashboardRequestTO.getValue() !=null && !dashboardRequestTO.getValue().isBlank()){
+                switch (dashboardRequestTO.getSearch().toLowerCase()){
+                    case COLLEGE_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setCollegeId(dashboardRequestTO.getValue());
+                        break;
+                    case NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setName(dashboardRequestTO.getValue());
+                        break;
+                    case NMR_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setNmrId(dashboardRequestTO.getValue());
+                        break;
+                    case SMC_ID_IN_LOWER_CASE: {
+                        if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
+                                || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
+                            dashboardRequestParamsTO.setSmcId(dashboardRequestTO.getValue());
+                        }
+                    }
+                    break;
+                    case WORK_FLOW_STATUS_IN_LOWER_CASE: dashboardRequestParamsTO.setWorkFlowStatusId(dashboardRequestTO.getValue());
+                        break;
+                    case SEARCH_IN_LOWER_CASE: dashboardRequestParamsTO.setSearch(dashboardRequestTO.getValue());
+                        break;
+                    default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_POST_CARD_DETAIL);
+                }
+            }
+            else{
+                throw new InvalidRequestException(MISSING_SEARCH_VALUE);
+            }
+        }
+
         dashboardRequestParamsTO.setSortBy(column);
         dashboardRequestParamsTO.setUserGroupId(groupId);
         dashboardRequestParamsTO.setUserGroupStatus(dashboardRequestTO.getUserGroupStatus());
@@ -253,10 +278,6 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
             CollegeRegistrar collegeRegistrar = iCollegeRegistrarRepository.findByUserId(userId);
             dashboardRequestParamsTO.setCollegeId(collegeRegistrar.getCollege().getId().toString());
-        }
-        if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
-                || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
-            dashboardRequestParamsTO.setSmcId(dashboardRequestTO.getSmcId());
         }
         final String sortingOrder = (sortOrder == null || sortOrder.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
