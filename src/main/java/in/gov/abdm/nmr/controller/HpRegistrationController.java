@@ -173,9 +173,9 @@ public class HpRegistrationController {
     @PostMapping(path = "/health-professional/{healthProfessionalId}/qualifications", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String addQualifications(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
                                     @RequestPart("data") QualificationRequestTO qualificationDetailRequestTO,
-                                    @RequestParam(value = "proof") List<MultipartFile> proofs
+                                    @RequestParam(value = "degreeCertificates") List<MultipartFile> degreeCertificates
                                     ) throws WorkFlowException, InvalidRequestException {
-        return hpService.addQualification(hpProfileId, qualificationDetailRequestTO.getQualificationDetailRequestTos(), proofs);
+        return hpService.addQualification(hpProfileId, qualificationDetailRequestTO.getQualificationDetailRequestTos(), degreeCertificates);
     }
 
     /**
