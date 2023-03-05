@@ -231,7 +231,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 .hpProfile(hpProfile)
                 .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get())
                 .previousGroup(actorGroup)
-                .currentGroup(coalesce(iGroupRepository.findById(iNextGroup.getAssignTo()).get(), null))
+                .currentGroup(iNextGroup.getAssignTo() != null ? coalesce(iGroupRepository.findById(iNextGroup.getAssignTo()).get(), null) : null)
                 .startDate(requestTO.getStartDate())
                 .endDate(requestTO.getEndDate())
                 .remarks(requestTO.getRemarks())
