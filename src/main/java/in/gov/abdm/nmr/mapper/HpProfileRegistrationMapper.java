@@ -28,8 +28,7 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
             registrationDetailsTo.setRegistrationNumber(registrationDetails.getRegistrationNo());
             registrationDetailsTo.setStateMedicalCouncil(StateMedicalCouncilTO.builder().code(registrationDetails.getStateMedicalCouncil().getCode()).name(registrationDetails.getStateMedicalCouncil().getName()).build());
             registrationDetailsTo.setIsRenewable(registrationDetails.getIsRenewable());
-            registrationDetailsTo.setCertificate(registrationDetails.getCertificate());
-            registrationDetailsTo.setNameChangeProof(registrationDetails.getNameChangeProofAttachment());
+            registrationDetailsTo.setRegistrationCertificate(registrationDetails.getCertificate());
         }
         if(nbeDetails != null) {
             nbeResponseTo.setResult(nbeDetails.getUserResult());
@@ -53,6 +52,7 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
                 qualificationDetailResponseTo.setCourse(CourseTO.builder().id(indianQualification.getCourse().getId()).courseName(indianQualification.getCourse().getCourseName()).build());
                 qualificationDetailResponseTo.setUniversity(UniversityTO.builder().id(indianQualification.getUniversity().getId()).name(indianQualification.getUniversity().getName()).build());
                 qualificationDetailResponseTo.setCollege(CollegeTO.builder().id(indianQualification.getCollege().getId()).name(indianQualification.getCollege().getName()).build());
+                qualificationDetailResponseTo.setDegreeCertificate(indianQualification.getCertificate());
                 return qualificationDetailResponseTo;
             }).toList());
         }
@@ -68,6 +68,7 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
                 qualificationDetailResponseTo.setCourse(CourseTO.builder().courseName(internationalQualification.getCourse()).build());
                 qualificationDetailResponseTo.setUniversity(UniversityTO.builder().name(internationalQualification.getUniversity()).build());
                 qualificationDetailResponseTo.setCollege(CollegeTO.builder().name(internationalQualification.getCollege()).build());
+                qualificationDetailResponseTo.setDegreeCertificate(internationalQualification.getCertificate());
                 return qualificationDetailResponseTo;
             }).toList());
         }
