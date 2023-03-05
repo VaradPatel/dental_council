@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class QualificationRequestTempTO {
+public class QualificationRequestTO {
 
     private List<QualificationDetailRequestTO> qualificationDetailRequestTos;
 

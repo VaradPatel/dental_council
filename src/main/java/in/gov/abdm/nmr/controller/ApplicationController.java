@@ -58,7 +58,7 @@ public class ApplicationController {
      */
     @PostMapping(ProtectedPaths.REACTIVATE_REQUEST_URL)
     public String reactivateHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
-        return applicationService.reactiveRequest(applicationRequestTo);
+        return applicationService.reactivateRequest(applicationRequestTo);
     }
 
     /**
