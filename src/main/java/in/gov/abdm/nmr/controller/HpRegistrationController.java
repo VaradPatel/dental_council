@@ -99,22 +99,21 @@ public class HpRegistrationController {
     /**
      * This method updates the health professional registration details.
      *
-     * @param certificate                       The health professional's certificate file.
-     * @param proof                             The health professional's proof file.
-     * @param hpRegistrationUpdateRequestString The health professional registration update request in string format.
+     * @param registrationCertificate                       The health professional's certificate file.
+     * @param degreeCertificate                             The health professional's proof file.
+     * @param hpRegistrationUpdateRequest The health professional registration update request in string format.
      * @param hpProfileId                       The health professional profile id.
      * @return The updated health professional registration response in a transfer object.
      * @throws InvalidRequestException If the provided request is invalid.
      * @throws WorkFlowException       If there is an error in the workflow.
      */
     @PutMapping(path = "health-professional/{healthProfessionalId}/registration", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam(value = "certificate", required = false) MultipartFile certificate,
-                                                                                      @RequestParam(value = "proof", required = false) MultipartFile proof,
-                                                                                      @RequestParam(value = "proofOfQualification", required = false) List<MultipartFile> proofOfQualifications,
+    public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam(value = "registrationCertificate", required = false) MultipartFile registrationCertificate,
+                                                                                      @RequestParam(value = "degreeCertificate", required = false) MultipartFile degreeCertificate,
                                                                                       @RequestPart("data") HpRegistrationUpdateRequestTO hpRegistrationUpdateRequest,
                                                                                       @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, WorkFlowException, NmrException {
 
-        return hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequest, certificate, proof, proofOfQualifications);
+        return hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequest, registrationCertificate, degreeCertificate);
     }
 
     /**
@@ -173,10 +172,10 @@ public class HpRegistrationController {
      */
     @PostMapping(path = "/health-professional/{healthProfessionalId}/qualifications", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String addQualifications(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
-                                    @RequestPart("data") QualificationRequestTempTO qualificationDetailRequestTO,
-                                    @RequestParam(value = "proof") List<MultipartFile> proofs
+                                    @RequestPart("data") QualificationRequestTO qualificationDetailRequestTO,
+                                    @RequestParam(value = "degreeCertificates") List<MultipartFile> degreeCertificates
                                     ) throws WorkFlowException, InvalidRequestException {
-        return hpService.addQualification(hpProfileId, qualificationDetailRequestTO.getQualificationDetailRequestTos(), proofs);
+        return hpService.addQualification(hpProfileId, qualificationDetailRequestTO.getQualificationDetailRequestTos(), degreeCertificates);
     }
 
     /**

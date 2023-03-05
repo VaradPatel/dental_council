@@ -172,8 +172,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Override
     public HpProfileRegistrationResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
-                                                                           HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile certificate, MultipartFile proof, List<MultipartFile> proofOfQualifications) throws InvalidRequestException, NmrException {
-        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(hpProfileId, hpRegistrationUpdateRequestTO, certificate, proof, proofOfQualifications);
+                                                                           HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, MultipartFile degreeCertificate) throws InvalidRequestException, NmrException {
+        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(hpProfileId, hpRegistrationUpdateRequestTO, registrationCertificate, degreeCertificate);
         return getHealthProfessionalRegistrationDetail(hpProfileUpdateResponseTO.getHpProfileId());
     }
 
@@ -230,9 +230,14 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public HpProfilePersonalResponseTO getHealthProfessionalPersonalDetail(BigInteger hpProfileId) {
         HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
         Address communicationAddressByHpProfileId = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfileId, AddressType.COMMUNICATION.getId());
+        BigInteger applicationTypeId = null;
+        if(hpProfile.getRequestId() != null){
+            WorkFlow workFlow = workFlowRepository.findByRequestId(hpProfile.getRequestId());
+            applicationTypeId = workFlow.getApplicationType().getId();
+        }
         List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(hpProfileId);
         List<Language> languages = languageRepository.getLanguage();
-        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, languagesKnown, languages);
+        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, languagesKnown, languages, applicationTypeId);
     }
 
     @Override
