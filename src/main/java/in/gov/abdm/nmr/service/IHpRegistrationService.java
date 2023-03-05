@@ -115,4 +115,6 @@ public interface IHpRegistrationService {
      * @return HpProfileRegistrationResponseTO object containing the registration details of the health professional.
      */
     HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(BigInteger hpProfileId);
+
+    ResponseMessageTo saveUserKycDetails(UserKycTo userKycTo);
 }

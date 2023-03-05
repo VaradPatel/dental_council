@@ -16,6 +16,7 @@ import in.gov.abdm.nmr.service.IHpProfileDaoService;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
+import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,9 @@ import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetails;
 public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Autowired
     private IHpProfileMapper iHpProfileMapper;
+
+    @Autowired
+    private UserKycDtoMapper userKycDtoMapper;
 
     @Autowired
     private IHpProfileMasterMapper iHpProfileAuditMapper;
@@ -94,6 +98,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Autowired
     private BroadSpecialityRepository broadSpecialityRepository;
+
+    @Autowired
+    private UserKycRepository userKycRepository;
 
     /**
      * This method fetches the SMC registration details for a given request.
@@ -236,5 +243,11 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = HpProfileRegistrationMapper.convertEntitiesToRegistrationResponseTo(registrationDetails, nbeDetails, indianQualifications, internationalQualifications);
         hpProfileRegistrationResponseTO.setHpProfileId(hpProfileId);
         return hpProfileRegistrationResponseTO;
+    }
+
+    public  ResponseMessageTo saveUserKycDetails(UserKycTo userKycTo){
+
+        userKycRepository.save(userKycDtoMapper.userKycToToUserKyc(userKycTo));
+        return new ResponseMessageTo(null, NMRConstants.SUCCESS);
     }
 }
