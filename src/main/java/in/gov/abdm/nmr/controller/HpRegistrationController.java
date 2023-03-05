@@ -230,4 +230,9 @@ public class HpRegistrationController {
     public List<QueryResponseTo> getQueries(@PathVariable("healthProfessionalId") BigInteger healthProfessionalId) {
         return queryService.getQueriesByHpProfileId(healthProfessionalId);
     }
+
+    @PostMapping(path = NMRConstants.SAVE_KYC_DETAILS, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseMessageTo saveUserKycDetails(@RequestBody UserKycTo userKycTo){
+        return hpService.saveUserKycDetails(userKycTo);
+    }
 }
