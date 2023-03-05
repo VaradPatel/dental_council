@@ -168,20 +168,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             newRegistrationDetails.setHpProfileId(targetedHpProfile);
             iRegistrationDetailRepository.save(newRegistrationDetails);
 
-            List<WorkProfile> workProfileList = new ArrayList<>();
-            List<WorkProfile> workProfiles = workProfileRepository.getWorkProfileDetailsByHPId(copiedExistingHpProfile.getId());
-            HpProfile finalTargetedHpProfile = targetedHpProfile;
-            workProfiles.forEach(workProfile -> {
-                WorkProfile newWorkProfile = new WorkProfile();
-                org.springframework.beans.BeanUtils.copyProperties(workProfile, newWorkProfile);
-                newWorkProfile.setId(null);
-                if (finalTargetedHpProfile != null && finalTargetedHpProfile.getId() != null) {
-                    newWorkProfile.setHpProfileId(finalTargetedHpProfile.getId());
-                }
-                workProfileList.add(newWorkProfile);
-            });
-            workProfileRepository.saveAll(workProfileList);
-
             List<LanguagesKnown> languagesKnownList = new ArrayList<>();
             List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(copiedExistingHpProfile.getId());
             for (LanguagesKnown languageKnown : languagesKnown) {
@@ -214,28 +200,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 customQualificationDetailsList.add(newCustomQualificationDetails);
             }
             iForeignQualificationDetailRepository.saveAll(customQualificationDetailsList);
-
-            List<SuperSpeciality> superSpecialities = new ArrayList<>();
-            List<SuperSpeciality> superSpecialityList = superSpecialityRepository.getSuperSpecialityFromHpProfileId(copiedExistingHpProfile.getId());
-            for (SuperSpeciality superSpeciality : superSpecialityList) {
-                SuperSpeciality newSuperSpeciality = new SuperSpeciality();
-                org.springframework.beans.BeanUtils.copyProperties(superSpeciality, newSuperSpeciality);
-                newSuperSpeciality.setId(null);
-                if (targetedHpProfile != null && targetedHpProfile.getId() != null) {
-                    newSuperSpeciality.setHpProfileId(targetedHpProfile.getId());
-                }
-                superSpecialities.add(newSuperSpeciality);
-            }
-            superSpecialityRepository.saveAll(superSpecialities);
-
-            Address address=iAddressRepository.getCommunicationAddressByHpProfileId(copiedExistingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId());
-            Address newAddress = new Address();
-            org.springframework.beans.BeanUtils.copyProperties(address, newAddress);
-            newAddress.setId(null);
-            if (targetedHpProfile != null && targetedHpProfile.getId() != null) {
-                newAddress.setHpProfileId(targetedHpProfile.getId());
-            }
-            iAddressRepository.save(newAddress);
 
         }
 
