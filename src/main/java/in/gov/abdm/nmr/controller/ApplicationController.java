@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
@@ -75,11 +76,11 @@ public class ApplicationController {
     @GetMapping(REACTIVATE_REQUEST_URL)
     public ReactivateHealthProfessionalResponseTO reactivationRecordsOfHealthProfessionalsToNmc(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
                                                                                                 @RequestParam(required = false, value = "offset", defaultValue = "2") String offset,
-                                                                                                @RequestParam(required = false, value = "filterCriteria") String filterCriteria,
-                                                                                                @RequestParam(required = false, value = "filterValue") String filterValue,
+                                                                                                @RequestParam(required = false, value = "search") String search,
+                                                                                                @RequestParam(required = false, value = "value") String value,
                                                                                                 @RequestParam(required = false, value = "sortBy") String sortBy,
-                                                                                                @RequestParam(required = false, value = "sortType") String sortType) {
-        return applicationService.getReactivationRecordsOfHealthProfessionalsToNmc(pageNo, offset, filterCriteria, filterValue, sortBy, sortType);
+                                                                                                @RequestParam(required = false, value = "sortType") String sortType) throws InvalidRequestException {
+        return applicationService.getReactivationRecordsOfHealthProfessionalsToNmc(pageNo, offset, search, value, sortBy, sortType);
     }
 
     /**
@@ -98,9 +99,9 @@ public class ApplicationController {
                                                                            @RequestParam(required = false, value = "offset", defaultValue = "2") String offset,
                                                                            @RequestParam(required = false, value = "sortBy") String sortBy,
                                                                            @RequestParam(required = false, value = "sortType") String sortType,
-                                                                           @RequestParam(required = false, value = "filterCriteria") String filterCriteria,
-                                                                           @RequestParam(required = false, value = "filterValue") String filterValue) {
-        return applicationService.fetchApplicationDetailsForHealthProfessional(healthProfessionalId, pageNo, offset, sortBy, sortType, filterCriteria, filterValue);
+                                                                           @RequestParam(required = false, value = "search") String search,
+                                                                           @RequestParam(required = false, value = "value") String value) throws InvalidRequestException {
+        return applicationService.fetchApplicationDetailsForHealthProfessional(healthProfessionalId, pageNo, offset, sortBy, sortType, search, value);
     }
 
     /**
@@ -119,9 +120,9 @@ public class ApplicationController {
                                                                       @RequestParam(required = false, value = "offset", defaultValue = "2") String offset,
                                                                       @RequestParam(required = false, value = "sortBy") String sortBy,
                                                                       @RequestParam(required = false, value = "sortType") String sortType,
-                                                                      @RequestParam(required = false, value = "filterCriteria") String filterCriteria,
-                                                                      @RequestParam(required = false, value = "filterValue") String filterValue) {
-        return applicationService.fetchApplicationDetails(pageNo, offset, sortBy, sortType, filterCriteria, filterValue);
+                                                                      @RequestParam(required = false, value = "search") String search,
+                                                                      @RequestParam(required = false, value = "value") String value) throws InvalidRequestException {
+        return applicationService.fetchApplicationDetails(pageNo, offset, sortBy, sortType, search, value);
     }
 
     /**

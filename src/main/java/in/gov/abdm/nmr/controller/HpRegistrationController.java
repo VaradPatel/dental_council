@@ -43,7 +43,7 @@ public class HpRegistrationController {
      * @param registrationNumber
      * @return SmcRegistrationDetailResponseTO This returns the SMC registration detail information.
      */
-    @GetMapping(path = "health-professional", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "health-professional", produces = MediaType.APPLICATION_JSON_VALUE)
     public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(
             @RequestParam("smcId") Integer councilId,
             @RequestParam("registrationNumber") String registrationNumber) {

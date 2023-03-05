@@ -7,6 +7,7 @@ import in.gov.abdm.nmr.entity.CollegeRegistrar;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.ICollegeMapper;
@@ -149,8 +150,8 @@ public class CollegeServiceImpl implements ICollegeService {
      *
      * @param pageNo   - Gives the current page number
      * @param limit   - Gives the number of records to be displayed
-     * @param filterCriteria
-     * @param filterValue
+     * @param search
+     * @param value
      * @param columnToSort   -  According to which column the sort has to happen
      * @param sortOrder -  Sorting order ASC or DESC
      * @return the CollegeRegistrationResponseTO  response Object
@@ -158,20 +159,22 @@ public class CollegeServiceImpl implements ICollegeService {
      * for approval
      */
     @Override
-    public CollegeRegistrationResponseTO getCollegeRegistrationDetails(String pageNo, String limit, String filterCriteria, String filterValue, String columnToSort, String sortOrder) {
+    public CollegeRegistrationResponseTO getCollegeRegistrationDetails(String pageNo, String limit, String search, String value, String columnToSort, String sortOrder) throws InvalidRequestException {
         CollegeRegistrationResponseTO collegeRegistrationResponseTO = null;
         CollegeRegistrationRequestParamsTO collegeRegistrationRequestParams = new CollegeRegistrationRequestParamsTO();
         final Integer dataLimit = MAX_DATA_SIZE < Integer.valueOf(limit) ? MAX_DATA_SIZE : Integer.valueOf(limit);
         collegeRegistrationRequestParams.setOffset(dataLimit);
         collegeRegistrationRequestParams.setPageNo(Integer.valueOf(pageNo));
-        switch (filterCriteria.toLowerCase()){
-            case COLLEGE_ID_IN_LOWER_CASE: collegeRegistrationRequestParams.setCollegeId(filterValue);
-            break;
-            case COLLEGE_NAME_IN_LOWER_CASE: collegeRegistrationRequestParams.setCollegeName(filterValue);
-            break;
-            case COUNCIL_NAME_IN_LOWER_CASE: collegeRegistrationRequestParams.setCouncilName(filterValue);
-            break;
-            case SEARCH_IN_LOWER_CASE: collegeRegistrationRequestParams.setSearch(filterValue);
+        switch (search.toLowerCase()){
+            case COLLEGE_ID_IN_LOWER_CASE: collegeRegistrationRequestParams.setCollegeId(value);
+                break;
+            case COLLEGE_NAME_IN_LOWER_CASE: collegeRegistrationRequestParams.setCollegeName(value);
+                break;
+            case COUNCIL_NAME_IN_LOWER_CASE: collegeRegistrationRequestParams.setCouncilName(value);
+                break;
+            case SEARCH_IN_LOWER_CASE: collegeRegistrationRequestParams.setSearch(value);
+                break;
+            default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_COLLEGE_APPLICATIONS);
         }
         String column = getColumnToSort(columnToSort);
         collegeRegistrationRequestParams.setSortBy(column);

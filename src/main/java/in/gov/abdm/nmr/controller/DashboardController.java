@@ -82,14 +82,14 @@ public class DashboardController {
             @RequestParam(required = false, value = "workFlowStatusId") String workFlowStatusId,
             @RequestParam(required = false, value = "applicationTypeId") String applicationTypeId,
             @RequestParam(required = false, value = "userGroupStatus") String userGroupStatus,
-            @RequestParam(required = false, value = "filterCriteria") String filterCriteria,
-            @RequestParam(required = false, value = "filterValue") String filterValue,
+            @RequestParam(required = false, value = "search") String search,
+            @RequestParam(required = false, value = "value") String value,
             @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(required = false, value = "size", defaultValue = "2") int size,
             @RequestParam(required = false, value = "sortBy") String sortBy,
             @RequestParam(required = false, value = "sortOrder") String sortOrder) throws InvalidRequestException {
         return iFetchSpecificDetailsService.fetchCardDetails(workFlowStatusId, applicationTypeId,
-                userGroupStatus, filterCriteria, filterValue, pageNo, size, sortBy, sortOrder);
+                userGroupStatus, search, value, pageNo, size, sortBy, sortOrder);
     }
 
 }

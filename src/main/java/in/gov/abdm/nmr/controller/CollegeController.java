@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
@@ -139,8 +140,8 @@ public class CollegeController {
      *
      * @param pageNo
      * @param limit
-     * @param filterCriteria
-     * @param filterValue
+     * @param search
+     * @param value
      * @param columnToSort
      * @param sortOrder
      * @return the CollegeRegistrationResponseTO  response Object
@@ -150,10 +151,10 @@ public class CollegeController {
     @GetMapping(path = NMRConstants.PATH_COLLEGE_APPLICATIONS)
     public CollegeRegistrationResponseTO getCollegeRegistrationDetails(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
                                                                        @RequestParam(required = false, value = "limit", defaultValue = "2") String limit,
-                                                                       @RequestParam(required = false, value = "filterCriteria") String filterCriteria,
-                                                                       @RequestParam(required = false, value = "filterValue") String filterValue,
+                                                                       @RequestParam(required = false, value = "search") String search,
+                                                                       @RequestParam(required = false, value = "value") String value,
                                                                        @RequestParam(required = false, value = "sort") String columnToSort,
-                                                                       @RequestParam(required = false, value = "sortingOrder") String sortOrder) {
-        return collegeService.getCollegeRegistrationDetails(pageNo, limit, filterCriteria, filterValue, columnToSort, sortOrder);
+                                                                       @RequestParam(required = false, value = "sortingOrder") String sortOrder) throws InvalidRequestException {
+        return collegeService.getCollegeRegistrationDetails(pageNo, limit, search, value, columnToSort, sortOrder);
     }
 }

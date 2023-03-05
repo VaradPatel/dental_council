@@ -166,7 +166,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
      */
     @Override
     public DashboardResponseTO fetchCardDetails(String workFlowStatusId, String applicationTypeId, String userGroupStatus,
-                                                String filterCriteria, String filterValue, int pageNo, int size,
+                                                String search, String value, int pageNo, int size,
                                                 String sortBy, String sortOrder) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User userDetail = userDaoService.findByUsername(userName);
@@ -175,19 +175,28 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
         dashboardRequestParamsTO.setWorkFlowStatusId(workFlowStatusId);
         dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
-        switch (filterCriteria.toLowerCase()){
-            case NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setName(filterValue);
-                break;
-            case NMR_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setNmrId(filterValue);
-                break;
-            case SMC_ID_IN_LOWER_CASE: {
-                if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
-                        || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
-                    dashboardRequestParamsTO.setSmcId(filterValue);
+        if(search !=null){
+            if(value !=null && !value.isBlank()){
+                switch (search.toLowerCase()){
+                    case NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setName(value);
+                        break;
+                    case NMR_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setNmrId(value);
+                        break;
+                    case SMC_ID_IN_LOWER_CASE: {
+                        if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
+                                || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
+                            dashboardRequestParamsTO.setSmcId(value);
+                        }
+                    }
+                    break;
+                    case SEARCH_IN_LOWER_CASE: dashboardRequestParamsTO.setSearch(value);
+                        break;
+                    default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL);
                 }
             }
-                break;
-            case SEARCH_IN_LOWER_CASE: dashboardRequestParamsTO.setSearch(filterValue);
+            else{
+                throw new InvalidRequestException(MISSING_SEARCH_VALUE);
+            }
         }
 
         String column = mapColumnToTable(sortBy);
@@ -229,25 +238,34 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
         dashboardRequestParamsTO.setWorkFlowStatusId(dashboardRequestTO.getWorkFlowStatusId());
         dashboardRequestParamsTO.setApplicationTypeId(dashboardRequestTO.getApplicationTypeId());
-
-        switch (dashboardRequestTO.getFilterCriteria().toLowerCase()){
-            case COLLEGE_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setCollegeId(dashboardRequestTO.getFilterValue());
-                break;
-            case NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setName(dashboardRequestTO.getFilterValue());
-                break;
-            case NMR_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setNmrId(dashboardRequestTO.getFilterValue());
-                break;
-            case SMC_ID_IN_LOWER_CASE: {
-                if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
-                        || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
-                    dashboardRequestParamsTO.setSmcId(dashboardRequestTO.getFilterValue());
+        if(dashboardRequestTO.getSearch() !=null){
+            if(dashboardRequestTO.getValue() !=null && !dashboardRequestTO.getValue().isBlank()){
+                switch (dashboardRequestTO.getSearch().toLowerCase()){
+                    case COLLEGE_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setCollegeId(dashboardRequestTO.getValue());
+                        break;
+                    case NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setName(dashboardRequestTO.getValue());
+                        break;
+                    case NMR_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setNmrId(dashboardRequestTO.getValue());
+                        break;
+                    case SMC_ID_IN_LOWER_CASE: {
+                        if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
+                                || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
+                            dashboardRequestParamsTO.setSmcId(dashboardRequestTO.getValue());
+                        }
+                    }
+                    break;
+                    case WORK_FLOW_STATUS_IN_LOWER_CASE: dashboardRequestParamsTO.setWorkFlowStatusId(dashboardRequestTO.getValue());
+                        break;
+                    case SEARCH_IN_LOWER_CASE: dashboardRequestParamsTO.setSearch(dashboardRequestTO.getValue());
+                        break;
+                    default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_POST_CARD_DETAIL);
                 }
             }
-                break;
-            case WORK_FLOW_STATUS_IN_LOWER_CASE: dashboardRequestParamsTO.setWorkFlowStatusId(dashboardRequestTO.getFilterValue());
-                break;
-            case SEARCH_IN_LOWER_CASE: dashboardRequestParamsTO.setSearch(dashboardRequestTO.getFilterValue());
+            else{
+                throw new InvalidRequestException(MISSING_SEARCH_VALUE);
+            }
         }
+
         dashboardRequestParamsTO.setSortBy(column);
         dashboardRequestParamsTO.setUserGroupId(groupId);
         dashboardRequestParamsTO.setUserGroupStatus(dashboardRequestTO.getUserGroupStatus());

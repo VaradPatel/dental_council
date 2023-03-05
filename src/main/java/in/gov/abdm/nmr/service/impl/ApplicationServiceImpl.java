@@ -5,6 +5,7 @@ import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.repository.*;
@@ -22,10 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 
@@ -179,14 +177,23 @@ public class ApplicationServiceImpl implements IApplicationService {
      * raised a request to NMC to reactivate their profiles
      */
     @Override
-    public ReactivateHealthProfessionalResponseTO getReactivationRecordsOfHealthProfessionalsToNmc(String pageNo, String offset, String filterCriteria, String filterValue, String sortBy, String sortType) {
+    public ReactivateHealthProfessionalResponseTO getReactivationRecordsOfHealthProfessionalsToNmc(String pageNo, String offset, String search, String value, String sortBy, String sortType) throws InvalidRequestException {
         ReactivateHealthProfessionalResponseTO reactivateHealthProfessionalResponseTO = null;
         ReactivateHealthProfessionalRequestParam reactivateHealthProfessionalQueryParam = new ReactivateHealthProfessionalRequestParam();
         reactivateHealthProfessionalQueryParam.setPageNo(Integer.parseInt(pageNo));
         final int dataLimit = Math.min(MAX_DATA_SIZE, Integer.parseInt(offset));
         reactivateHealthProfessionalQueryParam.setOffset(dataLimit);
-        switch (filterCriteria.toLowerCase()){
-            case SEARCH_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setSearch(filterValue);
+        if(search!=null){
+            if(value !=null && !value.isBlank()){
+                switch (search.toLowerCase()){
+                    case SEARCH_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setSearch(value);
+                        break;
+                    default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE);
+                }
+            }
+            else{
+                throw new InvalidRequestException(MISSING_SEARCH_VALUE);
+            }
         }
         final String sortingOrder = sortType == null ? DEFAULT_SORT_ORDER : sortType;
         reactivateHealthProfessionalQueryParam.setSortType(sortingOrder);
@@ -321,24 +328,29 @@ public class ApplicationServiceImpl implements IApplicationService {
      * raised a request
      */
     @Override
-    public HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String filterCriteria, String filterValue) {
-        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, filterCriteria, filterValue, null);
+    public HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String search, String value) throws InvalidRequestException {
+        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, search, value, null);
         Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getSize());
-        return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable);
+        return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable, Collections.emptyList());
     }
 
-    private HealthProfessionalApplicationRequestParamsTo setHPRequestParamInToObject(String pageNo, String offset, String sortBy, String sortType, String filterCriteria, String filterValue, BigInteger hpProfileId) {
+    private HealthProfessionalApplicationRequestParamsTo setHPRequestParamInToObject(String pageNo, String offset, String sortBy, String sortType, String search, String value, BigInteger hpProfileId) throws InvalidRequestException {
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = new HealthProfessionalApplicationRequestParamsTo();
 
-        switch (filterCriteria.toLowerCase()){
-            case REGISTRATION_NUMBER_IN_LOWER_CASE: applicationRequestParamsTo.setRegistrationNo(filterValue);
-                break;
-            case APPLICATION_TYPE_ID_IN_LOWER_CASE: applicationRequestParamsTo.setApplicationTypeId(filterValue);
-                break;
-            case SMC_ID_IN_LOWER_CASE: applicationRequestParamsTo.setSmcId(filterValue);
-                break;
-            case WORK_FLOW_STATUS_IN_LOWER_CASE: applicationRequestParamsTo.setWorkFlowStatusId(filterValue);
+        if(search !=null ){
+            if(value !=null && !value.isBlank()){
+                switch (search.toLowerCase()){
+                    case REGISTRATION_NUMBER_IN_LOWER_CASE: applicationRequestParamsTo.setRegistrationNo(value);
+                        break;
+                    case SMC_ID_IN_LOWER_CASE: applicationRequestParamsTo.setSmcId(value);
+                        break;
+                    default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION);
+                }
             }
+            else{
+                throw new InvalidRequestException(MISSING_SEARCH_VALUE);
+            }
+        }
         final int dataLimit = Math.min(MAX_DATA_SIZE, Integer.parseInt(offset));
         applicationRequestParamsTo.setSize(dataLimit);
         applicationRequestParamsTo.setPageNo(Integer.parseInt(pageNo));
@@ -363,12 +375,12 @@ public class ApplicationServiceImpl implements IApplicationService {
      * raised a request
      */
     @Override
-    public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String filterCriteria, String filterValue) {
+    public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String search, String value) throws InvalidRequestException {
         RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(healthProfessionalId);
-        List<HpProfile> hpProfiles = iHpProfileRepository.findByRegistrationId(new BigInteger(registrationDetails.getRegistrationNo()));
-        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, filterCriteria, filterValue, healthProfessionalId);
+        List<HpProfile> hpProfiles = iHpProfileRepository.findByRegistrationId(registrationDetails.getRegistrationNo());
+        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, search, value, healthProfessionalId);
         Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getSize());
-        return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable);
+        return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable,hpProfiles);
     }
 
     /**

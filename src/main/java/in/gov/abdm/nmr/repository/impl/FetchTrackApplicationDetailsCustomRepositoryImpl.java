@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.repository.impl;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestParamsTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationTo;
+import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static in.gov.abdm.nmr.util.NMRConstants.FETCH_TRACK_DETAILS_COUNT_QUERY;
@@ -89,14 +91,21 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      * @param healthProfessionalApplicationRequestParamsTo - an object that contains parameters for the function
      * @return a string query to get the status of the Health Professional's application requests.
      */
-    private static final Function<HealthProfessionalApplicationRequestParamsTo, String> TRACK_APPLICATION = healthProfessionalApplicationRequestParamsTo -> {
+    private static final BiFunction<HealthProfessionalApplicationRequestParamsTo,List<HpProfile>, String> TRACK_APPLICATION = (healthProfessionalApplicationRequestParamsTo, hpProfiles) -> {
         StringBuilder sb = new StringBuilder();
 
         sb.append(FETCH_TRACK_DETAILS_QUERY);
 
-//        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getHpProfileId()) && !healthProfessionalApplicationRequestParamsTo.getHpProfileId().toString().isEmpty()) {
-//            sb.append("AND rd.hp_profile_id = ").append(healthProfessionalApplicationRequestParamsTo.getHpProfileId());
-//        }
+        if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
+            StringBuilder hpIds = new StringBuilder();
+            hpProfiles.forEach(hpProfile -> {
+                if(hpProfiles.indexOf(hpProfile) == hpProfiles.size()-1){
+                    hpIds.append(hpProfile.getId());
+                }
+                hpIds.append(hpProfile.getId()).append(",");
+            });
+            sb.append("AND rd.hp_profile_id IN  (").append(hpIds).append(")");
+        }
 
         String parameters = TRACK_APPLICATION_PARAMETERS.apply(healthProfessionalApplicationRequestParamsTo);
 
@@ -114,12 +123,13 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      * This method is used to retrieve the count of health professional application records based on the provided parameters.
      *
      * @param healthProfessionalApplicationRequestParamsTo - the parameters used to retrieve the health professional application records count
+     * @param hpProfiles
      * @return totalRecords the count of health professional application requests
      */
-    private BigInteger getCount(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo) {
+    private BigInteger getCount(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, List<HpProfile> hpProfiles) {
         BigInteger totalRecords = null;
         try {
-            Query query = entityManager.createNativeQuery(GET_RECORD_COUNT.apply(healthProfessionalApplicationRequestParamsTo));
+            Query query = entityManager.createNativeQuery(GET_RECORD_COUNT.apply(healthProfessionalApplicationRequestParamsTo, hpProfiles));
             Object result = query.getSingleResult();
             totalRecords = (BigInteger) result;
         } catch (Exception e) {
@@ -135,14 +145,21 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      * @param healthProfessionalApplicationRequestParamsTo - an object that contains parameters for the function
      * @return a query to get the count of the Health Professional's application requests.
      */
-    private static final Function<HealthProfessionalApplicationRequestParamsTo, String> GET_RECORD_COUNT = healthProfessionalApplicationRequestParamsTo -> {
+    private static final BiFunction<HealthProfessionalApplicationRequestParamsTo, List<HpProfile>, String> GET_RECORD_COUNT = (healthProfessionalApplicationRequestParamsTo, hpProfiles) -> {
         StringBuilder sb = new StringBuilder();
 
         sb.append(FETCH_TRACK_DETAILS_COUNT_QUERY);
 
-//      if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getHpProfileId()) && !healthProfessionalApplicationRequestParamsTo.getHpProfileId().toString().isEmpty()) {
-//          sb.append("AND rd.hp_profile_id = ").append(healthProfessionalApplicationRequestParamsTo.getHpProfileId());
-//        }
+        if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
+            StringBuilder hpIds = new StringBuilder();
+            hpProfiles.forEach(hpProfile -> {
+                if(hpProfiles.indexOf(hpProfile) == hpProfiles.size()-1){
+                    hpIds.append(hpProfile.getId());
+                }
+                hpIds.append(hpProfile.getId()).append(",");
+            });
+            sb.append("AND rd.hp_profile_id IN  (").append(hpIds).append(")");
+        }
 
         String parameters = TRACK_APPLICATION_PARAMETERS.apply(healthProfessionalApplicationRequestParamsTo);
 
@@ -162,11 +179,11 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      * raised a request
      */
     @Override
-    public HealthProfessionalApplicationResponseTo fetchTrackApplicationDetails(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, Pageable pagination) {
+    public HealthProfessionalApplicationResponseTo fetchTrackApplicationDetails(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, Pageable pagination, List<HpProfile> hpProfiles) {
         HealthProfessionalApplicationResponseTo healthProfessionalApplicationResponseTo = new HealthProfessionalApplicationResponseTo();
         List<HealthProfessionalApplicationTo> healthProfessionalApplicationToList = new ArrayList<>();
 
-        Query query = entityManager.createNativeQuery(TRACK_APPLICATION.apply(healthProfessionalApplicationRequestParamsTo));
+        Query query = entityManager.createNativeQuery(TRACK_APPLICATION.apply(healthProfessionalApplicationRequestParamsTo, hpProfiles));
 
         query.setFirstResult((pagination.getPageNumber() - 1) * pagination.getPageSize());
         query.setMaxResults(pagination.getPageSize());
@@ -193,7 +210,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationToList.add(healthProfessionalApplicationTo);
         });
         healthProfessionalApplicationResponseTo.setHealthProfessionalApplications(healthProfessionalApplicationToList);
-        healthProfessionalApplicationResponseTo.setTotalNoOfRecords(getCount(healthProfessionalApplicationRequestParamsTo));
+        healthProfessionalApplicationResponseTo.setTotalNoOfRecords(getCount(healthProfessionalApplicationRequestParamsTo, hpProfiles));
         return healthProfessionalApplicationResponseTo;
     }
 }

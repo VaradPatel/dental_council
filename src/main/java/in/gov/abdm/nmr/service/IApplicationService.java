@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.service;
 import in.gov.abdm.nmr.dto.ApplicationRequestTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
 import in.gov.abdm.nmr.dto.ReactivateHealthProfessionalResponseTO;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 
@@ -43,7 +44,7 @@ public interface IApplicationService {
      * which contains all the details related to the health professionals who have
      * raised a request to NMC to reactivate their profiles
      */
-    ReactivateHealthProfessionalResponseTO getReactivationRecordsOfHealthProfessionalsToNmc(String pageNo, String offset, String filterCriteria, String filterValue, String sortBy, String sortType);
+    ReactivateHealthProfessionalResponseTO getReactivationRecordsOfHealthProfessionalsToNmc(String pageNo, String offset, String search, String value, String sortBy, String sortType) throws InvalidRequestException;
 
     /**
      * Retrieves information about the status of a health professional's requests for NMC, NBE, SMC, Dean, Registrar and Admin.
@@ -56,7 +57,7 @@ public interface IApplicationService {
      * which contains all the details used to track the health professionals who have
      * raised a request
      */
-    HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String filterCriteria, String filterValue);
+    HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String search, String value) throws InvalidRequestException;
 
     /**
      * Retrieves information about a health professional's application requests to track by health professional.
@@ -70,6 +71,6 @@ public interface IApplicationService {
      * which contains all the details used to track the health professionals who have
      * raised a request
      */
-    HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String filterCriteria, String filterValue);
+    HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String search, String value) throws InvalidRequestException;
 
 }

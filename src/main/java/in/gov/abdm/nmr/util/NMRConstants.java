@@ -459,4 +459,16 @@ public class NMRConstants {
     public static final String EXCESS_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR="Please remove excess proofs to sync with the work profile details provided. ";
 
     public static final String WORK_PROFILE_DETAILS_LIMIT_EXCEEDED="Please provide less than or equal to 6 work profiles at a time.";
+
+    public static final String INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION = "Invalid Search Criteria. Expected: registrationnumber or smcid ";
+
+    public static final String INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE = "Invalid Search Criteria. Expected: search";
+
+    public static final String INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL = "Invalid Search Criteria. Expected: name, nmrid, smcid or search";
+
+    public static final String INVALID_SEARCH_CRITERIA_FOR_POST_CARD_DETAIL = "Invalid Search Criteria. Expected: collegeid, name, nmrid, smcid, workflowstatus or search";
+
+    public static final String INVALID_SEARCH_CRITERIA_FOR_COLLEGE_APPLICATIONS = "Invalid Search Criteria. Expected: collegeid, collegename, councilname or search";
+
+    public static final String MISSING_SEARCH_VALUE = "Please Enter a search value.";
 }

@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 
@@ -27,13 +28,13 @@ public interface ICollegeService {
      *
      * @param pageNo   - Gives the current page number
      * @param limit   - Gives the number of records to be displayed
-     * @param filterCriteria
-     * @param filterValue
+     * @param search
+     * @param value
      * @param columnToSort   -  According to which column the sort has to happen
      * @param sortOrder -  Sorting order ASC or DESC
      * @return the CollegeRegistrationResponseTO  response Object
      * which contains all the details related to the College submitted to NMC
      * for approval
      */
-    CollegeRegistrationResponseTO getCollegeRegistrationDetails(String pageNo, String limit, String filterCriteria, String filterValue, String columnToSort, String sortOrder);
+    CollegeRegistrationResponseTO getCollegeRegistrationDetails(String pageNo, String limit, String search, String value, String columnToSort, String sortOrder) throws InvalidRequestException;
 }

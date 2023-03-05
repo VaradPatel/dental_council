@@ -11,8 +11,8 @@ public class DashboardRequestTO {
     private String workFlowStatusId;
     private String applicationTypeId;
     private String userGroupStatus;
-    private String filterCriteria;
-    private String filterValue;
+    private String search;
+    private String value;
     private int pageNo;
     private int size;
     private String sortBy;
