@@ -227,6 +227,17 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             registrationDetailRepository.save(registrationDetails);
             workProfileRepository.saveAll(workProfileList);
             iHpProfileRepository.save(hpProfileById);
+
+            if (hpSubmitRequestTO.getApplicationTypeId().equals(ApplicationType.HP_REGISTRATION)) {
+                List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getQualificationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
+                List<QualificationDetails> qualificationDetailsList = new ArrayList<>();
+                String finalRequestId1 = requestId;
+                qualificationDetails.forEach(qualifications -> {
+                    qualifications.setRequestId(finalRequestId1);
+                    qualificationDetailsList.add(qualifications);
+                });
+                qualificationDetailRepository.saveAll(qualificationDetailsList);
+            }
         }
         return new HpProfileAddResponseTO(201, "Hp Profile Submitted Successfully!", hpSubmitRequestTO.getHpProfileId(), requestId);
     }
