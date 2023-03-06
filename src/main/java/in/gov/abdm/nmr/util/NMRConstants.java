@@ -423,7 +423,12 @@ public class NMRConstants {
     public static final String FETCH_WORK_PROFILE_RECORDS_BY_HP_ID = """
             SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id, 
             broad_speciality_id, state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at, 
-            updated_at, request_id, facility_type_id, organization_type FROM work_profile where hp_profile_id =:""" + HP_PROFILE_ID;
+            updated_at, request_id, facility_type_id, organization_type, registration_no FROM work_profile where hp_profile_id =:""" + HP_PROFILE_ID;
+
+    public static final String FETCH_WORK_PROFILE_RECORDS_BY_REG_NO = """
+            SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id, 
+            broad_speciality_id, state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at, 
+            updated_at, request_id, facility_type_id, organization_type, registration_no FROM work_profile where registration_no =:""" + REGISTRATION_NUMBER;
 
     public static final int MAX_DATA_SIZE = 500;
     public static final String DEFAULT_SORT_ORDER = "ASC";
@@ -437,7 +442,7 @@ public class NMRConstants {
 
     public static final String COMMA_SEPARATOR = ",";
 
-    public static final String QUALIFICATION_DETAILS_NULL_ERROR = "The field 'qualificationDetailRequestTOs' is mandatory. ";
+    public static final String QUALIFICATION_DETAILS_NULL_ERROR = "The field 'qualificationDetails' is mandatory. ";
 
     public static final String QUALIFICATION_DETAILS_EMPTY_ERROR = "Please provide at-least one qualification to be added. ";
 
@@ -472,4 +477,8 @@ public class NMRConstants {
     public static final String INVALID_SEARCH_CRITERIA_FOR_COLLEGE_APPLICATIONS = "Invalid Search Criteria. Expected: collegeid, collegename, councilname or search";
 
     public static final String MISSING_SEARCH_VALUE = "Please Enter a search value.";
+
+    public static final String NO_MATCHING_REGISTRATION_DETAILS_FOUND = "No matching registration details found for the given hp_profile_id";
+
+    public static final String NO_MATCHING_WORK_PROFILE_DETAILS_FOUND = "No matching work profile details found for the given hp_profile_id";
 }

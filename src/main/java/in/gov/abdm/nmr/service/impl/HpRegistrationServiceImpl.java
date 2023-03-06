@@ -28,6 +28,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import static in.gov.abdm.nmr.util.NMRConstants.NO_MATCHING_REGISTRATION_DETAILS_FOUND;
+import static in.gov.abdm.nmr.util.NMRConstants.NO_MATCHING_WORK_PROFILE_DETAILS_FOUND;
 import static in.gov.abdm.nmr.util.NMRUtil.validateQualificationDetailsAndProofs;
 import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetails;
 
@@ -116,6 +118,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Autowired
     private SubDistrictRepository subDistrictRepository;
+
+    @Autowired
+    private IRegistrationDetailRepository iRegistrationDetailRepository;
 
     /**
      * This method fetches the SMC registration details for a given request.
@@ -245,11 +250,20 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) throws NmrException {
         HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = null;
         List<SuperSpeciality> superSpecialities = NMRUtil.coalesceCollection(superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId), superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId));
-        List<WorkProfile> workProfileList = workProfileRepository.getWorkProfileDetailsByHPId(hpProfileId);
+        List<String> registrationNos=iRegistrationDetailRepository.getRegistrationNosByHpProfileId(hpProfileId);
+
+        List<WorkProfile> workProfileList = new ArrayList<>();
+        if(!registrationNos.isEmpty()){
+            workProfileList = workProfileRepository.getWorkProfileDetailsByRegNo(registrationNos.get(0));
+        }
+        else {
+            throw new NmrException(NO_MATCHING_REGISTRATION_DETAILS_FOUND, HttpStatus.NOT_FOUND);
+        }
+
         if (!workProfileList.isEmpty()) {
             hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(superSpecialities, workProfileList);
         } else {
-            throw new NmrException("Invalid HP profile ID", HttpStatus.valueOf(404));
+            throw new NmrException(NO_MATCHING_WORK_PROFILE_DETAILS_FOUND, HttpStatus.NOT_FOUND);
         }
         return hpProfileWorkDetailsResponseTO;
     }

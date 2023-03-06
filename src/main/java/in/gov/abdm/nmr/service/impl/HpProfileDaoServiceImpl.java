@@ -610,6 +610,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                     addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
                 }
                 addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());
+                addWorkProfile.setRegistrationNo(hpWorkProfileUpdateRequestTO.getRegistrationNo());
                 workProfileDetailsList.add(addWorkProfile);
             });
         });
@@ -645,6 +646,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
             }
             addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());
+            addWorkProfile.setRegistrationNo(hpWorkProfileUpdateRequestTO.getRegistrationNo());
             workProfileDetailsList.add(addWorkProfile);
         });
         workProfileRepository.saveAll(workProfileDetailsList);
