@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.security.jwt;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator.Builder;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
@@ -12,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.math.BigInteger;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.UUID;
@@ -20,6 +22,8 @@ import java.util.UUID;
 public class JwtUtil {
 
     public static final String AUTHORITIES_LABEL = "authorities";
+    
+    public static final String USER_PROFILE_ID_LABEL = "profile_id";
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -50,7 +54,7 @@ public class JwtUtil {
         this.userDetailService = userDetailService;
     }
 
-    public String generateToken(String username, JwtTypeEnum type, String role) {
+    public String generateToken(String username, JwtTypeEnum type, String role, BigInteger profileId) {
         LOGGER.info("Generating {}", type);
 
         Long expiry = accessTokenExpirySeconds;
@@ -64,9 +68,13 @@ public class JwtUtil {
             userDetailService.updateRefreshTokenId(updateRefreshTokenIdRequestTO);
         }
 
-        return JWT.create().withJWTId(jwtId).withIssuer(ISSUER_VALUE).withSubject(username).withAudience(AUDIENCE_VALUE).withIssuedAt(Instant.now()) //
-                .withExpiresAt(Instant.now().plusSeconds(expiry)).withClaim(TOKEN_TYPE_LABEL, type.getCode()).withClaim(AUTHORITIES_LABEL, Arrays.asList(role)) //
-                .sign(Algorithm.RSA512(keyUtil.getPublicKey(KEY_ALIAS), keyUtil.getPrivateKey(KEY_ALIAS, privateKeyPass)));
+        Builder tokenBuilder = JWT.create().withJWTId(jwtId).withIssuer(ISSUER_VALUE).withSubject(username).withAudience(AUDIENCE_VALUE).withIssuedAt(Instant.now()) //
+                .withExpiresAt(Instant.now().plusSeconds(expiry)).withClaim(TOKEN_TYPE_LABEL, type.getCode()).withClaim(AUTHORITIES_LABEL, Arrays.asList(role));
+        if (profileId != null) {
+            tokenBuilder.withClaim(USER_PROFILE_ID_LABEL, profileId.longValueExact());
+        }
+
+        return tokenBuilder.sign(Algorithm.RSA512(keyUtil.getPublicKey(KEY_ALIAS), keyUtil.getPrivateKey(KEY_ALIAS, privateKeyPass)));
     }
 
     public DecodedJWT verifyToken(String token, JwtTypeEnum type) {
