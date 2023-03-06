@@ -12,7 +12,7 @@ public class DashboardRequestParamsTO {
     private BigInteger userGroupId;
     private String smcId;
     private String name;
-    private String nmrId;
+    private String registrationNo;
     private String search;
     private String councilId;
     private String collegeId;

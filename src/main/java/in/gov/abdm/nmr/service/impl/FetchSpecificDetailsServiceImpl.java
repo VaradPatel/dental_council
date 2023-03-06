@@ -180,7 +180,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                 switch (search.toLowerCase()){
                     case NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setName(value);
                         break;
-                    case NMR_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setNmrId(value);
+                    case REGISTRATION_NUMBER_IN_LOWER_CASE: dashboardRequestParamsTO.setRegistrationNo(value);
                         break;
                     case SMC_ID_IN_LOWER_CASE: {
                         if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
@@ -245,7 +245,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                         break;
                     case NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setName(dashboardRequestTO.getValue());
                         break;
-                    case NMR_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setNmrId(dashboardRequestTO.getValue());
+                    case REGISTRATION_NUMBER_IN_LOWER_CASE: dashboardRequestParamsTO.setRegistrationNo(dashboardRequestTO.getValue());
                         break;
                     case SMC_ID_IN_LOWER_CASE: {
                         if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
