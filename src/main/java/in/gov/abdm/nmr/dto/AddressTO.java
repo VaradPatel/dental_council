@@ -27,4 +27,9 @@ public class AddressTO {
     private String createdAt;
     private String updatedAt;
     private String fullName;
+    private String house;
+    private String street;
+    private String landmark;
+    private String locality;
+    private String isSameAddress;
 }

@@ -28,20 +28,21 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class SearchServiceImpl implements ISearchService {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    
+
     private IElasticsearchDaoService elasticsearchDaoService;
-    
+
     private IHpProfileMasterRepository iHpProfileMasterRepository;
-    
+
     private RegistrationDetailMasterRepository registrationDetailMasterRepository;
-    
+
     private IQualificationDetailMasterRepository qualificationDetailMasterRepository;
-    
+
     private IForeignQualificationDetailMasterRepository foreignQualificationDetailMasterRepository;
 
     private static final List<BigInteger> PROFILE_STATUS_CODES = Arrays.asList(BigInteger.valueOf(2l), BigInteger.valueOf(5l), BigInteger.valueOf(6l));
@@ -89,7 +90,7 @@ public class SearchServiceImpl implements ISearchService {
         hpSearchProfileTO.setSalutation(hpProfileMaster.getSalutation());
         hpSearchProfileTO.setFatherHusbandName(StringUtils.isNotBlank(hpProfileMaster.getSpouseName()) ? hpProfileMaster.getSpouseName() : hpProfileMaster.getFatherName());
         hpSearchProfileTO.setDateOfBirth(new SimpleDateFormat("dd-MM-yyyy").format(hpProfileMaster.getDateOfBirth()));
-        
+
         String mobileNumber = hpProfileMaster.getMobileNumber();
         if (mobileNumber != null && !mobileNumber.isBlank()) {
             mobileNumber = mobileNumber.replaceAll(mobileNumber.substring(0, 10 - 4), "xxxxxx");
@@ -114,15 +115,17 @@ public class SearchServiceImpl implements ISearchService {
 
         List<HpSearchProfileQualificationTO> qualificationTOs = new ArrayList<>();
         List<QualificationDetailsMaster> indianQualifications = qualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(profileId);
-        qualificationTOs.addAll(indianQualifications.stream().map(indianQualification ->{
+        qualificationTOs.addAll(indianQualifications.stream().map(indianQualification -> {
             HpSearchProfileQualificationTO hpSearchProfileQualificationTO = new HpSearchProfileQualificationTO();
             hpSearchProfileQualificationTO.setQualification(indianQualification.getName());
             hpSearchProfileQualificationTO.setQualificationYear(indianQualification.getQualificationYear());
-            hpSearchProfileQualificationTO.setUniversityName(indianQualification.getUniversity().getName());
+            if (Objects.nonNull(indianQualification.getUniversity())) {
+                hpSearchProfileQualificationTO.setUniversityName(indianQualification.getUniversity().getName());
+            }
             return hpSearchProfileQualificationTO;
         }).toList());
         List<ForeignQualificationDetailsMaster> internationalQualifications = foreignQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(profileId);
-        qualificationTOs.addAll(internationalQualifications.stream().map(internationalQualification ->{
+        qualificationTOs.addAll(internationalQualifications.stream().map(internationalQualification -> {
             HpSearchProfileQualificationTO hpSearchProfileQualificationTO = new HpSearchProfileQualificationTO();
             hpSearchProfileQualificationTO.setQualification(internationalQualification.getName());
             hpSearchProfileQualificationTO.setQualificationYear(internationalQualification.getQualificationYear());

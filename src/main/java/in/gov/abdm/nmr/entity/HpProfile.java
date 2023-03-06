@@ -84,4 +84,5 @@ public class HpProfile extends CommonAuditEntity {
 	private String transactionId;
 	private String eSignStatus;
 	private String registrationId;
+	private String isSameAddress;
 }

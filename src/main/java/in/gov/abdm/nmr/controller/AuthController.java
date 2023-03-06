@@ -2,6 +2,8 @@ package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.LoginRequestTO;
 import in.gov.abdm.nmr.dto.LoginResponseTO;
+import in.gov.abdm.nmr.dto.SessionRequestTo;
+import in.gov.abdm.nmr.dto.SessionResponseTo;
 import in.gov.abdm.nmr.service.IAuthService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.MediaType;
@@ -33,5 +35,10 @@ public class AuthController {
     @SecurityRequirement(name = "bearerAuth")
     public LoginResponseTO refreshToken(HttpServletResponse response) {
         return authService.successfulAuth(response);
+    }
+
+    @PostMapping(path = "/sessions", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SessionResponseTo sessions(@RequestBody SessionRequestTo sessionRequestTo) {
+        return authService.sessions(sessionRequestTo);
     }
 }

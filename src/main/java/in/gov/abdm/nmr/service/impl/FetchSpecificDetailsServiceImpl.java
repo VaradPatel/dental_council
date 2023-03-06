@@ -17,6 +17,7 @@ import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
 import in.gov.abdm.nmr.service.IUserDaoService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -175,7 +176,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
         dashboardRequestParamsTO.setWorkFlowStatusId(workFlowStatusId);
         dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
-        if(search !=null){
+        if(StringUtils.isNotBlank(search)){
             if(value !=null && !value.isBlank()){
                 switch (search.toLowerCase()){
                     case NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setName(value);

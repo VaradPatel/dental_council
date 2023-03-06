@@ -17,7 +17,6 @@ import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -121,6 +120,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             hpSmcDetailTO.setCouncilName(hpProfile.get("name", String.class));
             hpSmcDetailTO.setRegistrationNumber(hpProfile.get("registration_no", String.class));
             hpSmcDetailTO.setHpProfileId(hpProfile.get("hp_profile_id", BigInteger.class));
+            hpSmcDetailTO.setEmailId(hpProfile.get("email_id", String.class));
         } else {
             throw new NoDataFoundException(NO_DATA_FOUND);
         }
@@ -423,6 +423,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         qualification.setHpProfile(hpProfile);
         qualification.setRequestId(
                 coalesce(indianQualification.getRequestId(), hpProfile.getRequestId()));
+        qualification.setBroadSpecialityId(indianQualification.getBroadSpecialityId());
+        qualification.setSuperSpecialityName(indianQualification.getSuperSpecialityName());
         try {
             qualification.setCertificate(proof.getBytes());
         } catch (IOException e) {
@@ -461,6 +463,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         customQualification.setRequestId(
                 coalesce(newCustomQualification.getRequestId(), hpProfile.getRequestId()));
         customQualification.setHpProfile(hpProfile);
+        customQualification.setBroadSpecialityId(newCustomQualification.getBroadSpecialityId());
+        customQualification.setSuperSpecialityName(newCustomQualification.getSuperSpecialityName());
         try {
             customQualification.setCertificate(proof.getBytes());
         } catch (IOException e) {
@@ -501,8 +505,12 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         AddressType addressType = new AddressType();
         addressType.setId(hpPersonalUpdateRequestTO.getCommunicationAddress().getAddressType().getId());
         addressData.setAddressTypeId(addressType);
-
         addressData.setHpProfileId(hpProfileId);
+
+        addressData.setHouse(hpPersonalUpdateRequestTO.getCommunicationAddress().getHouse());
+        addressData.setStreet(hpPersonalUpdateRequestTO.getCommunicationAddress().getStreet());
+        addressData.setLandmark(hpPersonalUpdateRequestTO.getCommunicationAddress().getLandmark());
+        addressData.setLocality(hpPersonalUpdateRequestTO.getCommunicationAddress().getLocality());
     }
 
     private void mapHpPersonalRequestToEntity(HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO, HpProfile hpProfile) {
@@ -518,7 +526,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         hpProfile.setDateOfBirth(hpPersonalUpdateRequestTO.getPersonalDetails().getDateOfBirth());
         hpProfile.setRequestId(hpPersonalUpdateRequestTO.getRequestId());
         hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
-
+        hpProfile.setIsSameAddress(hpPersonalUpdateRequestTO.getCommunicationAddress().getIsSameAddress());
         Schedule schedule = iScheduleRepository
                 .findById(hpPersonalUpdateRequestTO.getPersonalDetails().getSchedule().getId()).orElse(null);
         hpProfile.setSchedule(schedule);
@@ -603,6 +611,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                     addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
                 }
                 addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());
+                addWorkProfile.setRegistrationNo(hpWorkProfileUpdateRequestTO.getRegistrationNo());
                 workProfileDetailsList.add(addWorkProfile);
             });
         });
@@ -638,6 +647,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
             }
             addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());
+            addWorkProfile.setRegistrationNo(hpWorkProfileUpdateRequestTO.getRegistrationNo());
             workProfileDetailsList.add(addWorkProfile);
         });
         workProfileRepository.saveAll(workProfileDetailsList);

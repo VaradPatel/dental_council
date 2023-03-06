@@ -24,7 +24,7 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
     Tuple fetchSmcRegistrationDetail1(BigInteger registrationNo, Integer councilId);
 
     @Query(value = """
-            select hp.id, rd.registration_no , smc."name",hp.full_name,smc.id from main.hp_profile hp 
+            select hp.id hp_profile_id, rd.registration_no , smc."name",hp.full_name,smc.id ,hp.email_id from main.hp_profile hp 
             inner join main.registration_details rd  on rd.hp_profile_id  = hp.id
             INNER JOIN main.state_medical_council smc ON smc.id = rd.state_medical_council_id
             where rd.registration_no = :registrationNo and smc.id =:councilId order by rd.hp_profile_id desc limit 1""", nativeQuery = true)

@@ -28,6 +28,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import static in.gov.abdm.nmr.util.NMRConstants.NO_MATCHING_REGISTRATION_DETAILS_FOUND;
+import static in.gov.abdm.nmr.util.NMRConstants.NO_MATCHING_WORK_PROFILE_DETAILS_FOUND;
 import static in.gov.abdm.nmr.util.NMRUtil.validateQualificationDetailsAndProofs;
 import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetails;
 
@@ -38,6 +40,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Autowired
     private UserKycDtoMapper userKycDtoMapper;
+
+    @Autowired
+    private CountryDtoMapper countryDtoMapper;
 
     @Autowired
     private IHpProfileMasterMapper iHpProfileAuditMapper;
@@ -79,6 +84,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     private IAddressRepository iAddressRepository;
 
     @Autowired
+    private VillagesRepository villagesRepository;
+
+    @Autowired
     private LanguagesKnownRepository languagesKnownRepository;
 
     @Autowired
@@ -101,6 +109,18 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Autowired
     private UserKycRepository userKycRepository;
+
+    @Autowired
+    private IStateRepository stateRepository;
+
+    @Autowired
+    private DistrictRepository districtRepository;
+
+    @Autowired
+    private SubDistrictRepository subDistrictRepository;
+
+    @Autowired
+    private IRegistrationDetailRepository iRegistrationDetailRepository;
 
     /**
      * This method fetches the SMC registration details for a given request.
@@ -207,6 +227,17 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             registrationDetailRepository.save(registrationDetails);
             workProfileRepository.saveAll(workProfileList);
             iHpProfileRepository.save(hpProfileById);
+
+            if (hpSubmitRequestTO.getApplicationTypeId().equals(ApplicationType.HP_REGISTRATION)) {
+                List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getQualificationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
+                List<QualificationDetails> qualificationDetailsList = new ArrayList<>();
+                String finalRequestId1 = requestId;
+                qualificationDetails.forEach(qualifications -> {
+                    qualifications.setRequestId(finalRequestId1);
+                    qualificationDetailsList.add(qualifications);
+                });
+                qualificationDetailRepository.saveAll(qualificationDetailsList);
+            }
         }
         return new HpProfileAddResponseTO(201, "Hp Profile Submitted Successfully!", hpSubmitRequestTO.getHpProfileId(), requestId);
     }
@@ -215,25 +246,35 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public HpProfilePersonalResponseTO getHealthProfessionalPersonalDetail(BigInteger hpProfileId) {
         HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
         Address communicationAddressByHpProfileId = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfileId, AddressType.COMMUNICATION.getId());
+        Address KycAddressByHpProfileId = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfileId, AddressType.KYC.getId());
         BigInteger applicationTypeId = null;
-        if(hpProfile.getRequestId() != null){
+        if (hpProfile.getRequestId() != null) {
             WorkFlow workFlow = workFlowRepository.findByRequestId(hpProfile.getRequestId());
             applicationTypeId = workFlow.getApplicationType().getId();
         }
         List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(hpProfileId);
         List<Language> languages = languageRepository.getLanguage();
-        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, languagesKnown, languages, applicationTypeId);
+        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, KycAddressByHpProfileId, languagesKnown, languages, applicationTypeId);
     }
 
     @Override
     public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) throws NmrException {
         HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = null;
         List<SuperSpeciality> superSpecialities = NMRUtil.coalesceCollection(superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId), superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId));
-        List<WorkProfile> workProfileList = workProfileRepository.getWorkProfileDetailsByHPId(hpProfileId);
+        List<String> registrationNos=iRegistrationDetailRepository.getRegistrationNosByHpProfileId(hpProfileId);
+
+        List<WorkProfile> workProfileList = new ArrayList<>();
+        if(!registrationNos.isEmpty()){
+            workProfileList = workProfileRepository.getWorkProfileDetailsByRegNo(registrationNos.get(0));
+        }
+        else {
+            throw new NmrException(NO_MATCHING_REGISTRATION_DETAILS_FOUND, HttpStatus.NOT_FOUND);
+        }
+
         if (!workProfileList.isEmpty()) {
             hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(superSpecialities, workProfileList);
         } else {
-            throw new NmrException("Invalid HP profile ID", HttpStatus.valueOf(404));
+            throw new NmrException(NO_MATCHING_WORK_PROFILE_DETAILS_FOUND, HttpStatus.NOT_FOUND);
         }
         return hpProfileWorkDetailsResponseTO;
     }
@@ -250,9 +291,28 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         return hpProfileRegistrationResponseTO;
     }
 
-    public  ResponseMessageTo saveUserKycDetails(UserKycTo userKycTo){
+    public ResponseMessageTo saveUserKycDetails(UserKycTo userKycTo) {
 
         userKycRepository.save(userKycDtoMapper.userKycToToUserKyc(userKycTo));
+
+        Address address = new Address();
+        address.setPincode(userKycTo.getPincode());
+        address.setMobile(userKycTo.getMobileNumber());
+        address.setAddressLine1(userKycTo.getAddress());
+        address.setEmail(userKycTo.getEmail());
+        address.setHouse(userKycTo.getHouse());
+        address.setStreet(userKycTo.getStreet());
+        address.setLocality(userKycTo.getLocality());
+        address.setLandmark(userKycTo.getLandmark());
+        address.setHpProfileId(userKycTo.getHpProfileId());
+        address.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.KYC.getId(), AddressType.KYC.name()));
+        address.setVillage(villagesRepository.findByName(userKycTo.getLocality()));
+        address.setSubDistrict(subDistrictRepository.findByName(userKycTo.getSubDist()));
+        address.setState(stateRepository.findByName(userKycTo.getState()));
+        address.setDistrict(districtRepository.findByName(userKycTo.getDistrict().toUpperCase()));
+        address.setCountry(stateRepository.findByName(userKycTo.getState().toUpperCase()).getCountry());
+        iAddressRepository.save(address);
+
         return new ResponseMessageTo(null, NMRConstants.SUCCESS);
     }
 }

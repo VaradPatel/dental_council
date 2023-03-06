@@ -14,4 +14,5 @@ public class HpWorkProfileUpdateRequestTO {
     private WorkDetailsTO workDetails;
     private List<CurrentWorkDetailsTO> currentWorkDetails;
     private String requestId;
+    private String registrationNo;
 }

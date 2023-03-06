@@ -11,4 +11,5 @@ public class SmcRegistrationDetailResponseTO {
     private String registrationNumber;
     private String councilName;
     private BigInteger hpProfileId;
+    private String emailId;
 }

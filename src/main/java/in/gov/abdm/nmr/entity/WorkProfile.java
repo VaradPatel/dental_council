@@ -48,4 +48,5 @@ public class WorkProfile {
     private String organizationType;
     private String requestId;
     private String pincode;
+    private String registrationNo;
 }
