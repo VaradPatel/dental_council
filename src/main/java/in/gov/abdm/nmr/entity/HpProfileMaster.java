@@ -76,7 +76,6 @@ public class HpProfileMaster {
 	@OneToOne
 	@JoinColumn(name = "user_id")
 	private User user;
-	
-	
 	private String requestId;
+	private String isSameAddress;
 }
