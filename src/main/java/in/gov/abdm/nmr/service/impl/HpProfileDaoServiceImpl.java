@@ -120,6 +120,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             hpSmcDetailTO.setCouncilName(hpProfile.get("name", String.class));
             hpSmcDetailTO.setRegistrationNumber(hpProfile.get("registration_no", String.class));
             hpSmcDetailTO.setHpProfileId(hpProfile.get("hp_profile_id", BigInteger.class));
+            hpSmcDetailTO.setEmailId(hpProfile.get("email_id", String.class));
         } else {
             throw new NoDataFoundException(NO_DATA_FOUND);
         }
