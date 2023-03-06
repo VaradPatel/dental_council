@@ -14,6 +14,7 @@ import in.gov.abdm.nmr.mapper.ICollegeMapper;
 import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -165,16 +166,23 @@ public class CollegeServiceImpl implements ICollegeService {
         final Integer dataLimit = MAX_DATA_SIZE < Integer.valueOf(limit) ? MAX_DATA_SIZE : Integer.valueOf(limit);
         collegeRegistrationRequestParams.setOffset(dataLimit);
         collegeRegistrationRequestParams.setPageNo(Integer.valueOf(pageNo));
-        switch (search.toLowerCase()){
-            case COLLEGE_ID_IN_LOWER_CASE: collegeRegistrationRequestParams.setCollegeId(value);
-                break;
-            case COLLEGE_NAME_IN_LOWER_CASE: collegeRegistrationRequestParams.setCollegeName(value);
-                break;
-            case COUNCIL_NAME_IN_LOWER_CASE: collegeRegistrationRequestParams.setCouncilName(value);
-                break;
-            case SEARCH_IN_LOWER_CASE: collegeRegistrationRequestParams.setSearch(value);
-                break;
-            default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_COLLEGE_APPLICATIONS);
+        if(StringUtils.isNotBlank(search)) {
+            switch (search.toLowerCase()) {
+                case COLLEGE_ID_IN_LOWER_CASE:
+                    collegeRegistrationRequestParams.setCollegeId(value);
+                    break;
+                case COLLEGE_NAME_IN_LOWER_CASE:
+                    collegeRegistrationRequestParams.setCollegeName(value);
+                    break;
+                case COUNCIL_NAME_IN_LOWER_CASE:
+                    collegeRegistrationRequestParams.setCouncilName(value);
+                    break;
+                case SEARCH_IN_LOWER_CASE:
+                    collegeRegistrationRequestParams.setSearch(value);
+                    break;
+                default:
+                    throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_COLLEGE_APPLICATIONS);
+            }
         }
         String column = getColumnToSort(columnToSort);
         collegeRegistrationRequestParams.setSortBy(column);
