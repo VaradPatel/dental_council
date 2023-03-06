@@ -90,6 +90,7 @@ public class SearchServiceImpl implements ISearchService {
         hpSearchProfileTO.setSalutation(hpProfileMaster.getSalutation());
         hpSearchProfileTO.setFatherHusbandName(StringUtils.isNotBlank(hpProfileMaster.getSpouseName()) ? hpProfileMaster.getSpouseName() : hpProfileMaster.getFatherName());
         hpSearchProfileTO.setDateOfBirth(new SimpleDateFormat("dd-MM-yyyy").format(hpProfileMaster.getDateOfBirth()));
+        hpSearchProfileTO.setProfilePhoto(hpProfileMaster.getProfilePhoto());
 
         String mobileNumber = hpProfileMaster.getMobileNumber();
         if (mobileNumber != null && !mobileNumber.isBlank()) {

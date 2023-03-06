@@ -19,4 +19,5 @@ public class HpSearchProfileTO {
     private String registrationNumber;
     private String dateOfRegistration;
     private String nmrId;
+    private byte[] profilePhoto;
 }
