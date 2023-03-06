@@ -423,7 +423,7 @@ public class NMRConstants {
     public static final String FETCH_WORK_PROFILE_RECORDS_BY_HP_ID = """
             SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id, 
             broad_speciality_id, state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at, 
-            updated_at, request_id, facility_type_id, organization_type FROM work_profile where hp_profile_id =:""" + HP_PROFILE_ID;
+            updated_at, request_id, facility_type_id, organization_type, registration_no FROM work_profile where hp_profile_id =:""" + HP_PROFILE_ID;
 
     public static final int MAX_DATA_SIZE = 500;
     public static final String DEFAULT_SORT_ORDER = "ASC";

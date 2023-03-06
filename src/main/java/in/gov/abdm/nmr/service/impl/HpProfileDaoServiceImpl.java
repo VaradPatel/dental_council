@@ -17,7 +17,6 @@ import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -603,6 +602,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                     addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
                 }
                 addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());
+                addWorkProfile.setRegistrationNo(hpWorkProfileUpdateRequestTO.getRegistrationNo());
                 workProfileDetailsList.add(addWorkProfile);
             });
         });
@@ -638,6 +638,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
             }
             addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());
+            addWorkProfile.setRegistrationNo(hpWorkProfileUpdateRequestTO.getRegistrationNo());
             workProfileDetailsList.add(addWorkProfile);
         });
         workProfileRepository.saveAll(workProfileDetailsList);
