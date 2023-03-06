@@ -66,6 +66,7 @@ public final class HpProfileWorkProfileMapper {
             }
             currentWorkDetailsTO.setAddress(address);
             currentWorkDetailsTO.setProof(workProfileObj.getProofOfWorkAttachment());
+            currentWorkDetailsTO.setRegistrationNo(workProfileObj.getRegistrationNo());
             currentWorkDetailsTOList.add(currentWorkDetailsTO);
         });
         hpProfileWorkDetailsResponseTO.setSpecialityDetails(specialityDetailsTO);

@@ -16,6 +16,7 @@ public class CurrentWorkDetailsTO {
     private String workOrganization;
     private String url;
     private AddressTO address;
+    private String registrationNo;
     private byte[] proof;
 
 }
