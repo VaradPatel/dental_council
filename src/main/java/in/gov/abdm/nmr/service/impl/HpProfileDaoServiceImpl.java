@@ -500,8 +500,12 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         AddressType addressType = new AddressType();
         addressType.setId(hpPersonalUpdateRequestTO.getCommunicationAddress().getAddressType().getId());
         addressData.setAddressTypeId(addressType);
-
         addressData.setHpProfileId(hpProfileId);
+
+        addressData.setHouse(hpPersonalUpdateRequestTO.getCommunicationAddress().getHouse());
+        addressData.setStreet(hpPersonalUpdateRequestTO.getCommunicationAddress().getStreet());
+        addressData.setLandmark(hpPersonalUpdateRequestTO.getCommunicationAddress().getLandmark());
+        addressData.setLocality(hpPersonalUpdateRequestTO.getCommunicationAddress().getLocality());
     }
 
     private void mapHpPersonalRequestToEntity(HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO, HpProfile hpProfile) {
@@ -517,7 +521,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         hpProfile.setDateOfBirth(hpPersonalUpdateRequestTO.getPersonalDetails().getDateOfBirth());
         hpProfile.setRequestId(hpPersonalUpdateRequestTO.getRequestId());
         hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
-
+        hpProfile.setIsSameAddress(hpPersonalUpdateRequestTO.getCommunicationAddress().getIsSameAddress());
         Schedule schedule = iScheduleRepository
                 .findById(hpPersonalUpdateRequestTO.getPersonalDetails().getSchedule().getId()).orElse(null);
         hpProfile.setSchedule(schedule);

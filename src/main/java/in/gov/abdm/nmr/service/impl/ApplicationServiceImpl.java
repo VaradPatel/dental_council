@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.service.impl;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Action;
+import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
@@ -126,6 +127,9 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Autowired
     private IHpProfileRepository hpProfileRepository;
 
+    @Autowired
+    private IAddressRepository addressRepository;
+
 
     private static final Map<String, String> REACTIVATION_SORT_MAPPINGS = Map.of("id", " r.id", "name", " r.full_name", "createdAt", " r.created_at", "reactivationDate", " r.start_date", "suspensionType", " r.suspension_type", "remarks", " r.remarks");
 
@@ -154,7 +158,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public String reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
-        if ((HpProfileStatus.SUSPENDED.getId()) == hpProfile.getHpProfileStatus().getId()) {
+        if (HpProfileStatus.SUSPENDED.getId() == hpProfile.getHpProfileStatus().getId() || HpProfileStatus.BLACKLISTED.getId() ==  hpProfile.getHpProfileStatus().getId()) {
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
             HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
             initiateWorkFlow(applicationRequestTo, requestId, newHpProfile);
@@ -259,16 +263,23 @@ public class ApplicationServiceImpl implements IApplicationService {
         newRegistrationDetails.setHpProfileId(targetedHpProfile);
         iRegistrationDetailRepository.save(newRegistrationDetails);
 
-        List<WorkProfile> workProfileList = new ArrayList<>();
-        List<WorkProfile> workProfiles = workProfileRepository.getWorkProfileDetailsByHPId(existingHpProfile.getId());
-        workProfiles.forEach(workProfile -> {
-            WorkProfile newWorkProfile = new WorkProfile();
-            org.springframework.beans.BeanUtils.copyProperties(workProfile, newWorkProfile);
-            newWorkProfile.setId(null);
-            newWorkProfile.setHpProfileId(targetedHpProfile.getId());
-            workProfileList.add(newWorkProfile);
-        });
-        workProfileRepository.saveAll(workProfileList);
+        Address address = addressRepository.getCommunicationAddressByHpProfileId(existingHpProfile.getId(), AddressType.COMMUNICATION.getId());
+        Address newAddress =  new Address();
+        org.springframework.beans.BeanUtils.copyProperties(address, newAddress);
+        newAddress.setId(null);
+        newAddress.setHpProfileId(targetedHpProfile.getId());
+        addressRepository.save(newAddress);
+
+//        List<WorkProfile> workProfileList = new ArrayList<>();
+//        List<WorkProfile> workProfiles = workProfileRepository.getWorkProfileDetailsByHPId(existingHpProfile.getId());
+//        workProfiles.forEach(workProfile -> {
+//            WorkProfile newWorkProfile = new WorkProfile();
+//            org.springframework.beans.BeanUtils.copyProperties(workProfile, newWorkProfile);
+//            newWorkProfile.setId(null);
+//            newWorkProfile.setHpProfileId(targetedHpProfile.getId());
+//            workProfileList.add(newWorkProfile);
+//        });
+//        workProfileRepository.saveAll(workProfileList);
 
         List<LanguagesKnown> languagesKnownList = new ArrayList<>();
         List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(existingHpProfile.getId());
@@ -303,16 +314,16 @@ public class ApplicationServiceImpl implements IApplicationService {
         }
         iForeignQualificationDetailRepository.saveAll(customQualificationDetailsList);
 
-        List<SuperSpeciality> superSpecialities = new ArrayList<>();
-        List<SuperSpeciality> superSpecialityList = superSpecialityRepository.getSuperSpecialityFromHpProfileId(existingHpProfile.getId());
-        for (SuperSpeciality superSpeciality : superSpecialityList) {
-            SuperSpeciality newSuperSpeciality = new SuperSpeciality();
-            org.springframework.beans.BeanUtils.copyProperties(superSpeciality, newSuperSpeciality);
-            newSuperSpeciality.setId(null);
-            newSuperSpeciality.setHpProfileId(targetedHpProfile.getId());
-            superSpecialities.add(newSuperSpeciality);
-        }
-        superSpecialityRepository.saveAll(superSpecialities);
+//        List<SuperSpeciality> superSpecialities = new ArrayList<>();
+//        List<SuperSpeciality> superSpecialityList = superSpecialityRepository.getSuperSpecialityFromHpProfileId(existingHpProfile.getId());
+//        for (SuperSpeciality superSpeciality : superSpecialityList) {
+//            SuperSpeciality newSuperSpeciality = new SuperSpeciality();
+//            org.springframework.beans.BeanUtils.copyProperties(superSpeciality, newSuperSpeciality);
+//            newSuperSpeciality.setId(null);
+//            newSuperSpeciality.setHpProfileId(targetedHpProfile.getId());
+//            superSpecialities.add(newSuperSpeciality);
+//        }
+//        superSpecialityRepository.saveAll(superSpecialities);
         return targetedHpProfile;
     }
 

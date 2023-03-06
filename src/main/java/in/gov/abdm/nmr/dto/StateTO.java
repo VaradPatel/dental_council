@@ -17,5 +17,4 @@ public class StateTO {
 
     private BigInteger id;
     private String name;
-    private List<District> districts;
 }

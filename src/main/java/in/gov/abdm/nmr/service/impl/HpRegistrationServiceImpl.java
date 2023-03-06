@@ -40,6 +40,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     private UserKycDtoMapper userKycDtoMapper;
 
     @Autowired
+    private CountryDtoMapper countryDtoMapper;
+
+    @Autowired
     private IHpProfileMasterMapper iHpProfileAuditMapper;
 
     @Autowired
@@ -79,6 +82,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     private IAddressRepository iAddressRepository;
 
     @Autowired
+    private VillagesRepository villagesRepository;
+
+    @Autowired
     private LanguagesKnownRepository languagesKnownRepository;
 
     @Autowired
@@ -101,6 +107,15 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Autowired
     private UserKycRepository userKycRepository;
+
+    @Autowired
+    private IStateRepository stateRepository;
+
+    @Autowired
+    private DistrictRepository districtRepository;
+
+    @Autowired
+    private SubDistrictRepository subDistrictRepository;
 
     /**
      * This method fetches the SMC registration details for a given request.
@@ -215,14 +230,15 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public HpProfilePersonalResponseTO getHealthProfessionalPersonalDetail(BigInteger hpProfileId) {
         HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
         Address communicationAddressByHpProfileId = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfileId, AddressType.COMMUNICATION.getId());
+        Address KycAddressByHpProfileId = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfileId, AddressType.KYC.getId());
         BigInteger applicationTypeId = null;
-        if(hpProfile.getRequestId() != null){
+        if (hpProfile.getRequestId() != null) {
             WorkFlow workFlow = workFlowRepository.findByRequestId(hpProfile.getRequestId());
             applicationTypeId = workFlow.getApplicationType().getId();
         }
         List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(hpProfileId);
         List<Language> languages = languageRepository.getLanguage();
-        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, languagesKnown, languages, applicationTypeId);
+        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, KycAddressByHpProfileId, languagesKnown, languages, applicationTypeId);
     }
 
     @Override
@@ -250,9 +266,28 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         return hpProfileRegistrationResponseTO;
     }
 
-    public  ResponseMessageTo saveUserKycDetails(UserKycTo userKycTo){
+    public ResponseMessageTo saveUserKycDetails(UserKycTo userKycTo) {
 
         userKycRepository.save(userKycDtoMapper.userKycToToUserKyc(userKycTo));
+
+        Address address = new Address();
+        address.setPincode(userKycTo.getPincode());
+        address.setMobile(userKycTo.getMobileNumber());
+        address.setAddressLine1(userKycTo.getAddress());
+        address.setEmail(userKycTo.getEmail());
+        address.setHouse(userKycTo.getHouse());
+        address.setStreet(userKycTo.getStreet());
+        address.setLocality(userKycTo.getLocality());
+        address.setLandmark(userKycTo.getLandmark());
+        address.setHpProfileId(userKycTo.getHpProfileId());
+        address.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.KYC.getId(), AddressType.KYC.name()));
+        address.setVillage(villagesRepository.findByName(userKycTo.getLocality()));
+        address.setSubDistrict(subDistrictRepository.findByName(userKycTo.getSubDist()));
+        address.setState(stateRepository.findByName(userKycTo.getState()));
+        address.setDistrict(districtRepository.findByName(userKycTo.getDistrict().toUpperCase()));
+        address.setCountry(stateRepository.findByName(userKycTo.getState().toUpperCase()).getCountry());
+        iAddressRepository.save(address);
+
         return new ResponseMessageTo(null, NMRConstants.SUCCESS);
     }
 }
