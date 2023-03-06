@@ -535,7 +535,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 .findById(hpPersonalUpdateRequestTO.getPersonalDetails().getCountryNationality().getId())
                 .orElse(null);
         hpProfile.setCountryNationality(countryNationality);
-        hpProfile.setFullName(hpPersonalUpdateRequestTO.getCommunicationAddress().getFullName());
+        hpProfile.setFullName(hpPersonalUpdateRequestTO.getPersonalDetails().getFullName());
     }
 
     private void mapNbeRequestDetailsToEntity(HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, HpNbeDetails hpNbeDetails, HpProfile hpProfile) {
