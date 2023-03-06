@@ -70,4 +70,8 @@ public class QualificationDetailsMaster {
     @JoinColumn(name = "hpProfileId", referencedColumnName = "id")
     private HpProfileMaster hpProfileMaster;
 
+    private BigInteger broadSpecialityId;
+
+    private String superSpecialityName;
+
 }

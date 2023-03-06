@@ -17,7 +17,6 @@ import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -423,6 +422,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         qualification.setHpProfile(hpProfile);
         qualification.setRequestId(
                 coalesce(indianQualification.getRequestId(), hpProfile.getRequestId()));
+        qualification.setBroadSpecialityId(indianQualification.getBroadSpecialityId());
+        qualification.setSuperSpecialityName(indianQualification.getSuperSpecialityName());
         try {
             qualification.setCertificate(proof.getBytes());
         } catch (IOException e) {
@@ -461,6 +462,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         customQualification.setRequestId(
                 coalesce(newCustomQualification.getRequestId(), hpProfile.getRequestId()));
         customQualification.setHpProfile(hpProfile);
+        customQualification.setBroadSpecialityId(newCustomQualification.getBroadSpecialityId());
+        customQualification.setSuperSpecialityName(newCustomQualification.getSuperSpecialityName());
         try {
             customQualification.setCertificate(proof.getBytes());
         } catch (IOException e) {
