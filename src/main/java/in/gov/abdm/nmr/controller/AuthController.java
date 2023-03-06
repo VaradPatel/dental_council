@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import in.gov.abdm.nmr.dto.LoginRequestTO;
 import in.gov.abdm.nmr.dto.LoginResponseTO;
 import in.gov.abdm.nmr.dto.SessionRequestTo;
@@ -39,7 +38,7 @@ public class AuthController {
     }
 
     @PostMapping(path = "/sessions", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SessionResponseTo sessions(@RequestBody SessionRequestTo sessionRequestTo) throws JsonProcessingException {
+    public SessionResponseTo sessions(@RequestBody SessionRequestTo sessionRequestTo) {
         return authService.sessions(sessionRequestTo);
     }
 }
