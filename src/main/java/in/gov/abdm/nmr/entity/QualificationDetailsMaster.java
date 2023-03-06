@@ -64,7 +64,7 @@ public class QualificationDetailsMaster {
 
     @ManyToOne
     @JoinColumn(name = "registration_details_id", referencedColumnName = "id")
-    private RegistrationDetails registrationDetails;
+    private RegistrationDetailsMaster registrationDetails;
 
     @ManyToOne
     @JoinColumn(name = "hpProfileId", referencedColumnName = "id")
