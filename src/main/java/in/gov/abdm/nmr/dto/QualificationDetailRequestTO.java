@@ -87,4 +87,7 @@ public class QualificationDetailRequestTO {
     @NotNullBlank
     private String qualificationFrom;
 
+    private BigInteger broadSpecialityId;
+
+    private String superSpecialityName;
 }

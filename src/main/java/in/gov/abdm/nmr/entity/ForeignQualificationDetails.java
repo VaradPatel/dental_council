@@ -52,5 +52,6 @@ public class ForeignQualificationDetails {
     @JoinColumn(name = "hpProfileId", referencedColumnName = "id")
     private HpProfile hpProfile;
 
-
+    private BigInteger broadSpecialityId;
+    private String superSpecialityName;
 }
