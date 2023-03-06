@@ -1,6 +1,11 @@
 package in.gov.abdm.nmr.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import in.gov.abdm.nmr.client.GatewayFClient;
 import in.gov.abdm.nmr.dto.LoginResponseTO;
+import in.gov.abdm.nmr.dto.SessionRequestTo;
+import in.gov.abdm.nmr.dto.SessionResponseTo;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
@@ -11,15 +16,15 @@ import in.gov.abdm.nmr.security.jwt.JwtTypeEnum;
 import in.gov.abdm.nmr.security.jwt.JwtUtil;
 import in.gov.abdm.nmr.service.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigInteger;
 
 import static in.gov.abdm.nmr.common.CustomHeaders.ACCESS_TOKEN;
 import static in.gov.abdm.nmr.common.CustomHeaders.REFRESH_TOKEN;
-
-import java.math.BigInteger;
 
 @Service
 public class AuthServiceImpl implements IAuthService {
@@ -41,6 +46,9 @@ public class AuthServiceImpl implements IAuthService {
     private INmcDaoService nmcDaoService;
     private INbeDaoService nbeDaoService;
 
+    @Autowired
+    GatewayFClient gatewayFClient;
+
     public AuthServiceImpl(JwtUtil jwtUtil, IUserDaoService userDetailDaoService, IHpProfileDaoService hpProfileService, ICollegeDaoService collegeDaoService, ICollegeDeanDaoService collegeDeanDaoService, ICollegeRegistrarDaoService collegeRegistrarDaoService, ISmcProfileDaoService smcProfileDaoService, INmcDaoService nmcDaoService, INbeDaoService nbeDaoService) {
         this.jwtUtil = jwtUtil;
         this.userDetailDaoService = userDetailDaoService;
@@ -61,6 +69,13 @@ public class AuthServiceImpl implements IAuthService {
         LoginResponseTO loginResponse = createLoginResponse(user);
         generateAccessAndRefreshToken(response, username, user, loginResponse.getProfileId());
         return loginResponse;
+    }
+
+    @Override
+    public SessionResponseTo sessions(SessionRequestTo sessionRequestTo) throws JsonProcessingException {
+        ObjectMapper o = new ObjectMapper();
+        System.out.println(o.writeValueAsString(sessionRequestTo));
+        return gatewayFClient.sessions(sessionRequestTo);
     }
 
     private LoginResponseTO createLoginResponse(User user) {
