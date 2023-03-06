@@ -19,5 +19,6 @@ public interface IRegistrationDetailRepository extends JpaRepository<Registratio
     @Query(value = "SELECT * FROM hp_profile where registration_id =:registrationId ORDER BY id asc LIMIT 2 OFFSET 1", nativeQuery = true)
     HpProfile findSecondLastHpProfile(BigInteger registrationId);
 
-
+    @Query(value = "SELECT hp_profile_id FROM registration_details where registration_no =:registrationNo", nativeQuery = true)
+    List<BigInteger> fetchHpProfileIdByRegistrationNumber(String registrationNo);
 }

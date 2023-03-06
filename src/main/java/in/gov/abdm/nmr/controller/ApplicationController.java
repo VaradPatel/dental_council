@@ -121,8 +121,10 @@ public class ApplicationController {
                                                                       @RequestParam(required = false, value = "sortBy") String sortBy,
                                                                       @RequestParam(required = false, value = "sortType") String sortType,
                                                                       @RequestParam(required = false, value = "search") String search,
-                                                                      @RequestParam(required = false, value = "value") String value) throws InvalidRequestException {
-        return applicationService.fetchApplicationDetails(pageNo, offset, sortBy, sortType, search, value);
+                                                                      @RequestParam(required = false, value = "value") String value,
+                                                                      @RequestParam(required = false, value = "smcId") String smcId,
+                                                                      @RequestParam(required = false, value = "registrationNo") String registrationNo) throws InvalidRequestException {
+        return applicationService.fetchApplicationDetails(pageNo, offset, sortBy, sortType, search, value, smcId, registrationNo);
     }
 
     /**
