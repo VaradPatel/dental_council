@@ -113,6 +113,8 @@ public class NMRConstants {
     public static final String OTP_EXPIRED = "OTP Expired Or Not Found";
     public static final String TEMPLATE_ID = "templateId";
     public static final String SUBJECT = "subject";
+
+    public static final String USER_ID = "userId";
     public static final String CONTENT = "content";
     public static final String TIMESTAMP = "TIMESTAMP";
     public static final String REQUEST_ID = "REQUEST_ID";
@@ -194,47 +196,18 @@ public class NMRConstants {
              \s AND wa.action_id = 4
             GROUP BY name""";
 
-    public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_DEAN = """
+    public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_COLLEGE = """
             SELECT ws.name as name, COUNT(w) as count 
             FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
-            JOIN college_dean cd ON w.user_id=cd.user_id 
-            WHERE cd.id=:""" + COLLEGE_DEAN_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND  w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
-             \s AND w.action_id IN ( 3,5 ) ) 
-            GROUP BY ws.name 
+            INNER JOIN qualification_details as qd on qd.hp_profile_id = w.hp_profile_id AND qd.request_id = w.request_id 
+            WHERE w.application_type_id = :""" + APPLICATION_TYPE_ID + " AND  w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
+            \s AND w.action_id IN ( 3,5 ) ) AND qd.college_id = :""" + COLLEGE_ID + """
+            \s GROUP BY ws.name 
             UNION 
             SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
-            JOIN college_dean cd ON wa.user_id=cd.user_id 
-            WHERE cd.id=:""" + COLLEGE_DEAN_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """  
-             \s AND wa.action_id = 4 
-            GROUP BY name """;
-
-    public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_REGISTRAR = """
-            SELECT ws.name as name, COUNT(w) as count 
-            FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
-            JOIN college_registrar cr ON w.user_id=cr.user_id 
-            WHERE cr.id=:""" + COLLEGE_REGISTRAR_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
-             \s AND w.action_id IN ( 3,5 ) ) 
-            GROUP BY ws.name 
-            UNION 
-            SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
-            JOIN college_registrar cr ON wa.user_id=cr.user_id 
-            WHERE cr.id=:""" + COLLEGE_REGISTRAR_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """  
-             \s AND wa.action_id = 4 
-            GROUP BY name """;
-
-    public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_ADMIN = """
-            SELECT ws.name as name, COUNT(w) as count 
-            FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
-            JOIN colleges c ON w.request_id=c.request_id 
-            WHERE c.id=:""" + COLLEGE_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND  w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
-             \s AND w.action_id IN ( 3,5 ) ) 
-            GROUP BY ws.name 
-            UNION 
-            SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
-            JOIN colleges c ON wa.request_id=c.request_id 
-            WHERE c.id=:""" + COLLEGE_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """  
-             \s AND wa.action_id = 4 
-            GROUP BY name """;
+            INNER JOIN qualification_details as qd on qd.hp_profile_id = wa.hp_profile_id AND qd.request_id = wa.request_id  
+            WHERE wa.application_type_id = :""" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """  
+             \s AND wa.action_id = 4 AND qd.college_id = :""" + COLLEGE_ID + " GROUP BY name ";
 
     public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_NBE = """
             SELECT ws.name as name, COUNT(w) as count 
