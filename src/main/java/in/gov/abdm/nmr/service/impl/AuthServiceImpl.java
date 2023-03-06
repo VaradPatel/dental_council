@@ -1,7 +1,6 @@
 package in.gov.abdm.nmr.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.client.GatewayFClient;
 import in.gov.abdm.nmr.dto.LoginResponseTO;
 import in.gov.abdm.nmr.dto.SessionRequestTo;
@@ -73,8 +72,6 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public SessionResponseTo sessions(SessionRequestTo sessionRequestTo) throws JsonProcessingException {
-        ObjectMapper o = new ObjectMapper();
-        System.out.println(o.writeValueAsString(sessionRequestTo));
         return gatewayFClient.sessions(sessionRequestTo);
     }
 
