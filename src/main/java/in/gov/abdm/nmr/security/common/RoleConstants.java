@@ -12,6 +12,7 @@ public class RoleConstants {
     public static final String COLLEGE_REGISTRAR ="COLLEGE_REGISTRAR";
     public static final String COLLEGE_ADMIN = "COLLEGE_ADMIN";
     public static final String NBE = "NBE";
+    public static final String SYSTEM = "SYSTEM";
 
     public static final String ROLE_PREFIX = "ROLE_";
     public static final String ROLE_HEALTH_PROFESSIONAL = ROLE_PREFIX + HEALTH_PROFESSIONAL;
@@ -21,4 +22,5 @@ public class RoleConstants {
     public static final String ROLE_COLLEGE_REGISTRAR = ROLE_PREFIX + COLLEGE_REGISTRAR;
     public static final String ROLE_COLLEGE_ADMIN = ROLE_PREFIX + COLLEGE_ADMIN;
     public static final String ROLE_NBE = ROLE_PREFIX + NBE;
+    public static final String ROLE_SYSTEM = ROLE_PREFIX + SYSTEM;
 }
