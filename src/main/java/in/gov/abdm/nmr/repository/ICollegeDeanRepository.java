@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.math.BigInteger;
 import java.util.List;
 
-import static in.gov.abdm.nmr.entity.WorkFlow_.USER_ID;
+import static in.gov.abdm.nmr.util.NMRConstants.USER_ID;
 
 public interface ICollegeDeanRepository extends JpaRepository<CollegeDean, BigInteger> {
 
