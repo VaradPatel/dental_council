@@ -54,6 +54,5 @@ public class CommunicationAddressTO {
     private String createdAt;
     private String updatedAt;
 
-    @NotBlank(message = NOT_BLANK_ERROR_MSG)
     private String fullName;
 }
