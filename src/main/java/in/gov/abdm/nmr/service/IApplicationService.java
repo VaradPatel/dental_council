@@ -57,7 +57,7 @@ public interface IApplicationService {
      * which contains all the details used to track the health professionals who have
      * raised a request
      */
-    HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String search, String value) throws InvalidRequestException;
+    HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String search, String value, String smcId, String registrationNo) throws InvalidRequestException;
 
     /**
      * Retrieves information about a health professional's application requests to track by health professional.

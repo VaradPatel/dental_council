@@ -19,4 +19,5 @@ public class DashboardTO {
     private String councilName;
     private String applicantFullName;
     private BigInteger workFlowStatusId;
+    private Double pendency;
 }
