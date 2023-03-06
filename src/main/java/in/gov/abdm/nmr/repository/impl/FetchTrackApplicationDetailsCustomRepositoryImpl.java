@@ -91,7 +91,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      * @param healthProfessionalApplicationRequestParamsTo - an object that contains parameters for the function
      * @return a string query to get the status of the Health Professional's application requests.
      */
-    private static final BiFunction<HealthProfessionalApplicationRequestParamsTo,List<HpProfile>, String> TRACK_APPLICATION = (healthProfessionalApplicationRequestParamsTo, hpProfiles) -> {
+    private static final BiFunction<HealthProfessionalApplicationRequestParamsTo,List<BigInteger>, String> TRACK_APPLICATION = (healthProfessionalApplicationRequestParamsTo, hpProfiles) -> {
         StringBuilder sb = new StringBuilder();
 
         sb.append(FETCH_TRACK_DETAILS_QUERY);
@@ -100,10 +100,10 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             StringBuilder hpIds = new StringBuilder();
             hpProfiles.forEach(hpProfile -> {
                 if(hpProfiles.indexOf(hpProfile) == hpProfiles.size()-1){
-                    hpIds.append(hpProfile.getId());
+                    hpIds.append(hpProfile);
                 }
                 else{
-                    hpIds.append(hpProfile.getId()).append(",");
+                    hpIds.append(hpProfile).append(",");
                 }
             });
             sb.append("AND rd.hp_profile_id IN (").append(hpIds).append(")");
@@ -128,7 +128,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      * @param hpProfiles
      * @return totalRecords the count of health professional application requests
      */
-    private BigInteger getCount(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, List<HpProfile> hpProfiles) {
+    private BigInteger getCount(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, List<BigInteger> hpProfiles) {
         BigInteger totalRecords = null;
         try {
             Query query = entityManager.createNativeQuery(GET_RECORD_COUNT.apply(healthProfessionalApplicationRequestParamsTo, hpProfiles));
@@ -147,7 +147,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      * @param healthProfessionalApplicationRequestParamsTo - an object that contains parameters for the function
      * @return a query to get the count of the Health Professional's application requests.
      */
-    private static final BiFunction<HealthProfessionalApplicationRequestParamsTo, List<HpProfile>, String> GET_RECORD_COUNT = (healthProfessionalApplicationRequestParamsTo, hpProfiles) -> {
+    private static final BiFunction<HealthProfessionalApplicationRequestParamsTo, List<BigInteger>, String> GET_RECORD_COUNT = (healthProfessionalApplicationRequestParamsTo, hpProfiles) -> {
         StringBuilder sb = new StringBuilder();
 
         sb.append(FETCH_TRACK_DETAILS_COUNT_QUERY);
@@ -156,10 +156,10 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             StringBuilder hpIds = new StringBuilder();
             hpProfiles.forEach(hpProfile -> {
                 if(hpProfiles.indexOf(hpProfile) == hpProfiles.size()-1){
-                    hpIds.append(hpProfile.getId());
+                    hpIds.append(hpProfile);
                 }
                 else {
-                    hpIds.append(hpProfile.getId()).append(",");
+                    hpIds.append(hpProfile).append(",");
                 }
             });
             sb.append("AND rd.hp_profile_id IN  (").append(hpIds).append(")");
@@ -183,7 +183,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      * raised a request
      */
     @Override
-    public HealthProfessionalApplicationResponseTo fetchTrackApplicationDetails(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, Pageable pagination, List<HpProfile> hpProfiles) {
+    public HealthProfessionalApplicationResponseTo fetchTrackApplicationDetails(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, Pageable pagination, List<BigInteger> hpProfiles) {
         HealthProfessionalApplicationResponseTo healthProfessionalApplicationResponseTo = new HealthProfessionalApplicationResponseTo();
         List<HealthProfessionalApplicationTo> healthProfessionalApplicationToList = new ArrayList<>();
 

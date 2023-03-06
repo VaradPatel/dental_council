@@ -56,8 +56,8 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             sb.append("AND stmc.name ILIKE '%").append(dashboardRequestParamsTO.getName()).append("%' ");
         }
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getNmrId()) && !dashboardRequestParamsTO.getNmrId().isEmpty()) {
-            sb.append("AND rd.registration_no ILIKE '%").append(dashboardRequestParamsTO.getNmrId()).append("%' ");
+        if (Objects.nonNull(dashboardRequestParamsTO.getRegistrationNo()) && !dashboardRequestParamsTO.getRegistrationNo().isEmpty()) {
+            sb.append("AND rd.registration_no ILIKE '%").append(dashboardRequestParamsTO.getRegistrationNo()).append("%' ");
         }
 
         if (Objects.nonNull(dashboardRequestParamsTO.getCouncilId()) && !dashboardRequestParamsTO.getCouncilId().isEmpty()) {
@@ -232,6 +232,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setCouncilName((String) result[10]);
             dashBoardTO.setApplicantFullName((String) result[11]);
             dashBoardTO.setWorkFlowStatusId((BigInteger) result[12]);
+            dashBoardTO.setPendency((Double) result[13]);
             dashboardTOList.add(dashBoardTO);
         });
         dashBoardResponseTO.setDashboardTOList(dashboardTOList);
