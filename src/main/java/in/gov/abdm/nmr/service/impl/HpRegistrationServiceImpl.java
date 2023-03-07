@@ -228,9 +228,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             workProfileRepository.saveAll(workProfileList);
             iHpProfileRepository.save(hpProfileById);
 
-            if (hpSubmitRequestTO.getApplicationTypeId().equals(ApplicationType.HP_REGISTRATION)) {
+            List<QualificationDetails> qualificationDetailsList = new ArrayList<>();
+            if (hpSubmitRequestTO.getApplicationTypeId().equals(ApplicationType.HP_REGISTRATION.getId())) {
                 List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getQualificationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
-                List<QualificationDetails> qualificationDetailsList = new ArrayList<>();
                 String finalRequestId1 = requestId;
                 qualificationDetails.forEach(qualifications -> {
                     qualifications.setRequestId(finalRequestId1);
