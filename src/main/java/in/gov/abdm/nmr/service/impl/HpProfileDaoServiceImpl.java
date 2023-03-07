@@ -240,6 +240,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             mapNbeRequestDetailsToEntity(hpRegistrationUpdateRequestTO, hpNbeDetails, hpProfile);
         }
         hpNbeDetailsRepository.save(hpNbeDetails);
+        hpProfile.setRegistrationId(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationNumber());
+        iHpProfileRepository.save(hpProfile);
         return new HpProfileUpdateResponseTO(204,
                 "Registration Added/Updated Successfully!!", hpProfileId);
     }
