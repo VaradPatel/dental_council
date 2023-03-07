@@ -43,7 +43,7 @@ public final class HpPersonalDetailMapper {
         addressTO.setState(StateTO.builder().id(address.getState().getId()).name(address.getState().getName()).build());
         addressTO.setVillage(VillagesTO.builder().id(address.getVillage().getId()).name(address.getVillage().getName()).build());
         addressTO.setEmail(address.getEmail());
-        addressTO.setMobile(address.getMobile());
+        addressTO.setMobile(hpProfile.getMobileNumber());
         addressTO.setId(address.getId());
         addressTO.setPincode(address.getPincode());
         addressTO.setHouse(address.getHouse());
