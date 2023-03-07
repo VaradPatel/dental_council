@@ -4,9 +4,13 @@ import static in.gov.abdm.nmr.util.NMRConstants.FORBIDDEN;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,11 +24,6 @@ import in.gov.abdm.nmr.dto.GetSetPasswordLinkTo;
 import in.gov.abdm.nmr.dto.ResetPasswordRequestTo;
 import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.dto.SetNewPasswordTo;
-import in.gov.abdm.nmr.entity.PasswordResetToken;
-import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.entity.UserGroup;
-import in.gov.abdm.nmr.entity.UserSubType;
-import in.gov.abdm.nmr.entity.UserType;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
@@ -65,6 +64,9 @@ public class PasswordServiceImpl implements IPasswordService {
     @Autowired
     RsaUtil rsaUtil;
 
+    @Autowired
+    IHpProfileRepository hpProfileRepository;
+
     /**
      * Creates new unique token for reset password transaction
      *
@@ -78,6 +80,16 @@ public class PasswordServiceImpl implements IPasswordService {
                 User userDetail = new User(null, setPasswordLinkTo.getEmail(), setPasswordLinkTo.getMobile(), setPasswordLinkTo.getUsername(), null, null, null, true, true, //
                         entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null);
                 userDaoService.save(userDetail);
+
+                List<HpProfile> hpProfileList=hpProfileRepository.findHpProfileByRegistrationId(setPasswordLinkTo.getRegistrationNumber());
+                List<HpProfile> hpProfiles= new ArrayList<>();
+                hpProfileList.forEach(hpProfile -> {
+                    hpProfile.setUser(userDetail);
+                    hpProfile.setMobileNumber(setPasswordLinkTo.getMobile());
+                    hpProfiles.add(hpProfile);
+                });
+
+                hpProfileRepository.saveAll(hpProfiles);
 
                 passwordResetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
 
