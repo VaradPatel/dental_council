@@ -85,8 +85,10 @@ public class PasswordServiceImpl implements IPasswordService {
                 List<HpProfile> hpProfiles= new ArrayList<>();
                 hpProfileList.forEach(hpProfile -> {
                     hpProfile.setUser(userDetail);
+                    hpProfile.setMobileNumber(setPasswordLinkTo.getMobile());
                     hpProfiles.add(hpProfile);
                 });
+
                 hpProfileRepository.saveAll(hpProfiles);
 
                 passwordResetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
