@@ -21,6 +21,7 @@ public class GetSetPasswordLinkTo {
     @NotBlank(message = NMRConstants.USERNAME_NOT_NULL)
     String username;
 
-
+    @NotBlank(message = NMRConstants.USERNAME_NOT_NULL)
+    String registrationNumber;
 
 }
