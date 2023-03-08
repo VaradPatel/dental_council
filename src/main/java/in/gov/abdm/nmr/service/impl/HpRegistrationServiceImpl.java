@@ -250,7 +250,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         BigInteger applicationTypeId = null;
         if (hpProfile.getRequestId() != null) {
             WorkFlow workFlow = workFlowRepository.findByRequestId(hpProfile.getRequestId());
-            applicationTypeId = workFlow.getApplicationType().getId();
+            if(workFlow!=null) {
+                applicationTypeId = workFlow.getApplicationType().getId();
+            }
         }
         List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(hpProfileId);
         List<Language> languages = languageRepository.getLanguage();
