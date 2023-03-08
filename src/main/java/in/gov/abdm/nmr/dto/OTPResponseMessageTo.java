@@ -11,7 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ResponseMessageTo {
+public class OTPResponseMessageTo {
 
+    String transactionId;
     String message;
+    String sentOn;
 }

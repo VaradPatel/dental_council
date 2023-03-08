@@ -315,6 +315,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         address.setCountry(stateRepository.findByName(userKycTo.getState().toUpperCase()).getCountry());
         iAddressRepository.save(address);
 
-        return new ResponseMessageTo(null, NMRConstants.SUCCESS);
+        return new ResponseMessageTo(NMRConstants.SUCCESS);
     }
 }

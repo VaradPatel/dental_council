@@ -5,13 +5,9 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.UUID;
 
+import in.gov.abdm.nmr.dto.*;
 import org.springframework.stereotype.Service;
 
-import in.gov.abdm.nmr.dto.OtpGenerateRequestTo;
-import in.gov.abdm.nmr.dto.OtpValidateMessageTo;
-import in.gov.abdm.nmr.dto.OtpValidateRequestTo;
-import in.gov.abdm.nmr.dto.OtpValidateResponseTo;
-import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.enums.NotificationType;
 import in.gov.abdm.nmr.exception.OtpException;
 import in.gov.abdm.nmr.redis.hash.Otp;
@@ -51,7 +47,7 @@ public class OtpServiceImpl implements IOtpService {
      * @throws OtpException with message
      */
     @Override
-    public ResponseMessageTo generateOtp(OtpGenerateRequestTo otpGenerateRequestTo) throws OtpException {
+    public OTPResponseMessageTo generateOtp(OtpGenerateRequestTo otpGenerateRequestTo) throws OtpException {
         String notificationType = otpGenerateRequestTo.getType();
         String contact = otpGenerateRequestTo.getContact();
         if (NotificationType.NMR_ID.getNotificationType().equals(otpGenerateRequestTo.getType())) {
@@ -76,7 +72,26 @@ public class OtpServiceImpl implements IOtpService {
         
         Otp otpEntity = new Otp(UUID.randomUUID().toString(), otp, 0, contact, false, 10);
         otpDaoService.save(otpEntity);
-        return notificationService.sendNotificationForOTP(notificationType, otp, contact, otpEntity.getId());
+        ResponseMessageTo notificationResponse=notificationService.sendNotificationForOTP(notificationType, otp, contact);
+
+        if(notificationResponse.getMessage().equalsIgnoreCase(NMRConstants.SUCCESS_RESPONSE)) {
+
+            if (otpGenerateRequestTo.getType().equalsIgnoreCase(NMRConstants.SMS)) {
+                if (contact != null && !contact.isBlank()) {
+                    contact = contact.replaceAll(contact.substring(0, 10 - 4), "xxxxxx");
+                }
+            } else if (otpGenerateRequestTo.getType().equalsIgnoreCase(NMRConstants.EMAIL)) {
+                if (contact != null && !contact.isBlank()) {
+                    String idPart = contact.substring(0, contact.lastIndexOf("@"));
+                    String domain = contact.substring(contact.lastIndexOf("@"), contact.length());
+                    contact = "x".repeat(idPart.length()) + domain;
+                }
+            }
+            return new OTPResponseMessageTo(otpEntity.getId(),NMRConstants.SUCCESS_RESPONSE,contact);
+        }
+        else {
+            return new OTPResponseMessageTo(null,NMRConstants.FAILURE_RESPONSE,null);
+        }
     }
 
     /**
@@ -105,7 +120,7 @@ public class OtpServiceImpl implements IOtpService {
         if (decryptedOtp.equals(otpDetails.getOtp())) {
             otpDetails.setExpired(true);
             otpDaoService.save(otpDetails);
-            notificationService.sendNotificationForVerifiedOTP(otpValidateRequestTo.getType(), otpValidateRequestTo.getContact(), transactionId);
+            notificationService.sendNotificationForVerifiedOTP(otpValidateRequestTo.getType(), otpValidateRequestTo.getContact());
             return new OtpValidateResponseTo(new OtpValidateMessageTo(NMRConstants.SUCCESS_RESPONSE, otpDetails.getId(), otpValidateRequestTo.getType()));
         } else {
             otpDetails.setAttempts(otpDetails.getAttempts() + 1);
