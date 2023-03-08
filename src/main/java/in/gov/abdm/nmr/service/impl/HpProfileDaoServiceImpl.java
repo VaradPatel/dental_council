@@ -558,6 +558,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @SneakyThrows
     private void mapRegistrationRequestToEntity(HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, RegistrationDetails registrationDetail, HpProfile hpProfile) {
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
+            registrationDetail.setHpProfileId(hpProfile);
             registrationDetail.setRegistrationDate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationDate());
             registrationDetail.setRegistrationNo(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationNumber());
             registrationDetail.setStateMedicalCouncil(iStateMedicalCouncilRepository
