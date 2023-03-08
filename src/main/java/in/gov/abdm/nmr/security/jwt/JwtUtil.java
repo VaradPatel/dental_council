@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 import in.gov.abdm.nmr.dto.UpdateRefreshTokenIdRequestTO;
 import in.gov.abdm.nmr.security.common.KeyUtil;
+import in.gov.abdm.nmr.security.common.RoleConstants;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,6 +58,10 @@ public class JwtUtil {
     public String generateToken(String username, JwtTypeEnum type, String role, BigInteger profileId) {
         LOGGER.info("Generating {}", type);
 
+        if (RoleConstants.ROLE_SYSTEM.equals(role)) {
+            accessTokenExpirySeconds = 3600l;
+        }
+        
         Long expiry = accessTokenExpirySeconds;
         String jwtId = UUID.randomUUID().toString();
         if (JwtTypeEnum.REFRESH_TOKEN.equals(type)) {
