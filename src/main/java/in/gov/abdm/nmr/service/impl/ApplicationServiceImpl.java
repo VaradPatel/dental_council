@@ -281,7 +281,7 @@ public class ApplicationServiceImpl implements IApplicationService {
 //        });
 //        workProfileRepository.saveAll(workProfileList);
 
-        List<LanguagesKnown> languagesKnownList = new ArrayList<>();
+/*        List<LanguagesKnown> languagesKnownList = new ArrayList<>();
         List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(existingHpProfile.getId());
         for (LanguagesKnown languageKnown : languagesKnown) {
             LanguagesKnown newLanguagesKnown = new LanguagesKnown();
@@ -290,7 +290,7 @@ public class ApplicationServiceImpl implements IApplicationService {
             newLanguagesKnown.setHpProfile(targetedHpProfile);
             languagesKnownList.add(newLanguagesKnown);
         }
-        languagesKnownRepository.saveAll(languagesKnownList);
+        languagesKnownRepository.saveAll(languagesKnownList);*/
 
         List<QualificationDetails> qualificationDetails = new ArrayList<>();
         List<QualificationDetails> qualificationDetailsList = iQualificationDetailRepository.getQualificationDetailsByHpProfileId(existingHpProfile.getId());
