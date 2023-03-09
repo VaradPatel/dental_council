@@ -37,7 +37,7 @@ public class NMRConstants {
     public static final String RESET_PASSWORD = "/user/reset-password";
 
     public static final String RAISE_QUERY = "/health-professional/queries";
-    public static final String SAVE_KYC_DETAILS = "/health-professional/kyc";
+    public static final String SAVE_KYC_DETAILS = "/health-professional/{registrationNumber}/kyc";
     public static final String GET_QUERIES = "health-professional/{healthProfessionalId}/queries";
     public static final String PASSWORD_LINK = "/user/password-link";
     public static final String SET_PASSWORD = "/user/set-password";
@@ -452,6 +452,7 @@ public class NMRConstants {
     public static final String MISSING_SEARCH_VALUE = "Please Enter a search value.";
 
     public static final String NO_MATCHING_REGISTRATION_DETAILS_FOUND = "No matching registration details found for the given hp_profile_id";
+    public static final double FUZZY_MATCH_LIMIT = 80;
 
     public static final String NO_MATCHING_WORK_PROFILE_DETAILS_FOUND = "No matching work profile details found for the given hp_profile_id";
 }

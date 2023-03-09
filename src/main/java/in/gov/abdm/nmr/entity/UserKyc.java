@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import javax.persistence.*;
 import java.math.BigInteger;
-import java.sql.Timestamp;
+import java.sql.Date;
 
 @Getter
 @Setter
@@ -26,7 +26,7 @@ public class UserKyc extends CommonAuditEntity {
 	private String name;
 	private String email;
 	private String pincode;
-	private String birthDate;
+	private Date birthDate;
 	private String careOf;
 	private String house;
 	private String street;

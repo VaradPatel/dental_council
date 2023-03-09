@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.math.BigInteger;
+import java.sql.Date;
 import java.sql.Timestamp;
 
 @Getter
@@ -22,7 +23,7 @@ public class UserKycTo {
 	private String name;
 	private String email;
 	private String pincode;
-	private String birthDate;
+	private Date birthDate;
 	private String careOf;
 	private String house;
 	private String street;

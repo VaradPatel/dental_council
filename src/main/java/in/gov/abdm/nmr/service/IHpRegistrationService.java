@@ -115,5 +115,5 @@ public interface IHpRegistrationService {
      */
     HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(BigInteger hpProfileId);
 
-    ResponseMessageTo saveUserKycDetails(UserKycTo userKycTo);
+    ResponseMessageTo saveUserKycDetails(long registrationNumber,UserKycTo userKycTo);
 }
