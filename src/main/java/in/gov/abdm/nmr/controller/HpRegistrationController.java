@@ -231,7 +231,7 @@ public class HpRegistrationController {
     }
 
     @PostMapping(path = NMRConstants.SAVE_KYC_DETAILS, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseMessageTo saveUserKycDetails(@RequestBody UserKycTo userKycTo){
-        return hpService.saveUserKycDetails(userKycTo);
+    public ResponseMessageTo saveUserKycDetails(@PathVariable("registrationNumber") long registrationNumber,@RequestBody UserKycTo userKycTo){
+        return hpService.saveUserKycDetails(registrationNumber,userKycTo);
     }
 }
