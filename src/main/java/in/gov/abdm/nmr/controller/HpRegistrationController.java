@@ -101,7 +101,7 @@ public class HpRegistrationController {
      *
      * @param registrationCertificate                       The health professional's certificate file.
      * @param degreeCertificate                             The health professional's proof file.
-     * @param hpRegistrationUpdateRequest The health professional registration update request in string format.
+     * @param hpRegistrationUpdateRequestTO The health professional registration update request in string format.
      * @param hpProfileId                       The health professional profile id.
      * @return The updated health professional registration response in a transfer object.
      * @throws InvalidRequestException If the provided request is invalid.
@@ -110,10 +110,10 @@ public class HpRegistrationController {
     @PutMapping(path = "health-professional/{healthProfessionalId}/registration", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam(value = "registrationCertificate", required = false) MultipartFile registrationCertificate,
                                                                                       @RequestParam(value = "degreeCertificate", required = false) MultipartFile degreeCertificate,
-                                                                                      @RequestPart("data") String hpRegistrationUpdateRequestString,
+                                                                                      @RequestPart("data") HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO,
                                                                                       @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, WorkFlowException, NmrException {
 
-        return hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequestString, registrationCertificate, degreeCertificate);
+        return hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequestTO, registrationCertificate, degreeCertificate);
     }
 
     /**

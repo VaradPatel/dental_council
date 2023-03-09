@@ -209,9 +209,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @SneakyThrows
     @Override
     public HpProfileUpdateResponseTO updateHpRegistrationDetails(BigInteger hpProfileId,
-                                                                 String hpRegistrationUpdateRequestTOString, MultipartFile registrationCertificate, MultipartFile degreeCertificate) throws NmrException,InvalidRequestException {
+                                                                 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, MultipartFile degreeCertificate) throws NmrException,InvalidRequestException {
 
-        HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO=objectMapper.readValue(hpRegistrationUpdateRequestTOString,HpRegistrationUpdateRequestTO.class);
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
             try {
                 hpRegistrationUpdateRequestTO.getRegistrationDetail().setRegistrationCertificate(registrationCertificate != null ? registrationCertificate.getBytes() : null);
@@ -229,8 +228,15 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         } else {
             mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile);
         }
-        validateQualificationDetailsAndProofs(hpRegistrationUpdateRequestTO.getQualificationDetails(),List.of(degreeCertificate));
-        saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), List.of(degreeCertificate));
+        if(degreeCertificate!=null){
+            validateQualificationDetailsAndProofs(hpRegistrationUpdateRequestTO.getQualificationDetails(),List.of(degreeCertificate));
+            saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), List.of(degreeCertificate));
+        }
+        else{
+            validateQualificationDetailsAndProofs(hpRegistrationUpdateRequestTO.getQualificationDetails(),new ArrayList<>());
+            saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), new ArrayList<>());
+        }
+
         HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByHpProfileId(hpProfileId);
         if (hpNbeDetails == null) {
             hpNbeDetails = new HpNbeDetails();
