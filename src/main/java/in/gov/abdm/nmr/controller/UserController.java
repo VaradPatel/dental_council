@@ -5,6 +5,7 @@ import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.security.common.RoleConstants;
 import in.gov.abdm.nmr.service.IUserService;
+import in.gov.abdm.nmr.util.NMRConstants;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -70,5 +71,10 @@ public class UserController {
     @SecurityRequirement(name = "bearerAuth")
     public NbeProfileTO updateNbeProfile(@PathVariable(name = "id") BigInteger id, @RequestBody NbeProfileTO nbeProfileTO) throws NmrException {
         return userService.updateNbeProfile(id, nbeProfileTO);
+    }
+
+    @PostMapping(path = NMRConstants.PATH_HP_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseMessageTo createHpUserAccount(@RequestBody CreateHpUserAccountTo createHpUserAccountTo){
+        return userService.createHpUserAccount(createHpUserAccountTo);
     }
 }

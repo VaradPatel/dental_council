@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetSetPasswordLinkTo {
+public class CreateHpUserAccountTo {
 
     @NotBlank(message = NMRConstants.EMAIL_NOT_NULL)
     String email;
@@ -21,7 +21,10 @@ public class GetSetPasswordLinkTo {
     @NotBlank(message = NMRConstants.USERNAME_NOT_NULL)
     String username;
 
-    @NotBlank(message = NMRConstants.USERNAME_NOT_NULL)
+    @NotBlank(message = NMRConstants.REGISTRATION_NUMBER)
     String registrationNumber;
+
+    @NotBlank(message = NMRConstants.PASSWORD_NOT_NULL)
+    String password;
 
 }
