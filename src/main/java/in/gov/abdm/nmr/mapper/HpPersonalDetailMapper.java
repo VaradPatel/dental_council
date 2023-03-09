@@ -3,17 +3,14 @@ package in.gov.abdm.nmr.mapper;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.Address;
 import in.gov.abdm.nmr.entity.HpProfile;
-import in.gov.abdm.nmr.entity.Language;
-import in.gov.abdm.nmr.entity.LanguagesKnown;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigInteger;
-import java.util.List;
 
 @UtilityClass
 public final class HpPersonalDetailMapper {
 
-    public static HpProfilePersonalResponseTO convertEntitiesToPersonalResponseTo(HpProfile hpProfile, Address address, Address kycAddress, List<LanguagesKnown> languageKnowns, List<Language> languages, BigInteger applicationTypeId) {
+    public static HpProfilePersonalResponseTO convertEntitiesToPersonalResponseTo(HpProfile hpProfile, Address address, Address kycAddress, BigInteger applicationTypeId) {
         HpProfilePersonalResponseTO hpProfilePersonalResponseTO = new HpProfilePersonalResponseTO();
         PersonalDetailsTO personalDetailsTO = new PersonalDetailsTO();
         AddressTO addressTO = new AddressTO();
@@ -26,7 +23,6 @@ public final class HpPersonalDetailMapper {
         personalDetailsTO.setProfilePhoto(hpProfile.getProfilePhoto());
         personalDetailsTO.setFatherName(hpProfile.getFatherName());
         personalDetailsTO.setGender(hpProfile.getGender());
-        personalDetailsTO.setLanguage(convertLanguageEntityToLanguageDto(languageKnowns, languages));
         personalDetailsTO.setFirstName(hpProfile.getFirstName());
         personalDetailsTO.setMiddleName(hpProfile.getMiddleName());
         personalDetailsTO.setLastName(hpProfile.getLastName());
@@ -54,16 +50,16 @@ public final class HpPersonalDetailMapper {
 
         if (kycAddress != null) {
             kycAddressTo.setAddressLine1(kycAddress.getAddressLine1());
-            if(kycAddress.getCountry()!=null) {
+            if (kycAddress.getCountry() != null) {
                 kycAddressTo.setCountry(CountryTO.builder().id(kycAddress.getCountry().getId()).name(kycAddress.getCountry().getName()).nationality(kycAddress.getCountry().getNationality()).build());
             }
-            if(kycAddress.getDistrict()!=null) {
+            if (kycAddress.getDistrict() != null) {
                 kycAddressTo.setDistrict(DistrictTO.builder().id(kycAddress.getDistrict().getId()).name(kycAddress.getDistrict().getName()).isoCode(kycAddress.getDistrict().getIsoCode()).build());
             }
-            if(kycAddress.getSubDistrict()!=null) {
+            if (kycAddress.getSubDistrict() != null) {
                 kycAddressTo.setSubDistrict(SubDistrictTO.builder().id(kycAddress.getSubDistrict().getId()).name(kycAddress.getSubDistrict().getName()).isoCode(kycAddress.getSubDistrict().getIsoCode()).build());
             }
-            if(kycAddress.getState()!=null) {
+            if (kycAddress.getState() != null) {
                 kycAddressTo.setState(StateTO.builder().id(kycAddress.getState().getId()).name(kycAddress.getState().getName()).build());
             }
             if (kycAddress.getVillage() != null) {
@@ -93,8 +89,5 @@ public final class HpPersonalDetailMapper {
         return hpProfilePersonalResponseTO;
     }
 
-    private List<LanguageTO> convertLanguageEntityToLanguageDto(List<LanguagesKnown> languagesKnowns, List<Language> languages) {
-        return languagesKnowns.stream().map(language -> LanguageTO.builder().id(language.getLanguageId()).name(languages.stream().filter(l -> l.getId().equals(language.getLanguageId())).findFirst().get().getName()).build()).toList();
-    }
 
 }
