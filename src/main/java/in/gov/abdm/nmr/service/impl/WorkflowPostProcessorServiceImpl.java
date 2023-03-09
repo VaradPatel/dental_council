@@ -137,10 +137,8 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         updateAddressToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
         updateForeignQualificationToMaster(transactionHpProfile.getId(), masterHpProfileDetails);
         updateHpNbeDetailsToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
-        updateLanguagesKnownToMaster(transactionHpProfile.getId(), masterHpProfileDetails);
         updateNmrHprLinkageToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
         updateQualificationDetailsToMaster(transactionHpProfile.getId(), masterHpProfileDetails);
-
         try {
             updateElasticDB(iNextGroup, masterHpProfileDetails);
         } catch (WorkFlowException e) {

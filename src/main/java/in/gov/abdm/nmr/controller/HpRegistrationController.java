@@ -101,7 +101,7 @@ public class HpRegistrationController {
      *
      * @param registrationCertificate                       The health professional's certificate file.
      * @param degreeCertificate                             The health professional's proof file.
-     * @param hpRegistrationUpdateRequest The health professional registration update request in string format.
+     * @param hpRegistrationUpdateRequestString The health professional registration update request in string format.
      * @param hpProfileId                       The health professional profile id.
      * @return The updated health professional registration response in a transfer object.
      * @throws InvalidRequestException If the provided request is invalid.
