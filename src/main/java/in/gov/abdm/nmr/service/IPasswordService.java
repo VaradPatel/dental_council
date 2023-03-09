@@ -10,7 +10,7 @@ public interface IPasswordService {
 
     ResponseMessageTo changePassword(ChangePasswordRequestTo changePasswordRequestTo);
 
-    ResponseMessageTo getResetPasswordLink(GetSetPasswordLinkTo setPasswordLinkTo);
+    ResponseMessageTo getResetPasswordLink(CreateHpUserAccountTo setPasswordLinkTo);
 
     ResponseMessageTo setNewPassword(SetNewPasswordTo newPasswordTo);
 

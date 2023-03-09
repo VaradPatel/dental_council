@@ -28,7 +28,7 @@ public class PasswordController {
      * @return Success/Fail message
      */
     @PostMapping(NMRConstants.PASSWORD_LINK)
-    public ResponseMessageTo getResetPasswordLink(@RequestBody GetSetPasswordLinkTo setPasswordLinkTo) {
+    public ResponseMessageTo getResetPasswordLink(@RequestBody CreateHpUserAccountTo setPasswordLinkTo) {
 
         return passwordService.getResetPasswordLink(setPasswordLinkTo);
 
