@@ -16,8 +16,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 
@@ -172,50 +173,42 @@ public class NmrExceptionAdvice {
     }
 
     /**
-     * Exception handler for OTP Exceptions
+     * Handles OtpException and returns a JSON response entity with HTTP status code 400.
      *
-     * @param e
-     * @return
+     * @param ex  the OtpException object containing the error details
+     * @param req the HttpServletRequest object representing the current request
+     * @return a ResponseEntity object containing an ErrorDTO object and HTTP status code 400
+     * @throws OtpException if an error occurs while handling the exception
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(OtpException.class)
-    public Map<String, Object> oTPExceptionHandler(OtpException e) {
-        Map<String, Object> errorMap = new HashMap<>();
-        errorMap.put(RESPONSE_TIMESTAMP, LocalDate.now());
-        LOGGER.error(e.getMessage());
-        errorMap.put(MESSAGE, e.getMessage());
-        return errorMap;
+    public ResponseEntity<ErrorDTO> oTPExceptionHandler(OtpException ex, HttpServletRequest req) {
+        ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
     }
 
     /**
-     * Exception handler for OTP Exceptions
+     * Handles TemplateException and returns a JSON response entity with HTTP status code 400.
      *
-     * @param e
-     * @return
+     * @param ex  the TemplateException object containing the error details
+     * @param req the HttpServletRequest object representing the current request
+     * @return a ResponseEntity object containing an ErrorDTO object and HTTP status code 400
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(TemplateException.class)
-    public Map<String, Object> templateExceptionHandler(TemplateException e) {
-        Map<String, Object> errorMap = new HashMap<>();
-        errorMap.put(RESPONSE_TIMESTAMP, LocalDate.now());
-        LOGGER.error(e.getMessage());
-        errorMap.put(MESSAGE, e.getMessage());
-        return errorMap;
+    public ResponseEntity<ErrorDTO> templateExceptionHandler(OtpException ex, HttpServletRequest req) {
+        ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
     }
 
-    /**
-     * Handles the {@link NoDataFoundException} and returns a response with HTTP status code 404 (Not Found) and an error message.
-     *
-     * @param ex the {@link NoDataFoundException} to be handled
-     * @return a map containing the error response timestamp and message
-     */
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+
     @ExceptionHandler(NoDataFoundException.class)
-    public Map<String, Object> handleNoDataFoundException(NoDataFoundException ex) {
-        Map<String, Object> errorMap = new HashMap<>();
-        errorMap.put(RESPONSE_TIMESTAMP, LocalDate.now());
-        LOGGER.error(ex.getMessage());
-        errorMap.put(MESSAGE, ex.getMessage());
-        return errorMap;
+    public ResponseEntity<ErrorDTO> handleNoDataFoundException(OtpException ex, HttpServletRequest req) {
+        ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(error, headers, HttpStatus.NOT_FOUND);
     }
 }
