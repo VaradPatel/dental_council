@@ -73,11 +73,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @Autowired
     private CountryRepository countryRepository;
     @Autowired
-    private LanguageRepository languageRepository;
-    @Autowired
-    private LanguagesKnownRepository languagesKnownRepository;
-
-    @Autowired
     IRegistrationDetailRepository iRegistrationDetailRepository;
     @Autowired
     private IStateMedicalCouncilRepository iStateMedicalCouncilRepository;
@@ -149,16 +144,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             mapAddressRequestToEntity(existingHpProfile.getId(), hpPersonalUpdateRequestTO, address);
             iAddressRepository.save(address);
         }
-        List<LanguageTO> languages = hpPersonalUpdateRequestTO.getPersonalDetails().getLanguage();
-        if (languagesKnownRepository.existsById(existingHpProfile.getId())) {
-            languagesKnownRepository.deleteById(existingHpProfile.getId());
-        }
-        List<LanguagesKnown> languagesKnowns = new ArrayList<>();
-        for (LanguageTO languageTO : languages) {
-            languagesKnowns.add(LanguagesKnown.builder().hpProfile(existingHpProfile).languageId(languageTO.getId()).build());
-        }
-        languagesKnownRepository.saveAll(languagesKnowns);
-
         if (copiedExistingHpProfile != null && HpProfileStatus.APPROVED.getId().equals(copiedExistingHpProfile.getHpProfileStatus().getId())) {
 
             RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(copiedExistingHpProfile.getId());
@@ -167,17 +152,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             newRegistrationDetails.setId(null);
             newRegistrationDetails.setHpProfileId(targetedHpProfile);
             iRegistrationDetailRepository.save(newRegistrationDetails);
-
-            List<LanguagesKnown> languagesKnownList = new ArrayList<>();
-            List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(copiedExistingHpProfile.getId());
-            for (LanguagesKnown languageKnown : languagesKnown) {
-                LanguagesKnown newLanguagesKnown = new LanguagesKnown();
-                org.springframework.beans.BeanUtils.copyProperties(languageKnown, newLanguagesKnown);
-                newLanguagesKnown.setId(null);
-                newLanguagesKnown.setHpProfile(targetedHpProfile);
-                languagesKnownList.add(newLanguagesKnown);
-            }
-            languagesKnownRepository.saveAll(languagesKnownList);
 
             List<QualificationDetails> qualificationDetails = new ArrayList<>();
             List<QualificationDetails> qualificationDetailsList = iQualificationDetailRepository.getQualificationDetailsByHpProfileId(copiedExistingHpProfile.getId());
@@ -222,9 +196,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
 
         if (registrationDetail == null) {
-                registrationDetail = new RegistrationDetails();
-                mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile);
-                registrationDetailRepository.save(registrationDetail);
+            registrationDetail = new RegistrationDetails();
+            mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile);
+            registrationDetailRepository.save(registrationDetail);
         } else {
             mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile);
         }
@@ -404,18 +378,18 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private void saveIndianQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
                                                 List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs) {
 
-            List<QualificationDetails> qualificationDetails = new ArrayList<>();
-            for (QualificationDetailRequestTO indianQualification : qualificationDetailRequestTOS) {
-                QualificationDetails qualification = new QualificationDetails();
-                if (indianQualification.getId() != null) {
-                    qualification = qualificationDetailRepository.findById(indianQualification.getId()).get();
-                    mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification, proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)));
-                } else {
-                    mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification, proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)));
-                    qualificationDetails.add(qualification);
-                }
+        List<QualificationDetails> qualificationDetails = new ArrayList<>();
+        for (QualificationDetailRequestTO indianQualification : qualificationDetailRequestTOS) {
+            QualificationDetails qualification = new QualificationDetails();
+            if (indianQualification.getId() != null) {
+                qualification = qualificationDetailRepository.findById(indianQualification.getId()).get();
+                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification, proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)));
+            } else {
+                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification, proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)));
+                qualificationDetails.add(qualification);
             }
-            qualificationDetailRepository.saveAll(qualificationDetails);
+        }
+        qualificationDetailRepository.saveAll(qualificationDetails);
 
     }
 
@@ -445,18 +419,18 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     private void saveInternationalQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
                                                        List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs) {
-            List<ForeignQualificationDetails> internationQualifications = new ArrayList<>();
-            for (QualificationDetailRequestTO internationalQualification : qualificationDetailRequestTOS) {
-                ForeignQualificationDetails customQualification = new ForeignQualificationDetails();
-                if (internationalQualification.getId() != null) {
-                    customQualification = iCustomQualificationDetailRepository.findById(internationalQualification.getId()).get();
-                    mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification, proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)));
-                } else {
-                    mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification, proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)));
-                    internationQualifications.add(customQualification);
-                }
+        List<ForeignQualificationDetails> internationQualifications = new ArrayList<>();
+        for (QualificationDetailRequestTO internationalQualification : qualificationDetailRequestTOS) {
+            ForeignQualificationDetails customQualification = new ForeignQualificationDetails();
+            if (internationalQualification.getId() != null) {
+                customQualification = iCustomQualificationDetailRepository.findById(internationalQualification.getId()).get();
+                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification, proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)));
+            } else {
+                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification, proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)));
+                internationQualifications.add(customQualification);
             }
-            iCustomQualificationDetailRepository.saveAll(internationQualifications);
+        }
+        iCustomQualificationDetailRepository.saveAll(internationQualifications);
     }
 
     private void mapQualificationRequestToEntity(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, QualificationDetailRequestTO newCustomQualification, ForeignQualificationDetails customQualification, MultipartFile proof) {
