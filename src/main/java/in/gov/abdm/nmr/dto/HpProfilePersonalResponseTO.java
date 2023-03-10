@@ -12,5 +12,6 @@ public class HpProfilePersonalResponseTO {
     private BigInteger hpProfileId;
     private String requestId;
     private BigInteger applicationTypeId;
+    private String nmrId;
 
 }

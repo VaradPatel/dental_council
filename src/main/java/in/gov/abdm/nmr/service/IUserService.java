@@ -26,5 +26,6 @@ public interface IUserService {
 
     NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException;
 
+    ResponseMessageTo createHpUserAccount(CreateHpUserAccountTo createHpUserAccountTo);
 
 }

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ResponseMessageTo {
+public class KycResponseMessageTo {
 
-    String message;
+    String kycFuzzyMatchStatus;
 }

@@ -1,9 +1,6 @@
 package in.gov.abdm.nmr.controller;
 
-import in.gov.abdm.nmr.dto.OtpGenerateRequestTo;
-import in.gov.abdm.nmr.dto.OtpValidateRequestTo;
-import in.gov.abdm.nmr.dto.OtpValidateResponseTo;
-import in.gov.abdm.nmr.dto.ResponseMessageTo;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.OtpException;
 import in.gov.abdm.nmr.service.IOtpService;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -34,7 +31,7 @@ public class OtpController {
 	 * @throws OtpException with message
 	 */
 	@PostMapping(path = NMRConstants.SEND_OTP, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseMessageTo generateOtp(@Valid @RequestBody OtpGenerateRequestTo otpGenerateRequestTo)
+	public OTPResponseMessageTo generateOtp(@Valid @RequestBody OtpGenerateRequestTo otpGenerateRequestTo)
 			throws OtpException {
 		return otpService.generateOtp(otpGenerateRequestTo);
 	}

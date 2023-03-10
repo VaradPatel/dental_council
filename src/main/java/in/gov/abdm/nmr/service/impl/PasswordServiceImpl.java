@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import in.gov.abdm.nmr.dto.ChangePasswordRequestTo;
-import in.gov.abdm.nmr.dto.GetSetPasswordLinkTo;
+import in.gov.abdm.nmr.dto.CreateHpUserAccountTo;
 import in.gov.abdm.nmr.dto.ResetPasswordRequestTo;
 import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.dto.SetNewPasswordTo;
@@ -74,7 +74,7 @@ public class PasswordServiceImpl implements IPasswordService {
      * @return ResponseMessageTo with message
      */
     @Override
-    public ResponseMessageTo getResetPasswordLink(GetSetPasswordLinkTo setPasswordLinkTo) {
+    public ResponseMessageTo getResetPasswordLink(CreateHpUserAccountTo setPasswordLinkTo) {
         try {
             if (!userDaoService.existsByUsername(setPasswordLinkTo.getUsername())) {
                 User userDetail = new User(null, setPasswordLinkTo.getEmail(), setPasswordLinkTo.getMobile(), setPasswordLinkTo.getUsername(), null, null, null, true, true, //
@@ -96,17 +96,17 @@ public class PasswordServiceImpl implements IPasswordService {
                 if (userDaoService.existsByUsername(setPasswordLinkTo.getUsername())) {
                     return passwordReset(setPasswordLinkTo);
                 } else {
-                    return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND, null);
+                    return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
                 }
             } else {
-                return new ResponseMessageTo(NMRConstants.USER_ALREADY_EXISTS, null);
+                return new ResponseMessageTo(NMRConstants.USER_ALREADY_EXISTS);
             }
         } catch (Exception e) {
-            return new ResponseMessageTo(e.getLocalizedMessage(), null);
+            return new ResponseMessageTo(e.getLocalizedMessage());
         }
     }
 
-    public ResponseMessageTo passwordReset(GetSetPasswordLinkTo setPasswordLinkTo) {
+    public ResponseMessageTo passwordReset(CreateHpUserAccountTo setPasswordLinkTo) {
         String token = RandomString.make(30);
         PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByUserName(setPasswordLinkTo.getUsername());
 
@@ -137,18 +137,18 @@ public class PasswordServiceImpl implements IPasswordService {
             User user = userDaoService.findByUsername(passwordResetToken.getUserName());
 
             if (null == user) {
-                return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND, null);
+                return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
             }
             if (passwordResetToken.getExpiryDate().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0) {
 
-                return new ResponseMessageTo(NMRConstants.LINK_EXPIRED, null);
+                return new ResponseMessageTo(NMRConstants.LINK_EXPIRED);
             }
             user.setPassword(bCryptPasswordEncoder.encode(rsaUtil.decrypt(newPasswordTo.getPassword())));
             userDaoService.save(user);
 
-            return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE, null);
+            return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
         } catch (Exception e) {
-            return new ResponseMessageTo(e.getLocalizedMessage(), null);
+            return new ResponseMessageTo(e.getLocalizedMessage());
         }
     }
 
@@ -168,12 +168,12 @@ public class PasswordServiceImpl implements IPasswordService {
             user.setPassword(bCryptPasswordEncoder.encode(rsaUtil.decrypt(resetPasswordRequestTo.getPassword())));
             try {
                 userDaoService.save(user);
-                return new ResponseMessageTo(null,NMRConstants.SUCCESS_RESPONSE );
+                return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE );
             } catch (Exception e) {
-                return new ResponseMessageTo(null,NMRConstants.PROBLEM_OCCURRED);
+                return new ResponseMessageTo(NMRConstants.PROBLEM_OCCURRED);
             }
         } else {
-            return new ResponseMessageTo(null,NMRConstants.USER_NOT_FOUND);
+            return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
         }
 
     }
@@ -198,12 +198,12 @@ public class PasswordServiceImpl implements IPasswordService {
                     user.setPassword(bCryptPasswordEncoder.encode(rsaUtil.decrypt(changePasswordRequestTo.getNewPassword())));
                     try {
                         userDaoService.save(user);
-                        return new ResponseMessageTo(null, NMRConstants.SUCCESS_RESPONSE);
+                        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
                     } catch (Exception e) {
-                        return new ResponseMessageTo(null, NMRConstants.PROBLEM_OCCURRED);
+                        return new ResponseMessageTo(NMRConstants.PROBLEM_OCCURRED);
                     }
                 } else {
-                    return new ResponseMessageTo(null, NMRConstants.OLD_PASSWORD_NOT_MATCHING);
+                    return new ResponseMessageTo(NMRConstants.OLD_PASSWORD_NOT_MATCHING);
                 }
             } else {
 
@@ -211,7 +211,7 @@ public class PasswordServiceImpl implements IPasswordService {
             }
         } else {
 
-            return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND, null);
+            return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
         }
 
     }

@@ -84,8 +84,7 @@ public class AuthServiceImpl implements IAuthService {
             if (hp != null) {
                 loginResponseTO.setProfileId(hp.getId());
                 loginResponseTO.setHpRegistered(StringUtils.isBlank(hp.getNmrId()));
-                loginResponseTO.setBlacklisted(HpProfileStatus.BLACKLISTED.getId() == hp.getHpProfileStatus().getId() ||
-                        HpProfileStatus.SUSPENDED.getId() == hp.getHpProfileStatus().getId());
+                loginResponseTO.setBlacklisted(HpProfileStatus.BLACKLISTED.getId() == hp.getHpProfileStatus().getId() || HpProfileStatus.SUSPENDED.getId() == hp.getHpProfileStatus().getId());
             }
         } else if (UserTypeEnum.COLLEGE.getCode().equals(user.getUserType().getId())) {
             loginResponseTO.setUserSubType(user.getUserSubType().getId());
@@ -137,7 +136,10 @@ public class AuthServiceImpl implements IAuthService {
         } else if (UserTypeEnum.SYSTEM.getCode().equals(user.getUserType().getId())) {
             role = RoleConstants.ROLE_SYSTEM;
         }
+
         response.setHeader(ACCESS_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.ACCESS_TOKEN, role, profileId));
-        response.setHeader(REFRESH_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.REFRESH_TOKEN, role, profileId));
+        if (!UserTypeEnum.SYSTEM.getCode().equals(user.getUserType().getId())) {
+            response.setHeader(REFRESH_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.REFRESH_TOKEN, role, profileId));
+        }
     }
 }

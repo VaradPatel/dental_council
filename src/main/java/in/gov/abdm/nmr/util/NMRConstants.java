@@ -35,9 +35,10 @@ public class NMRConstants {
     public static final String NOTIFICATION_SERVICE_SEND_MESSAGE = "/internal/v3/notification/message";
     public static final String NOTIFICATION_DB_SERVICE_GET_TEMPLATE = "/internal/v3/notification/template/id/{id}";
     public static final String RESET_PASSWORD = "/user/reset-password";
+    public static final String PATH_HP_PROFILE = "/health-professional/user";
 
     public static final String RAISE_QUERY = "/health-professional/queries";
-    public static final String SAVE_KYC_DETAILS = "/health-professional/kyc";
+    public static final String SAVE_KYC_DETAILS = "/health-professional/{registrationNumber}/kyc";
     public static final String GET_QUERIES = "health-professional/{healthProfessionalId}/queries";
     public static final String PASSWORD_LINK = "/user/password-link";
     public static final String SET_PASSWORD = "/user/set-password";
@@ -105,6 +106,7 @@ public class NMRConstants {
     public static final String PROBLEM_OCCURRED = "Problem Occurred";
     public static final String USER_ID_NOT_NULL = "User Id cannot be null or empty";
     public static final String USERNAME_NOT_NULL = "Username cannot be null or empty";
+    public static final String REG_NUM_NOT_NULL = "Registration Number cannot be null or empty";
     public static final String PASSWORD_NOT_NULL = "Password cannot be null or empty";
     public static final String TOKEN_NOT_NULL = "Token cannot be null or empty";
     public static final int RESET_PASSWORD_LINK_EXPIRY_HOURS = 24;
@@ -452,6 +454,7 @@ public class NMRConstants {
     public static final String MISSING_SEARCH_VALUE = "Please Enter a search value.";
 
     public static final String NO_MATCHING_REGISTRATION_DETAILS_FOUND = "No matching registration details found for the given hp_profile_id";
+    public static final double FUZZY_MATCH_LIMIT = 80;
 
     public static final String NO_MATCHING_WORK_PROFILE_DETAILS_FOUND = "No matching work profile details found for the given hp_profile_id";
 }
