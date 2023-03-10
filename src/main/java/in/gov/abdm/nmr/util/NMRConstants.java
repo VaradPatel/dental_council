@@ -57,10 +57,28 @@ public class NMRConstants {
     public static final String NOTIFICATION_SERVICE = "notification";
     public static final String FACILITY_SERVICE = "facility";
     public static final String NOTIFICATION_DB_SERVICE = "notification-db";
+
+    public static final String LGD_DB_SERVICE = "lgd-db";
     public static final String AADHAAR_SERVICE = "aadhaar";
     public static final String CLOSED_STATUS = "closed";
     public static final String OPEN_STATUS = "open";
     public static final String GLOBAL_NOTIFICATION_ENDPOINT = "${global.notification.endpoint}";
+
+    public static final String GLOBAL_LGD_ENDPOINT = "${global.lgd.endpoint}";
+
+    public static final String LGD_API_VERSION = "/internal/v3/abdm";
+
+    public static final String LGD = "/lgd";
+
+    public static final String LGD_SEARCH_URL = LGD + "/search";
+
+    public static final String LGD_FEIGN_SEARCH_URL = LGD_API_VERSION + LGD_SEARCH_URL;
+
+    public static final String PIN_CODE="pinCode";
+    public static final String STATE_CODE="stateCode";
+    public static final String DISTRICT_CODE="districtCode";
+
+    public static final String VIEW="view";
     public static final String GLOBAL_AADHAAR_ENDPOINT = "${global.aadhaar.endpoint}";
     public static final String GLOBAL_FACILITY_ENDPOINT = "${global.facility.endpoint}";
     public static final String OTP_GENERATION_EXCEEDED = "OTP Generation Attempts Exceeded";
