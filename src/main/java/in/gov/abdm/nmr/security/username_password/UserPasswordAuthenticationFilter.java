@@ -80,7 +80,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
             
             if((LoginTypeEnum.MOBILE_OTP.getCode().equals(requestBodyTO.getLoginType()) || LoginTypeEnum.NMR_ID_OTP.getCode().equals(requestBodyTO.getLoginType())) //
                     && (requestBodyTO.getOtpTransId() == null || requestBodyTO.getOtpTransId().isBlank())) {
-                throw new AuthenticationServiceException("Invalid request");
+                throw new AuthenticationServiceException("Invalid otp transaction id");
             }
             authRequest = UserPasswordAuthenticationToken.unauthenticated(requestBodyTO.getUsername(), //
                     rsaUtil.decrypt(requestBodyTO.getPassword()), requestBodyTO.getUserType(), requestBodyTO.getLoginType(), requestBodyTO.getOtpTransId());
