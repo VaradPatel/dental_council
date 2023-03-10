@@ -232,7 +232,7 @@ public class NMRConstants {
             JOIN registration_details rd ON w.request_id=rd.request_id 
             WHERE rd.state_medical_council_id=:""" + SMC_PROFILE_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
              \s AND w.action_id IN ( 3,5 ) ) 
-            GROUP BY ws.name 
+            OR (w.previous_group_id = 4 AND w.action_id = 4 ) GROUP BY ws.name 
             UNION 
             SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
             JOIN registration_details rd ON wa.request_id=rd.request_id 
