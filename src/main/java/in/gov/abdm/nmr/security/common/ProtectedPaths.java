@@ -32,6 +32,7 @@ public class ProtectedPaths {
     public static final String PATH_NMC_PROFILE = "/nmc/user/{id}";
     public static final String PATH_NBE_PROFILE = "/nbe/user/{id}";
 
+
     public static final String PATH_USER_NOTIFICATION_ENABLED = "/user/enable-notification";
 
     public static final String PATH_DASHBOARD_FETCH_DETAILS = "/card-detail";

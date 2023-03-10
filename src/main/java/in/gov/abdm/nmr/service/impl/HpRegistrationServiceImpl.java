@@ -18,6 +18,8 @@ import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
+import org.apache.commons.codec.language.Soundex;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -250,24 +253,23 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         BigInteger applicationTypeId = null;
         if (hpProfile.getRequestId() != null) {
             WorkFlow workFlow = workFlowRepository.findByRequestId(hpProfile.getRequestId());
-            if(workFlow!=null) {
+            if (workFlow != null) {
                 applicationTypeId = workFlow.getApplicationType().getId();
             }
         }
-        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId,applicationTypeId);
+        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId);
     }
 
     @Override
     public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) throws NmrException {
         HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = null;
         List<SuperSpeciality> superSpecialities = NMRUtil.coalesceCollection(superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId), superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId));
-        List<String> registrationNos=iRegistrationDetailRepository.getRegistrationNosByHpProfileId(hpProfileId);
+        List<String> registrationNos = iRegistrationDetailRepository.getRegistrationNosByHpProfileId(hpProfileId);
 
         List<WorkProfile> workProfileList = new ArrayList<>();
-        if(!registrationNos.isEmpty()){
+        if (!registrationNos.isEmpty()) {
             workProfileList = workProfileRepository.getWorkProfileDetailsByRegNo(registrationNos.get(0));
-        }
-        else {
+        } else {
             throw new NmrException(NO_MATCHING_REGISTRATION_DETAILS_FOUND, HttpStatus.NOT_FOUND);
         }
 
@@ -291,28 +293,74 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         return hpProfileRegistrationResponseTO;
     }
 
-    public ResponseMessageTo saveUserKycDetails(UserKycTo userKycTo) {
+    public KycResponseMessageTo saveUserKycDetails(long registrationNumber, UserKycTo userKycTo) {
 
-        userKycRepository.save(userKycDtoMapper.userKycToToUserKyc(userKycTo));
+        HpProfile hpProfile = iHpProfileRepository.findLatestHpProfileByRegistrationId(String.valueOf(registrationNumber));
 
-        Address address = new Address();
-        address.setPincode(userKycTo.getPincode());
-        address.setMobile(userKycTo.getMobileNumber());
-        address.setAddressLine1(userKycTo.getAddress());
-        address.setEmail(userKycTo.getEmail());
-        address.setHouse(userKycTo.getHouse());
-        address.setStreet(userKycTo.getStreet());
-        address.setLocality(userKycTo.getLocality());
-        address.setLandmark(userKycTo.getLandmark());
-        address.setHpProfileId(userKycTo.getHpProfileId());
-        address.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.KYC.getId(), AddressType.KYC.name()));
-        address.setVillage(villagesRepository.findByName(userKycTo.getLocality()));
-        address.setSubDistrict(subDistrictRepository.findByName(userKycTo.getSubDist()));
-        address.setState(stateRepository.findByName(userKycTo.getState()));
-        address.setDistrict(districtRepository.findByName(userKycTo.getDistrict().toUpperCase()));
-        address.setCountry(stateRepository.findByName(userKycTo.getState().toUpperCase()).getCountry());
-        iAddressRepository.save(address);
+        if (hpProfile != null) {
 
-        return new ResponseMessageTo(NMRConstants.SUCCESS);
+            double nameMatch = getFuzzyScore(hpProfile.getFullName(), userKycTo.getName());
+
+            double genderMatch = getFuzzyScore(hpProfile.getGender(), userKycTo.getGender());
+
+            double dobMatch;
+            SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd");
+
+            if ((s.format(hpProfile.getDateOfBirth()).compareTo(s.format(userKycTo.getBirthDate()))) == 0) {
+                dobMatch = 100;
+            } else {
+                dobMatch = 0;
+            }
+
+            if (nameMatch > NMRConstants.FUZZY_MATCH_LIMIT && dobMatch > NMRConstants.FUZZY_MATCH_LIMIT && genderMatch > NMRConstants.FUZZY_MATCH_LIMIT) {
+
+                userKycTo.setHpProfileId(hpProfile.getId());
+                userKycRepository.save(userKycDtoMapper.userKycToToUserKyc(userKycTo));
+
+                Address address = new Address();
+                address.setPincode(userKycTo.getPincode());
+                address.setMobile(userKycTo.getMobileNumber());
+                address.setAddressLine1(userKycTo.getAddress());
+                address.setEmail(userKycTo.getEmail());
+                address.setHouse(userKycTo.getHouse());
+                address.setStreet(userKycTo.getStreet());
+                address.setLocality(userKycTo.getLocality());
+                address.setLandmark(userKycTo.getLandmark());
+                address.setHpProfileId(hpProfile.getId());
+                address.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.KYC.getId(), AddressType.KYC.name()));
+                address.setVillage(villagesRepository.findByName(userKycTo.getLocality()));
+                address.setSubDistrict(subDistrictRepository.findByName(userKycTo.getSubDist()));
+                address.setState(stateRepository.findByName(userKycTo.getState()));
+                address.setDistrict(districtRepository.findByName(userKycTo.getDistrict().toUpperCase()));
+                address.setCountry(stateRepository.findByName(userKycTo.getState().toUpperCase()).getCountry());
+                iAddressRepository.save(address);
+
+                return new KycResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
+            } else {
+                return new KycResponseMessageTo(NMRConstants.FAILURE_RESPONSE);
+            }
+        } else {
+            return new KycResponseMessageTo(NMRConstants.USER_NOT_FOUND);
+        }
+    }
+
+    /**
+     * This method implements the string comparsion logic based on the fuzzy
+     * logic.
+     *
+     * @param s1 is the string which need to compare.
+     * @param s2 is the string which needs to compare.
+     * @return this will return the double value 0/1,0 means the strings are
+     * not matched,
+     * And 1 represents the strings are equal.
+     */
+    public double getFuzzyScore(String s1, String s2) {
+        double score;
+        if (new Soundex().soundex(s1).equals(s2)) {
+            score = 100;
+        } else {
+            score = (100 - (new LevenshteinDistance().apply(s1, s2) / (double) s2.length()) * 100);
+        }
+        return score;
     }
 }

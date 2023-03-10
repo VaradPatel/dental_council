@@ -85,6 +85,7 @@ public final class HpPersonalDetailMapper {
         hpProfilePersonalResponseTO.setKycAddress(kycAddressTo);
         hpProfilePersonalResponseTO.setRequestId(hpProfile.getRequestId());
         hpProfilePersonalResponseTO.setApplicationTypeId(applicationTypeId);
+        hpProfilePersonalResponseTO.setNmrId(hpProfile.getNmrId());
 
         return hpProfilePersonalResponseTO;
     }

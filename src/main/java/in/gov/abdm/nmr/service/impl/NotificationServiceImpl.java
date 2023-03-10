@@ -4,6 +4,7 @@ import in.gov.abdm.nmr.client.NotificationDBFClient;
 import in.gov.abdm.nmr.client.NotificationFClient;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.enums.NotificationType;
+import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.TemplateException;
 import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -189,11 +191,11 @@ public class NotificationServiceImpl implements INotificationService {
             template = notificationDBFClient.getTemplateById(new BigInteger(templateId));
 
         } catch (NoSuchMessageException noSuchMessageException) {
-            throw new TemplateException(NMRConstants.TEMPLATE_ID_NOT_FOUND_IN_PROPERTIES);
+            throw new TemplateException(NMRError.TEMPLATE_ID_NOT_FOUND_IN_PROPERTIES.getCode(),NMRError.OTP_INVALID.getMessage(), HttpStatus.NOT_FOUND.toString());
         }
 
         if (null == template) {
-            throw new TemplateException(NMRConstants.TEMPLATE_NOT_FOUND);
+            throw new TemplateException(NMRError.TEMPLATE_NOT_FOUND.getCode(),NMRError.TEMPLATE_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND.toString());
         }
         return template;
     }

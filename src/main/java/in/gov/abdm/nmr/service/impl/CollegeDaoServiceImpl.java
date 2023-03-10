@@ -3,7 +3,7 @@ package in.gov.abdm.nmr.service.impl;
 import in.gov.abdm.nmr.dto.CollegeRegistrationRequestParamsTO;
 import in.gov.abdm.nmr.dto.CollegeRegistrationRequestTo;
 import in.gov.abdm.nmr.dto.CollegeRegistrationResponseTO;
-import in.gov.abdm.nmr.dto.GetSetPasswordLinkTo;
+import in.gov.abdm.nmr.dto.CreateHpUserAccountTo;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
@@ -82,7 +82,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
             collegeEntity.setApproved(collegeRegistrationRequestTo.isApproved());
             College college = collegeRepository.saveAndFlush(collegeEntity);
 
-            GetSetPasswordLinkTo setPasswordLinkTo = new GetSetPasswordLinkTo();
+            CreateHpUserAccountTo setPasswordLinkTo = new CreateHpUserAccountTo();
             setPasswordLinkTo.setUsername(String.valueOf(college.getId()));
             setPasswordLinkTo.setEmail(college.getEmailId());
             setPasswordLinkTo.setMobile(college.getPhoneNumber());
