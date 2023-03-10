@@ -162,9 +162,9 @@
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>in.gov.abdm</groupId>
-			<artifactId>abdm-string-util</artifactId>
-			<version>1.0.3</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>1.10.0</version>
 		</dependency>
 	</dependencies>
 

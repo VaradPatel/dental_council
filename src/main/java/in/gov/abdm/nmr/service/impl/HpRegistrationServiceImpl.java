@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.ABDMString;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
 import in.gov.abdm.nmr.entity.*;
@@ -19,6 +18,8 @@ import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
+import org.apache.commons.codec.language.Soundex;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -256,7 +257,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 applicationTypeId = workFlow.getApplicationType().getId();
             }
         }
-        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId,applicationTypeId);
+        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId);
     }
 
     @Override
@@ -298,13 +299,17 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         if (hpProfile != null) {
 
-            ABDMString abdmString = new ABDMString();
+            double nameMatch = getFuzzyScore(hpProfile.getFullName(), userKycTo.getName());
 
-            double nameMatch = abdmString.getFuzzyScore(hpProfile.getFullName(), userKycTo.getName());
+            double genderMatch = getFuzzyScore(hpProfile.getGender(), userKycTo.getGender());
 
-            double dobMatch = abdmString.getFuzzyScore(String.valueOf(hpProfile.getDateOfBirth()), String.valueOf(userKycTo.getBirthDate()));
-
-            double genderMatch = abdmString.getFuzzyScore(hpProfile.getGender(), userKycTo.getGender());
+            double dobMatch;
+            SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd");
+            if ((s.format(hpProfile.getDateOfBirth()).compareTo(s.format(userKycTo.getBirthDate()))) == 0) {
+                dobMatch = 100;
+            } else {
+                dobMatch = 0;
+            }
 
             if (nameMatch > NMRConstants.FUZZY_MATCH_LIMIT && dobMatch > NMRConstants.FUZZY_MATCH_LIMIT && genderMatch > NMRConstants.FUZZY_MATCH_LIMIT) {
 
@@ -336,5 +341,25 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         } else {
             return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
         }
+    }
+
+    /**
+     * This method implements the string comparsion logic based on the fuzzy
+     * logic.
+     *
+     * @param s1 is the string which need to compare.
+     * @param s2 is the string which needs to compare.
+     * @return this will return the double value 0/1,0 means the strings are
+     * not matched,
+     * And 1 represents the strings are equal.
+     */
+    public double getFuzzyScore(String s1, String s2) {
+        double score;
+        if (new Soundex().soundex(s1).equals(s2)) {
+            score = 100;
+        } else {
+            score = (100 - (new LevenshteinDistance().apply(s1, s2) / (double) s2.length()) * 100);
+        }
+        return score;
     }
 }
