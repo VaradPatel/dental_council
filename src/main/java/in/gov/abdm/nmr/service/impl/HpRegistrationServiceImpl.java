@@ -293,7 +293,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         return hpProfileRegistrationResponseTO;
     }
 
-    public ResponseMessageTo saveUserKycDetails(long registrationNumber, UserKycTo userKycTo) {
+    public KycResponseMessageTo saveUserKycDetails(long registrationNumber, UserKycTo userKycTo) {
 
         HpProfile hpProfile = iHpProfileRepository.findLatestHpProfileByRegistrationId(String.valueOf(registrationNumber));
 
@@ -305,6 +305,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
             double dobMatch;
             SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd");
+
             if ((s.format(hpProfile.getDateOfBirth()).compareTo(s.format(userKycTo.getBirthDate()))) == 0) {
                 dobMatch = 100;
             } else {
@@ -334,12 +335,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 address.setCountry(stateRepository.findByName(userKycTo.getState().toUpperCase()).getCountry());
                 iAddressRepository.save(address);
 
-                return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
+                return new KycResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
             } else {
-                return new ResponseMessageTo(NMRConstants.FAILURE_RESPONSE);
+                return new KycResponseMessageTo(NMRConstants.FAILURE_RESPONSE);
             }
         } else {
-            return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
+            return new KycResponseMessageTo(NMRConstants.USER_NOT_FOUND);
         }
     }
 
