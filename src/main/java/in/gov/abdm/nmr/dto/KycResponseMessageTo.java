@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * Response TO for reset password
  */
@@ -13,5 +15,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class KycResponseMessageTo {
 
+    List<FuzzyParameter> fuzzParameters;
     String kycFuzzyMatchStatus;
 }

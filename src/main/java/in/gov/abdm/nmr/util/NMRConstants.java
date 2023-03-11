@@ -473,6 +473,11 @@ public class NMRConstants {
 
     public static final String NO_MATCHING_REGISTRATION_DETAILS_FOUND = "No matching registration details found for the given hp_profile_id";
     public static final double FUZZY_MATCH_LIMIT = 80;
+    public static final String FUZZY_PARAMETER_NAME = "userName";
+    public static final String FUZZY_PARAMETER_GENDER = "gender";
+    public static final String FUZZY_PARAMETER_DOB = "dob";
+
+
 
     public static final String NO_MATCHING_WORK_PROFILE_DETAILS_FOUND = "No matching work profile details found for the given hp_profile_id";
 }
