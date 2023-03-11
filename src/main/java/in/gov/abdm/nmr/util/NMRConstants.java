@@ -245,18 +245,21 @@ public class NMRConstants {
 
 
     public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_SMC = """
-            SELECT ws.name as name, COUNT(w) as count 
-            FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
-            JOIN registration_details rd ON w.hp_profile_id=rd.hp_profile_id 
-            WHERE rd.state_medical_council_id=:""" + SMC_PROFILE_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
-             \s AND w.action_id IN ( 3,5 ) ) 
-            OR (w.previous_group_id = 4 AND w.action_id = 4 ) GROUP BY ws.name 
-            UNION 
-            SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
-            JOIN registration_details rd ON wa.hp_profile_id=rd.hp_profile_id 
-            WHERE rd.state_medical_council_id=:""" + SMC_PROFILE_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """ 
-             \s AND wa.action_id = 4 
-            GROUP BY name """;
+        SELECT ws.name as name, COUNT(w) as count 
+        FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
+        JOIN registration_details rd ON w.hp_profile_id=rd.hp_profile_id 
+        WHERE rd.state_medical_council_id=:""" + SMC_PROFILE_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.current_group_id = :" + GROUP_ID + " OR ( w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.previous_group_id = :" + GROUP_ID + """ 
+         \s AND w.action_id IN ( 3,5 ) ) 
+        OR (w.application_type_id =:""" + APPLICATION_TYPE_ID + """
+         AND w.previous_group_id = 4 AND w.action_id = 4 ) GROUP BY ws.name 
+        UNION 
+        SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
+        JOIN registration_details rd ON wa.hp_profile_id=rd.hp_profile_id 
+        WHERE rd.state_medical_council_id=:""" + SMC_PROFILE_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """
+         \s AND wa.action_id = 4 
+        GROUP BY name """;
+
+
 
     public static final String FETCH_DETAILS_FOR_LISTING_QUERY = "SELECT rd.registration_no as registrationNo, hp.full_name as nameOfApplicant, smc.name as nameOfStateCouncil, rd.registration_date as dateOfSubmission, g.name as groupName, ws.name as workFlowStatus " +
             "FROM work_flow w JOIN registration_details rd ON w.hp_profile_id=rd.hp_profile_id " +
@@ -473,9 +476,9 @@ public class NMRConstants {
 
     public static final String NO_MATCHING_REGISTRATION_DETAILS_FOUND = "No matching registration details found for the given hp_profile_id";
     public static final double FUZZY_MATCH_LIMIT = 80;
-    public static final String FUZZY_PARAMETER_NAME = "userName";
-    public static final String FUZZY_PARAMETER_GENDER = "gender";
-    public static final String FUZZY_PARAMETER_DOB = "dob";
+    public static final String FUZZY_PARAMETER_NAME = "Name";
+    public static final String FUZZY_PARAMETER_GENDER = "Gender";
+    public static final String FUZZY_PARAMETER_DOB = "DOB";
 
 
 

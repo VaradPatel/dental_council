@@ -6,7 +6,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class FuzzyParameter {
-    String key;
+    String field;
     String registeredValue;
     String kycValue;
     String status;
