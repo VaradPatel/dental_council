@@ -21,9 +21,7 @@ public class PersonalDetailsTO {
     @NotBlank(message = NOT_BLANK_ERROR_MSG)
     private String firstName;
     private String middleName;
-    @NotBlank(message = NOT_BLANK_ERROR_MSG)
     private String lastName;
-    @NotBlank(message = NOT_BLANK_ERROR_MSG)
     private String fatherName;
     private String motherName;
     private String spouseName;
@@ -33,7 +31,6 @@ public class PersonalDetailsTO {
     private Date dateOfBirth;
     @NotBlank(message = NOT_BLANK_ERROR_MSG)
     private String gender;
-    @NotNull(message = NOT_NULL_ERROR_MSG)
     private ScheduleTO schedule;
     private byte[] profilePhoto;
     private String fullName;
