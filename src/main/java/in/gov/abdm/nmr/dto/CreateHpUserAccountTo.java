@@ -12,7 +12,6 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class CreateHpUserAccountTo {
 
-    @NotBlank(message = NMRConstants.EMAIL_NOT_NULL)
     String email;
 
     @NotBlank(message = NMRConstants.MOBILE_NOT_NULL)
