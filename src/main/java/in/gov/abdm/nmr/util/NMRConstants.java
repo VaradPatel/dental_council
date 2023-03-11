@@ -415,6 +415,7 @@ public class NMRConstants {
     public static final String INPUT_VALIDATION_ERROR_CODE = "ABDM-NMR-400";
     public static final String INPUT_VALIDATION_INTERNAL_ERROR_CODE = "ABDM-NMR-401";
     public static final String INVALID_INPUT_ERROR_MSG = "Invalid input";
+    public static final String INVALID_PINCODE = "pincode should be of max 6 digit";
 
     public static final String FETCH_WORK_PROFILE_RECORDS_BY_HP_ID = """
             SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id, 

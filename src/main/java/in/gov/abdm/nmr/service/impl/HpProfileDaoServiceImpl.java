@@ -509,9 +509,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         hpProfile.setRequestId(hpPersonalUpdateRequestTO.getRequestId());
         hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
         hpProfile.setIsSameAddress(hpPersonalUpdateRequestTO.getCommunicationAddress().getIsSameAddress());
-        Schedule schedule = iScheduleRepository
-                .findById(hpPersonalUpdateRequestTO.getPersonalDetails().getSchedule().getId()).orElse(null);
-        hpProfile.setSchedule(schedule);
+//        Schedule schedule = iScheduleRepository
+//                .findById(hpPersonalUpdateRequestTO.getPersonalDetails().getSchedule().getId()).orElse(null);
+//        hpProfile.setSchedule(schedule);
 
         Country countryNationality = countryRepository
                 .findById(hpPersonalUpdateRequestTO.getPersonalDetails().getCountryNationality().getId())
