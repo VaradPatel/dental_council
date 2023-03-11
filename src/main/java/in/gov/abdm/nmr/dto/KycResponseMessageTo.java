@@ -15,6 +15,6 @@ import java.util.List;
 @Builder
 public class KycResponseMessageTo {
 
-    List<FuzzyParameter> fuzzParameters;
+    List<FuzzyParameter> fuzzyParameters;
     String kycFuzzyMatchStatus;
 }
