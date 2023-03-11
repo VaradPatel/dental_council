@@ -11,6 +11,8 @@ import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.ICollegeMapper;
+import in.gov.abdm.nmr.mapper.ICollegeMasterMapper;
+import in.gov.abdm.nmr.repository.CollegeMasterRepository;
 import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -23,13 +25,14 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @Service
 @Slf4j
-public class CollegeServiceImpl implements ICollegeService {
+public class CollegeServiceImpl implements ICollegeService, ICollegeMasterService {
     @Autowired
     private ICollegeDaoService collegeService;
 
@@ -47,9 +50,13 @@ public class CollegeServiceImpl implements ICollegeService {
 
     @Autowired
     private IRequestCounterService requestCounterService;
+    @Autowired
+    private CollegeMasterRepository collegeMaster;
+    @Autowired
+    private ICollegeMasterMapper collegeMasterMapper;
 
     @Override
-    public CollegeProfileTo registerCollege(BigInteger collegeId,CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException, WorkFlowException {
+    public CollegeProfileTo registerCollege(BigInteger collegeId, CollegeRegistrationRequestTo collegeRegistrationRequestTo, boolean update) throws NmrException, WorkFlowException {
         CollegeProfileTo collegeCreationRequestToResponse = null;
         if (collegeId != null) {
             collegeRegistrationRequestTo.setId(collegeId);
@@ -111,7 +118,7 @@ public class CollegeServiceImpl implements ICollegeService {
 
     @Override
     public CollegeDeanProfileTo updateRegisterDean(BigInteger collegeId, BigInteger deanId, CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
-        CollegeDean collegeDeanEntity = collegeDeanDaoService.updateCollegeDean(collegeId,deanId, collegeDeanCreationRequestTo);
+        CollegeDean collegeDeanEntity = collegeDeanDaoService.updateCollegeDean(collegeId, deanId, collegeDeanCreationRequestTo);
         CollegeDeanProfileTo collegeDeanProfileTO = collegeMapper.collegeDeanRequestToResponse(collegeDeanCreationRequestTo);
         collegeDeanProfileTO.setId(collegeDeanEntity.getId());
         collegeDeanProfileTO.setUserId(collegeDeanEntity.getUser().getId());
@@ -149,12 +156,12 @@ public class CollegeServiceImpl implements ICollegeService {
      * Service Implementation's method for fetching the College registration records
      * for the NMC that has been submitted for approval
      *
-     * @param pageNo   - Gives the current page number
-     * @param limit   - Gives the number of records to be displayed
+     * @param pageNo       - Gives the current page number
+     * @param limit        - Gives the number of records to be displayed
      * @param search
      * @param value
-     * @param columnToSort   -  According to which column the sort has to happen
-     * @param sortOrder -  Sorting order ASC or DESC
+     * @param columnToSort -  According to which column the sort has to happen
+     * @param sortOrder    -  Sorting order ASC or DESC
      * @return the CollegeRegistrationResponseTO  response Object
      * which contains all the details related to the College submitted to NMC
      * for approval
@@ -166,7 +173,7 @@ public class CollegeServiceImpl implements ICollegeService {
         final Integer dataLimit = MAX_DATA_SIZE < Integer.valueOf(limit) ? MAX_DATA_SIZE : Integer.valueOf(limit);
         collegeRegistrationRequestParams.setOffset(dataLimit);
         collegeRegistrationRequestParams.setPageNo(Integer.valueOf(pageNo));
-        if(StringUtils.isNotBlank(search)) {
+        if (StringUtils.isNotBlank(search)) {
             switch (search.toLowerCase()) {
                 case COLLEGE_ID_IN_LOWER_CASE:
                     collegeRegistrationRequestParams.setCollegeId(value);
@@ -224,5 +231,10 @@ public class CollegeServiceImpl implements ICollegeService {
 
     private boolean collegeRegistrationStatus() {
         return false;
+    }
+
+    @Override
+    public List<CollegeMasterTo> getCollegesByStateId(BigInteger stateId) {
+        return collegeMasterMapper.collegeMasterTo(collegeMaster.getCollegesByStateId(stateId));
     }
 }

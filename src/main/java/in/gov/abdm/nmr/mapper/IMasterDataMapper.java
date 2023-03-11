@@ -16,15 +16,15 @@ public interface IMasterDataMapper {
     List<MasterDataTO> countriesToMasterDataTOs(List<CountryTO> countries);
 
     List<MasterDataTO> statesToMasterDataTOs(List<StateTO> states);
-    
+
     List<MasterDataTO> districtsToMasterDataTOs(List<DistrictTO> districts);
 
     List<MasterDataTO> subDistrictsToMasterDataTOs(List<SubDistrictTO> subDistricts);
-    
+
     List<MasterDataTO> citiesToMasterDataTOs(List<VillagesTO> cities);
 
     List<MasterDataTO> specialitiesToMasterDataTOs(List<BroadSpecialityTO> specialities);
-    
+
     List<MasterDataTO> universitiesToMasterDataTOs(List<UniversityTO> universities);
 
     List<MasterDataTO> collegesToMasterDataTOs(List<CollegeTO> colleges);
@@ -32,9 +32,13 @@ public interface IMasterDataMapper {
     List<MasterDataTO> languagesToMasterDataTOs(List<LanguageTO> languages);
 
     List<MasterDataTO> coursesToMasterDataTOs(List<CourseTO> courses);
-    
+
     List<MasterDataTO> registrationRenewationTypeDataTOs(List<RegistrationRenewationTypeTO> registrationRenewationType);
-    
+
     List<MasterDataTO> facilityTypeDataTOs(List<FacilityTypeTO> facilityType);
+
+    List<CollegeMasterResponseTo> collegeMasterResponseDataTo(List<CollegeMasterTo> collegeMaster);
+
+    List<UniversityMasterResponseTo> universityMasterResponseDataTo(List<UniversityMasterTo> universityMaster);
 
 }
