@@ -86,6 +86,7 @@ public final class HpPersonalDetailMapper {
         hpProfilePersonalResponseTO.setRequestId(hpProfile.getRequestId());
         hpProfilePersonalResponseTO.setApplicationTypeId(applicationTypeId);
         hpProfilePersonalResponseTO.setNmrId(hpProfile.getNmrId());
+        hpProfilePersonalResponseTO.setHpProfileStatusId(hpProfile.getHpProfileStatus().getId());
 
         return hpProfilePersonalResponseTO;
     }
