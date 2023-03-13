@@ -498,7 +498,7 @@ public class NMRConstants {
 
     public static final String REGISTRATION_NO_COLUMN = "registration_no";
 
-    public static final String USER_ALREADY_EXISTS_EXCEPTION = "Invalid Input. An user already Exists with the given credentials. ";
+    public static final String USER_ALREADY_EXISTS_EXCEPTION = "Your account already exists. Please login with your credentials! ";
 
     public static final String NO_MATCHING_WORK_PROFILE_DETAILS_FOUND = "No matching work profile details found for the given hp_profile_id";
 }
