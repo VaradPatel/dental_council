@@ -11,11 +11,12 @@ public class DashboardRequestParamsTO {
     private String userGroupStatus;
     private BigInteger userGroupId;
     private String smcId;
-    private String name;
-    private String registrationNo;
+    private String councilName;
+    private String registrationNumber;
     private String search;
     private String councilId;
     private String collegeId;
+    private String applicantFullName;
     private String sortBy;
     private String sortOrder;
 }

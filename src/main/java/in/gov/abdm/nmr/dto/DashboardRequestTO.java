@@ -14,7 +14,7 @@ public class DashboardRequestTO {
     private String search;
     private String value;
     private int pageNo;
-    private int size;
+    private int offset;
     private String sortBy;
     private String sortOrder;
 }

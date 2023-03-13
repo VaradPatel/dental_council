@@ -48,32 +48,36 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
     private static final Function<DashboardRequestParamsTO, String> DASHBOARD_PARAMETERS = dashboardRequestParamsTO -> {
         StringBuilder sb = new StringBuilder();
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getSearch()) && !dashboardRequestParamsTO.getSearch().isEmpty()) {
-            sb.append("AND ( rd.registration_no ILIKE '%").append(dashboardRequestParamsTO.getSearch()).append("%' OR stmc.name ILIKE '%").append(dashboardRequestParamsTO.getSearch()).append("%' OR hp.full_name ILIKE '%").append(dashboardRequestParamsTO.getSearch()).append("%') ");
-        }
-
-        if (Objects.nonNull(dashboardRequestParamsTO.getName()) && !dashboardRequestParamsTO.getName().isEmpty()) {
-            sb.append("AND stmc.name ILIKE '%").append(dashboardRequestParamsTO.getName()).append("%' ");
-        }
-
-        if (Objects.nonNull(dashboardRequestParamsTO.getRegistrationNo()) && !dashboardRequestParamsTO.getRegistrationNo().isEmpty()) {
-            sb.append("AND rd.registration_no ILIKE '%").append(dashboardRequestParamsTO.getRegistrationNo()).append("%' ");
-        }
-
-        if (Objects.nonNull(dashboardRequestParamsTO.getCouncilId()) && !dashboardRequestParamsTO.getCouncilId().isEmpty()) {
-            sb.append("AND rd.state_medical_council_id = ").append(dashboardRequestParamsTO.getCouncilId()).append(" ");
+        if (Objects.nonNull(dashboardRequestParamsTO.getWorkFlowStatusId()) && !dashboardRequestParamsTO.getWorkFlowStatusId().isEmpty()) {
+            sb.append("AND  work_flow_status_id = '").append(dashboardRequestParamsTO.getWorkFlowStatusId()).append("' ");
         }
 
         if (Objects.nonNull(dashboardRequestParamsTO.getCollegeId()) && !dashboardRequestParamsTO.getCollegeId().isEmpty()) {
             sb.append("AND qd.college_id = ").append(dashboardRequestParamsTO.getCollegeId()).append(" ");
         }
 
+        if (Objects.nonNull(dashboardRequestParamsTO.getSearch()) && !dashboardRequestParamsTO.getSearch().isEmpty()) {
+            sb.append("AND ( rd.registration_no ILIKE '%").append(dashboardRequestParamsTO.getSearch()).append("%' OR stmc.name ILIKE '%").append(dashboardRequestParamsTO.getSearch()).append("%' OR hp.full_name ILIKE '%").append(dashboardRequestParamsTO.getSearch()).append("%') ");
+        }
+
+        if (Objects.nonNull(dashboardRequestParamsTO.getCouncilName()) && !dashboardRequestParamsTO.getCouncilName().isEmpty()) {
+            sb.append("AND stmc.name ILIKE '%").append(dashboardRequestParamsTO.getCouncilName()).append("%' ");
+        }
+
         if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
             sb.append("AND rd.state_medical_council_id = ").append(dashboardRequestParamsTO.getSmcId()).append(" ");
         }
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getWorkFlowStatusId()) && !dashboardRequestParamsTO.getWorkFlowStatusId().isEmpty()) {
-            sb.append(" AND  work_flow_status_id = '").append(dashboardRequestParamsTO.getWorkFlowStatusId()).append("' ");
+        if (Objects.nonNull(dashboardRequestParamsTO.getRegistrationNumber()) && !dashboardRequestParamsTO.getRegistrationNumber().isEmpty()) {
+            sb.append("AND rd.registration_no ILIKE '%").append(dashboardRequestParamsTO.getRegistrationNumber()).append("%' ");
+        }
+
+        if (Objects.nonNull(dashboardRequestParamsTO.getApplicantFullName()) && !dashboardRequestParamsTO.getApplicantFullName().isEmpty()) {
+            sb.append("AND hp.full_name ILIKE '%").append(dashboardRequestParamsTO.getApplicantFullName()).append("%' ");
+        }
+
+        if (Objects.nonNull(dashboardRequestParamsTO.getCouncilId()) && !dashboardRequestParamsTO.getCouncilId().isEmpty()) {
+            sb.append("AND rd.state_medical_council_id = ").append(dashboardRequestParamsTO.getCouncilId()).append(" ");
         }
 
         if (Objects.nonNull(dashboardRequestParamsTO.getUserGroupId())) {

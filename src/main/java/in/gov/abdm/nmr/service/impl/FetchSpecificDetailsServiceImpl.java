@@ -167,7 +167,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
      */
     @Override
     public DashboardResponseTO fetchCardDetails(String workFlowStatusId, String applicationTypeId, String userGroupStatus,
-                                                String search, String value, int pageNo, int size,
+                                                String search, String value, int pageNo, int offset,
                                                 String sortBy, String sortOrder) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User userDetail = userDaoService.findByUsername(userName);
@@ -179,9 +179,11 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         if(StringUtils.isNotBlank(search)){
             if(value !=null && !value.isBlank()){
                 switch (search.toLowerCase()){
-                    case NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setName(value);
+                    case APPLICANT_FULL_NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setApplicantFullName(value);
                         break;
-                    case REGISTRATION_NUMBER_IN_LOWER_CASE: dashboardRequestParamsTO.setRegistrationNo(value);
+                    case COUNCIL_NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setCouncilName(value);
+                        break;
+                    case REGISTRATION_NUMBER_IN_LOWER_CASE: dashboardRequestParamsTO.setRegistrationNumber(value);
                         break;
                     case SMC_ID_IN_LOWER_CASE: {
                         if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
@@ -216,7 +218,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
 
         final String sortingOrder = (sortOrder == null || sortOrder.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
-        final int dataLimit = Math.min(MAX_DATA_SIZE, size);
+        final int dataLimit = Math.min(MAX_DATA_SIZE, offset);
         Pageable pageable = PageRequest.of(pageNo, dataLimit);
         return iFetchSpecificDetailsCustomRepository.fetchDashboardData(dashboardRequestParamsTO, pageable);
     }
@@ -244,9 +246,9 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                 switch (dashboardRequestTO.getSearch().toLowerCase()){
                     case COLLEGE_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setCollegeId(dashboardRequestTO.getValue());
                         break;
-                    case NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setName(dashboardRequestTO.getValue());
+                    case NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setCouncilName(dashboardRequestTO.getValue());
                         break;
-                    case REGISTRATION_NUMBER_IN_LOWER_CASE: dashboardRequestParamsTO.setRegistrationNo(dashboardRequestTO.getValue());
+                    case REGISTRATION_NUMBER_IN_LOWER_CASE: dashboardRequestParamsTO.setRegistrationNumber(dashboardRequestTO.getValue());
                         break;
                     case SMC_ID_IN_LOWER_CASE: {
                         if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
@@ -282,7 +284,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         }
         final String sortingOrder = (sortOrder == null || sortOrder.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
-        final int dataLimit = Math.min(MAX_DATA_SIZE, dashboardRequestTO.getSize());
+        final int dataLimit = Math.min(MAX_DATA_SIZE, dashboardRequestTO.getOffset());
         Pageable pageable = PageRequest.of(dashboardRequestTO.getPageNo(), dataLimit);
         return iFetchSpecificDetailsCustomRepository.fetchDashboardData(dashboardRequestParamsTO, pageable);
     }

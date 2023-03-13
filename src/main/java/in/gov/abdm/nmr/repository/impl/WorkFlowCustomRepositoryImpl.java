@@ -39,7 +39,13 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
             sb.append(" OR cast(r.start_date as varchar) LIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
             sb.append(" OR r.remarks ILIKE '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
             sb.append(" OR r.suspension_type ILIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
-            sb.append("  OR r.registration_id ILIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%') ");
+            sb.append(" OR r.registration_id ILIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%') ");
+        }
+        if (Objects.nonNull(reactivateHealthProfessionalQueryParam.getApplicantFullName()) && (!reactivateHealthProfessionalQueryParam.getApplicantFullName().isEmpty())) {
+            sb.append(" AND r.full_name ILIKE  '%" + reactivateHealthProfessionalQueryParam.getApplicantFullName() + "%'  ");
+        }
+        if (Objects.nonNull(reactivateHealthProfessionalQueryParam.getRegistrationNumber()) && (!reactivateHealthProfessionalQueryParam.getRegistrationNumber().isEmpty())) {
+            sb.append(" AND r.registration_id ILIKE  '%" + reactivateHealthProfessionalQueryParam.getRegistrationNumber() + "%' ");
         }
         return sb.toString();
     };
