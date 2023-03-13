@@ -6,9 +6,11 @@ import lombok.Data;
  * */
 @Data
 public class ReactivateHealthProfessionalRequestParam {
+    private String applicantFullName;
+    private String registrationNumber;
+    private String search;
     private Integer pageNo;
     private Integer offset;
-    private String search;
     private String sortBy;
     private String sortType;
 }

@@ -71,7 +71,7 @@ public class DashboardController {
      * @param applicationTypeId the application type ID to filter by
      * @param userGroupStatus   the user group status to filter by
      * @param pageNo            the page number to retrieve
-     * @param size              the number of results per page
+     * @param offset            the number of results per page
      * @param sortBy            the field to sort by
      * @param sortOrder         the sort order ("asc" or "desc")
      * @return a DashboardResponseTO object containing the retrieved data
@@ -85,11 +85,11 @@ public class DashboardController {
             @RequestParam(required = false, value = "search") String search,
             @RequestParam(required = false, value = "value") String value,
             @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
-            @RequestParam(required = false, value = "size", defaultValue = "2") int size,
+            @RequestParam(required = false, value = "offset", defaultValue = "2") int offset,
             @RequestParam(required = false, value = "sortBy") String sortBy,
             @RequestParam(required = false, value = "sortOrder") String sortOrder) throws InvalidRequestException {
         return iFetchSpecificDetailsService.fetchCardDetails(workFlowStatusId, applicationTypeId,
-                userGroupStatus, search, value, pageNo, size, sortBy, sortOrder);
+                userGroupStatus, search, value, pageNo, offset, sortBy, sortOrder);
     }
 
 }

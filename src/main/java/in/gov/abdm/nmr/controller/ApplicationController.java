@@ -95,7 +95,8 @@ public class ApplicationController {
      * raised a request
      */
     @GetMapping(PATH_HEALTH_PROFESSIONAL_APPLICATIONS)
-    public HealthProfessionalApplicationResponseTo trackApplicationDetails(@PathVariable("healthProfessionalId") BigInteger healthProfessionalId, @RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
+    public HealthProfessionalApplicationResponseTo trackApplicationDetails(@PathVariable("healthProfessionalId") BigInteger healthProfessionalId,
+                                                                           @RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
                                                                            @RequestParam(required = false, value = "offset", defaultValue = "2") String offset,
                                                                            @RequestParam(required = false, value = "sortBy") String sortBy,
                                                                            @RequestParam(required = false, value = "sortType") String sortType,
@@ -123,8 +124,8 @@ public class ApplicationController {
                                                                       @RequestParam(required = false, value = "search") String search,
                                                                       @RequestParam(required = false, value = "value") String value,
                                                                       @RequestParam(required = false, value = "smcId") String smcId,
-                                                                      @RequestParam(required = false, value = "registrationNo") String registrationNo) throws InvalidRequestException {
-        return applicationService.fetchApplicationDetails(pageNo, offset, sortBy, sortType, search, value, smcId, registrationNo);
+                                                                      @RequestParam(required = false, value = "registrationNo") String registrationNumber) throws InvalidRequestException {
+        return applicationService.fetchApplicationDetails(pageNo, offset, sortBy, sortType, search, value, smcId, registrationNumber);
     }
 
     /**
