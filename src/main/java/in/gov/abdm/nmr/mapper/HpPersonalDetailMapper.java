@@ -30,7 +30,7 @@ public final class HpPersonalDetailMapper {
         personalDetailsTO.setFullName(hpProfile.getFullName());
         personalDetailsTO.setMotherName(hpProfile.getMotherName());
         personalDetailsTO.setSalutation(hpProfile.getSalutation());
-        personalDetailsTO.setSchedule(ScheduleTO.builder().id(hpProfile.getSchedule().getId()).name(hpProfile.getSchedule().getName()).build());
+//        personalDetailsTO.setSchedule(ScheduleTO.builder().id(hpProfile.getSchedule().getId()).name(hpProfile.getSchedule().getName()).build());
 
         addressTO.setAddressLine1(address.getAddressLine1());
         addressTO.setCountry(CountryTO.builder().id(address.getCountry().getId()).name(address.getCountry().getName()).nationality(address.getCountry().getNationality()).build());
@@ -86,6 +86,7 @@ public final class HpPersonalDetailMapper {
         hpProfilePersonalResponseTO.setRequestId(hpProfile.getRequestId());
         hpProfilePersonalResponseTO.setApplicationTypeId(applicationTypeId);
         hpProfilePersonalResponseTO.setNmrId(hpProfile.getNmrId());
+        hpProfilePersonalResponseTO.setHpProfileStatusId(hpProfile.getHpProfileStatus().getId());
 
         return hpProfilePersonalResponseTO;
     }

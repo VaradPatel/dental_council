@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static in.gov.abdm.nmr.util.NMRConstants.NO_MATCHING_REGISTRATION_DETAILS_FOUND;
@@ -299,20 +300,21 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         if (hpProfile != null) {
 
+            List<FuzzyParameter> fuzzyParameters =  new ArrayList<>();
             double nameMatch = getFuzzyScore(hpProfile.getFullName(), userKycTo.getName());
+            boolean isNameMatching = nameMatch > NMRConstants.FUZZY_MATCH_LIMIT;
+            fuzzyParameters.add(new FuzzyParameter(NMRConstants.FUZZY_PARAMETER_NAME,hpProfile.getFullName(),userKycTo.getName(),isNameMatching ? NMRConstants.SUCCESS_RESPONSE : NMRConstants.FAILURE_RESPONSE));
 
             double genderMatch = getFuzzyScore(hpProfile.getGender(), userKycTo.getGender());
+            boolean isGenderMatching = genderMatch > NMRConstants.FUZZY_MATCH_LIMIT;
+            fuzzyParameters.add(new FuzzyParameter(NMRConstants.FUZZY_PARAMETER_GENDER,hpProfile.getGender(),userKycTo.getGender(),isGenderMatching ? NMRConstants.SUCCESS_RESPONSE : NMRConstants.FAILURE_RESPONSE));
 
-            double dobMatch;
             SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd");
+            boolean isDobMatching = (s.format(hpProfile.getDateOfBirth()).compareTo(s.format(userKycTo.getBirthDate()))) == 0 ;
+            fuzzyParameters.add(new FuzzyParameter(NMRConstants.FUZZY_PARAMETER_DOB,hpProfile.getDateOfBirth().toString(),userKycTo.getBirthDate().toString(),isDobMatching ? NMRConstants.SUCCESS_RESPONSE : NMRConstants.FAILURE_RESPONSE));
 
-            if ((s.format(hpProfile.getDateOfBirth()).compareTo(s.format(userKycTo.getBirthDate()))) == 0) {
-                dobMatch = 100;
-            } else {
-                dobMatch = 0;
-            }
 
-            if (nameMatch > NMRConstants.FUZZY_MATCH_LIMIT && dobMatch > NMRConstants.FUZZY_MATCH_LIMIT && genderMatch > NMRConstants.FUZZY_MATCH_LIMIT) {
+            if (isNameMatching && isDobMatching && isGenderMatching) {
 
                 userKycTo.setHpProfileId(hpProfile.getId());
                 userKycRepository.save(userKycDtoMapper.userKycToToUserKyc(userKycTo));
@@ -335,12 +337,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 address.setCountry(stateRepository.findByName(userKycTo.getState().toUpperCase()).getCountry());
                 iAddressRepository.save(address);
 
-                return new KycResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
+                return new KycResponseMessageTo(fuzzyParameters,NMRConstants.SUCCESS_RESPONSE);
             } else {
-                return new KycResponseMessageTo(NMRConstants.FAILURE_RESPONSE);
+                return new KycResponseMessageTo(fuzzyParameters,NMRConstants.FAILURE_RESPONSE);
             }
         } else {
-            return new KycResponseMessageTo(NMRConstants.USER_NOT_FOUND);
+            return new KycResponseMessageTo(Collections.emptyList(),NMRConstants.USER_NOT_FOUND);
         }
     }
 

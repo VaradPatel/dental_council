@@ -58,10 +58,28 @@ public class NMRConstants {
     public static final String NOTIFICATION_SERVICE = "notification";
     public static final String FACILITY_SERVICE = "facility";
     public static final String NOTIFICATION_DB_SERVICE = "notification-db";
+
+    public static final String LGD_DB_SERVICE = "lgd-db";
     public static final String AADHAAR_SERVICE = "aadhaar";
     public static final String CLOSED_STATUS = "closed";
     public static final String OPEN_STATUS = "open";
     public static final String GLOBAL_NOTIFICATION_ENDPOINT = "${global.notification.endpoint}";
+
+    public static final String GLOBAL_LGD_ENDPOINT = "${global.lgd.endpoint}";
+
+    public static final String LGD_API_VERSION = "/internal/v3/abdm";
+
+    public static final String LGD = "/lgd";
+
+    public static final String LGD_SEARCH_URL = LGD + "/search";
+
+    public static final String LGD_FEIGN_SEARCH_URL = LGD_API_VERSION + LGD_SEARCH_URL;
+
+    public static final String PIN_CODE="pinCode";
+    public static final String STATE_CODE="stateCode";
+    public static final String DISTRICT_CODE="districtCode";
+
+    public static final String VIEW="view";
     public static final String GLOBAL_AADHAAR_ENDPOINT = "${global.aadhaar.endpoint}";
     public static final String GLOBAL_FACILITY_ENDPOINT = "${global.facility.endpoint}";
     public static final String OTP_GENERATION_EXCEEDED = "OTP Generation Attempts Exceeded";
@@ -227,18 +245,21 @@ public class NMRConstants {
 
 
     public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_SMC = """
-            SELECT ws.name as name, COUNT(w) as count 
-            FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
-            JOIN registration_details rd ON w.request_id=rd.request_id 
-            WHERE rd.state_medical_council_id=:""" + SMC_PROFILE_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
-             \s AND w.action_id IN ( 3,5 ) ) 
-            OR (w.previous_group_id = 4 AND w.action_id = 4 ) GROUP BY ws.name 
-            UNION 
-            SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
-            JOIN registration_details rd ON wa.request_id=rd.request_id 
-            WHERE rd.state_medical_council_id=:""" + SMC_PROFILE_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """ 
-             \s AND wa.action_id = 4 
-            GROUP BY name """;
+        SELECT ws.name as name, COUNT(w) as count 
+        FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
+        JOIN registration_details rd ON w.hp_profile_id=rd.hp_profile_id 
+        WHERE rd.state_medical_council_id=:""" + SMC_PROFILE_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.current_group_id = :" + GROUP_ID + " OR ( w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.previous_group_id = :" + GROUP_ID + """ 
+         \s AND w.action_id IN ( 3,5 ) ) 
+        OR (w.application_type_id =:""" + APPLICATION_TYPE_ID + """
+         AND w.previous_group_id = 4 AND w.action_id = 4 ) GROUP BY ws.name 
+        UNION 
+        SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
+        JOIN registration_details rd ON wa.hp_profile_id=rd.hp_profile_id 
+        WHERE rd.state_medical_council_id=:""" + SMC_PROFILE_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """
+         \s AND wa.action_id = 4 
+        GROUP BY name """;
+
+
 
     public static final String FETCH_DETAILS_FOR_LISTING_QUERY = "SELECT rd.registration_no as registrationNo, hp.full_name as nameOfApplicant, smc.name as nameOfStateCouncil, rd.registration_date as dateOfSubmission, g.name as groupName, ws.name as workFlowStatus " +
             "FROM work_flow w JOIN registration_details rd ON w.hp_profile_id=rd.hp_profile_id " +
@@ -394,6 +415,7 @@ public class NMRConstants {
     public static final String INPUT_VALIDATION_ERROR_CODE = "ABDM-NMR-400";
     public static final String INPUT_VALIDATION_INTERNAL_ERROR_CODE = "ABDM-NMR-401";
     public static final String INVALID_INPUT_ERROR_MSG = "Invalid input";
+    public static final String INVALID_PINCODE = "pincode should be of max 6 digit";
 
     public static final String FETCH_WORK_PROFILE_RECORDS_BY_HP_ID = """
             SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id, 
@@ -455,6 +477,11 @@ public class NMRConstants {
 
     public static final String NO_MATCHING_REGISTRATION_DETAILS_FOUND = "No matching registration details found for the given hp_profile_id";
     public static final double FUZZY_MATCH_LIMIT = 80;
+    public static final String FUZZY_PARAMETER_NAME = "Name";
+    public static final String FUZZY_PARAMETER_GENDER = "Gender";
+    public static final String FUZZY_PARAMETER_DOB = "DOB";
+
+
 
     public static final String NO_MATCHING_WORK_PROFILE_DETAILS_FOUND = "No matching work profile details found for the given hp_profile_id";
 }

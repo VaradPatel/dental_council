@@ -1,20 +1,20 @@
 package in.gov.abdm.nmr.dto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.math.BigInteger;
 
-/**
- * Response TO for reset password
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class KycResponseMessageTo {
+public class CollegeMasterResponseTo {
+    private BigInteger id;
+    private BigInteger collegeId;
+    private String name;
+    private BigInteger stateId;
 
-    List<FuzzyParameter> fuzzyParameters;
-    String kycFuzzyMatchStatus;
 }
