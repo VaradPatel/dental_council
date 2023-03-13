@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface IUniversityMasterService {
     List<UniversityMasterTo> getUniversitiesByCollegeId(BigInteger collegeId);
+
+    List<UniversityMasterTo> getUniversitiesByState(BigInteger stateId);
 }
