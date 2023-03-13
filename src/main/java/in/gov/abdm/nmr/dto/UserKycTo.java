@@ -37,4 +37,5 @@ public class UserKycTo {
 	private String address;
 	private Timestamp createdAt;
 	private Timestamp updatedAt;
+	private String registrationNo;
 }

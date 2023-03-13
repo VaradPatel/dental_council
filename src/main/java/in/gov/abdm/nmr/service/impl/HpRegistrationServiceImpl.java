@@ -294,9 +294,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         return hpProfileRegistrationResponseTO;
     }
 
-    public KycResponseMessageTo saveUserKycDetails(long registrationNumber, UserKycTo userKycTo) {
+    public KycResponseMessageTo saveUserKycDetails(String registrationNumber, UserKycTo userKycTo) {
 
-        HpProfile hpProfile = iHpProfileRepository.findLatestHpProfileByRegistrationId(String.valueOf(registrationNumber));
+        HpProfile hpProfile = iHpProfileRepository.findLatestHpProfileByRegistrationId(registrationNumber);
 
         if (hpProfile != null) {
 
@@ -317,6 +317,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             if (isNameMatching && isDobMatching && isGenderMatching) {
 
                 userKycTo.setHpProfileId(hpProfile.getId());
+                userKycTo.setRegistrationNo(registrationNumber);
                 userKycRepository.save(userKycDtoMapper.userKycToToUserKyc(userKycTo));
 
                 Address address = new Address();

@@ -38,4 +38,5 @@ public class UserKyc extends CommonAuditEntity {
 	private String state;
 	private String postOffice;
 	private String address;
+	private String registrationNo;
 }
