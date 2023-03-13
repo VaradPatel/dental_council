@@ -12,7 +12,7 @@ public class HealthProfessionalApplicationRequestParamsTo {
     private String applicationTypeId;
     private String applicantFullName;
     private int pageNo;
-    private int size;
+    private int offset;
     private String sortBy;
     private String sortOrder;
     private BigInteger hpProfileId;

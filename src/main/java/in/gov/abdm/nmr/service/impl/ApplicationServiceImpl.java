@@ -342,7 +342,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String search, String value, String smcId, String registrationNo) throws InvalidRequestException {
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, search, value,smcId,registrationNo, null);
-        Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getSize());
+        Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getOffset());
         return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable, Collections.emptyList());
     }
 
@@ -376,7 +376,7 @@ public class ApplicationServiceImpl implements IApplicationService {
             applicationRequestParamsTo.setRegistrationNumber(registrationNo);
         }
         final int dataLimit = Math.min(MAX_DATA_SIZE, Integer.parseInt(offset));
-        applicationRequestParamsTo.setSize(dataLimit);
+        applicationRequestParamsTo.setOffset(dataLimit);
         applicationRequestParamsTo.setPageNo(Integer.parseInt(pageNo));
         final String sortingOrder = (sortType == null || sortType.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortType;
         String column = mapColumnToTable(sortBy);
@@ -403,7 +403,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(healthProfessionalId);
         List<BigInteger> hpProfileIds = iRegistrationDetailRepository.fetchHpProfileIdByRegistrationNumber(registrationDetails.getRegistrationNo());
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, search, value,null,null, healthProfessionalId);
-        Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getSize());
+        Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getOffset());
         return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable,hpProfileIds);
     }
 
