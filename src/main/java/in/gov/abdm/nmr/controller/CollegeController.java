@@ -139,22 +139,22 @@ public class CollegeController {
      * for the NMC that has been submitted for approval
      *
      * @param pageNo
-     * @param limit
+     * @param offset
      * @param search
      * @param value
-     * @param columnToSort
-     * @param sortOrder
+     * @param sortBy
+     * @param sortType
      * @return the CollegeRegistrationResponseTO  response Object
      * which contains all the details related to the College submitted to NMC
      * for approval.
      */
     @GetMapping(path = NMRConstants.PATH_COLLEGE_APPLICATIONS)
     public CollegeRegistrationResponseTO getCollegeRegistrationDetails(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
-                                                                       @RequestParam(required = false, value = "limit", defaultValue = "2") String limit,
+                                                                       @RequestParam(required = false, value = "offset", defaultValue = "2") String offset,
                                                                        @RequestParam(required = false, value = "search") String search,
                                                                        @RequestParam(required = false, value = "value") String value,
-                                                                       @RequestParam(required = false, value = "sort") String columnToSort,
-                                                                       @RequestParam(required = false, value = "sortingOrder") String sortOrder) throws InvalidRequestException {
-        return collegeService.getCollegeRegistrationDetails(pageNo, limit, search, value, columnToSort, sortOrder);
+                                                                       @RequestParam(required = false, value = "sortBy") String sortBy,
+                                                                       @RequestParam(required = false, value = "sortType") String sortType) throws InvalidRequestException {
+        return collegeService.getCollegeRegistrationDetails(pageNo, offset, search, value, sortBy, sortType);
     }
 }

@@ -188,9 +188,13 @@ public class ApplicationServiceImpl implements IApplicationService {
         reactivateHealthProfessionalQueryParam.setPageNo(Integer.parseInt(pageNo));
         final int dataLimit = Math.min(MAX_DATA_SIZE, Integer.parseInt(offset));
         reactivateHealthProfessionalQueryParam.setOffset(dataLimit);
-        if(search!=null){
+        if(StringUtils.isNotBlank(search)){
             if(value !=null && !value.isBlank()){
                 switch (search.toLowerCase()){
+                    case APPLICANT_FULL_NAME_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setApplicantFullName(value);
+                        break;
+                    case REGISTRATION_NUMBER_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setRegistrationNumber(value);
+                        break;
                     case SEARCH_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setSearch(value);
                         break;
                     default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE);
