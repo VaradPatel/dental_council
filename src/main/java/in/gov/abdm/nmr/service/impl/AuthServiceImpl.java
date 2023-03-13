@@ -4,6 +4,8 @@ import in.gov.abdm.nmr.client.GatewayFClient;
 import in.gov.abdm.nmr.dto.LoginResponseTO;
 import in.gov.abdm.nmr.dto.SessionRequestTo;
 import in.gov.abdm.nmr.dto.SessionResponseTo;
+import in.gov.abdm.nmr.entity.CollegeDean;
+import in.gov.abdm.nmr.entity.CollegeRegistrar;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
@@ -93,10 +95,14 @@ public class AuthServiceImpl implements IAuthService {
                 loginResponseTO.setProfileId(collegeDaoService.findByUserId(user.getId()).getId());
 
             } else if (UserSubTypeEnum.COLLEGE_DEAN.getCode().equals(user.getUserSubType().getId())) {
-                loginResponseTO.setProfileId(collegeDeanDaoService.findByUserId(user.getId()).getId());
+                CollegeDean collegeDean = collegeDeanDaoService.findByUserId(user.getId());
+                loginResponseTO.setProfileId(collegeDean.getId());
+                loginResponseTO.setParentProfileId(collegeDean.getCollege().getId());
 
             } else if (UserSubTypeEnum.COLLEGE_REGISTRAR.getCode().equals(user.getUserSubType().getId())) {
-                loginResponseTO.setProfileId(collegeRegistrarDaoService.findByUserId(user.getId()).getId());
+                CollegeRegistrar collegeRegistrar = collegeRegistrarDaoService.findByUserId(user.getId());
+                loginResponseTO.setProfileId(collegeRegistrar.getId());
+                loginResponseTO.setParentProfileId(collegeRegistrar.getCollege().getId());
 
             }
 
