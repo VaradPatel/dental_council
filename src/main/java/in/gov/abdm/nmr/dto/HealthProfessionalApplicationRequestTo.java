@@ -9,7 +9,7 @@ public class HealthProfessionalApplicationRequestTo {
     private String workFlowStatusId;
     private String applicationTypeId;
     private int pageNo;
-    private int size;
+    private int offset;
     private String sortBy;
     private String sortOrder;
 }

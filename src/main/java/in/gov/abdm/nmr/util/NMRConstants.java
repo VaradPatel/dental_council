@@ -386,6 +386,9 @@ public class NMRConstants {
 
     public static final String WORK_FLOW_STATUS_IN_LOWER_CASE = "workflowstatus";
 
+    public static final String WORK_FLOW_STATUS_ID_IN_LOWER_CASE = "workflowstatusid";
+
+    public static final String APPLICANT_FULL_NAME_IN_LOWER_CASE = "applicantfullname";
 
 
     public static  final String REACTIVATION_RECORDS= """
