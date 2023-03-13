@@ -484,7 +484,21 @@ public class NMRConstants {
     public static final String FUZZY_PARAMETER_GENDER = "Gender";
     public static final String FUZZY_PARAMETER_DOB = "DOB";
 
+    public static final String USER_ID_COLUMN ="user_id";
 
+    public static final String PRIMARY_CONTACT_NO_COLUMN ="primary_contact_no";
+
+    public static final String EMAIL_ID_COLUMN ="email_id";
+
+    public static final String FULL_NAME_COLUMN ="full_name";
+
+    public static final String NAME_COLUMN ="name";
+
+    public static final String HP_PROFILE_ID_COLUMN ="hp_profile_id";
+
+    public static final String REGISTRATION_NO_COLUMN = "registration_no";
+
+    public static final String USER_ALREADY_EXISTS_EXCEPTION = "Your account already exists. Please login with your credentials! ";
 
     public static final String NO_MATCHING_WORK_PROFILE_DETAILS_FOUND = "No matching work profile details found for the given hp_profile_id";
 }

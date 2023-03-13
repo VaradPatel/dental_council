@@ -1,11 +1,10 @@
 package in.gov.abdm.nmr.repository;
 
-import java.math.BigInteger;
-
+import in.gov.abdm.nmr.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import in.gov.abdm.nmr.entity.User;
+import java.math.BigInteger;
 
 public interface IUserRepository extends JpaRepository<User, BigInteger> {
 
@@ -13,4 +12,9 @@ public interface IUserRepository extends JpaRepository<User, BigInteger> {
             SELECT * FROM {h-schema}user usr WHERE usr.email = :username OR usr.mobile_number = :username
             OR usr.hpr_id = :username or usr.nmr_id= :username""", nativeQuery = true)
     User findByUsername(String username);
+
+    User findFirstByEmail(String email);
+
+    User findFirstByMobileNumber(String mobileNumber);
+
 }

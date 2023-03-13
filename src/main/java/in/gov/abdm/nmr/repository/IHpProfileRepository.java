@@ -24,10 +24,10 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
     Tuple fetchSmcRegistrationDetail1(BigInteger registrationNo, Integer councilId);
 
     @Query(value = """
-            select hp.id hp_profile_id, rd.registration_no , smc."name",hp.full_name,smc.id ,hp.email_id from main.hp_profile hp 
-            inner join main.registration_details rd  on rd.hp_profile_id  = hp.id
-            INNER JOIN main.state_medical_council smc ON smc.id = rd.state_medical_council_id
-            where rd.registration_no = :registrationNo and smc.id =:councilId order by rd.hp_profile_id desc limit 1""", nativeQuery = true)
+            select hp.id hp_profile_id, hp.user_id, hp.primary_contact_no, rd.registration_no, smc."name", hp.full_name, smc.id, hp.email_id from main.hp_profile hp 
+            inner join main.registration_details rd ON rd.hp_profile_id  = hp.id 
+            INNER JOIN main.state_medical_council smc ON smc.id = rd.state_medical_council_id 
+            where rd.registration_no = :registrationNo and smc.id =:councilId order by rd.hp_profile_id desc limit 1 """, nativeQuery = true)
     Tuple fetchSmcRegistrationDetail(String registrationNo, Integer councilId);
 
     @Query(value = "select registration_details.id as registration_id, hp_profile.request_id, registration_details.hp_profile_id, full_name, nmr_id, year_of_info,transaction_id, e_sign_status ,registration_no, registration_date,"
