@@ -14,7 +14,7 @@ import java.util.List;
 
 public interface IHpProfileDaoService {
 
-	HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId,String registrationNumber);
+	HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId,String registrationNumber) throws NmrException;
 
 	HpProfileUpdateResponseTO updateHpPersonalDetails(BigInteger hpProfileId,
 			HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException;
