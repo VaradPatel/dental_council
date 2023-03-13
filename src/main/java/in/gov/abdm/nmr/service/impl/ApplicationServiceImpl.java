@@ -16,6 +16,7 @@ import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -348,12 +349,18 @@ public class ApplicationServiceImpl implements IApplicationService {
     private HealthProfessionalApplicationRequestParamsTo setHPRequestParamInToObject(String pageNo, String offset, String sortBy, String sortType, String search, String value,String smcId, String registrationNo, BigInteger hpProfileId) throws InvalidRequestException {
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = new HealthProfessionalApplicationRequestParamsTo();
 
-        if(search !=null ){
+        if(StringUtils.isNotBlank(search)){
             if(value !=null && !value.isBlank()){
                 switch (search.toLowerCase()){
-                    case REGISTRATION_NUMBER_IN_LOWER_CASE: applicationRequestParamsTo.setRegistrationNo(value);
+                    case WORK_FLOW_STATUS_ID_IN_LOWER_CASE: applicationRequestParamsTo.setWorkFlowStatusId(value);
+                        break;
+                    case APPLICATION_TYPE_ID_IN_LOWER_CASE: applicationRequestParamsTo.setApplicationTypeId(value);
+                        break;
+                    case REGISTRATION_NUMBER_IN_LOWER_CASE: applicationRequestParamsTo.setRegistrationNumber(value);
                         break;
                     case SMC_ID_IN_LOWER_CASE: applicationRequestParamsTo.setSmcId(value);
+                        break;
+                    case APPLICANT_FULL_NAME_IN_LOWER_CASE: applicationRequestParamsTo.setApplicantFullName(value);
                         break;
                     default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION);
                 }
@@ -366,7 +373,7 @@ public class ApplicationServiceImpl implements IApplicationService {
             applicationRequestParamsTo.setSmcId(smcId);
         }
         if(Objects.nonNull(registrationNo)){
-            applicationRequestParamsTo.setRegistrationNo(registrationNo);
+            applicationRequestParamsTo.setRegistrationNumber(registrationNo);
         }
         final int dataLimit = Math.min(MAX_DATA_SIZE, Integer.parseInt(offset));
         applicationRequestParamsTo.setSize(dataLimit);

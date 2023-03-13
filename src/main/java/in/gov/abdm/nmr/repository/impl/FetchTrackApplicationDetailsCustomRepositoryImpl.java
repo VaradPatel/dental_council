@@ -3,7 +3,6 @@ package in.gov.abdm.nmr.repository.impl;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestParamsTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationTo;
-import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -53,8 +52,8 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             sb.append("AND calculate.application_type_id IN (").append(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId()).append(") ");
         }
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getRegistrationNo()) && !healthProfessionalApplicationRequestParamsTo.getRegistrationNo().isEmpty()) {
-            sb.append("AND rd.registration_no ILIKE '%").append(healthProfessionalApplicationRequestParamsTo.getRegistrationNo()).append("%' ");
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getRegistrationNumber()) && !healthProfessionalApplicationRequestParamsTo.getRegistrationNumber().isEmpty()) {
+            sb.append("AND rd.registration_no ILIKE '%").append(healthProfessionalApplicationRequestParamsTo.getRegistrationNumber()).append("%' ");
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getSmcId()) && !healthProfessionalApplicationRequestParamsTo.getSmcId().isEmpty()) {
@@ -62,7 +61,11 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId()) && !healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId().isEmpty()) {
-            sb.append("AND  work_flow_status_id = '").append(healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId()).append("' ");
+            sb.append("AND work_flow_status_id = '").append(healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId()).append("' ");
+        }
+
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getApplicantFullName()) && !healthProfessionalApplicationRequestParamsTo.getApplicantFullName().isEmpty()) {
+            sb.append("AND hp.full_name ILIKE '%").append(healthProfessionalApplicationRequestParamsTo.getApplicantFullName()).append("%' ");
         }
 
         return sb.toString();
@@ -76,10 +79,9 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      */
     private static final Function<HealthProfessionalApplicationRequestParamsTo, String> SORT_RECORDS = healthProfessionalApplicationRequestParamsTo -> {
         StringBuilder sb = new StringBuilder();
-        sb.append("  ");
-        sb.append("ORDER BY  ");
+        sb.append("ORDER BY ");
         sb.append(healthProfessionalApplicationRequestParamsTo.getSortBy());
-        sb.append("  ");
+        sb.append(" ");
         sb.append(healthProfessionalApplicationRequestParamsTo.getSortOrder());
         return sb.toString();
     };
@@ -106,7 +108,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
                     hpIds.append(hpProfile).append(",");
                 }
             });
-            sb.append("AND rd.hp_profile_id IN (").append(hpIds).append(")");
+            sb.append("AND rd.hp_profile_id IN (").append(hpIds).append(") ");
         }
 
         String parameters = TRACK_APPLICATION_PARAMETERS.apply(healthProfessionalApplicationRequestParamsTo);
@@ -162,7 +164,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
                     hpIds.append(hpProfile).append(",");
                 }
             });
-            sb.append("AND rd.hp_profile_id IN  (").append(hpIds).append(")");
+            sb.append("AND rd.hp_profile_id IN  (").append(hpIds).append(") ");
         }
 
         String parameters = TRACK_APPLICATION_PARAMETERS.apply(healthProfessionalApplicationRequestParamsTo);
