@@ -32,21 +32,23 @@ public final class HpPersonalDetailMapper {
         personalDetailsTO.setSalutation(hpProfile.getSalutation());
 //        personalDetailsTO.setSchedule(ScheduleTO.builder().id(hpProfile.getSchedule().getId()).name(hpProfile.getSchedule().getName()).build());
 
-        addressTO.setAddressLine1(address.getAddressLine1());
-        addressTO.setCountry(CountryTO.builder().id(address.getCountry().getId()).name(address.getCountry().getName()).nationality(address.getCountry().getNationality()).build());
-        addressTO.setDistrict(DistrictTO.builder().id(address.getDistrict().getId()).name(address.getDistrict().getName()).isoCode(address.getDistrict().getIsoCode()).build());
-        addressTO.setSubDistrict(SubDistrictTO.builder().id(address.getSubDistrict().getId()).name(address.getSubDistrict().getName()).isoCode(address.getSubDistrict().getIsoCode()).build());
-        addressTO.setState(StateTO.builder().id(address.getState().getId()).name(address.getState().getName()).build());
-        addressTO.setVillage(VillagesTO.builder().id(address.getVillage().getId()).name(address.getVillage().getName()).build());
-        addressTO.setEmail(address.getEmail());
-        addressTO.setMobile(hpProfile.getMobileNumber());
-        addressTO.setId(address.getId());
-        addressTO.setPincode(address.getPincode());
-        addressTO.setHouse(address.getHouse());
-        addressTO.setStreet(address.getStreet());
-        addressTO.setLocality(address.getLocality());
-        addressTO.setLandmark(address.getLandmark());
-        addressTO.setIsSameAddress(hpProfile.getIsSameAddress());
+        if (address != null) {
+            addressTO.setAddressLine1(address.getAddressLine1());
+            addressTO.setCountry(CountryTO.builder().id(address.getCountry().getId()).name(address.getCountry().getName()).nationality(address.getCountry().getNationality()).build());
+            addressTO.setDistrict(DistrictTO.builder().id(address.getDistrict().getId()).name(address.getDistrict().getName()).isoCode(address.getDistrict().getIsoCode()).build());
+            addressTO.setSubDistrict(SubDistrictTO.builder().id(address.getSubDistrict().getId()).name(address.getSubDistrict().getName()).isoCode(address.getSubDistrict().getIsoCode()).build());
+            addressTO.setState(StateTO.builder().id(address.getState().getId()).name(address.getState().getName()).build());
+            addressTO.setVillage(VillagesTO.builder().id(address.getVillage().getId()).name(address.getVillage().getName()).build());
+            addressTO.setEmail(address.getEmail());
+            addressTO.setMobile(hpProfile.getMobileNumber());
+            addressTO.setId(address.getId());
+            addressTO.setPincode(address.getPincode());
+            addressTO.setHouse(address.getHouse());
+            addressTO.setStreet(address.getStreet());
+            addressTO.setLocality(address.getLocality());
+            addressTO.setLandmark(address.getLandmark());
+            addressTO.setIsSameAddress(hpProfile.getIsSameAddress());
+        }
 
         if (kycAddress != null) {
             kycAddressTo.setAddressLine1(kycAddress.getAddressLine1());
