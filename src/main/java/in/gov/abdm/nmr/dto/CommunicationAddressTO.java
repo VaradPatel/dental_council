@@ -20,9 +20,6 @@ public class CommunicationAddressTO {
     private StateTO state;
     private DistrictTO district;
 
-
-    @Valid
-    @NotNull(message = NOT_NULL_ERROR_MSG)
     private VillagesTO village;
     private SubDistrictTO subDistrict;
 
