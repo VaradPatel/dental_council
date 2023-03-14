@@ -206,7 +206,7 @@ public class NMRConstants {
     public static final String FETCH_STATUS_WISE_COUNT_QUERY = """
             SELECT ws.name as name, COUNT(w) as count
             FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id
-            WHERE w.application_type_id = :""" + APPLICATION_TYPE_ID + " AND w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
+            WHERE w.application_type_id = :""" + APPLICATION_TYPE_ID + " AND w.current_group_id = :" + GROUP_ID + " OR ( w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.previous_group_id = :" + GROUP_ID + """ 
              \s AND w.action_id IN ( 3,5 ) )
             GROUP BY ws.name
             UNION
