@@ -119,7 +119,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             if(hpProfile.get(USER_ID_COLUMN,BigInteger.class) != null) {
                 throw new NmrException(USER_ALREADY_EXISTS_EXCEPTION, HttpStatus.BAD_REQUEST);
             }
-            else {
+            /*else {
                 String primaryContactNo = hpProfile.get(PRIMARY_CONTACT_NO_COLUMN, String.class);
                 if(primaryContactNo != null && iUserRepository.findFirstByMobileNumber(primaryContactNo) != null){
                     throw new NmrException(USER_ALREADY_EXISTS_EXCEPTION, HttpStatus.BAD_REQUEST);
@@ -128,7 +128,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 if(email != null && iUserRepository.findFirstByEmail(email) != null){
                     throw new NmrException(USER_ALREADY_EXISTS_EXCEPTION, HttpStatus.BAD_REQUEST);
                 }
-            }
+            }*/
 
             hpSmcDetailTO.setHpName(hpProfile.get(FULL_NAME_COLUMN, String.class));
             hpSmcDetailTO.setCouncilName(hpProfile.get(NAME_COLUMN, String.class));
