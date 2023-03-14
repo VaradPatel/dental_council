@@ -150,14 +150,15 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         BigInteger updatedHpProfileId = null;
         if (existingHpProfile == null || HpProfileStatus.APPROVED.getId().equals(existingHpProfile.getHpProfileStatus().getId())) {
 
+            String registrationId = null;
             if (existingHpProfile != null) {
                 HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileByRegistrationId(existingHpProfile.getRegistrationId());
                 if (HpProfileStatus.PENDING.getId().equals(latestHpProfile.getHpProfileStatus().getId())) {
                     throw new InvalidRequestException("Please use the latest ongoing HP Profile id for updation.");
                 }
+                registrationId = existingHpProfile.getRegistrationId();
             }
 
-            String registrationId = existingHpProfile.getRegistrationId();
             existingHpProfile = new HpProfile();
             existingHpProfile.setRegistrationId(registrationId);
 
