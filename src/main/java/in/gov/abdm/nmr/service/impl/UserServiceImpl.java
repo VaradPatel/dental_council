@@ -112,7 +112,9 @@ public class UserServiceImpl implements IUserService {
                 List<HpProfile> hpProfiles= new ArrayList<>();
                 hpProfileList.forEach(hpProfile -> {
                     hpProfile.setUser(userDetail);
-                    hpProfile.setMobileNumber(createHpUserAccountTo.getMobile());
+                    if(createHpUserAccountTo.getMobile() != null) {
+                        hpProfile.setMobileNumber(createHpUserAccountTo.getMobile());
+                    }
                     hpProfiles.add(hpProfile);
                 });
                 hpProfileRepository.saveAll(hpProfiles);
