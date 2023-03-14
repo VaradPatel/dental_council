@@ -495,15 +495,19 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 .orElse(null);
         addressData.setDistrict(communicationDistrict);
 
-        SubDistrict communicationSubDistrict = subDistrictRepository
-                .findById(hpPersonalUpdateRequestTO.getCommunicationAddress().getSubDistrict().getId())
-                .orElse(null);
-        addressData.setSubDistrict(communicationSubDistrict);
+        if (hpPersonalUpdateRequestTO.getCommunicationAddress().getSubDistrict() != null) {
+            SubDistrict communicationSubDistrict = subDistrictRepository
+                    .findById(hpPersonalUpdateRequestTO.getCommunicationAddress().getSubDistrict().getId())
+                    .orElse(null);
+            addressData.setSubDistrict(communicationSubDistrict);
+        }
 
-        Villages communicationCity = villagesRepository
-                .findById(hpPersonalUpdateRequestTO.getCommunicationAddress().getVillage().getId())
-                .orElse(null);
-        addressData.setVillage(communicationCity);
+        if (hpPersonalUpdateRequestTO.getCommunicationAddress().getVillage() != null) {
+            Villages communicationCity = villagesRepository
+                    .findById(hpPersonalUpdateRequestTO.getCommunicationAddress().getVillage().getId())
+                    .orElse(null);
+            addressData.setVillage(communicationCity);
+        }
 
         AddressType addressType = new AddressType();
         addressType.setId(hpPersonalUpdateRequestTO.getCommunicationAddress().getAddressType().getId());
