@@ -3,6 +3,8 @@ package in.gov.abdm.nmr.security.common;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import in.gov.abdm.nmr.util.NMRConstants;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +51,9 @@ public class ProtectedPaths {
     public static final String SUSPENSION_REQUEST_URL = APPLICATION_REQUEST_URL + "/suspend";
     public static final String REACTIVATE_REQUEST_URL = APPLICATION_REQUEST_URL + "/re-activate";
     public static final String CHANGE_PASSWORD = "/user/change-password";
+    
+    public static final String HEALTH_PROFESSIONAL_ACTION = NMRConstants.HEALTH_PROFESSIONAL_ACTION;
+    public static final String COLLEGES_ACTION = NMRConstants.COLLEGES_ACTION;
 
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<AntPathRequestMatcher> protectedPaths = new ArrayList<>();
@@ -75,6 +80,9 @@ public class ProtectedPaths {
         protectedPaths.add(new AntPathRequestMatcher(SUSPENSION_REQUEST_URL));
         protectedPaths.add(new AntPathRequestMatcher(REACTIVATE_REQUEST_URL, HttpMethod.POST.name()));
         protectedPaths.add(new AntPathRequestMatcher(CHANGE_PASSWORD));
+        
+        protectedPaths.add(new AntPathRequestMatcher(HEALTH_PROFESSIONAL_ACTION));
+        protectedPaths.add(new AntPathRequestMatcher(COLLEGES_ACTION));
 
         return protectedPaths.toArray(AntPathRequestMatcher[]::new);
     }

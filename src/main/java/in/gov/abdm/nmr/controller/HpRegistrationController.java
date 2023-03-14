@@ -43,10 +43,10 @@ public class HpRegistrationController {
      * @param registrationNumber
      * @return SmcRegistrationDetailResponseTO This returns the SMC registration detail information.
      */
-    @GetMapping(path = "health-professional", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "health-professional", produces = MediaType.APPLICATION_JSON_VALUE)
     public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(
             @RequestParam("smcId") Integer councilId,
-            @RequestParam("registrationNumber") String registrationNumber) {
+            @RequestParam("registrationNumber") String registrationNumber) throws NmrException {
         return hpService.fetchSmcRegistrationDetail(councilId, registrationNumber);
     }
 
@@ -231,7 +231,7 @@ public class HpRegistrationController {
     }
 
     @PostMapping(path = NMRConstants.SAVE_KYC_DETAILS, produces = MediaType.APPLICATION_JSON_VALUE)
-    public KycResponseMessageTo saveUserKycDetails(@PathVariable("registrationNumber") long registrationNumber,@RequestBody UserKycTo userKycTo){
+    public KycResponseMessageTo saveUserKycDetails(@PathVariable("registrationNumber") String registrationNumber,@RequestBody UserKycTo userKycTo){
         return hpService.saveUserKycDetails(registrationNumber,userKycTo);
     }
 }

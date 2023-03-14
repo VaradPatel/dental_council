@@ -24,7 +24,7 @@ public interface IHpRegistrationService {
      * @param registrationNumber
      * @return SmcRegistrationDetailResponseTO The SMC registration detail response transfer object which contains the SMC registration details of the user.
      */
-    SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber);
+    SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NmrException;
 
     /**
      * Uploads the profile picture for the given HP profile ID.
@@ -115,5 +115,5 @@ public interface IHpRegistrationService {
      */
     HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(BigInteger hpProfileId);
 
-    KycResponseMessageTo saveUserKycDetails(long registrationNumber,UserKycTo userKycTo);
+    KycResponseMessageTo saveUserKycDetails(String registrationNumber,UserKycTo userKycTo);
 }

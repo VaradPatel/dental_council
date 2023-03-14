@@ -5,7 +5,10 @@ import in.gov.abdm.nmr.client.DscFClient;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
-import in.gov.abdm.nmr.exception.*;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NmrException;
+import in.gov.abdm.nmr.exception.NoDataFoundException;
+import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.IHpProfileMapper;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.IHpProfileDaoService;
@@ -31,7 +34,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
-import static in.gov.abdm.nmr.util.NMRConstants.NO_DATA_FOUND;
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static in.gov.abdm.nmr.util.NMRUtil.*;
 
 @Service
@@ -102,18 +105,36 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private BroadSpecialityRepository broadSpecialityRepository;
 
     @Autowired
+    private IUserRepository iUserRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
-    public HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) {
+    public HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NmrException {
         HpSmcDetailTO hpSmcDetailTO = new HpSmcDetailTO();
 
         Tuple hpProfile = iHpProfileRepository.fetchSmcRegistrationDetail(registrationNumber, councilId);
+
         if (hpProfile != null) {
-            hpSmcDetailTO.setHpName(hpProfile.get("full_name", String.class));
-            hpSmcDetailTO.setCouncilName(hpProfile.get("name", String.class));
-            hpSmcDetailTO.setRegistrationNumber(hpProfile.get("registration_no", String.class));
-            hpSmcDetailTO.setHpProfileId(hpProfile.get("hp_profile_id", BigInteger.class));
-            hpSmcDetailTO.setEmailId(hpProfile.get("email_id", String.class));
+            if(hpProfile.get(USER_ID_COLUMN,BigInteger.class) != null) {
+                throw new NmrException(USER_ALREADY_EXISTS_EXCEPTION, HttpStatus.BAD_REQUEST);
+            }
+            else {
+                String primaryContactNo = hpProfile.get(PRIMARY_CONTACT_NO_COLUMN, String.class);
+                if(primaryContactNo != null && iUserRepository.findFirstByMobileNumber(primaryContactNo) != null){
+                    throw new NmrException(USER_ALREADY_EXISTS_EXCEPTION, HttpStatus.BAD_REQUEST);
+                }
+                String email = hpProfile.get(EMAIL_ID_COLUMN, String.class);
+                if(email != null && iUserRepository.findFirstByEmail(email) != null){
+                    throw new NmrException(USER_ALREADY_EXISTS_EXCEPTION, HttpStatus.BAD_REQUEST);
+                }
+            }
+
+            hpSmcDetailTO.setHpName(hpProfile.get(FULL_NAME_COLUMN, String.class));
+            hpSmcDetailTO.setCouncilName(hpProfile.get(NAME_COLUMN, String.class));
+            hpSmcDetailTO.setRegistrationNumber(hpProfile.get(REGISTRATION_NO_COLUMN, String.class));
+            hpSmcDetailTO.setHpProfileId(hpProfile.get(HP_PROFILE_ID_COLUMN, BigInteger.class));
+            hpSmcDetailTO.setEmailId(hpProfile.get(EMAIL_ID_COLUMN, String.class));
         } else {
             throw new NoDataFoundException(NO_DATA_FOUND);
         }
