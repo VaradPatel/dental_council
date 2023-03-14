@@ -10,7 +10,7 @@ import java.math.BigInteger;
 @UtilityClass
 public final class HpPersonalDetailMapper {
 
-    public static HpProfilePersonalResponseTO convertEntitiesToPersonalResponseTo(HpProfile hpProfile, Address address, Address kycAddress, BigInteger applicationTypeId) {
+    public static HpProfilePersonalResponseTO convertEntitiesToPersonalResponseTo(HpProfile hpProfile, Address address, Address kycAddress, BigInteger applicationTypeId, BigInteger workFlowStatusId) {
         HpProfilePersonalResponseTO hpProfilePersonalResponseTO = new HpProfilePersonalResponseTO();
         PersonalDetailsTO personalDetailsTO = new PersonalDetailsTO();
         AddressTO addressTO = new AddressTO();
@@ -36,9 +36,13 @@ public final class HpPersonalDetailMapper {
             addressTO.setAddressLine1(address.getAddressLine1());
             addressTO.setCountry(CountryTO.builder().id(address.getCountry().getId()).name(address.getCountry().getName()).nationality(address.getCountry().getNationality()).build());
             addressTO.setDistrict(DistrictTO.builder().id(address.getDistrict().getId()).name(address.getDistrict().getName()).isoCode(address.getDistrict().getIsoCode()).build());
-            addressTO.setSubDistrict(SubDistrictTO.builder().id(address.getSubDistrict().getId()).name(address.getSubDistrict().getName()).isoCode(address.getSubDistrict().getIsoCode()).build());
+            if(address.getSubDistrict() != null) {
+                addressTO.setSubDistrict(SubDistrictTO.builder().id(address.getSubDistrict().getId()).name(address.getSubDistrict().getName()).isoCode(address.getSubDistrict().getIsoCode()).build());
+            }
+            if(address.getVillage() != null){
+                addressTO.setVillage(VillagesTO.builder().id(address.getVillage().getId()).name(address.getVillage().getName()).build());
+            }
             addressTO.setState(StateTO.builder().id(address.getState().getId()).name(address.getState().getName()).build());
-            addressTO.setVillage(VillagesTO.builder().id(address.getVillage().getId()).name(address.getVillage().getName()).build());
             addressTO.setEmail(address.getEmail());
             addressTO.setMobile(hpProfile.getMobileNumber());
             addressTO.setId(address.getId());
@@ -89,6 +93,7 @@ public final class HpPersonalDetailMapper {
         hpProfilePersonalResponseTO.setApplicationTypeId(applicationTypeId);
         hpProfilePersonalResponseTO.setNmrId(hpProfile.getNmrId());
         hpProfilePersonalResponseTO.setHpProfileStatusId(hpProfile.getHpProfileStatus().getId());
+        hpProfilePersonalResponseTO.setWorkFlowStatusId(workFlowStatusId);
 
         return hpProfilePersonalResponseTO;
     }
