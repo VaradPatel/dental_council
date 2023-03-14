@@ -14,6 +14,7 @@ import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.service.IUserService;
 import in.gov.abdm.nmr.util.NMRConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -112,7 +113,7 @@ public class UserServiceImpl implements IUserService {
                 List<HpProfile> hpProfiles= new ArrayList<>();
                 hpProfileList.forEach(hpProfile -> {
                     hpProfile.setUser(userDetail);
-                    if(createHpUserAccountTo.getMobile() != null) {
+                    if(StringUtils.isNotBlank(createHpUserAccountTo.getMobile())) {
                         hpProfile.setMobileNumber(createHpUserAccountTo.getMobile());
                     }
                     hpProfiles.add(hpProfile);
