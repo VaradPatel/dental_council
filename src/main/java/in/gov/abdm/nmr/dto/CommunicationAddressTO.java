@@ -38,12 +38,10 @@ public class CommunicationAddressTO {
 
     private String landmark;
 
-    @NotBlank(message = NOT_BLANK_ERROR_MSG)
     private String isSameAddress;
 
     private String email;
 
-    @NotBlank(message = NOT_BLANK_ERROR_MSG)
     private String mobile;
     private AddressTypeTO addressType;
     private String createdAt;
