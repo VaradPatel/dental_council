@@ -87,7 +87,7 @@ public class NmrExceptionAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorTO> invalidRequest(HttpServletRequest req, Throwable ex) {
         LOGGER.error(ex);
-        ErrorTO error = new ErrorTO(new Date(), HttpStatus.BAD_REQUEST.value(), "Invalid request", req.getServletPath());
+        ErrorTO error = new ErrorTO(new Date(), HttpStatus.BAD_REQUEST.value(), ex.getMessage() != null ? ex.getMessage() : "Invalid request", req.getServletPath());
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
