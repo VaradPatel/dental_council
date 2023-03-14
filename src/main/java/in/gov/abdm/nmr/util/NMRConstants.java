@@ -220,9 +220,9 @@ public class NMRConstants {
             SELECT ws.name as name, COUNT(w) as count 
             FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
             INNER JOIN qualification_details as qd on qd.hp_profile_id = w.hp_profile_id AND qd.request_id = w.request_id 
-            WHERE w.application_type_id = :""" + APPLICATION_TYPE_ID + " AND  w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
-            \s AND w.action_id IN ( 3,5 ) ) AND qd.college_id = :""" + COLLEGE_ID + """
-            \s GROUP BY ws.name 
+            WHERE w.application_type_id = :""" + APPLICATION_TYPE_ID + " AND qd.college_id = :" + COLLEGE_ID + " AND w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
+            \s AND w.action_id IN ( 3,5 ) )
+            GROUP BY ws.name 
             UNION 
             SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
             INNER JOIN qualification_details as qd on qd.hp_profile_id = wa.hp_profile_id AND qd.request_id = wa.request_id  
