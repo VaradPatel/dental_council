@@ -126,6 +126,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Autowired
     private IRegistrationDetailRepository iRegistrationDetailRepository;
 
+    @Autowired
+    private IAddressRepository addressRepository;
+
     /**
      * This method fetches the SMC registration details for a given request.
      *
@@ -315,12 +318,19 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
 
             if (isNameMatching && isDobMatching && isGenderMatching) {
-
+                UserKyc existingUserKyc = userKycRepository.findUserKycByRegistrationNumber(registrationNumber);
+                if (existingUserKyc != null) {
+                    userKycTo.setId(existingUserKyc.getId());
+                }
                 userKycTo.setHpProfileId(hpProfile.getId());
                 userKycTo.setRegistrationNo(registrationNumber);
                 userKycRepository.save(userKycDtoMapper.userKycToToUserKyc(userKycTo));
 
+                Address existingAddress = addressRepository.getCommunicationAddressByHpProfileId(hpProfile.getId(), AddressType.KYC.getId());
                 Address address = new Address();
+                if (existingAddress != null) {
+                    address.setId(existingAddress.getId());
+                }
                 address.setPincode(userKycTo.getPincode());
                 address.setMobile(userKycTo.getMobileNumber());
                 address.setAddressLine1(userKycTo.getAddress());

@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class UserKycTo {
 
+	private BigInteger id;
 	private BigInteger hpProfileId;
 	private String txnId;
 	private String mobileNumber;
