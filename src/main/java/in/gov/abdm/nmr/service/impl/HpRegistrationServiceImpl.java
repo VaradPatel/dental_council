@@ -255,13 +255,15 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         Address communicationAddressByHpProfileId = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfileId, AddressType.COMMUNICATION.getId());
         Address kycAddressByHpProfileId = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfileId, AddressType.KYC.getId());
         BigInteger applicationTypeId = null;
+        BigInteger workFlowStatusId = null;
         if (hpProfile.getRequestId() != null) {
             WorkFlow workFlow = workFlowRepository.findByRequestId(hpProfile.getRequestId());
             if (workFlow != null) {
                 applicationTypeId = workFlow.getApplicationType().getId();
+                workFlowStatusId = workFlow.getWorkFlowStatus().getId();
             }
         }
-        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId);
+        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId,workFlowStatusId);
     }
 
     @Override

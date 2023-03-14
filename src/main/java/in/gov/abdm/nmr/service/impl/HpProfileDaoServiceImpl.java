@@ -119,7 +119,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             if(hpProfile.get(USER_ID_COLUMN,BigInteger.class) != null) {
                 throw new NmrException(USER_ALREADY_EXISTS_EXCEPTION, HttpStatus.BAD_REQUEST);
             }
-            else {
+            /*else {
                 String primaryContactNo = hpProfile.get(PRIMARY_CONTACT_NO_COLUMN, String.class);
                 if(primaryContactNo != null && iUserRepository.findFirstByMobileNumber(primaryContactNo) != null){
                     throw new NmrException(USER_ALREADY_EXISTS_EXCEPTION, HttpStatus.BAD_REQUEST);
@@ -128,7 +128,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 if(email != null && iUserRepository.findFirstByEmail(email) != null){
                     throw new NmrException(USER_ALREADY_EXISTS_EXCEPTION, HttpStatus.BAD_REQUEST);
                 }
-            }
+            }*/
 
             hpSmcDetailTO.setHpName(hpProfile.get(FULL_NAME_COLUMN, String.class));
             hpSmcDetailTO.setCouncilName(hpProfile.get(NAME_COLUMN, String.class));
@@ -149,7 +149,18 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         HpProfile targetedHpProfile = null;
         BigInteger updatedHpProfileId = null;
         if (existingHpProfile == null || HpProfileStatus.APPROVED.getId().equals(existingHpProfile.getHpProfileStatus().getId())) {
+
+            if (existingHpProfile != null) {
+                HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileByRegistrationId(existingHpProfile.getRegistrationId());
+                if (HpProfileStatus.PENDING.getId().equals(latestHpProfile.getHpProfileStatus().getId())) {
+                    throw new InvalidRequestException("Please use the latest ongoing HP Profile id for updation.");
+                }
+            }
+
+            String registrationId = existingHpProfile.getRegistrationId();
             existingHpProfile = new HpProfile();
+            existingHpProfile.setRegistrationId(registrationId);
+
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, existingHpProfile);
             targetedHpProfile = iHpProfileRepository.save(existingHpProfile);
             updatedHpProfileId = targetedHpProfile.getId();
