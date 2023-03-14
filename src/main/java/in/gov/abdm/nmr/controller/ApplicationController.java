@@ -75,7 +75,7 @@ public class ApplicationController {
      */
     @GetMapping(REACTIVATE_REQUEST_URL)
     public ReactivateHealthProfessionalResponseTO reactivationRecordsOfHealthProfessionalsToNmc(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
-                                                                                                @RequestParam(required = false, value = "offset", defaultValue = "2") String offset,
+                                                                                                @RequestParam(required = false, value = "offset", defaultValue = "10") String offset,
                                                                                                 @RequestParam(required = false, value = "search") String search,
                                                                                                 @RequestParam(required = false, value = "value") String value,
                                                                                                 @RequestParam(required = false, value = "sortBy") String sortBy,
@@ -97,7 +97,7 @@ public class ApplicationController {
     @GetMapping(PATH_HEALTH_PROFESSIONAL_APPLICATIONS)
     public HealthProfessionalApplicationResponseTo trackApplicationDetails(@PathVariable("healthProfessionalId") BigInteger healthProfessionalId,
                                                                            @RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
-                                                                           @RequestParam(required = false, value = "offset", defaultValue = "2") String offset,
+                                                                           @RequestParam(required = false, value = "offset", defaultValue = "10") String offset,
                                                                            @RequestParam(required = false, value = "sortBy") String sortBy,
                                                                            @RequestParam(required = false, value = "sortType") String sortType,
                                                                            @RequestParam(required = false, value = "search") String search,
@@ -118,7 +118,7 @@ public class ApplicationController {
      */
     @GetMapping(APPLICATION_REQUEST_URL)
     public HealthProfessionalApplicationResponseTo trackStatusDetails(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
-                                                                      @RequestParam(required = false, value = "offset", defaultValue = "2") String offset,
+                                                                      @RequestParam(required = false, value = "offset", defaultValue = "10") String offset,
                                                                       @RequestParam(required = false, value = "sortBy") String sortBy,
                                                                       @RequestParam(required = false, value = "sortType") String sortType,
                                                                       @RequestParam(required = false, value = "search") String search,
