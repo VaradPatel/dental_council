@@ -145,5 +145,16 @@ public class MasterDataServiceImpl implements IMasterDataService {
         return masterDataMapper.universityMasterResponseDataTo(universityMasterService.getUniversitiesByCollegeId(collegeId));
     }
 
+    @Override
+    public List<CollegeMasterResponseTo> getCollegesByUniversity(BigInteger universityId) {
+        return masterDataMapper.collegeMasterResponseDataTo(collegeMasterService.getCollegesByUniversity(universityId));
+    }
+
+    @Override
+    public List<UniversityMasterResponseTo> getUniversitiesByState(BigInteger stateId) {
+        return masterDataMapper.universityMasterResponseDataTo(universityMasterService.getUniversitiesByState(stateId));
+
+    }
+
 
 }

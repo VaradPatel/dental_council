@@ -97,4 +97,14 @@ public class MasterDataController {
     public List<UniversityMasterResponseTo> getUniversitiesByCollege(@RequestParam(required = false, value = "collegeId") BigInteger collegeId) {
         return masterDataService.getUniversitiesByCollege(collegeId);
     }
+
+    @GetMapping(path = "/colleges", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<CollegeMasterResponseTo> getCollegesByUniversity(@RequestParam(required = false, value = "universityId") BigInteger universityId) {
+        return masterDataService.getCollegesByUniversity(universityId);
+    }
+
+    @GetMapping(path = "/universitiesByStateId", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UniversityMasterResponseTo> getUniversitiesByState(@RequestParam(required = false, value = "stateId") BigInteger stateId) {
+        return masterDataService.getUniversitiesByState(stateId);
+    }
 }
