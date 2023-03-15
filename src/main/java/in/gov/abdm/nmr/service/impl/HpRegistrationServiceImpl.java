@@ -349,6 +349,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 address.setDistrict(districtRepository.findByName(userKycTo.getDistrict().toUpperCase()));
                 address.setCountry(stateRepository.findByName(userKycTo.getState().toUpperCase()).getCountry());
                 iAddressRepository.save(address);
+                hpProfile.setProfilePhoto(userKycTo.getPhoto().getBytes());
+                iHpProfileRepository.save(hpProfile);
 
                 return new KycResponseMessageTo(fuzzyParameters,NMRConstants.SUCCESS_RESPONSE);
             } else {
