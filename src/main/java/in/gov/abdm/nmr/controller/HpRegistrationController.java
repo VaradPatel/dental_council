@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
+import in.gov.abdm.nmr.exception.DateException;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
@@ -239,7 +240,7 @@ public class HpRegistrationController {
     }
 
     @PostMapping(path = "health-professional", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseMessageTo> addNewHealthProfessional(@Valid @RequestBody NewHealthPersonalRequestTO request) {
+    public ResponseEntity<ResponseMessageTo> addNewHealthProfessional(@Valid @RequestBody NewHealthPersonalRequestTO request) throws DateException {
         hpService.addNewHealthProfessional(request);
         return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
     }
