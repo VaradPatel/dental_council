@@ -29,6 +29,8 @@ public class CaptchaServiceImpl implements ICaptchaService {
     private static final String OPERATOR_MINUS = "-";
 
     private static final String OPERATOR_PLUS = "+";
+    
+    private static final String OPERATOR_MULTIPLICATION = "*";
 
     private static final List<Color> COLORS = List.of(Color.BLUE, Color.CYAN, Color.DARK_GRAY, Color.GRAY, Color.GREEN, Color.LIGHT_GRAY, Color.MAGENTA, Color.ORANGE, //
             Color.PINK, Color.RED, Color.YELLOW);
@@ -38,7 +40,7 @@ public class CaptchaServiceImpl implements ICaptchaService {
     private static final List<Font> FONTS = List.of(new Font(Font.DIALOG, Font.BOLD, TEXT_SIZE), new Font(Font.DIALOG_INPUT, Font.ITALIC, TEXT_SIZE), //
             new Font(Font.MONOSPACED, Font.PLAIN, TEXT_SIZE), new Font(Font.SANS_SERIF, Font.BOLD, TEXT_SIZE), new Font(Font.SERIF, Font.ITALIC, TEXT_SIZE));
     
-    private static final List<String> OPERATORS = Arrays.asList(OPERATOR_PLUS, OPERATOR_MINUS);
+    private static final List<String> OPERATORS = Arrays.asList(OPERATOR_PLUS, OPERATOR_MINUS, OPERATOR_MULTIPLICATION);
 
     private ICaptchaDaoService captchaDaoService;
     
@@ -66,7 +68,7 @@ public class CaptchaServiceImpl implements ICaptchaService {
         Captcha captchaEntity = createCaptchaEntity();
         cn.apiclub.captcha.Captcha captcha = new cn.apiclub.captcha.Captcha.Builder(1300, 575) //
                 .addText(() -> captchaEntity.getNum1() + " " + captchaEntity.getOperation() + " " + captchaEntity.getNum2() + " = ?", new DefaultWordRenderer(COLORS, FONTS)) //
-                .addNoise().build();
+                .build();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         CaptchaServletUtil.writeImage(outputStream, captcha.getImage());
@@ -77,15 +79,16 @@ public class CaptchaServiceImpl implements ICaptchaService {
         Captcha captchaEntity = new Captcha();
 
         SecureRandom secureRandom = SecureRandom.getInstanceStrong();
-        captchaEntity.setNum1(secureRandom.nextInt(51, 98));
+        captchaEntity.setNum1(secureRandom.nextInt(6, 10));
+        captchaEntity.setNum2(secureRandom.nextInt(1, 5));
         captchaEntity.setOperation(OPERATORS.get(secureRandom.nextInt(OPERATORS.size())));
 
         if (OPERATOR_PLUS.equals(captchaEntity.getOperation())) {
-            captchaEntity.setNum2(secureRandom.nextInt(1, 100 - captchaEntity.getNum1()));
             captchaEntity.setResult(Math.addExact(captchaEntity.getNum1(), captchaEntity.getNum2()));
         } else if (OPERATOR_MINUS.equals(captchaEntity.getOperation())) {
-            captchaEntity.setNum2(secureRandom.nextInt(1, 50));
             captchaEntity.setResult(Math.subtractExact(captchaEntity.getNum1(), captchaEntity.getNum2()));
+        } else if (OPERATOR_MULTIPLICATION.equals(captchaEntity.getOperation())) {
+            captchaEntity.setResult(Math.multiplyExact(captchaEntity.getNum1(), captchaEntity.getNum2()));
         }
 
         captchaEntity.setTimeToLive(5);

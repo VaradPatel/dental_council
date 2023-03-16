@@ -63,7 +63,7 @@ public class ProtectedPaths {
         protectedPaths.add(new AntPathRequestMatcher(PATH_REGISTER_COLLEGE_REGISTRAR));
         protectedPaths.add(new AntPathRequestMatcher(PATH_REGISTER_COLLEGE_DEAN));
 
-        protectedPaths.add(new AntPathRequestMatcher(PATH_COLLEGE_PROFILE));
+        protectedPaths.add(new AntPathRequestMatcher(PATH_COLLEGE_PROFILE, HttpMethod.GET.name()));
         protectedPaths.add(new AntPathRequestMatcher(PATH_COLLEGE_DEAN_PROFILE));
         protectedPaths.add(new AntPathRequestMatcher(PATH_COLLEGE_REGISTRAR_PROFILE));
 
