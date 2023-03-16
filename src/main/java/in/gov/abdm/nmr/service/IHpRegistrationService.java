@@ -116,4 +116,6 @@ public interface IHpRegistrationService {
     HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(BigInteger hpProfileId);
 
     KycResponseMessageTo saveUserKycDetails(String registrationNumber,UserKycTo userKycTo);
+
+    void addNewHealthProfessional(NewHealthPersonalRequestTO request);
 }

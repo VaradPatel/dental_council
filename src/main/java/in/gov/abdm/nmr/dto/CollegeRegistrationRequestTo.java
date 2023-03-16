@@ -14,6 +14,7 @@ public class CollegeRegistrationRequestTo {
     private BigInteger userId;
     private BigInteger councilId;
     private BigInteger universityId;
+    private BigInteger collegeId;
     private String website;
     private String address;
     private String requestId;

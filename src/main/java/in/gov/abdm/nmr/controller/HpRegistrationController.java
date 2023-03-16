@@ -10,6 +10,7 @@ import in.gov.abdm.nmr.service.IQueriesService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +19,8 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
+
+import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
 
 /**
  * The HpRegistrationController class is a RestController that handles requests for registration related operations.
@@ -233,5 +236,11 @@ public class HpRegistrationController {
     @PostMapping(path = NMRConstants.SAVE_KYC_DETAILS, produces = MediaType.APPLICATION_JSON_VALUE)
     public KycResponseMessageTo saveUserKycDetails(@PathVariable("registrationNumber") String registrationNumber,@RequestBody UserKycTo userKycTo){
         return hpService.saveUserKycDetails(registrationNumber,userKycTo);
+    }
+
+    @PostMapping(path = "health-professional", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseMessageTo> addNewHealthProfessional(@Valid @RequestBody NewHealthPersonalRequestTO request) {
+        hpService.addNewHealthProfessional(request);
+        return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
     }
 }

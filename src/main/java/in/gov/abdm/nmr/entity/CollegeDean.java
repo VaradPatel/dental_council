@@ -24,7 +24,7 @@ public class CollegeDean extends CommonAuditEntity {
 
     @OneToOne
     @JoinColumn(name = "college_id")
-    private College college;
+    private CollegeMaster college;
 
     @OneToOne
     @JoinColumn(name = "user_id")
