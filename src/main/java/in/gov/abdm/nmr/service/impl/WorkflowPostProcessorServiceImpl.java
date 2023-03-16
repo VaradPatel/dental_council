@@ -133,12 +133,12 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
         HpProfileMaster masterHpProfileDetails = updateHpProfileToMaster(transactionHpProfile.getId(), transactionHpProfile.getRegistrationId());
 
-        updateRegistrationDetailsToMaster(transactionHpProfile.getId(), masterHpProfileDetails);
+        RegistrationDetailsMaster registrationMaster = updateRegistrationDetailsToMaster(transactionHpProfile.getId(), masterHpProfileDetails);
         updateAddressToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
-        updateForeignQualificationToMaster(transactionHpProfile.getId(), masterHpProfileDetails);
+        updateForeignQualificationToMaster(transactionHpProfile.getId(), masterHpProfileDetails, registrationMaster);
         updateHpNbeDetailsToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
         updateNmrHprLinkageToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
-        updateQualificationDetailsToMaster(transactionHpProfile.getId(), masterHpProfileDetails);
+        updateQualificationDetailsToMaster(transactionHpProfile.getId(), masterHpProfileDetails, registrationMaster);
         try {
             updateElasticDB(iNextGroup, masterHpProfileDetails);
         } catch (WorkFlowException e) {
@@ -163,7 +163,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         foreignQualificationDetails.forEach(foreignQualificationDetail -> foreignQualificationDetail.setIsVerified(1));
     }
 
-    private void updateRegistrationDetailsToMaster(BigInteger transactionHpProfileId, HpProfileMaster hpProfileMaster) {
+    private RegistrationDetailsMaster updateRegistrationDetailsToMaster(BigInteger transactionHpProfileId, HpProfileMaster hpProfileMaster) {
 
         RegistrationDetails registrationDetailsByHpProfileId = registrationDetailRepository.getRegistrationDetailsByHpProfileId(transactionHpProfileId);
 
@@ -176,8 +176,9 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
                 registrationDetailsAudit.setId(fetchedFromMaster.getId());
             }
             registrationDetailsAudit.setHpProfileMaster(hpProfileMaster);
-            registrationDetailAuditRepository.save(registrationDetailsAudit);
+            return registrationDetailAuditRepository.save(registrationDetailsAudit);
         }
+        return null;
     }
 
     private HpProfileMaster updateHpProfileToMaster(BigInteger transactionHpProfileId, String hpRegistrationId) {
@@ -210,7 +211,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         }
     }
 
-    private void updateForeignQualificationToMaster(BigInteger transactionHpProfileId, HpProfileMaster masterHpProfile) {
+    private void updateForeignQualificationToMaster(BigInteger transactionHpProfileId, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
 
         List<ForeignQualificationDetails> qualificationDetails = customQualificationDetailRepository.getQualificationDetailsByHpProfileId(transactionHpProfileId);
 
@@ -223,6 +224,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
                     qualificationDetailsMasters.get(i).setId(fetchedFromMasters.get(i).getId());
                 }
                 qualificationDetailsMasters.get(i).setHpProfileMaster(masterHpProfile);
+                qualificationDetailsMasters.get(i).setRegistrationDetails(registrationMaster);
             }
             customQualificationDetailMasterRepository.saveAll(qualificationDetailsMasters);
         }
@@ -278,7 +280,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         }
     }
 
-    private void updateQualificationDetailsToMaster(BigInteger transactionHpProfileId, HpProfileMaster masterHpProfile) {
+    private void updateQualificationDetailsToMaster(BigInteger transactionHpProfileId, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
 
         List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getQualificationDetailsByHpProfileId(transactionHpProfileId);
 
@@ -291,6 +293,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
                     qualificationDetailsMasters.get(i).setId(fetchedFromMasters.get(i).getId());
                 }
                 qualificationDetailsMasters.get(i).setHpProfileMaster(masterHpProfile);
+                qualificationDetailsMasters.get(i).setRegistrationDetails(registrationMaster);
             }
             qualificationDetailMasterRepository.saveAll(qualificationDetailsMasters);
         }
