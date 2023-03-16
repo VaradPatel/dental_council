@@ -109,6 +109,10 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private CollegeMasterRepository collegeMasterRepository;
+    @Autowired
+    private UniversityMasterRepository universityMasterRepository;
 
     public HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NmrException {
         HpSmcDetailTO hpSmcDetailTO = new HpSmcDetailTO();
@@ -214,7 +218,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @SneakyThrows
     @Override
     public HpProfileUpdateResponseTO updateHpRegistrationDetails(BigInteger hpProfileId,
-                                                                 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, MultipartFile degreeCertificate) throws NmrException,InvalidRequestException {
+                                                                 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, MultipartFile degreeCertificate) throws NmrException, InvalidRequestException {
 
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
             try {
@@ -233,12 +237,11 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         } else {
             mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile);
         }
-        if(degreeCertificate!=null){
-            validateQualificationDetailsAndProofs(hpRegistrationUpdateRequestTO.getQualificationDetails(),List.of(degreeCertificate));
+        if (degreeCertificate != null) {
+            validateQualificationDetailsAndProofs(hpRegistrationUpdateRequestTO.getQualificationDetails(), List.of(degreeCertificate));
             saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), List.of(degreeCertificate));
-        }
-        else{
-            validateQualificationDetailsAndProofs(hpRegistrationUpdateRequestTO.getQualificationDetails(),new ArrayList<>());
+        } else {
+            validateQualificationDetailsAndProofs(hpRegistrationUpdateRequestTO.getQualificationDetails(), new ArrayList<>());
             saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), new ArrayList<>());
         }
 
@@ -260,7 +263,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @Override
     public HpProfileUpdateResponseTO updateWorkProfileDetails(BigInteger hpProfileId,
                                                               HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws InvalidRequestException {
-        if(proofs != null){
+        if (proofs != null) {
             validateWorkProfileDetailsAndProofs(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails(), proofs);
             hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().stream().forEach(currentWorkDetailsTO -> {
                 MultipartFile file = proofs.get(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().indexOf(currentWorkDetailsTO));
@@ -427,8 +430,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private void mapIndianQualificationRequestToEntity(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, QualificationDetailRequestTO indianQualification, QualificationDetails qualification, MultipartFile proof) {
         qualification.setCountry(countryRepository.findById(indianQualification.getCountry().getId()).get());
         qualification.setState(stateRepository.findById(indianQualification.getState().getId()).get());
-        qualification.setCollege(collegeRepository.findCollegeById(indianQualification.getCollege().getId()));
-        qualification.setUniversity(universityRepository.findById(indianQualification.getUniversity().getId()).get());
+        qualification.setCollege(collegeMasterRepository.findCollegeMasterById(indianQualification.getCollege().getId()));
+        qualification.setUniversity(universityMasterRepository.findUniversityMasterById(indianQualification.getUniversity().getId()));
         qualification.setCourse(courseRepository.findById(indianQualification.getCourse().getId()).get());
         qualification.setIsVerified(indianQualification.getIsVerified());
         qualification.setQualificationYear(indianQualification.getQualificationYear());

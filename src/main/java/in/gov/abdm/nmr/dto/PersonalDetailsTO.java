@@ -35,4 +35,6 @@ public class PersonalDetailsTO {
     private byte[] profilePhoto;
     private String fullName;
 
+    private Boolean isNew;
+
 }

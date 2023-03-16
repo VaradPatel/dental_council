@@ -9,7 +9,6 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import java.math.BigInteger;
 import java.sql.Date;
-import java.sql.Timestamp;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 
@@ -85,4 +84,5 @@ public class HpProfile extends CommonAuditEntity {
 	private String eSignStatus;
 	private String registrationId;
 	private String isSameAddress;
+	private Integer isNew;
 }

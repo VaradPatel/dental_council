@@ -11,6 +11,9 @@ public interface CollegeMasterRepository extends JpaRepository<CollegeMaster, Bi
     @Query(value = "SELECT *  FROM college_master WHERE state_id= :stateId", nativeQuery = true)
     List<CollegeMaster> getCollegesByStateId(BigInteger stateId);
 
+    @Query(value = "SELECT *  FROM college_master WHERE id= :id", nativeQuery = true)
+    CollegeMaster findCollegeMasterById(BigInteger id);
+
 
     @Query(value = """
             select cm.id, cm.college_id, cm.name, cm.status, cm.visible_status, cm.system_of_medicine_id, 
