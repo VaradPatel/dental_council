@@ -24,8 +24,8 @@ public class College extends CommonAuditEntity {
     private String collegeCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "university")
-    private University university;
+    @JoinColumn(name = "university_master_id", referencedColumnName = "id")
+    private UniversityMaster universityMaster;
     private String phoneNumber;
     private String emailId;
 
@@ -33,10 +33,10 @@ public class College extends CommonAuditEntity {
     @JoinColumn(name = "stateMedicalCouncil")
     private StateMedicalCouncil stateMedicalCouncil;
     private String website;
-    
+
     private String address;
     private String requestId;
-    
+
     private String pinCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -48,4 +48,7 @@ public class College extends CommonAuditEntity {
     private User user;
 
     private boolean isApproved;
+    @OneToOne
+    @JoinColumn(name = "college_master_id", referencedColumnName = "id")
+    private CollegeMaster collegeMaster;
 }

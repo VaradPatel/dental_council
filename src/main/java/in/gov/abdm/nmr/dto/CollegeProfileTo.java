@@ -15,6 +15,7 @@ public class CollegeProfileTo {
     private String stateName;
     private String councilName;
     private String universityName;
+    private String collegeId;
     private String website;
     private String address;
     private String pinCode;

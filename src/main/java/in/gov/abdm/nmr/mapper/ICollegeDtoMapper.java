@@ -15,8 +15,8 @@ import java.util.List;
 public interface ICollegeDtoMapper {
 
     List<CollegeTO> collegeDataToDto(List<College> college);
-    
-    @Mapping(target = "university", ignore = true)
+
+    @Mapping(target = "universityMaster", ignore = true)
     @Mapping(target = "stateMedicalCouncil", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
