@@ -30,16 +30,18 @@ public final class HpPersonalDetailMapper {
         personalDetailsTO.setFullName(hpProfile.getFullName());
         personalDetailsTO.setMotherName(hpProfile.getMotherName());
         personalDetailsTO.setSalutation(hpProfile.getSalutation());
+        personalDetailsTO.setIsNew(hpProfile.getIsNew() != null && hpProfile.getIsNew() == 1);
+
 //        personalDetailsTO.setSchedule(ScheduleTO.builder().id(hpProfile.getSchedule().getId()).name(hpProfile.getSchedule().getName()).build());
 
         if (address != null) {
             addressTO.setAddressLine1(address.getAddressLine1());
             addressTO.setCountry(CountryTO.builder().id(address.getCountry().getId()).name(address.getCountry().getName()).nationality(address.getCountry().getNationality()).build());
             addressTO.setDistrict(DistrictTO.builder().id(address.getDistrict().getId()).name(address.getDistrict().getName()).isoCode(address.getDistrict().getIsoCode()).build());
-            if(address.getSubDistrict() != null) {
+            if (address.getSubDistrict() != null) {
                 addressTO.setSubDistrict(SubDistrictTO.builder().id(address.getSubDistrict().getId()).name(address.getSubDistrict().getName()).isoCode(address.getSubDistrict().getIsoCode()).build());
             }
-            if(address.getVillage() != null){
+            if (address.getVillage() != null) {
                 addressTO.setVillage(VillagesTO.builder().id(address.getVillage().getId()).name(address.getVillage().getName()).build());
             }
             addressTO.setState(StateTO.builder().id(address.getState().getId()).name(address.getState().getName()).build());
@@ -92,7 +94,7 @@ public final class HpPersonalDetailMapper {
         hpProfilePersonalResponseTO.setRequestId(hpProfile.getRequestId());
         hpProfilePersonalResponseTO.setApplicationTypeId(applicationTypeId);
         hpProfilePersonalResponseTO.setNmrId(hpProfile.getNmrId());
-        hpProfilePersonalResponseTO.setHpProfileStatusId(hpProfile.getHpProfileStatus().getId());
+        hpProfilePersonalResponseTO.setHpProfileStatusId(hpProfile.getHpProfileStatus() != null ? hpProfile.getHpProfileStatus().getId() : null);
         hpProfilePersonalResponseTO.setWorkFlowStatusId(workFlowStatusId);
 
         return hpProfilePersonalResponseTO;

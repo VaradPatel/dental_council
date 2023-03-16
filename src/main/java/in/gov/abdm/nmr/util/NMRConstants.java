@@ -364,7 +364,7 @@ public class NMRConstants {
     public static final int DEFAULT_ADDRESS_TYPE_AADHAR = 4;
     public static final String INDIA = "India";
     public static final String INTERNATIONAL = "International";
-
+    public static final String SALUTATION_DR = "Dr.";
     public static final String COLLEGE_ID_IN_LOWER_CASE = "collegeid";
 
     public static final String COLLEGE_NAME_IN_LOWER_CASE = "collegename";
