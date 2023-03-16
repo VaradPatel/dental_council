@@ -6,6 +6,7 @@ import in.gov.abdm.nmr.dto.CollegeRegistrationResponseTO;
 import in.gov.abdm.nmr.dto.CreateHpUserAccountTo;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.NmrException;
@@ -62,30 +63,34 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
             if (userDetailService.findByUsername(collegeRegistrationRequestTo.getEmailId()) != null) {
                 throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
             }
-            
+
             if (userDetailService.findByUsername(collegeRegistrationRequestTo.getPhoneNumber()) != null) {
                 throw new NmrException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
             }
 
-            User userDetail = new User(null, collegeRegistrationRequestTo.getEmailId(), collegeRegistrationRequestTo.getPhoneNumber(), null, null, null, null, true, true, //
-                    entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), //
-                    entityManager.getReference(UserGroup.class, in.gov.abdm.nmr.enums.Group.COLLEGE_REGISTRAR.getId()), true, 0, null);
-            userDetailService.save(userDetail);
 
             College collegeEntity = collegeDtoMapper.collegeRegistartionDtoToEntity(collegeRegistrationRequestTo);
             collegeEntity.setId(null);
-            collegeEntity.setUser(userDetail);
 
             collegeEntity.setState(entityManager.getReference(State.class, collegeRegistrationRequestTo.getStateId()));
             collegeEntity.setStateMedicalCouncil(entityManager.getReference(StateMedicalCouncil.class, collegeRegistrationRequestTo.getCouncilId()));
-            collegeEntity.setUniversity(entityManager.getReference(University.class, collegeRegistrationRequestTo.getUniversityId()));
+            collegeEntity.setUniversityMaster(entityManager.getReference(UniversityMaster.class, collegeRegistrationRequestTo.getUniversityId()));
+            collegeEntity.setCollegeMaster(entityManager.getReference(CollegeMaster.class, collegeRegistrationRequestTo.getCollegeId()));
             collegeEntity.setApproved(collegeRegistrationRequestTo.isApproved());
+
+            User userDetail = new User(null, collegeRegistrationRequestTo.getEmailId(), collegeRegistrationRequestTo.getPhoneNumber(), null, null, null, null, true, true, //
+                    entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), //
+                    entityManager.getReference(UserGroup.class, Group.COLLEGE_ADMIN.getId()), true, 0, null);
+            userDetailService.save(userDetail);
+            collegeEntity.setUser(userDetail);
+
             College college = collegeRepository.saveAndFlush(collegeEntity);
 
             CreateHpUserAccountTo setPasswordLinkTo = new CreateHpUserAccountTo();
             setPasswordLinkTo.setUsername(String.valueOf(college.getId()));
             setPasswordLinkTo.setEmail(college.getEmailId());
             setPasswordLinkTo.setMobile(college.getPhoneNumber());
+
             passwordReset.passwordReset(setPasswordLinkTo);
 
             return college;
@@ -109,7 +114,8 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
             collegeEntity.setUser(collegeUserDetail);
             collegeEntity.setState(entityManager.getReference(State.class, collegeRegistrationRequestTo.getStateId()));
             collegeEntity.setStateMedicalCouncil(entityManager.getReference(StateMedicalCouncil.class, collegeRegistrationRequestTo.getCouncilId()));
-            collegeEntity.setUniversity(entityManager.getReference(University.class, collegeRegistrationRequestTo.getUniversityId()));
+            collegeEntity.setUniversityMaster(entityManager.getReference(UniversityMaster.class, collegeRegistrationRequestTo.getUniversityId()));
+            collegeEntity.setCollegeMaster(entityManager.getReference(CollegeMaster.class, collegeRegistrationRequestTo.getCollegeId()));
 
             return collegeRepository.saveAndFlush(collegeEntity);
         }

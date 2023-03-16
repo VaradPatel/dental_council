@@ -22,14 +22,14 @@ public class QualificationDetails {
     @Column(name = "id")
     private BigInteger id;
     @Lob
-    @Type(type="org.hibernate.type.BinaryType")
+    @Type(type = "org.hibernate.type.BinaryType")
     private byte[] certificate;
     private Date endDate;
     private Integer isNameChange;
     private Integer isVerified;
     private String name;
     @Lob
-    @Type(type="org.hibernate.type.BinaryType")
+    @Type(type = "org.hibernate.type.BinaryType")
     private byte[] nameChangeProofAttach;
     private String qualificationMonth;
     private String qualificationYear;
@@ -42,8 +42,8 @@ public class QualificationDetails {
     private District district;
 
     @OneToOne
-    @JoinColumn(name = "college_id", referencedColumnName = "id")
-    private College college;
+    @JoinColumn(name = "college_id")
+    private CollegeMaster college;
 
     @OneToOne
     @JoinColumn(name = "country_id", referencedColumnName = "id")
@@ -58,8 +58,8 @@ public class QualificationDetails {
     private State state;
 
     @OneToOne
-    @JoinColumn(name = "university_id", referencedColumnName = "id")
-    private University university;
+    @JoinColumn(name = "university_id")
+    private UniversityMaster university;
 
     @ManyToOne
     @JoinColumn(name = "registration_details_id", referencedColumnName = "id")

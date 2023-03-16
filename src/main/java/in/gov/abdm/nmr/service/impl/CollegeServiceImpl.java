@@ -63,6 +63,7 @@ public class CollegeServiceImpl implements ICollegeService, ICollegeMasterServic
         }
         if (!collegeRegistrationStatus()) {
             College collegeProfileEntity = collegeService.saveCollege(collegeRegistrationRequestTo, update);
+
             collegeCreationRequestToResponse = collegeMapper.collegeCreationRequestToResponse(collegeRegistrationRequestTo);
             collegeCreationRequestToResponse.setId(collegeProfileEntity.getId());
             collegeCreationRequestToResponse.setUserId(collegeProfileEntity.getUser().getId());
@@ -72,8 +73,11 @@ public class CollegeServiceImpl implements ICollegeService, ICollegeMasterServic
             if (collegeProfileEntity.getState() != null) {
                 collegeCreationRequestToResponse.setStateName(collegeProfileEntity.getState().getName());
             }
-            if (collegeProfileEntity.getUniversity() != null) {
-                collegeCreationRequestToResponse.setUniversityName(collegeProfileEntity.getUniversity().getName());
+            if (collegeProfileEntity.getUniversityMaster() != null) {
+                collegeCreationRequestToResponse.setUniversityName(collegeProfileEntity.getUniversityMaster().getName());
+            }
+            if (collegeProfileEntity.getCollegeMaster() != null) {
+                collegeCreationRequestToResponse.setName(collegeProfileEntity.getCollegeMaster().getName());
             }
             collegeCreationRequestToResponse.setApproved(collegeProfileEntity.isApproved());
             if ((!collegeProfileEntity.isApproved()) && (collegeRegistrationRequestTo.getRequestId() == null)) {
@@ -131,7 +135,7 @@ public class CollegeServiceImpl implements ICollegeService, ICollegeMasterServic
         CollegeProfileTo collegeProfileTO = collegeMapper.collegeEntityToCollegeProfile(collegeEntity);
         collegeProfileTO.setCouncilName(collegeEntity.getStateMedicalCouncil().getName());
         collegeProfileTO.setStateName(collegeEntity.getState().getName());
-        collegeProfileTO.setUniversityName(collegeEntity.getUniversity().getName());
+        collegeProfileTO.setUniversityName(collegeEntity.getUniversityMaster().getName());
         collegeProfileTO.setUserId(collegeEntity.getUser().getId());
         return collegeProfileTO;
     }

@@ -21,10 +21,10 @@ public class CollegeRegistrar extends CommonAuditEntity {
     private String name;
     private String phoneNumber;
     private String emailId;
-    
+
     @OneToOne
     @JoinColumn(name = "college_id")
-    private College college;
+    private CollegeMaster college;
 
     @OneToOne
     @JoinColumn(name = "user_id")
