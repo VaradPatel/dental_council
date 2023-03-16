@@ -13,14 +13,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static in.gov.abdm.nmr.util.NMRConstants.FETCH_TRACK_DETAILS_COUNT_QUERY;
-import static in.gov.abdm.nmr.util.NMRConstants.FETCH_TRACK_DETAILS_QUERY;
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 /**
  * A class that implements all the methods of the Custom Repository interface IFetchTrackApplicationDetailsCustomRepository
@@ -37,6 +37,10 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      */
     @PersistenceContext
     private EntityManager entityManager;
+
+    private static final Function<String, String> UPDATED_DATES = requestId -> "SELECT * FROM (SELECT request_id,previous_group_id,updated_at, DENSE_RANK() OVER(PARTITION BY previous_group_id ORDER BY updated_at DESC) AS previous_group_id_rank " +
+            "FROM main.work_flow_audit WHERE request_id = '" + requestId + "' ORDER BY updated_at DESC) work_flow_details WHERE work_flow_details.previous_group_id_rank = 1";
+
 
     /**
      * Represents a functional interface to generates a dynamic WHERE clause based on the HealthProfessionalApplicationRequestParamsTo
@@ -93,7 +97,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      * @param healthProfessionalApplicationRequestParamsTo - an object that contains parameters for the function
      * @return a string query to get the status of the Health Professional's application requests.
      */
-    private static final BiFunction<HealthProfessionalApplicationRequestParamsTo,List<BigInteger>, String> TRACK_APPLICATION = (healthProfessionalApplicationRequestParamsTo, hpProfiles) -> {
+    private static final BiFunction<HealthProfessionalApplicationRequestParamsTo, List<BigInteger>, String> TRACK_APPLICATION = (healthProfessionalApplicationRequestParamsTo, hpProfiles) -> {
         StringBuilder sb = new StringBuilder();
 
         sb.append(FETCH_TRACK_DETAILS_QUERY);
@@ -101,10 +105,9 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
             StringBuilder hpIds = new StringBuilder();
             hpProfiles.forEach(hpProfile -> {
-                if(hpProfiles.indexOf(hpProfile) == hpProfiles.size()-1){
+                if (hpProfiles.indexOf(hpProfile) == hpProfiles.size() - 1) {
                     hpIds.append(hpProfile);
-                }
-                else{
+                } else {
                     hpIds.append(hpProfile).append(",");
                 }
             });
@@ -157,10 +160,9 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
             StringBuilder hpIds = new StringBuilder();
             hpProfiles.forEach(hpProfile -> {
-                if(hpProfiles.indexOf(hpProfile) == hpProfiles.size()-1){
+                if (hpProfiles.indexOf(hpProfile) == hpProfiles.size() - 1) {
                     hpIds.append(hpProfile);
-                }
-                else {
+                } else {
                     hpIds.append(hpProfile).append(",");
                 }
             });
@@ -204,6 +206,33 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setNmcStatus((String) result[4]);
             healthProfessionalApplicationTo.setNbeStatus((String) result[5]);
             healthProfessionalApplicationTo.setHpProfileId((BigInteger) result[6]);
+            String requestId = (String) result[7];
+            Query queryDate = entityManager.createNativeQuery(UPDATED_DATES.apply(requestId));
+            List<Object[]> resultsDate = queryDate.getResultList();
+            resultsDate.forEach(objects -> {
+                BigInteger previousGroupId = (BigInteger) objects[1];
+                Timestamp timestamp = (Timestamp) objects[2];
+                switch (previousGroupId.intValue()) {
+                    case 1:
+                        healthProfessionalApplicationTo.setDoctorActionDate(timestamp.toString());
+                        break;
+                    case 2:
+                        healthProfessionalApplicationTo.setSmcActionDate(timestamp.toString());
+                        break;
+                    case 3:
+                        healthProfessionalApplicationTo.setNmcActionDate(timestamp.toString());
+                        break;
+                    case 4:
+                        healthProfessionalApplicationTo.setCollegeDeanActionDate(timestamp.toString());
+                        break;
+                    case 5:
+                        healthProfessionalApplicationTo.setCollegeRegistrarActionDate(timestamp.toString());
+                        break;
+                    case 7:
+                        healthProfessionalApplicationTo.setNbeActionDate(timestamp.toString());
+                        break;
+                }
+            });
             healthProfessionalApplicationTo.setRequestId((String) result[7]);
             healthProfessionalApplicationTo.setRegistrationNo((String) result[8]);
             healthProfessionalApplicationTo.setCreatedAt((String) result[9]);
