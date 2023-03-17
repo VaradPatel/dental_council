@@ -21,6 +21,7 @@ import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -308,6 +309,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         return hpProfileRegistrationResponseTO;
     }
 
+    @Transactional
     public KycResponseMessageTo saveUserKycDetails(String registrationNumber, UserKycTo userKycTo) {
 
         HpProfile hpProfile = iHpProfileRepository.findLatestHpProfileByRegistrationId(registrationNumber);
@@ -352,9 +354,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 address.setLandmark(userKycTo.getLandmark());
                 address.setHpProfileId(hpProfile.getId());
                 address.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.KYC.getId(), AddressType.KYC.name()));
-                address.setVillage(villagesRepository.findByName(userKycTo.getLocality()));
+                address.setVillage(villagesRepository.findByName(userKycTo.getVillageTownCity()));
                 address.setSubDistrict(subDistrictRepository.findByName(userKycTo.getSubDist()));
-                address.setState(stateRepository.findByName(userKycTo.getState()));
+                address.setState(stateRepository.findByName(userKycTo.getState().toUpperCase()));
                 address.setDistrict(districtRepository.findByDistrictNameAndStateId(userKycTo.getDistrict().toUpperCase(),address.getState().getId()));
                 address.setCountry(stateRepository.findByName(userKycTo.getState().toUpperCase()).getCountry());
                 iAddressRepository.save(address);
