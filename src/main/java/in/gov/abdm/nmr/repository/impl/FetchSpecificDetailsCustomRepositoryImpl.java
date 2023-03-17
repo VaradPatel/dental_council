@@ -80,6 +80,22 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             sb.append("AND rd.state_medical_council_id = ").append(dashboardRequestParamsTO.getCouncilId()).append(" ");
         }
 
+        if (Objects.nonNull(dashboardRequestParamsTO.getGender()) && !dashboardRequestParamsTO.getGender().isEmpty()) {
+            sb.append("AND hp.gender ILIKE '%").append(dashboardRequestParamsTO.getGender()).append("%' ");
+        }
+
+        if (Objects.nonNull(dashboardRequestParamsTO.getEmailId()) && !dashboardRequestParamsTO.getEmailId().isEmpty()) {
+            sb.append("AND hp.email_id ILIKE '%").append(dashboardRequestParamsTO.getEmailId()).append("%' ");
+        }
+
+        if (Objects.nonNull(dashboardRequestParamsTO.getMobileNumber()) && !dashboardRequestParamsTO.getMobileNumber().isEmpty()) {
+            sb.append("AND hp.mobile_number ILIKE '%").append(dashboardRequestParamsTO.getMobileNumber()).append("%' ");
+        }
+
+        if (Objects.nonNull(dashboardRequestParamsTO.getYearOfRegistration()) && !dashboardRequestParamsTO.getYearOfRegistration().isEmpty()) {
+            sb.append("AND rd.created_at ILIKE '%").append(dashboardRequestParamsTO.getYearOfRegistration()).append("%' ");
+        }
+
         if (Objects.nonNull(dashboardRequestParamsTO.getUserGroupId())) {
             BigInteger groupId = dashboardRequestParamsTO.getUserGroupId();
             String userGroupStatus = dashboardRequestParamsTO.getUserGroupStatus().toUpperCase();
@@ -252,6 +268,9 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setApplicantFullName((String) result[11]);
             dashBoardTO.setWorkFlowStatusId((BigInteger) result[12]);
             dashBoardTO.setPendency((Double) result[13]);
+            dashBoardTO.setGender((String) result[14]);
+            dashBoardTO.setEmailId((String) result[15]);
+            dashBoardTO.setMobileNumber((String) result[16]);
             dashboardTOList.add(dashBoardTO);
         });
         dashBoardResponseTO.setDashboardTOList(dashboardTOList);

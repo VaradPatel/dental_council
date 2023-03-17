@@ -11,6 +11,10 @@ public class HealthProfessionalApplicationRequestParamsTo {
     private String workFlowStatusId;
     private String applicationTypeId;
     private String applicantFullName;
+    private String gender;
+    private String emailId;
+    private String mobileNumber;
+    private String yearOfRegistration;
     private int pageNo;
     private int offset;
     private String sortBy;

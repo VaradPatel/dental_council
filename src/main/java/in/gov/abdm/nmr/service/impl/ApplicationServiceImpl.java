@@ -195,6 +195,14 @@ public class ApplicationServiceImpl implements IApplicationService {
                         break;
                     case REGISTRATION_NUMBER_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setRegistrationNumber(value);
                         break;
+                    case GENDER_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setGender(value);
+                        break;
+                    case EMAIL_ID_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setEmailId(value);
+                        break;
+                    case MOBILE_NUMBER_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setMobileNumber(value);
+                        break;
+                    case YEAR_OF_REGISTRATION_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setYearOfRegistration(value);
+                        break;
                     case SEARCH_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setSearch(value);
                         break;
                     default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE);
@@ -365,6 +373,14 @@ public class ApplicationServiceImpl implements IApplicationService {
                     case SMC_ID_IN_LOWER_CASE: applicationRequestParamsTo.setSmcId(value);
                         break;
                     case APPLICANT_FULL_NAME_IN_LOWER_CASE: applicationRequestParamsTo.setApplicantFullName(value);
+                        break;
+                    case GENDER_IN_LOWER_CASE: applicationRequestParamsTo.setGender(value);
+                        break;
+                    case EMAIL_ID_IN_LOWER_CASE: applicationRequestParamsTo.setEmailId(value);
+                        break;
+                    case MOBILE_NUMBER_IN_LOWER_CASE: applicationRequestParamsTo.setMobileNumber(value);
+                        break;
+                    case YEAR_OF_REGISTRATION_IN_LOWER_CASE: applicationRequestParamsTo.setYearOfRegistration(value);
                         break;
                     default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION);
                 }

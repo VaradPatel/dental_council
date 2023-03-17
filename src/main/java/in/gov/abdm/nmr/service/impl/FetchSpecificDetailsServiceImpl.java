@@ -159,7 +159,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
      * @param applicationTypeId the application type ID
      * @param userGroupStatus   the user group status
      * @param pageNo            the page number
-     * @param size              the size of the page
+     * @param offset              the size of the page
      * @param sortBy            the sort parameter
      * @param sortOrder         the sort order
      * @return the DashboardResponseTO containing the card details
@@ -184,6 +184,14 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                     case COUNCIL_NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setCouncilName(value);
                         break;
                     case REGISTRATION_NUMBER_IN_LOWER_CASE: dashboardRequestParamsTO.setRegistrationNumber(value);
+                        break;
+                    case GENDER_IN_LOWER_CASE: dashboardRequestParamsTO.setGender(value);
+                        break;
+                    case EMAIL_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setEmailId(value);
+                        break;
+                    case MOBILE_NUMBER_IN_LOWER_CASE: dashboardRequestParamsTO.setMobileNumber(value);
+                        break;
+                    case YEAR_OF_REGISTRATION_IN_LOWER_CASE: dashboardRequestParamsTO.setYearOfRegistration(value);
                         break;
                     case SMC_ID_IN_LOWER_CASE: {
                         if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
