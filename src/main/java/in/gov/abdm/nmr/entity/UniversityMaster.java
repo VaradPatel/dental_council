@@ -20,7 +20,6 @@ public class UniversityMaster extends CommonAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger id;
-    private BigInteger universityId;
     private String name;
     private BigInteger status;
     private BigInteger visibleStatus;

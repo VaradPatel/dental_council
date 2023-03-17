@@ -15,7 +15,6 @@ public class NewHealthPersonalRequestTO {
     private String email;
     private String pincode;
     private String birthdate;
-    private String careOf;
     private String house;
     private String street;
     private String landmark;
