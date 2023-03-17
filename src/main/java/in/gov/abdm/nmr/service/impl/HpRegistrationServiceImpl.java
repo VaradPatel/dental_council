@@ -7,6 +7,7 @@ import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.*;
+import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.mapper.*;
 import in.gov.abdm.nmr.repository.*;
@@ -17,6 +18,8 @@ import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import org.apache.commons.codec.language.Soundex;
+import org.apache.commons.text.similarity.CosineSimilarity;
+import org.apache.commons.text.similarity.JaccardSimilarity;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -134,6 +137,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     private CountryRepository countryRepository;
     @Autowired
     private IStateMedicalCouncilRepository iStateMedicalCouncilRepository;
+
+    @Autowired
+    private IHpProfileStatusRepository hpProfileStatusRepository;
 
     /**
      * This method fetches the SMC registration details for a given request.
@@ -393,12 +399,13 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setIsSameAddress(String.valueOf(false));
         hpProfile.setCountryNationality(countryRepository.findByName(NMRConstants.DEFAULT_COUNTRY_AADHAR));
         hpProfile.setIsNew(1);
+        hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.PENDING.getId()).get());
         hpProfile = iHpProfileRepository.save(hpProfile);
 
         RegistrationDetails registrationDetails = new RegistrationDetails();
         registrationDetails.setStateMedicalCouncil(iStateMedicalCouncilRepository.findById(new BigInteger(request.getSmcId())).get());
         registrationDetails.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
-        registrationDetails.setRegistrationNo(registrationDetails.getRegistrationNo());
+        registrationDetails.setRegistrationNo(request.getRegistrationNumber());
         registrationDetails.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         registrationDetails.setHpProfileId(hpProfile);
         iRegistrationDetailRepository.save(registrationDetails);
