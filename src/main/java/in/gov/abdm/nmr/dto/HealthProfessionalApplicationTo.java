@@ -28,4 +28,7 @@ public class HealthProfessionalApplicationTo {
     private String collegeDeanActionDate;
     private String nmcActionDate;
     private String nbeActionDate;
+    private String gender;
+    private String emailId;
+    private String mobileNumber;
 }
