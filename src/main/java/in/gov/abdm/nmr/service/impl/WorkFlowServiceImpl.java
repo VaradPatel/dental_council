@@ -1,27 +1,44 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
-import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.enums.Action;
-import in.gov.abdm.nmr.enums.WorkflowStatus;
-import in.gov.abdm.nmr.exception.WorkFlowException;
-import in.gov.abdm.nmr.mapper.INextGroup;
-import in.gov.abdm.nmr.repository.*;
-import in.gov.abdm.nmr.service.INotificationService;
-import in.gov.abdm.nmr.service.IUserDaoService;
-import in.gov.abdm.nmr.service.IWorkFlowService;
-import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;
+import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
+
+import java.math.BigInteger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.math.BigInteger;
-
-import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
+import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
+import in.gov.abdm.nmr.entity.College;
+import in.gov.abdm.nmr.entity.HpProfile;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.entity.UserGroup;
+import in.gov.abdm.nmr.entity.WorkFlow;
+import in.gov.abdm.nmr.entity.WorkFlowAudit;
+import in.gov.abdm.nmr.enums.Action;
+import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.enums.WorkflowStatus;
+import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.mapper.INextGroup;
+import in.gov.abdm.nmr.repository.IActionRepository;
+import in.gov.abdm.nmr.repository.IApplicationTypeRepository;
+import in.gov.abdm.nmr.repository.ICollegeRepository;
+import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.IHpProfileStatusRepository;
+import in.gov.abdm.nmr.repository.INMRWorkFlowConfigurationRepository;
+import in.gov.abdm.nmr.repository.IQualificationDetailRepository;
+import in.gov.abdm.nmr.repository.IUserGroupRepository;
+import in.gov.abdm.nmr.repository.IWorkFlowAuditRepository;
+import in.gov.abdm.nmr.repository.IWorkFlowRepository;
+import in.gov.abdm.nmr.repository.IWorkFlowStatusRepository;
+import in.gov.abdm.nmr.service.INotificationService;
+import in.gov.abdm.nmr.service.IUserDaoService;
+import in.gov.abdm.nmr.service.IWorkFlowService;
+import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;
 
 @Service
 public class WorkFlowServiceImpl implements IWorkFlowService {
@@ -89,24 +106,35 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             user = userDetailService.findByUsername(userName);
         }
 
-        INextGroup iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(requestTO.getApplicationTypeId(), requestTO.getActorId(), requestTO.getActionId());
-        if (iNextGroup != null) {
-            HpProfile hpProfile = iHpProfileRepository.findById(requestTO.getHpProfileId()).get();
-            WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
-            if (workFlow == null) {
-                workFlow = buildNewWorkFlow(requestTO, iNextGroup, hpProfile, user);
-                iWorkFlowRepository.save(workFlow);
-            } else {
-                workFlow.setUpdatedAt(null);
-                workFlow.setAction(iActionRepository.findById(requestTO.getActionId()).get());
-                workFlow.setPreviousGroup(workFlow.getCurrentGroup());
-                workFlow.setCurrentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null);
-                workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
-                workFlow.setRemarks(requestTO.getRemarks());
-                workFlow.setUserId(user);
+        WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
+        HpProfile hpProfile = iHpProfileRepository.findById(requestTO.getHpProfileId()).orElse(new HpProfile());
+        INextGroup iNextGroup = null;
+        if (workFlow == null) {
+            if (!ApplicationType.getAllHpApplicationTypeIds().contains(requestTO.getApplicationTypeId()) || !Group.HEALTH_PROFESSIONAL.getId().equals(requestTO.getActorId()) //
+                    || !Action.SUBMIT.getId().equals(requestTO.getActionId())) {
+                throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
             }
+
+            iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(requestTO.getApplicationTypeId(), Group.HEALTH_PROFESSIONAL.getId(), Action.SUBMIT.getId());
+            workFlow = buildNewWorkFlow(requestTO, iNextGroup, hpProfile, user);
+            iWorkFlowRepository.save(workFlow);
+        } else {
+            if (!workFlow.getApplicationType().getId().equals(requestTO.getApplicationTypeId()) || workFlow.getCurrentGroup() == null || !workFlow.getCurrentGroup().getId().equals(requestTO.getActorId())) {
+                throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
+            }
+            iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(workFlow.getApplicationType().getId(), workFlow.getCurrentGroup().getId(), requestTO.getActionId());
+        }
+
+        if (iNextGroup != null) {
+            workFlow.setUpdatedAt(null);
+            workFlow.setAction(iActionRepository.findById(requestTO.getActionId()).get());
+            workFlow.setPreviousGroup(workFlow.getCurrentGroup());
+            workFlow.setCurrentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null);
+            workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
+            workFlow.setRemarks(requestTO.getRemarks());
+            workFlow.setUserId(user);
             if (isLastStepOfWorkFlow(iNextGroup)) {
-                workflowPostProcessorService.performPostWorkflowUpdates(requestTO,hpProfile,iNextGroup);
+                workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
             }
             iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
             notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
@@ -115,8 +143,6 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             throw new WorkFlowException("Next Group Not Found", HttpStatus.BAD_REQUEST);
         }
     }
-
-
 
     @Override
     public boolean isAnyActiveWorkflowWithOtherApplicationType(BigInteger hpProfileId, BigInteger applicationTypeId) {
@@ -140,24 +166,35 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         if (userName != null) {
             user = userDetailService.findByUsername(userName);
         }
-
-        INextGroup iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(applicationTypeId, actorId, actionId);
-        if (iNextGroup != null) {
-            WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestId);
-            if (workFlow == null) {
-                WorkFlow collegeWorkFlow = buildNewCollegeWorkFlow(requestId, applicationTypeId, actionId, actorId, iNextGroup, user);
-                workFlow = iWorkFlowRepository.save(collegeWorkFlow);
-            } else {
-                workFlow.setUpdatedAt(null);
-                workFlow.setAction(iActionRepository.findById(actionId).get());
-                workFlow.setPreviousGroup(workFlow.getCurrentGroup());
-                workFlow.setCurrentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null);
-                workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
-                workFlow.setUserId(user);
+        
+        WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestId);
+        INextGroup iNextGroup = null;
+        if (workFlow == null) {
+            if (!ApplicationType.getAllCollegeApplicationTypeIds().contains(applicationTypeId) || !Group.COLLEGE_ADMIN.getId().equals(actorId) //
+                    || !Action.SUBMIT.getId().equals(actionId)) {
+                throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
             }
-            iWorkFlowAuditRepository.save(buildNewCollegeWorkFlowAudit(requestId, applicationTypeId, actionId, actorId, iNextGroup,user));
+
+            iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(applicationTypeId, Group.COLLEGE_ADMIN.getId(), Action.SUBMIT.getId());
+            workFlow = buildNewCollegeWorkFlow(requestId, applicationTypeId, actionId, actorId, iNextGroup, user);
+            iWorkFlowRepository.save(workFlow);
+        } else {
+            if (!workFlow.getApplicationType().getId().equals(applicationTypeId) || workFlow.getCurrentGroup() == null || !workFlow.getCurrentGroup().getId().equals(actorId)) {
+                throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
+            }
+            iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(workFlow.getApplicationType().getId(), workFlow.getCurrentGroup().getId(), actionId);
+        }
+
+        if (iNextGroup != null) {
+            workFlow.setUpdatedAt(null);
+            workFlow.setAction(iActionRepository.findById(actionId).get());
+            workFlow.setPreviousGroup(workFlow.getCurrentGroup());
+            workFlow.setCurrentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null);
+            workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
+            workFlow.setUserId(user);
+            iWorkFlowAuditRepository.save(buildNewCollegeWorkFlowAudit(requestId, applicationTypeId, actionId, actorId, iNextGroup, user));
             College college = collegeRepository.findCollegeByRequestId(requestId);
-            if(college != null && college.getEmailId() != null) {
+            if (college != null && college.getEmailId() != null) {
                 notificationService.sendNotificationOnStatusChangeForCollege(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), null, college.getEmailId());
             }
 

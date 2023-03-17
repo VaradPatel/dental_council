@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.enums;
 
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * Enum for different workflow in NMR.
@@ -30,5 +31,14 @@ public enum ApplicationType {
 
     public String getDescription() {
         return description;
+    }
+    
+    public static List<BigInteger> getAllHpApplicationTypeIds() {
+        return List.of(HP_REGISTRATION.getId(), HP_MODIFICATION.getId(), HP_TEMPORARY_SUSPENSION.getId(), HP_PERMANENT_SUSPENSION.getId(), HP_ACTIVATE_LICENSE.getId(), //
+                FOREIGN_HP_REGISTRATION.getId(), QUALIFICATION_ADDITION.getId(), FOREIGN_HP_MODIFICATION.getId());
+    }
+
+    public static List<BigInteger> getAllCollegeApplicationTypeIds() {
+        return List.of(COLLEGE_REGISTRATION.getId());
     }
 }

@@ -54,7 +54,7 @@ public class NMRConstants {
     public static final String SUSPENSION_REQUEST_URL = APPLICATION_REQUEST_URL+"/suspend";
     public static final String REACTIVATE_REQUEST_URL = APPLICATION_REQUEST_URL+"/re-activate";
     public static final String HEALTH_PROFESSIONAL_ACTION = APPLICATION_REQUEST_URL +"/status";
-    public static final String COLLEGES_ACTION = "college/applications/status";
+    public static final String COLLEGES_ACTION = "/college/applications/status";
     public static final String NOTIFICATION_SERVICE = "notification";
     public static final String FACILITY_SERVICE = "facility";
     public static final String NOTIFICATION_DB_SERVICE = "notification-db";

@@ -24,7 +24,7 @@ public class CollegeController {
         this.collegeService = collegeService;
     }
 
-    @PostMapping(path = "college/applications", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/college/applications", produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeProfileTo registerCollege(@RequestBody CollegeRegistrationRequestTo collegeRegistrationRequestTo) throws NmrException, WorkFlowException {
         return collegeService.registerCollege(null, collegeRegistrationRequestTo, false);
     }
