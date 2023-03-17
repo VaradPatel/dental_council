@@ -20,4 +20,7 @@ public class DashboardTO {
     private String applicantFullName;
     private BigInteger workFlowStatusId;
     private Double pendency;
+    private String gender;
+    private String emailId;
+    private String mobileNumber;
 }

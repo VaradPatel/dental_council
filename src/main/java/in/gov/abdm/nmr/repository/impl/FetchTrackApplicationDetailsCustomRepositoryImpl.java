@@ -72,6 +72,22 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             sb.append("AND hp.full_name ILIKE '%").append(healthProfessionalApplicationRequestParamsTo.getApplicantFullName()).append("%' ");
         }
 
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getGender()) && !healthProfessionalApplicationRequestParamsTo.getGender().isEmpty()) {
+            sb.append("AND hp.gender ILIKE '%").append(healthProfessionalApplicationRequestParamsTo.getGender()).append("%' ");
+        }
+
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getEmailId()) && !healthProfessionalApplicationRequestParamsTo.getEmailId().isEmpty()) {
+            sb.append("AND hp.email_id ILIKE '%").append(healthProfessionalApplicationRequestParamsTo.getEmailId()).append("%' ");
+        }
+
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getMobileNumber()) && !healthProfessionalApplicationRequestParamsTo.getMobileNumber().isEmpty()) {
+            sb.append("AND hp.mobile_number ILIKE '%").append(healthProfessionalApplicationRequestParamsTo.getMobileNumber()).append("%' ");
+        }
+
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getYearOfRegistration()) && !healthProfessionalApplicationRequestParamsTo.getYearOfRegistration().isEmpty()) {
+            sb.append("AND rd.created_at ILIKE '%").append(healthProfessionalApplicationRequestParamsTo.getYearOfRegistration()).append("%' ");
+        }
+
         return sb.toString();
     };
 
@@ -242,6 +258,9 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setApplicationTypeName((String) result[13]);
             healthProfessionalApplicationTo.setPendency((Double) result[14]);
             healthProfessionalApplicationTo.setWorkFlowStatusId((BigInteger) result[15]);
+            healthProfessionalApplicationTo.setGender((String) result[16]);
+            healthProfessionalApplicationTo.setEmailId((String) result[17]);
+            healthProfessionalApplicationTo.setMobileNumber((String) result[18]);
             healthProfessionalApplicationToList.add(healthProfessionalApplicationTo);
         });
         healthProfessionalApplicationResponseTo.setHealthProfessionalApplications(healthProfessionalApplicationToList);

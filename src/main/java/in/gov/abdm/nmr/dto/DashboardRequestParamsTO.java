@@ -17,6 +17,10 @@ public class DashboardRequestParamsTO {
     private String councilId;
     private String collegeId;
     private String applicantFullName;
+    private String gender;
+    private String emailId;
+    private String mobileNumber;
+    private String yearOfRegistration;
     private String sortBy;
     private String sortOrder;
 }

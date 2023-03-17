@@ -8,6 +8,10 @@ import lombok.Data;
 public class ReactivateHealthProfessionalRequestParam {
     private String applicantFullName;
     private String registrationNumber;
+    private String gender;
+    private String emailId;
+    private String mobileNumber;
+    private String yearOfRegistration;
     private String search;
     private Integer pageNo;
     private Integer offset;

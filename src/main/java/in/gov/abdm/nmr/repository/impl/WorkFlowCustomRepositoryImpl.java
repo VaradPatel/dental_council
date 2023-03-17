@@ -47,6 +47,18 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
         if (Objects.nonNull(reactivateHealthProfessionalQueryParam.getRegistrationNumber()) && (!reactivateHealthProfessionalQueryParam.getRegistrationNumber().isEmpty())) {
             sb.append(" AND r.registration_id ILIKE  '%" + reactivateHealthProfessionalQueryParam.getRegistrationNumber() + "%' ");
         }
+        if (Objects.nonNull(reactivateHealthProfessionalQueryParam.getGender()) && !reactivateHealthProfessionalQueryParam.getGender().isEmpty()) {
+            sb.append(" AND r.gender ILIKE '%").append(reactivateHealthProfessionalQueryParam.getGender()).append("%' ");
+        }
+        if (Objects.nonNull(reactivateHealthProfessionalQueryParam.getEmailId()) && !reactivateHealthProfessionalQueryParam.getEmailId().isEmpty()) {
+            sb.append(" AND r.email_id ILIKE '%").append(reactivateHealthProfessionalQueryParam.getEmailId()).append("%' ");
+        }
+        if (Objects.nonNull(reactivateHealthProfessionalQueryParam.getMobileNumber()) && !reactivateHealthProfessionalQueryParam.getMobileNumber().isEmpty()) {
+            sb.append(" AND r.mobile_number ILIKE '%").append(reactivateHealthProfessionalQueryParam.getMobileNumber()).append("%' ");
+        }
+        if (Objects.nonNull(reactivateHealthProfessionalQueryParam.getYearOfRegistration()) && !reactivateHealthProfessionalQueryParam.getYearOfRegistration().isEmpty()) {
+            sb.append(" AND r.created_at ILIKE '%").append(reactivateHealthProfessionalQueryParam.getYearOfRegistration()).append("%' ");
+        }
         return sb.toString();
     };
     private static final Function<ReactivateHealthProfessionalRequestParam, String> SORT_RECORDS = reactivateHealthProfessionalQueryParam -> {
@@ -123,8 +135,11 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
             reactivateHealthProfessionalTO.setHealthProfessionalName((String) result[3]);
             reactivateHealthProfessionalTO.setSubmittedDate((Date) result[4]);
             reactivateHealthProfessionalTO.setReactivation((Date) result[5]);
-            reactivateHealthProfessionalTO.setTypeOfSuspension((String) result[6]);
-            reactivateHealthProfessionalTO.setRemarks((String) result[7]);
+            reactivateHealthProfessionalTO.setGender((String) result[6]);
+            reactivateHealthProfessionalTO.setEmailId((String) result[7]);
+            reactivateHealthProfessionalTO.setMobileNumber((String) result[8]);
+            reactivateHealthProfessionalTO.setTypeOfSuspension((String) result[9]);
+            reactivateHealthProfessionalTO.setRemarks((String) result[10]);
             reactivateHealthProfessionalTOList.add(reactivateHealthProfessionalTO);
         });
         reactivateHealthProfessionalResponseTO.setHealthProfessionalDetails(reactivateHealthProfessionalTOList);

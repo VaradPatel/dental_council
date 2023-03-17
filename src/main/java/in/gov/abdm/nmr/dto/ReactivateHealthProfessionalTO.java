@@ -18,4 +18,7 @@ public class ReactivateHealthProfessionalTO {
     private Date reactivation;
     private String typeOfSuspension;
     private String remarks;
+    private String gender;
+    private String emailId;
+    private String mobileNumber;
 }
