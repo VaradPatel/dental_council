@@ -18,6 +18,7 @@ public enum NMRError {
     TEMPLATE_ID_NOT_FOUND_IN_PROPERTIES ("NMR-1007","Template id not found in properties"),
     TEMPLATE_NOT_FOUND("1008", "Template not found"),
     NO_DATA_FOUND("1009", "No data found"),
+    DATE_EXCEPTION("10010", "Fail to Process"),
 
 
     ;

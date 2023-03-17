@@ -7,9 +7,7 @@ import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.*;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
-import in.gov.abdm.nmr.exception.NmrException;
-import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.mapper.*;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.IHpProfileDaoService;
@@ -27,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -132,9 +129,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Autowired
     private IAddressRepository addressRepository;
-
     @Autowired
     private CountryRepository countryRepository;
+    @Autowired
+    private IStateMedicalCouncilRepository iStateMedicalCouncilRepository;
 
     /**
      * This method fetches the SMC registration details for a given request.
@@ -369,17 +367,17 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     @Override
-    public void addNewHealthProfessional(NewHealthPersonalRequestTO request) {
+    public void addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException {
         HpProfile hpProfile = new HpProfile();
-        hpProfile.setAadhaarToken(request.getAadhaarToken());
+        hpProfile.setAadhaarToken(request.getAadhaarToken() != null ? request.getAadhaarToken() : null);
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         try {
             java.util.Date dt = df.parse(request.getBirthdate());
             hpProfile.setDateOfBirth(new java.sql.Date(dt.getTime()));
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            throw new DateException(NMRError.DATE_EXCEPTION.getCode(), NMRError.DATE_EXCEPTION.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString());
         }
-        hpProfile.setEmailId(request.getEmail());
+        hpProfile.setEmailId(request.getEmail() != null ? request.getEmail() : null);
         hpProfile.setFullName(request.getName());
         hpProfile.setGender(request.getGender());
         hpProfile.setMobileNumber(request.getMobileNumber());
@@ -392,9 +390,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile = iHpProfileRepository.save(hpProfile);
 
         RegistrationDetails registrationDetails = new RegistrationDetails();
-        StateMedicalCouncil council = new StateMedicalCouncil();
-        council.setId(new BigInteger(request.getSmcId()));
-        registrationDetails.setStateMedicalCouncil(council);
+        registrationDetails.setStateMedicalCouncil(iStateMedicalCouncilRepository.findById(new BigInteger(request.getSmcId())).get());
         registrationDetails.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
         registrationDetails.setRegistrationNo(registrationDetails.getRegistrationNo());
         registrationDetails.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
@@ -405,15 +401,15 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         address.setPincode(request.getPincode());
         address.setMobile(request.getMobileNumber());
         address.setAddressLine1(request.getAddress());
-        address.setEmail(request.getEmail());
-        address.setHouse(request.getHouse());
-        address.setStreet(request.getStreet());
+        address.setEmail(request.getEmail() != null ? request.getEmail() : null);
+        address.setHouse(request.getHouse() != null ? request.getHouse() : null);
+        address.setStreet(request.getStreet() != null ? request.getStreet() : null);
         address.setLocality(request.getLocality());
-        address.setLandmark(request.getLandmark());
+        address.setLandmark(request.getLandmark() != null ? request.getLandmark() : null);
         address.setHpProfileId(hpProfile.getId());
         address.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.KYC.getId(), AddressType.KYC.name()));
         address.setVillage(villagesRepository.findByName(request.getLocality()));
-        address.setSubDistrict(subDistrictRepository.findByName(request.getSubDist()));
+        address.setSubDistrict(request.getSubDist() != null ? subDistrictRepository.findByName(request.getSubDist()) : null);
         address.setState(stateRepository.findByName(request.getState()));
         address.setDistrict(districtRepository.findByName(request.getDistrict().toUpperCase()));
         address.setCountry(stateRepository.findByName(request.getState().toUpperCase()).getCountry());
