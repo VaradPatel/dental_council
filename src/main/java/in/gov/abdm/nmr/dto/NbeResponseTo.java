@@ -12,4 +12,5 @@ public class NbeResponseTo {
     private String year;
     private String month;
     private Integer marksObtained;
+    private String passportNumber;
 }

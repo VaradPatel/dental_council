@@ -37,6 +37,7 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
             nbeResponseTo.setMarksObtained(nbeDetails.getMarksObtained());
             nbeResponseTo.setRollNo(nbeDetails.getRollNo());
             nbeResponseTo.setYear(nbeDetails.getYearOfPassing());
+            nbeResponseTo.setPassportNumber(nbeDetails.getPassportNumber());
         }
         if(!indianQualifications.isEmpty()) {
             qualifications.addAll(indianQualifications.stream().map(indianQualification -> {

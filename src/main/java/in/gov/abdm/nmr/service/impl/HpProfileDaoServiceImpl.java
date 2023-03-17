@@ -570,6 +570,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             hpNbeDetails.setYearOfPassing(hpRegistrationUpdateRequestTO.getHpNbeDetails().getYearOfPassing());
             hpNbeDetails.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
             hpNbeDetails.setHpProfileId(hpProfile.getId());
+            hpNbeDetails.setPassportNumber(hpRegistrationUpdateRequestTO.getHpNbeDetails().getPassportNumber());
         }
     }
 
