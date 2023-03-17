@@ -380,7 +380,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setEmailId(request.getEmail() != null ? request.getEmail() : null);
         hpProfile.setFullName(request.getName());
         hpProfile.setGender(request.getGender());
-        hpProfile.setMobileNumber(request.getMobileNumber());
+        hpProfile.setMobileNumber(request.getMobileNumber()!=null?request.getMobileNumber():null);
         hpProfile.setSalutation(NMRConstants.SALUTATION_DR);
         hpProfile.setProfilePhoto(request.getPhoto()!=null?request.getPhoto().getBytes():null);
         hpProfile.setRegistrationId(request.getRegistrationNumber());
