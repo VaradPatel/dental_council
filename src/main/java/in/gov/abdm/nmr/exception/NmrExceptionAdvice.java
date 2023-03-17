@@ -211,4 +211,13 @@ public class NmrExceptionAdvice {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, headers, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler({DateException.class})
+    public ResponseEntity<ErrorTO> handleDateException(HttpServletRequest req, DateException ex) {
+        ErrorTO error = new ErrorTO(new Date(), HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), req.getServletPath());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(error, headers, HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
 }
