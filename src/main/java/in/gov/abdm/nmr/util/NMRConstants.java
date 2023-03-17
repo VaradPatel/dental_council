@@ -54,7 +54,7 @@ public class NMRConstants {
     public static final String SUSPENSION_REQUEST_URL = APPLICATION_REQUEST_URL+"/suspend";
     public static final String REACTIVATE_REQUEST_URL = APPLICATION_REQUEST_URL+"/re-activate";
     public static final String HEALTH_PROFESSIONAL_ACTION = APPLICATION_REQUEST_URL +"/status";
-    public static final String COLLEGES_ACTION = "college/applications/status";
+    public static final String COLLEGES_ACTION = "/college/applications/status";
     public static final String NOTIFICATION_SERVICE = "notification";
     public static final String FACILITY_SERVICE = "facility";
     public static final String NOTIFICATION_DB_SERVICE = "notification-db";
@@ -146,20 +146,28 @@ public class NMRConstants {
     public static final int OTP_GENERATION_MAX_ATTEMPTS = 5;
     public static final int OTP_MAX_ATTEMPTS = 3;
 
-    public static final String TOTAL_HP_REGISTRATION_REQUESTS = "Total HP Registration Requests";
-    public static final String TOTAL_HP_MODIFICATION_REQUESTS = "Total HP Modification Requests";
+    public static final String TOTAL_HP_REGISTRATION_REQUESTS = "Total Registration Requests";
+    public static final String TOTAL_HP_MODIFICATION_REQUESTS = "Total Modification Requests";
 
     public static final String TOTAL_TEMPORARY_SUSPENSION_REQUESTS = "Total Temporary Suspension Requests";
 
     public static final String TOTAL_PERMANENT_SUSPENSION_REQUESTS = "Total Permanent Suspension Requests";
 
-    public static final String TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS = "Total Consolidated Suspension Requests";
+    public static final String TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS = "Total Suspension Requests";
+
+    public static final String CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS = "Temporary Suspension Requests Received";
+
+    public static final String CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS = "Temporary Suspension Requests Approved";
+
+    public static final String CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS = "Permanent Suspension Requests Received";
+
+    public static final String CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS = "Permanent Suspension Requests Approved";
 
     public static final String TOTAL_ACTIVATE_LICENSE_REQUESTS = "Total Activate License Requests";
 
     public static final String TOTAL_COLLEGE_REGISTRATION_REQUESTS = "Total College Registration Requests";
 
-    public static final String TOTAL_FOREIGN_HP_REGISTRATION_REQUESTS = "Total Foreign HP Registration Requests";
+    public static final String TOTAL_FOREIGN_HP_REGISTRATION_REQUESTS = "Total Foreign Registration Requests";
 
     public static final String HP_PROFILE_ID = "hpProfileId";
 
@@ -204,7 +212,8 @@ public class NMRConstants {
 
     public static final String WORK_FLOW_STATUS = "workFlowStatus";
     public static final String FETCH_STATUS_WISE_COUNT_QUERY = """
-            SELECT ws.name as name, COUNT(w) as count
+            SELECT wfs.name, coalesce(result.count,0) as count FROM 
+            (SELECT ws.name as name, COUNT(w) as count
             FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id
             WHERE w.application_type_id = :""" + APPLICATION_TYPE_ID + " AND w.current_group_id = :" + GROUP_ID + " OR ( w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.previous_group_id = :" + GROUP_ID + """ 
              \s AND w.action_id IN ( 3,5 ) )
@@ -214,10 +223,11 @@ public class NMRConstants {
             FROM work_flow_audit wa
             WHERE wa.application_type_id = :""" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """
              \s AND wa.action_id = 4
-            GROUP BY name""";
+            GROUP BY name ) as result right join main.work_flow_status wfs on wfs.name=result.name""";
 
     public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_COLLEGE = """
-            SELECT ws.name as name, COUNT(w) as count 
+            SELECT wfs.name, coalesce (result.count,0) as count FROM 
+            (SELECT ws.name as name, COUNT(w) as count 
             FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
             INNER JOIN qualification_details as qd on qd.hp_profile_id = w.hp_profile_id AND qd.request_id = w.request_id 
             WHERE w.application_type_id = :""" + APPLICATION_TYPE_ID + " AND qd.college_id = :" + COLLEGE_ID + " AND w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
@@ -227,12 +237,13 @@ public class NMRConstants {
             SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
             INNER JOIN qualification_details as qd on qd.hp_profile_id = wa.hp_profile_id AND qd.request_id = wa.request_id  
             WHERE wa.application_type_id = :""" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """  
-             \s AND wa.action_id = 4 AND qd.college_id = :""" + COLLEGE_ID + " GROUP BY name ";
+             \s AND wa.action_id = 4 AND qd.college_id = :""" + COLLEGE_ID + " GROUP BY name ) as result right join main.work_flow_status wfs on wfs.name=result.name";
 
     public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_NBE = """
-            SELECT ws.name as name, COUNT(w) as count 
+            SELECT wfs.name, coalesce(result.count,0) as count FROM 
+            (SELECT ws.name as name, COUNT(w) as count 
             FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
-            JOIN nbe_profile nbe ON nbe.user_id=nbe.user_id 
+            JOIN nbe_profile nbe ON nbe.user_id=w.user_id 
             WHERE nbe.id=:""" + NBE_PROFILE_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND  w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
              \s AND w.action_id IN ( 3,5 ) ) 
             GROUP BY ws.name 
@@ -241,11 +252,11 @@ public class NMRConstants {
             JOIN nbe_profile nbe ON wa.user_id=nbe.user_id 
             WHERE nbe.id=:""" + NBE_PROFILE_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """  
              \s AND wa.action_id = 4 
-            GROUP BY name """;
-
+            GROUP BY name ) as result right join main.work_flow_status wfs on wfs.name=result.name""";
 
     public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_SMC = """
-        SELECT ws.name as name, COUNT(w) as count 
+        SELECT wfs.name, coalesce(result.count,0) as count FROM 
+        (SELECT ws.name as name, COUNT(w) as count 
         FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
         JOIN registration_details rd ON w.hp_profile_id=rd.hp_profile_id 
         WHERE rd.state_medical_council_id=:""" + SMC_PROFILE_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.current_group_id = :" + GROUP_ID + " OR ( w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.previous_group_id = :" + GROUP_ID + """ 
@@ -257,8 +268,7 @@ public class NMRConstants {
         JOIN registration_details rd ON wa.hp_profile_id=rd.hp_profile_id 
         WHERE rd.state_medical_council_id=:""" + SMC_PROFILE_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """
          \s AND wa.action_id = 4 
-        GROUP BY name """;
-
+        GROUP BY name ) as result right join main.work_flow_status wfs on wfs.name=result.name""";
 
 
     public static final String FETCH_DETAILS_FOR_LISTING_QUERY = "SELECT rd.registration_no as registrationNo, hp.full_name as nameOfApplicant, smc.name as nameOfStateCouncil, rd.registration_date as dateOfSubmission, g.name as groupName, ws.name as workFlowStatus " +
