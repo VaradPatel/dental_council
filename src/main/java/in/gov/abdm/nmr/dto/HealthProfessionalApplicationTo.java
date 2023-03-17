@@ -22,4 +22,10 @@ public class HealthProfessionalApplicationTo {
     private String applicationTypeName;
     private Double pendency;
     private BigInteger workFlowStatusId;
+    private String doctorActionDate;
+    private String smcActionDate;
+    private String collegeRegistrarActionDate;
+    private String collegeDeanActionDate;
+    private String nmcActionDate;
+    private String nbeActionDate;
 }
