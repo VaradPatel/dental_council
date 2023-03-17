@@ -382,7 +382,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setGender(request.getGender());
         hpProfile.setMobileNumber(request.getMobileNumber());
         hpProfile.setSalutation(NMRConstants.SALUTATION_DR);
-        hpProfile.setProfilePhoto(request.getPhoto().getBytes());
+        hpProfile.setProfilePhoto(request.getPhoto()!=null?request.getPhoto().getBytes():null);
         hpProfile.setRegistrationId(request.getRegistrationNumber());
         hpProfile.setIsSameAddress(String.valueOf(false));
         hpProfile.setCountryNationality(countryRepository.findByName(NMRConstants.DEFAULT_COUNTRY_AADHAR));
@@ -404,14 +404,16 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         address.setEmail(request.getEmail() != null ? request.getEmail() : null);
         address.setHouse(request.getHouse() != null ? request.getHouse() : null);
         address.setStreet(request.getStreet() != null ? request.getStreet() : null);
-        address.setLocality(request.getLocality());
+        address.setLocality(request.getLocality()!=null?request.getLocality():null);
+        address.setHouse(request.getHouse()!=null?request.getHouse():null);
+        address.setLandmark(request.getLandmark()!=null?request.getLandmark():null);
         address.setLandmark(request.getLandmark() != null ? request.getLandmark() : null);
         address.setHpProfileId(hpProfile.getId());
         address.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.KYC.getId(), AddressType.KYC.name()));
-        address.setVillage(villagesRepository.findByName(request.getLocality()));
+        address.setVillage(request.getVillageTownCity()!=null?villagesRepository.findByName(request.getLocality()):null);
         address.setSubDistrict(request.getSubDist() != null ? subDistrictRepository.findByName(request.getSubDist()) : null);
         address.setState(stateRepository.findByName(request.getState()));
-        address.setDistrict(districtRepository.findByName(request.getDistrict().toUpperCase()));
+        address.setDistrict(request.getDistrict()!=null?districtRepository.findByName(request.getDistrict().toUpperCase()):null);
         address.setCountry(stateRepository.findByName(request.getState().toUpperCase()).getCountry());
         iAddressRepository.save(address);
     }
