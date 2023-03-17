@@ -355,7 +355,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 address.setVillage(villagesRepository.findByName(userKycTo.getLocality()));
                 address.setSubDistrict(subDistrictRepository.findByName(userKycTo.getSubDist()));
                 address.setState(stateRepository.findByName(userKycTo.getState()));
-                address.setDistrict(districtRepository.findByName(userKycTo.getDistrict().toUpperCase()));
+                address.setDistrict(districtRepository.findByDistrictNameAndStateId(userKycTo.getDistrict().toUpperCase(),address.getState().getId()));
                 address.setCountry(stateRepository.findByName(userKycTo.getState().toUpperCase()).getCountry());
                 iAddressRepository.save(address);
                 hpProfile.setProfilePhoto(userKycTo.getPhoto().getBytes());
@@ -416,8 +416,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         address.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.KYC.getId(), AddressType.KYC.name()));
         address.setVillage(request.getVillageTownCity()!=null?villagesRepository.findByName(request.getLocality()):null);
         address.setSubDistrict(request.getSubDist() != null ? subDistrictRepository.findByName(request.getSubDist()) : null);
-        address.setState(stateRepository.findByName(request.getState()));
-        address.setDistrict(request.getDistrict()!=null?districtRepository.findByName(request.getDistrict().toUpperCase()):null);
+        address.setState(stateRepository.findByName(request.getState().toUpperCase()));
+        address.setDistrict(districtRepository.findByDistrictNameAndStateId(request.getDistrict().toUpperCase(),address.getState().getId()));
         address.setCountry(stateRepository.findByName(request.getState().toUpperCase()).getCountry());
         iAddressRepository.save(address);
     }
