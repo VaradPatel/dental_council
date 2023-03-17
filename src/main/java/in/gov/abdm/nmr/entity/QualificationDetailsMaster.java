@@ -43,7 +43,7 @@ public class QualificationDetailsMaster {
 
     @OneToOne
     @JoinColumn(name = "college_id", referencedColumnName = "id")
-    private College college;
+    private CollegeMaster college;
 
     @OneToOne
     @JoinColumn(name = "country_id", referencedColumnName = "id")
@@ -59,7 +59,7 @@ public class QualificationDetailsMaster {
 
     @OneToOne
     @JoinColumn(name = "university_id", referencedColumnName = "id")
-    private University university;
+    private UniversityMaster university;
 
 
     @ManyToOne
