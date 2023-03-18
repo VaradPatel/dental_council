@@ -182,7 +182,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             mapAddressRequestToEntity(updatedHpProfileId, hpPersonalUpdateRequestTO, newAddress);
             iAddressRepository.save(newAddress);
             Address kycAddress = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(copiedExistingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.KYC.getId()), new Address());
-            if (kycAddress.getId() != null) {
+            if (kycAddress != null && kycAddress.getId() != null) {
                 Address newKycAddress = new Address();
                 org.springframework.beans.BeanUtils.copyProperties(kycAddress, newKycAddress);
                 newKycAddress.setId(null);
