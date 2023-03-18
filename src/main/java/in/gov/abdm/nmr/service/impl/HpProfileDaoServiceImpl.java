@@ -182,14 +182,23 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             mapAddressRequestToEntity(updatedHpProfileId, hpPersonalUpdateRequestTO, newAddress);
             iAddressRepository.save(newAddress);
 
+            System.out.println("*************************************");
+            System.out.println(newAddress.getId());
+            System.out.println("*************************************");
+
             Address kycAddress = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(copiedExistingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.KYC.getId()), new Address());
-            if (kycAddress != null) {
+            if (kycAddress.getId() != null) {
+                System.out.println("INSIDE KYC ----------------->>>>" + kycAddress);
                 Address newKycAddress = new Address();
                 org.springframework.beans.BeanUtils.copyProperties(kycAddress, newKycAddress);
                 newKycAddress.setId(null);
                 newKycAddress.setHpProfileId(updatedHpProfileId);
                 //mapAddressRequestToEntity(updatedHpProfileId, hpPersonalUpdateRequestTO, newKycAddress);
                 iAddressRepository.save(newKycAddress);
+
+                System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+                System.out.println(newKycAddress.getId());
+                System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
             }
         }
         if (copiedExistingHpProfile != null && HpProfileStatus.APPROVED.getId().equals(copiedExistingHpProfile.getHpProfileStatus().getId())) {
