@@ -78,5 +78,6 @@ public class HpProfileMaster {
 	private User user;
 	private String requestId;
 	private String isSameAddress;
+	private String transactionId;
 	private String registrationId;
 }
