@@ -22,15 +22,8 @@ public class HpRegistrationServiceImplTest {
     @Test
     public void testFuzzyScore() throws IOException {
 
-        double fuzzyScore = hpRegistrationService.getFuzzyScore("Satish Chonde", "Satish Udhavrao chonde");
-//        System.out.println(fuzzyScore);
-//        Assertions.assertTrue(fuzzyScore> 80);
-
-        File file = new File("C:/Users/10717747/Downloads/e-sign_NMR.pdf");
-        byte[] input_file = Files.readAllBytes(Paths.get("C:/Users/10717747/Downloads/e-sign_NMR.pdf"));
-//        Base64.getEncoder().encodeToString(input_file);
-        String encodeToString = Base64.getEncoder().encodeToString(input_file);
-        Base64.getDecoder().decode(encodeToString)
+        double fuzzyScore = hpRegistrationService.getFuzzyScore("Govind Kedia", "Govind Dwarkadasji Kedia");
+        Assertions.assertTrue(fuzzyScore> 80);
     }
 
 }
