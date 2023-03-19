@@ -17,6 +17,8 @@ import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.language.Metaphone;
 import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.text.similarity.CosineSimilarity;
 import org.apache.commons.text.similarity.JaccardSimilarity;
@@ -43,6 +45,7 @@ import static in.gov.abdm.nmr.util.NMRUtil.validateQualificationDetailsAndProofs
 import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetails;
 
 @Service
+@Slf4j
 public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Autowired
     private IHpProfileMapper iHpProfileMapper;
@@ -444,10 +447,13 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public double getFuzzyScore(String s1, String s2) {
         double score;
         if (new Soundex().soundex(s1).equals(s2)) {
-            score = 100;
-        } else {
-            score = (100 - (new LevenshteinDistance().apply(s1, s2) / (double) s2.length()) * 100);
+            log.info("Matched using soundex algorithm");
+            return 100;
         }
-        return score;
+        if(new Metaphone().isMetaphoneEqual(s1,s2)){
+            log.info("Matched using metaphone algorithm");
+            return 100;
+        }
+        return  (100 - (new LevenshteinDistance().apply(s1, s2) / (double) s2.length()) * 100);
     }
 }
