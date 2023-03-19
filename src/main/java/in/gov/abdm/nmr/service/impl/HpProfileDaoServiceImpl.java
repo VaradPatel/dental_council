@@ -163,21 +163,32 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 registrationId = existingHpProfile.getRegistrationId();
             }
 
-            existingHpProfile = new HpProfile();
-            existingHpProfile.setRegistrationId(registrationId);
-
-            mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, existingHpProfile);
-            targetedHpProfile = iHpProfileRepository.save(existingHpProfile);
-            updatedHpProfileId = targetedHpProfile.getId();
+            targetedHpProfile = new HpProfile();
+            org.springframework.beans.BeanUtils.copyProperties(existingHpProfile, targetedHpProfile);
+            targetedHpProfile.setId(null);
+            mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, targetedHpProfile);
+            HpProfile savedHpProfile = iHpProfileRepository.save(targetedHpProfile);
+            updatedHpProfileId = savedHpProfile.getId();
 
         } else {
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, existingHpProfile);
             updatedHpProfileId = existingHpProfile.getId();
         }
         if (hpPersonalUpdateRequestTO.getCommunicationAddress() != null) {
-            Address address = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(existingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId()), new Address());
-            mapAddressRequestToEntity(existingHpProfile.getId(), hpPersonalUpdateRequestTO, address);
-            iAddressRepository.save(address);
+            Address address = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(copiedExistingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId()), new Address());
+            Address newAddress =new Address();
+            org.springframework.beans.BeanUtils.copyProperties(address, newAddress);
+            newAddress.setId(null);
+            mapAddressRequestToEntity(updatedHpProfileId, hpPersonalUpdateRequestTO, newAddress);
+            iAddressRepository.save(newAddress);
+            Address kycAddress = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(copiedExistingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.KYC.getId()), new Address());
+            if (kycAddress != null && kycAddress.getId() != null) {
+                Address newKycAddress = new Address();
+                org.springframework.beans.BeanUtils.copyProperties(kycAddress, newKycAddress);
+                newKycAddress.setId(null);
+                newKycAddress.setHpProfileId(updatedHpProfileId);
+                iAddressRepository.save(newKycAddress);
+            }
         }
         if (copiedExistingHpProfile != null && HpProfileStatus.APPROVED.getId().equals(copiedExistingHpProfile.getHpProfileStatus().getId())) {
 
@@ -210,8 +221,14 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             }
             iForeignQualificationDetailRepository.saveAll(customQualificationDetailsList);
 
+            HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByHpProfileId(copiedExistingHpProfile.getId());
+            if (hpNbeDetails!=null){
+                HpNbeDetails newHpNbeDetails =new HpNbeDetails();
+                org.springframework.beans.BeanUtils.copyProperties(hpNbeDetails, newHpNbeDetails);
+                newHpNbeDetails.setId(null);
+                newHpNbeDetails.setHpProfileId(targetedHpProfile.getId());
+            }
         }
-
         return new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", updatedHpProfileId);
     }
 
@@ -525,7 +542,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         }
 
         AddressType addressType = new AddressType();
-        addressType.setId(hpPersonalUpdateRequestTO.getCommunicationAddress().getAddressType().getId());
+        addressType.setId(hpPersonalUpdateRequestTO.getCommunicationAddress().getAddressType()!=null?hpPersonalUpdateRequestTO.getCommunicationAddress().getAddressType().getId(): in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId());
         addressData.setAddressTypeId(addressType);
         addressData.setHpProfileId(hpProfileId);
 
