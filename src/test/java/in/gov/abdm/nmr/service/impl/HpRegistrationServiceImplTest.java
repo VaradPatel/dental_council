@@ -7,6 +7,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Base64;
+
 @ExtendWith(MockitoExtension.class)
 public class HpRegistrationServiceImplTest {
 
@@ -14,10 +20,9 @@ public class HpRegistrationServiceImplTest {
     HpRegistrationServiceImpl hpRegistrationService;
 
     @Test
-    public void testFuzzyScore(){
+    public void testFuzzyScore() throws IOException {
 
-        double fuzzyScore = hpRegistrationService.getFuzzyScore("Satish Chonde", "Satish Udhavrao chonde");
-//        System.out.println(fuzzyScore);
+        double fuzzyScore = hpRegistrationService.getFuzzyScore("Govind Kedia", "Govind Dwarkadasji Kedia");
         Assertions.assertTrue(fuzzyScore> 80);
     }
 
