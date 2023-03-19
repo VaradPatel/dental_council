@@ -271,6 +271,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setGender((String) result[14]);
             dashBoardTO.setEmailId((String) result[15]);
             dashBoardTO.setMobileNumber((String) result[16]);
+            dashBoardTO.setNmrId((String)result[17]);
             dashboardTOList.add(dashBoardTO);
         });
         dashBoardResponseTO.setDashboardTOList(dashboardTOList);
