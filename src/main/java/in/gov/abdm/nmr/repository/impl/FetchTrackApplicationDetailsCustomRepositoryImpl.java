@@ -261,6 +261,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setGender((String) result[16]);
             healthProfessionalApplicationTo.setEmailId((String) result[17]);
             healthProfessionalApplicationTo.setMobileNumber((String) result[18]);
+            healthProfessionalApplicationTo.setNmrId((String)result[19]);
             healthProfessionalApplicationToList.add(healthProfessionalApplicationTo);
         });
         healthProfessionalApplicationResponseTo.setHealthProfessionalApplications(healthProfessionalApplicationToList);
