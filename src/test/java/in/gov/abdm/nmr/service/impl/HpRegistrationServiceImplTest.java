@@ -16,7 +16,7 @@ public class HpRegistrationServiceImplTest {
     @Test
     public void testFuzzyScore(){
 
-        double fuzzyScore = hpRegistrationService.getFuzzyScore("Govind Kedia", "Govind Kedia");
+        double fuzzyScore = hpRegistrationService.getFuzzyScore("Satish Chonde", "Satish Udhavrao chonde");
 //        System.out.println(fuzzyScore);
         Assertions.assertTrue(fuzzyScore> 80);
     }

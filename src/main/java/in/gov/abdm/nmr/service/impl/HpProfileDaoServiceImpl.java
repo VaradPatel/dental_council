@@ -239,7 +239,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
             try {
-                hpRegistrationUpdateRequestTO.getRegistrationDetail().setRegistrationCertificate(registrationCertificate != null ? registrationCertificate.getBytes() : null);
+                hpRegistrationUpdateRequestTO.getRegistrationDetail().setRegistrationCertificate(registrationCertificate != null ? Base64.getEncoder().encodeToString(registrationCertificate.getBytes()) : null);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -603,7 +603,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             registrationDetail.setRenewableRegistrationDate(
                     hpRegistrationUpdateRequestTO.getRegistrationDetail().getRenewableRegistrationDate());
             registrationDetail.setIsNameChange(hpRegistrationUpdateRequestTO.getRegistrationDetail().getIsNameChange());
-            registrationDetail.setCertificate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationCertificate());
+            registrationDetail.setCertificate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationCertificate().getBytes());
         }
         registrationDetail.setHpProfileId(hpProfile);
         registrationDetail.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));

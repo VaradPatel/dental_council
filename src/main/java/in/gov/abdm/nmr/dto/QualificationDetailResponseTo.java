@@ -19,5 +19,5 @@ public class QualificationDetailResponseTo {
     private Integer isVerified;
     private String requestId;
     private String qualificationFrom;
-    private byte[] degreeCertificate;
+    private String degreeCertificate;
 }
