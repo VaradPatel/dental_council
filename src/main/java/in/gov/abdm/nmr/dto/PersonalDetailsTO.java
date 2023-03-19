@@ -18,7 +18,6 @@ public class PersonalDetailsTO {
 
     private String aadhaarToken;
 
-    @NotBlank(message = NOT_BLANK_ERROR_MSG)
     private String firstName;
     private String middleName;
     private String lastName;
