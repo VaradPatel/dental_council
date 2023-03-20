@@ -120,7 +120,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         Tuple hpProfile = iHpProfileRepository.fetchSmcRegistrationDetail(registrationNumber, councilId);
 
         if (hpProfile != null) {
-            if(hpProfile.get(USER_ID_COLUMN,BigInteger.class) != null) {
+            if (hpProfile.get(USER_ID_COLUMN, BigInteger.class) != null) {
                 throw new NmrException(USER_ALREADY_EXISTS_EXCEPTION, HttpStatus.BAD_REQUEST);
             }
             /*else {
@@ -176,9 +176,13 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         }
         if (hpPersonalUpdateRequestTO.getCommunicationAddress() != null) {
             Address address = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(copiedExistingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId()), new Address());
-            Address newAddress =new Address();
+            Address newAddress = new Address();
             org.springframework.beans.BeanUtils.copyProperties(address, newAddress);
-            newAddress.setId(null);
+            if (hpPersonalUpdateRequestTO.getCommunicationAddress().getId() != null) {
+                newAddress.setId(address.getId());
+            } else {
+                newAddress.setId(null);
+            }
             mapAddressRequestToEntity(updatedHpProfileId, hpPersonalUpdateRequestTO, newAddress);
             iAddressRepository.save(newAddress);
         }
@@ -223,8 +227,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             iForeignQualificationDetailRepository.saveAll(customQualificationDetailsList);
 
             HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByHpProfileId(copiedExistingHpProfile.getId());
-            if (hpNbeDetails!=null){
-                HpNbeDetails newHpNbeDetails =new HpNbeDetails();
+            if (hpNbeDetails != null) {
+                HpNbeDetails newHpNbeDetails = new HpNbeDetails();
                 org.springframework.beans.BeanUtils.copyProperties(hpNbeDetails, newHpNbeDetails);
                 newHpNbeDetails.setId(null);
                 newHpNbeDetails.setHpProfileId(targetedHpProfile.getId());
@@ -543,7 +547,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         }
 
         AddressType addressType = new AddressType();
-        addressType.setId(hpPersonalUpdateRequestTO.getCommunicationAddress().getAddressType()!=null?hpPersonalUpdateRequestTO.getCommunicationAddress().getAddressType().getId(): in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId());
+        addressType.setId(hpPersonalUpdateRequestTO.getCommunicationAddress().getAddressType() != null ? hpPersonalUpdateRequestTO.getCommunicationAddress().getAddressType().getId() : in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId());
         addressData.setAddressTypeId(addressType);
         addressData.setHpProfileId(hpProfileId);
 
