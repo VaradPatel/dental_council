@@ -164,8 +164,10 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             }
 
             targetedHpProfile = new HpProfile();
-            org.springframework.beans.BeanUtils.copyProperties(existingHpProfile, targetedHpProfile);
-            targetedHpProfile.setId(null);
+            if (existingHpProfile != null) {
+                org.springframework.beans.BeanUtils.copyProperties(existingHpProfile, targetedHpProfile);
+                targetedHpProfile.setId(null);
+            }
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, targetedHpProfile);
             HpProfile savedHpProfile = iHpProfileRepository.save(targetedHpProfile);
             updatedHpProfileId = savedHpProfile.getId();
@@ -174,7 +176,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, existingHpProfile);
             updatedHpProfileId = existingHpProfile.getId();
         }
-        if (hpPersonalUpdateRequestTO.getCommunicationAddress() != null) {
+        if (hpPersonalUpdateRequestTO.getCommunicationAddress() != null && copiedExistingHpProfile!=null) {
             Address address = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(copiedExistingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId()), new Address());
             Address newAddress = new Address();
             org.springframework.beans.BeanUtils.copyProperties(address, newAddress);
