@@ -81,6 +81,7 @@ public class CollegeDaoServiceImpl implements ICollegeDaoService {
             User userDetail = new User(null, collegeRegistrationRequestTo.getEmailId(), collegeRegistrationRequestTo.getPhoneNumber(), null, null, null, null, true, true, //
                     entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), //
                     entityManager.getReference(UserGroup.class, Group.COLLEGE_ADMIN.getId()), true, 0, null);
+            
             userDetailService.save(userDetail);
             collegeEntity.setUser(userDetail);
 

@@ -12,6 +12,7 @@ import in.gov.abdm.nmr.repository.ICollegeDeanRepository;
 import in.gov.abdm.nmr.repository.ICollegeRepository;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.ICollegeDeanDaoService;
+import in.gov.abdm.nmr.service.IPasswordDaoService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,12 +43,15 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private IAccessControlService accessControlService;
+    
     @Autowired
     private CollegeMasterRepository collegeMasterRepository;
+    
+    private IPasswordDaoService passwordDaoService;
 
     public CollegeDeanDaoServiceImpl(ICollegeDeanRepository collegeDeanRepository, ICollegeRepository collegeRepository, ICollegeDeanMapper collegeDeanMapper, //
                                      EntityManager entityManager, IUserDaoService userDetailService, BCryptPasswordEncoder bCryptPasswordEncoder, //
-                                     IAccessControlService accessControlService) {
+                                     IAccessControlService accessControlService, IPasswordDaoService passwordDaoService) {
         this.collegeDeanRepository = collegeDeanRepository;
         this.collegeRepository = collegeRepository;
         this.collegeDeanMapper = collegeDeanMapper;
@@ -55,6 +59,7 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
         this.userDetailService = userDetailService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.accessControlService = accessControlService;
+        this.passwordDaoService = passwordDaoService;
     }
 
     public CollegeDean saveCollegeDean(BigInteger collegeId, CollegeDeanCreationRequestTo collegeDeanCreationRequestTo) throws NmrException {
@@ -82,13 +87,17 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
         CollegeMaster collegeMaster = collegeMasterRepository.findCollegeMasterById(loggedIncollege.getCollegeMaster().getId());
         collegeDeanEntity.setCollege(collegeMaster);
 
-        User userDetail = new User(collegeDeanCreationRequestTo.getUserId(), collegeDeanCreationRequestTo.getEmailId(), collegeDeanCreationRequestTo.getPhoneNumber(), null, null,//
-                bCryptPasswordEncoder.encode(collegeDeanCreationRequestTo.getPassword()), null, true, true, entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), //
+        String hashedPassword = bCryptPasswordEncoder.encode(collegeDeanCreationRequestTo.getPassword());
+        User user = new User(collegeDeanCreationRequestTo.getUserId(), collegeDeanCreationRequestTo.getEmailId(), collegeDeanCreationRequestTo.getPhoneNumber(), null, null,//
+                hashedPassword, null, true, true, entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), //
                 entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_DEAN.getCode()), entityManager.getReference(UserGroup.class, in.gov.abdm.nmr.enums.Group.COLLEGE_DEAN.getId()), //
                 true, 0, null);
-        userDetailService.save(userDetail);
-        collegeDeanEntity.setUser(userDetail);
-
+        user = userDetailService.save(user);
+        
+        Password password = new Password(null, hashedPassword, user);
+        passwordDaoService.save(password);
+        
+        collegeDeanEntity.setUser(user);
         return collegeDeanRepository.saveAndFlush(collegeDeanEntity);
     }
 
@@ -116,9 +125,6 @@ public class CollegeDeanDaoServiceImpl implements ICollegeDeanDaoService {
 
             collegeDeanUserDetail.setEmail(collegeDeanCreationRequestTo.getEmailId());
             collegeDeanUserDetail.setMobileNumber(collegeDeanCreationRequestTo.getPhoneNumber());
-            if (collegeDeanCreationRequestTo.getPassword() != null) {
-                collegeDeanUserDetail.setPassword(bCryptPasswordEncoder.encode(collegeDeanCreationRequestTo.getPassword()));
-            }
             userDetailService.save(collegeDeanUserDetail);
 
             CollegeDean collegeDeanEntity = collegeDeanMapper.collegeDeanDtoToEntity(collegeDeanCreationRequestTo);
