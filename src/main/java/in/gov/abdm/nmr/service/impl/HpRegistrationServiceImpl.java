@@ -468,8 +468,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
      * And 1 represents the strings are equal.
      */
     public double getFuzzyScore(String s1, String s2) {
-        double score;
-        if (new Soundex().soundex(s1).equals(s2)) {
+        if (new Soundex().soundex(s1).equals(new Soundex().soundex(s2))) {
             log.info("Matched using soundex algorithm");
             return 100;
         }
@@ -477,6 +476,51 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             log.info("Matched using metaphone algorithm");
             return 100;
         }
-        return (100 - (new LevenshteinDistance().apply(s1, s2) / (double) s2.length()) * 100);
+        int maxLength = s2.length() > s1.length() ? s2.length() : s1.length();
+        double levenshteinDistancePercentage = 100 - ((new LevenshteinDistance().apply(s1, s2) / (double) maxLength) * 100);
+        if (levenshteinDistancePercentage >= NMRConstants.FUZZY_MATCH_LIMIT) {
+            log.info("Matched using LevenshteinDistance algorithm");
+            return levenshteinDistancePercentage;
+        }
+        int smiliarText = (similar(s1.toLowerCase(), s2.toLowerCase()) * 200) / (s1.length() + s2.length());
+        if (smiliarText >= NMRConstants.FUZZY_MATCH_LIMIT) {
+            log.info("Matched using similiar Text algorithm");
+            return smiliarText;
+        }
+        return 0.0;
+    }
+
+    private int similar(String first, String second) {
+        int p, q, l, sum;
+        int pos1 = 0;
+        int pos2 = 0;
+        int max = 0;
+        char[] arr1 = first.toCharArray();
+        char[] arr2 = second.toCharArray();
+        int firstLength = arr1.length;
+        int secondLength = arr2.length;
+
+        for (p = 0; p < firstLength; p++) {
+            for (q = 0; q < secondLength; q++) {
+                for (l = 0; (p + l < firstLength) && (q + l < secondLength) && (arr1[p + l] == arr2[q + l]); l++) ;
+                if (l > max) {
+                    max = l;
+                    pos1 = p;
+                    pos2 = q;
+                }
+
+            }
+        }
+        sum = max;
+        if (sum > 0) {
+            if (pos1 > 0 && pos2 > 0) {
+                sum += this.similar(first.substring(0, pos1 > firstLength ? firstLength : pos1), second.substring(0, pos2 > secondLength ? secondLength : pos2));
+            }
+
+            if ((pos1 + max < firstLength) && (pos2 + max < secondLength)) {
+                sum += this.similar(first.substring(pos1 + max, firstLength), second.substring(pos2 + max, secondLength));
+            }
+        }
+        return sum;
     }
 }

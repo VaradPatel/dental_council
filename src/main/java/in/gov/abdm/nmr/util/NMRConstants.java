@@ -49,11 +49,11 @@ public class NMRConstants {
 
     public static final String PATH_COLLEGE_APPLICATIONS = "/college/applications";
     public static final String APPLICATION_REQUEST_URL = "/health-professional/applications";
-    public static final String PATH_TRACK_APPLICATIONS_STATUS = APPLICATION_REQUEST_URL+"/applications";
+    public static final String PATH_TRACK_APPLICATIONS_STATUS = APPLICATION_REQUEST_URL + "/applications";
 
-    public static final String SUSPENSION_REQUEST_URL = APPLICATION_REQUEST_URL+"/suspend";
-    public static final String REACTIVATE_REQUEST_URL = APPLICATION_REQUEST_URL+"/re-activate";
-    public static final String HEALTH_PROFESSIONAL_ACTION = APPLICATION_REQUEST_URL +"/status";
+    public static final String SUSPENSION_REQUEST_URL = APPLICATION_REQUEST_URL + "/suspend";
+    public static final String REACTIVATE_REQUEST_URL = APPLICATION_REQUEST_URL + "/re-activate";
+    public static final String HEALTH_PROFESSIONAL_ACTION = APPLICATION_REQUEST_URL + "/status";
     public static final String COLLEGES_ACTION = "/college/applications/status";
     public static final String NOTIFICATION_SERVICE = "notification";
     public static final String FACILITY_SERVICE = "facility";
@@ -75,11 +75,11 @@ public class NMRConstants {
 
     public static final String LGD_FEIGN_SEARCH_URL = LGD_API_VERSION + LGD_SEARCH_URL;
 
-    public static final String PIN_CODE="pinCode";
-    public static final String STATE_CODE="stateCode";
-    public static final String DISTRICT_CODE="districtCode";
+    public static final String PIN_CODE = "pinCode";
+    public static final String STATE_CODE = "stateCode";
+    public static final String DISTRICT_CODE = "districtCode";
 
-    public static final String VIEW="view";
+    public static final String VIEW = "view";
     public static final String GLOBAL_AADHAAR_ENDPOINT = "${global.aadhaar.endpoint}";
     public static final String GLOBAL_FACILITY_ENDPOINT = "${global.facility.endpoint}";
     public static final String OTP_GENERATION_EXCEEDED = "OTP Generation Attempts Exceeded";
@@ -171,7 +171,7 @@ public class NMRConstants {
 
     public static final String HP_PROFILE_ID = "hpProfileId";
 
-    public static final String COLLEGE_DEAN_ID="collegeDeanId";
+    public static final String COLLEGE_DEAN_ID = "collegeDeanId";
 
     public static final String COLLEGE_REGISTRAR_ID = "collegeRegistrarId";
 
@@ -237,7 +237,7 @@ public class NMRConstants {
             SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
             INNER JOIN qualification_details as qd on qd.hp_profile_id = wa.hp_profile_id AND qd.request_id = wa.request_id  
             WHERE wa.application_type_id = :""" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """  
-             \s AND wa.action_id = 4 AND qd.college_id = :""" + COLLEGE_ID + " GROUP BY name ) as result right join main.work_flow_status wfs on wfs.name=result.name";
+            \s AND wa.action_id = 4 AND qd.college_id = :""" + COLLEGE_ID + " GROUP BY name ) as result right join main.work_flow_status wfs on wfs.name=result.name";
 
     public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_NBE = """
             SELECT wfs.name, coalesce(result.count,0) as count FROM 
@@ -255,20 +255,20 @@ public class NMRConstants {
             GROUP BY name ) as result right join main.work_flow_status wfs on wfs.name=result.name""";
 
     public static final String FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_SMC = """
-        SELECT wfs.name, coalesce(result.count,0) as count FROM 
-        (SELECT ws.name as name, COUNT(w) as count 
-        FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
-        JOIN registration_details rd ON w.hp_profile_id=rd.hp_profile_id 
-        WHERE rd.state_medical_council_id=:""" + SMC_PROFILE_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.current_group_id = :" + GROUP_ID + " OR ( w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.previous_group_id = :" + GROUP_ID + """ 
-         \s AND w.action_id IN ( 3,5 ) ) 
-        OR (w.application_type_id =:""" + APPLICATION_TYPE_ID + """
-         AND w.previous_group_id = 4 AND w.action_id = 4 ) GROUP BY ws.name 
-        UNION 
-        SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
-        JOIN registration_details rd ON wa.hp_profile_id=rd.hp_profile_id 
-        WHERE rd.state_medical_council_id=:""" + SMC_PROFILE_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """
-         \s AND wa.action_id = 4 
-        GROUP BY name ) as result right join main.work_flow_status wfs on wfs.name=result.name""";
+            SELECT wfs.name, coalesce(result.count,0) as count FROM 
+            (SELECT ws.name as name, COUNT(w) as count 
+            FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
+            JOIN registration_details rd ON w.hp_profile_id=rd.hp_profile_id 
+            WHERE rd.state_medical_council_id=:""" + SMC_PROFILE_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.current_group_id = :" + GROUP_ID + " OR ( w.application_type_id = :" + APPLICATION_TYPE_ID + " AND w.previous_group_id = :" + GROUP_ID + """ 
+             \s AND w.action_id IN ( 3,5 ) ) 
+            OR (w.application_type_id =:""" + APPLICATION_TYPE_ID + """
+             AND w.previous_group_id = 4 AND w.action_id = 4 ) GROUP BY ws.name 
+            UNION 
+            SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
+            JOIN registration_details rd ON wa.hp_profile_id=rd.hp_profile_id 
+            WHERE rd.state_medical_council_id=:""" + SMC_PROFILE_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """
+             \s AND wa.action_id = 4 
+            GROUP BY name ) as result right join main.work_flow_status wfs on wfs.name=result.name""";
 
 
     public static final String FETCH_DETAILS_FOR_LISTING_QUERY = "SELECT rd.registration_no as registrationNo, hp.full_name as nameOfApplicant, smc.name as nameOfStateCouncil, rd.registration_date as dateOfSubmission, g.name as groupName, ws.name as workFlowStatus " +
@@ -406,7 +406,7 @@ public class NMRConstants {
     public static final String APPLICANT_FULL_NAME_IN_LOWER_CASE = "applicantfullname";
 
 
-    public static  final String REACTIVATION_RECORDS= """
+    public static final String REACTIVATION_RECORDS = """
             WITH reactivate AS(
             SELECT hp.id ,hp.registration_id ,wf.request_id,hp.full_name , wf.created_at, wf.start_date, hp.gender, hp.email_id, hp.mobile_number,
             (
@@ -416,17 +416,17 @@ public class NMRConstants {
             )) AS suspension_type,wf.remarks
             FROM main.work_flow wf  INNER JOIN main.hp_profile hp ON wf.hp_profile_id=hp.id
             JOIN main.application_type a ON wf.application_type_id=a.id WHERE wf.application_type_id= """ + HP_ACTIVATE_LICENSE.getId();
-    public static final String FETCH_REACTIVATION_RECORDS = REACTIVATION_RECORDS+
+    public static final String FETCH_REACTIVATION_RECORDS = REACTIVATION_RECORDS +
             """
-            )                        
-            SELECT *  FROM reactivate r
-            WHERE 1=1 """;
+                    )                        
+                    SELECT *  FROM reactivate r
+                    WHERE 1=1 """;
 
-    public static final String FETCH_COUNT_OF_REACTIVATION_RECORDS =REACTIVATION_RECORDS+
+    public static final String FETCH_COUNT_OF_REACTIVATION_RECORDS = REACTIVATION_RECORDS +
             """
-             )                        
-             SELECT COUNT(*)  FROM reactivate r
-             WHERE 1=1 """;
+                    )                        
+                    SELECT COUNT(*)  FROM reactivate r
+                    WHERE 1=1 """;
 
     public static final String NOT_NULL_ERROR_MSG = "The {0} is mandatory.";
     public static final String NOT_BLANK_ERROR_MSG = "The {0} should not be blank.";
@@ -465,21 +465,21 @@ public class NMRConstants {
 
     public static final String PROOFS_EMPTY_ERROR = "Please provide at-least one proof document. ";
 
-    public static final String MISSING_PROOFS_ERROR="Please provide proofs for all the qualification details provided. ";
+    public static final String MISSING_PROOFS_ERROR = "Please provide proofs for all the qualification details provided. ";
 
-    public static final String EXCESS_PROOFS_ERROR="Please remove excess proofs to sync with the qualification details provided. ";
+    public static final String EXCESS_PROOFS_ERROR = "Please remove excess proofs to sync with the qualification details provided. ";
 
-    public static final String QUALIFICATION_DETAILS_LIMIT_EXCEEDED="Please provide less than or equal to 6 qualifications at a time.";
+    public static final String QUALIFICATION_DETAILS_LIMIT_EXCEEDED = "Please provide less than or equal to 6 qualifications at a time.";
 
     public static final String WORK_PROFILE_DETAILS_NULL_ERROR = "The field 'currentWorkDetails' is mandatory. ";
 
     public static final String WORK_PROFILE_DETAILS_EMPTY_ERROR = "Please provide at-least one work profile detail to be added. ";
 
-    public static final String MISSING_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR="Please provide proofs for all the work profile details provided. ";
+    public static final String MISSING_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR = "Please provide proofs for all the work profile details provided. ";
 
-    public static final String EXCESS_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR="Please remove excess proofs to sync with the work profile details provided. ";
+    public static final String EXCESS_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR = "Please remove excess proofs to sync with the work profile details provided. ";
 
-    public static final String WORK_PROFILE_DETAILS_LIMIT_EXCEEDED="Please provide less than or equal to 6 work profiles at a time.";
+    public static final String WORK_PROFILE_DETAILS_LIMIT_EXCEEDED = "Please provide less than or equal to 6 work profiles at a time.";
 
     public static final String INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION = "Invalid Search Criteria. Expected: registrationnumber or smcid ";
 
@@ -494,22 +494,22 @@ public class NMRConstants {
     public static final String MISSING_SEARCH_VALUE = "Please Enter a search value.";
 
     public static final String NO_MATCHING_REGISTRATION_DETAILS_FOUND = "No matching registration details found for the given hp_profile_id";
-    public static final double FUZZY_MATCH_LIMIT = 80;
+    public static final double FUZZY_MATCH_LIMIT = 75;
     public static final String FUZZY_PARAMETER_NAME = "Name";
     public static final String FUZZY_PARAMETER_GENDER = "Gender";
     public static final String FUZZY_PARAMETER_DOB = "DOB";
 
-    public static final String USER_ID_COLUMN ="user_id";
+    public static final String USER_ID_COLUMN = "user_id";
 
-    public static final String PRIMARY_CONTACT_NO_COLUMN ="primary_contact_no";
+    public static final String PRIMARY_CONTACT_NO_COLUMN = "primary_contact_no";
 
-    public static final String EMAIL_ID_COLUMN ="email_id";
+    public static final String EMAIL_ID_COLUMN = "email_id";
 
-    public static final String FULL_NAME_COLUMN ="full_name";
+    public static final String FULL_NAME_COLUMN = "full_name";
 
-    public static final String NAME_COLUMN ="name";
+    public static final String NAME_COLUMN = "name";
 
-    public static final String HP_PROFILE_ID_COLUMN ="hp_profile_id";
+    public static final String HP_PROFILE_ID_COLUMN = "hp_profile_id";
 
     public static final String REGISTRATION_NO_COLUMN = "registration_no";
 
