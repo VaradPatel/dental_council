@@ -163,21 +163,24 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 registrationId = existingHpProfile.getRegistrationId();
             }
 
-            existingHpProfile = new HpProfile();
-            existingHpProfile.setRegistrationId(registrationId);
-
-            mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, existingHpProfile);
-            targetedHpProfile = iHpProfileRepository.save(existingHpProfile);
-            updatedHpProfileId = targetedHpProfile.getId();
+            targetedHpProfile = new HpProfile();
+            org.springframework.beans.BeanUtils.copyProperties(existingHpProfile, targetedHpProfile);
+            targetedHpProfile.setId(null);
+            mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, targetedHpProfile);
+            HpProfile savedHpProfile = iHpProfileRepository.save(targetedHpProfile);
+            updatedHpProfileId = savedHpProfile.getId();
 
         } else {
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, existingHpProfile);
             updatedHpProfileId = existingHpProfile.getId();
         }
         if (hpPersonalUpdateRequestTO.getCommunicationAddress() != null) {
-            Address address = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(existingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId()), new Address());
-            mapAddressRequestToEntity(existingHpProfile.getId(), hpPersonalUpdateRequestTO, address);
-            iAddressRepository.save(address);
+            Address address = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(copiedExistingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId()), new Address());
+            Address newAddress =new Address();
+            org.springframework.beans.BeanUtils.copyProperties(address, newAddress);
+            newAddress.setId(null);
+            mapAddressRequestToEntity(updatedHpProfileId, hpPersonalUpdateRequestTO, newAddress);
+            iAddressRepository.save(newAddress);
         }
         if (copiedExistingHpProfile != null && HpProfileStatus.APPROVED.getId().equals(copiedExistingHpProfile.getHpProfileStatus().getId())) {
 
@@ -187,6 +190,15 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             newRegistrationDetails.setId(null);
             newRegistrationDetails.setHpProfileId(targetedHpProfile);
             iRegistrationDetailRepository.save(newRegistrationDetails);
+
+            Address kycAddress = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(copiedExistingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.KYC.getId()), new Address());
+            if (kycAddress != null && kycAddress.getId() != null) {
+                Address newKycAddress = new Address();
+                org.springframework.beans.BeanUtils.copyProperties(kycAddress, newKycAddress);
+                newKycAddress.setId(null);
+                newKycAddress.setHpProfileId(updatedHpProfileId);
+                iAddressRepository.save(newKycAddress);
+            }
 
             List<QualificationDetails> qualificationDetails = new ArrayList<>();
             List<QualificationDetails> qualificationDetailsList = iQualificationDetailRepository.getQualificationDetailsByHpProfileId(copiedExistingHpProfile.getId());
@@ -210,8 +222,14 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             }
             iForeignQualificationDetailRepository.saveAll(customQualificationDetailsList);
 
+            HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByHpProfileId(copiedExistingHpProfile.getId());
+            if (hpNbeDetails!=null){
+                HpNbeDetails newHpNbeDetails =new HpNbeDetails();
+                org.springframework.beans.BeanUtils.copyProperties(hpNbeDetails, newHpNbeDetails);
+                newHpNbeDetails.setId(null);
+                newHpNbeDetails.setHpProfileId(targetedHpProfile.getId());
+            }
         }
-
         return new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", updatedHpProfileId);
     }
 
@@ -222,7 +240,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
             try {
-                hpRegistrationUpdateRequestTO.getRegistrationDetail().setRegistrationCertificate(registrationCertificate != null ? registrationCertificate.getBytes() : null);
+                hpRegistrationUpdateRequestTO.getRegistrationDetail().setRegistrationCertificate(registrationCertificate != null ? Base64.getEncoder().encodeToString(registrationCertificate.getBytes()) : null);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -525,7 +543,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         }
 
         AddressType addressType = new AddressType();
-        addressType.setId(hpPersonalUpdateRequestTO.getCommunicationAddress().getAddressType().getId());
+        addressType.setId(hpPersonalUpdateRequestTO.getCommunicationAddress().getAddressType()!=null?hpPersonalUpdateRequestTO.getCommunicationAddress().getAddressType().getId(): in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId());
         addressData.setAddressTypeId(addressType);
         addressData.setHpProfileId(hpProfileId);
 
@@ -570,6 +588,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             hpNbeDetails.setYearOfPassing(hpRegistrationUpdateRequestTO.getHpNbeDetails().getYearOfPassing());
             hpNbeDetails.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
             hpNbeDetails.setHpProfileId(hpProfile.getId());
+            hpNbeDetails.setPassportNumber(hpRegistrationUpdateRequestTO.getHpNbeDetails().getPassportNumber());
         }
     }
 
@@ -585,7 +604,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             registrationDetail.setRenewableRegistrationDate(
                     hpRegistrationUpdateRequestTO.getRegistrationDetail().getRenewableRegistrationDate());
             registrationDetail.setIsNameChange(hpRegistrationUpdateRequestTO.getRegistrationDetail().getIsNameChange());
-            registrationDetail.setCertificate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationCertificate());
+            registrationDetail.setCertificate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationCertificate().getBytes());
         }
         registrationDetail.setHpProfileId(hpProfile);
         registrationDetail.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));

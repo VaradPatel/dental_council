@@ -31,4 +31,5 @@ public class HealthProfessionalApplicationTo {
     private String gender;
     private String emailId;
     private String mobileNumber;
+    private String nmrId;
 }

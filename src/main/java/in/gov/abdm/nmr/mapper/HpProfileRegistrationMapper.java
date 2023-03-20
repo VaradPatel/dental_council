@@ -10,6 +10,7 @@ import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.experimental.UtilityClass;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @UtilityClass
@@ -28,7 +29,9 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
             registrationDetailsTo.setRegistrationNumber(registrationDetails.getRegistrationNo());
             registrationDetailsTo.setStateMedicalCouncil(StateMedicalCouncilTO.builder().code(registrationDetails.getStateMedicalCouncil().getCode()).name(registrationDetails.getStateMedicalCouncil().getName()).build());
             registrationDetailsTo.setIsRenewable(registrationDetails.getIsRenewable());
-            registrationDetailsTo.setRegistrationCertificate(registrationDetails.getCertificate());
+            if(registrationDetails.getCertificate() != null) {
+                registrationDetailsTo.setRegistrationCertificate(Base64.getEncoder().encodeToString(registrationDetails.getCertificate()));
+            }
         }
         if(nbeDetails != null) {
             nbeResponseTo.setResult(nbeDetails.getUserResult());
@@ -37,6 +40,7 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
             nbeResponseTo.setMarksObtained(nbeDetails.getMarksObtained());
             nbeResponseTo.setRollNo(nbeDetails.getRollNo());
             nbeResponseTo.setYear(nbeDetails.getYearOfPassing());
+            nbeResponseTo.setPassportNumber(nbeDetails.getPassportNumber());
         }
         if(!indianQualifications.isEmpty()) {
             qualifications.addAll(indianQualifications.stream().map(indianQualification -> {
@@ -52,7 +56,10 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
                 qualificationDetailResponseTo.setCourse(CourseTO.builder().id(indianQualification.getCourse().getId()).courseName(indianQualification.getCourse().getCourseName()).build());
                 qualificationDetailResponseTo.setUniversity(UniversityTO.builder().id(indianQualification.getUniversity().getId()).name(indianQualification.getUniversity().getName()).build());
                 qualificationDetailResponseTo.setCollege(CollegeTO.builder().id(indianQualification.getCollege().getId()).name(indianQualification.getCollege().getName()).build());
-                qualificationDetailResponseTo.setDegreeCertificate(indianQualification.getCertificate());
+                if(indianQualification.getCertificate() != null) {
+                    qualificationDetailResponseTo.setDegreeCertificate(Base64.getEncoder().encodeToString(indianQualification.getCertificate()));
+                }
+
                 return qualificationDetailResponseTo;
             }).toList());
         }
@@ -68,7 +75,9 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
                 qualificationDetailResponseTo.setCourse(CourseTO.builder().courseName(internationalQualification.getCourse()).build());
                 qualificationDetailResponseTo.setUniversity(UniversityTO.builder().name(internationalQualification.getUniversity()).build());
                 qualificationDetailResponseTo.setCollege(CollegeTO.builder().name(internationalQualification.getCollege()).build());
-                qualificationDetailResponseTo.setDegreeCertificate(internationalQualification.getCertificate());
+                if(internationalQualification.getCertificate() != null) {
+                    qualificationDetailResponseTo.setDegreeCertificate(Base64.getEncoder().encodeToString(internationalQualification.getCertificate()));
+                }
                 return qualificationDetailResponseTo;
             }).toList());
         }

@@ -17,5 +17,5 @@ public class RegistrationDetailTO {
     private String isRenewable;
     private Date renewableRegistrationDate;
     private String isNameChange;
-    private byte[] registrationCertificate;
+    private String registrationCertificate;
 }

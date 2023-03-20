@@ -31,4 +31,5 @@ public class HpNbeDetails {
 	private Timestamp createdAt;
 	private Timestamp updatedAt;
 	private BigInteger hpProfileId;
+	private String passportNumber;
 }

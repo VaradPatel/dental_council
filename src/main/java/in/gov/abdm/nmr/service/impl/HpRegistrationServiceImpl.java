@@ -7,6 +7,7 @@ import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.*;
+import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.mapper.*;
 import in.gov.abdm.nmr.repository.*;
@@ -16,7 +17,11 @@ import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.language.Metaphone;
 import org.apache.commons.codec.language.Soundex;
+import org.apache.commons.text.similarity.CosineSimilarity;
+import org.apache.commons.text.similarity.JaccardSimilarity;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,6 +45,7 @@ import static in.gov.abdm.nmr.util.NMRUtil.validateQualificationDetailsAndProofs
 import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetails;
 
 @Service
+@Slf4j
 public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Autowired
     private IHpProfileMapper iHpProfileMapper;
@@ -134,6 +140,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     private CountryRepository countryRepository;
     @Autowired
     private IStateMedicalCouncilRepository iStateMedicalCouncilRepository;
+
+    @Autowired
+    private IHpProfileStatusRepository hpProfileStatusRepository;
 
     /**
      * This method fetches the SMC registration details for a given request.
@@ -361,6 +370,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 address.setCountry(stateRepository.findByName(userKycTo.getState().toUpperCase()).getCountry());
                 iAddressRepository.save(address);
                 hpProfile.setProfilePhoto(userKycTo.getPhoto().getBytes());
+                hpProfile.setMobileNumber(userKycTo.getMobileNumber());
                 iHpProfileRepository.save(hpProfile);
 
                 return new KycResponseMessageTo(fuzzyParameters, NMRConstants.SUCCESS_RESPONSE);
@@ -393,12 +403,13 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setIsSameAddress(String.valueOf(false));
         hpProfile.setCountryNationality(countryRepository.findByName(NMRConstants.DEFAULT_COUNTRY_AADHAR));
         hpProfile.setIsNew(1);
+        hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.PENDING.getId()).get());
         hpProfile = iHpProfileRepository.save(hpProfile);
 
         RegistrationDetails registrationDetails = new RegistrationDetails();
         registrationDetails.setStateMedicalCouncil(iStateMedicalCouncilRepository.findById(new BigInteger(request.getSmcId())).get());
         registrationDetails.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
-        registrationDetails.setRegistrationNo(registrationDetails.getRegistrationNo());
+        registrationDetails.setRegistrationNo(request.getRegistrationNumber());
         registrationDetails.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         registrationDetails.setHpProfileId(hpProfile);
         iRegistrationDetailRepository.save(registrationDetails);
@@ -437,10 +448,13 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public double getFuzzyScore(String s1, String s2) {
         double score;
         if (new Soundex().soundex(s1).equals(s2)) {
-            score = 100;
-        } else {
-            score = (100 - (new LevenshteinDistance().apply(s1, s2) / (double) s2.length()) * 100);
+            log.info("Matched using soundex algorithm");
+            return 100;
         }
-        return score;
+        if(new Metaphone().isMetaphoneEqual(s1,s2)){
+            log.info("Matched using metaphone algorithm");
+            return 100;
+        }
+        return  (100 - (new LevenshteinDistance().apply(s1, s2) / (double) s2.length()) * 100);
     }
 }
