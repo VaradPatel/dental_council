@@ -11,6 +11,7 @@ import in.gov.abdm.nmr.mapper.INmcMapper;
 import in.gov.abdm.nmr.mapper.ISmcMapper;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.security.common.RsaUtil;
+import in.gov.abdm.nmr.service.IPasswordDaoService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.service.IUserService;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -43,6 +44,9 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     IHpProfileRepository hpProfileRepository;
+    
+    @Autowired
+    private IPasswordDaoService passwordDaoService;
 
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -105,9 +109,13 @@ public class UserServiceImpl implements IUserService {
         try {
             
             if (!userDaoService.existsByUsername(createHpUserAccountTo.getUsername())) {
-                User userDetail = new User(null, createHpUserAccountTo.getEmail(), createHpUserAccountTo.getMobile(), createHpUserAccountTo.getUsername(), null, bCryptPasswordEncoder.encode(rsaUtil.decrypt(createHpUserAccountTo.getPassword())), null, true, true, //
+                String hashedPassword = bCryptPasswordEncoder.encode(rsaUtil.decrypt(createHpUserAccountTo.getPassword()));
+                User userDetail = new User(null, createHpUserAccountTo.getEmail(), createHpUserAccountTo.getMobile(), createHpUserAccountTo.getUsername(), null, hashedPassword, null, true, true, //
                         entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null);
                 userDaoService.save(userDetail);
+                
+                Password password = new Password(null, hashedPassword, userDetail);
+                passwordDaoService.save(password);
 
                 List<HpProfile> hpProfileList=hpProfileRepository.findHpProfileByRegistrationId(createHpUserAccountTo.getRegistrationNumber());
                 List<HpProfile> hpProfiles= new ArrayList<>();

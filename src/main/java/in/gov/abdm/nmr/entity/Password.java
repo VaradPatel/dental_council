@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigInteger;
+
 import javax.persistence.*;
 
 @Getter
@@ -16,7 +18,7 @@ public class Password extends CommonAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private BigInteger id;
     private String value;
 
     @ManyToOne
