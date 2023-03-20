@@ -437,7 +437,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     @Override
-    public void updateHealthProfessionalEMailMobile(BigInteger hpProfileId, EmailMobileTO request) {
+    public void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) {
         if (request.getEmail() != null) {
             iHpProfileRepository.updateHpProfileEmail(hpProfileId, request.getEmail());
             iAddressRepository.updateAddressEmail(hpProfileId, request.getEmail(), AddressType.COMMUNICATION.getId());

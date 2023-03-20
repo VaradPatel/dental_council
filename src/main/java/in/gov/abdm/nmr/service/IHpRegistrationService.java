@@ -120,5 +120,5 @@ public interface IHpRegistrationService {
 
     void addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException;
 
-    void updateHealthProfessionalEMailMobile(BigInteger hpProfileId, EmailMobileTO request);
+    void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request);
 }

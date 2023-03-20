@@ -246,10 +246,10 @@ public class HpRegistrationController {
     }
 
     @PatchMapping(path = "health-professional/{healthProfessionalId}/personal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseMessageTo> updateHealthProfessionalEMailMobile(
-            @Valid @RequestBody EmailMobileTO request,
+    public ResponseEntity<ResponseMessageTo> updateHealthProfessionalEmailMobile(
+            @Valid @RequestBody HealthProfessionalPersonalRequestTo request,
             @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) {
-        hpService.updateHealthProfessionalEMailMobile(hpProfileId, request);
+        hpService.updateHealthProfessionalEmailMobile (hpProfileId, request);
         return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
     }
 }
