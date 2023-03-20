@@ -244,4 +244,12 @@ public class HpRegistrationController {
         hpService.addNewHealthProfessional(request);
         return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
     }
+
+    @PatchMapping(path = "health-professional/{healthProfessionalId}/personal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseMessageTo> updateHealthProfessionalEMailMobile(
+            @Valid @RequestBody EmailMobileTO request,
+            @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) {
+        hpService.updateHealthProfessionalEMailMobile(hpProfileId, request);
+        return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
+    }
 }
