@@ -70,7 +70,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     private IWorkFlowAuditRepository iWorkFlowAuditRepository;
 
     @Autowired
-    private IHpProfileMasterRepository iHpProfileAuditRepository;
+    private IHpProfileMasterRepository iHpProfileMasterRepository;
 
     @Autowired
     private IHpProfileRepository iHpProfileRepository;
@@ -141,6 +141,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Autowired
     private IHpProfileStatusRepository hpProfileStatusRepository;
+
+    @Autowired
+    IAddressMasterRepository iAddressMasterRepository;
 
     /**
      * This method fetches the SMC registration details for a given request.
@@ -433,6 +436,27 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         iAddressRepository.save(address);
     }
 
+    @Override
+    public void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) {
+        if (request.getEmail() != null) {
+            iHpProfileRepository.updateHpProfileEmail(hpProfileId, request.getEmail());
+            iAddressRepository.updateAddressEmail(hpProfileId, request.getEmail(), AddressType.COMMUNICATION.getId());
+        }
+        if (request.getMobileNumber() != null) {
+            iHpProfileRepository.updateHpProfileMobile(hpProfileId, request.getMobileNumber());
+        }
+        BigInteger masterHpProfileId = iHpProfileRepository.findMasterHpProfileByHpProfileId(hpProfileId);
+        if (masterHpProfileId != null) {
+            if (request.getEmail() != null) {
+                iHpProfileMasterRepository.updateMasterHpProfileEmail(masterHpProfileId, request.getEmail());
+                iAddressMasterRepository.updateMasterAddressEmail(masterHpProfileId, request.getEmail(), AddressType.COMMUNICATION.getId());
+            }
+            if (request.getMobileNumber() != null) {// update mobile_number hp_profile_master by hp_profile_master.id
+                iHpProfileMasterRepository.updateMasterHpProfileMobile(masterHpProfileId, request.getMobileNumber());
+            }
+        }
+    }
+
     /**
      * This method implements the string comparsion logic based on the fuzzy
      * logic.
@@ -499,5 +523,4 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
         return sum;
     }
-
 }

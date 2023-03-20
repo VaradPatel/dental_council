@@ -2,8 +2,10 @@ package in.gov.abdm.nmr.repository;
 
 import in.gov.abdm.nmr.entity.HpProfileMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.transaction.Transactional;
 import java.math.BigInteger;
 
 public interface IHpProfileMasterRepository extends JpaRepository<HpProfileMaster, BigInteger> {
@@ -13,4 +15,13 @@ public interface IHpProfileMasterRepository extends JpaRepository<HpProfileMaste
 
     HpProfileMaster findHpProfileMasterById(BigInteger hpProfileId);
 
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE hp_profile_master SET email_id =:email  WHERE id =:masterHpProfileId", nativeQuery = true)
+    void updateMasterHpProfileEmail(BigInteger masterHpProfileId, String email);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE hp_profile_master SET mobile_Number =:mobileNumber  WHERE id =:masterHpProfileId", nativeQuery = true)
+    void updateMasterHpProfileMobile(BigInteger masterHpProfileId, String mobileNumber);
 }

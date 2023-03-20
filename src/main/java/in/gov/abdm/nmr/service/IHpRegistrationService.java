@@ -119,4 +119,6 @@ public interface IHpRegistrationService {
     KycResponseMessageTo saveUserKycDetails(String registrationNumber,UserKycTo userKycTo);
 
     void addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException;
+
+    void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request);
 }

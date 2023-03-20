@@ -58,11 +58,13 @@ public class MasterDataController {
         return masterDataService.cities(subDistrictId);
     }
 
+    @Deprecated
     @GetMapping(path = "/universities", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MasterDataTO> universities() {
         return masterDataService.universities();
     }
 
+    @Deprecated
     @GetMapping(path = "/universities/{university_id}/colleges", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MasterDataTO> colleges(@PathVariable(name = "university_id") BigInteger universityId) {
         return masterDataService.colleges(universityId);
@@ -98,11 +100,13 @@ public class MasterDataController {
         return masterDataService.getUniversitiesByCollege(collegeId);
     }
 
+    @Deprecated
     @GetMapping(path = "/colleges", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<CollegeMasterResponseTo> getCollegesByUniversity(@RequestParam(required = false, value = "universityId") BigInteger universityId) {
         return masterDataService.getCollegesByUniversity(universityId);
     }
 
+    @Deprecated
     @GetMapping(path = "/universitiesByStateId", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UniversityMasterResponseTo> getUniversitiesByState(@RequestParam(required = false, value = "stateId") BigInteger stateId) {
         return masterDataService.getUniversitiesByState(stateId);
