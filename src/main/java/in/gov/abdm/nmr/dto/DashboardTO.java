@@ -24,4 +24,5 @@ public class DashboardTO {
     private String emailId;
     private String mobileNumber;
     private String nmrId;
+    private String yearOfRegistration;
 }
