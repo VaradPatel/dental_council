@@ -6,8 +6,8 @@ import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.enums.ApplicationType;
-import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
+import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.mapper.*;
 import in.gov.abdm.nmr.repository.*;
@@ -20,8 +20,6 @@ import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.language.Metaphone;
 import org.apache.commons.codec.language.Soundex;
-import org.apache.commons.text.similarity.CosineSimilarity;
-import org.apache.commons.text.similarity.JaccardSimilarity;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -174,7 +172,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Override
     public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws NmrException, InvalidRequestException, WorkFlowException {
         HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
-        if(hpProfile.getNmrId() == null){
+        if (hpProfile.getNmrId() == null) {
             throw new NmrException("You cannot raise additional qualification request until NMR Id is generated", HttpStatus.BAD_REQUEST);
         }
         validateQualificationDetailsAndProofs(qualificationDetailRequestTOs, proofs);
@@ -366,7 +364,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 address.setVillage(villagesRepository.findByName(userKycTo.getVillageTownCity()));
                 address.setSubDistrict(subDistrictRepository.findByName(userKycTo.getSubDist()));
                 address.setState(stateRepository.findByName(userKycTo.getState().toUpperCase()));
-                address.setDistrict(districtRepository.findByDistrictNameAndStateId(userKycTo.getDistrict().toUpperCase(),address.getState().getId()));
+                address.setDistrict(districtRepository.findByDistrictNameAndStateId(userKycTo.getDistrict().toUpperCase(), address.getState().getId()));
                 address.setCountry(stateRepository.findByName(userKycTo.getState().toUpperCase()).getCountry());
                 iAddressRepository.save(address);
                 hpProfile.setProfilePhoto(userKycTo.getPhoto().getBytes());
@@ -396,9 +394,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setEmailId(request.getEmail() != null ? request.getEmail() : null);
         hpProfile.setFullName(request.getName());
         hpProfile.setGender(request.getGender());
-        hpProfile.setMobileNumber(request.getMobileNumber()!=null?request.getMobileNumber():null);
+        hpProfile.setMobileNumber(request.getMobileNumber() != null ? request.getMobileNumber() : null);
         hpProfile.setSalutation(NMRConstants.SALUTATION_DR);
-        hpProfile.setProfilePhoto(request.getPhoto()!=null?request.getPhoto().getBytes():null);
+        hpProfile.setProfilePhoto(request.getPhoto() != null ? request.getPhoto().getBytes() : null);
         hpProfile.setRegistrationId(request.getRegistrationNumber());
         hpProfile.setIsSameAddress(String.valueOf(false));
         hpProfile.setCountryNationality(countryRepository.findByName(NMRConstants.DEFAULT_COUNTRY_AADHAR));
@@ -421,16 +419,16 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         address.setEmail(request.getEmail() != null ? request.getEmail() : null);
         address.setHouse(request.getHouse() != null ? request.getHouse() : null);
         address.setStreet(request.getStreet() != null ? request.getStreet() : null);
-        address.setLocality(request.getLocality()!=null?request.getLocality():null);
-        address.setHouse(request.getHouse()!=null?request.getHouse():null);
-        address.setLandmark(request.getLandmark()!=null?request.getLandmark():null);
+        address.setLocality(request.getLocality() != null ? request.getLocality() : null);
+        address.setHouse(request.getHouse() != null ? request.getHouse() : null);
+        address.setLandmark(request.getLandmark() != null ? request.getLandmark() : null);
         address.setLandmark(request.getLandmark() != null ? request.getLandmark() : null);
         address.setHpProfileId(hpProfile.getId());
         address.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.KYC.getId(), AddressType.KYC.name()));
-        address.setVillage(request.getVillageTownCity()!=null?villagesRepository.findByName(request.getLocality()):null);
+        address.setVillage(request.getVillageTownCity() != null ? villagesRepository.findByName(request.getLocality()) : null);
         address.setSubDistrict(request.getSubDist() != null ? subDistrictRepository.findByName(request.getSubDist()) : null);
         address.setState(stateRepository.findByName(request.getState().toUpperCase()));
-        address.setDistrict(districtRepository.findByDistrictNameAndStateId(request.getDistrict().toUpperCase(),address.getState().getId()));
+        address.setDistrict(districtRepository.findByDistrictNameAndStateId(request.getDistrict().toUpperCase(), address.getState().getId()));
         address.setCountry(stateRepository.findByName(request.getState().toUpperCase()).getCountry());
         iAddressRepository.save(address);
     }
@@ -446,15 +444,60 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
      * And 1 represents the strings are equal.
      */
     public double getFuzzyScore(String s1, String s2) {
-        double score;
-        if (new Soundex().soundex(s1).equals(s2)) {
+        if (new Soundex().soundex(s1).equals(new Soundex().soundex(s2))) {
             log.info("Matched using soundex algorithm");
             return 100;
         }
-        if(new Metaphone().isMetaphoneEqual(s1,s2)){
+        if (new Metaphone().isMetaphoneEqual(s1, s2)) {
             log.info("Matched using metaphone algorithm");
             return 100;
         }
-        return  (100 - (new LevenshteinDistance().apply(s1, s2) / (double) s2.length()) * 100);
+        int maxLength = s2.length() > s1.length() ? s2.length() : s1.length();
+        double levenshteinDistancePercentage = 100 - ((new LevenshteinDistance().apply(s1, s2) / (double) maxLength) * 100);
+        if (levenshteinDistancePercentage >= NMRConstants.FUZZY_MATCH_LIMIT) {
+            log.info("Matched using LevenshteinDistance algorithm");
+            return levenshteinDistancePercentage;
+        }
+        int smiliarText = (similar(s1.toLowerCase(), s2.toLowerCase()) * 200) / (s1.length() + s2.length());
+        if (smiliarText >= NMRConstants.FUZZY_MATCH_LIMIT) {
+            log.info("Matched using similiar Text algorithm");
+            return smiliarText;
+        }
+        return 0.0;
     }
+
+    private int similar(String first, String second) {
+        int p, q, l, sum;
+        int pos1 = 0;
+        int pos2 = 0;
+        int max = 0;
+        char[] arr1 = first.toCharArray();
+        char[] arr2 = second.toCharArray();
+        int firstLength = arr1.length;
+        int secondLength = arr2.length;
+
+        for (p = 0; p < firstLength; p++) {
+            for (q = 0; q < secondLength; q++) {
+                for (l = 0; (p + l < firstLength) && (q + l < secondLength) && (arr1[p + l] == arr2[q + l]); l++) ;
+                if (l > max) {
+                    max = l;
+                    pos1 = p;
+                    pos2 = q;
+                }
+
+            }
+        }
+        sum = max;
+        if (sum > 0) {
+            if (pos1 > 0 && pos2 > 0) {
+                sum += this.similar(first.substring(0, pos1 > firstLength ? firstLength : pos1), second.substring(0, pos2 > secondLength ? secondLength : pos2));
+            }
+
+            if ((pos1 + max < firstLength) && (pos2 + max < secondLength)) {
+                sum += this.similar(first.substring(pos1 + max, firstLength), second.substring(pos2 + max, secondLength));
+            }
+        }
+        return sum;
+    }
+
 }
