@@ -181,14 +181,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             newAddress.setId(null);
             mapAddressRequestToEntity(updatedHpProfileId, hpPersonalUpdateRequestTO, newAddress);
             iAddressRepository.save(newAddress);
-            Address kycAddress = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(copiedExistingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.KYC.getId()), new Address());
-            if (kycAddress != null && kycAddress.getId() != null) {
-                Address newKycAddress = new Address();
-                org.springframework.beans.BeanUtils.copyProperties(kycAddress, newKycAddress);
-                newKycAddress.setId(null);
-                newKycAddress.setHpProfileId(updatedHpProfileId);
-                iAddressRepository.save(newKycAddress);
-            }
         }
         if (copiedExistingHpProfile != null && HpProfileStatus.APPROVED.getId().equals(copiedExistingHpProfile.getHpProfileStatus().getId())) {
 
@@ -198,6 +190,15 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             newRegistrationDetails.setId(null);
             newRegistrationDetails.setHpProfileId(targetedHpProfile);
             iRegistrationDetailRepository.save(newRegistrationDetails);
+
+            Address kycAddress = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(copiedExistingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.KYC.getId()), new Address());
+            if (kycAddress != null && kycAddress.getId() != null) {
+                Address newKycAddress = new Address();
+                org.springframework.beans.BeanUtils.copyProperties(kycAddress, newKycAddress);
+                newKycAddress.setId(null);
+                newKycAddress.setHpProfileId(updatedHpProfileId);
+                iAddressRepository.save(newKycAddress);
+            }
 
             List<QualificationDetails> qualificationDetails = new ArrayList<>();
             List<QualificationDetails> qualificationDetailsList = iQualificationDetailRepository.getQualificationDetailsByHpProfileId(copiedExistingHpProfile.getId());
