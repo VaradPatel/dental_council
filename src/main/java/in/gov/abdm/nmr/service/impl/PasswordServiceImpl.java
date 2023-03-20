@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.service.impl;
 
 import static in.gov.abdm.nmr.util.NMRConstants.FORBIDDEN;
 
+import java.security.GeneralSecurityException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,8 +10,6 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
@@ -24,12 +23,22 @@ import in.gov.abdm.nmr.dto.CreateHpUserAccountTo;
 import in.gov.abdm.nmr.dto.ResetPasswordRequestTo;
 import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.dto.SetNewPasswordTo;
+import in.gov.abdm.nmr.entity.HpProfile;
+import in.gov.abdm.nmr.entity.Password;
+import in.gov.abdm.nmr.entity.PasswordResetToken;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.entity.UserGroup;
+import in.gov.abdm.nmr.entity.UserSubType;
+import in.gov.abdm.nmr.entity.UserType;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.repository.PasswordResetTokenRepository;
 import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.INotificationService;
+import in.gov.abdm.nmr.service.IPasswordDaoService;
 import in.gov.abdm.nmr.service.IPasswordService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -66,6 +75,9 @@ public class PasswordServiceImpl implements IPasswordService {
 
     @Autowired
     IHpProfileRepository hpProfileRepository;
+    
+    @Autowired
+    private IPasswordDaoService passwordDaoService;
 
     /**
      * Creates new unique token for reset password transaction
@@ -143,8 +155,20 @@ public class PasswordServiceImpl implements IPasswordService {
 
                 return new ResponseMessageTo(NMRConstants.LINK_EXPIRED);
             }
-            user.setPassword(bCryptPasswordEncoder.encode(rsaUtil.decrypt(newPasswordTo.getPassword())));
+            
+            String decryptedNewPassword = rsaUtil.decrypt(newPasswordTo.getPassword());
+            for (Password password : passwordDaoService.findLast5(user.getId())) {
+                if (bCryptPasswordEncoder.matches(decryptedNewPassword, password.getValue())) {
+                    throw new InvalidRequestException("Current password should not be same as last 5 passwords");
+                }
+            }
+            
+            String hashedPassword = bCryptPasswordEncoder.encode(decryptedNewPassword);
+            user.setPassword(hashedPassword);
             userDaoService.save(user);
+            
+            Password password = new Password(null, hashedPassword, user);
+            passwordDaoService.save(password);
 
             return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
         } catch (Exception e) {
@@ -157,18 +181,31 @@ public class PasswordServiceImpl implements IPasswordService {
      *
      * @param resetPasswordRequestTo coming from Service
      * @return ResetPasswordResponseTo Object
+     * @throws GeneralSecurityException 
+     * @throws InvalidRequestException 
      */
-    @SneakyThrows
     @Override
-    public ResponseMessageTo resetPassword(ResetPasswordRequestTo resetPasswordRequestTo) {
+    public ResponseMessageTo resetPassword(ResetPasswordRequestTo resetPasswordRequestTo) throws GeneralSecurityException, InvalidRequestException {
 
         User user = userDaoService.findByUsername(resetPasswordRequestTo.getUsername());
 
         if (null != user) {
-            user.setPassword(bCryptPasswordEncoder.encode(rsaUtil.decrypt(resetPasswordRequestTo.getPassword())));
+            
+            String decryptedNewPassword = rsaUtil.decrypt(resetPasswordRequestTo.getPassword());
+            for (Password password : passwordDaoService.findLast5(user.getId())) {
+                if (bCryptPasswordEncoder.matches(decryptedNewPassword, password.getValue())) {
+                    throw new InvalidRequestException("Current password should not be same as last 5 passwords");
+                }
+            }
+
             try {
+                String hashedPassword = bCryptPasswordEncoder.encode(decryptedNewPassword);
+                user.setPassword(hashedPassword);
                 userDaoService.save(user);
-                return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE );
+
+                Password password = new Password(null, hashedPassword, user);
+                passwordDaoService.save(password);
+                return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
             } catch (Exception e) {
                 return new ResponseMessageTo(NMRConstants.PROBLEM_OCCURRED);
             }
@@ -183,10 +220,10 @@ public class PasswordServiceImpl implements IPasswordService {
      *
      * @param changePasswordRequestTo coming from controller
      * @return Success or failure message
+     * @throws GeneralSecurityException 
      */
-    @SneakyThrows
     @Override
-    public ResponseMessageTo changePassword(ChangePasswordRequestTo changePasswordRequestTo) {
+    public ResponseMessageTo changePassword(ChangePasswordRequestTo changePasswordRequestTo) throws InvalidRequestException, GeneralSecurityException{
 
         User user = userDaoService.findById(changePasswordRequestTo.getUserId());
         if (user != null) {
@@ -195,9 +232,21 @@ public class PasswordServiceImpl implements IPasswordService {
             if (loggedInUser.getId().equals(user.getId())) {
 
                 if (bCryptPasswordEncoder.matches(rsaUtil.decrypt(changePasswordRequestTo.getOldPassword()), user.getPassword())) {
-                    user.setPassword(bCryptPasswordEncoder.encode(rsaUtil.decrypt(changePasswordRequestTo.getNewPassword())));
+                    
+                    String decryptedNewPassword = rsaUtil.decrypt(changePasswordRequestTo.getNewPassword());
+                    for (Password password : passwordDaoService.findLast5(user.getId())) {
+                        if (bCryptPasswordEncoder.matches(decryptedNewPassword, password.getValue())) {
+                            throw new InvalidRequestException("Current password should not be same as last 5 passwords");
+                        }
+                    }
+                    
+                    String hashedPassword = bCryptPasswordEncoder.encode(decryptedNewPassword);
+                    user.setPassword(hashedPassword);
                     try {
-                        userDaoService.save(user);
+                        user = userDaoService.save(user);
+                        Password password = new Password(null, hashedPassword, user);
+                        passwordDaoService.save(password);
+                        
                         return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
                     } catch (Exception e) {
                         return new ResponseMessageTo(NMRConstants.PROBLEM_OCCURRED);

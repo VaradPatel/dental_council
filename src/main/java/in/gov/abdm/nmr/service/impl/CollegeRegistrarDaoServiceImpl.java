@@ -12,6 +12,7 @@ import in.gov.abdm.nmr.repository.ICollegeRegistrarRepository;
 import in.gov.abdm.nmr.repository.ICollegeRepository;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.ICollegeRegistrarDaoService;
+import in.gov.abdm.nmr.service.IPasswordDaoService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,10 +45,12 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private IAccessControlService accessControlService;
+    
+    private IPasswordDaoService passwordDaoService;
 
     public CollegeRegistrarDaoServiceImpl(ICollegeRegistrarRepository collegeRegistrarRepository, ICollegeRepository collegeRepository, //
                                           ICollegeRegistrarMapper collegeRegistrarMapper, EntityManager entityManager, IUserDaoService userDetailService, //
-                                          BCryptPasswordEncoder bCryptPasswordEncoder, IAccessControlService accessControlService) {
+                                          BCryptPasswordEncoder bCryptPasswordEncoder, IAccessControlService accessControlService, IPasswordDaoService passwordDaoService) {
         this.collegeRegistrarRepository = collegeRegistrarRepository;
         this.collegeRepository = collegeRepository;
         this.collegeRegistrarMapper = collegeRegistrarMapper;
@@ -55,6 +58,7 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
         this.userDetailService = userDetailService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.accessControlService = accessControlService;
+        this.passwordDaoService = passwordDaoService;
     }
 
     @Override
@@ -82,13 +86,16 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
         CollegeMaster collegeMaster = collegeMasterRepository.findCollegeMasterById(loggedIncollege.getCollegeMaster().getId());
         collegeRegistrarEntity.setCollege(collegeMaster);
 
-        User userDetail = new User(collegeRegistrarCreationRequestTo.getUserId(), collegeRegistrarCreationRequestTo.getEmailId(), collegeRegistrarCreationRequestTo.getPhoneNumber(), //
-                null, null, bCryptPasswordEncoder.encode(collegeRegistrarCreationRequestTo.getPassword()), null, true, true, //
+        String hashedPassword = bCryptPasswordEncoder.encode(collegeRegistrarCreationRequestTo.getPassword());
+        User user = new User(collegeRegistrarCreationRequestTo.getUserId(), collegeRegistrarCreationRequestTo.getEmailId(), collegeRegistrarCreationRequestTo.getPhoneNumber(), //
+                null, null, hashedPassword, null, true, true, //
                 entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_REGISTRAR.getCode()), entityManager.getReference(UserGroup.class, in.gov.abdm.nmr.enums.Group.COLLEGE_REGISTRAR.getId()), true, 0, null);
-        userDetailService.save(userDetail);
+        user = userDetailService.save(user);
+        
+        Password password = new Password(null, hashedPassword, user);
+        passwordDaoService.save(password);
 
-        collegeRegistrarEntity.setUser(userDetail);
-
+        collegeRegistrarEntity.setUser(user);
         return collegeRegistrarRepository.saveAndFlush(collegeRegistrarEntity);
     }
 
@@ -114,9 +121,6 @@ public class CollegeRegistrarDaoServiceImpl implements ICollegeRegistrarDaoServi
             }
             collegeRegistrarUserDetail.setEmail(collegeRegistrarCreationRequestTo.getEmailId());
             collegeRegistrarUserDetail.setMobileNumber(collegeRegistrarCreationRequestTo.getPhoneNumber());
-            if (collegeRegistrarCreationRequestTo.getPassword() != null) {
-                collegeRegistrarUserDetail.setPassword(bCryptPasswordEncoder.encode(collegeRegistrarCreationRequestTo.getPassword()));
-            }
             userDetailService.save(collegeRegistrarUserDetail);
 
             CollegeRegistrar collegeRegistrarEntity = collegeRegistrarMapper.collegeRegistrarDtoToEntity(collegeRegistrarCreationRequestTo);
