@@ -54,4 +54,5 @@ public class ForeignQualificationDetailsMaster {
 
     private BigInteger broadSpecialityId;
     private String superSpecialityName;
+    private String fileName;
 }
