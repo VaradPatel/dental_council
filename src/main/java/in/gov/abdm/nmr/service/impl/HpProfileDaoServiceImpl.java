@@ -495,9 +495,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     private void mapQualificationRequestToEntity(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, QualificationDetailRequestTO newCustomQualification, ForeignQualificationDetails customQualification, MultipartFile proof) {
         customQualification.setCountry(newCustomQualification.getCountry().getName());
-        customQualification.setState(newCustomQualification.getState().getName());
+        customQualification.setState(newCustomQualification.getState() != null ? newCustomQualification.getState().getName() : null);
         customQualification.setCollege(newCustomQualification.getCollege().getName());
-        customQualification.setUniversity(newCustomQualification.getUniversity().getName());
+        customQualification.setUniversity(newCustomQualification.getUniversity() != null ? newCustomQualification.getUniversity().getName() : null);
         customQualification.setCourse(newCustomQualification.getCourse().getCourseName());
         customQualification.setIsVerified(newCustomQualification.getIsVerified());
         customQualification.setQualificationYear(newCustomQualification.getQualificationYear());
