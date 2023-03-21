@@ -81,9 +81,9 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
                 qualificationDetailResponseTo.setQualificationMonth(internationalQualification.getQualificationMonth());
                 qualificationDetailResponseTo.setQualificationFrom(NMRConstants.INTERNATIONAL);
                 qualificationDetailResponseTo.setCountry(CountryTO.builder().name(internationalQualification.getCountry()).build());
-                qualificationDetailResponseTo.setState(StateTO.builder().name(internationalQualification.getState()).build());
+                qualificationDetailResponseTo.setState(internationalQualification.getState()!=null?StateTO.builder().name(internationalQualification.getState()).build():null);
                 qualificationDetailResponseTo.setCourse(CourseTO.builder().courseName(internationalQualification.getCourse()).build());
-                qualificationDetailResponseTo.setUniversity(UniversityTO.builder().name(internationalQualification.getUniversity()).build());
+                qualificationDetailResponseTo.setUniversity(internationalQualification.getUniversity()!=null?UniversityTO.builder().name(internationalQualification.getUniversity()).build():null);
                 qualificationDetailResponseTo.setCollege(CollegeTO.builder().name(internationalQualification.getCollege()).build());
                 if(internationalQualification.getCertificate() != null) {
                     qualificationDetailResponseTo.setDegreeCertificate(Base64.getEncoder().encodeToString(internationalQualification.getCertificate()));
