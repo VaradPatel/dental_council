@@ -32,6 +32,11 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
             if(registrationDetails.getCertificate() != null) {
                 registrationDetailsTo.setRegistrationCertificate(Base64.getEncoder().encodeToString(registrationDetails.getCertificate()));
             }
+            if (registrationDetails.getFileName() != null) {
+                String[] res = registrationDetails.getFileName().split("[.]", 0);
+                registrationDetailsTo.setFileName(res[0]);
+                registrationDetailsTo.setFileType(res[1]);
+            }
         }
         if(nbeDetails != null) {
             nbeResponseTo.setResult(nbeDetails.getUserResult());
@@ -59,6 +64,11 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
                 if(indianQualification.getCertificate() != null) {
                     qualificationDetailResponseTo.setDegreeCertificate(Base64.getEncoder().encodeToString(indianQualification.getCertificate()));
                 }
+                if (indianQualification.getFileName()!=null){
+                    String[] res = indianQualification.getFileName().split("[.]", 0);
+                    qualificationDetailResponseTo.setFileName(res[0]);
+                    qualificationDetailResponseTo.setFileType(res[1]);
+                }
 
                 return qualificationDetailResponseTo;
             }).toList());
@@ -77,6 +87,11 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
                 qualificationDetailResponseTo.setCollege(CollegeTO.builder().name(internationalQualification.getCollege()).build());
                 if(internationalQualification.getCertificate() != null) {
                     qualificationDetailResponseTo.setDegreeCertificate(Base64.getEncoder().encodeToString(internationalQualification.getCertificate()));
+                }
+                if (internationalQualification.getFileName() != null) {
+                    String[] res = internationalQualification.getFileName().split("[.]", 0);
+                    qualificationDetailResponseTo.setFileName(res[0]);
+                    qualificationDetailResponseTo.setFileType(res[1]);
                 }
                 return qualificationDetailResponseTo;
             }).toList());
