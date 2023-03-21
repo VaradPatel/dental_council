@@ -14,6 +14,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.math.BigInteger;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -93,7 +94,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         }
 
         if (Objects.nonNull(dashboardRequestParamsTO.getYearOfRegistration()) && !dashboardRequestParamsTO.getYearOfRegistration().isEmpty()) {
-            sb.append("AND rd.created_at ILIKE '%").append(dashboardRequestParamsTO.getYearOfRegistration()).append("%' ");
+            sb.append("AND EXTRACT(YEAR FROM rd.registration_date) = ").append(dashboardRequestParamsTO.getYearOfRegistration()).append(" ");
         }
 
         if (Objects.nonNull(dashboardRequestParamsTO.getUserGroupId())) {
@@ -272,6 +273,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setEmailId((String) result[15]);
             dashBoardTO.setMobileNumber((String) result[16]);
             dashBoardTO.setNmrId((String)result[17]);
+            dashBoardTO.setYearOfRegistration(((Date) result[18]).toString());
             dashboardTOList.add(dashBoardTO);
         });
         dashBoardResponseTO.setDashboardTOList(dashboardTOList);

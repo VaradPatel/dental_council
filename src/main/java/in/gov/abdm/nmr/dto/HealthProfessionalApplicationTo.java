@@ -32,4 +32,5 @@ public class HealthProfessionalApplicationTo {
     private String emailId;
     private String mobileNumber;
     private String nmrId;
+    private String yearOfRegistration;
 }

@@ -13,6 +13,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.math.BigInteger;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +86,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getYearOfRegistration()) && !healthProfessionalApplicationRequestParamsTo.getYearOfRegistration().isEmpty()) {
-            sb.append("AND rd.created_at ILIKE '%").append(healthProfessionalApplicationRequestParamsTo.getYearOfRegistration()).append("%' ");
+            sb.append("AND EXTRACT(YEAR FROM rd.registration_date) = ").append(healthProfessionalApplicationRequestParamsTo.getYearOfRegistration()).append(" ");
         }
 
         return sb.toString();
@@ -117,6 +118,12 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         StringBuilder sb = new StringBuilder();
 
         sb.append(FETCH_TRACK_DETAILS_QUERY);
+
+        if (hpProfiles.size() == 1) {
+            sb.append("INNER JOIN main.qualification_details as qd on qd.hp_profile_id = rd.hp_profile_id AND qd.request_id = rd.request_id ");
+        }
+
+        sb.append(" where calculate.hp_profile_id IS NOT NULL and current_status = 1 ");
 
         if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
             StringBuilder hpIds = new StringBuilder();
@@ -172,6 +179,12 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         StringBuilder sb = new StringBuilder();
 
         sb.append(FETCH_TRACK_DETAILS_COUNT_QUERY);
+
+        if (hpProfiles.size() == 1) {
+            sb.append("INNER JOIN main.qualification_details as qd on qd.hp_profile_id = rd.hp_profile_id AND qd.request_id = rd.request_id ");
+        }
+
+        sb.append(" where calculate.hp_profile_id IS NOT NULL and current_status = 1 ");
 
         if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
             StringBuilder hpIds = new StringBuilder();
@@ -262,6 +275,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setEmailId((String) result[17]);
             healthProfessionalApplicationTo.setMobileNumber((String) result[18]);
             healthProfessionalApplicationTo.setNmrId((String)result[19]);
+            healthProfessionalApplicationTo.setNmrId(((Date) result[20]).toString());
             healthProfessionalApplicationToList.add(healthProfessionalApplicationTo);
         });
         healthProfessionalApplicationResponseTo.setHealthProfessionalApplications(healthProfessionalApplicationToList);
