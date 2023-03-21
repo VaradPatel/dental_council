@@ -27,7 +27,7 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
             registrationDetailsTo.setRenewableRegistrationDate(registrationDetails.getRenewableRegistrationDate());
             registrationDetailsTo.setIsNameChange(registrationDetails.getIsNameChange());
             registrationDetailsTo.setRegistrationNumber(registrationDetails.getRegistrationNo());
-            registrationDetailsTo.setStateMedicalCouncil(StateMedicalCouncilTO.builder().code(registrationDetails.getStateMedicalCouncil().getCode()).name(registrationDetails.getStateMedicalCouncil().getName()).build());
+            registrationDetailsTo.setStateMedicalCouncil(StateMedicalCouncilTO.builder().id(registrationDetails.getStateMedicalCouncil().getId()).name(registrationDetails.getStateMedicalCouncil().getName()).build());
             registrationDetailsTo.setIsRenewable(registrationDetails.getIsRenewable());
             if(registrationDetails.getCertificate() != null) {
                 registrationDetailsTo.setRegistrationCertificate(Base64.getEncoder().encodeToString(registrationDetails.getCertificate()));
