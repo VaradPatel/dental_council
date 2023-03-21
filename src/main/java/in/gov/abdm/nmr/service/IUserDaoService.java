@@ -21,6 +21,11 @@ public interface IUserDaoService {
     
     boolean existsByUsername(String username);
 
+    boolean existsByHprId(String hprId);
+
+    boolean existsByMobileNumber(String mobileNumber);
+    boolean existsByEmail(String email);
+
     User toggleSmsNotification(boolean isSmsNotificationEnabled);
 
     User toggleEmailNotification(boolean isEmailNotificationEnabled);

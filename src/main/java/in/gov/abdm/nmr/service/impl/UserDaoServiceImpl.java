@@ -101,6 +101,23 @@ public class UserDaoServiceImpl implements IUserDaoService {
     }
 
     @Override
+    public boolean existsByHprId(String hprId) {
+        return userDetailRepository.existsByHprId(hprId);
+    }
+
+    @Override
+    public boolean existsByMobileNumber(String mobileNumber) {
+        return userDetailRepository.existsByMobileNumber(mobileNumber);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userDetailRepository.existsByEmail(email);
+    }
+
+
+
+    @Override
     public User toggleSmsNotification(boolean isSmsNotificationEnabled) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User userDetail = userDetailRepository.findByUsername(userName);
