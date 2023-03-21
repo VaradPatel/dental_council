@@ -71,5 +71,6 @@ public class RegistrationDetailsMaster extends CommonAuditEntity {
     private HpProfileMaster hpProfileMaster;
 
     private String requestId;
+    private String fileName;
 
 }

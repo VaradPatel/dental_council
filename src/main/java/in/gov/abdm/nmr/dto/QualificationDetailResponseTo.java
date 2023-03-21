@@ -20,4 +20,6 @@ public class QualificationDetailResponseTo {
     private String requestId;
     private String qualificationFrom;
     private String degreeCertificate;
+    private String fileName;
+    private String fileType;
 }

@@ -69,5 +69,5 @@ public class RegistrationDetails extends CommonAuditEntity {
     private HpProfile hpProfileId;
 
     private String requestId;
-    
+    private String fileName;
 }

@@ -72,5 +72,5 @@ public class QualificationDetails {
     private BigInteger broadSpecialityId;
 
     private String superSpecialityName;
-
+    private String fileName;
 }
