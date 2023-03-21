@@ -1,9 +1,18 @@
 package in.gov.abdm.nmr.service.impl;
 
-import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
-
-import java.math.BigInteger;
-
+import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
+import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.enums.Action;
+import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.enums.WorkflowStatus;
+import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.mapper.INextGroup;
+import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.service.INotificationService;
+import in.gov.abdm.nmr.service.IUserDaoService;
+import in.gov.abdm.nmr.service.IWorkFlowService;
+import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,34 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
-import in.gov.abdm.nmr.entity.College;
-import in.gov.abdm.nmr.entity.HpProfile;
-import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.entity.UserGroup;
-import in.gov.abdm.nmr.entity.WorkFlow;
-import in.gov.abdm.nmr.entity.WorkFlowAudit;
-import in.gov.abdm.nmr.enums.Action;
-import in.gov.abdm.nmr.enums.ApplicationType;
-import in.gov.abdm.nmr.enums.Group;
-import in.gov.abdm.nmr.enums.WorkflowStatus;
-import in.gov.abdm.nmr.exception.WorkFlowException;
-import in.gov.abdm.nmr.mapper.INextGroup;
-import in.gov.abdm.nmr.repository.IActionRepository;
-import in.gov.abdm.nmr.repository.IApplicationTypeRepository;
-import in.gov.abdm.nmr.repository.ICollegeRepository;
-import in.gov.abdm.nmr.repository.IHpProfileRepository;
-import in.gov.abdm.nmr.repository.IHpProfileStatusRepository;
-import in.gov.abdm.nmr.repository.INMRWorkFlowConfigurationRepository;
-import in.gov.abdm.nmr.repository.IQualificationDetailRepository;
-import in.gov.abdm.nmr.repository.IUserGroupRepository;
-import in.gov.abdm.nmr.repository.IWorkFlowAuditRepository;
-import in.gov.abdm.nmr.repository.IWorkFlowRepository;
-import in.gov.abdm.nmr.repository.IWorkFlowStatusRepository;
-import in.gov.abdm.nmr.service.INotificationService;
-import in.gov.abdm.nmr.service.IUserDaoService;
-import in.gov.abdm.nmr.service.IWorkFlowService;
-import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;
+import java.math.BigInteger;
+
+import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
 
 @Service
 public class WorkFlowServiceImpl implements IWorkFlowService {
@@ -123,25 +107,24 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
             }
             iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(workFlow.getApplicationType().getId(), workFlow.getCurrentGroup().getId(), requestTO.getActionId());
-        }
-
-        if (iNextGroup != null) {
-            workFlow.setUpdatedAt(null);
-            workFlow.setAction(iActionRepository.findById(requestTO.getActionId()).get());
-            workFlow.setPreviousGroup(workFlow.getCurrentGroup());
-            workFlow.setCurrentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null);
-            workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
-            workFlow.setRemarks(requestTO.getRemarks());
-            workFlow.setUserId(user);
-            if (isLastStepOfWorkFlow(iNextGroup)) {
-                workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
+            if (iNextGroup != null) {
+                workFlow.setUpdatedAt(null);
+                workFlow.setAction(iActionRepository.findById(requestTO.getActionId()).get());
+                workFlow.setPreviousGroup(workFlow.getCurrentGroup());
+                workFlow.setCurrentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null);
+                workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
+                workFlow.setRemarks(requestTO.getRemarks());
+                workFlow.setUserId(user);
+                if (isLastStepOfWorkFlow(iNextGroup)) {
+                    workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
+                }
+            } else {
+                throw new WorkFlowException("Next Group Not Found", HttpStatus.BAD_REQUEST);
             }
-            iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
-            notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
-
-        } else {
-            throw new WorkFlowException("Next Group Not Found", HttpStatus.BAD_REQUEST);
         }
+        iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
+        notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+
     }
 
     @Override
