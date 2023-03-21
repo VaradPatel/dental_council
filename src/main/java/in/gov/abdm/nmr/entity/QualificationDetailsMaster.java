@@ -73,5 +73,6 @@ public class QualificationDetailsMaster {
     private BigInteger broadSpecialityId;
 
     private String superSpecialityName;
+    private String fileName;
 
 }
