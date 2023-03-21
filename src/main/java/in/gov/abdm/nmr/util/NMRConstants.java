@@ -113,6 +113,9 @@ public class NMRConstants {
     public static final String USER_NOT_FOUND = "User not found";
     public static final String COLLEGE_CONSTANT = "College";
     public static final String USER_ALREADY_EXISTS = "User already exists";
+    public static final String USERNAME_ALREADY_EXISTS = "User with this username already exists";
+    public static final String MOBILE_NUMBER_ALREADY_EXISTS = "User with this mobile number already exists";
+    public static final String EMAIL_ALREADY_EXISTS = "User with this email already exists";
     public static final String FORBIDDEN = "Forbidden";
     public static final String INVALID_COLLEGE_ID = "Invalid college id";
     public static final String INVALID_PROFILE_ID = "Invalid profile id";

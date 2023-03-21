@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -149,6 +150,10 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        if(failed instanceof BadCredentialsException) {
+            failed = new AuthenticationServiceException("Invalid Username or Password! Please Enter Valid Username and Password");
+        }
+        
         super.unsuccessfulAuthentication(request, response, failed);
         publishAuthenticationFailure(request, failed);
 
