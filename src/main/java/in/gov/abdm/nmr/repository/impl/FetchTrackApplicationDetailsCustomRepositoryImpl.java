@@ -119,6 +119,12 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
 
         sb.append(FETCH_TRACK_DETAILS_QUERY);
 
+        if (hpProfiles.size() == 1) {
+            sb.append("INNER JOIN main.qualification_details as qd on qd.hp_profile_id = rd.hp_profile_id AND qd.request_id = rd.request_id ");
+        }
+
+        sb.append(" where calculate.hp_profile_id IS NOT NULL and current_status = 1 ");
+
         if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
             StringBuilder hpIds = new StringBuilder();
             hpProfiles.forEach(hpProfile -> {
@@ -173,6 +179,12 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         StringBuilder sb = new StringBuilder();
 
         sb.append(FETCH_TRACK_DETAILS_COUNT_QUERY);
+
+        if (hpProfiles.size() == 1) {
+            sb.append("INNER JOIN main.qualification_details as qd on qd.hp_profile_id = rd.hp_profile_id AND qd.request_id = rd.request_id ");
+        }
+
+        sb.append(" where calculate.hp_profile_id IS NOT NULL and current_status = 1 ");
 
         if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
             StringBuilder hpIds = new StringBuilder();
