@@ -164,8 +164,10 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             }
 
             targetedHpProfile = new HpProfile();
-            org.springframework.beans.BeanUtils.copyProperties(existingHpProfile, targetedHpProfile);
-            targetedHpProfile.setId(null);
+            if (existingHpProfile != null) {
+                org.springframework.beans.BeanUtils.copyProperties(existingHpProfile, targetedHpProfile);
+                targetedHpProfile.setId(null);
+            }
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, targetedHpProfile);
             HpProfile savedHpProfile = iHpProfileRepository.save(targetedHpProfile);
             updatedHpProfileId = savedHpProfile.getId();
@@ -174,7 +176,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, existingHpProfile);
             updatedHpProfileId = existingHpProfile.getId();
         }
-        if (hpPersonalUpdateRequestTO.getCommunicationAddress() != null) {
+        if (hpPersonalUpdateRequestTO.getCommunicationAddress() != null && copiedExistingHpProfile!=null) {
             Address address = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(copiedExistingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId()), new Address());
             Address newAddress = new Address();
             org.springframework.beans.BeanUtils.copyProperties(address, newAddress);
@@ -245,6 +247,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
             try {
                 hpRegistrationUpdateRequestTO.getRegistrationDetail().setRegistrationCertificate(registrationCertificate != null ? Base64.getEncoder().encodeToString(registrationCertificate.getBytes()) : null);
+                hpRegistrationUpdateRequestTO.getRegistrationDetail().setFileName(registrationCertificate != null ? registrationCertificate.getOriginalFilename() : null);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -465,6 +468,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 coalesce(indianQualification.getRequestId(), hpProfile.getRequestId()));
         qualification.setBroadSpecialityId(indianQualification.getBroadSpecialityId());
         qualification.setSuperSpecialityName(indianQualification.getSuperSpecialityName());
+        qualification.setFileName(proof != null ? proof.getOriginalFilename() : null);
         try {
             qualification.setCertificate(proof.getBytes());
         } catch (IOException e) {
@@ -505,6 +509,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         customQualification.setHpProfile(hpProfile);
         customQualification.setBroadSpecialityId(newCustomQualification.getBroadSpecialityId());
         customQualification.setSuperSpecialityName(newCustomQualification.getSuperSpecialityName());
+        customQualification.setFileName(proof != null ? proof.getOriginalFilename() : null);
         try {
             customQualification.setCertificate(proof.getBytes());
         } catch (IOException e) {
@@ -609,6 +614,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                     hpRegistrationUpdateRequestTO.getRegistrationDetail().getRenewableRegistrationDate());
             registrationDetail.setIsNameChange(hpRegistrationUpdateRequestTO.getRegistrationDetail().getIsNameChange());
             registrationDetail.setCertificate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationCertificate().getBytes());
+            registrationDetail.setFileName(hpRegistrationUpdateRequestTO.getRegistrationDetail().getFileName());
         }
         registrationDetail.setHpProfileId(hpProfile);
         registrationDetail.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));

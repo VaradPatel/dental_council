@@ -18,4 +18,6 @@ public class RegistrationDetailTO {
     private Date renewableRegistrationDate;
     private String isNameChange;
     private String registrationCertificate;
+    private String fileName;
+    private String fileType;
 }
