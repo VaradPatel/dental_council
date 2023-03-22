@@ -246,14 +246,12 @@ public class NMRConstants {
             SELECT wfs.name, coalesce(result.count,0) as count FROM 
             (SELECT ws.name as name, COUNT(w) as count 
             FROM work_flow w JOIN work_flow_status ws ON w.work_flow_status_id = ws.id 
-            JOIN nbe_profile nbe ON nbe.user_id=w.user_id 
-            WHERE nbe.id=:""" + NBE_PROFILE_ID + " AND w.application_type_id = :" + APPLICATION_TYPE_ID + " AND  w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
+            WHERE w.application_type_id = :""" + APPLICATION_TYPE_ID + " AND  w.current_group_id = :" + GROUP_ID + " OR ( w.previous_group_id = :" + GROUP_ID + """ 
              \s AND w.action_id IN ( 3,5 ) ) 
             GROUP BY ws.name 
             UNION 
             SELECT 'Approved' as name, COUNT(wa) as count FROM work_flow_audit wa 
-            JOIN nbe_profile nbe ON wa.user_id=nbe.user_id 
-            WHERE nbe.id=:""" + NBE_PROFILE_ID + " AND wa.application_type_id = :" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """  
+            WHERE wa.application_type_id = :""" + APPLICATION_TYPE_ID + " AND wa.previous_group_id = :" + GROUP_ID + """  
              \s AND wa.action_id = 4 
             GROUP BY name ) as result right join main.work_flow_status wfs on wfs.name=result.name""";
 
