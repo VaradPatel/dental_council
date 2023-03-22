@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static in.gov.abdm.nmr.util.NMRConstants.FETCH_CARD_DETAILS_COUNT_QUERY;
 import static in.gov.abdm.nmr.util.NMRConstants.FETCH_CARD_DETAILS_QUERY;
 
 /**
@@ -191,7 +190,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
      * @param dashboardRequestParamsTO - the parameters used to retrieve the Dashboard records list.
      * @return totalRecords the count of Dashboard records list.
      */
-    private BigInteger getCount(DashboardRequestParamsTO dashboardRequestParamsTO) {
+    /*private BigInteger getCount(DashboardRequestParamsTO dashboardRequestParamsTO) {
         BigInteger totalRecords = null;
         try {
             Query query = entityManager.createNativeQuery(GET_RECORD_COUNT.apply(dashboardRequestParamsTO));
@@ -201,7 +200,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             log.error("Repository:: getRecords " + e.getMessage());
         }
         return totalRecords;
-    }
+    }*/
 
     /**
      * Represents a functional interface to generates a dynamic WHERE clause based on the DashboardRequestParamsTO
@@ -210,7 +209,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
      * @param dashboardRequestParamsTO - an object that contains parameters for the function
      * @return a query to get the count of the Dashboard records list.
      */
-    private static final Function<DashboardRequestParamsTO, String> GET_RECORD_COUNT = dashboardRequestParamsTO -> {
+    /*private static final Function<DashboardRequestParamsTO, String> GET_RECORD_COUNT = dashboardRequestParamsTO -> {
         StringBuilder sb = new StringBuilder();
         BigInteger groupId = dashboardRequestParamsTO.getUserGroupId();
 
@@ -232,7 +231,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             sb.append(parameters);
         }
         return sb.toString();
-    };
+    };*/
 
     /**
      * Retrieves the details of Dashboard records list based on the provided parameters.
@@ -245,6 +244,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
     @Override
     public DashboardResponseTO fetchDashboardData(DashboardRequestParamsTO dashboardRequestParamsTO, Pageable pagination) {
         DashboardResponseTO dashBoardResponseTO = new DashboardResponseTO();
+        dashBoardResponseTO.setTotalNoOfRecords(BigInteger.ZERO);
         List<DashboardTO> dashboardTOList = new ArrayList<>();
 
         Query query = entityManager.createNativeQuery(DASHBOARD.apply(dashboardRequestParamsTO));
@@ -274,10 +274,10 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setMobileNumber((String) result[16]);
             dashBoardTO.setNmrId((String)result[17]);
             dashBoardTO.setYearOfRegistration(((Date) result[18]).toString());
+            dashBoardResponseTO.setTotalNoOfRecords((BigInteger) result[19]);
             dashboardTOList.add(dashBoardTO);
         });
         dashBoardResponseTO.setDashboardTOList(dashboardTOList);
-        dashBoardResponseTO.setTotalNoOfRecords(getCount(dashboardRequestParamsTO));
         return dashBoardResponseTO;
     }
 }
