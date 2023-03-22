@@ -245,22 +245,17 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                                                                  HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, MultipartFile degreeCertificate) throws NmrException, InvalidRequestException {
 
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
-            try {
-                hpRegistrationUpdateRequestTO.getRegistrationDetail().setRegistrationCertificate(registrationCertificate != null ? Base64.getEncoder().encodeToString(registrationCertificate.getBytes()) : null);
-                hpRegistrationUpdateRequestTO.getRegistrationDetail().setFileName(registrationCertificate != null ? registrationCertificate.getOriginalFilename() : null);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            hpRegistrationUpdateRequestTO.getRegistrationDetail().setFileName(registrationCertificate != null ? registrationCertificate.getOriginalFilename() : null);
         }
         RegistrationDetails registrationDetail = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId);
         HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
 
         if (registrationDetail == null) {
             registrationDetail = new RegistrationDetails();
-            mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile);
+            mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile,registrationCertificate);
             registrationDetailRepository.save(registrationDetail);
         } else {
-            mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile);
+            mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile,registrationCertificate);
         }
         if (degreeCertificate != null) {
             validateQualificationDetailsAndProofs(hpRegistrationUpdateRequestTO.getQualificationDetails(), List.of(degreeCertificate));
@@ -602,7 +597,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     @SneakyThrows
-    private void mapRegistrationRequestToEntity(HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, RegistrationDetails registrationDetail, HpProfile hpProfile) {
+    private void mapRegistrationRequestToEntity(HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, RegistrationDetails registrationDetail, HpProfile hpProfile,MultipartFile registrationCertificate) {
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
             registrationDetail.setHpProfileId(hpProfile);
             registrationDetail.setRegistrationDate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationDate());
@@ -613,7 +608,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             registrationDetail.setRenewableRegistrationDate(
                     hpRegistrationUpdateRequestTO.getRegistrationDetail().getRenewableRegistrationDate());
             registrationDetail.setIsNameChange(hpRegistrationUpdateRequestTO.getRegistrationDetail().getIsNameChange());
-            registrationDetail.setCertificate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationCertificate().getBytes());
+            registrationDetail.setCertificate(registrationCertificate.getBytes());
             registrationDetail.setFileName(hpRegistrationUpdateRequestTO.getRegistrationDetail().getFileName());
         }
         registrationDetail.setHpProfileId(hpProfile);
