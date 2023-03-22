@@ -83,7 +83,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
         responseTO.setHpRegistrationRequest(FetchCountOnCardInnerResponseTO.builder()
                 .applicationTypeIds(ApplicationType.HP_REGISTRATION.getId().toString()+COMMA_SEPARATOR+ApplicationType.FOREIGN_HP_REGISTRATION.getId().toString())
                 .build());
-        if (Group.SMC.getDescription().equals(groupName) || Group.COLLEGE_ADMIN.getDescription().equals(groupName) || Group.COLLEGE_DEAN.getDescription().equals(groupName) || Group.COLLEGE_REGISTRAR.getDescription().equals(groupName) || Group.NMC.getDescription().equals(groupName)) {
+        if (Group.SMC.getDescription().equals(groupName) || Group.COLLEGE_ADMIN.getDescription().equals(groupName) || Group.COLLEGE_DEAN.getDescription().equals(groupName) || Group.COLLEGE_REGISTRAR.getDescription().equals(groupName) || Group.NMC.getDescription().equals(groupName) || Group.NBE.getDescription().equals(groupName)) {
             counter=BigInteger.ZERO;
             List<StatusWiseCountTO> hpRegistrationRequests = fetchStatusWiseCountBasedOnLoggedInUser(ApplicationType.HP_REGISTRATION.getId(), loggedInUser)
                     .stream()
@@ -586,15 +586,14 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
          * Group - NBE
          */
         if (Group.NBE.getDescription().equals(group.getName())) {
-            BigInteger nbeProfileId=iNbeProfileRepository.getNbeProfileIdByUserId(loggedInUser.getId()).get(0);
-            List<IStatusWiseCount> primaryStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForNbe(applicationTypeId,groupId,nbeProfileId);
+            List<IStatusWiseCount> primaryStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForNbe(applicationTypeId,groupId);
 
             if (ApplicationType.HP_REGISTRATION.getId().equals(applicationTypeId)){
-                List<IStatusWiseCount> foreignHpStatusWiseCount= iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForNbe(ApplicationType.FOREIGN_HP_REGISTRATION.getId(), groupId, nbeProfileId);
+                List<IStatusWiseCount> foreignHpStatusWiseCount= iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForNbe(ApplicationType.FOREIGN_HP_REGISTRATION.getId(), groupId);
                 return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount,foreignHpStatusWiseCount);
             }
             else if (ApplicationType.HP_MODIFICATION.getId().equals(applicationTypeId)){
-                List<IStatusWiseCount> qualificationAdditionStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForNbe(ApplicationType.QUALIFICATION_ADDITION.getId(), groupId, nbeProfileId);
+                List<IStatusWiseCount> qualificationAdditionStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForNbe(ApplicationType.QUALIFICATION_ADDITION.getId(), groupId);
                 return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount,qualificationAdditionStatusWiseCount);
             }
             return primaryStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).toList();
