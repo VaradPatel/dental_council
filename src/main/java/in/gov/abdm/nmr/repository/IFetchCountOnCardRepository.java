@@ -28,7 +28,7 @@ public interface IFetchCountOnCardRepository extends JpaRepository<HpVerificatio
     List<IStatusWiseCount> fetchUserSpecificStatusWiseCountForAdmin(@Param(APPLICATION_TYPE_ID) BigInteger applicationTypeId, @Param(GROUP_ID) BigInteger groupId, @Param(COLLEGE_ID) BigInteger collegeId);
 
     @Query(value = FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_NBE,nativeQuery = true)
-    List<IStatusWiseCount> fetchUserSpecificStatusWiseCountForNbe(@Param(APPLICATION_TYPE_ID) BigInteger applicationTypeId, @Param(GROUP_ID) BigInteger groupId, @Param(NBE_PROFILE_ID) BigInteger nbeProfileId);
+    List<IStatusWiseCount> fetchUserSpecificStatusWiseCountForNbe(@Param(APPLICATION_TYPE_ID) BigInteger applicationTypeId, @Param(GROUP_ID) BigInteger groupId);
 
     @Query(value = FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_SMC,nativeQuery = true)
     List<IStatusWiseCount> fetchUserSpecificStatusWiseCountForSmc(@Param(APPLICATION_TYPE_ID) BigInteger applicationTypeId, @Param(GROUP_ID) BigInteger groupId, @Param(SMC_PROFILE_ID) BigInteger smcProfileId);

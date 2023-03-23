@@ -31,7 +31,7 @@ public class PersonalDetailsTO {
     @NotBlank(message = NOT_BLANK_ERROR_MSG)
     private String gender;
     private ScheduleTO schedule;
-    private byte[] profilePhoto;
+    private String profilePhoto;
     private String fullName;
 
     private Boolean isNew;
