@@ -32,6 +32,8 @@ public final class HpPersonalDetailMapper {
         personalDetailsTO.setMotherName(hpProfile.getMotherName());
         personalDetailsTO.setSalutation(hpProfile.getSalutation());
         personalDetailsTO.setIsNew(hpProfile.getIsNew() != null && hpProfile.getIsNew() == 1);
+        personalDetailsTO.setEmail(hpProfile.getEmailId());
+        personalDetailsTO.setMobile(hpProfile.getMobileNumber());
 
 //        personalDetailsTO.setSchedule(ScheduleTO.builder().id(hpProfile.getSchedule().getId()).name(hpProfile.getSchedule().getName()).build());
 

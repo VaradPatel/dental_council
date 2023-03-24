@@ -12,5 +12,6 @@ public interface CourseDtoMapper {
 
     List<CourseTO> courseDataToDto(List<Course> course);
 
+    CourseTO mapToCourseTO(Course course);
 
 }

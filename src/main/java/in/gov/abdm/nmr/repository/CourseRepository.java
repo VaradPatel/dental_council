@@ -12,4 +12,6 @@ public interface CourseRepository extends JpaRepository<Course, BigInteger> {
     @Query(value = "SELECT course_name, id FROM course", nativeQuery = true)
     List<Course> getCourse();
 
+    Course getByCourseName(String courseName);
+
 }
