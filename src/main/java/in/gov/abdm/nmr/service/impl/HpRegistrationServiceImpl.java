@@ -145,6 +145,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Autowired
     IAddressMasterRepository iAddressMasterRepository;
 
+    @Autowired
+    private HpProfileRegistrationMapper hpProfileRegistrationMapper;
+
     /**
      * This method fetches the SMC registration details for a given request.
      *
@@ -314,7 +317,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         HpNbeDetails nbeDetails = hpNbeDetailsRepository.findByHpProfileId(hpProfileId);
         List<QualificationDetails> indianQualifications = qualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId);
         List<ForeignQualificationDetails> internationalQualifications = customQualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId);
-        HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = HpProfileRegistrationMapper.convertEntitiesToRegistrationResponseTo(registrationDetails, nbeDetails, indianQualifications, internationalQualifications);
+        HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = hpProfileRegistrationMapper.convertEntitiesToRegistrationResponseTo(registrationDetails, nbeDetails, indianQualifications, internationalQualifications);
         hpProfileRegistrationResponseTO.setHpProfileId(hpProfileId);
         return hpProfileRegistrationResponseTO;
     }
