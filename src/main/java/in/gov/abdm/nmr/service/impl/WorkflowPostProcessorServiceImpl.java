@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorService {
@@ -154,7 +155,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
         if (!ApplicationType.QUALIFICATION_ADDITION.getId().equals(requestTO.getApplicationTypeId())) {
             hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
-            if(hpProfile.getNmrId() == null) {
+            if (hpProfile.getNmrId() == null) {
                 hpProfile.setNmrId(generateNmrId());
                 User user = userRepository.findById(hpProfile.getUser().getId()).get();
                 user.setNmrId(hpProfile.getNmrId());
@@ -217,20 +218,16 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     }
 
     private void updateForeignQualificationToMaster(BigInteger transactionHpProfileId, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
-
         List<ForeignQualificationDetails> qualificationDetails = customQualificationDetailRepository.getQualificationDetailsByHpProfileId(transactionHpProfileId);
-
-        if (!qualificationDetails.isEmpty()) {
-            List<ForeignQualificationDetailsMaster> qualificationDetailsMasters = customQualificationDetailsMasterMapper.qualificationToQualificationMaster(qualificationDetails);
-            List<ForeignQualificationDetailsMaster> fetchedFromMasters = customQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId());
-
-            for (int i = 0; i < qualificationDetailsMasters.size(); i++) {
-                if (!fetchedFromMasters.isEmpty() && fetchedFromMasters.get(i) != null) {
-                    qualificationDetailsMasters.get(i).setId(fetchedFromMasters.get(i).getId());
-                }
-                qualificationDetailsMasters.get(i).setHpProfileMaster(masterHpProfile);
-                qualificationDetailsMasters.get(i).setRegistrationDetails(registrationMaster);
-            }
+        List<String> masterCourseIds = customQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId())
+                .stream().map(qualificationDetailsMaster -> qualificationDetailsMaster.getCourse()).collect(Collectors.toList());
+        List<ForeignQualificationDetails> filterQualifications = qualificationDetails.stream().filter(qualificationDetail -> !masterCourseIds.contains(qualificationDetail.getCourse())).toList();
+        if (!filterQualifications.isEmpty()) {
+            List<ForeignQualificationDetailsMaster> qualificationDetailsMasters = customQualificationDetailsMasterMapper.qualificationToQualificationMaster(filterQualifications);
+            qualificationDetailsMasters.forEach(qualificationDetailsMaster -> {
+                qualificationDetailsMaster.setHpProfileMaster(masterHpProfile);
+                qualificationDetailsMaster.setRegistrationDetails(registrationMaster);
+            });
             customQualificationDetailMasterRepository.saveAll(qualificationDetailsMasters);
         }
     }
@@ -271,7 +268,6 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     }
 
     private void updateNmrHprLinkageToMaster(BigInteger transactionHpProfileId, BigInteger masterHpProfileId) {
-
         NmrHprLinkage nmrHprLinkage = nmrHprLinkageRepository.findByHpProfileId(transactionHpProfileId);
 
         if (nmrHprLinkage != null) {
@@ -286,20 +282,16 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     }
 
     private void updateQualificationDetailsToMaster(BigInteger transactionHpProfileId, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
-
         List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getQualificationDetailsByHpProfileId(transactionHpProfileId);
-
-        if (!qualificationDetails.isEmpty()) {
-            List<QualificationDetailsMaster> qualificationDetailsMasters = qualificationDetailMasterMapper.qualificationDetailsToQualificationDetailsMaster(qualificationDetails);
-            List<QualificationDetailsMaster> fetchedFromMasters = qualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId());
-
-            for (int i = 0; i < qualificationDetailsMasters.size(); i++) {
-                if (!fetchedFromMasters.isEmpty() && fetchedFromMasters.get(i) != null) {
-                    qualificationDetailsMasters.get(i).setId(fetchedFromMasters.get(i).getId());
-                }
-                qualificationDetailsMasters.get(i).setHpProfileMaster(masterHpProfile);
-                qualificationDetailsMasters.get(i).setRegistrationDetails(registrationMaster);
-            }
+        List<BigInteger> masterCourseIds = qualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId())
+                .stream().map(qualificationDetailsMaster -> qualificationDetailsMaster.getCourse().getId()).collect(Collectors.toList());
+        List<QualificationDetails> filterQualifications = qualificationDetails.stream().filter(qualificationDetail -> !masterCourseIds.contains(qualificationDetail.getCourse().getId())).toList();
+        if (!filterQualifications.isEmpty()) {
+            List<QualificationDetailsMaster> qualificationDetailsMasters = qualificationDetailMasterMapper.qualificationDetailsToQualificationDetailsMaster(filterQualifications);
+            qualificationDetailsMasters.forEach(qualificationDetailsMaster -> {
+                qualificationDetailsMaster.setHpProfileMaster(masterHpProfile);
+                qualificationDetailsMaster.setRegistrationDetails(registrationMaster);
+            });
             qualificationDetailMasterRepository.saveAll(qualificationDetailsMasters);
         }
     }

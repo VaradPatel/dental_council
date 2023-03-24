@@ -13,6 +13,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.math.BigInteger;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +86,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getYearOfRegistration()) && !healthProfessionalApplicationRequestParamsTo.getYearOfRegistration().isEmpty()) {
-            sb.append("AND rd.created_at ILIKE '%").append(healthProfessionalApplicationRequestParamsTo.getYearOfRegistration()).append("%' ");
+            sb.append("AND EXTRACT(YEAR FROM rd.registration_date) = ").append(healthProfessionalApplicationRequestParamsTo.getYearOfRegistration()).append(" ");
         }
 
         return sb.toString();
@@ -118,6 +119,8 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
 
         sb.append(FETCH_TRACK_DETAILS_QUERY);
 
+        sb.append(" where calculate.hp_profile_id IS NOT NULL and current_status = 1 ");
+
         if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
             StringBuilder hpIds = new StringBuilder();
             hpProfiles.forEach(hpProfile -> {
@@ -149,7 +152,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      * @param hpProfiles
      * @return totalRecords the count of health professional application requests
      */
-    private BigInteger getCount(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, List<BigInteger> hpProfiles) {
+    /*private BigInteger getCount(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, List<BigInteger> hpProfiles) {
         BigInteger totalRecords = null;
         try {
             Query query = entityManager.createNativeQuery(GET_RECORD_COUNT.apply(healthProfessionalApplicationRequestParamsTo, hpProfiles));
@@ -159,7 +162,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             log.error("Repository:: getRecords " + e.getMessage());
         }
         return totalRecords;
-    }
+    }*/
 
     /**
      * Represents a functional interface to generates a dynamic WHERE clause based on the HealthProfessionalApplicationRequestParamsTo
@@ -168,10 +171,12 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      * @param healthProfessionalApplicationRequestParamsTo - an object that contains parameters for the function
      * @return a query to get the count of the Health Professional's application requests.
      */
-    private static final BiFunction<HealthProfessionalApplicationRequestParamsTo, List<BigInteger>, String> GET_RECORD_COUNT = (healthProfessionalApplicationRequestParamsTo, hpProfiles) -> {
+    /* private static final BiFunction<HealthProfessionalApplicationRequestParamsTo, List<BigInteger>, String> GET_RECORD_COUNT = (healthProfessionalApplicationRequestParamsTo, hpProfiles) -> {
         StringBuilder sb = new StringBuilder();
 
         sb.append(FETCH_TRACK_DETAILS_COUNT_QUERY);
+
+        sb.append(" where calculate.hp_profile_id IS NOT NULL and current_status = 1 ");
 
         if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
             StringBuilder hpIds = new StringBuilder();
@@ -191,7 +196,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             sb.append(parameters);
         }
         return sb.toString();
-    };
+    };*/
 
     /**
      * Retrieves the details of health professional applications requests based on the provided parameters.
@@ -205,6 +210,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
     @Override
     public HealthProfessionalApplicationResponseTo fetchTrackApplicationDetails(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, Pageable pagination, List<BigInteger> hpProfiles) {
         HealthProfessionalApplicationResponseTo healthProfessionalApplicationResponseTo = new HealthProfessionalApplicationResponseTo();
+        healthProfessionalApplicationResponseTo.setTotalNoOfRecords(BigInteger.ZERO);
         List<HealthProfessionalApplicationTo> healthProfessionalApplicationToList = new ArrayList<>();
 
         Query query = entityManager.createNativeQuery(TRACK_APPLICATION.apply(healthProfessionalApplicationRequestParamsTo, hpProfiles));
@@ -262,10 +268,11 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setEmailId((String) result[17]);
             healthProfessionalApplicationTo.setMobileNumber((String) result[18]);
             healthProfessionalApplicationTo.setNmrId((String)result[19]);
+            healthProfessionalApplicationTo.setYearOfRegistration(((Date) result[20]).toString());
+            healthProfessionalApplicationResponseTo.setTotalNoOfRecords((BigInteger) result[21]);
             healthProfessionalApplicationToList.add(healthProfessionalApplicationTo);
         });
         healthProfessionalApplicationResponseTo.setHealthProfessionalApplications(healthProfessionalApplicationToList);
-        healthProfessionalApplicationResponseTo.setTotalNoOfRecords(getCount(healthProfessionalApplicationRequestParamsTo, hpProfiles));
         return healthProfessionalApplicationResponseTo;
     }
 }
