@@ -268,6 +268,16 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 });
                 qualificationDetailRepository.saveAll(qualificationDetailsList);
             }
+            List<ForeignQualificationDetails> foreignQualificationDetails = new ArrayList<>();
+            if (hpSubmitRequestTO.getApplicationTypeId().equals(ApplicationType.FOREIGN_HP_REGISTRATION.getId())) {
+                List<ForeignQualificationDetails> qualificationDetails = customQualificationDetailRepository.getQualificationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
+                String finalRequestId1 = requestId;
+                qualificationDetails.forEach(qualifications -> {
+                    qualifications.setRequestId(finalRequestId1);
+                    foreignQualificationDetails.add(qualifications);
+                });
+                customQualificationDetailRepository.saveAll(foreignQualificationDetails);
+            }
         }
         return new HpProfileAddResponseTO(201, "Hp Profile Submitted Successfully!", hpSubmitRequestTO.getHpProfileId(), requestId);
     }

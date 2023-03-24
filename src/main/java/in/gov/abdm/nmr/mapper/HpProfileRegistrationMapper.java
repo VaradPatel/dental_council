@@ -41,12 +41,12 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
             registrationDetailsTo.setStateMedicalCouncil(StateMedicalCouncilTO.builder().id(registrationDetails.getStateMedicalCouncil().getId()).name(registrationDetails.getStateMedicalCouncil().getName()).build());
             registrationDetailsTo.setIsRenewable(registrationDetails.getIsRenewable());
             if(registrationDetails.getCertificate() != null) {
-                registrationDetailsTo.setRegistrationCertificate(Base64.getEncoder().encodeToString(registrationDetails.getCertificate()));
+                registrationDetailsTo.setRegistrationCertificate( new String(Base64.getEncoder().encodeToString(registrationDetails.getCertificate())));
             }
             if (registrationDetails.getFileName() != null) {
-                String[] res = registrationDetails.getFileName().split("[.]", 0);
-                registrationDetailsTo.setFileName(res.length > 0 ? res[0] : null);
-                registrationDetailsTo.setFileType(res.length > 1 ? res[1] : null);
+                registrationDetailsTo.setFileName(registrationDetails.getFileName().substring(0,registrationDetails.getFileName().lastIndexOf(".")));
+                registrationDetailsTo.setFileType(registrationDetails.getFileName().substring(registrationDetails.getFileName().lastIndexOf(".")+1));
+
             }
         }
         if(nbeDetails != null) {
@@ -75,10 +75,9 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
                 if(indianQualification.getCertificate() != null) {
                     qualificationDetailResponseTo.setDegreeCertificate(Base64.getEncoder().encodeToString(indianQualification.getCertificate()));
                 }
-                if (indianQualification.getFileName()!=null){
-                    String[] res = indianQualification.getFileName().split("[.]", 0);
-                    qualificationDetailResponseTo.setFileName(res.length > 0 ? res[0] : null);
-                    qualificationDetailResponseTo.setFileType(res.length > 1 ? res[0] : null);
+                if (indianQualification.getFileName()!=null) {
+                    qualificationDetailResponseTo.setFileName(indianQualification.getFileName().substring(0, indianQualification.getFileName().lastIndexOf(".")));
+                    qualificationDetailResponseTo.setFileType(indianQualification.getFileName().substring(indianQualification.getFileName().lastIndexOf(".") + 1));
                 }
 
                 return qualificationDetailResponseTo;
@@ -110,9 +109,8 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
                     qualificationDetailResponseTo.setDegreeCertificate(Base64.getEncoder().encodeToString(internationalQualification.getCertificate()));
                 }
                 if (internationalQualification.getFileName() != null) {
-                    String[] res = internationalQualification.getFileName().split("[.]", 0);
-                    qualificationDetailResponseTo.setFileName(res.length > 0 ? res[0] : null);
-                    qualificationDetailResponseTo.setFileType(res.length > 1 ? res[0] : null);
+                    qualificationDetailResponseTo.setFileName(internationalQualification.getFileName().substring(0, internationalQualification.getFileName().lastIndexOf(".")));
+                    qualificationDetailResponseTo.setFileType(internationalQualification.getFileName().substring(internationalQualification.getFileName().lastIndexOf(".") + 1));
                 }
                 return qualificationDetailResponseTo;
             }).toList());
