@@ -9,6 +9,7 @@ import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.*;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.IElasticsearchDaoService;
+import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;
 import in.gov.abdm.nmr.util.NMRUtil;
 import org.apache.logging.log4j.LogManager;
@@ -125,6 +126,9 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     @Autowired
     IUserRepository userRepository;
 
+    @Autowired
+    INotificationService notificationService;
+
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
@@ -155,6 +159,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
                 hpProfile.setNmrId(generateNmrId());
                 User user = userRepository.findById(hpProfile.getUser().getId()).get();
                 user.setNmrId(hpProfile.getNmrId());
+                notificationService.sendNotificationForNMRCreation(user.getNmrId(),user.getMobileNumber());
             }
         }
         List<QualificationDetails> qualificationDetails = qualificationDetailRepository.findByRequestId(requestTO.getRequestId());

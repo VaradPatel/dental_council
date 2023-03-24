@@ -11,6 +11,7 @@ import in.gov.abdm.nmr.mapper.INmcMapper;
 import in.gov.abdm.nmr.mapper.ISmcMapper;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.security.common.RsaUtil;
+import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.service.IPasswordDaoService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.service.IUserService;
@@ -50,6 +51,9 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    INotificationService notificationService;
 
     public UserServiceImpl(IUserDaoService userDaoService) {
         this.userDaoService = userDaoService;
@@ -140,6 +144,7 @@ public class UserServiceImpl implements IUserService {
                 hpProfiles.add(hpProfile);
             });
             hpProfileRepository.saveAll(hpProfiles);
+            notificationService.sendNotificationForAccountCreation(createHpUserAccountTo.getUsername(),createHpUserAccountTo.getMobile());
             return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
 
         } catch (Exception e) {
