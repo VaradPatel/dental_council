@@ -143,10 +143,11 @@ public class ApplicationServiceImpl implements IApplicationService {
      */
     @Override
     public String suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
+        HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
         String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
-        HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
-        initiateWorkFlow(applicationRequestTo, requestId, newHpProfile);
-        return newHpProfile.getId().toString();
+//        HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
+        initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
+        return hpProfile.getId().toString();
     }
 
     /**
@@ -161,9 +162,9 @@ public class ApplicationServiceImpl implements IApplicationService {
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
         if (HpProfileStatus.SUSPENDED.getId() == hpProfile.getHpProfileStatus().getId() || HpProfileStatus.BLACKLISTED.getId() ==  hpProfile.getHpProfileStatus().getId()) {
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
-            HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
-            initiateWorkFlow(applicationRequestTo, requestId, newHpProfile);
-            return newHpProfile.getId().toString();
+//            HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
+            initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
+            return hpProfile.getId().toString();
         } else {
             throw new NmrException("Suspended profile can only be reactivated", HttpStatus.FORBIDDEN);
         }

@@ -33,4 +33,9 @@ public interface IFetchCountOnCardRepository extends JpaRepository<HpVerificatio
     @Query(value = FETCH_USER_SPECIFIC_STATUS_WISE_COUNT_QUERY_FOR_SMC,nativeQuery = true)
     List<IStatusWiseCount> fetchUserSpecificStatusWiseCountForSmc(@Param(APPLICATION_TYPE_ID) BigInteger applicationTypeId, @Param(GROUP_ID) BigInteger groupId, @Param(SMC_PROFILE_ID) BigInteger smcProfileId);
 
+    @Query(value = FETCH_USER_SPECIFIC_SUSPENSION_AND_ACTIVATE_STATUS_WISE_COUNT_QUERY_FOR_SMC,nativeQuery = true)
+    List<IStatusWiseCount> fetchUserSpecificSuspensionAndActivateStatusWiseCountForSmc(@Param(APPLICATION_TYPE_ID) BigInteger applicationTypeId, @Param(SMC_PROFILE_ID) BigInteger smcProfileId);
+
+    @Query(value = FETCH_USER_SPECIFIC_SUSPENSION_AND_ACTIVATE_STATUS_WISE_COUNT_QUERY_FOR_NMC,nativeQuery = true)
+    List<IStatusWiseCount> fetchUserSpecificSuspensionAndActivateStatusWiseCountForNmc(@Param(APPLICATION_TYPE_ID) BigInteger applicationTypeId);
 }
