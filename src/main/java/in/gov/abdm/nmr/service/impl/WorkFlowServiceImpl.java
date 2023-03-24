@@ -115,12 +115,12 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
                 workFlow.setRemarks(requestTO.getRemarks());
                 workFlow.setUserId(user);
-                if (isLastStepOfWorkFlow(iNextGroup)) {
-                    workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
-                }
             } else {
                 throw new WorkFlowException("Next Group Not Found", HttpStatus.BAD_REQUEST);
             }
+        }
+        if (isLastStepOfWorkFlow(iNextGroup)) {
+            workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
         }
         iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
         notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
