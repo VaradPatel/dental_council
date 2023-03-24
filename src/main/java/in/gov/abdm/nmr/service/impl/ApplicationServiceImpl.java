@@ -245,15 +245,12 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @throws WorkFlowException if there is any error while initiating the workflow
      */
     private void initiateWorkFlow(ApplicationRequestTo applicationRequestTo, String requestId, HpProfile newHpProfile) throws WorkFlowException {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userDetail = userDaoService.findByUsername(userName);
         WorkFlowRequestTO workFlowRequestTO = new WorkFlowRequestTO();
         workFlowRequestTO.setRequestId(requestId);
         workFlowRequestTO.setApplicationTypeId(applicationRequestTo.getApplicationTypeId());
-        workFlowRequestTO.setActionId(Action.SUBMIT.getId());
-        workFlowRequestTO.setActorId(Group.HEALTH_PROFESSIONAL.getId());
-        workFlowRequestTO.setApplicationTypeId(applicationRequestTo.getApplicationTypeId());
         workFlowRequestTO.setActionId(applicationRequestTo.getActionId());
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userDaoService.findByUsername(userName);
         workFlowRequestTO.setActorId(userDetail.getGroup().getId());
         workFlowRequestTO.setHpProfileId(newHpProfile.getId());
         workFlowRequestTO.setStartDate(applicationRequestTo.getFromDate());
