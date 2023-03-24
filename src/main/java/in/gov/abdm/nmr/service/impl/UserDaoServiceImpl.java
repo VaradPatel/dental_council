@@ -1,35 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
-import static in.gov.abdm.nmr.util.NMRConstants.INVALID_COLLEGE_ID;
-import static in.gov.abdm.nmr.util.NMRConstants.INVALID_PROFILE_ID;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-
-import in.gov.abdm.nmr.dto.NbeProfileTO;
-import in.gov.abdm.nmr.dto.NmcProfileTO;
-import in.gov.abdm.nmr.dto.NotificationToggleRequestTO;
-import in.gov.abdm.nmr.dto.SMCProfileTO;
-import in.gov.abdm.nmr.dto.UpdateRefreshTokenIdRequestTO;
-import in.gov.abdm.nmr.entity.NbeProfile;
-import in.gov.abdm.nmr.entity.NmcProfile;
-import in.gov.abdm.nmr.entity.SMCProfile;
-import in.gov.abdm.nmr.entity.StateMedicalCouncil;
-import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.entity.User_;
+import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.repository.INbeProfileRepository;
 import in.gov.abdm.nmr.repository.INmcProfileRepository;
@@ -38,6 +10,23 @@ import in.gov.abdm.nmr.repository.IUserRepository;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
+import static in.gov.abdm.nmr.util.NMRConstants.INVALID_COLLEGE_ID;
+import static in.gov.abdm.nmr.util.NMRConstants.INVALID_PROFILE_ID;
 
 @Service
 @Transactional
@@ -101,8 +90,8 @@ public class UserDaoServiceImpl implements IUserDaoService {
     }
 
     @Override
-    public boolean existsByHprId(String hprId) {
-        return userDetailRepository.existsByHprId(hprId);
+    public boolean existsByUserName(String userName) {
+        return userDetailRepository.existsByUserName(userName);
     }
 
     @Override

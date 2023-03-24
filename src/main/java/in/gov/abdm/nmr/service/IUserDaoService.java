@@ -21,7 +21,7 @@ public interface IUserDaoService {
     
     boolean existsByUsername(String username);
 
-    boolean existsByHprId(String hprId);
+    boolean existsByUserName(String userName);
 
     boolean existsByMobileNumber(String mobileNumber);
     boolean existsByEmail(String email);
