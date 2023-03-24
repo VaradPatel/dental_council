@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Implementation of methods to generate and validate OTP
@@ -183,6 +184,30 @@ public class NotificationServiceImpl implements INotificationService {
 
     }
 
+    @Override
+    public ResponseMessageTo sendNotificationForAccountCreation(String username,String mobile) {
+
+        Template template = getMessageTemplate(NMRConstants.ACCOUNT_CREATED);
+        String message = new TemplatedStringBuilder(template.getMessage())
+                .replace(NMRConstants.TEMPLATE_VAR1, username)
+                .replace(NMRConstants.TEMPLATE_VAR2,NMRConstants.MESSAGE_SENDER)
+                .finish();
+        return sendNotification(List.of(NotificationType.SMS.getNotificationType()), NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.ACCOUNT_CREATED_SUBJECT, message, mobile, null);
+
+    }
+
+    @Override
+    public ResponseMessageTo sendNotificationForNMRCreation(String nmrId,String mobile) {
+
+        Template template = getMessageTemplate(NMRConstants.NMR_ID_CREATED);
+        String message = new TemplatedStringBuilder(template.getMessage())
+                .replace(NMRConstants.TEMPLATE_VAR1, nmrId)
+                .replace(NMRConstants.TEMPLATE_VAR2,NMRConstants.MESSAGE_SENDER)
+                .finish();
+        return sendNotification(List.of(NotificationType.SMS.getNotificationType()), NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.ACCOUNT_CREATED_SUBJECT, message, mobile, null);
+
+    }
+
     @SneakyThrows
     Template getMessageTemplate(String propertiesKey) {
         Template template;
@@ -249,7 +274,8 @@ public class NotificationServiceImpl implements INotificationService {
 
         NotificationResponseTo response;
         try {
-            response = notificationFClient.sendNotification(notificationRequestTo, Timestamp.valueOf(LocalDateTime.now()), "123");
+
+            response = notificationFClient.sendNotification(notificationRequestTo, Timestamp.valueOf(LocalDateTime.now()), UUID.randomUUID().toString());
 
         } catch (Exception e) {
             return new ResponseMessageTo(e.getLocalizedMessage());

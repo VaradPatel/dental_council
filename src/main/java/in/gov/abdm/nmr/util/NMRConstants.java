@@ -90,6 +90,7 @@ public class NMRConstants {
     public static final String INFO_EMAIL_SUBJECT = "NMR : Status Changed";
     public static final String INFO_EMAIL_VERIFICATION_SUCCESSFUL_SUBJECT = "NMR : Verification Successful";
     public static final String INFO_EMAIL_SET_PASSWORD_SUBJECT = "NMR : Set New Password";
+    public static final String ACCOUNT_CREATED_SUBJECT = "Account Created";
     public static final String OTP_CONTENT_TYPE = "otp";
     public static final String SMS_OTP_MESSAGE_PROPERTIES_KEY = "sms-otp";
     public static final String EMAIL_OTP_MESSAGE_PROPERTIES_KEY = "email-otp";
@@ -379,7 +380,7 @@ public class NMRConstants {
     public static final String TEMPLATE_VAR1 = "var1";
     public static final String TEMPLATE_VAR2 = "var2";
     public static final String TEMPLATE_VAR3 = "var3";
-    public static final String MESSAGE_SENDER = "National Medical Council";
+    public static final String MESSAGE_SENDER = "National Medical Repository.";
     public static final String DEFAULT_COUNTRY_AADHAR = "India";
     public static final int DEFAULT_ADDRESS_TYPE_AADHAR = 4;
     public static final String INDIA = "India";
@@ -460,6 +461,8 @@ public class NMRConstants {
     public static final String NO_DATA_FOUND = "No data found";
     public static final String USER_NAME_ALREADY_EXISTS = "Username already exist";
     public static final String SMS_AND_EMAIL_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY = "sms-email-reset";
+    public static final String ACCOUNT_CREATED = "account-created";
+    public static final String NMR_ID_CREATED = "nmr-id-created";
     public static final String TYPE_NOT_NULL = "Type cannot be null";
     public static final String USER_REQUEST_MAPPING = "/user";
 
