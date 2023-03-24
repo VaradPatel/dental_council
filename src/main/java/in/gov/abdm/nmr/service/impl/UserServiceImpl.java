@@ -112,9 +112,10 @@ public class UserServiceImpl implements IUserService {
     public ResponseMessageTo createHpUserAccount(CreateHpUserAccountTo createHpUserAccountTo) {
 
 
-        if (userDaoService.existsByHprId(createHpUserAccountTo.getUsername())) {
+        if (userDaoService.existsByUserName(createHpUserAccountTo.getUsername())) {
             return new ResponseMessageTo(NMRConstants.USERNAME_ALREADY_EXISTS);
         }
+
         if (userDaoService.existsByMobileNumber(createHpUserAccountTo.getMobile())) {
             return new ResponseMessageTo(NMRConstants.MOBILE_NUMBER_ALREADY_EXISTS);
         }
@@ -127,8 +128,8 @@ public class UserServiceImpl implements IUserService {
 
         try {
             String hashedPassword = bCryptPasswordEncoder.encode(rsaUtil.decrypt(createHpUserAccountTo.getPassword()));
-            User userDetail = new User(null, createHpUserAccountTo.getEmail(), createHpUserAccountTo.getMobile(), createHpUserAccountTo.getUsername(), null, hashedPassword, null, true, true, //
-                    entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null);
+            User userDetail = new User(null, createHpUserAccountTo.getEmail(), createHpUserAccountTo.getMobile(), null, hashedPassword, null, true, true, //
+                    entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null, createHpUserAccountTo.getUsername(), createHpUserAccountTo.getHprId(), createHpUserAccountTo.getHprIdNumber(),createHpUserAccountTo.isNew() );
             userDaoService.save(userDetail);
 
             Password password = new Password(null, hashedPassword, userDetail);

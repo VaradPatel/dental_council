@@ -10,11 +10,11 @@ public interface IUserRepository extends JpaRepository<User, BigInteger> {
 
     @Query(value = """
             SELECT * FROM {h-schema}user usr WHERE usr.email = :username OR usr.mobile_number = :username
-            OR usr.hpr_id = :username or usr.nmr_id= :username""", nativeQuery = true)
+            OR usr.user_name = :username or usr.nmr_id= :username""", nativeQuery = true)
     User findByUsername(String username);
 
     //@Query(value = "(SELECT COUNT(usr) from user usr WHERE usr.hpr_id=:username)>0", nativeQuery = true)
-    boolean existsByHprId(String hprId);
+    boolean existsByUserName(String userName);
 
     boolean existsByMobileNumber(String mobileNumber);
 
