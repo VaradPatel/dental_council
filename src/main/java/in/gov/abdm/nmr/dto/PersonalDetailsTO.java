@@ -33,7 +33,8 @@ public class PersonalDetailsTO {
     private ScheduleTO schedule;
     private String profilePhoto;
     private String fullName;
-
     private Boolean isNew;
+    private String email;
+    private String mobile;
 
 }

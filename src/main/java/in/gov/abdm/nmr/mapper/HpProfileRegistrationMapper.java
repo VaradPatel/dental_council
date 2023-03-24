@@ -2,22 +2,33 @@ package in.gov.abdm.nmr.mapper;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
-import in.gov.abdm.nmr.entity.ForeignQualificationDetails;
-import in.gov.abdm.nmr.entity.HpNbeDetails;
-import in.gov.abdm.nmr.entity.QualificationDetails;
-import in.gov.abdm.nmr.entity.RegistrationDetails;
+import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.repository.CountryRepository;
+import in.gov.abdm.nmr.repository.CourseRepository;
 import in.gov.abdm.nmr.util.NMRConstants;
-import lombok.experimental.UtilityClass;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-@UtilityClass
-public final class HpProfileRegistrationMapper {
+@Component
+public class HpProfileRegistrationMapper {
 
+    @Autowired
+    private CountryRepository countryRepository;
 
-public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(RegistrationDetails registrationDetails, HpNbeDetails nbeDetails, List<QualificationDetails> indianQualifications, List<ForeignQualificationDetails> internationalQualifications) {
+    @Autowired
+    private CountryDtoMapper countryDtoMapper;
+
+    @Autowired
+    private CourseRepository courseRepository;
+
+    @Autowired
+    private CourseDtoMapper courseDtoMapper;
+
+public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(RegistrationDetails registrationDetails, HpNbeDetails nbeDetails, List<QualificationDetails> indianQualifications, List<ForeignQualificationDetails> internationalQualifications) {
         HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = new HpProfileRegistrationResponseTO();
         RegistrationDetailTO registrationDetailsTo = new RegistrationDetailTO();
         NbeResponseTo  nbeResponseTo =  new NbeResponseTo();
@@ -79,9 +90,19 @@ public static HpProfileRegistrationResponseTO convertEntitiesToRegistrationRespo
                 qualificationDetailResponseTo.setQualificationYear(internationalQualification.getQualificationYear());
                 qualificationDetailResponseTo.setQualificationMonth(internationalQualification.getQualificationMonth());
                 qualificationDetailResponseTo.setQualificationFrom(NMRConstants.INTERNATIONAL);
-                qualificationDetailResponseTo.setCountry(CountryTO.builder().name(internationalQualification.getCountry()).build());
+
+                Country country = countryRepository.findByName(internationalQualification.getCountry());
+                qualificationDetailResponseTo.setCountry( country != null
+                        ? countryDtoMapper.mapToCountryTO(country)
+                        : CountryTO.builder().name(internationalQualification.getCountry()).build());
+
                 qualificationDetailResponseTo.setState(internationalQualification.getState()!=null?StateTO.builder().name(internationalQualification.getState()).build():null);
-                qualificationDetailResponseTo.setCourse(CourseTO.builder().courseName(internationalQualification.getCourse()).build());
+
+                Course course = courseRepository.getByCourseName(internationalQualification.getCourse());
+                qualificationDetailResponseTo.setCourse( course != null
+                        ? courseDtoMapper.mapToCourseTO(course)
+                        : CourseTO.builder().courseName(internationalQualification.getCourse()).build());
+
                 qualificationDetailResponseTo.setUniversity(internationalQualification.getUniversity()!=null?UniversityTO.builder().name(internationalQualification.getUniversity()).build():null);
                 qualificationDetailResponseTo.setCollege(CollegeTO.builder().name(internationalQualification.getCollege()).build());
                 if(internationalQualification.getCertificate() != null) {
