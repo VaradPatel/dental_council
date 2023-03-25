@@ -13,7 +13,7 @@ public enum Action {
     APPROVED(BigInteger.valueOf(4), "Approved"),
     REJECT(BigInteger.valueOf(5), "Rejected"),
     TEMPORARY_SUSPEND(BigInteger.valueOf(6), "Temporary Suspend"),
-    PERMANENT_SUSPEND(BigInteger.valueOf(5), "Permanent Suspend");
+    PERMANENT_SUSPEND(BigInteger.valueOf(7), "Permanent Suspend");
 
 
     private final BigInteger id;

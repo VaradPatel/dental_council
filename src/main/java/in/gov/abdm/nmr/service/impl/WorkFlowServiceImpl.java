@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
 
@@ -81,6 +82,8 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     @Autowired
     private IUserDaoService userDetailService;
 
+    private static final List APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES = List.of(WorkflowStatus.APPROVED.getId(), WorkflowStatus.BLACKLISTED.getId(), WorkflowStatus.SUSPENDED.getId());
+
     @Override
     @Transactional
     public void initiateSubmissionWorkFlow(WorkFlowRequestTO requestTO) throws WorkFlowException {
@@ -94,12 +97,20 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         HpProfile hpProfile = iHpProfileRepository.findById(requestTO.getHpProfileId()).orElse(new HpProfile());
         INextGroup iNextGroup = null;
         if (workFlow == null) {
-            if (!ApplicationType.getAllHpApplicationTypeIds().contains(requestTO.getApplicationTypeId()) || !Group.HEALTH_PROFESSIONAL.getId().equals(requestTO.getActorId()) //
-                    || !Action.SUBMIT.getId().equals(requestTO.getActionId())) {
-                throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
+            if (Group.HEALTH_PROFESSIONAL.getId().equals(requestTO.getActorId())) {
+                if (!ApplicationType.getAllHpApplicationTypeIds().contains(requestTO.getApplicationTypeId()) ||
+                        !Action.SUBMIT.getId().equals(requestTO.getActionId()))
+                    throw new WorkFlowException("Invalid  Request", HttpStatus.BAD_REQUEST);
+            } else if (Group.SMC.getId().equals(requestTO.getActorId()) || Group.NMC.getId().equals(requestTO.getActorId())) {
+                if (//!ApplicationType.HP_TEMPORARY_SUSPENSION.equals(requestTO.getApplicationTypeId()) ||
+                    //!ApplicationType.HP_PERMANENT_SUSPENSION.equals(requestTO.getApplicationTypeId()) ||
+                        !Action.PERMANENT_SUSPEND.getId().equals(requestTO.getActionId()) &&
+                                !Action.TEMPORARY_SUSPEND.getId().equals(requestTO.getActionId())) {
+                    throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
+                }
             }
 
-            iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(requestTO.getApplicationTypeId(), Group.HEALTH_PROFESSIONAL.getId(), Action.SUBMIT.getId());
+            iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(requestTO.getApplicationTypeId(), requestTO.getActorId(), requestTO.getActionId());
             workFlow = buildNewWorkFlow(requestTO, iNextGroup, hpProfile, user);
             iWorkFlowRepository.save(workFlow);
         } else {
@@ -119,7 +130,8 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 throw new WorkFlowException("Next Group Not Found", HttpStatus.BAD_REQUEST);
             }
         }
-        if (isLastStepOfWorkFlow(iNextGroup)) {
+        if (isLastStepOfWorkFlow(iNextGroup) &&
+                APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES.contains(workFlow.getWorkFlowStatus().getId())) {
             workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
         }
         iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
@@ -149,7 +161,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         if (userName != null) {
             user = userDetailService.findByUsername(userName);
         }
-        
+
         WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestId);
         INextGroup iNextGroup = null;
         if (workFlow == null) {
