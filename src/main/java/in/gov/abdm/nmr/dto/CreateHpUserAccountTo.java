@@ -12,18 +12,25 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class CreateHpUserAccountTo {
 
-    String email;
+    private String email;
 
     @NotBlank(message = NMRConstants.MOBILE_NOT_NULL)
-    String mobile;
+    private String mobile;
 
     @NotBlank(message = NMRConstants.USERNAME_NOT_NULL)
-    String username;
+    private String username;
 
     @NotBlank(message = NMRConstants.REGISTRATION_NUMBER)
-    String registrationNumber;
+    private String registrationNumber;
 
     @NotBlank(message = NMRConstants.PASSWORD_NOT_NULL)
-    String password;
+    private String password;
+
+    private String hprId;
+
+    private String hprIdNumber;
+
+    private boolean isNew;
+
 
 }
