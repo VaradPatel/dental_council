@@ -13,8 +13,10 @@ public interface INMRWorkFlowConfigurationRepository extends JpaRepository<NmrWo
     @Query("SELECT wc.assignTo.id as assignTo,wc.workFlowStatus.id as workFlowStatusId FROM NmrWorkFlowConfiguration wc " +
             "WHERE wc.applicationType.id=:applicationTypeId " +
             "AND wc.actionPerformedBy.id=:actionPerformedBy " +
-            "AND wc.action.id=:actionId")
+            "AND wc.action.id=:actionId " +
+            "AND (:applicationSubTypeId is null OR wc.applicationSubType.id=:applicationSubTypeId) ")
     INextGroup getNextGroup(@Param("applicationTypeId") BigInteger applicationTypeId,
-                             @Param("actionPerformedBy") BigInteger actionPerformedBy,
-                             @Param("actionId") BigInteger actionId);
+                            @Param("actionPerformedBy") BigInteger actionPerformedBy,
+                            @Param("actionId") BigInteger actionId,
+                            @Param("applicationSubTypeId") BigInteger applicationSubTypeId);
 }

@@ -110,14 +110,14 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 }
             }
 
-            iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(requestTO.getApplicationTypeId(), requestTO.getActorId(), requestTO.getActionId());
+            iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(requestTO.getApplicationTypeId(), requestTO.getActorId(), requestTO.getActionId(), requestTO.getApplicationSubTypeId());
             workFlow = buildNewWorkFlow(requestTO, iNextGroup, hpProfile, user);
             iWorkFlowRepository.save(workFlow);
         } else {
             if (!workFlow.getApplicationType().getId().equals(requestTO.getApplicationTypeId()) || workFlow.getCurrentGroup() == null || !workFlow.getCurrentGroup().getId().equals(requestTO.getActorId())) {
                 throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
             }
-            iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(workFlow.getApplicationType().getId(), workFlow.getCurrentGroup().getId(), requestTO.getActionId());
+            iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(workFlow.getApplicationType().getId(), workFlow.getCurrentGroup().getId(), requestTO.getActionId(),  requestTO.getApplicationSubTypeId());
             if (iNextGroup != null) {
                 workFlow.setUpdatedAt(null);
                 workFlow.setAction(iActionRepository.findById(requestTO.getActionId()).get());
@@ -170,14 +170,14 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
             }
 
-            iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(applicationTypeId, Group.COLLEGE_ADMIN.getId(), Action.SUBMIT.getId());
+            iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(applicationTypeId, Group.COLLEGE_ADMIN.getId(), Action.SUBMIT.getId(), null);
             workFlow = buildNewCollegeWorkFlow(requestId, applicationTypeId, actionId, actorId, iNextGroup, user);
             iWorkFlowRepository.save(workFlow);
         } else {
             if (!workFlow.getApplicationType().getId().equals(applicationTypeId) || workFlow.getCurrentGroup() == null || !workFlow.getCurrentGroup().getId().equals(actorId)) {
                 throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
             }
-            iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(workFlow.getApplicationType().getId(), workFlow.getCurrentGroup().getId(), actionId);
+            iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(workFlow.getApplicationType().getId(), workFlow.getCurrentGroup().getId(), actionId, null);
         }
 
         if (iNextGroup != null) {

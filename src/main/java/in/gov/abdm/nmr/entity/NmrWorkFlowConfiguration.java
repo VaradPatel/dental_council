@@ -44,4 +44,8 @@ public class NmrWorkFlowConfiguration extends CommonAuditEntity {
     @ManyToOne
     @JoinColumn(name="work_flow_status_id")
     private WorkFlowStatus workFlowStatus;
+
+    @ManyToOne
+    @JoinColumn(name="application_sub_type_id")
+    private ApplicationSubType applicationSubType;
 }

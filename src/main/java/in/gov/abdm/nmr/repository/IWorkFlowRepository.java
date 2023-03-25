@@ -22,4 +22,7 @@ public interface IWorkFlowRepository extends JpaRepository<WorkFlow, BigInteger>
 
     @Query(value = "Select * from work_flow wf  where hp_profile_id = :hpProfileId", nativeQuery = true)
     List<WorkFlow> findWorkflowById(BigInteger hpProfileId);
+
+    @Query(value = "Select * from work_flow wf where wf.hp_profile_id = :hpProfileId order by created_at desc limit 1", nativeQuery = true)
+    WorkFlow findLastWorkFlowForHealthProfessional(BigInteger hpProfileId);
 }
