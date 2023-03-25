@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.math.BigInteger;
@@ -13,4 +14,6 @@ public class ApplicationRequestTo {
     private Timestamp fromDate;
     private Timestamp toDate;
     private String remarks;
+    @JsonIgnore
+    private BigInteger applicationSubTypeId;
 }

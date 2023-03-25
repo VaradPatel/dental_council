@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,5 +23,6 @@ public class WorkFlowRequestTO {
     private Timestamp startDate;
     private Timestamp endDate;
     private String remarks;
-
+    @JsonIgnore
+    private BigInteger applicationSubTypeId;
 }

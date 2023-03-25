@@ -2,8 +2,8 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.AddressType;
+import in.gov.abdm.nmr.enums.ApplicationSubType;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
@@ -131,6 +131,8 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Autowired
     private IAddressRepository addressRepository;
 
+    @Autowired
+    private IWorkFlowRepository iWorkFlowRepository;
 
     private static final Map<String, String> REACTIVATION_SORT_MAPPINGS = Map.of("id", " r.id", "name", " r.full_name", "createdAt", " r.created_at", "reactivationDate", " r.start_date", "suspensionType", " r.suspension_type", "remarks", " r.remarks");
 
@@ -160,9 +162,15 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public String reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
-        if (HpProfileStatus.SUSPENDED.getId() == hpProfile.getHpProfileStatus().getId() || HpProfileStatus.BLACKLISTED.getId() ==  hpProfile.getHpProfileStatus().getId()) {
+        if (HpProfileStatus.SUSPENDED.getId() == hpProfile.getHpProfileStatus().getId() || HpProfileStatus.BLACKLISTED.getId() == hpProfile.getHpProfileStatus().getId()) {
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
 //            HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
+            WorkFlow workFlow = iWorkFlowRepository.findLastWorkFlowForHealthProfessional(hpProfile.getId());
+            if (Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
+                applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.REACTIVATION_THROUGH_SMC.getId());
+            }else {
+                applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.SELF_REACTIVATION.getId());
+            }
             initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
             return hpProfile.getId().toString();
         } else {
@@ -189,27 +197,34 @@ public class ApplicationServiceImpl implements IApplicationService {
         reactivateHealthProfessionalQueryParam.setPageNo(Integer.parseInt(pageNo));
         final int dataLimit = Math.min(MAX_DATA_SIZE, Integer.parseInt(offset));
         reactivateHealthProfessionalQueryParam.setOffset(dataLimit);
-        if(StringUtils.isNotBlank(search)){
-            if(value !=null && !value.isBlank()){
-                switch (search.toLowerCase()){
-                    case APPLICANT_FULL_NAME_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setApplicantFullName(value);
+        if (StringUtils.isNotBlank(search)) {
+            if (value != null && !value.isBlank()) {
+                switch (search.toLowerCase()) {
+                    case APPLICANT_FULL_NAME_IN_LOWER_CASE:
+                        reactivateHealthProfessionalQueryParam.setApplicantFullName(value);
                         break;
-                    case REGISTRATION_NUMBER_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setRegistrationNumber(value);
+                    case REGISTRATION_NUMBER_IN_LOWER_CASE:
+                        reactivateHealthProfessionalQueryParam.setRegistrationNumber(value);
                         break;
-                    case GENDER_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setGender(value);
+                    case GENDER_IN_LOWER_CASE:
+                        reactivateHealthProfessionalQueryParam.setGender(value);
                         break;
-                    case EMAIL_ID_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setEmailId(value);
+                    case EMAIL_ID_IN_LOWER_CASE:
+                        reactivateHealthProfessionalQueryParam.setEmailId(value);
                         break;
-                    case MOBILE_NUMBER_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setMobileNumber(value);
+                    case MOBILE_NUMBER_IN_LOWER_CASE:
+                        reactivateHealthProfessionalQueryParam.setMobileNumber(value);
                         break;
-                    case YEAR_OF_REGISTRATION_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setYearOfRegistration(value);
+                    case YEAR_OF_REGISTRATION_IN_LOWER_CASE:
+                        reactivateHealthProfessionalQueryParam.setYearOfRegistration(value);
                         break;
-                    case SEARCH_IN_LOWER_CASE: reactivateHealthProfessionalQueryParam.setSearch(value);
+                    case SEARCH_IN_LOWER_CASE:
+                        reactivateHealthProfessionalQueryParam.setSearch(value);
                         break;
-                    default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE);
+                    default:
+                        throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE);
                 }
-            }
-            else{
+            } else {
                 throw new InvalidRequestException(MISSING_SEARCH_VALUE);
             }
         }
@@ -256,6 +271,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         workFlowRequestTO.setStartDate(applicationRequestTo.getFromDate());
         workFlowRequestTO.setEndDate(applicationRequestTo.getToDate());
         workFlowRequestTO.setRemarks(applicationRequestTo.getRemarks());
+        workFlowRequestTO.setApplicationSubTypeId(applicationRequestTo.getApplicationSubTypeId());
         iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
     }
 
@@ -275,7 +291,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         iRegistrationDetailRepository.save(newRegistrationDetails);
 
         Address address = addressRepository.getCommunicationAddressByHpProfileId(existingHpProfile.getId(), AddressType.COMMUNICATION.getId());
-        Address newAddress =  new Address();
+        Address newAddress = new Address();
         org.springframework.beans.BeanUtils.copyProperties(address, newAddress);
         newAddress.setId(null);
         newAddress.setHpProfileId(targetedHpProfile.getId());
@@ -341,56 +357,65 @@ public class ApplicationServiceImpl implements IApplicationService {
     /**
      * Retrieves information about the status of a health professional's requests for NMC, NBE, SMC, Dean, Registrar and Admin.
      *
-     * @param pageNo            - Gives the current page number
-     * @param offset            - Gives the number of records to be displayed
-     * @param sortBy            -  According to which column the sort has to happen
-     * @param sortType          -  Sorting order ASC or DESC
+     * @param pageNo   - Gives the current page number
+     * @param offset   - Gives the number of records to be displayed
+     * @param sortBy   -  According to which column the sort has to happen
+     * @param sortType -  Sorting order ASC or DESC
      * @return the HealthProfessionalApplicationResponseTo object representing the response object
      * which contains all the details used to track the health professionals who have
      * raised a request
      */
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String search, String value, String smcId, String registrationNo) throws InvalidRequestException {
-        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, search, value,smcId,registrationNo, null);
+        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, search, value, smcId, registrationNo, null);
         Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getOffset());
         return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable, Collections.emptyList());
     }
 
-    private HealthProfessionalApplicationRequestParamsTo setHPRequestParamInToObject(String pageNo, String offset, String sortBy, String sortType, String search, String value,String smcId, String registrationNo, BigInteger hpProfileId) throws InvalidRequestException {
+    private HealthProfessionalApplicationRequestParamsTo setHPRequestParamInToObject(String pageNo, String offset, String sortBy, String sortType, String search, String value, String smcId, String registrationNo, BigInteger hpProfileId) throws InvalidRequestException {
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = new HealthProfessionalApplicationRequestParamsTo();
 
-        if(StringUtils.isNotBlank(search)){
-            if(value !=null && !value.isBlank()){
-                switch (search.toLowerCase()){
-                    case WORK_FLOW_STATUS_ID_IN_LOWER_CASE: applicationRequestParamsTo.setWorkFlowStatusId(value);
+        if (StringUtils.isNotBlank(search)) {
+            if (value != null && !value.isBlank()) {
+                switch (search.toLowerCase()) {
+                    case WORK_FLOW_STATUS_ID_IN_LOWER_CASE:
+                        applicationRequestParamsTo.setWorkFlowStatusId(value);
                         break;
-                    case APPLICATION_TYPE_ID_IN_LOWER_CASE: applicationRequestParamsTo.setApplicationTypeId(value);
+                    case APPLICATION_TYPE_ID_IN_LOWER_CASE:
+                        applicationRequestParamsTo.setApplicationTypeId(value);
                         break;
-                    case REGISTRATION_NUMBER_IN_LOWER_CASE: applicationRequestParamsTo.setRegistrationNumber(value);
+                    case REGISTRATION_NUMBER_IN_LOWER_CASE:
+                        applicationRequestParamsTo.setRegistrationNumber(value);
                         break;
-                    case SMC_ID_IN_LOWER_CASE: applicationRequestParamsTo.setSmcId(value);
+                    case SMC_ID_IN_LOWER_CASE:
+                        applicationRequestParamsTo.setSmcId(value);
                         break;
-                    case APPLICANT_FULL_NAME_IN_LOWER_CASE: applicationRequestParamsTo.setApplicantFullName(value);
+                    case APPLICANT_FULL_NAME_IN_LOWER_CASE:
+                        applicationRequestParamsTo.setApplicantFullName(value);
                         break;
-                    case GENDER_IN_LOWER_CASE: applicationRequestParamsTo.setGender(value);
+                    case GENDER_IN_LOWER_CASE:
+                        applicationRequestParamsTo.setGender(value);
                         break;
-                    case EMAIL_ID_IN_LOWER_CASE: applicationRequestParamsTo.setEmailId(value);
+                    case EMAIL_ID_IN_LOWER_CASE:
+                        applicationRequestParamsTo.setEmailId(value);
                         break;
-                    case MOBILE_NUMBER_IN_LOWER_CASE: applicationRequestParamsTo.setMobileNumber(value);
+                    case MOBILE_NUMBER_IN_LOWER_CASE:
+                        applicationRequestParamsTo.setMobileNumber(value);
                         break;
-                    case YEAR_OF_REGISTRATION_IN_LOWER_CASE: applicationRequestParamsTo.setYearOfRegistration(value);
+                    case YEAR_OF_REGISTRATION_IN_LOWER_CASE:
+                        applicationRequestParamsTo.setYearOfRegistration(value);
                         break;
-                    default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION);
+                    default:
+                        throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION);
                 }
-            }
-            else{
+            } else {
                 throw new InvalidRequestException(MISSING_SEARCH_VALUE);
             }
         }
-        if(Objects.nonNull(smcId)){
+        if (Objects.nonNull(smcId)) {
             applicationRequestParamsTo.setSmcId(smcId);
         }
-        if(Objects.nonNull(registrationNo)){
+        if (Objects.nonNull(registrationNo)) {
             applicationRequestParamsTo.setRegistrationNumber(registrationNo);
         }
         final int dataLimit = Math.min(MAX_DATA_SIZE, Integer.parseInt(offset));
@@ -420,9 +445,9 @@ public class ApplicationServiceImpl implements IApplicationService {
     public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String search, String value) throws InvalidRequestException {
         RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(healthProfessionalId);
         List<BigInteger> hpProfileIds = iRegistrationDetailRepository.fetchHpProfileIdByRegistrationNumber(registrationDetails.getRegistrationNo());
-        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, search, value,null,null, healthProfessionalId);
+        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, search, value, null, null, healthProfessionalId);
         Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getOffset());
-        return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable,hpProfileIds);
+        return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable, hpProfileIds);
     }
 
     /**
