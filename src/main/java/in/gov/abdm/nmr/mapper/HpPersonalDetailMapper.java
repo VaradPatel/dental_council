@@ -21,7 +21,7 @@ public final class HpPersonalDetailMapper {
         personalDetailsTO.setAadhaarToken(hpProfile.getAadhaarToken());
         personalDetailsTO.setCountryNationality(NationalityTO.builder().id(hpProfile.getCountryNationality().getId()).name(hpProfile.getCountryNationality().getName()).build());
         personalDetailsTO.setDateOfBirth(hpProfile.getDateOfBirth());
-        personalDetailsTO.setProfilePhoto(hpProfile.getProfilePhoto() != null?Base64.getEncoder().encodeToString(hpProfile.getProfilePhoto()):null);
+        personalDetailsTO.setProfilePhoto(hpProfile.getProfilePhoto() != null ? new String(hpProfile.getProfilePhoto()) : null);
         personalDetailsTO.setFatherName(hpProfile.getFatherName());
         personalDetailsTO.setGender(hpProfile.getGender());
         personalDetailsTO.setFirstName(hpProfile.getFirstName());
