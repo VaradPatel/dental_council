@@ -152,30 +152,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         }
     }
 
-    /**
-     * Fetches card details for a given set of parameters.
-     *
-     * @param workFlowStatusId  the workflow status ID
-     * @param applicationTypeId the application type ID
-     * @param userGroupStatus   the user group status
-     * @param pageNo            the page number
-     * @param offset              the size of the page
-     * @param sortBy            the sort parameter
-     * @param sortOrder         the sort order
-     * @return the DashboardResponseTO containing the card details
-     * @throws InvalidRequestException if the request is invalid
-     */
-    @Override
-    public DashboardResponseTO fetchCardDetails(String workFlowStatusId, String applicationTypeId, String userGroupStatus,
-                                                String search, String value, int pageNo, int offset,
-                                                String sortBy, String sortOrder) throws InvalidRequestException {
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userDaoService.findByUsername(userName);
-        BigInteger groupId = userDetail.getGroup().getId();
-        BigInteger userId = userDetail.getId();
-        DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
-        dashboardRequestParamsTO.setWorkFlowStatusId(workFlowStatusId);
-        dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
+    private void applyFiltersForCardDetails(String search, String value, BigInteger groupId, DashboardRequestParamsTO dashboardRequestParamsTO) throws InvalidRequestException {
         if(StringUtils.isNotBlank(search)){
             if(value !=null && !value.isBlank()){
                 switch (search.toLowerCase()){
@@ -209,11 +186,58 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                 throw new InvalidRequestException(MISSING_SEARCH_VALUE);
             }
         }
+    }
 
+    private void setApplicationTypeIdAndUserGroupStatus(String applicationTypeId, String userGroupStatus,
+                                                        DashboardRequestParamsTO dashboardRequestParamsTO) {
+        if(TEMPORARY_AND_PERMANENT_SUSPENSION_APPLICATION_TYPE_ID.equals(applicationTypeId)){
+            if(CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS.equals(userGroupStatus)){
+                dashboardRequestParamsTO.setApplicationTypeId(TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID);
+                dashboardRequestParamsTO.setUserGroupStatus(PENDING);
+            }else if (CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS.equals(userGroupStatus)){
+                dashboardRequestParamsTO.setApplicationTypeId(TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID);
+                dashboardRequestParamsTO.setUserGroupStatus(APPROVED);
+            }else if(CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS.equals(userGroupStatus)){
+                dashboardRequestParamsTO.setApplicationTypeId(PERMANENT_SUSPENSION_APPLICATION_TYPE_ID);
+                dashboardRequestParamsTO.setUserGroupStatus(PENDING);
+            }else if(CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS.equals(userGroupStatus)){
+                dashboardRequestParamsTO.setApplicationTypeId(PERMANENT_SUSPENSION_APPLICATION_TYPE_ID);
+                dashboardRequestParamsTO.setUserGroupStatus(APPROVED);
+            }
+        }else {
+            dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
+            dashboardRequestParamsTO.setUserGroupStatus(userGroupStatus);
+        }
+    }
+
+    /**
+     * Fetches card details for a given set of parameters.
+     *
+     * @param workFlowStatusId  the workflow status ID
+     * @param applicationTypeId the application type ID
+     * @param userGroupStatus   the user group status
+     * @param pageNo            the page number
+     * @param offset              the size of the page
+     * @param sortBy            the sort parameter
+     * @param sortOrder         the sort order
+     * @return the DashboardResponseTO containing the card details
+     * @throws InvalidRequestException if the request is invalid
+     */
+    @Override
+    public DashboardResponseTO fetchCardDetails(String workFlowStatusId, String applicationTypeId, String userGroupStatus,
+                                                String search, String value, int pageNo, int offset,
+                                                String sortBy, String sortOrder) throws InvalidRequestException {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userDetail = userDaoService.findByUsername(userName);
+        BigInteger groupId = userDetail.getGroup().getId();
+        BigInteger userId = userDetail.getId();
+        DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
+        dashboardRequestParamsTO.setWorkFlowStatusId(workFlowStatusId);
+        setApplicationTypeIdAndUserGroupStatus(applicationTypeId, userGroupStatus, dashboardRequestParamsTO);
+        applyFiltersForCardDetails(search, value, groupId, dashboardRequestParamsTO);
         String column = mapColumnToTable(sortBy);
         dashboardRequestParamsTO.setSortBy(column);
         dashboardRequestParamsTO.setUserGroupId(groupId);
-        dashboardRequestParamsTO.setUserGroupStatus(userGroupStatus);
         if (groupId.equals(Group.SMC.getId())) {
             dashboardRequestParamsTO.setCouncilId(iSmcProfileRepository.findByUserId(userId).getStateMedicalCouncil().getId().toString());
         } else if (groupId.equals(Group.COLLEGE_DEAN.getId())) {
@@ -223,7 +247,6 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         } else if (groupId.equals(Group.COLLEGE_ADMIN.getId())) {
             dashboardRequestParamsTO.setCollegeId(iCollegeRepository.findByUserId(userId).getId().toString());
         }
-
         final String sortingOrder = (sortOrder == null || sortOrder.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
         final int dataLimit = Math.min(MAX_DATA_SIZE, offset);
