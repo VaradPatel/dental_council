@@ -59,6 +59,7 @@ public class DashboardController {
      * @return The response object with request specific details related to the dashboard.
      * @throws InvalidRequestException when the request is invalid.
      */
+    @Deprecated
     @PostMapping(PATH_DASHBOARD_FETCH_DETAILS)
     public DashboardResponseTO fetchDashboardData(@RequestBody DashboardRequestTO requestTO) throws InvalidRequestException {
         return iFetchSpecificDetailsService.fetchDashboardData(requestTO);

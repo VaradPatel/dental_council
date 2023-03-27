@@ -239,7 +239,7 @@ public class CollegeServiceImpl implements ICollegeService, ICollegeMasterServic
 
     @Override
     public List<CollegeMasterTo> getCollegesByStateId(BigInteger stateId) {
-        return collegeMasterMapper.collegeMasterTo(collegeMaster.getCollegesByStateId(stateId));
+        return collegeMasterMapper.collegeMasterTo(stateId != null ? collegeMaster.getCollegesByStateId(stateId) : collegeMaster.getColleges());
     }
 
     @Override
