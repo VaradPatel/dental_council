@@ -350,10 +350,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             throw new InvalidRequestException(file.getOriginalFilename() + " is not a allowed file type !!");
         }
 
-        byte[] fileContent = file.getBytes();
-
-
-        hpProfile.setProfilePhoto(fileContent);
+        hpProfile.setProfilePhoto(file != null ? Base64.getEncoder().encodeToString(file.getBytes()) : null);
         hpProfile.setPicName(file.getOriginalFilename());
         HpProfile insertedData = iHpProfileRepository.save(hpProfile);
         HpProfilePictureResponseTO hpProfilePictureResponseTO = new HpProfilePictureResponseTO();
@@ -389,7 +386,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 + checkIsNullAndAddSeparator(userKycTo.getPostOffice());
         try {
             HpProfile hpProfile = iHpProfileRepository.findHpProfileById(id);
-            hpProfile.setProfilePhoto(userKycTo.getPhoto().getBytes(StandardCharsets.UTF_8));
+            hpProfile.setProfilePhoto(userKycTo.getPhoto());
             iHpProfileRepository.save(hpProfile);
 
             Address address = iAddressRepository.getCommunicationAddressByHpProfileId(id,
