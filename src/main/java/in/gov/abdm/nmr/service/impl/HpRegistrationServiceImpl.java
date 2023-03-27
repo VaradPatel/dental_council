@@ -384,7 +384,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 address.setDistrict(districtRepository.findByDistrictNameAndStateId(userKycTo.getDistrict().toUpperCase(), address.getState().getId()));
                 address.setCountry(stateRepository.findByName(userKycTo.getState().toUpperCase()).getCountry());
                 iAddressRepository.save(address);
-                hpProfile.setProfilePhoto(userKycTo.getPhoto() != null ? Base64.getDecoder().decode(userKycTo.getPhoto()) : null);
+                hpProfile.setProfilePhoto(userKycTo.getPhoto() != null ? new String(Base64.getDecoder().decode(userKycTo.getPhoto())) : null);
                 hpProfile.setMobileNumber(userKycTo.getMobileNumber());
                 iHpProfileRepository.save(hpProfile);
 
@@ -413,7 +413,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setGender(request.getGender());
         hpProfile.setMobileNumber(request.getMobileNumber() != null ? request.getMobileNumber() : null);
         hpProfile.setSalutation(NMRConstants.SALUTATION_DR);
-        hpProfile.setProfilePhoto(request.getPhoto() != null ? Base64.getDecoder().decode(request.getPhoto()) : null);
+        hpProfile.setProfilePhoto(request.getPhoto() != null ? new String(Base64.getDecoder().decode(request.getPhoto())) : null);
         hpProfile.setRegistrationId(request.getRegistrationNumber());
         hpProfile.setIsSameAddress(String.valueOf(false));
         hpProfile.setCountryNationality(countryRepository.findByName(NMRConstants.DEFAULT_COUNTRY_AADHAR));
