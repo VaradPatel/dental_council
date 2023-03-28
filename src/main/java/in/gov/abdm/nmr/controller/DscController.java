@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import javax.validation.Valid;
 
 /**
  * Controller for e-sign API'S
@@ -25,7 +26,7 @@ public class DscController {
 	 * @return response from genDscRequest.
 	 */
 	@PostMapping(path = NMRConstants.E_SIGN, produces = MediaType.APPLICATION_JSON_VALUE)
-	public DscResponseTo invokeDSCGenEspRequest(@RequestBody DscRequestTo dscRequestTo) throws JsonProcessingException {
+	public DscResponseTo invokeDSCGenEspRequest(@Valid @RequestBody DscRequestTo dscRequestTo) throws JsonProcessingException {
 		return dscService.invokeDSCGenEspRequest(dscRequestTo);
 	}
 }

@@ -4,26 +4,39 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import javax.validation.constraints.NotBlank;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class PersonalDetailTO {
-	@JsonProperty("firstName")
-	private String firstName;
+
+	@NotBlank
+	@JsonProperty("fullName")
+	private String fullName;
 	
-	@JsonProperty("userId")
-	private String userId;
+	@JsonProperty("fatherName")
+	private String fatherName;
 
-	@JsonProperty("middleName")
-	private String middleName;
+	@JsonProperty("motherName")
+	private String motherName;
 
-	@JsonProperty("lastName")
-	private String lastName;
-	
-	@JsonProperty("qualification")
-	private String qualification;
+	@JsonProperty("spouseName")
+	private String spouseName;
 
+	@NotBlank
+	@JsonProperty("gender")
+	private String gender;
+
+	@NotBlank
+	@JsonProperty("dob")
+	private String dob;
+
+	@NotBlank
+	@JsonProperty("nationality")
+	private String nationality;
+
+	@NotBlank
 	@JsonProperty("mobileNumber")
 	private String mobileNumber;
 	

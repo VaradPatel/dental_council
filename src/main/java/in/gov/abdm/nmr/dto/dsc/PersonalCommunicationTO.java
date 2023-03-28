@@ -4,27 +4,45 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import javax.validation.constraints.NotBlank;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class PersonalCommunicationTO {
 
-	@JsonProperty("address")
-	private String address;
+	@NotBlank
+	@JsonProperty("house")
+	private String house;
+
+	@JsonProperty("street")
+	private String street;
 	
-	@JsonProperty("country")
-	private String country;
+	@JsonProperty("landmark")
+	private String landmark;
 	
-	@JsonProperty("stateUT")
-	private String stateUT;
-	
-	@JsonProperty("district")
-	private String district;
+	@JsonProperty("locality")
+	private String locality;
 	
 	@JsonProperty("city")
 	private String city;
 	
-	@JsonProperty("pincode")
-	private String pinCode;
+	@JsonProperty("subDistrict")
+	private String subDistrict;
+
+	@NotBlank
+	@JsonProperty("district")
+	private String district;
+
+	@NotBlank
+	@JsonProperty("state")
+	private String state;
+
+	@NotBlank
+	@JsonProperty("country")
+	private String country;
+
+	@NotBlank
+	@JsonProperty("postalCode")
+	private String postalCode;
 }
