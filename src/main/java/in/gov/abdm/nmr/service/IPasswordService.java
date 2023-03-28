@@ -13,7 +13,7 @@ public interface IPasswordService {
 
     ResponseMessageTo changePassword(ChangePasswordRequestTo changePasswordRequestTo) throws InvalidRequestException, GeneralSecurityException;
 
-    ResponseMessageTo getResetPasswordLink(CreateHpUserAccountTo setPasswordLinkTo);
+    ResponseMessageTo getResetPasswordLink(SendLinkOnMailTo sendLinkOnMailTo);
 
     ResponseMessageTo setNewPassword(SetNewPasswordTo newPasswordTo);
 

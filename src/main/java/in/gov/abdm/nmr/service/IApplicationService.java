@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.service;
 
+import in.gov.abdm.nmr.dto.ApplicationDetailResponseTo;
 import in.gov.abdm.nmr.dto.ApplicationRequestTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
 import in.gov.abdm.nmr.dto.ReactivateHealthProfessionalResponseTO;
@@ -73,4 +74,5 @@ public interface IApplicationService {
      */
     HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String search, String value) throws InvalidRequestException;
 
+    ApplicationDetailResponseTo fetchApplicationDetail(String requestId) throws InvalidRequestException;
 }

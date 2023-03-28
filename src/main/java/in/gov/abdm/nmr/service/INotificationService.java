@@ -11,7 +11,7 @@ public interface INotificationService {
 
     ResponseMessageTo sendNotificationOnStatusChangeForCollege(String applicationType, String action, String mobile,String email);
 
-    ResponseMessageTo sendNotificationForResetPasswordLink(String type, String receiver, String link);
+    ResponseMessageTo sendNotificationForResetPasswordLink(String email, String link);
 
     ResponseMessageTo sendNotificationForOTP(String type, String otp, String receiver);
 

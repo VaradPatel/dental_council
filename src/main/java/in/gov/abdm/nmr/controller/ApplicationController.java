@@ -147,15 +147,15 @@ public class ApplicationController {
         }
         throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
     }
-
     /**
-     * This endpoint can be accessed to initiate workflow
+     * Retrieves the details of a specific application.
      *
-     * @return
+     * @param requestId the unique identifier for the application request
+     * @return an {@link ApplicationDetailResponseTo} object containing the details of the application
      */
-    @PatchMapping(COLLEGES_ACTION)
-    public ResponseEntity<ResponseMessageTo> executeActionOnCollege(@RequestBody WorkFlowRequestTO requestTO) throws WorkFlowException {
-        iWorkFlowService.initiateCollegeRegistrationWorkFlow(requestTO.getRequestId(), requestTO.getApplicationTypeId(), requestTO.getActorId(), requestTO.getActionId());
-        return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
+    @GetMapping(APPLICATION_DETAILS)
+    public ApplicationDetailResponseTo applicationDetail(@PathVariable(name = "requestId") String requestId) throws InvalidRequestException {
+        return applicationService.fetchApplicationDetail(requestId);
     }
+
 }

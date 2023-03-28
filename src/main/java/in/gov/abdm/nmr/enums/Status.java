@@ -7,7 +7,8 @@ public enum Status {
     APPROVED("Approved"),
     VERIFIED("Verified"),
     PENDING("Pending"),
-    SUMBMITTED("Submitted");
+    SUMBMITTED("Submitted"),
+    QUERY_RAISED("Query Raised");;
     private final String name;
 
     private Status(String name) {
