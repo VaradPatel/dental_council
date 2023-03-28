@@ -10,7 +10,7 @@ public interface ICollegeProfileDaoService {
     
     CollegeProfile save(CollegeProfile collegeProfile);
     
-    CollegeProfile findByCollegeId(BigInteger id);
+    CollegeProfile findAdminByCollegeId(BigInteger collegeId, BigInteger userSubTypeId);
 
     CollegeProfile findByUserId(BigInteger userId);
 }

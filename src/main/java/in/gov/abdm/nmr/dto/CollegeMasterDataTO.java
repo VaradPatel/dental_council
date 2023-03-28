@@ -1,5 +1,7 @@
 package in.gov.abdm.nmr.dto;
 
+import java.math.BigInteger;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CollegeDesignationTO {
+public class CollegeMasterDataTO {
 
-    private Long id;
+    private BigInteger id;
     private String name;
 }
