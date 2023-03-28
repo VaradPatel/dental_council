@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import in.gov.abdm.nmr.entity.CollegeProfile;
+import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.repository.ICollegeProfileRepository;
 import in.gov.abdm.nmr.service.ICollegeProfileDaoService;
 
@@ -25,8 +26,8 @@ public class CollegeProfileDaoServiceImpl implements ICollegeProfileDaoService {
     }
 
     @Override
-    public CollegeProfile findAdminByCollegeId(BigInteger collegeId, BigInteger userSubTypeId) {
-        return collegeProfileRepository.findAdminByCollegeId(collegeId, userSubTypeId);
+    public CollegeProfile findAdminByCollegeId(BigInteger collegeId) {
+        return collegeProfileRepository.findAdminByCollegeId(collegeId, UserSubTypeEnum.COLLEGE.getCode());
     }
 
     @Override
