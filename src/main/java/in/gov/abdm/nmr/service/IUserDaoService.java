@@ -18,6 +18,8 @@ public interface IUserDaoService {
     User save(User user);
 
     User findByUsername(String username);
+
+    User findFirstByMobileNumber(String mobileNumber);
     
     boolean existsByUsername(String username);
 

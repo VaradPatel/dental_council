@@ -5,7 +5,9 @@ import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.NmrException;
+import in.gov.abdm.nmr.exception.OtpException;
 import in.gov.abdm.nmr.mapper.INbeMapper;
 import in.gov.abdm.nmr.mapper.INmcMapper;
 import in.gov.abdm.nmr.mapper.ISmcMapper;
@@ -18,6 +20,7 @@ import in.gov.abdm.nmr.service.IUserService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -54,6 +57,9 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     INotificationService notificationService;
+
+    @Autowired
+    OtpServiceImpl otpService;
 
     public UserServiceImpl(IUserDaoService userDaoService) {
         this.userDaoService = userDaoService;
@@ -153,4 +159,17 @@ public class UserServiceImpl implements IUserService {
         }
     }
 
+    @Override
+    public String retrieveUser(RetrieveUserRequestTo retrieveUserRequestTo) throws OtpException {
+        String transactionId = retrieveUserRequestTo.getTransactionId();
+        if(otpService.isOtpVerified(transactionId)){
+            throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage(),
+                    HttpStatus.UNAUTHORIZED.toString());
+        }
+        User user = userDaoService.findFirstByMobileNumber(retrieveUserRequestTo.getContact());
+        if(user.getUserName() != null){
+            return user.getUserName();
+        }
+        return user.getEmail();
+    }
 }
