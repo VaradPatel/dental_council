@@ -1,14 +1,15 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.dto.college.CollegeTO;
-import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
-import in.gov.abdm.nmr.entity.Course;
-import in.gov.abdm.nmr.mapper.IMasterDataMapper;
-import in.gov.abdm.nmr.service.ICollegeDaoService;
-import in.gov.abdm.nmr.service.ICourseService;
-import in.gov.abdm.nmr.service.IFacilityTypeService;
-import in.gov.abdm.nmr.service.IRegistrationRenewationTypeService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,13 +19,25 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import in.gov.abdm.nmr.dto.BroadSpecialityTO;
+import in.gov.abdm.nmr.dto.CountryTO;
+import in.gov.abdm.nmr.dto.CourseTO;
+import in.gov.abdm.nmr.dto.DistrictTO;
+import in.gov.abdm.nmr.dto.FacilityTypeTO;
+import in.gov.abdm.nmr.dto.LanguageTO;
+import in.gov.abdm.nmr.dto.RegistrationRenewationTypeTO;
+import in.gov.abdm.nmr.dto.StateMedicalCouncilTO;
+import in.gov.abdm.nmr.dto.StateTO;
+import in.gov.abdm.nmr.dto.SubDistrictTO;
+import in.gov.abdm.nmr.dto.UniversityTO;
+import in.gov.abdm.nmr.dto.VillagesTO;
+import in.gov.abdm.nmr.dto.college.CollegeTO;
+import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
+import in.gov.abdm.nmr.entity.Course;
+import in.gov.abdm.nmr.mapper.IMasterDataMapper;
+import in.gov.abdm.nmr.service.ICourseService;
+import in.gov.abdm.nmr.service.IFacilityTypeService;
+import in.gov.abdm.nmr.service.IRegistrationRenewationTypeService;
 
 @ExtendWith(MockitoExtension.class)
 class MasterDataServiceImplTest {
@@ -45,8 +58,6 @@ class MasterDataServiceImplTest {
     BroadSpecialityServiceImpl broadSpecialityServiceImpl;
     @Mock
     UniversityServiceImpl universityService;
-    @Mock
-    ICollegeDaoService collegeService;
     @Mock
     LanguageServiceImpl languageService;
     @Mock
@@ -213,21 +224,6 @@ class MasterDataServiceImplTest {
     void testUniversitiesNullResult() {
         when(universityService.getUniversityData()).thenReturn(null);
         List<MasterDataTO> result = masterDataService.universities();
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void testColleges() {
-        when(collegeService.getCollegeData(id)).thenReturn(collegeList);
-        when(masterDataMapper.collegesToMasterDataTOs(collegeList)).thenReturn(expected);
-        List<MasterDataTO> result = masterDataService.colleges(BigInteger.ONE);
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void testCollegesNullResult() {
-        when(collegeService.getCollegeData(id)).thenReturn(null);
-        List<MasterDataTO> result = masterDataService.colleges(BigInteger.ONE);
         assertTrue(result.isEmpty());
     }
 
