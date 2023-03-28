@@ -473,13 +473,13 @@ public class ApplicationServiceImpl implements IApplicationService {
         response.setRequestId(workFlowAudit.get(0).getRequestId());
         response.setApplicationType(workFlowAudit.get(0).getApplicationType().getId());
         response.setSubmissionDate(String.valueOf(workFlowAudit.get(0).getCreatedAt()));
-        if (workFlowAudit.size() < 1) {
-            response.setPendency(0L);
-        } else if (workFlowAudit.get(workFlowAudit.size() - 1).getWorkFlowStatus().getName().equalsIgnoreCase(Status.PENDING.getName())
-                || workFlowAudit.get(workFlowAudit.size() - 1).getWorkFlowStatus().getName().equalsIgnoreCase(Status.QUERY_RAISED.getName())) {
+        if (Status.PENDING.getName().equalsIgnoreCase(workFlowAudit.get(workFlowAudit.size() - 1).getWorkFlowStatus().getName())
+                || Status.QUERY_RAISED.getName().equalsIgnoreCase(workFlowAudit.get(workFlowAudit.size() - 1).getWorkFlowStatus().getName())) {
             response.setPendency(Math.abs(workFlowAudit.get(0).getCreatedAt().getTime() - Timestamp.from(Instant.now()).getTime()) / 86400000);
-        } else {
+        } else if (workFlowAudit.size() > 1) {
             response.setPendency(Math.abs(workFlowAudit.get(0).getCreatedAt().getTime() - workFlowAudit.get(workFlowAudit.size() - 1).getCreatedAt().getTime()) / 86400000);
+        } else {
+            response.setPendency(0L);
         }
         response.setCurrentStatus(workFlowAudit.get(workFlowAudit.size() - 1).getWorkFlowStatus().getId());
         response.setCurrentGroupId(workFlowAudit.get(workFlowAudit.size() - 1).getCurrentGroup() != null ? workFlowAudit.get(workFlowAudit.size() - 1).getCurrentGroup().getId() : null);
