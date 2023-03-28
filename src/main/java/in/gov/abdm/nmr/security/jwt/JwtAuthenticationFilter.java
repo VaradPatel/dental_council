@@ -1,10 +1,12 @@
 package in.gov.abdm.nmr.security.jwt;
 
-import brave.Tracer;
-import com.auth0.jwt.exceptions.SignatureVerificationException;
-import in.gov.abdm.nmr.entity.SecurityAuditTrail;
-import in.gov.abdm.nmr.security.common.ProtectedPaths;
-import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
+import java.io.IOException;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,11 +23,10 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import brave.Tracer;
+import in.gov.abdm.nmr.entity.SecurityAuditTrail;
+import in.gov.abdm.nmr.security.common.ProtectedPaths;
+import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 
 @Component
 public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
@@ -109,7 +110,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
         String payload = null;
         if (StringUtils.isNotBlank(request.getHeader(HttpHeaders.AUTHORIZATION))) {
             String jwtToken = extractBearerToken(request);
-            if (exception instanceof InvalidBearerTokenException && exception.getCause() instanceof SignatureVerificationException) {
+            if (exception instanceof InvalidBearerTokenException) {
                 payload = jwtToken;
             } else {
                 username = jwtUtil.decodeToken(jwtToken).getSubject();
