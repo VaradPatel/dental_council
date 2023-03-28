@@ -2,9 +2,9 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.enums.ApplicationSubType;
-import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
@@ -25,6 +25,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.*;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
@@ -133,6 +135,9 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     @Autowired
     private IWorkFlowRepository iWorkFlowRepository;
+
+    @Autowired
+    private IWorkFlowAuditRepository iWorkFlowAuditRepository;
 
     private static final Map<String, String> REACTIVATION_SORT_MAPPINGS = Map.of("id", " r.id", "name", " r.full_name", "createdAt", " r.created_at", "reactivationDate", " r.start_date", "suspensionType", " r.suspension_type", "remarks", " r.remarks");
 
@@ -448,6 +453,48 @@ public class ApplicationServiceImpl implements IApplicationService {
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, search, value, null, null, healthProfessionalId);
         Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getOffset());
         return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable, hpProfileIds);
+    }
+
+
+    /**
+     * This method fetches the application detail based on the given requestId and returns the ApplicationDetailResponseTo object.
+     *
+     * @param requestId - the id of the request for which application detail is required
+     * @return ApplicationDetailResponseTo - the response object containing application detail
+     */
+    @Override
+    public ApplicationDetailResponseTo fetchApplicationDetail(String requestId) {
+        log.info("Fetching application detail for request ID: {}", requestId);
+        ApplicationDetailResponseTo response = new ApplicationDetailResponseTo();
+        List<ApplicationDetailsTo> applicationDetail = new ArrayList<>();
+        ApplicationDetailsTo detailsTo;
+        List<WorkFlowAudit> workFlowAudit = iWorkFlowAuditRepository.fetchApplicationDetails(requestId);
+        log.debug("Fetched {} workflow audit records for request ID: {}", workFlowAudit.size(), requestId);
+        response.setRequestId(workFlowAudit.get(0).getRequestId());
+        response.setApplicationType(workFlowAudit.get(0).getApplicationType().getId());
+        response.setSubmissionDate(String.valueOf(workFlowAudit.get(0).getCreatedAt()));
+        if (Status.PENDING.getName().equalsIgnoreCase(workFlowAudit.get(workFlowAudit.size() - 1).getWorkFlowStatus().getName())
+                || Status.QUERY_RAISED.getName().equalsIgnoreCase(workFlowAudit.get(workFlowAudit.size() - 1).getWorkFlowStatus().getName())) {
+            response.setPendency(Math.abs(workFlowAudit.get(0).getCreatedAt().getTime() - Timestamp.from(Instant.now()).getTime()) / 86400000);
+        } else if (workFlowAudit.size() > 1) {
+            response.setPendency(Math.abs(workFlowAudit.get(0).getCreatedAt().getTime() - workFlowAudit.get(workFlowAudit.size() - 1).getCreatedAt().getTime()) / 86400000);
+        } else {
+            response.setPendency(0L);
+        }
+        response.setCurrentStatus(workFlowAudit.get(workFlowAudit.size() - 1).getWorkFlowStatus().getId());
+        response.setCurrentGroupId(workFlowAudit.get(workFlowAudit.size() - 1).getCurrentGroup() != null ? workFlowAudit.get(workFlowAudit.size() - 1).getCurrentGroup().getId() : null);
+        for (WorkFlowAudit list : workFlowAudit) {
+            detailsTo = new ApplicationDetailsTo();
+            detailsTo.setWorkflowStatusId(list.getWorkFlowStatus().getId());
+            detailsTo.setActionId(list.getAction().getId());
+            detailsTo.setGroupId(list.getPreviousGroup().getId());
+            detailsTo.setActionDate(String.valueOf(list.getCreatedAt()));
+            detailsTo.setRemarks(list.getRemarks());
+            applicationDetail.add(detailsTo);
+        }
+        response.setApplicationDetails(applicationDetail);
+        log.info("Fetched application detail successfully for request ID: {}", requestId);
+        return response;
     }
 
     /**

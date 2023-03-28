@@ -147,4 +147,15 @@ public class ApplicationController {
         }
         throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
     }
+    /**
+     * Retrieves the details of a specific application.
+     *
+     * @param requestId the unique identifier for the application request
+     * @return an {@link ApplicationDetailResponseTo} object containing the details of the application
+     */
+    @GetMapping(APPLICATION_DETAILS)
+    public ApplicationDetailResponseTo applicationDetail(@PathVariable(name = "requestId") String requestId) {
+        return applicationService.fetchApplicationDetail(requestId);
+    }
+
 }
