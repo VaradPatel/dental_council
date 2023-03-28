@@ -87,8 +87,13 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         User user = null;
 
         user = userDetailService.findByUsername(userName);
-        if (UserSubTypeEnum.COLLEGE.getCode().equals(user.getUserSubType().getId())) {
-            throw new WorkFlowException("Invalid Request", HttpStatus.FORBIDDEN);
+
+        if(user!=null) {
+            if (UserTypeEnum.COLLEGE.getCode().equals(user.getUserType().getId())) {
+                if (UserSubTypeEnum.COLLEGE.getCode().equals(user.getUserSubType().getId())) {
+                    throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
+                }
+            }
         }
 
         WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
