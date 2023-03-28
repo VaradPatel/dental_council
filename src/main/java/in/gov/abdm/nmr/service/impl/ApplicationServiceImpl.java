@@ -463,12 +463,16 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @return ApplicationDetailResponseTo - the response object containing application detail
      */
     @Override
-    public ApplicationDetailResponseTo fetchApplicationDetail(String requestId) {
-        log.info("Fetching application detail for request ID: {}", requestId);
+    public ApplicationDetailResponseTo fetchApplicationDetail(String requestId) throws InvalidRequestException {
+        log.info("Fetching application detail for request ID:", requestId);
         ApplicationDetailResponseTo response = new ApplicationDetailResponseTo();
         List<ApplicationDetailsTo> applicationDetail = new ArrayList<>();
         ApplicationDetailsTo detailsTo;
         List<WorkFlowAudit> workFlowAudit = iWorkFlowAuditRepository.fetchApplicationDetails(requestId);
+        if (workFlowAudit == null || workFlowAudit.isEmpty()) {
+            log.error("unable to complete fetch application details process due {} workflow audit records for request ID: {}", workFlowAudit.size(), requestId);
+            throw new InvalidRequestException("Invalid input request ID: " + requestId + ". Please enter a valid input and try again");
+        }
         log.debug("Fetched {} workflow audit records for request ID: {}", workFlowAudit.size(), requestId);
         response.setRequestId(workFlowAudit.get(0).getRequestId());
         response.setApplicationType(workFlowAudit.get(0).getApplicationType().getId());

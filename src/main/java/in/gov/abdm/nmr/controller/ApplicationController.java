@@ -154,7 +154,7 @@ public class ApplicationController {
      * @return an {@link ApplicationDetailResponseTo} object containing the details of the application
      */
     @GetMapping(APPLICATION_DETAILS)
-    public ApplicationDetailResponseTo applicationDetail(@PathVariable(name = "requestId") String requestId) {
+    public ApplicationDetailResponseTo applicationDetail(@PathVariable(name = "requestId") String requestId) throws InvalidRequestException {
         return applicationService.fetchApplicationDetail(requestId);
     }
 
