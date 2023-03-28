@@ -149,12 +149,15 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
     @Override
-    public String suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
+    public SuspendRequestResponseTo suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
         String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
 //        HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
         initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
-        return hpProfile.getId().toString();
+        SuspendRequestResponseTo suspendRequestResponseTo = new SuspendRequestResponseTo();
+        suspendRequestResponseTo.setProfileId(hpProfile.getId().toString());
+        suspendRequestResponseTo.setMessage(SUCCESS_RESPONSE);
+        return suspendRequestResponseTo;
     }
 
     /**
@@ -165,19 +168,24 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
     @Override
-    public String reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
+    public ReactivateRequestResponseTo reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
+        ReactivateRequestResponseTo reactivateRequestResponseTo = new ReactivateRequestResponseTo();
         if (HpProfileStatus.SUSPENDED.getId() == hpProfile.getHpProfileStatus().getId() || HpProfileStatus.BLACKLISTED.getId() == hpProfile.getHpProfileStatus().getId()) {
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
 //            HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
             WorkFlow workFlow = iWorkFlowRepository.findLastWorkFlowForHealthProfessional(hpProfile.getId());
             if (Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
                 applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.REACTIVATION_THROUGH_SMC.getId());
+                reactivateRequestResponseTo.setSelfReactivation(false);
             }else {
                 applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.SELF_REACTIVATION.getId());
+                reactivateRequestResponseTo.setSelfReactivation(true);
             }
             initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
-            return hpProfile.getId().toString();
+            reactivateRequestResponseTo.setProfileId(hpProfile.getId().toString());
+            reactivateRequestResponseTo.setMessage(SUCCESS_RESPONSE);
+            return reactivateRequestResponseTo;
         } else {
             throw new NmrException("Suspended profile can only be reactivated", HttpStatus.FORBIDDEN);
         }

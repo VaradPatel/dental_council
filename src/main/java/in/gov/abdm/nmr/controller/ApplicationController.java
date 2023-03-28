@@ -43,9 +43,8 @@ public class ApplicationController {
      *                           to perform the suspension request and return the result of the process.
      */
     @PostMapping(ProtectedPaths.SUSPENSION_REQUEST_URL)
-    public ResponseEntity<ResponseMessageTo> suspensionHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
-        applicationService.suspendRequest(applicationRequestTo);
-        return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
+    public SuspendRequestResponseTo suspensionHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
+        return applicationService.suspendRequest(applicationRequestTo);
     }
 
     /**
@@ -58,9 +57,8 @@ public class ApplicationController {
      *                           to perform the reactivate request and return the result of the process.
      */
     @PostMapping(ProtectedPaths.REACTIVATE_REQUEST_URL)
-    public ResponseEntity<ResponseMessageTo> reactivateHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
-        applicationService.reactivateRequest(applicationRequestTo);
-        return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
+    public ReactivateRequestResponseTo reactivateHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
+       return applicationService.reactivateRequest(applicationRequestTo);
     }
 
     /**

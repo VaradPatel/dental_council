@@ -1,9 +1,6 @@
 package in.gov.abdm.nmr.service;
 
-import in.gov.abdm.nmr.dto.ApplicationDetailResponseTo;
-import in.gov.abdm.nmr.dto.ApplicationRequestTo;
-import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
-import in.gov.abdm.nmr.dto.ReactivateHealthProfessionalResponseTO;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
@@ -22,7 +19,7 @@ public interface IApplicationService {
      * @return a string indicating the result of the suspension request.
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
-    String suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException;
+    SuspendRequestResponseTo suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException;
 
     /**
      * This method is used to reactivate a health professional based on the request provided.
@@ -31,7 +28,7 @@ public interface IApplicationService {
      * @return a string indicating the result of the reactivate request.
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
-    String reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException;
+    ReactivateRequestResponseTo reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException;
 
     /**
      * Service for fetching the reactivation records of the health professionals
