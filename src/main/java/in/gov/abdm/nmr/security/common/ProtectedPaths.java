@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.security.common;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import in.gov.abdm.nmr.controller.CollegeControllerV2;
 import in.gov.abdm.nmr.util.NMRConstants;
 
 import java.util.ArrayList;
@@ -82,6 +83,18 @@ public class ProtectedPaths {
         
         protectedPaths.add(new AntPathRequestMatcher(HEALTH_PROFESSIONAL_ACTION));
         protectedPaths.add(new AntPathRequestMatcher(COLLEGES_ACTION));
+        
+        protectedPaths.add(new AntPathRequestMatcher(CollegeControllerV2.COLLEGES, HttpMethod.GET.name()));
+        protectedPaths.add(new AntPathRequestMatcher(CollegeControllerV2.COLLEGES, HttpMethod.POST.name()));
+        
+        protectedPaths.add(new AntPathRequestMatcher(CollegeControllerV2.COLLEGE_ID, HttpMethod.GET.name()));
+        protectedPaths.add(new AntPathRequestMatcher(CollegeControllerV2.COLLEGE_ID, HttpMethod.PUT.name()));
+        
+        protectedPaths.add(new AntPathRequestMatcher(CollegeControllerV2.COLLEGES_VERIFIERS_DESIGNATION, HttpMethod.GET.name()));
+        protectedPaths.add(new AntPathRequestMatcher(CollegeControllerV2.COLLEGES_COLLEGE_ID_VERIFIERS, HttpMethod.POST.name()));
+        
+        protectedPaths.add(new AntPathRequestMatcher(CollegeControllerV2.COLLEGES_COLLEGE_ID_VERIFIERS_VERIFIER_ID, HttpMethod.PUT.name()));
+        protectedPaths.add(new AntPathRequestMatcher(CollegeControllerV2.COLLEGES_COLLEGE_ID_VERIFIERS_VERIFIER_ID, HttpMethod.GET.name()));
 
         return protectedPaths.toArray(AntPathRequestMatcher[]::new);
     }

@@ -9,6 +9,7 @@ import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IQueriesService;
 import in.gov.abdm.nmr.util.NMRConstants;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
  */
 @RestController
 @Validated
+@Slf4j
 public class HpRegistrationController {
 
     /**
@@ -179,6 +181,7 @@ public class HpRegistrationController {
                                     @RequestPart("data") QualificationRequestTO qualificationDetailRequestTO,
                                     @RequestParam(value = "degreeCertificates") List<MultipartFile> degreeCertificates
                                     ) throws WorkFlowException, InvalidRequestException, NmrException {
+        log.info(degreeCertificates!=null?String.valueOf(degreeCertificates.size()):null);
         return hpService.addQualification(hpProfileId, qualificationDetailRequestTO.getQualificationDetailRequestTos(), degreeCertificates);
     }
 
