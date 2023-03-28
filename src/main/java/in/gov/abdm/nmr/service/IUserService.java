@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.NmrException;
+import in.gov.abdm.nmr.exception.OtpException;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -28,4 +29,5 @@ public interface IUserService {
 
     ResponseMessageTo createHpUserAccount(CreateHpUserAccountTo createHpUserAccountTo);
 
+    String retrieveUser(RetrieveUserRequestTo retrieveUserRequestTo) throws OtpException;
 }

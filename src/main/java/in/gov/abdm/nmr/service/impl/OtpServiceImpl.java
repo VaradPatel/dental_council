@@ -27,7 +27,7 @@ import in.gov.abdm.nmr.util.NMRConstants;
 public class OtpServiceImpl implements IOtpService {
 
     private IOtpDaoService otpDaoService;
-    
+
     private IUserDaoService userDaoService;
 
     private INotificationService notificationService;
@@ -56,27 +56,27 @@ public class OtpServiceImpl implements IOtpService {
             notificationType = NotificationType.SMS.getNotificationType();
             contact = userDaoService.findByUsername(otpGenerateRequestTo.getContact()).getMobileNumber();
         }
-        
+
         List<Otp> previousOtps = otpDaoService.findAllByContact(contact);
         if (previousOtps.size() >= NMRConstants.OTP_GENERATION_MAX_ATTEMPTS) {
-            throw new OtpException(NMRError.OTP_ATTEMPTS_EXCEEDED.getCode(),NMRError.OTP_ATTEMPTS_EXCEEDED.getMessage(), HttpStatus.TOO_MANY_REQUESTS.toString());
+            throw new OtpException(NMRError.OTP_ATTEMPTS_EXCEEDED.getCode(), NMRError.OTP_ATTEMPTS_EXCEEDED.getMessage(), HttpStatus.TOO_MANY_REQUESTS.toString());
         } else {
             for (Otp previousOtp : previousOtps) {
                 previousOtp.setExpired(true);
                 otpDaoService.save(previousOtp);
                 if (previousOtp.getAttempts() >= NMRConstants.OTP_MAX_ATTEMPTS) {
-                    throw new OtpException(NMRError.OTP_ATTEMPTS_EXCEEDED.getCode(),NMRError.OTP_ATTEMPTS_EXCEEDED.getMessage(), HttpStatus.TOO_MANY_REQUESTS.toString());
+                    throw new OtpException(NMRError.OTP_ATTEMPTS_EXCEEDED.getCode(), NMRError.OTP_ATTEMPTS_EXCEEDED.getMessage(), HttpStatus.TOO_MANY_REQUESTS.toString());
                 }
             }
         }
 
         String otp = String.valueOf(new SecureRandom().nextInt(899999) + 100000);
-        
+
         Otp otpEntity = new Otp(UUID.randomUUID().toString(), otp, 0, contact, false, 10);
         otpDaoService.save(otpEntity);
-        ResponseMessageTo notificationResponse=notificationService.sendNotificationForOTP(notificationType, otp, contact);
+        ResponseMessageTo notificationResponse = notificationService.sendNotificationForOTP(notificationType, otp, contact);
 
-        if(notificationResponse.getMessage().equalsIgnoreCase(NMRConstants.SUCCESS_RESPONSE)) {
+        if (notificationResponse.getMessage().equalsIgnoreCase(NMRConstants.SUCCESS_RESPONSE)) {
 
             if (otpGenerateRequestTo.getType().equalsIgnoreCase(NMRConstants.SMS)) {
                 if (contact != null && !contact.isBlank()) {
@@ -89,10 +89,9 @@ public class OtpServiceImpl implements IOtpService {
                     contact = "x".repeat(idPart.length()) + domain;
                 }
             }
-            return new OTPResponseMessageTo(otpEntity.getId(),NMRConstants.SUCCESS_RESPONSE,contact);
-        }
-        else {
-            return new OTPResponseMessageTo(null,NMRConstants.FAILURE_RESPONSE,null);
+            return new OTPResponseMessageTo(otpEntity.getId(), NMRConstants.SUCCESS_RESPONSE, contact);
+        } else {
+            return new OTPResponseMessageTo(null, NMRConstants.FAILURE_RESPONSE, null);
         }
     }
 
@@ -109,25 +108,33 @@ public class OtpServiceImpl implements IOtpService {
         Otp otpDetails = otpDaoService.findById(transactionId);
 
         if (otpDetails == null || otpDetails.isExpired()) {
-            throw new OtpException(NMRError.OTP_EXPIRED.getCode(),NMRError.OTP_EXPIRED.getMessage(), HttpStatus.UNAUTHORIZED.toString());
+            throw new OtpException(NMRError.OTP_EXPIRED.getCode(), NMRError.OTP_EXPIRED.getMessage(), HttpStatus.UNAUTHORIZED.toString());
         }
 
         if (otpDetails.getAttempts() >= NMRConstants.OTP_MAX_ATTEMPTS) {
-            otpDetails.setExpired(true);
-            otpDaoService.save(otpDetails);
-            throw new OtpException(NMRError.OTP_ATTEMPTS_EXCEEDED.getCode(),NMRError.OTP_ATTEMPTS_EXCEEDED.getMessage(), HttpStatus.TOO_MANY_REQUESTS.toString());
+            otpDaoService.deleteById(otpDetails.getId());
+            throw new OtpException(NMRError.OTP_ATTEMPTS_EXCEEDED.getCode(), NMRError.OTP_ATTEMPTS_EXCEEDED.getMessage(), HttpStatus.TOO_MANY_REQUESTS.toString());
         }
 
         String decryptedOtp = callInternal ? otpValidateRequestTo.getOtp() : rsaUtil.decrypt(otpValidateRequestTo.getOtp());
         if (decryptedOtp.equals(otpDetails.getOtp())) {
-            otpDetails.setExpired(true);
             otpDaoService.save(otpDetails);
             notificationService.sendNotificationForVerifiedOTP(otpValidateRequestTo.getType(), otpValidateRequestTo.getContact());
             return new OtpValidateResponseTo(new OtpValidateMessageTo(NMRConstants.SUCCESS_RESPONSE, otpDetails.getId(), otpValidateRequestTo.getType()));
         } else {
             otpDetails.setAttempts(otpDetails.getAttempts() + 1);
             otpDaoService.save(otpDetails);
-            throw new OtpException(NMRError.OTP_INVALID.getCode(),NMRError.OTP_INVALID.getMessage(), HttpStatus.UNAUTHORIZED.toString());
+            throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage(), HttpStatus.UNAUTHORIZED.toString());
         }
+    }
+
+    @Override
+    public boolean isOtpVerified(String id) {
+        Otp otp = otpDaoService.findById(id);
+        if (otp == null) {
+            return false;
+        }
+        otpDaoService.deleteById(id);
+        return otp.isExpired();
     }
 }

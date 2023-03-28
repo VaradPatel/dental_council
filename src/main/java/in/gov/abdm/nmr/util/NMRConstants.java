@@ -27,6 +27,7 @@ public class NMRConstants {
     public static final String VERIFY_OTP = "/verify-otp";
     public static final String GENERATE_OTP = "/generateOtp";
     public static final String GENERATE_AADHAR_OTP = "/sendAadhaarOtp";
+    public static final String RETRIEVE_USER = "/retrieve-user";
     public static final String VALIDATE_OTP = "/validateOtp";
     public static final String VALIDATE_AADHAR_OTP = "/verifyAadhaarOtp";
     public static final String FACILITY_SERVICE_SEARCH = "/v1.5/facility/search";

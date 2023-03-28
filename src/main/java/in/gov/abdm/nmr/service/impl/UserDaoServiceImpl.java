@@ -85,6 +85,11 @@ public class UserDaoServiceImpl implements IUserDaoService {
     }
 
     @Override
+    public User findFirstByMobileNumber(String mobileNumber) {
+        return userDetailRepository.findFirstByMobileNumber(mobileNumber);
+    }
+
+    @Override
     public boolean existsByUsername(String username) {
         return findByUsername(username) != null;
     }
