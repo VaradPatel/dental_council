@@ -27,13 +27,15 @@ public class PasswordController {
     /**
      * Sends reset password link on email/mobile
      *
-     * @param setPasswordLinkTo receiver email/mobile
+     * @param sendLinkOnMailTo receiver email/mobile
      * @return Success/Fail message
      */
-    @PostMapping(NMRConstants.PASSWORD_LINK)
-    public ResponseMessageTo getResetPasswordLink(@RequestBody CreateHpUserAccountTo setPasswordLinkTo) {
 
-        return passwordService.getResetPasswordLink(setPasswordLinkTo);
+    @Deprecated
+    @PostMapping(NMRConstants.PASSWORD_LINK)
+    public ResponseMessageTo getResetPasswordLink(@RequestBody SendLinkOnMailTo sendLinkOnMailTo) {
+
+        return passwordService.getResetPasswordLink(sendLinkOnMailTo);
 
     }
 

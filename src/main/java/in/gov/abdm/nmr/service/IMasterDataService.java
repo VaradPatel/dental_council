@@ -25,8 +25,6 @@ public interface IMasterDataService {
 
     List<MasterDataTO> universities();
 
-    List<MasterDataTO> colleges(BigInteger universityId);
-
     List<MasterDataTO> languages();
 
     List<MasterDataTO> courses();

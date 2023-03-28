@@ -64,12 +64,6 @@ public class MasterDataController {
         return masterDataService.universities();
     }
 
-    @Deprecated
-    @GetMapping(path = "/universities/{university_id}/colleges", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<MasterDataTO> colleges(@PathVariable(name = "university_id") BigInteger universityId) {
-        return masterDataService.colleges(universityId);
-    }
-
     @GetMapping(path = "/languages", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MasterDataTO> languages() {
         return masterDataService.languages();
@@ -101,7 +95,7 @@ public class MasterDataController {
     }
 
     @Deprecated
-    @GetMapping(path = "/colleges", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/colleges-deprecated", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<CollegeMasterResponseTo> getCollegesByUniversity(@RequestParam(required = false, value = "universityId") BigInteger universityId) {
         return masterDataService.getCollegesByUniversity(universityId);
     }

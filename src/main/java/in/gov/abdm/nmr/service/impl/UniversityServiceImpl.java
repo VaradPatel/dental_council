@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.UniversityMasterTo;
 import in.gov.abdm.nmr.dto.UniversityTO;
+import in.gov.abdm.nmr.entity.UniversityMaster;
 import in.gov.abdm.nmr.mapper.IUniversityMasterToMapper;
 import in.gov.abdm.nmr.mapper.UniversityDtoMapper;
 import in.gov.abdm.nmr.repository.IUniversityRepository;
@@ -46,5 +47,15 @@ public class UniversityServiceImpl implements IUniversityService, IUniversityMas
     @Override
     public List<UniversityMasterTo> getUniversitiesByState(BigInteger stateId) {
         return universititesToMapper.universitiesTo(universitiesRepository.getUniversitiesByState(stateId));
+    }
+    
+    @Override
+    public UniversityMaster findById(BigInteger id) {
+        return universitiesRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public UniversityMaster save(UniversityMaster universityMaster) {
+        return universitiesRepository.save(universityMaster);
     }
 }
