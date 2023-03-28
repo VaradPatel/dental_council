@@ -96,8 +96,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @PersistenceContext
     private EntityManager entityManager;
     @Autowired
-    private ICollegeRepository collegeRepository;
-    @Autowired
     private IUniversityRepository universityRepository;
     @Autowired
     private CourseRepository courseRepository;
@@ -110,7 +108,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private CollegeMasterRepository collegeMasterRepository;
+    private ICollegeMasterRepository collegeMasterRepository;
     @Autowired
     private UniversityMasterRepository universityMasterRepository;
 

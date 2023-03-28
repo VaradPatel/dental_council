@@ -4,10 +4,7 @@ import in.gov.abdm.nmr.dto.DashboardRequestParamsTO;
 import in.gov.abdm.nmr.dto.DashboardRequestTO;
 import in.gov.abdm.nmr.dto.DashboardResponseTO;
 import in.gov.abdm.nmr.dto.FetchSpecificDetailsResponseTO;
-import in.gov.abdm.nmr.entity.CollegeDean;
-import in.gov.abdm.nmr.entity.CollegeRegistrar;
-import in.gov.abdm.nmr.entity.SMCProfile;
-import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
@@ -15,6 +12,8 @@ import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetails;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
 import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.service.ICollegeMasterDaoService;
+import in.gov.abdm.nmr.service.ICollegeProfileDaoService;
 import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import org.apache.commons.lang3.StringUtils;
@@ -72,26 +71,8 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
     @Autowired
     private ISmcProfileRepository iSmcProfileRepository;
 
-    /**
-     * Injecting ICollegeDeanRepository bean instead of an explicit object creation to achieve
-     * Singleton principle
-     */
     @Autowired
-    private ICollegeDeanRepository iCollegeDeanRepository;
-
-    /**
-     * Injecting ICollegeRegistrarRepository bean instead of an explicit object creation to achieve
-     * Singleton principle
-     */
-    @Autowired
-    private ICollegeRegistrarRepository iCollegeRegistrarRepository;
-
-    /**
-     * Injecting ICollegeRepository bean instead of an explicit object creation to achieve
-     * Singleton principle
-     */
-    @Autowired
-    private ICollegeRepository iCollegeRepository;
+    private ICollegeProfileDaoService collegeProfileDaoService;
 
     @Override
     public List<FetchSpecificDetailsResponseTO> fetchSpecificDetails(String groupName, String applicationType, String workFlowStatus) throws InvalidRequestException {
@@ -104,9 +85,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                 .map(fetchSpecificDetails -> {
                     FetchSpecificDetailsResponseTO fetchSpecificDetailsResponseTO = iFetchSpecificDetailsMapper.toFetchSpecificDetailsResponseTO(fetchSpecificDetails);
 
-                    if (Group.COLLEGE_ADMIN.getDescription().equals(fetchSpecificDetails.getGroupName()) ||
-                            Group.COLLEGE_DEAN.getDescription().equals(fetchSpecificDetails.getGroupName()) ||
-                            Group.COLLEGE_REGISTRAR.getDescription().equals(fetchSpecificDetails.getGroupName())) {
+                    if (Group.COLLEGE.getDescription().equals(fetchSpecificDetails.getGroupName())) {
                         fetchSpecificDetailsResponseTO.setCollegeVerificationStatus(fetchSpecificDetails.getWorkFlowStatus());
                     }
                     if (Group.SMC.getDescription().equals(fetchSpecificDetails.getGroupName())) {
@@ -194,7 +173,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                     case YEAR_OF_REGISTRATION_IN_LOWER_CASE: dashboardRequestParamsTO.setYearOfRegistration(value);
                         break;
                     case SMC_ID_IN_LOWER_CASE: {
-                        if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
+                        if (groupId.equals(Group.COLLEGE.getId())
                                 || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
                             dashboardRequestParamsTO.setSmcId(value);
                         }
@@ -216,12 +195,8 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         dashboardRequestParamsTO.setUserGroupStatus(userGroupStatus);
         if (groupId.equals(Group.SMC.getId())) {
             dashboardRequestParamsTO.setCouncilId(iSmcProfileRepository.findByUserId(userId).getStateMedicalCouncil().getId().toString());
-        } else if (groupId.equals(Group.COLLEGE_DEAN.getId())) {
-            dashboardRequestParamsTO.setCollegeId(iCollegeDeanRepository.findByUserId(userId).getCollege().getId().toString());
-        } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
-            dashboardRequestParamsTO.setCollegeId(iCollegeRegistrarRepository.findByUserId(userId).getCollege().getId().toString());
-        } else if (groupId.equals(Group.COLLEGE_ADMIN.getId())) {
-            dashboardRequestParamsTO.setCollegeId(iCollegeRepository.findByUserId(userId).getId().toString());
+        } else if (groupId.equals(Group.COLLEGE.getId())) {
+            dashboardRequestParamsTO.setCollegeId(collegeProfileDaoService.findByUserId(userId).getCollege().getId().toString());
         }
 
         final String sortingOrder = (sortOrder == null || sortOrder.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortOrder;
@@ -259,7 +234,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                     case REGISTRATION_NUMBER_IN_LOWER_CASE: dashboardRequestParamsTO.setRegistrationNumber(dashboardRequestTO.getValue());
                         break;
                     case SMC_ID_IN_LOWER_CASE: {
-                        if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
+                        if (groupId.equals(Group.COLLEGE.getId())
                                 || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
                             dashboardRequestParamsTO.setSmcId(dashboardRequestTO.getValue());
                         }
@@ -283,12 +258,9 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         if (groupId.equals(Group.SMC.getId())) {
             SMCProfile smcProfile = iSmcProfileRepository.findByUserId(userId);
             dashboardRequestParamsTO.setCouncilId(smcProfile.getStateMedicalCouncil().getId().toString());
-        } else if (groupId.equals(Group.COLLEGE_DEAN.getId())) {
-            CollegeDean collegeDean = iCollegeDeanRepository.findByUserId(userId);
-            dashboardRequestParamsTO.setCollegeId(collegeDean.getCollege().getId().toString());
-        } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
-            CollegeRegistrar collegeRegistrar = iCollegeRegistrarRepository.findByUserId(userId);
-            dashboardRequestParamsTO.setCollegeId(collegeRegistrar.getCollege().getId().toString());
+        } else if (groupId.equals(Group.COLLEGE.getId())) {
+            CollegeProfile collegeProfile = collegeProfileDaoService.findByUserId(userId);
+            dashboardRequestParamsTO.setCollegeId(collegeProfile.getCollege().getId().toString());
         }
         final String sortingOrder = (sortOrder == null || sortOrder.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);

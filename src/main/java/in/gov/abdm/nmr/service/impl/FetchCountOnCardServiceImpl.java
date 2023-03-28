@@ -13,6 +13,7 @@ import in.gov.abdm.nmr.mapper.IStatusWiseCount;
 import in.gov.abdm.nmr.mapper.IStatusWiseCountMapper;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.IAccessControlService;
+import in.gov.abdm.nmr.service.ICollegeProfileDaoService;
 import in.gov.abdm.nmr.service.IFetchCountOnCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,21 +49,14 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
 
     @Autowired
     private IAccessControlService accessControlService;
-
-    @Autowired
-    private ICollegeDeanRepository iCollegeDeanRepository;
-
-    @Autowired
-    private ICollegeRegistrarRepository iCollegeRegistrarRepository;
-
-    @Autowired
-    private ICollegeRepository iCollegeRepository;
-
     @Autowired
     private ISmcProfileRepository iSmcProfileRepository;
 
     @Autowired
     private INbeProfileRepository iNbeProfileRepository;
+
+    @Autowired
+    ICollegeProfileDaoService iCollegeProfileDaoService;
 
     private BigInteger counter = BigInteger.ZERO;
 
@@ -83,7 +77,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
         responseTO.setHpRegistrationRequest(FetchCountOnCardInnerResponseTO.builder()
                 .applicationTypeIds(ApplicationType.HP_REGISTRATION.getId().toString() + COMMA_SEPARATOR + ApplicationType.FOREIGN_HP_REGISTRATION.getId().toString())
                 .build());
-        if (Group.SMC.getDescription().equals(groupName) || Group.COLLEGE_ADMIN.getDescription().equals(groupName) || Group.COLLEGE_DEAN.getDescription().equals(groupName) || Group.COLLEGE_REGISTRAR.getDescription().equals(groupName) || Group.NMC.getDescription().equals(groupName) || Group.NBE.getDescription().equals(groupName)) {
+        if (Group.SMC.getDescription().equals(groupName) || Group.COLLEGE.getDescription().equals(groupName) || Group.NMC.getDescription().equals(groupName) || Group.NBE.getDescription().equals(groupName)) {
             counter = BigInteger.ZERO;
             List<StatusWiseCountTO> hpRegistrationRequests = fetchStatusWiseCountBasedOnLoggedInUser(ApplicationType.HP_REGISTRATION.getId(), loggedInUser)
                     .stream()
@@ -139,7 +133,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                 .applicationTypeIds(ApplicationType.HP_MODIFICATION.getId().toString() + COMMA_SEPARATOR + ApplicationType.QUALIFICATION_ADDITION.getId().toString())
                 .build());
         counter = BigInteger.ZERO;
-        if (Group.SMC.getDescription().equals(groupName) || Group.COLLEGE_ADMIN.getDescription().equals(groupName) || Group.COLLEGE_DEAN.getDescription().equals(groupName) || Group.COLLEGE_REGISTRAR.getDescription().equals(groupName) || Group.NMC.getDescription().equals(groupName) || Group.NBE.getDescription().equals(groupName)) {
+        if (Group.SMC.getDescription().equals(groupName) || Group.COLLEGE.getDescription().equals(groupName) || Group.NMC.getDescription().equals(groupName) || Group.NBE.getDescription().equals(groupName)) {
             List<StatusWiseCountTO> hpModificationRequests = fetchStatusWiseCountBasedOnLoggedInUser(ApplicationType.HP_MODIFICATION.getId(), loggedInUser)
                     .stream()
                     .map(statusWiseCountTO -> {
@@ -496,8 +490,8 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
         /**
          * Group - College Dean
          */
-        if (Group.COLLEGE_DEAN.getDescription().equals(group.getName())) {
-            BigInteger collegeId = iCollegeDeanRepository.findByUserId(loggedInUser.getId()).getCollege().getId();
+        if (Group.COLLEGE.getDescription().equals(group.getName())) {
+            BigInteger collegeId = iCollegeProfileDaoService.findByUserId(loggedInUser.getId()).getCollege().getId();
             List<IStatusWiseCount> primaryStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForDean(applicationTypeId, groupId, collegeId);
 
             if (ApplicationType.HP_REGISTRATION.getId().equals(applicationTypeId)) {
@@ -505,40 +499,6 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                 return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, foreignHpStatusWiseCount);
             } else if (ApplicationType.HP_MODIFICATION.getId().equals(applicationTypeId)) {
                 List<IStatusWiseCount> qualificationAdditionStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForDean(ApplicationType.QUALIFICATION_ADDITION.getId(), groupId, collegeId);
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, qualificationAdditionStatusWiseCount);
-            }
-            return primaryStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).toList();
-        }
-
-        /**
-         * Group - College Admin
-         */
-        if (Group.COLLEGE_ADMIN.getDescription().equals(group.getName())) {
-            BigInteger collegeId = iCollegeRepository.getCollegeIdByUserId(loggedInUser.getId()).get(0);
-            List<IStatusWiseCount> primaryStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForAdmin(applicationTypeId, groupId, collegeId);
-
-            if (ApplicationType.HP_REGISTRATION.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> foreignHpStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForAdmin(ApplicationType.FOREIGN_HP_REGISTRATION.getId(), groupId, collegeId);
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, foreignHpStatusWiseCount);
-            } else if (ApplicationType.HP_MODIFICATION.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> qualificationAdditionStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForAdmin(ApplicationType.QUALIFICATION_ADDITION.getId(), groupId, collegeId);
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, qualificationAdditionStatusWiseCount);
-            }
-            return primaryStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).toList();
-        }
-
-        /**
-         * Group - College Registrar
-         */
-        if (Group.COLLEGE_REGISTRAR.getDescription().equals(group.getName())) {
-            BigInteger collegeId = iCollegeRegistrarRepository.findByUserId(loggedInUser.getId()).getCollege().getId();
-            List<IStatusWiseCount> primaryStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForRegistrar(applicationTypeId, groupId, collegeId);
-
-            if (ApplicationType.HP_REGISTRATION.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> foreignHpStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForRegistrar(ApplicationType.FOREIGN_HP_REGISTRATION.getId(), groupId, collegeId);
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, foreignHpStatusWiseCount);
-            } else if (ApplicationType.HP_MODIFICATION.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> qualificationAdditionStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForRegistrar(ApplicationType.QUALIFICATION_ADDITION.getId(), groupId, collegeId);
                 return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, qualificationAdditionStatusWiseCount);
             }
             return primaryStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).toList();

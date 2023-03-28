@@ -33,8 +33,6 @@ public class MasterDataServiceImpl implements IMasterDataService {
 
     private LanguageServiceImpl languageService;
 
-    private ICollegeDaoService collegeService;
-
     private IMasterDataMapper masterDataMapper;
 
     private ICourseService courseService;
@@ -49,7 +47,7 @@ public class MasterDataServiceImpl implements IMasterDataService {
 
     public MasterDataServiceImpl(StateMedicalCouncilDaoServiceImpl stateMedicalCouncilService, IMasterDataMapper masterDataMapper,
                                  CountryServiceImpl countryService, StateServiceImpl stateService, DistrictServiceImpl districtService, SubDistrictServiceImpl subDistrictService,
-                                 VillagesServiceImpl villagesServiceImpl, BroadSpecialityServiceImpl broadSpecialityServiceImpl, UniversityServiceImpl universityService, ICollegeDaoService collegeService,
+                                 VillagesServiceImpl villagesServiceImpl, BroadSpecialityServiceImpl broadSpecialityServiceImpl, UniversityServiceImpl universityService,
                                  LanguageServiceImpl languageService, ICourseService courseService, IRegistrationRenewationTypeService registrationRenewationTypeService,
                                  IFacilityTypeService facilityTypeService) {
         super();
@@ -62,7 +60,6 @@ public class MasterDataServiceImpl implements IMasterDataService {
         this.villagesServiceImpl = villagesServiceImpl;
         this.broadSpecialityServiceImpl = broadSpecialityServiceImpl;
         this.universityService = universityService;
-        this.collegeService = collegeService;
         this.languageService = languageService;
         this.courseService = courseService;
         this.registrationRenewationTypeService = registrationRenewationTypeService;
@@ -110,11 +107,6 @@ public class MasterDataServiceImpl implements IMasterDataService {
     }
 
     @Override
-    public List<MasterDataTO> colleges(BigInteger universityId) {
-        return masterDataMapper.collegesToMasterDataTOs(collegeService.getCollegeData(universityId));
-    }
-
-    @Override
     public List<MasterDataTO> languages() {
         return masterDataMapper.languagesToMasterDataTOs(languageService.getLanguageData());
     }
@@ -155,6 +147,4 @@ public class MasterDataServiceImpl implements IMasterDataService {
         return masterDataMapper.universityMasterResponseDataTo(universityMasterService.getUniversitiesByState(stateId));
 
     }
-
-
 }
