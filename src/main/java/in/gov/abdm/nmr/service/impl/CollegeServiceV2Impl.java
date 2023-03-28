@@ -105,7 +105,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         collegeMasterTO.setDistrictId(collegeMaster.getDistrict() != null ? collegeMaster.getDistrict().getId() : null);
         collegeMasterTO.setVillageId(collegeMaster.getVillage() != null ? collegeMaster.getVillage().getId() : null);
 
-        CollegeProfile collegeprofile = collegeProfileDaoService.findAdminByCollegeId(id, UserSubTypeEnum.COLLEGE.getCode());
+        CollegeProfile collegeprofile = collegeProfileDaoService.findAdminByCollegeId(id);
         if (collegeprofile != null) {
             BigInteger userId = collegeprofile.getUser().getId();
             User collegeUser = userDaoService.findById(userId);
@@ -134,7 +134,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         }
 
         if (UserSubTypeEnum.COLLEGE.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {
-            CollegeProfile collegeprofile = collegeProfileDaoService.findAdminByCollegeId(collegeMaster.getId(), UserSubTypeEnum.COLLEGE.getCode());
+            CollegeProfile collegeprofile = collegeProfileDaoService.findAdminByCollegeId(collegeMaster.getId());
             if (collegeprofile == null) {
                 throw new NmrException(UNSUPPORTED_OPERATION, HttpStatus.BAD_REQUEST);
             }
@@ -192,6 +192,8 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
             user = new User(null, collegeMasterTOV2.getEmailId(), collegeMasterTOV2.getMobileNumber(), null, null, null, false, false, //
                     entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), // 
                     entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false);
+            
+            passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail()));
         } else {
             user.setEmail(collegeMasterTOV2.getEmailId());
             user.setMobileNumber(collegeMasterTOV2.getMobileNumber());
@@ -205,8 +207,6 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         collegeProfile.setCollege(collegeMaster);
         collegeProfile.setUser(user);
         collegeProfileDaoService.save(collegeProfile);
-
-        passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail()));
 
         return collegeMasterTOV2;
     }
@@ -228,7 +228,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
 
         if (UserSubTypeEnum.COLLEGE.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {
 
-            collegeProfile = collegeProfileDaoService.findAdminByCollegeId(collegeMaster.getId(), UserSubTypeEnum.COLLEGE.getCode());
+            collegeProfile = collegeProfileDaoService.findAdminByCollegeId(collegeMaster.getId());
             if (collegeProfile == null) {
                 throw new NmrException(UNSUPPORTED_OPERATION, HttpStatus.BAD_REQUEST);
             }
@@ -263,6 +263,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
                     null, null, false, false, entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), //
                     entityManager.getReference(UserSubType.class, collegeProfileTOV2.getDesignation()), //
                     entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false);
+            passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail()));
         } else {
             user.setEmail(collegeProfileTOV2.getEmailId());
             user.setMobileNumber(collegeProfileTOV2.getMobileNumber());
@@ -278,7 +279,6 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         collegeProfile = collegeProfileDaoService.save(collegeProfile);
 
         collegeProfileTOV2.setId(collegeProfile.getId());
-        passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail()));
         return collegeProfileTOV2;
     }
 
