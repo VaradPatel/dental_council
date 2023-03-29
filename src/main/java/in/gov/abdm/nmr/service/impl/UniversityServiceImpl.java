@@ -41,7 +41,7 @@ public class UniversityServiceImpl implements IUniversityService, IUniversityMas
 
     @Override
     public List<UniversityMasterTo> getUniversitiesByCollegeId(BigInteger collegeId) {
-        return universititesToMapper.universitiesTo(universitiesRepository.getUniversitiesByCollegeId(collegeId));
+        return universititesToMapper.universitiesTo(collegeId!=null ? universitiesRepository.getUniversitiesByCollegeId(collegeId):universitiesRepository.getUniversities());
     }
 
     @Override

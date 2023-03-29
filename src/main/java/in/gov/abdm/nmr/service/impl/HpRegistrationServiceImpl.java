@@ -11,10 +11,7 @@ import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.mapper.*;
 import in.gov.abdm.nmr.repository.*;
-import in.gov.abdm.nmr.service.IHpProfileDaoService;
-import in.gov.abdm.nmr.service.IHpRegistrationService;
-import in.gov.abdm.nmr.service.IRequestCounterService;
-import in.gov.abdm.nmr.service.IWorkFlowService;
+import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -150,6 +147,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     private HpProfileRegistrationMapper hpProfileRegistrationMapper;
 
     @Autowired
+    private IQueriesService iQueriesService;
+
+    @Autowired
     OtpServiceImpl otpService;
 
     /**
@@ -224,6 +224,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         return getHealthProfessionalWorkDetail(hpProfileUpdateResponseTO.getHpProfileId());
     }
 
+    @Transactional
     @Override
     public HpProfileAddResponseTO submitHpProfile(HpSubmitRequestTO hpSubmitRequestTO)
             throws InvalidRequestException, WorkFlowException {
@@ -234,6 +235,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
         if (hpSubmitRequestTO.getRequestId() != null && WorkflowStatus.QUERY_RAISED.getId().equals(workFlowRepository.findByRequestId(hpSubmitRequestTO.getRequestId()).getWorkFlowStatus().getId())) {
             iWorkFlowService.assignQueriesBackToQueryCreator(hpSubmitRequestTO.getRequestId());
+            iQueriesService.markQueryAsClosed(hpSubmitRequestTO.getHpProfileId());
+
         } else {
             requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(hpSubmitRequestTO.getApplicationTypeId()));
             WorkFlowRequestTO workFlowRequestTO = WorkFlowRequestTO.builder().requestId(requestId)

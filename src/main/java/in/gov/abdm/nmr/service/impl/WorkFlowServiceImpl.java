@@ -8,10 +8,7 @@ import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.INextGroup;
 import in.gov.abdm.nmr.repository.*;
-import in.gov.abdm.nmr.service.INotificationService;
-import in.gov.abdm.nmr.service.IUserDaoService;
-import in.gov.abdm.nmr.service.IWorkFlowService;
-import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;
+import in.gov.abdm.nmr.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -168,6 +165,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         UserGroup currentGroup = workflow.getCurrentGroup();
         workflow.setCurrentGroup(previousGroup);
         workflow.setPreviousGroup(currentGroup);
+        workflow.setAction(iActionRepository.findById(Action.SUBMIT.getId()).get());
         workflow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).get());
         workflow.setUserId(user);
 

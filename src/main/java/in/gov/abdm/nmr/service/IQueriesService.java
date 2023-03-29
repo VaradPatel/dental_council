@@ -26,5 +26,5 @@ public interface IQueriesService {
     /**
      *Update status of raised query
      */
-    ResponseMessageTo markQueryAsClosed(List<BigInteger> queryIdList);
+    ResponseMessageTo markQueryAsClosed(BigInteger hpProfileId);
 }
