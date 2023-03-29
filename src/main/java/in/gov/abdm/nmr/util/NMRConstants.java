@@ -172,11 +172,11 @@ public class NMRConstants {
 
     public static final String TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS = "Total Suspension Requests";
 
-    public static final String CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS = "Temporary Suspension Requests Pending";
+    public static final String CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS = "Temporary Suspension Requests Received";
 
     public static final String CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS = "Temporary Suspension Requests Approved";
 
-    public static final String CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS = "Permanent Suspension Requests Pending";
+    public static final String CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS = "Permanent Suspension Requests Received";
 
     public static final String CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS = "Permanent Suspension Requests Approved";
 
