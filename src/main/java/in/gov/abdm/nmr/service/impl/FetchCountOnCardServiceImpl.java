@@ -352,7 +352,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
             consolidatedSuspensionRequests.stream().forEach(statusWiseCountTO -> counter = counter.add(statusWiseCountTO.getCount()));
 
             tempConsolidatedSuspensionRequests.add(StatusWiseCountTO.builder()
-                    .name(TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS)
+                    .name(TOTAL)
                     .count(counter)
                     .build());
 
