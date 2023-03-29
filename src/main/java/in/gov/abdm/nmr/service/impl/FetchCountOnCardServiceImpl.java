@@ -89,7 +89,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
             List<StatusWiseCountTO> tempHpRegistrationRequests = new ArrayList<>();
 
             tempHpRegistrationRequests.add(StatusWiseCountTO.builder()
-                    .name(TOTAL_HP_REGISTRATION_REQUESTS)
+                    .name(TOTAL)
                     .count(counter)
                     .build());
 
@@ -145,7 +145,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
             List<StatusWiseCountTO> tempHpModificationRequests = new ArrayList<>();
 
             tempHpModificationRequests.add(StatusWiseCountTO.builder()
-                    .name(TOTAL_HP_MODIFICATION_REQUESTS)
+                    .name(TOTAL)
                     .count(counter)
                     .build());
 
@@ -202,7 +202,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
             List<StatusWiseCountTO> tempTemporarySuspensionRequests = new ArrayList<>();
 
             tempTemporarySuspensionRequests.add(StatusWiseCountTO.builder()
-                    .name(TOTAL_TEMPORARY_SUSPENSION_REQUESTS)
+                    .name(TOTAL)
                     .count(counter)
                     .build());
 
@@ -260,7 +260,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
             List<StatusWiseCountTO> tempPermanentSuspensionRequests = new ArrayList<>();
 
             tempPermanentSuspensionRequests.add(StatusWiseCountTO.builder()
-                    .name(TOTAL_PERMANENT_SUSPENSION_REQUESTS)
+                    .name(TOTAL)
                     .count(counter)
                     .build());
 
@@ -383,7 +383,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
             List<StatusWiseCountTO> tempActivateLicenseRequests = new ArrayList<>();
 
             tempActivateLicenseRequests.add(StatusWiseCountTO.builder()
-                    .name(TOTAL_ACTIVATE_LICENSE_REQUESTS)
+                    .name(TOTAL)
                     .count(counter)
                     .build());
 
@@ -441,7 +441,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
             List<StatusWiseCountTO> tempCollegeRegistrationRequests = new ArrayList<>();
 
             tempCollegeRegistrationRequests.add(StatusWiseCountTO.builder()
-                    .name(TOTAL_COLLEGE_REGISTRATION_REQUESTS)
+                    .name(TOTAL)
                     .count(counter)
                     .build());
 

@@ -2,10 +2,7 @@ package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
-import in.gov.abdm.nmr.exception.DateException;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
-import in.gov.abdm.nmr.exception.NmrException;
-import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.exception.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -120,5 +117,5 @@ public interface IHpRegistrationService {
 
     void addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException;
 
-    void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request);
+    void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException;
 }

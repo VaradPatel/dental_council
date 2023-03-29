@@ -53,7 +53,6 @@ public class NMRConstants {
     public static final String PATH_TRACK_APPLICATIONS_STATUS = APPLICATION_REQUEST_URL + "/applications";
 
     public static final String SUSPENSION_REQUEST_URL = APPLICATION_REQUEST_URL + "/suspend";
-    public static final String REACTIVATE_REQUEST_URL = APPLICATION_REQUEST_URL + "/re-activate";
     public static final String HEALTH_PROFESSIONAL_ACTION = APPLICATION_REQUEST_URL + "/status";
     public static final String COLLEGES_ACTION = "/college/applications/status";
 
@@ -154,6 +153,16 @@ public class NMRConstants {
     public static final int OTP_GENERATION_MAX_ATTEMPTS = 5;
     public static final int OTP_MAX_ATTEMPTS = 3;
 
+    public static final String TOTAL = "Total";
+
+    public static final String TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID = "3";
+    public static final String PERMANENT_SUSPENSION_APPLICATION_TYPE_ID = "3";
+    public static final String TEMPORARY_AND_PERMANENT_SUSPENSION_APPLICATION_TYPE_ID = "3,4";
+
+    public static final String PENDING = "Pending";
+
+    public static final String APPROVED = "Approved";
+
     public static final String TOTAL_HP_REGISTRATION_REQUESTS = "Total Registration Requests";
     public static final String TOTAL_HP_MODIFICATION_REQUESTS = "Total Modification Requests";
 
@@ -163,11 +172,11 @@ public class NMRConstants {
 
     public static final String TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS = "Total Suspension Requests";
 
-    public static final String CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS = "Temporary Suspension Requests Received";
+    public static final String CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS = "Temporary Suspension Requests Pending";
 
     public static final String CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS = "Temporary Suspension Requests Approved";
 
-    public static final String CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS = "Permanent Suspension Requests Received";
+    public static final String CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS = "Permanent Suspension Requests Pending";
 
     public static final String CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS = "Permanent Suspension Requests Approved";
 
@@ -443,6 +452,7 @@ public class NMRConstants {
                     SELECT COUNT(*)  FROM reactivate r
                     WHERE 1=1 """;
 
+    public static final String FETCH_REACTIVATION_REQUESTS = "SELECT hp.id, hp.registration_id, wf.request_id, hp.full_name, wf.created_at, wf.start_date, hp.gender, hp.email_id, hp.mobile_number , hp.hp_profile_status_id, wf.remarks, COUNT(*) OVER() AS total_count FROM main.work_flow AS wf INNER JOIN main.hp_profile AS hp ON wf.hp_profile_id = hp.id WHERE application_type_id = 5";
     public static final String NOT_NULL_ERROR_MSG = "The {0} is mandatory.";
     public static final String NOT_BLANK_ERROR_MSG = "The {0} should not be blank.";
     public static final String INPUT_VALIDATION_ERROR_CODE = "ABDM-NMR-400";

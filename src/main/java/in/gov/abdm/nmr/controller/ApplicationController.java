@@ -73,7 +73,7 @@ public class ApplicationController {
      * which contains all the details related to the health professionals who have
      * raised a request to NMC to reactivate their profiles
      */
-    @GetMapping(REACTIVATE_REQUEST_URL)
+    @GetMapping(ProtectedPaths.REACTIVATE_REQUEST_URL)
     public ReactivateHealthProfessionalResponseTO reactivationRecordsOfHealthProfessionalsToNmc(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
                                                                                                 @RequestParam(required = false, value = "offset", defaultValue = "10") String offset,
                                                                                                 @RequestParam(required = false, value = "search") String search,

@@ -17,4 +17,5 @@ public class ReactivateHealthProfessionalRequestParam {
     private Integer offset;
     private String sortBy;
     private String sortType;
+    private String groupId;
 }
