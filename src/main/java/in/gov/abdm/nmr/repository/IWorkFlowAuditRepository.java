@@ -24,4 +24,13 @@ public interface IWorkFlowAuditRepository extends JpaRepository<WorkFlowAudit, B
     @Query(value = "Select * from work_flow_master wf  where hp_profile_id = :hpProfileId", nativeQuery = true)
     List<WorkFlowAudit> findWorkflowById(BigInteger hpProfileId);
 
+    /**
+     * Fetches the application details from the work_flow_audit table for the given request ID
+     * and returns a list of WorkFlowAudit objects sorted by created_at in ascending order.
+     *
+     * @param requestId the ID of the request to fetch the application details for
+     * @return a list of WorkFlowAudit objects containing the application details for the request
+     */
+    @Query(value = "Select * from work_flow_audit where request_id = :requestId order by created_at asc ", nativeQuery = true)
+    List<WorkFlowAudit> fetchApplicationDetails(String requestId);
 }

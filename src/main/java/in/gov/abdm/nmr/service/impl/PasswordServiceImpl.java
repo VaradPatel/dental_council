@@ -1,49 +1,33 @@
 package in.gov.abdm.nmr.service.impl;
 
-import static in.gov.abdm.nmr.util.NMRConstants.FORBIDDEN;
-
-import java.security.GeneralSecurityException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-
+import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.entity.Password;
+import in.gov.abdm.nmr.entity.PasswordResetToken;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NMRError;
+import in.gov.abdm.nmr.exception.OtpException;
+import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.PasswordResetTokenRepository;
+import in.gov.abdm.nmr.security.common.RsaUtil;
+import in.gov.abdm.nmr.service.*;
+import in.gov.abdm.nmr.util.NMRConstants;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import in.gov.abdm.nmr.dto.ChangePasswordRequestTo;
-import in.gov.abdm.nmr.dto.CreateHpUserAccountTo;
-import in.gov.abdm.nmr.dto.ResetPasswordRequestTo;
-import in.gov.abdm.nmr.dto.ResponseMessageTo;
-import in.gov.abdm.nmr.dto.SetNewPasswordTo;
-import in.gov.abdm.nmr.entity.HpProfile;
-import in.gov.abdm.nmr.entity.Password;
-import in.gov.abdm.nmr.entity.PasswordResetToken;
-import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.entity.UserGroup;
-import in.gov.abdm.nmr.entity.UserSubType;
-import in.gov.abdm.nmr.entity.UserType;
-import in.gov.abdm.nmr.enums.Group;
-import in.gov.abdm.nmr.enums.UserSubTypeEnum;
-import in.gov.abdm.nmr.enums.UserTypeEnum;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
-import in.gov.abdm.nmr.repository.IHpProfileRepository;
-import in.gov.abdm.nmr.repository.PasswordResetTokenRepository;
-import in.gov.abdm.nmr.security.common.RsaUtil;
-import in.gov.abdm.nmr.service.INotificationService;
-import in.gov.abdm.nmr.service.IPasswordDaoService;
-import in.gov.abdm.nmr.service.IPasswordService;
-import in.gov.abdm.nmr.service.IUserDaoService;
-import in.gov.abdm.nmr.util.NMRConstants;
-import lombok.SneakyThrows;
-import net.bytebuddy.utility.RandomString;
+import javax.persistence.EntityManager;
+import java.security.GeneralSecurityException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
+import static in.gov.abdm.nmr.util.NMRConstants.FORBIDDEN;
 
 /**
  * Implementations of methods for resetting and changing password
@@ -79,59 +63,47 @@ public class PasswordServiceImpl implements IPasswordService {
     @Autowired
     private IPasswordDaoService passwordDaoService;
 
+    @Autowired
+    private IOtpService otpService;
+
     /**
      * Creates new unique token for reset password transaction
      *
-     * @param setPasswordLinkTo email/mobile to send link
+     * @param sendLinkOnMailTo email/mobile to send link
      * @return ResponseMessageTo with message
      */
     @Override
-    public ResponseMessageTo getResetPasswordLink(CreateHpUserAccountTo setPasswordLinkTo) {
+    public ResponseMessageTo getResetPasswordLink(SendLinkOnMailTo sendLinkOnMailTo) {
         try {
-            if (!userDaoService.existsByUsername(setPasswordLinkTo.getUsername())) {
-                User userDetail = new User(null, setPasswordLinkTo.getEmail(), setPasswordLinkTo.getMobile(), setPasswordLinkTo.getUsername(), null, null, null, true, true, //
-                        entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null);
-                userDaoService.save(userDetail);
 
-                List<HpProfile> hpProfileList=hpProfileRepository.findHpProfileByRegistrationId(setPasswordLinkTo.getRegistrationNumber());
-                List<HpProfile> hpProfiles= new ArrayList<>();
-                hpProfileList.forEach(hpProfile -> {
-                    hpProfile.setUser(userDetail);
-                    hpProfile.setMobileNumber(setPasswordLinkTo.getMobile());
-                    hpProfiles.add(hpProfile);
-                });
-
-                hpProfileRepository.saveAll(hpProfiles);
 
                 passwordResetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
 
-                if (userDaoService.existsByUsername(setPasswordLinkTo.getUsername())) {
-                    return passwordReset(setPasswordLinkTo);
+                if (userDaoService.existsByEmail(sendLinkOnMailTo.getEmail())) {
+                    return passwordReset(sendLinkOnMailTo);
                 } else {
                     return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
                 }
-            } else {
-                return new ResponseMessageTo(NMRConstants.USER_ALREADY_EXISTS);
-            }
+
         } catch (Exception e) {
             return new ResponseMessageTo(e.getLocalizedMessage());
         }
     }
 
-    public ResponseMessageTo passwordReset(CreateHpUserAccountTo setPasswordLinkTo) {
+    public ResponseMessageTo passwordReset(SendLinkOnMailTo sendLinkOnMailTo) {
         String token = RandomString.make(30);
-        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByUserName(setPasswordLinkTo.getUsername());
+        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByUserName(sendLinkOnMailTo.getEmail());
 
         if (passwordResetToken != null) {
             passwordResetToken.setToken(token);
         } else {
-            passwordResetToken = new PasswordResetToken(token, setPasswordLinkTo.getUsername());
+            passwordResetToken = new PasswordResetToken(token, sendLinkOnMailTo.getEmail());
         }
         passwordResetTokenRepository.save(passwordResetToken);
 
         String resetPasswordLink = resetPasswordUrl + "/" + token;
 
-        return notificationService.sendNotificationForResetPasswordLink(setPasswordLinkTo.getEmail(), setPasswordLinkTo.getMobile(), resetPasswordLink);
+        return notificationService.sendNotificationForResetPasswordLink(sendLinkOnMailTo.getEmail(), resetPasswordLink);
     }
 
     /**
@@ -185,8 +157,12 @@ public class PasswordServiceImpl implements IPasswordService {
      * @throws InvalidRequestException 
      */
     @Override
-    public ResponseMessageTo resetPassword(ResetPasswordRequestTo resetPasswordRequestTo) throws GeneralSecurityException, InvalidRequestException {
-
+    public ResponseMessageTo resetPassword(ResetPasswordRequestTo resetPasswordRequestTo) throws GeneralSecurityException, InvalidRequestException, OtpException {
+        String transactionId = resetPasswordRequestTo.getTransactionId();
+        if(otpService.isOtpVerified(transactionId)){
+            throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage(),
+                    HttpStatus.UNAUTHORIZED.toString());
+        }
         User user = userDaoService.findByUsername(resetPasswordRequestTo.getUsername());
 
         if (null != user) {

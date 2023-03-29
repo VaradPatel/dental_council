@@ -49,7 +49,7 @@ public class ElasticsearchDaoServiceImpl implements IElasticsearchDaoService {
         elasticDocumentTO.setFullName(hpProfile.getFullName());
         elasticDocumentTO.setSalutation(hpProfile.getSalutation());
         elasticDocumentTO.setProfileStatusId(hpProfile.getHpProfileStatus().getId());
-        elasticDocumentTO.setProfilePhoto(hpProfile.getProfilePhoto() != null ? Base64.getEncoder().encodeToString(hpProfile.getProfilePhoto()) : null);
+        elasticDocumentTO.setProfilePhoto(hpProfile.getProfilePhoto());
 
         RegistrationDetailsMaster registrationDetails = iRegistrationDetailMasterDaoService.findByHpProfileId(hpProfileId);
         elasticDocumentTO.setRegistrationNumber(registrationDetails.getRegistrationNo());

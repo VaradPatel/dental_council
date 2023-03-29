@@ -149,6 +149,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Autowired
     private HpProfileRegistrationMapper hpProfileRegistrationMapper;
 
+    @Autowired
+    OtpServiceImpl otpService;
+
     /**
      * This method fetches the SMC registration details for a given request.
      *
@@ -384,7 +387,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 address.setDistrict(districtRepository.findByDistrictNameAndStateId(userKycTo.getDistrict().toUpperCase(), address.getState().getId()));
                 address.setCountry(stateRepository.findByName(userKycTo.getState().toUpperCase()).getCountry());
                 iAddressRepository.save(address);
-                hpProfile.setProfilePhoto(userKycTo.getPhoto() != null ? Base64.getDecoder().decode(userKycTo.getPhoto()) : null);
+                hpProfile.setProfilePhoto(userKycTo.getPhoto() != null ? new String(Base64.getDecoder().decode(userKycTo.getPhoto())) : null);
                 hpProfile.setMobileNumber(userKycTo.getMobileNumber());
                 iHpProfileRepository.save(hpProfile);
 
@@ -413,7 +416,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setGender(request.getGender());
         hpProfile.setMobileNumber(request.getMobileNumber() != null ? request.getMobileNumber() : null);
         hpProfile.setSalutation(NMRConstants.SALUTATION_DR);
-        hpProfile.setProfilePhoto(request.getPhoto() != null ? Base64.getDecoder().decode(request.getPhoto()) : null);
+        hpProfile.setProfilePhoto(request.getPhoto() != null ? new String(Base64.getDecoder().decode(request.getPhoto())) : null);
         hpProfile.setRegistrationId(request.getRegistrationNumber());
         hpProfile.setIsSameAddress(String.valueOf(false));
         hpProfile.setCountryNationality(countryRepository.findByName(NMRConstants.DEFAULT_COUNTRY_AADHAR));
@@ -451,7 +454,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     @Override
-    public void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) {
+    public void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException {
+        String transactionId = request.getTransactionId();
+        if(otpService.isOtpVerified(transactionId)){
+            throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage(),
+                    HttpStatus.UNAUTHORIZED.toString());
+        }
         if (request.getEmail() != null) {
             iHpProfileRepository.updateHpProfileEmail(hpProfileId, request.getEmail());
             iAddressRepository.updateAddressEmail(hpProfileId, request.getEmail(), AddressType.COMMUNICATION.getId());

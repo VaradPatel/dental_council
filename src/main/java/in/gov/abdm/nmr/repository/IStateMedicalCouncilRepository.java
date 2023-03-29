@@ -7,6 +7,5 @@ import java.math.BigInteger;
 
 public interface IStateMedicalCouncilRepository extends JpaRepository<StateMedicalCouncil, BigInteger> {
 
-
-
+    StateMedicalCouncil findByState(String stateId);
 }

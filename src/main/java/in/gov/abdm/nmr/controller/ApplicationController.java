@@ -43,9 +43,8 @@ public class ApplicationController {
      *                           to perform the suspension request and return the result of the process.
      */
     @PostMapping(ProtectedPaths.SUSPENSION_REQUEST_URL)
-    public ResponseEntity<ResponseMessageTo> suspensionHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
-        applicationService.suspendRequest(applicationRequestTo);
-        return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
+    public SuspendRequestResponseTo suspensionHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
+        return applicationService.suspendRequest(applicationRequestTo);
     }
 
     /**
@@ -58,9 +57,8 @@ public class ApplicationController {
      *                           to perform the reactivate request and return the result of the process.
      */
     @PostMapping(ProtectedPaths.REACTIVATE_REQUEST_URL)
-    public ResponseEntity<ResponseMessageTo> reactivateHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
-        applicationService.reactivateRequest(applicationRequestTo);
-        return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
+    public ReactivateRequestResponseTo reactivateHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
+       return applicationService.reactivateRequest(applicationRequestTo);
     }
 
     /**
@@ -75,7 +73,7 @@ public class ApplicationController {
      * which contains all the details related to the health professionals who have
      * raised a request to NMC to reactivate their profiles
      */
-    @GetMapping(REACTIVATE_REQUEST_URL)
+    @GetMapping(ProtectedPaths.REACTIVATE_REQUEST_URL)
     public ReactivateHealthProfessionalResponseTO reactivationRecordsOfHealthProfessionalsToNmc(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
                                                                                                 @RequestParam(required = false, value = "offset", defaultValue = "10") String offset,
                                                                                                 @RequestParam(required = false, value = "search") String search,
@@ -147,15 +145,15 @@ public class ApplicationController {
         }
         throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
     }
-
     /**
-     * This endpoint can be accessed to initiate workflow
+     * Retrieves the details of a specific application.
      *
-     * @return
+     * @param requestId the unique identifier for the application request
+     * @return an {@link ApplicationDetailResponseTo} object containing the details of the application
      */
-    @PatchMapping(COLLEGES_ACTION)
-    public ResponseEntity<ResponseMessageTo> executeActionOnCollege(@RequestBody WorkFlowRequestTO requestTO) throws WorkFlowException {
-        iWorkFlowService.initiateCollegeRegistrationWorkFlow(requestTO.getRequestId(), requestTO.getApplicationTypeId(), requestTO.getActorId(), requestTO.getActionId());
-        return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
+    @GetMapping(APPLICATION_DETAILS)
+    public ApplicationDetailResponseTo applicationDetail(@PathVariable(name = "requestId") String requestId) throws InvalidRequestException {
+        return applicationService.fetchApplicationDetail(requestId);
     }
+
 }

@@ -1,15 +1,17 @@
 package in.gov.abdm.nmr.entity;
 
+import java.math.BigInteger;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+import org.hibernate.annotations.GenericGenerator;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.math.BigInteger;
 
 @Getter
 @Setter
@@ -17,8 +19,10 @@ import java.math.BigInteger;
 @NoArgsConstructor
 @Entity
 public class UniversityMaster extends CommonAuditEntity {
+    
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GenericGenerator(name="incrementGenerator" , strategy="increment")
+    @GeneratedValue(generator = "incrementGenerator")
     private BigInteger id;
     private String name;
     private BigInteger status;

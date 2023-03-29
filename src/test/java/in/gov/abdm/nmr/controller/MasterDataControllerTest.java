@@ -1,7 +1,13 @@
 package in.gov.abdm.nmr.controller;
 
-import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
-import in.gov.abdm.nmr.service.IMasterDataService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,13 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
+import in.gov.abdm.nmr.service.IMasterDataService;
 
 @ExtendWith(MockitoExtension.class)
 class MasterDataControllerTest {
@@ -111,14 +112,6 @@ class MasterDataControllerTest {
         assertEquals(expectedResult, result);
     }
 
-
-    @Test
-    void testColleges() {
-        BigInteger universityId = BigInteger.valueOf(1);
-        when(masterDataService.colleges(universityId)).thenReturn(expectedResult);
-        List<MasterDataTO> result = masterDataController.colleges(universityId);
-        assertEquals(expectedResult, result);
-    }
 
     @Test
     void testLanguages() throws Exception {

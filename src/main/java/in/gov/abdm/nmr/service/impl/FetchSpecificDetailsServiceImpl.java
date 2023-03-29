@@ -4,10 +4,7 @@ import in.gov.abdm.nmr.dto.DashboardRequestParamsTO;
 import in.gov.abdm.nmr.dto.DashboardRequestTO;
 import in.gov.abdm.nmr.dto.DashboardResponseTO;
 import in.gov.abdm.nmr.dto.FetchSpecificDetailsResponseTO;
-import in.gov.abdm.nmr.entity.CollegeDean;
-import in.gov.abdm.nmr.entity.CollegeRegistrar;
-import in.gov.abdm.nmr.entity.SMCProfile;
-import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
@@ -15,6 +12,7 @@ import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetails;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
 import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.service.ICollegeProfileDaoService;
 import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import org.apache.commons.lang3.StringUtils;
@@ -72,26 +70,8 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
     @Autowired
     private ISmcProfileRepository iSmcProfileRepository;
 
-    /**
-     * Injecting ICollegeDeanRepository bean instead of an explicit object creation to achieve
-     * Singleton principle
-     */
     @Autowired
-    private ICollegeDeanRepository iCollegeDeanRepository;
-
-    /**
-     * Injecting ICollegeRegistrarRepository bean instead of an explicit object creation to achieve
-     * Singleton principle
-     */
-    @Autowired
-    private ICollegeRegistrarRepository iCollegeRegistrarRepository;
-
-    /**
-     * Injecting ICollegeRepository bean instead of an explicit object creation to achieve
-     * Singleton principle
-     */
-    @Autowired
-    private ICollegeRepository iCollegeRepository;
+    private ICollegeProfileDaoService collegeProfileDaoService;
 
     @Override
     public List<FetchSpecificDetailsResponseTO> fetchSpecificDetails(String groupName, String applicationType, String workFlowStatus) throws InvalidRequestException {
@@ -104,9 +84,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                 .map(fetchSpecificDetails -> {
                     FetchSpecificDetailsResponseTO fetchSpecificDetailsResponseTO = iFetchSpecificDetailsMapper.toFetchSpecificDetailsResponseTO(fetchSpecificDetails);
 
-                    if (Group.COLLEGE_ADMIN.getDescription().equals(fetchSpecificDetails.getGroupName()) ||
-                            Group.COLLEGE_DEAN.getDescription().equals(fetchSpecificDetails.getGroupName()) ||
-                            Group.COLLEGE_REGISTRAR.getDescription().equals(fetchSpecificDetails.getGroupName())) {
+                    if (Group.COLLEGE.getDescription().equals(fetchSpecificDetails.getGroupName())) {
                         fetchSpecificDetailsResponseTO.setCollegeVerificationStatus(fetchSpecificDetails.getWorkFlowStatus());
                     }
                     if (Group.SMC.getDescription().equals(fetchSpecificDetails.getGroupName())) {
@@ -152,6 +130,55 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         }
     }
 
+    /**
+     * Maps the database column name to be used for sorting based on the columnToSort name.
+     *
+     * @param columnToSort - name of the column to be sorted
+     * @return database column name to be used for sorting
+     */
+    private String mapColumnToTable(String columnToSort) {
+        Map<String, String> columnToSortMap = new HashMap<>();
+        columnToSortMap.put("doctorStatus", " doctor_status");
+        columnToSortMap.put("smcStatus", " smc_status");
+        columnToSortMap.put("collegeDeanStatus", " college_dean_status");
+        columnToSortMap.put("collegeRegistrarStatus", " college_registrar_status");
+        columnToSortMap.put("nmcStatus", " nmc_status");
+        columnToSortMap.put("nbeStatus", " nbe_status");
+        columnToSortMap.put("hpProfileId", " calculate.hp_profile_id");
+        columnToSortMap.put("requestId", " calculate.request_id");
+        columnToSortMap.put("registrationNo", " rd.registration_no");
+        columnToSortMap.put("createdAt", " rd.created_at");
+        columnToSortMap.put("councilName", " stmc.name");
+        columnToSortMap.put("applicantFullName", " hp.full_name");
+        return columnToSortMap.getOrDefault(columnToSort, " rd.created_at ");
+    }
+
+    private void setApplicationTypeIdAndUserGroupStatus(String applicationTypeId, String userGroupStatus,
+                                                        DashboardRequestParamsTO dashboardRequestParamsTO) {
+        if(TEMPORARY_AND_PERMANENT_SUSPENSION_APPLICATION_TYPE_ID.equals(applicationTypeId)){
+            if(CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS.equals(userGroupStatus)){
+                dashboardRequestParamsTO.setApplicationTypeId(TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID);
+                dashboardRequestParamsTO.setUserGroupStatus(PENDING);
+            }else if (CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS.equals(userGroupStatus)){
+                dashboardRequestParamsTO.setApplicationTypeId(TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID);
+                dashboardRequestParamsTO.setUserGroupStatus(APPROVED);
+            }else if(CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS.equals(userGroupStatus)){
+                dashboardRequestParamsTO.setApplicationTypeId(PERMANENT_SUSPENSION_APPLICATION_TYPE_ID);
+                dashboardRequestParamsTO.setUserGroupStatus(PENDING);
+            }else if(CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS.equals(userGroupStatus)){
+                dashboardRequestParamsTO.setApplicationTypeId(PERMANENT_SUSPENSION_APPLICATION_TYPE_ID);
+                dashboardRequestParamsTO.setUserGroupStatus(APPROVED);
+            }
+            else if(TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS.equals(userGroupStatus)){
+                dashboardRequestParamsTO.setUserGroupStatus(TOTAL);
+                dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
+            }
+        }else {
+            dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
+            dashboardRequestParamsTO.setUserGroupStatus(userGroupStatus);
+        }
+    }
+
     private void applyFiltersForCardDetails(String search, String value, BigInteger groupId, DashboardRequestParamsTO dashboardRequestParamsTO) throws InvalidRequestException {
         if(StringUtils.isNotBlank(search)){
             if(value !=null && !value.isBlank()){
@@ -171,7 +198,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                     case YEAR_OF_REGISTRATION_IN_LOWER_CASE: dashboardRequestParamsTO.setYearOfRegistration(value);
                         break;
                     case SMC_ID_IN_LOWER_CASE: {
-                        if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
+                        if (groupId.equals(Group.COLLEGE.getId())
                                 || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
                             dashboardRequestParamsTO.setSmcId(value);
                         }
@@ -185,28 +212,6 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
             else{
                 throw new InvalidRequestException(MISSING_SEARCH_VALUE);
             }
-        }
-    }
-
-    private void setApplicationTypeIdAndUserGroupStatus(String applicationTypeId, String userGroupStatus,
-                                                        DashboardRequestParamsTO dashboardRequestParamsTO) {
-        if(TEMPORARY_AND_PERMANENT_SUSPENSION_APPLICATION_TYPE_ID.equals(applicationTypeId)){
-            if(CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS.equals(userGroupStatus)){
-                dashboardRequestParamsTO.setApplicationTypeId(TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID);
-                dashboardRequestParamsTO.setUserGroupStatus(PENDING);
-            }else if (CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS.equals(userGroupStatus)){
-                dashboardRequestParamsTO.setApplicationTypeId(TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID);
-                dashboardRequestParamsTO.setUserGroupStatus(APPROVED);
-            }else if(CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS.equals(userGroupStatus)){
-                dashboardRequestParamsTO.setApplicationTypeId(PERMANENT_SUSPENSION_APPLICATION_TYPE_ID);
-                dashboardRequestParamsTO.setUserGroupStatus(PENDING);
-            }else if(CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS.equals(userGroupStatus)){
-                dashboardRequestParamsTO.setApplicationTypeId(PERMANENT_SUSPENSION_APPLICATION_TYPE_ID);
-                dashboardRequestParamsTO.setUserGroupStatus(APPROVED);
-            }
-        }else {
-            dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
-            dashboardRequestParamsTO.setUserGroupStatus(userGroupStatus);
         }
     }
 
@@ -232,20 +237,16 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         BigInteger groupId = userDetail.getGroup().getId();
         BigInteger userId = userDetail.getId();
         DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
-        dashboardRequestParamsTO.setWorkFlowStatusId(workFlowStatusId);
         setApplicationTypeIdAndUserGroupStatus(applicationTypeId, userGroupStatus, dashboardRequestParamsTO);
+        dashboardRequestParamsTO.setWorkFlowStatusId(workFlowStatusId);
         applyFiltersForCardDetails(search, value, groupId, dashboardRequestParamsTO);
         String column = mapColumnToTable(sortBy);
         dashboardRequestParamsTO.setSortBy(column);
         dashboardRequestParamsTO.setUserGroupId(groupId);
         if (groupId.equals(Group.SMC.getId())) {
             dashboardRequestParamsTO.setCouncilId(iSmcProfileRepository.findByUserId(userId).getStateMedicalCouncil().getId().toString());
-        } else if (groupId.equals(Group.COLLEGE_DEAN.getId())) {
-            dashboardRequestParamsTO.setCollegeId(iCollegeDeanRepository.findByUserId(userId).getCollege().getId().toString());
-        } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
-            dashboardRequestParamsTO.setCollegeId(iCollegeRegistrarRepository.findByUserId(userId).getCollege().getId().toString());
-        } else if (groupId.equals(Group.COLLEGE_ADMIN.getId())) {
-            dashboardRequestParamsTO.setCollegeId(iCollegeRepository.findByUserId(userId).getId().toString());
+        } else if (groupId.equals(Group.COLLEGE.getId())) {
+            dashboardRequestParamsTO.setCollegeId(collegeProfileDaoService.findByUserId(userId).getCollege().getId().toString());
         }
         final String sortingOrder = (sortOrder == null || sortOrder.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
@@ -282,7 +283,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                     case REGISTRATION_NUMBER_IN_LOWER_CASE: dashboardRequestParamsTO.setRegistrationNumber(dashboardRequestTO.getValue());
                         break;
                     case SMC_ID_IN_LOWER_CASE: {
-                        if (groupId.equals(Group.COLLEGE_DEAN.getId()) || groupId.equals(Group.COLLEGE_REGISTRAR.getId()) || groupId.equals(Group.COLLEGE_ADMIN.getId())
+                        if (groupId.equals(Group.COLLEGE.getId())
                                 || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
                             dashboardRequestParamsTO.setSmcId(dashboardRequestTO.getValue());
                         }
@@ -306,40 +307,14 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         if (groupId.equals(Group.SMC.getId())) {
             SMCProfile smcProfile = iSmcProfileRepository.findByUserId(userId);
             dashboardRequestParamsTO.setCouncilId(smcProfile.getStateMedicalCouncil().getId().toString());
-        } else if (groupId.equals(Group.COLLEGE_DEAN.getId())) {
-            CollegeDean collegeDean = iCollegeDeanRepository.findByUserId(userId);
-            dashboardRequestParamsTO.setCollegeId(collegeDean.getCollege().getId().toString());
-        } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
-            CollegeRegistrar collegeRegistrar = iCollegeRegistrarRepository.findByUserId(userId);
-            dashboardRequestParamsTO.setCollegeId(collegeRegistrar.getCollege().getId().toString());
+        } else if (groupId.equals(Group.COLLEGE.getId())) {
+            CollegeProfile collegeProfile = collegeProfileDaoService.findByUserId(userId);
+            dashboardRequestParamsTO.setCollegeId(collegeProfile.getCollege().getId().toString());
         }
         final String sortingOrder = (sortOrder == null || sortOrder.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortOrder;
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
         final int dataLimit = Math.min(MAX_DATA_SIZE, dashboardRequestTO.getOffset());
         Pageable pageable = PageRequest.of(dashboardRequestTO.getPageNo(), dataLimit);
         return iFetchSpecificDetailsCustomRepository.fetchDashboardData(dashboardRequestParamsTO, pageable);
-    }
-
-    /**
-     * Maps the database column name to be used for sorting based on the columnToSort name.
-     *
-     * @param columnToSort - name of the column to be sorted
-     * @return database column name to be used for sorting
-     */
-    private String mapColumnToTable(String columnToSort) {
-        Map<String, String> columnToSortMap = new HashMap<>();
-        columnToSortMap.put("doctorStatus", " doctor_status");
-        columnToSortMap.put("smcStatus", " smc_status");
-        columnToSortMap.put("collegeDeanStatus", " college_dean_status");
-        columnToSortMap.put("collegeRegistrarStatus", " college_registrar_status");
-        columnToSortMap.put("nmcStatus", " nmc_status");
-        columnToSortMap.put("nbeStatus", " nbe_status");
-        columnToSortMap.put("hpProfileId", " calculate.hp_profile_id");
-        columnToSortMap.put("requestId", " calculate.request_id");
-        columnToSortMap.put("registrationNo", " rd.registration_no");
-        columnToSortMap.put("createdAt", " rd.created_at");
-        columnToSortMap.put("councilName", " stmc.name");
-        columnToSortMap.put("applicantFullName", " hp.full_name");
-        return columnToSortMap.getOrDefault(columnToSort, " rd.created_at ");
     }
 }

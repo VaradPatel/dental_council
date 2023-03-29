@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.NmrException;
+import in.gov.abdm.nmr.exception.OtpException;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.security.common.RoleConstants;
 import in.gov.abdm.nmr.service.IUserService;
@@ -11,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -76,5 +78,10 @@ public class UserController {
     @PostMapping(path = NMRConstants.PATH_HP_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseMessageTo createHpUserAccount(@RequestBody CreateHpUserAccountTo createHpUserAccountTo){
         return userService.createHpUserAccount(createHpUserAccountTo);
+    }
+
+    @PostMapping(path = NMRConstants.RETRIEVE_USER, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String retrieveUser(@Valid @RequestBody RetrieveUserRequestTo retrieveUserRequestTo) throws OtpException {
+        return userService.retrieveUser(retrieveUserRequestTo);
     }
 }

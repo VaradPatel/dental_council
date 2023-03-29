@@ -169,18 +169,17 @@ public class NotificationServiceImpl implements INotificationService {
      * Sends notification on each status change
      *
      * @param email email
-     * @param mobile mobile
      * @param link link for reset password
      * @return success/failure
      */
     @Override
-    public ResponseMessageTo sendNotificationForResetPasswordLink(String email, String mobile, String link) {
+    public ResponseMessageTo sendNotificationForResetPasswordLink(String email, String link) {
 
         Template template = getMessageTemplate(NMRConstants.SMS_AND_EMAIL_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY);
         String message = new TemplatedStringBuilder(template.getMessage())
                 .replace(NMRConstants.TEMPLATE_VAR1, link)
                 .finish();
-        return sendNotification(List.of(NotificationType.EMAIL.getNotificationType(),NotificationType.SMS.getNotificationType()), NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SET_PASSWORD_SUBJECT, message, mobile, email);
+        return sendNotification(List.of(NotificationType.EMAIL.getNotificationType()), NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SET_PASSWORD_SUBJECT, message, null, email);
 
     }
 

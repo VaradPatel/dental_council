@@ -96,8 +96,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @PersistenceContext
     private EntityManager entityManager;
     @Autowired
-    private ICollegeRepository collegeRepository;
-    @Autowired
     private IUniversityRepository universityRepository;
     @Autowired
     private CourseRepository courseRepository;
@@ -110,7 +108,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private CollegeMasterRepository collegeMasterRepository;
+    private ICollegeMasterRepository collegeMasterRepository;
     @Autowired
     private UniversityMasterRepository universityMasterRepository;
 
@@ -350,10 +348,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             throw new InvalidRequestException(file.getOriginalFilename() + " is not a allowed file type !!");
         }
 
-        byte[] fileContent = file.getBytes();
-
-
-        hpProfile.setProfilePhoto(fileContent);
+        hpProfile.setProfilePhoto(file != null ? Base64.getEncoder().encodeToString(file.getBytes()) : null);
         hpProfile.setPicName(file.getOriginalFilename());
         HpProfile insertedData = iHpProfileRepository.save(hpProfile);
         HpProfilePictureResponseTO hpProfilePictureResponseTO = new HpProfilePictureResponseTO();
@@ -389,7 +384,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 + checkIsNullAndAddSeparator(userKycTo.getPostOffice());
         try {
             HpProfile hpProfile = iHpProfileRepository.findHpProfileById(id);
-            hpProfile.setProfilePhoto(userKycTo.getPhoto().getBytes(StandardCharsets.UTF_8));
+            hpProfile.setProfilePhoto(userKycTo.getPhoto());
             iHpProfileRepository.save(hpProfile);
 
             Address address = iAddressRepository.getCommunicationAddressByHpProfileId(id,

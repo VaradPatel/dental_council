@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.OtpException;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IPasswordService;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -27,13 +28,15 @@ public class PasswordController {
     /**
      * Sends reset password link on email/mobile
      *
-     * @param setPasswordLinkTo receiver email/mobile
+     * @param sendLinkOnMailTo receiver email/mobile
      * @return Success/Fail message
      */
-    @PostMapping(NMRConstants.PASSWORD_LINK)
-    public ResponseMessageTo getResetPasswordLink(@RequestBody CreateHpUserAccountTo setPasswordLinkTo) {
 
-        return passwordService.getResetPasswordLink(setPasswordLinkTo);
+    @Deprecated
+    @PostMapping(NMRConstants.PASSWORD_LINK)
+    public ResponseMessageTo getResetPasswordLink(@RequestBody SendLinkOnMailTo sendLinkOnMailTo) {
+
+        return passwordService.getResetPasswordLink(sendLinkOnMailTo);
 
     }
 
@@ -58,7 +61,7 @@ public class PasswordController {
      * @throws InvalidRequestException 
      */
     @PostMapping(path = NMRConstants.RESET_PASSWORD, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseMessageTo resetPassword(@Valid @RequestBody ResetPasswordRequestTo resetPasswordRequestTo) throws InvalidRequestException, GeneralSecurityException {
+    public ResponseMessageTo resetPassword(@Valid @RequestBody ResetPasswordRequestTo resetPasswordRequestTo) throws InvalidRequestException, GeneralSecurityException, OtpException {
         return passwordService.resetPassword(resetPasswordRequestTo);
     }
 

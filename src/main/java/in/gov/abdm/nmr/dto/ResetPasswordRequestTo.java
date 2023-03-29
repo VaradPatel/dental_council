@@ -19,4 +19,7 @@ public class ResetPasswordRequestTo {
 
     @NotBlank(message = NMRConstants.PASSWORD_NOT_NULL)
     String password;
+
+    @NotBlank(message = "transactionId cannot be NULL or Blank")
+    private String transactionId;
 }

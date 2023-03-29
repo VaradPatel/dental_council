@@ -2,9 +2,9 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.enums.ApplicationSubType;
-import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
@@ -25,6 +25,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.*;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
@@ -134,7 +136,10 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Autowired
     private IWorkFlowRepository iWorkFlowRepository;
 
-    private static final Map<String, String> REACTIVATION_SORT_MAPPINGS = Map.of("id", " r.id", "name", " r.full_name", "createdAt", " r.created_at", "reactivationDate", " r.start_date", "suspensionType", " r.suspension_type", "remarks", " r.remarks");
+    @Autowired
+    private IWorkFlowAuditRepository iWorkFlowAuditRepository;
+
+    private static final Map<String, String> REACTIVATION_SORT_MAPPINGS = Map.of("id", " hp.id", "name", " hp.full_name", "createdAt", " wf.created_at", "reactivationDate", " wf.start_date", "suspensionType", " hp.hp_profile_status_id", "remarks", " wf.remarks");
 
     /**
      * This method is used to suspend a health professional based on the request provided.
@@ -144,12 +149,15 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
     @Override
-    public String suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
+    public SuspendRequestResponseTo suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
         String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
 //        HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
         initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
-        return hpProfile.getId().toString();
+        SuspendRequestResponseTo suspendRequestResponseTo = new SuspendRequestResponseTo();
+        suspendRequestResponseTo.setProfileId(hpProfile.getId().toString());
+        suspendRequestResponseTo.setMessage(SUCCESS_RESPONSE);
+        return suspendRequestResponseTo;
     }
 
     /**
@@ -160,19 +168,24 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
     @Override
-    public String reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
+    public ReactivateRequestResponseTo reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
+        ReactivateRequestResponseTo reactivateRequestResponseTo = new ReactivateRequestResponseTo();
         if (HpProfileStatus.SUSPENDED.getId() == hpProfile.getHpProfileStatus().getId() || HpProfileStatus.BLACKLISTED.getId() == hpProfile.getHpProfileStatus().getId()) {
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
 //            HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
             WorkFlow workFlow = iWorkFlowRepository.findLastWorkFlowForHealthProfessional(hpProfile.getId());
             if (Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
                 applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.REACTIVATION_THROUGH_SMC.getId());
+                reactivateRequestResponseTo.setSelfReactivation(false);
             }else {
                 applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.SELF_REACTIVATION.getId());
+                reactivateRequestResponseTo.setSelfReactivation(true);
             }
             initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
-            return hpProfile.getId().toString();
+            reactivateRequestResponseTo.setProfileId(hpProfile.getId().toString());
+            reactivateRequestResponseTo.setMessage(SUCCESS_RESPONSE);
+            return reactivateRequestResponseTo;
         } else {
             throw new NmrException("Suspended profile can only be reactivated", HttpStatus.FORBIDDEN);
         }
@@ -193,7 +206,11 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public ReactivateHealthProfessionalResponseTO getReactivationRecordsOfHealthProfessionalsToNmc(String pageNo, String offset, String search, String value, String sortBy, String sortType) throws InvalidRequestException {
         ReactivateHealthProfessionalResponseTO reactivateHealthProfessionalResponseTO = null;
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userDetail = userDaoService.findByUsername(userName);
+        BigInteger groupId = userDetail.getGroup().getId();
         ReactivateHealthProfessionalRequestParam reactivateHealthProfessionalQueryParam = new ReactivateHealthProfessionalRequestParam();
+        reactivateHealthProfessionalQueryParam.setGroupId(groupId.toString());
         reactivateHealthProfessionalQueryParam.setPageNo(Integer.parseInt(pageNo));
         final int dataLimit = Math.min(MAX_DATA_SIZE, Integer.parseInt(offset));
         reactivateHealthProfessionalQueryParam.setOffset(dataLimit);
@@ -244,9 +261,9 @@ public class ApplicationServiceImpl implements IApplicationService {
     private String getReactivationSortColumn(String columnToSort) {
 
         if (columnToSort != null && columnToSort.length() > 0) {
-            return REACTIVATION_SORT_MAPPINGS.getOrDefault(columnToSort, " r.created_at ");
+            return REACTIVATION_SORT_MAPPINGS.getOrDefault(columnToSort, " wf.created_at ");
         } else {
-            return " r.created_at ";
+            return " wf.created_at ";
         }
     }
 
@@ -448,6 +465,52 @@ public class ApplicationServiceImpl implements IApplicationService {
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, search, value, null, null, healthProfessionalId);
         Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getOffset());
         return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable, hpProfileIds);
+    }
+
+
+    /**
+     * This method fetches the application detail based on the given requestId and returns the ApplicationDetailResponseTo object.
+     *
+     * @param requestId - the id of the request for which application detail is required
+     * @return ApplicationDetailResponseTo - the response object containing application detail
+     */
+    @Override
+    public ApplicationDetailResponseTo fetchApplicationDetail(String requestId) throws InvalidRequestException {
+        log.info("Fetching application detail for request ID:", requestId);
+        ApplicationDetailResponseTo response = new ApplicationDetailResponseTo();
+        List<ApplicationDetailsTo> applicationDetail = new ArrayList<>();
+        ApplicationDetailsTo detailsTo;
+        List<WorkFlowAudit> workFlowAudit = iWorkFlowAuditRepository.fetchApplicationDetails(requestId);
+        if (workFlowAudit == null || workFlowAudit.isEmpty()) {
+            log.error("unable to complete fetch application details process due {} workflow audit records for request ID: {}", workFlowAudit.size(), requestId);
+            throw new InvalidRequestException("Invalid input request ID: " + requestId + ". Please enter a valid input and try again");
+        }
+        log.debug("Fetched {} workflow audit records for request ID: {}", workFlowAudit.size(), requestId);
+        response.setRequestId(workFlowAudit.get(0).getRequestId());
+        response.setApplicationType(workFlowAudit.get(0).getApplicationType().getId());
+        response.setSubmissionDate(String.valueOf(workFlowAudit.get(0).getCreatedAt()));
+        if (Status.PENDING.getName().equalsIgnoreCase(workFlowAudit.get(workFlowAudit.size() - 1).getWorkFlowStatus().getName())
+                || Status.QUERY_RAISED.getName().equalsIgnoreCase(workFlowAudit.get(workFlowAudit.size() - 1).getWorkFlowStatus().getName())) {
+            response.setPendency(Math.abs(workFlowAudit.get(0).getCreatedAt().getTime() - Timestamp.from(Instant.now()).getTime()) / 86400000);
+        } else if (workFlowAudit.size() > 1) {
+            response.setPendency(Math.abs(workFlowAudit.get(0).getCreatedAt().getTime() - workFlowAudit.get(workFlowAudit.size() - 1).getCreatedAt().getTime()) / 86400000);
+        } else {
+            response.setPendency(0L);
+        }
+        response.setCurrentStatus(workFlowAudit.get(workFlowAudit.size() - 1).getWorkFlowStatus().getId());
+        response.setCurrentGroupId(workFlowAudit.get(workFlowAudit.size() - 1).getCurrentGroup() != null ? workFlowAudit.get(workFlowAudit.size() - 1).getCurrentGroup().getId() : null);
+        for (WorkFlowAudit list : workFlowAudit) {
+            detailsTo = new ApplicationDetailsTo();
+            detailsTo.setWorkflowStatusId(list.getWorkFlowStatus().getId());
+            detailsTo.setActionId(list.getAction().getId());
+            detailsTo.setGroupId(list.getPreviousGroup().getId());
+            detailsTo.setActionDate(String.valueOf(list.getCreatedAt()));
+            detailsTo.setRemarks(list.getRemarks());
+            applicationDetail.add(detailsTo);
+        }
+        response.setApplicationDetails(applicationDetail);
+        log.info("Fetched application detail successfully for request ID: {}", requestId);
+        return response;
     }
 
     /**

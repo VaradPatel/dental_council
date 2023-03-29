@@ -102,33 +102,37 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             if (!dashboardRequestParamsTO.getUserGroupStatus().contains("Total")) {
                 if (groupId.equals(Group.SMC.getId())) {
                     sb.append("AND smc_status = '").append(userGroupStatus).append("' ");
-                } else if (groupId.equals(Group.COLLEGE_DEAN.getId())) {
-                    sb.append("AND college_dean_status = '").append(userGroupStatus).append("' ");
-                } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
-                    sb.append("AND college_registrar_status = '").append(userGroupStatus).append("' ");
-                } else if (groupId.equals(Group.NMC.getId())) {
+                } else if (groupId.equals(Group.COLLEGE.getId())) {
+                    sb.append("AND college_status = '").append(userGroupStatus).append("' ");
+                }
+//                else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
+//                    sb.append("AND college_registrar_status = '").append(userGroupStatus).append("' ");
+                else if (groupId.equals(Group.NMC.getId())) {
                     sb.append("AND nmc_status = '").append(userGroupStatus).append("' ");
                 } else if (groupId.equals(Group.NBE.getId())) {
                     sb.append("AND nbe_status = '").append(userGroupStatus).append("' ");
-                } else if (groupId.equals(Group.COLLEGE_ADMIN.getId())) {
-                    sb.append("AND college_registrar_status = '").append(userGroupStatus).append("' ");
-                    sb.append("AND college_dean_status = '").append(userGroupStatus).append("' ");
                 }
+//                else if (groupId.equals(Group.COLLEGE_ADMIN.getId())) {
+//                    sb.append("AND college_registrar_status = '").append(userGroupStatus).append("' ");
+//                    sb.append("AND college_dean_status = '").append(userGroupStatus).append("' ");
+//                }
             } else {
                 if (groupId.equals(Group.SMC.getId())) {
                     sb.append(" AND smc_status NOT IN ('FORWARDED','NOT YET RECEIVED') ");
-                } else if (groupId.equals(Group.COLLEGE_DEAN.getId())) {
-                    sb.append(" AND college_dean_status NOT IN ('NOT YET RECEIVED') ");
-                } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
-                    sb.append(" AND college_registrar_status NOT IN ('NOT YET RECEIVED') ");
-                } else if (groupId.equals(Group.NMC.getId())) {
+                } else if (groupId.equals(Group.COLLEGE.getId())) {
+                    sb.append(" AND college_status NOT IN ('NOT YET RECEIVED') ");
+//                } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
+//                    sb.append(" AND college_registrar_status NOT IN ('NOT YET RECEIVED') ");
+//                }
+                }else if (groupId.equals(Group.NMC.getId())) {
                     sb.append(" AND nmc_status NOT IN ('NOT YET RECEIVED') ");
                 } else if (groupId.equals(Group.NBE.getId())) {
                     sb.append(" AND nbe_status NOT IN ('NOT YET RECEIVED') ");
-                } else if (groupId.equals(Group.COLLEGE_ADMIN.getId())) {
-                    sb.append(" AND college_registrar_status NOT IN ('NOT YET RECEIVED') ");
-                    sb.append(" AND college_dean_status NOT IN ('NOT YET RECEIVED') ");
                 }
+//                else if (groupId.equals(Group.COLLEGE_ADMIN.getId())) {
+//                    sb.append(" AND college_registrar_status NOT IN ('NOT YET RECEIVED') ");
+//                    sb.append(" AND college_dean_status NOT IN ('NOT YET RECEIVED') ");
+//                }
             }
         }
         return sb.toString();
@@ -274,7 +278,8 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setMobileNumber((String) result[16]);
             dashBoardTO.setNmrId((String)result[17]);
             dashBoardTO.setYearOfRegistration(((Date) result[18]).toString());
-            dashBoardResponseTO.setTotalNoOfRecords((BigInteger) result[19]);
+            dashBoardTO.setCollegeStatus((String) result[19]);
+            dashBoardResponseTO.setTotalNoOfRecords((BigInteger) result[20]);
             dashboardTOList.add(dashBoardTO);
         });
         dashBoardResponseTO.setDashboardTOList(dashboardTOList);
