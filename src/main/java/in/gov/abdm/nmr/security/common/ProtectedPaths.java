@@ -78,7 +78,7 @@ public class ProtectedPaths {
 
         protectedPaths.add(new AntPathRequestMatcher(PATH_HEALTH_PROFESSIONAL_ROOT + PATH_HEALTH_PROFESSIONAL_APPLICATIONS));
         protectedPaths.add(new AntPathRequestMatcher(SUSPENSION_REQUEST_URL));
-        protectedPaths.add(new AntPathRequestMatcher(REACTIVATE_REQUEST_URL, HttpMethod.POST.name()));
+        protectedPaths.add(new AntPathRequestMatcher(REACTIVATE_REQUEST_URL));
         protectedPaths.add(new AntPathRequestMatcher(CHANGE_PASSWORD));
         
         protectedPaths.add(new AntPathRequestMatcher(HEALTH_PROFESSIONAL_ACTION));
