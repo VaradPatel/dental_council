@@ -123,6 +123,7 @@ public class SearchServiceImpl implements ISearchService {
         hpSearchProfileTO.setStateMedicalCouncil(registrationDetailsMaster.getStateMedicalCouncil().getName());
         hpSearchProfileTO.setRegistrationNumber(registrationDetailsMaster.getRegistrationNo());
         hpSearchProfileTO.setDateOfRegistration(new SimpleDateFormat("dd-MM-yyyy").format(registrationDetailsMaster.getRegistrationDate()));
+        hpSearchProfileTO.setRegistrationYear(new SimpleDateFormat("yyyy").format(registrationDetailsMaster.getRegistrationDate()));
 
         List<HpSearchProfileQualificationTO> qualificationTOs = new ArrayList<>();
         List<QualificationDetailsMaster> indianQualifications = qualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(profileId);
