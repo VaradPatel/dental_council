@@ -169,7 +169,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                 dashboardRequestParamsTO.setApplicationTypeId(PERMANENT_SUSPENSION_APPLICATION_TYPE_ID);
                 dashboardRequestParamsTO.setUserGroupStatus(APPROVED);
             }
-            else if(TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS.equals(userGroupStatus)){
+            else if(TOTAL.equals(userGroupStatus)){
                 dashboardRequestParamsTO.setUserGroupStatus(TOTAL);
                 dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
             }
