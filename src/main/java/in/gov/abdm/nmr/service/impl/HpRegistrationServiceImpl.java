@@ -296,14 +296,16 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         Address kycAddressByHpProfileId = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfileId, AddressType.KYC.getId());
         BigInteger applicationTypeId = null;
         BigInteger workFlowStatusId = null;
+        String requestId=null;
         if (hpProfile.getRequestId() != null) {
             WorkFlow workFlow = workFlowRepository.findLastWorkFlowForHealthProfessional(hpProfileId);
             if (workFlow != null) {
                 applicationTypeId = workFlow.getApplicationType().getId();
                 workFlowStatusId = workFlow.getWorkFlowStatus().getId();
+                requestId=workFlow.getRequestId();
             }
         }
-        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId, workFlowStatusId);
+        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId, workFlowStatusId,requestId);
     }
 
     @Override

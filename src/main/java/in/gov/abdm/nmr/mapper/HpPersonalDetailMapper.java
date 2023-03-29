@@ -11,7 +11,7 @@ import java.math.BigInteger;
 @UtilityClass
 public final class HpPersonalDetailMapper {
 
-    public static HpProfilePersonalResponseTO convertEntitiesToPersonalResponseTo(HpProfile hpProfile, Address address, Address kycAddress, BigInteger applicationTypeId, BigInteger workFlowStatusId) {
+    public static HpProfilePersonalResponseTO convertEntitiesToPersonalResponseTo(HpProfile hpProfile, Address address, Address kycAddress, BigInteger applicationTypeId, BigInteger workFlowStatusId, String requestId) {
         HpProfilePersonalResponseTO hpProfilePersonalResponseTO = new HpProfilePersonalResponseTO();
         PersonalDetailsTO personalDetailsTO = new PersonalDetailsTO();
         AddressTO addressTO = new AddressTO();
@@ -94,7 +94,7 @@ public final class HpPersonalDetailMapper {
         hpProfilePersonalResponseTO.setPersonalDetails(personalDetailsTO);
         hpProfilePersonalResponseTO.setCommunicationAddress(addressTO);
         hpProfilePersonalResponseTO.setKycAddress(kycAddressTo);
-        hpProfilePersonalResponseTO.setRequestId(hpProfile.getRequestId());
+        hpProfilePersonalResponseTO.setRequestId(requestId);
         hpProfilePersonalResponseTO.setApplicationTypeId(applicationTypeId);
         hpProfilePersonalResponseTO.setNmrId(hpProfile.getNmrId());
         hpProfilePersonalResponseTO.setHpProfileStatusId(hpProfile.getHpProfileStatus() != null ? hpProfile.getHpProfileStatus().getId() : null);
