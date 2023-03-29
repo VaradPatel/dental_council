@@ -63,8 +63,8 @@ public class NMRConstants {
 
     public static final String LGD_DB_SERVICE = "lgd-db";
     public static final String AADHAAR_SERVICE = "aadhaar";
-    public static final String CLOSED_STATUS = "closed";
-    public static final String OPEN_STATUS = "open";
+    public static final String QUERY_CLOSED_STATUS = "closed";
+    public static final String QUERY_OPEN_STATUS = "open";
     public static final String GLOBAL_NOTIFICATION_ENDPOINT = "${global.notification.endpoint}";
 
     public static final String GLOBAL_LGD_ENDPOINT = "${global.lgd.endpoint}";
@@ -394,6 +394,7 @@ public class NMRConstants {
     public static final String TEMPLATE_VAR2 = "var2";
     public static final String TEMPLATE_VAR3 = "var3";
     public static final String MESSAGE_SENDER = "National Medical Repository.";
+    public static final String NMR_ACCOUNT = "NMR Account";
     public static final String DEFAULT_COUNTRY_AADHAR = "India";
     public static final int DEFAULT_ADDRESS_TYPE_AADHAR = 4;
     public static final String INDIA = "India";

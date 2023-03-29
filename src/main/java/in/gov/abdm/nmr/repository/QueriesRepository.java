@@ -9,7 +9,5 @@ import java.util.List;
 public interface QueriesRepository extends JpaRepository<Queries, BigInteger> {
 
     @Query(value = "SELECT id,hp_profile_id,field_name,field_label,section_name,query_comment,common_comment,query_by,query_status,created_at,updated_at FROM queries WHERE hp_profile_id=:hpProfileId AND query_status='open'", nativeQuery = true)
-    List<Queries> findQueriesByHpProfileId(BigInteger hpProfileId);
-
-    Queries findQueriesById(BigInteger id);
+    List<Queries> findOpenQueriesByHpProfileId(BigInteger hpProfileId);
 }
