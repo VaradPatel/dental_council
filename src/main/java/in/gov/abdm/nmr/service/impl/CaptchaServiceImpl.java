@@ -32,14 +32,6 @@ public class CaptchaServiceImpl implements ICaptchaService {
     
     private static final String OPERATOR_MULTIPLICATION = "*";
 
-    private static final List<Color> COLORS = List.of(Color.BLUE, Color.CYAN, Color.DARK_GRAY, Color.GRAY, Color.GREEN, Color.LIGHT_GRAY, Color.MAGENTA, Color.ORANGE, //
-            Color.PINK, Color.RED, Color.YELLOW);
-
-    private static final int TEXT_SIZE = 350;
-
-    private static final List<Font> FONTS = List.of(new Font(Font.DIALOG, Font.BOLD, TEXT_SIZE), new Font(Font.DIALOG_INPUT, Font.ITALIC, TEXT_SIZE), //
-            new Font(Font.MONOSPACED, Font.PLAIN, TEXT_SIZE), new Font(Font.SANS_SERIF, Font.BOLD, TEXT_SIZE), new Font(Font.SERIF, Font.ITALIC, TEXT_SIZE));
-    
     private static final List<String> OPERATORS = Arrays.asList(OPERATOR_PLUS, OPERATOR_MINUS, OPERATOR_MULTIPLICATION);
 
     private ICaptchaDaoService captchaDaoService;
@@ -67,7 +59,8 @@ public class CaptchaServiceImpl implements ICaptchaService {
     public GenerateCaptchaResponseTO generateCaptcha() throws NoSuchAlgorithmException, IOException {
         Captcha captchaEntity = createCaptchaEntity();
         cn.apiclub.captcha.Captcha captcha = new cn.apiclub.captcha.Captcha.Builder(1300, 575) //
-                .addText(() -> captchaEntity.getNum1() + " " + captchaEntity.getOperation() + " " + captchaEntity.getNum2() + " = ?", new DefaultWordRenderer(COLORS, FONTS)) //
+                .addText(() -> captchaEntity.getNum1() + " " + captchaEntity.getOperation() + " " + captchaEntity.getNum2() + " = ?", //
+                        new DefaultWordRenderer(List.of(Color.BLACK), List.of(new Font(Font.DIALOG, Font.BOLD, 350)))) //
                 .build();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

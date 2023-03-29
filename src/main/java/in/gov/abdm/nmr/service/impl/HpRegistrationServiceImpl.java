@@ -149,6 +149,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Autowired
     private IQueriesService iQueriesService;
 
+    @Autowired
+    OtpServiceImpl otpService;
+
     /**
      * This method fetches the SMC registration details for a given request.
      *
@@ -420,7 +423,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setRegistrationId(request.getRegistrationNumber());
         hpProfile.setIsSameAddress(String.valueOf(false));
         hpProfile.setCountryNationality(countryRepository.findByName(NMRConstants.DEFAULT_COUNTRY_AADHAR));
-        hpProfile.setIsNew(1);
+        hpProfile.setIsNew(NMRConstants.YES);
         hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.PENDING.getId()).get());
         hpProfile = iHpProfileRepository.save(hpProfile);
 
@@ -454,7 +457,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     @Override
-    public void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) {
+    public void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException {
+        String transactionId = request.getTransactionId();
+        if(otpService.isOtpVerified(transactionId)){
+            throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage(),
+                    HttpStatus.UNAUTHORIZED.toString());
+        }
         if (request.getEmail() != null) {
             iHpProfileRepository.updateHpProfileEmail(hpProfileId, request.getEmail());
             iAddressRepository.updateAddressEmail(hpProfileId, request.getEmail(), AddressType.COMMUNICATION.getId());

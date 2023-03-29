@@ -3,10 +3,10 @@ package in.gov.abdm.nmr.mapper;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.Address;
 import in.gov.abdm.nmr.entity.HpProfile;
+import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigInteger;
-import java.util.Base64;
 
 @UtilityClass
 public final class HpPersonalDetailMapper {
@@ -31,7 +31,7 @@ public final class HpPersonalDetailMapper {
         personalDetailsTO.setFullName(hpProfile.getFullName());
         personalDetailsTO.setMotherName(hpProfile.getMotherName());
         personalDetailsTO.setSalutation(hpProfile.getSalutation());
-        personalDetailsTO.setIsNew(hpProfile.getIsNew() != null && hpProfile.getIsNew() == 1);
+        personalDetailsTO.setIsNew(NMRConstants.YES.equals(hpProfile.getIsNew()));
         personalDetailsTO.setEmail(hpProfile.getEmailId());
         personalDetailsTO.setMobile(hpProfile.getMobileNumber());
 
