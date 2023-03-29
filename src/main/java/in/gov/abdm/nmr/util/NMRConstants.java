@@ -80,6 +80,8 @@ public class NMRConstants {
     public static final String PIN_CODE = "pinCode";
     public static final String STATE_CODE = "stateCode";
     public static final String DISTRICT_CODE = "districtCode";
+    public static final String RENEWABLE_REGISTRATION_CODE = "1";
+
 
     public static final String VIEW = "view";
     public static final String GLOBAL_AADHAAR_ENDPOINT = "${global.aadhaar.endpoint}";

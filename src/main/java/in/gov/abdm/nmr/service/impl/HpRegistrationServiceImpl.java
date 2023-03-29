@@ -297,7 +297,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         BigInteger applicationTypeId = null;
         BigInteger workFlowStatusId = null;
         if (hpProfile.getRequestId() != null) {
-            WorkFlow workFlow = workFlowRepository.findByRequestId(hpProfile.getRequestId());
+            WorkFlow workFlow = workFlowRepository.findLastWorkFlowForHealthProfessional(hpProfileId);
             if (workFlow != null) {
                 applicationTypeId = workFlow.getApplicationType().getId();
                 workFlowStatusId = workFlow.getWorkFlowStatus().getId();
