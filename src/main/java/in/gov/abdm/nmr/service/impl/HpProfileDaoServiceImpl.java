@@ -599,9 +599,11 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             registrationDetail.setRegistrationNo(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationNumber());
             registrationDetail.setStateMedicalCouncil(iStateMedicalCouncilRepository
                     .findById(hpRegistrationUpdateRequestTO.getRegistrationDetail().getStateMedicalCouncil().getId()).get());
-            registrationDetail.setIsRenewable(hpRegistrationUpdateRequestTO.getRegistrationDetail().getIsRenewable());
-            registrationDetail.setRenewableRegistrationDate(
-                    hpRegistrationUpdateRequestTO.getRegistrationDetail().getRenewableRegistrationDate());
+            String isRenewable = hpRegistrationUpdateRequestTO.getRegistrationDetail().getIsRenewable();
+            registrationDetail.setIsRenewable(isRenewable);
+            if(NMRConstants.RENEWABLE_REGISTRATION_CODE.equalsIgnoreCase(isRenewable)) {
+                registrationDetail.setRenewableRegistrationDate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRenewableRegistrationDate());
+            }
             registrationDetail.setIsNameChange(hpRegistrationUpdateRequestTO.getRegistrationDetail().getIsNameChange());
             registrationDetail.setCertificate(registrationCertificate.getBytes());
             registrationDetail.setFileName(hpRegistrationUpdateRequestTO.getRegistrationDetail().getFileName());
