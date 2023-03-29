@@ -543,4 +543,9 @@ public class NMRConstants {
     public static final String USER_ALREADY_EXISTS_EXCEPTION = "Your account already exists. Please login with your credentials! ";
 
     public static final String NO_MATCHING_WORK_PROFILE_DETAILS_FOUND = "No matching work profile details found for the given hp_profile_id";
+
+    public static final Integer YES = 1;
+
+    public static final Integer NO = 0;
+
 }

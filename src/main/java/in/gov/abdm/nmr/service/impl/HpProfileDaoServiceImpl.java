@@ -26,7 +26,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -165,6 +164,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             if (existingHpProfile != null) {
                 org.springframework.beans.BeanUtils.copyProperties(existingHpProfile, targetedHpProfile);
                 targetedHpProfile.setId(null);
+                targetedHpProfile.setIsNew(NO);
             }
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, targetedHpProfile);
             HpProfile savedHpProfile = iHpProfileRepository.save(targetedHpProfile);
