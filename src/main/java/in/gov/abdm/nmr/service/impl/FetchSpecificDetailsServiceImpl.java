@@ -4,14 +4,18 @@ import in.gov.abdm.nmr.dto.DashboardRequestParamsTO;
 import in.gov.abdm.nmr.dto.DashboardRequestTO;
 import in.gov.abdm.nmr.dto.DashboardResponseTO;
 import in.gov.abdm.nmr.dto.FetchSpecificDetailsResponseTO;
-import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.entity.CollegeProfile;
+import in.gov.abdm.nmr.entity.SMCProfile;
+import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetails;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
-import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.repository.IFetchSpecificDetailsCustomRepository;
+import in.gov.abdm.nmr.repository.IFetchSpecificDetailsRepository;
+import in.gov.abdm.nmr.repository.ISmcProfileRepository;
 import in.gov.abdm.nmr.service.ICollegeProfileDaoService;
 import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
 import in.gov.abdm.nmr.service.IUserDaoService;
@@ -155,47 +159,53 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
 
     private void setApplicationTypeIdAndUserGroupStatus(String applicationTypeId, String userGroupStatus,
                                                         DashboardRequestParamsTO dashboardRequestParamsTO) {
-        if(TEMPORARY_AND_PERMANENT_SUSPENSION_APPLICATION_TYPE_ID.equals(applicationTypeId)){
-            if(CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS.equals(userGroupStatus)){
+        if (TEMPORARY_AND_PERMANENT_SUSPENSION_APPLICATION_TYPE_ID.equals(applicationTypeId)) {
+            if (CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setApplicationTypeId(TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID);
                 dashboardRequestParamsTO.setUserGroupStatus(PENDING);
-            }else if (CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS.equals(userGroupStatus)){
+            } else if (CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setApplicationTypeId(TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID);
                 dashboardRequestParamsTO.setUserGroupStatus(APPROVED);
-            }else if(CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS.equals(userGroupStatus)){
+            } else if (CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setApplicationTypeId(PERMANENT_SUSPENSION_APPLICATION_TYPE_ID);
                 dashboardRequestParamsTO.setUserGroupStatus(PENDING);
-            }else if(CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS.equals(userGroupStatus)){
+            } else if (CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setApplicationTypeId(PERMANENT_SUSPENSION_APPLICATION_TYPE_ID);
                 dashboardRequestParamsTO.setUserGroupStatus(APPROVED);
-            }
-            else if(TOTAL.equals(userGroupStatus)){
+            } else if (TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setUserGroupStatus(TOTAL);
                 dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
             }
-        }else {
+        } else {
             dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
             dashboardRequestParamsTO.setUserGroupStatus(userGroupStatus);
         }
     }
 
     private void applyFiltersForCardDetails(String search, String value, BigInteger groupId, DashboardRequestParamsTO dashboardRequestParamsTO) throws InvalidRequestException {
-        if(StringUtils.isNotBlank(search)){
-            if(value !=null && !value.isBlank()){
-                switch (search.toLowerCase()){
-                    case APPLICANT_FULL_NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setApplicantFullName(value);
+        if (StringUtils.isNotBlank(search)) {
+            if (value != null && !value.isBlank()) {
+                switch (search.toLowerCase()) {
+                    case APPLICANT_FULL_NAME_IN_LOWER_CASE:
+                        dashboardRequestParamsTO.setApplicantFullName(value);
                         break;
-                    case COUNCIL_NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setCouncilName(value);
+                    case COUNCIL_NAME_IN_LOWER_CASE:
+                        dashboardRequestParamsTO.setCouncilName(value);
                         break;
-                    case REGISTRATION_NUMBER_IN_LOWER_CASE: dashboardRequestParamsTO.setRegistrationNumber(value);
+                    case REGISTRATION_NUMBER_IN_LOWER_CASE:
+                        dashboardRequestParamsTO.setRegistrationNumber(value);
                         break;
-                    case GENDER_IN_LOWER_CASE: dashboardRequestParamsTO.setGender(value);
+                    case GENDER_IN_LOWER_CASE:
+                        dashboardRequestParamsTO.setGender(value);
                         break;
-                    case EMAIL_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setEmailId(value);
+                    case EMAIL_ID_IN_LOWER_CASE:
+                        dashboardRequestParamsTO.setEmailId(value);
                         break;
-                    case MOBILE_NUMBER_IN_LOWER_CASE: dashboardRequestParamsTO.setMobileNumber(value);
+                    case MOBILE_NUMBER_IN_LOWER_CASE:
+                        dashboardRequestParamsTO.setMobileNumber(value);
                         break;
-                    case YEAR_OF_REGISTRATION_IN_LOWER_CASE: dashboardRequestParamsTO.setYearOfRegistration(value);
+                    case YEAR_OF_REGISTRATION_IN_LOWER_CASE:
+                        dashboardRequestParamsTO.setYearOfRegistration(value);
                         break;
                     case SMC_ID_IN_LOWER_CASE: {
                         if (groupId.equals(Group.COLLEGE.getId())
@@ -204,12 +214,13 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                         }
                     }
                     break;
-                    case SEARCH_IN_LOWER_CASE: dashboardRequestParamsTO.setSearch(value);
+                    case SEARCH_IN_LOWER_CASE:
+                        dashboardRequestParamsTO.setSearch(value);
                         break;
-                    default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL);
+                    default:
+                        throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL);
                 }
-            }
-            else{
+            } else {
                 throw new InvalidRequestException(MISSING_SEARCH_VALUE);
             }
         }
@@ -222,7 +233,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
      * @param applicationTypeId the application type ID
      * @param userGroupStatus   the user group status
      * @param pageNo            the page number
-     * @param offset              the size of the page
+     * @param offset            the size of the page
      * @param sortBy            the sort parameter
      * @param sortOrder         the sort order
      * @return the DashboardResponseTO containing the card details
@@ -273,14 +284,17 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
         dashboardRequestParamsTO.setWorkFlowStatusId(dashboardRequestTO.getWorkFlowStatusId());
         dashboardRequestParamsTO.setApplicationTypeId(dashboardRequestTO.getApplicationTypeId());
-        if(dashboardRequestTO.getSearch() !=null){
-            if(dashboardRequestTO.getValue() !=null && !dashboardRequestTO.getValue().isBlank()){
-                switch (dashboardRequestTO.getSearch().toLowerCase()){
-                    case COLLEGE_ID_IN_LOWER_CASE: dashboardRequestParamsTO.setCollegeId(dashboardRequestTO.getValue());
+        if (dashboardRequestTO.getSearch() != null) {
+            if (dashboardRequestTO.getValue() != null && !dashboardRequestTO.getValue().isBlank()) {
+                switch (dashboardRequestTO.getSearch().toLowerCase()) {
+                    case COLLEGE_ID_IN_LOWER_CASE:
+                        dashboardRequestParamsTO.setCollegeId(dashboardRequestTO.getValue());
                         break;
-                    case NAME_IN_LOWER_CASE: dashboardRequestParamsTO.setCouncilName(dashboardRequestTO.getValue());
+                    case NAME_IN_LOWER_CASE:
+                        dashboardRequestParamsTO.setCouncilName(dashboardRequestTO.getValue());
                         break;
-                    case REGISTRATION_NUMBER_IN_LOWER_CASE: dashboardRequestParamsTO.setRegistrationNumber(dashboardRequestTO.getValue());
+                    case REGISTRATION_NUMBER_IN_LOWER_CASE:
+                        dashboardRequestParamsTO.setRegistrationNumber(dashboardRequestTO.getValue());
                         break;
                     case SMC_ID_IN_LOWER_CASE: {
                         if (groupId.equals(Group.COLLEGE.getId())
@@ -289,14 +303,16 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                         }
                     }
                     break;
-                    case WORK_FLOW_STATUS_IN_LOWER_CASE: dashboardRequestParamsTO.setWorkFlowStatusId(dashboardRequestTO.getValue());
+                    case WORK_FLOW_STATUS_IN_LOWER_CASE:
+                        dashboardRequestParamsTO.setWorkFlowStatusId(dashboardRequestTO.getValue());
                         break;
-                    case SEARCH_IN_LOWER_CASE: dashboardRequestParamsTO.setSearch(dashboardRequestTO.getValue());
+                    case SEARCH_IN_LOWER_CASE:
+                        dashboardRequestParamsTO.setSearch(dashboardRequestTO.getValue());
                         break;
-                    default: throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_POST_CARD_DETAIL);
+                    default:
+                        throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_POST_CARD_DETAIL);
                 }
-            }
-            else{
+            } else {
                 throw new InvalidRequestException(MISSING_SEARCH_VALUE);
             }
         }
