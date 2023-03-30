@@ -9,6 +9,7 @@ import in.gov.abdm.nmr.service.IApplicationService;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.NMRUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
  * Presentation Layer to expose the endpoints of Health Professional Suspend and Reactivate API
  */
 @RestController
+@Slf4j
 public class ApplicationController {
 
     @Autowired
@@ -44,7 +46,18 @@ public class ApplicationController {
      */
     @PostMapping(ProtectedPaths.SUSPENSION_REQUEST_URL)
     public SuspendRequestResponseTo suspensionHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
-        return applicationService.suspendRequest(applicationRequestTo);
+
+        log.info("In Application Controller: suspensionHealthProfessional method ");
+        log.debug("Request Payload: ApplicationRequestTo: ", applicationRequestTo);
+
+        SuspendRequestResponseTo suspendRequestResponseTo = applicationService.suspendRequest(applicationRequestTo);
+
+        log.info("Application Controller: suspensionHealthProfessional method: Execution Successful. ");
+        log.debug("Response Payload: SuspendRequestResponseTo: ",suspendRequestResponseTo);
+
+        return suspendRequestResponseTo;
+
+
     }
 
     /**
@@ -58,7 +71,17 @@ public class ApplicationController {
      */
     @PostMapping(ProtectedPaths.REACTIVATE_REQUEST_URL)
     public ReactivateRequestResponseTo reactivateHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
-       return applicationService.reactivateRequest(applicationRequestTo);
+
+        log.info("In Application Controller: reactivateHealthProfessional method ");
+        log.debug("Request Payload: ApplicationRequestTo: ", applicationRequestTo);
+
+        ReactivateRequestResponseTo reactivateRequestResponseTo = applicationService.reactivateRequest(applicationRequestTo);
+
+        log.info("Application Controller: reactivateHealthProfessional method: Execution Successful. ");
+        log.debug("Response Payload: ReactivateRequestResponseTo: ",reactivateRequestResponseTo);
+
+        return reactivateRequestResponseTo;
+
     }
 
     /**

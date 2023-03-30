@@ -16,6 +16,7 @@ import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -38,6 +38,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static in.gov.abdm.nmr.util.NMRUtil.*;
 
 @Service
+@Slf4j
 public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @Autowired
     private IHpProfileMapper ihHpProfileMapper;
@@ -146,14 +147,18 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @Override
     public HpProfileUpdateResponseTO updateHpPersonalDetails(BigInteger hpProfileId,
                                                              HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException {
+
+        log.info("In HpProfileDaoServiceImpl : updateHpPersonalDetails method");
+
         HpProfile existingHpProfile = iHpProfileRepository.findById(NMRUtil.coalesce(hpProfileId, BigInteger.ZERO)).orElse(null);
         HpProfile copiedExistingHpProfile = existingHpProfile;
         HpProfile targetedHpProfile = null;
         BigInteger updatedHpProfileId = null;
         if (existingHpProfile == null || HpProfileStatus.APPROVED.getId().equals(existingHpProfile.getHpProfileStatus().getId())) {
-
+            log.debug("Initiating HP Profile Insertion flow since there are no existing HP Profiles with this hp_profile_id or The existing HP Profile is now Approved");
             String registrationId = null;
             if (existingHpProfile != null) {
+                log.debug("There was an existing HP Profile with the given hp_profile_id which has been Approved. ");
                 HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileByRegistrationId(existingHpProfile.getRegistrationId());
                 if (HpProfileStatus.PENDING.getId().equals(latestHpProfile.getHpProfileStatus().getId())) {
                     throw new InvalidRequestException("Please use the latest ongoing HP Profile id for updation.");
@@ -171,6 +176,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             updatedHpProfileId = savedHpProfile.getId();
 
         } else {
+            log.debug("Initiating HP Profile Updation flow since there is an existing HP Profile with this hp_profile_id or The existing HP Profile is not yet Approved");
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, existingHpProfile);
             updatedHpProfileId = existingHpProfile.getId();
         }
@@ -228,12 +234,14 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
             HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByHpProfileId(copiedExistingHpProfile.getId());
             if (hpNbeDetails != null) {
+                log.debug("Setting NBE Details");
                 HpNbeDetails newHpNbeDetails = new HpNbeDetails();
                 org.springframework.beans.BeanUtils.copyProperties(hpNbeDetails, newHpNbeDetails);
                 newHpNbeDetails.setId(null);
                 newHpNbeDetails.setHpProfileId(targetedHpProfile.getId());
             }
         }
+        log.info("HpProfileDaoServiceImpl : updateHpPersonalDetails method : Execution Successful. ");
         return new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", updatedHpProfileId);
     }
 
@@ -242,20 +250,26 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     public HpProfileUpdateResponseTO updateHpRegistrationDetails(BigInteger hpProfileId,
                                                                  HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, MultipartFile degreeCertificate) throws NmrException, InvalidRequestException {
 
+        log.info("In HpProfileDaoServiceImpl : updateHpRegistrationDetails method");
+
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
             hpRegistrationUpdateRequestTO.getRegistrationDetail().setFileName(registrationCertificate != null ? registrationCertificate.getOriginalFilename() : null);
         }
         RegistrationDetails registrationDetail = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId);
+
         HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
 
         if (registrationDetail == null) {
+            log.debug("Initiating Registration details Insertion flow since there were no matching Registration details found for the given hp_profile_id. ");
             registrationDetail = new RegistrationDetails();
             mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile,registrationCertificate);
             registrationDetailRepository.save(registrationDetail);
         } else {
+            log.debug("Initiating Registration details Updation flow since there was an existing Registration detail for the given hp_profile_id. ");
             mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile,registrationCertificate);
         }
         if (degreeCertificate != null) {
+            log.debug("Validating Degree Certificates against the List of Qualifications accepted as payload");
             validateQualificationDetailsAndProofs(hpRegistrationUpdateRequestTO.getQualificationDetails(), List.of(degreeCertificate));
             saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), List.of(degreeCertificate));
         } else {
@@ -265,15 +279,20 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByHpProfileId(hpProfileId);
         if (hpNbeDetails == null) {
+            log.debug("Initiating NBE details Insertion flow since there were no matching NBE details found for the given hp_profile_id. ");
             hpNbeDetails = new HpNbeDetails();
             mapNbeRequestDetailsToEntity(hpRegistrationUpdateRequestTO, hpNbeDetails, hpProfile);
             hpNbeDetails.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
         } else {
+            log.debug("Initiating NBE details Updation flow since there was an existing NBE detail for the given hp_profile_id. ");
             mapNbeRequestDetailsToEntity(hpRegistrationUpdateRequestTO, hpNbeDetails, hpProfile);
         }
         hpNbeDetailsRepository.save(hpNbeDetails);
         hpProfile.setRegistrationId(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationNumber());
         iHpProfileRepository.save(hpProfile);
+
+        log.info("HpProfileDaoServiceImpl : updateHpRegistrationDetails method : Execution Successful. ");
+
         return new HpProfileUpdateResponseTO(204,
                 "Registration Added/Updated Successfully!!", hpProfileId);
     }
@@ -281,8 +300,14 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @Override
     public HpProfileUpdateResponseTO updateWorkProfileDetails(BigInteger hpProfileId,
                                                               HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws InvalidRequestException {
+
+        log.info("In HpProfileDaoServiceImpl : updateWorkProfileDetails method");
+
         if (proofs != null) {
+            log.debug("Initiating Addition of Proofs since Proofs are provided as a part of input payload. ");
             validateWorkProfileDetailsAndProofs(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails(), proofs);
+
+            log.debug("Validation of Work Profile Details against the Proofs is successful. ");
             hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().stream().forEach(currentWorkDetailsTO -> {
                 MultipartFile file = proofs.get(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().indexOf(currentWorkDetailsTO));
                 try {
@@ -291,12 +316,15 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                     throw new RuntimeException(e);
                 }
             });
+            log.debug("Addition of proofs is successful");
         }
         List<WorkProfile> workProfile = workProfileRepository.getWorkProfileDetailsByHPId(hpProfileId);
         if (workProfile.size() == 0) {
+            log.debug("Initiation of Work Profile Insertion flow for Work Profile details since there are no matching Work Profiles found for the provided hp_profile_id");
             workProfile = new ArrayList<>();
             mapWorkRequestToEntity(hpWorkProfileUpdateRequestTO, workProfile, hpProfileId);
         } else {
+            log.debug("Initiation of Work Profile Updation flow for Work Profile details since there were matching Work Profiles found for the provided hp_profile_id");
             mapWorkRequestToEntity(hpWorkProfileUpdateRequestTO, workProfile, hpProfileId);
         }
         List<SuperSpecialityTO> newSuperSpecialities = hpWorkProfileUpdateRequestTO.getSpecialityDetails().getSuperSpeciality();
@@ -304,14 +332,19 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         for (SuperSpecialityTO superSpecialityTo : newSuperSpecialities) {
             SuperSpeciality superSpecialityEntity = new SuperSpeciality();
             if (superSpecialityTo.getId() != null) {
+                log.debug("Initiation of Super speciality Updation flow since there were matching Super speciality id is provided as a part of Input payload");
                 superSpecialityEntity = superSpecialityRepository.findById(superSpecialityTo.getId()).get();
                 mapSuperSpecialityToEntity(hpProfileId, superSpecialityTo, superSpecialityEntity);
             } else {
+                log.debug("Initiation of Super speciality Insertion flow since there are no matching Super speciality id is not provided as a part of Input payload");
                 mapSuperSpecialityToEntity(hpProfileId, superSpecialityTo, superSpecialityEntity);
                 superSpecialities.add(superSpecialityEntity);
             }
         }
         superSpecialityRepository.saveAll(superSpecialities);
+
+        log.info("HpProfileDaoServiceImpl : updateWorkProfileDetails method : Execution Successful. ");
+
         return new HpProfileUpdateResponseTO(204,
                 "Registration Added/Updated Successfully!!", hpProfileId);
     }
@@ -593,6 +626,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @SneakyThrows
     private void mapRegistrationRequestToEntity(HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, RegistrationDetails registrationDetail, HpProfile hpProfile,MultipartFile registrationCertificate) {
+        log.debug("In HpProfileDaoServiceImpl : mapRegistrationRequestToEntity method");
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
             registrationDetail.setHpProfileId(hpProfile);
             registrationDetail.setRegistrationDate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationDate());
