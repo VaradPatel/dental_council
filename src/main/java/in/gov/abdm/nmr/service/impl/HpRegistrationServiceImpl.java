@@ -233,7 +233,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(hpSubmitRequestTO.getHpProfileId())) {
             throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
         }
-        if (hpSubmitRequestTO.getRequestId() != null && WorkflowStatus.QUERY_RAISED.getId().equals(workFlowRepository.findByRequestId(hpSubmitRequestTO.getRequestId()).getWorkFlowStatus().getId())) {
+        WorkFlow lastWorkFlowForHealthProfessional = workFlowRepository.findLastWorkFlowForHealthProfessional(hpSubmitRequestTO.getHpProfileId());
+        if (lastWorkFlowForHealthProfessional!=null && WorkflowStatus.QUERY_RAISED.getId().equals(lastWorkFlowForHealthProfessional.getWorkFlowStatus().getId())) {
             iWorkFlowService.assignQueriesBackToQueryCreator(hpSubmitRequestTO.getRequestId());
             iQueriesService.markQueryAsClosed(hpSubmitRequestTO.getHpProfileId());
 
