@@ -22,6 +22,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -37,9 +40,9 @@ import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 @Component
 public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final String REQUEST_BODY = "request-body";
 
-    private String requestBodyString = null;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private ObjectMapper objectMapper;
 
@@ -76,9 +79,9 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         UserPasswordAuthenticationToken authRequest = UserPasswordAuthenticationToken.unauthenticated(null, null, null, null, null);
         try {
-            requestBodyString = readRequestBody(request);
-            LoginRequestTO requestBodyTO = objectMapper.readValue(requestBodyString, LoginRequestTO.class);
-            
+            ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).setAttribute(REQUEST_BODY, readRequestBody(request), RequestAttributes.SCOPE_REQUEST);
+
+            LoginRequestTO requestBodyTO = objectMapper.readValue(getRequestBody(), LoginRequestTO.class);
             if((LoginTypeEnum.MOBILE_OTP.getCode().equals(requestBodyTO.getLoginType()) || LoginTypeEnum.NMR_ID_OTP.getCode().equals(requestBodyTO.getLoginType())) //
                     && (requestBodyTO.getOtpTransId() == null || requestBodyTO.getOtpTransId().isBlank())) {
                 throw new AuthenticationServiceException("Invalid otp transaction id");
@@ -118,6 +121,8 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
     private void publishAuthenticationFailure(HttpServletRequest request, AuthenticationException exception) throws IOException {
         String username = null;
         String payload = null;
+        
+        String requestBodyString = getRequestBody();
         if (StringUtils.isNotBlank(requestBodyString)) {
             LoginRequestTO requestBodyTO = objectMapper.readValue(requestBodyString, LoginRequestTO.class);
             if (StringUtils.isNotBlank(requestBodyTO.getUsername())) {
@@ -156,9 +161,14 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
         
         super.unsuccessfulAuthentication(request, response, failed);
         publishAuthenticationFailure(request, failed);
-
+        
+        String requestBodyString = getRequestBody();
         if (requestBodyString != null && !requestBodyString.isBlank()) {
             authenticationHandler.updateFailedAttemptsAndLockStatus(objectMapper.readValue(requestBodyString, LoginRequestTO.class).getUsername());
         }
+    }
+    
+    private String getRequestBody() {
+        return (String) ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getAttribute(REQUEST_BODY, RequestAttributes.SCOPE_REQUEST);
     }
 }
