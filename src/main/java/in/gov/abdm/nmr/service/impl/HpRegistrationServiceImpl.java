@@ -205,29 +205,56 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Override
     public HpProfilePersonalResponseTO addOrUpdateHpPersonalDetail(BigInteger hpProfileId,
                                                                    HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException {
+        log.info("In HpRegistrationServiceImpl : addOrUpdateHpPersonalDetail method");
         HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpPersonalDetails(hpProfileId, hpPersonalUpdateRequestTO);
-        return getHealthProfessionalPersonalDetail(hpProfileUpdateResponseTO.getHpProfileId());
+
+        log.debug("Update Successful. Calling the getHealthProfessionalPersonalDetail method to retrieve the Details. ");
+        HpProfilePersonalResponseTO healthProfessionalPersonalDetail = getHealthProfessionalPersonalDetail(hpProfileUpdateResponseTO.getHpProfileId());
+
+        log.info("HpRegistrationServiceImpl: addOrUpdateHpPersonalDetail method: Execution Successful. ");
+        return healthProfessionalPersonalDetail;
+
     }
 
     @Override
     public HpProfileRegistrationResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
                                                                            HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, MultipartFile degreeCertificate) throws InvalidRequestException, NmrException {
+        log.info("In HpRegistrationServiceImpl : addOrUpdateHpRegistrationDetail method");
         HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(hpProfileId, hpRegistrationUpdateRequestTO, registrationCertificate, degreeCertificate);
-        return getHealthProfessionalRegistrationDetail(hpProfileUpdateResponseTO.getHpProfileId());
+
+        log.debug("Update Successful. Calling the getHealthProfessionalRegistrationDetail method to retrieve the Details. ");
+        HpProfileRegistrationResponseTO healthProfessionalRegistrationDetail = getHealthProfessionalRegistrationDetail(hpProfileUpdateResponseTO.getHpProfileId());
+
+        log.info("HpRegistrationServiceImpl: addOrUpdateHpRegistrationDetail method: Execution Successful. ");
+        return healthProfessionalRegistrationDetail;
     }
 
     @Override
     public HpProfileWorkDetailsResponseTO addOrUpdateWorkProfileDetail(BigInteger hpProfileId,
                                                                        HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws NmrException, InvalidRequestException {
+
+        log.info("In HpRegistrationServiceImpl : addOrUpdateWorkProfileDetail method");
+
         validateWorkProfileDetails(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails());
+
+        log.debug("WorkProfileDetails Validation Successful. Calling the updateWorkProfileDetails method to update the work profile details. ");
         HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateWorkProfileDetails(hpProfileId, hpWorkProfileUpdateRequestTO, proofs);
-        return getHealthProfessionalWorkDetail(hpProfileUpdateResponseTO.getHpProfileId());
+
+        log.debug("Update Successful. Calling the getHealthProfessionalRegistrationDetail method to retrieve the work profile details. ");
+        HpProfileWorkDetailsResponseTO healthProfessionalWorkDetail = getHealthProfessionalWorkDetail(hpProfileUpdateResponseTO.getHpProfileId());
+
+        log.info("HpRegistrationServiceImpl: addOrUpdateWorkProfileDetail method: Execution Successful. ");
+        return healthProfessionalWorkDetail;
+
     }
 
     @Transactional
     @Override
     public HpProfileAddResponseTO submitHpProfile(HpSubmitRequestTO hpSubmitRequestTO)
             throws InvalidRequestException, WorkFlowException {
+
+        log.info("In HpRegistrationServiceImpl : submitHpProfile method");
+
         String requestId = null;
         if (hpSubmitRequestTO.getHpProfileId() != null &&
                 iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(hpSubmitRequestTO.getHpProfileId())) {
@@ -235,26 +262,34 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
         WorkFlow lastWorkFlowForHealthProfessional = workFlowRepository.findLastWorkFlowForHealthProfessional(hpSubmitRequestTO.getHpProfileId());
         if (lastWorkFlowForHealthProfessional != null && WorkflowStatus.QUERY_RAISED.getId().equals(lastWorkFlowForHealthProfessional.getWorkFlowStatus().getId())) {
+            log.debug("Calling assignQueriesBackToQueryCreator method since there is an existing workflow with 'Query Raised' work flow status. ");
             iWorkFlowService.assignQueriesBackToQueryCreator(hpSubmitRequestTO.getRequestId());
             iQueriesService.markQueryAsClosed(hpSubmitRequestTO.getHpProfileId());
 
         } else {
+            log.debug("Proceeding to submit the profile since request_id is not given as a part of input payload");
             requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(hpSubmitRequestTO.getApplicationTypeId()));
+            log.debug("New Request id is built - "+requestId);
             WorkFlowRequestTO workFlowRequestTO = WorkFlowRequestTO.builder().requestId(requestId)
                     .applicationTypeId(hpSubmitRequestTO.getApplicationTypeId())
                     .hpProfileId(hpSubmitRequestTO.getHpProfileId())
                     .actionId(Action.SUBMIT.getId())
                     .actorId(Group.HEALTH_PROFESSIONAL.getId())
                     .build();
+            log.debug("Initiating Submission Workflow");
             iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
+
+            log.debug("Updating the request_id, e-sign status and transaction id in hp_profile table");
             HpProfile hpProfileById = iHpProfileRepository.findHpProfileById(hpSubmitRequestTO.getHpProfileId());
             hpProfileById.setTransactionId(hpSubmitRequestTO.getTransactionId());
             hpProfileById.setESignStatus(hpSubmitRequestTO.getESignStatus());
             hpProfileById.setRequestId(requestId);
 
+            log.debug("Updating the request_id in registration_details table");
             RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
             registrationDetails.setRequestId(requestId);
 
+            log.debug("Updating the request_id in work_profile table");
             List<WorkProfile> workProfileList = new ArrayList<>();
             List<WorkProfile> workProfiles = workProfileRepository.getWorkProfileDetailsByHPId(hpSubmitRequestTO.getHpProfileId());
             String finalRequestId = requestId;
@@ -268,6 +303,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
             List<QualificationDetails> qualificationDetailsList = new ArrayList<>();
             if (hpSubmitRequestTO.getApplicationTypeId().equals(ApplicationType.HP_REGISTRATION.getId())) {
+                log.debug("Updating the request_id in qualification_details table");
                 List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getQualificationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
                 String finalRequestId1 = requestId;
                 qualificationDetails.forEach(qualifications -> {
@@ -278,6 +314,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             }
             List<ForeignQualificationDetails> foreignQualificationDetails = new ArrayList<>();
             if (hpSubmitRequestTO.getApplicationTypeId().equals(ApplicationType.FOREIGN_HP_REGISTRATION.getId())) {
+                log.debug("Updating the request_id in foreign_qualification_details table");
                 List<ForeignQualificationDetails> qualificationDetails = customQualificationDetailRepository.getQualificationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
                 String finalRequestId1 = requestId;
                 qualificationDetails.forEach(qualifications -> {
@@ -287,6 +324,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 customQualificationDetailRepository.saveAll(foreignQualificationDetails);
             }
         }
+
+        log.info("HpRegistrationServiceImpl: submitHpProfile method: Execution Successful. ");
         return new HpProfileAddResponseTO(201, "Hp Profile Submitted Successfully!", hpSubmitRequestTO.getHpProfileId(), requestId);
     }
 

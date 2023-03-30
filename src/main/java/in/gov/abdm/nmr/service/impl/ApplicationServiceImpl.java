@@ -150,13 +150,21 @@ public class ApplicationServiceImpl implements IApplicationService {
      */
     @Override
     public SuspendRequestResponseTo suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
+
+        log.info("In ApplicationServiceImpl: suspendRequest method ");
+
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
+
+        log.debug("Building a new request_id");
         String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
 //        HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
         initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
         SuspendRequestResponseTo suspendRequestResponseTo = new SuspendRequestResponseTo();
         suspendRequestResponseTo.setProfileId(hpProfile.getId().toString());
         suspendRequestResponseTo.setMessage(SUCCESS_RESPONSE);
+
+        log.info("ApplicationServiceImpl: suspendRequest method: Execution Successful. ");
+
         return suspendRequestResponseTo;
     }
 
@@ -169,22 +177,33 @@ public class ApplicationServiceImpl implements IApplicationService {
      */
     @Override
     public ReactivateRequestResponseTo reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
+
+        log.info("In ApplicationServiceImpl: reactivateRequest method ");
+
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
         ReactivateRequestResponseTo reactivateRequestResponseTo = new ReactivateRequestResponseTo();
         if (HpProfileStatus.SUSPENDED.getId() == hpProfile.getHpProfileStatus().getId() || HpProfileStatus.BLACKLISTED.getId() == hpProfile.getHpProfileStatus().getId()) {
+            log.debug("Proceeding to Reactivate the profile since the profile is currently in Suspended / Black Listed state");
+
+            log.debug("Building Request id.");
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
 //            HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
             WorkFlow workFlow = iWorkFlowRepository.findLastWorkFlowForHealthProfessional(hpProfile.getId());
             if (Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
+                log.debug("Proceeding to reactivate through SMC since the profile was suspended by NMC");
                 applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.REACTIVATION_THROUGH_SMC.getId());
                 reactivateRequestResponseTo.setSelfReactivation(false);
             }else {
+                log.debug("Proceeding to initiate self reactivation since the profile wasn't suspended by NMC");
                 applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.SELF_REACTIVATION.getId());
                 reactivateRequestResponseTo.setSelfReactivation(true);
             }
             initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
             reactivateRequestResponseTo.setProfileId(hpProfile.getId().toString());
             reactivateRequestResponseTo.setMessage(SUCCESS_RESPONSE);
+
+            log.info("ApplicationServiceImpl: reactivateRequest method: Execution Successful. ");
+
             return reactivateRequestResponseTo;
         } else {
             throw new NmrException("Suspended profile can only be reactivated", HttpStatus.FORBIDDEN);
