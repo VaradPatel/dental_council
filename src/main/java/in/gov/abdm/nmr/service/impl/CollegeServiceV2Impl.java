@@ -110,7 +110,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
             BigInteger userId = collegeprofile.getUser().getId();
             User collegeUser = userDaoService.findById(userId);
             collegeMasterTO.setEmailId(collegeUser.getEmail());
-            collegeMasterTO.setMobileNumber(collegeUser.getEmail());
+            collegeMasterTO.setMobileNumber(collegeUser.getMobileNumber());
         }
 
         List<UniversityMasterTo> university = universityMasterService.getUniversitiesByCollegeId(id);
