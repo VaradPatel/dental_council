@@ -26,4 +26,5 @@ public class DashboardTO {
     private String nmrId;
     private String yearOfRegistration;
     private String collegeStatus;
+    private BigInteger applicationTypeId;
 }

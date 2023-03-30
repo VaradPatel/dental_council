@@ -135,6 +135,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
 
         if (UserSubTypeEnum.COLLEGE.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {
             CollegeProfile collegeprofile = collegeProfileDaoService.findAdminByCollegeId(collegeMaster.getId());
+
             if (collegeprofile == null) {
                 throw new NmrException(UNSUPPORTED_OPERATION, HttpStatus.BAD_REQUEST);
             }
@@ -148,14 +149,20 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
 
     @Override
     public CollegeMasterTOV2 createOrUpdateCollege(CollegeMasterTOV2 collegeMasterTOV2) throws NmrException {
-        User loggedInUser = getLoggedInUser();
-        CollegeMaster collegeMaster = collegeMasterDaoService.findById(collegeMasterTOV2.getId());
+        CollegeMaster collegeMaster = null;
         CollegeProfile collegeProfile = null;
 
         if (collegeMasterTOV2.getId() != null) {
-            collegeProfile = preCollegeUpdationChecks(loggedInUser, collegeMaster, collegeProfile);
+            collegeMaster = collegeMasterDaoService.findById(collegeMasterTOV2.getId());
+
+            if (collegeMaster == null) {
+                throw new NmrException("No college found for id", HttpStatus.NOT_FOUND);
+            }
+
+            collegeProfile = collegeProfileDaoService.findAdminByCollegeId(collegeMaster.getId());
+            preCollegeUpdationChecks(collegeMasterTOV2, collegeMaster, collegeProfile);
         } else {
-            preCollegeCreationChecks(collegeMasterTOV2);
+            duplicateContactsCheck(collegeMasterTOV2.getEmailId(), collegeMasterTOV2.getMobileNumber());
         }
 
         collegeMaster = collegeMaster != null ? collegeMaster : new CollegeMaster();
@@ -192,7 +199,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
             user = new User(null, collegeMasterTOV2.getEmailId(), collegeMasterTOV2.getMobileNumber(), null, null, null, false, false, //
                     entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), // 
                     entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false);
-            
+
             passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail()));
         } else {
             user.setEmail(collegeMasterTOV2.getEmailId());
@@ -211,26 +218,21 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         return collegeMasterTOV2;
     }
 
-    private void preCollegeCreationChecks(CollegeMasterTOV2 collegeMasterTOV2) throws NmrException {
-        if (userDaoService.existsByEmail(collegeMasterTOV2.getEmailId())) {
-            throw new NmrException("Email id already registered", HttpStatus.NOT_FOUND);
-        }
+    private CollegeProfile preCollegeUpdationChecks(CollegeMasterTOV2 collegeMasterTOV2, CollegeMaster collegeMaster, CollegeProfile collegeProfile) throws NmrException {
+        User loggedInUser = getLoggedInUser();
 
-        if (userDaoService.existsByMobileNumber(collegeMasterTOV2.getMobileNumber())) {
-            throw new NmrException("Mobile number already registered", HttpStatus.NOT_FOUND);
-        }
-    }
-
-    private CollegeProfile preCollegeUpdationChecks(User loggedInUser, CollegeMaster collegeMaster, CollegeProfile collegeProfile) throws NmrException {
         if (collegeMaster == null) {
             throw new NmrException("No college found for id", HttpStatus.NOT_FOUND);
         }
 
         if (UserSubTypeEnum.COLLEGE.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {
-
-            collegeProfile = collegeProfileDaoService.findAdminByCollegeId(collegeMaster.getId());
             if (collegeProfile == null) {
                 throw new NmrException(UNSUPPORTED_OPERATION, HttpStatus.BAD_REQUEST);
+            }
+
+            User user = collegeProfile.getUser();
+            if (!collegeMasterTOV2.getEmailId().equals(user.getEmail()) || !collegeMasterTOV2.getMobileNumber().equals(user.getMobileNumber())) {
+                duplicateContactsCheck(collegeMasterTOV2.getEmailId(), collegeMasterTOV2.getMobileNumber());
             }
 
             if (!loggedInUser.getId().equals(collegeProfile.getUser().getId())) {
@@ -249,12 +251,13 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
 
     @Override
     public CollegeProfileTOV2 createOrUpdateCollegeVerifier(CollegeProfileTOV2 collegeProfileTOV2) throws GeneralSecurityException, NmrException {
-        User loggedInUser = getLoggedInUser();
         CollegeProfile collegeProfile = null;
+
         if (collegeProfileTOV2.getId() != null) {
-            collegeProfile = preVerifierUpdationChecks(collegeProfileTOV2, loggedInUser, collegeProfile);
+            collegeProfile = collegeProfileDaoService.findById(collegeProfileTOV2.getId());
+            preVerifierUpdationChecks(collegeProfileTOV2, collegeProfile);
         } else {
-            preVerifierCreationChecks(collegeProfileTOV2);
+            duplicateContactsCheck(collegeProfileTOV2.getEmailId(), collegeProfileTOV2.getMobileNumber());
         }
 
         User user = collegeProfile != null ? collegeProfile.getUser() : null;
@@ -263,12 +266,13 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
                     null, null, false, false, entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), //
                     entityManager.getReference(UserSubType.class, collegeProfileTOV2.getDesignation()), //
                     entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false);
+            user = userDaoService.save(user);
             passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail()));
         } else {
             user.setEmail(collegeProfileTOV2.getEmailId());
             user.setMobileNumber(collegeProfileTOV2.getMobileNumber());
+            user = userDaoService.save(user);
         }
-        user = userDaoService.save(user);
 
         if (collegeProfile == null) {
             collegeProfile = new CollegeProfile();
@@ -282,72 +286,66 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         return collegeProfileTOV2;
     }
 
-    private void preVerifierCreationChecks(CollegeProfileTOV2 collegeProfileTOV2) throws NmrException {
-        if (userDaoService.existsByEmail(collegeProfileTOV2.getEmailId())) {
+    private void duplicateContactsCheck(String emailId, String mobileNumber) throws NmrException {
+        if (userDaoService.existsByEmail(emailId)) {
             throw new NmrException("Email id already registered", HttpStatus.NOT_FOUND);
         }
 
-        if (userDaoService.existsByMobileNumber(collegeProfileTOV2.getMobileNumber())) {
+        if (userDaoService.existsByMobileNumber(mobileNumber)) {
             throw new NmrException("Mobile number already registered", HttpStatus.NOT_FOUND);
         }
     }
 
-    private CollegeProfile preVerifierUpdationChecks(CollegeProfileTOV2 collegeProfileTOV2, User loggedInUser, CollegeProfile collegeProfile) throws NmrException {
-        if (UserSubTypeEnum.COLLEGE_DEAN.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null) || //
-                UserSubTypeEnum.COLLEGE_REGISTRAR.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {
-
-            collegeProfile = collegeProfileDaoService.findById(collegeProfileTOV2.getId());
-            if (collegeProfile == null) {
-                throw new NmrException(UNSUPPORTED_OPERATION, HttpStatus.BAD_REQUEST);
-            }
-
-            if (!loggedInUser.getId().equals(collegeProfile.getUser().getId())) {
-                throw new NmrException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
-            }
-
-            if (!collegeProfileTOV2.getCollegeId().equals(collegeProfile.getCollege().getId())) {
-                throw new NmrException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
-            }
+    private void preVerifierUpdationChecks(CollegeProfileTOV2 collegeProfileTOV2, CollegeProfile collegeProfile) throws NmrException {
+        User loggedInUser = getLoggedInUser();
+        if (collegeProfile == null) {
+            throw new NmrException("No college verifier found for id", HttpStatus.BAD_REQUEST);
         }
-        return collegeProfile;
+
+        User user = collegeProfile.getUser();
+        if (!collegeProfileTOV2.getEmailId().equals(user.getEmail()) || !collegeProfileTOV2.getMobileNumber().equals(user.getMobileNumber())) {
+            duplicateContactsCheck(collegeProfileTOV2.getEmailId(), collegeProfileTOV2.getMobileNumber());
+        }
+
+        if (!loggedInUser.getId().equals(collegeProfile.getUser().getId())) {
+            throw new NmrException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
+        }
+
+        if (!collegeProfileTOV2.getCollegeId().equals(collegeProfile.getCollege().getId())) {
+            throw new NmrException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
+        }
     }
 
     @Override
     public CollegeProfileTOV2 getCollegeVerifier(BigInteger collegeId, BigInteger verifierId) throws NmrException {
         CollegeProfile collegeProfile = preVerifierAccessChecks(collegeId, verifierId);
 
-        if (collegeProfile != null) {
-            CollegeProfileTOV2 collegeProfileTOV2 = new CollegeProfileTOV2();
-            collegeProfileTOV2.setId(collegeProfile.getId());
-            collegeProfileTOV2.setName(collegeProfile.getName());
-            collegeProfileTOV2.setCollegeId(collegeProfile.getCollege().getId());
+        CollegeProfileTOV2 collegeProfileTOV2 = new CollegeProfileTOV2();
+        collegeProfileTOV2.setId(collegeProfile.getId());
+        collegeProfileTOV2.setName(collegeProfile.getName());
+        collegeProfileTOV2.setCollegeId(collegeProfile.getCollege().getId());
 
-            User user = collegeProfile.getUser();
-            collegeProfileTOV2.setMobileNumber(user.getEmail());
-            collegeProfileTOV2.setMobileNumber(user.getMobileNumber());
-            collegeProfileTOV2.setDesignation(user.getUserSubType().getId());
-            return collegeProfileTOV2;
-        }
-        throw new NmrException("No college verifier found for id", HttpStatus.NOT_FOUND);
+        User user = collegeProfile.getUser();
+        collegeProfileTOV2.setMobileNumber(user.getEmail());
+        collegeProfileTOV2.setMobileNumber(user.getMobileNumber());
+        collegeProfileTOV2.setDesignation(user.getUserSubType().getId());
+        return collegeProfileTOV2;
     }
 
     private CollegeProfile preVerifierAccessChecks(BigInteger collegeId, BigInteger verifierId) throws NmrException {
         User loggedInUser = getLoggedInUser();
         CollegeProfile collegeProfile = collegeProfileDaoService.findById(verifierId);
 
-        if (UserSubTypeEnum.COLLEGE_DEAN.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null) || //
-                UserSubTypeEnum.COLLEGE_REGISTRAR.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {
-            if (collegeProfile == null) {
-                throw new NmrException(UNSUPPORTED_OPERATION, HttpStatus.BAD_REQUEST);
-            }
+        if (collegeProfile == null) {
+            throw new NmrException("No college verifier found for id", HttpStatus.BAD_REQUEST);
+        }
 
-            if (!loggedInUser.getId().equals(collegeProfile.getUser().getId())) {
-                throw new NmrException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
-            }
+        if (!loggedInUser.getId().equals(collegeProfile.getUser().getId())) {
+            throw new NmrException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
+        }
 
-            if (!collegeId.equals(collegeProfile.getCollege().getId())) {
-                throw new NmrException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
-            }
+        if (!collegeId.equals(collegeProfile.getCollege().getId())) {
+            throw new NmrException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
         }
         return collegeProfile;
     }

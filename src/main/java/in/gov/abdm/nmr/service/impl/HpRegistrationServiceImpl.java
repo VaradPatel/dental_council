@@ -11,10 +11,7 @@ import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.mapper.*;
 import in.gov.abdm.nmr.repository.*;
-import in.gov.abdm.nmr.service.IHpProfileDaoService;
-import in.gov.abdm.nmr.service.IHpRegistrationService;
-import in.gov.abdm.nmr.service.IRequestCounterService;
-import in.gov.abdm.nmr.service.IWorkFlowService;
+import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -149,6 +146,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Autowired
     private HpProfileRegistrationMapper hpProfileRegistrationMapper;
 
+    @Autowired
+    private IQueriesService iQueriesService;
+
+    @Autowired
+    OtpServiceImpl otpService;
+
     /**
      * This method fetches the SMC registration details for a given request.
      *
@@ -245,6 +248,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     }
 
+    @Transactional
     @Override
     public HpProfileAddResponseTO submitHpProfile(HpSubmitRequestTO hpSubmitRequestTO)
             throws InvalidRequestException, WorkFlowException {
@@ -256,9 +260,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(hpSubmitRequestTO.getHpProfileId())) {
             throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
         }
-        if (hpSubmitRequestTO.getRequestId() != null && WorkflowStatus.QUERY_RAISED.getId().equals(workFlowRepository.findByRequestId(hpSubmitRequestTO.getRequestId()).getWorkFlowStatus().getId())) {
-            log.debug("Calling assignQueriesBackToQueryCreator method since request_id given as a part of input payload has an existing workflow with 'Query Raised' work flow status. ");
+        WorkFlow lastWorkFlowForHealthProfessional = workFlowRepository.findLastWorkFlowForHealthProfessional(hpSubmitRequestTO.getHpProfileId());
+        if (lastWorkFlowForHealthProfessional!=null && WorkflowStatus.QUERY_RAISED.getId().equals(lastWorkFlowForHealthProfessional.getWorkFlowStatus().getId())) {
+            log.debug("Calling assignQueriesBackToQueryCreator method since there is an existing workflow with 'Query Raised' work flow status. ");
             iWorkFlowService.assignQueriesBackToQueryCreator(hpSubmitRequestTO.getRequestId());
+            iQueriesService.markQueryAsClosed(hpSubmitRequestTO.getHpProfileId());
+
         } else {
             log.debug("Proceeding to submit the profile since request_id is not given as a part of input payload");
             requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(hpSubmitRequestTO.getApplicationTypeId()));
@@ -329,14 +336,16 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         Address kycAddressByHpProfileId = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfileId, AddressType.KYC.getId());
         BigInteger applicationTypeId = null;
         BigInteger workFlowStatusId = null;
+        String requestId=null;
         if (hpProfile.getRequestId() != null) {
-            WorkFlow workFlow = workFlowRepository.findByRequestId(hpProfile.getRequestId());
+            WorkFlow workFlow = workFlowRepository.findLastWorkFlowForHealthProfessional(hpProfileId);
             if (workFlow != null) {
                 applicationTypeId = workFlow.getApplicationType().getId();
                 workFlowStatusId = workFlow.getWorkFlowStatus().getId();
+                requestId=workFlow.getRequestId();
             }
         }
-        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId, workFlowStatusId);
+        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId, workFlowStatusId,requestId);
     }
 
     @Override
@@ -456,7 +465,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setRegistrationId(request.getRegistrationNumber());
         hpProfile.setIsSameAddress(String.valueOf(false));
         hpProfile.setCountryNationality(countryRepository.findByName(NMRConstants.DEFAULT_COUNTRY_AADHAR));
-        hpProfile.setIsNew(1);
+        hpProfile.setIsNew(NMRConstants.YES);
         hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.PENDING.getId()).get());
         hpProfile = iHpProfileRepository.save(hpProfile);
 
@@ -490,7 +499,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     @Override
-    public void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) {
+    public void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException {
+        String transactionId = request.getTransactionId();
+        if(otpService.isOtpVerified(transactionId)){
+            throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage(),
+                    HttpStatus.UNAUTHORIZED.toString());
+        }
         if (request.getEmail() != null) {
             iHpProfileRepository.updateHpProfileEmail(hpProfileId, request.getEmail());
             iAddressRepository.updateAddressEmail(hpProfileId, request.getEmail(), AddressType.COMMUNICATION.getId());

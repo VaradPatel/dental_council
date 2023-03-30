@@ -32,32 +32,36 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
     EntityManager entityManager;
     private static final Function<ReactivateHealthProfessionalRequestParam, String> REACTIVATION_SEARCH_PARAMETERS = reactivateHealthProfessionalQueryParam -> {
         StringBuilder sb = new StringBuilder();
+
+        if (Objects.nonNull(reactivateHealthProfessionalQueryParam.getGroupId()) && (!reactivateHealthProfessionalQueryParam.getGroupId().isEmpty())) {
+            sb.append(" AND current_group_id IN ( " + reactivateHealthProfessionalQueryParam.getGroupId() + " ) ");
+        }
         if (Objects.nonNull(reactivateHealthProfessionalQueryParam.getSearch()) && (!reactivateHealthProfessionalQueryParam.getSearch().isEmpty())) {
-            sb.append("  AND (cast(r.id as varchar) LIKE '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
-            sb.append(" OR r.full_name ILIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
-            sb.append(" OR cast(r.created_at as varchar) LIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
-            sb.append(" OR cast(r.start_date as varchar) LIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
-            sb.append(" OR r.remarks ILIKE '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
-            sb.append(" OR r.suspension_type ILIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
-            sb.append(" OR r.registration_id ILIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%') ");
+            sb.append("  AND (cast(hp.id as varchar) LIKE '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
+            sb.append(" OR hp.full_name ILIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
+            sb.append(" OR cast(wf.created_at as varchar) LIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
+            sb.append(" OR cast(wf.start_date as varchar) LIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
+            sb.append(" OR wf.remarks ILIKE '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
+            sb.append(" OR hp.hp_profile_status_id  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%'  ");
+            sb.append(" OR hp.registration_id ILIKE  '%" + reactivateHealthProfessionalQueryParam.getSearch() + "%') ");
         }
         if (Objects.nonNull(reactivateHealthProfessionalQueryParam.getApplicantFullName()) && (!reactivateHealthProfessionalQueryParam.getApplicantFullName().isEmpty())) {
-            sb.append(" AND r.full_name ILIKE  '%" + reactivateHealthProfessionalQueryParam.getApplicantFullName() + "%'  ");
+            sb.append(" AND hp.full_name ILIKE  '%" + reactivateHealthProfessionalQueryParam.getApplicantFullName() + "%'  ");
         }
         if (Objects.nonNull(reactivateHealthProfessionalQueryParam.getRegistrationNumber()) && (!reactivateHealthProfessionalQueryParam.getRegistrationNumber().isEmpty())) {
-            sb.append(" AND r.registration_id ILIKE  '%" + reactivateHealthProfessionalQueryParam.getRegistrationNumber() + "%' ");
+            sb.append(" AND hp.registration_id ILIKE  '%" + reactivateHealthProfessionalQueryParam.getRegistrationNumber() + "%' ");
         }
         if (Objects.nonNull(reactivateHealthProfessionalQueryParam.getGender()) && !reactivateHealthProfessionalQueryParam.getGender().isEmpty()) {
-            sb.append(" AND r.gender ILIKE '%").append(reactivateHealthProfessionalQueryParam.getGender()).append("%' ");
+            sb.append(" AND hp.gender ILIKE '%").append(reactivateHealthProfessionalQueryParam.getGender()).append("%' ");
         }
         if (Objects.nonNull(reactivateHealthProfessionalQueryParam.getEmailId()) && !reactivateHealthProfessionalQueryParam.getEmailId().isEmpty()) {
-            sb.append(" AND r.email_id ILIKE '%").append(reactivateHealthProfessionalQueryParam.getEmailId()).append("%' ");
+            sb.append(" AND hp.email_id ILIKE '%").append(reactivateHealthProfessionalQueryParam.getEmailId()).append("%' ");
         }
         if (Objects.nonNull(reactivateHealthProfessionalQueryParam.getMobileNumber()) && !reactivateHealthProfessionalQueryParam.getMobileNumber().isEmpty()) {
-            sb.append(" AND r.mobile_number ILIKE '%").append(reactivateHealthProfessionalQueryParam.getMobileNumber()).append("%' ");
+            sb.append(" AND hp.mobile_number ILIKE '%").append(reactivateHealthProfessionalQueryParam.getMobileNumber()).append("%' ");
         }
         if (Objects.nonNull(reactivateHealthProfessionalQueryParam.getYearOfRegistration()) && !reactivateHealthProfessionalQueryParam.getYearOfRegistration().isEmpty()) {
-            sb.append(" AND r.created_at ILIKE '%").append(reactivateHealthProfessionalQueryParam.getYearOfRegistration()).append("%' ");
+            sb.append(" AND wf.created_at ILIKE '%").append(reactivateHealthProfessionalQueryParam.getYearOfRegistration()).append("%' ");
         }
         return sb.toString();
     };
@@ -72,7 +76,7 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
     };
     private static final Function<ReactivateHealthProfessionalRequestParam, String> REACTIVATE_HEALTH_PROFESSIONAL = reactivateHealthProfessionalQueryParam -> {
         StringBuilder sb = new StringBuilder();
-        sb.append(NMRConstants.FETCH_REACTIVATION_RECORDS);
+        sb.append(NMRConstants.FETCH_REACTIVATION_REQUESTS);
         String parameters = REACTIVATION_SEARCH_PARAMETERS.apply(reactivateHealthProfessionalQueryParam);
         if (Objects.nonNull(parameters) && !parameters.isEmpty()) {
             sb.append(parameters);

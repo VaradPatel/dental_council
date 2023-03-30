@@ -17,6 +17,7 @@ public class HpSearchProfileTO {
     List<HpSearchProfileQualificationTO> qualifications;
     private String yearOfInfo;
     private String registrationNumber;
+    private String registrationYear;
     private String dateOfRegistration;
     private String nmrId;
     private String profilePhoto;

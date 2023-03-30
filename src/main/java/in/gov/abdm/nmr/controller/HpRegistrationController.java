@@ -2,10 +2,7 @@ package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
-import in.gov.abdm.nmr.exception.DateException;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
-import in.gov.abdm.nmr.exception.NmrException;
-import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IQueriesService;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -293,7 +290,7 @@ public class HpRegistrationController {
     @PatchMapping(path = "health-professional/{healthProfessionalId}/personal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseMessageTo> updateHealthProfessionalEmailMobile(
             @Valid @RequestBody HealthProfessionalPersonalRequestTo request,
-            @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) {
+            @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws OtpException {
         hpService.updateHealthProfessionalEmailMobile (hpProfileId, request);
         return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
     }

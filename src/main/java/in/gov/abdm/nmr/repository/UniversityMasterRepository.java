@@ -1,10 +1,8 @@
 package in.gov.abdm.nmr.repository;
-
 import in.gov.abdm.nmr.entity.UniversityMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
 import java.math.BigInteger;
 import java.util.List;
 
@@ -21,4 +19,7 @@ public interface UniversityMasterRepository extends JpaRepository<UniversityMast
 
     @Query(value = "SELECT * FROM university_master WHERE id=:id", nativeQuery = true)
     UniversityMaster findUniversityMasterById(BigInteger id);
+
+    @Query(value = "SELECT *  FROM university_master", nativeQuery = true)
+    List<UniversityMaster> getUniversities();
 }

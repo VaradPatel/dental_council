@@ -139,7 +139,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Autowired
     private IWorkFlowAuditRepository iWorkFlowAuditRepository;
 
-    private static final Map<String, String> REACTIVATION_SORT_MAPPINGS = Map.of("id", " r.id", "name", " r.full_name", "createdAt", " r.created_at", "reactivationDate", " r.start_date", "suspensionType", " r.suspension_type", "remarks", " r.remarks");
+    private static final Map<String, String> REACTIVATION_SORT_MAPPINGS = Map.of("id", " hp.id", "name", " hp.full_name", "createdAt", " wf.created_at", "reactivationDate", " wf.start_date", "suspensionType", " hp.hp_profile_status_id", "remarks", " wf.remarks");
 
     /**
      * This method is used to suspend a health professional based on the request provided.
@@ -225,7 +225,11 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public ReactivateHealthProfessionalResponseTO getReactivationRecordsOfHealthProfessionalsToNmc(String pageNo, String offset, String search, String value, String sortBy, String sortType) throws InvalidRequestException {
         ReactivateHealthProfessionalResponseTO reactivateHealthProfessionalResponseTO = null;
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userDetail = userDaoService.findByUsername(userName);
+        BigInteger groupId = userDetail.getGroup().getId();
         ReactivateHealthProfessionalRequestParam reactivateHealthProfessionalQueryParam = new ReactivateHealthProfessionalRequestParam();
+        reactivateHealthProfessionalQueryParam.setGroupId(groupId.toString());
         reactivateHealthProfessionalQueryParam.setPageNo(Integer.parseInt(pageNo));
         final int dataLimit = Math.min(MAX_DATA_SIZE, Integer.parseInt(offset));
         reactivateHealthProfessionalQueryParam.setOffset(dataLimit);
@@ -276,9 +280,9 @@ public class ApplicationServiceImpl implements IApplicationService {
     private String getReactivationSortColumn(String columnToSort) {
 
         if (columnToSort != null && columnToSort.length() > 0) {
-            return REACTIVATION_SORT_MAPPINGS.getOrDefault(columnToSort, " r.created_at ");
+            return REACTIVATION_SORT_MAPPINGS.getOrDefault(columnToSort, " wf.created_at ");
         } else {
-            return " r.created_at ";
+            return " wf.created_at ";
         }
     }
 

@@ -45,7 +45,7 @@ public class QueriesServiceImpl implements IQueriesService {
     @Override
     public ResponseMessageTo createQueries(QueryCreateTo queryCreateTo) throws WorkFlowException {
 
-        List<Queries> queries= new ArrayList<>();
+        List<Queries> queries = new ArrayList<>();
         queryCreateTo.getQueries().forEach(queryTo -> {
             Queries query = Queries.builder()
                     .hpProfileId(queryCreateTo.getHpProfileId())
@@ -55,14 +55,14 @@ public class QueriesServiceImpl implements IQueriesService {
                     .fieldLabel(queryTo.getFieldLabel())
                     .sectionName(queryTo.getSectionName())
                     .queryComment(queryTo.getQueryComment())
-                    .queryStatus(NMRConstants.OPEN_STATUS).build();
+                    .queryStatus(NMRConstants.QUERY_OPEN_STATUS).build();
             queries.add(query);
         });
 
         queriesRepository.saveAll(queries);
 
         WorkFlowRequestTO workFlowRequestTO = WorkFlowRequestTO.builder().requestId(queryCreateTo.getRequestId())
-                .applicationTypeId(ApplicationType.HP_REGISTRATION.getId())
+                .applicationTypeId(queryCreateTo.getApplicationTypeId())
                 .hpProfileId(queryCreateTo.getHpProfileId())
                 .actionId(Action.QUERY_RAISE.getId())
                 .actorId(queryCreateTo.getGroupId())
@@ -79,22 +79,23 @@ public class QueriesServiceImpl implements IQueriesService {
      */
     @Override
     public List<QueryResponseTo> getQueriesByHpProfileId(BigInteger hpProfileId) {
-        return queriesDtoMapper.queryDataToOpenQueriesDto(queriesRepository.findQueriesByHpProfileId(hpProfileId));
+        return queriesDtoMapper.queryDataToOpenQueriesDto(queriesRepository.findOpenQueriesByHpProfileId(hpProfileId));
     }
 
     /**
      * Update query status
      *
-     * @param queryIds list of query ids
+     * @param hpProfileId list of query ids
      * @return string of message
      */
     @Override
-    public ResponseMessageTo markQueryAsClosed(List<BigInteger> queryIds) {
-        queryIds.stream().forEach(id -> {
-            Queries queries = queriesRepository.findQueriesById(id);
-            queries.setQueryStatus(NMRConstants.CLOSED_STATUS);
-            queriesRepository.save(queries);
+    public ResponseMessageTo markQueryAsClosed(BigInteger hpProfileId) {
+
+        List<Queries> queries=queriesRepository.findOpenQueriesByHpProfileId(hpProfileId);
+        queries.forEach(query->{
+            query.setQueryStatus(NMRConstants.QUERY_CLOSED_STATUS);
         });
+        queriesRepository.saveAll(queries);
         return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
     }
 }
