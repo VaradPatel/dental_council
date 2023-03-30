@@ -199,22 +199,24 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
             user = new User(null, collegeMasterTOV2.getEmailId(), collegeMasterTOV2.getMobileNumber(), null, null, null, false, false, //
                     entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), // 
                     entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false);
-
-            passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail()));
         } else {
             user.setEmail(collegeMasterTOV2.getEmailId());
             user.setMobileNumber(collegeMasterTOV2.getMobileNumber());
         }
         user = userDaoService.save(user);
 
-        if (collegeProfile == null) {
+        boolean isNewCollegeProfile = collegeProfile == null;
+        if (isNewCollegeProfile) {
             collegeProfile = new CollegeProfile();
         }
         collegeProfile.setName(collegeMaster.getName());
         collegeProfile.setCollege(collegeMaster);
         collegeProfile.setUser(user);
         collegeProfileDaoService.save(collegeProfile);
-
+        
+        if(isNewCollegeProfile) {
+            passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail()));
+        }
         return collegeMasterTOV2;
     }
 
@@ -266,15 +268,14 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
                     null, null, false, false, entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), //
                     entityManager.getReference(UserSubType.class, collegeProfileTOV2.getDesignation()), //
                     entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false);
-            user = userDaoService.save(user);
-            passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail()));
         } else {
             user.setEmail(collegeProfileTOV2.getEmailId());
             user.setMobileNumber(collegeProfileTOV2.getMobileNumber());
-            user = userDaoService.save(user);
         }
+        user = userDaoService.save(user);
 
-        if (collegeProfile == null) {
+        boolean isNewCollegeVerifierProfile = collegeProfile == null;
+        if (isNewCollegeVerifierProfile) {
             collegeProfile = new CollegeProfile();
         }
         collegeProfile.setName(collegeProfileTOV2.getName());
@@ -283,6 +284,10 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         collegeProfile = collegeProfileDaoService.save(collegeProfile);
 
         collegeProfileTOV2.setId(collegeProfile.getId());
+        
+        if (isNewCollegeVerifierProfile) {
+            passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail()));
+        }
         return collegeProfileTOV2;
     }
 
@@ -326,7 +331,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         collegeProfileTOV2.setCollegeId(collegeProfile.getCollege().getId());
 
         User user = collegeProfile.getUser();
-        collegeProfileTOV2.setMobileNumber(user.getEmail());
+        collegeProfileTOV2.setEmailId(user.getEmail());
         collegeProfileTOV2.setMobileNumber(user.getMobileNumber());
         collegeProfileTOV2.setDesignation(user.getUserSubType().getId());
         return collegeProfileTOV2;
