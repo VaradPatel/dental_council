@@ -48,12 +48,14 @@ public class ApplicationController {
     public SuspendRequestResponseTo suspensionHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
 
         log.info("In Application Controller: suspensionHealthProfessional method ");
-        log.debug("Request Payload: ApplicationRequestTo: ", applicationRequestTo);
+        log.debug("Request Payload: ApplicationRequestTo: ");
+        log.debug(applicationRequestTo.toString());
 
         SuspendRequestResponseTo suspendRequestResponseTo = applicationService.suspendRequest(applicationRequestTo);
 
         log.info("Application Controller: suspensionHealthProfessional method: Execution Successful. ");
-        log.debug("Response Payload: SuspendRequestResponseTo: ",suspendRequestResponseTo);
+        log.debug("Response Payload: SuspendRequestResponseTo: ");
+        log.debug(suspendRequestResponseTo.toString());
 
         return suspendRequestResponseTo;
 
@@ -73,12 +75,14 @@ public class ApplicationController {
     public ReactivateRequestResponseTo reactivateHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
 
         log.info("In Application Controller: reactivateHealthProfessional method ");
-        log.debug("Request Payload: ApplicationRequestTo: ", applicationRequestTo);
+        log.debug("Request Payload: ApplicationRequestTo: ");
+        log.debug(applicationRequestTo.toString());
 
         ReactivateRequestResponseTo reactivateRequestResponseTo = applicationService.reactivateRequest(applicationRequestTo);
 
         log.info("Application Controller: reactivateHealthProfessional method: Execution Successful. ");
-        log.debug("Response Payload: ReactivateRequestResponseTo: ",reactivateRequestResponseTo);
+        log.debug("Response Payload: ReactivateRequestResponseTo: ");
+        log.debug(reactivateRequestResponseTo.toString());
 
         return reactivateRequestResponseTo;
 
