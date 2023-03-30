@@ -105,9 +105,10 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             log.debug("Proceeding to create a new Workflow entry since there are no existing entries with the given request_id");
             if (Group.HEALTH_PROFESSIONAL.getId().equals(requestTO.getActorId())) {
                 if (!ApplicationType.getAllHpApplicationTypeIds().contains(requestTO.getApplicationTypeId()) ||
-                        !Action.SUBMIT.getId().equals(requestTO.getActionId()))
+                        !Action.SUBMIT.getId().equals(requestTO.getActionId())) {
                     log.debug("Health Professional is the Actor but either Action is not Submit or Application type is invalid");
                     throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
+                }
             } else if (Group.SMC.getId().equals(requestTO.getActorId()) || Group.NMC.getId().equals(requestTO.getActorId())) {
                 if (//!ApplicationType.HP_TEMPORARY_SUSPENSION.equals(requestTO.getApplicationTypeId()) ||
                     //!ApplicationType.HP_PERMANENT_SUSPENSION.equals(requestTO.getApplicationTypeId()) ||
