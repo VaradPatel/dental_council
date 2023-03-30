@@ -119,14 +119,14 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             } else {
                 if (groupId.equals(Group.SMC.getId())) {
                     sb.append(" AND smc_status NOT IN ('FORWARDED','NOT YET RECEIVED') ");
-                } else if (groupId.equals(Group.COLLEGE.getId())) {
+                } else if (groupId.equals(Group.COLLEGE.getId()) && !dashboardRequestParamsTO.getApplicationTypeId().equals("1,8")) {
                     sb.append(" AND college_status NOT IN ('NOT YET RECEIVED') ");
 //                } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
 //                    sb.append(" AND college_registrar_status NOT IN ('NOT YET RECEIVED') ");
 //                }
                 }else if (groupId.equals(Group.NMC.getId())) {
                     sb.append(" AND nmc_status NOT IN ('NOT YET RECEIVED') ");
-                } else if (groupId.equals(Group.NBE.getId())) {
+                } else if (groupId.equals(Group.NBE.getId()) && !dashboardRequestParamsTO.getApplicationTypeId().equals("7")) {
                     sb.append(" AND nbe_status NOT IN ('NOT YET RECEIVED') ");
                 }
 //                else if (groupId.equals(Group.COLLEGE_ADMIN.getId())) {
