@@ -266,12 +266,13 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
                     null, null, false, false, entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), //
                     entityManager.getReference(UserSubType.class, collegeProfileTOV2.getDesignation()), //
                     entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false);
+            user = userDaoService.save(user);
             passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail()));
         } else {
             user.setEmail(collegeProfileTOV2.getEmailId());
             user.setMobileNumber(collegeProfileTOV2.getMobileNumber());
+            user = userDaoService.save(user);
         }
-        user = userDaoService.save(user);
 
         if (collegeProfile == null) {
             collegeProfile = new CollegeProfile();
