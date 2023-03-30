@@ -279,7 +279,8 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setNmrId((String)result[17]);
             dashBoardTO.setYearOfRegistration(((Date) result[18]).toString());
             dashBoardTO.setCollegeStatus((String) result[19]);
-            dashBoardResponseTO.setTotalNoOfRecords((BigInteger) result[20]);
+            dashBoardTO.setApplicationTypeId((BigInteger) result[20]);
+            dashBoardResponseTO.setTotalNoOfRecords((BigInteger) result[21]);
             dashboardTOList.add(dashBoardTO);
         });
         dashBoardResponseTO.setDashboardTOList(dashboardTOList);
