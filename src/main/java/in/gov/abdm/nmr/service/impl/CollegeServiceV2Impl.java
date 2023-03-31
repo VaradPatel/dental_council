@@ -246,7 +246,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
 
     @Override
     public List<CollegeMasterDataTO> getAllCollegeVerifiersDesignation() throws NmrException {
-        return entityManager.createQuery("select ust from userSubType ust where ust.id != ?1 and ust.userType.id = ?2", UserSubType.class) //
+        return entityManager.createQuery("select ust from userSubType ust where ust.id != ?1 and ust.userType.id = ?2 order by ust.id asc", UserSubType.class) //
                 .setParameter(1, UserSubTypeEnum.COLLEGE.getCode()).setParameter(2, UserTypeEnum.COLLEGE.getCode()) //
                 .getResultList().stream().map(userSubType -> new CollegeMasterDataTO(userSubType.getId(), userSubType.getName())).toList();
     }
