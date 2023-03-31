@@ -26,6 +26,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import brave.Tracer;
@@ -104,6 +105,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
 
     private String readRequestBody(HttpServletRequest request) throws IOException {
         ServletInputStream requestInputStream = request.getInputStream();
+        objectMapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
         return new String(requestInputStream.available() > 0 ? requestInputStream.readAllBytes() : new byte[0]);
     }
 
