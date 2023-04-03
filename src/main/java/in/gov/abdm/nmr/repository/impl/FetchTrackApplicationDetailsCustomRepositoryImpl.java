@@ -40,7 +40,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
     private EntityManager entityManager;
 
     private static final Function<String, String> UPDATED_DATES = requestId -> "SELECT * FROM (SELECT request_id,previous_group_id,updated_at, DENSE_RANK() OVER(PARTITION BY previous_group_id ORDER BY updated_at DESC) AS previous_group_id_rank " +
-            "FROM main.work_flow_audit WHERE request_id = '" + requestId + "' ORDER BY updated_at DESC) work_flow_details WHERE work_flow_details.previous_group_id_rank = 1";
+            "FROM main.work_flow_audit WHERE request_id = '" + requestId + "' ORDER BY updated_at ASC) work_flow_details WHERE work_flow_details.previous_group_id_rank = 1";
 
 
     /**
@@ -231,6 +231,8 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             String requestId = (String) result[7];
             Query queryDate = entityManager.createNativeQuery(UPDATED_DATES.apply(requestId));
             List<Object[]> resultsDate = queryDate.getResultList();
+            Timestamp submissionDate = (Timestamp)resultsDate.get(0)[2];
+            healthProfessionalApplicationTo.setCreatedAt(submissionDate.toString());
             resultsDate.forEach(objects -> {
                 BigInteger previousGroupId = (BigInteger) objects[1];
                 Timestamp timestamp = (Timestamp) objects[2];
@@ -245,7 +247,8 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
                         healthProfessionalApplicationTo.setNmcActionDate(timestamp.toString());
                         break;
                     case 4:
-                        healthProfessionalApplicationTo.setCollegeDeanActionDate(timestamp.toString());
+//                        healthProfessionalApplicationTo.setCollegeDeanActionDate(timestamp.toString());
+                        healthProfessionalApplicationTo.setCollegeActionDate(timestamp.toString());
                         break;
                     case 5:
                         healthProfessionalApplicationTo.setCollegeRegistrarActionDate(timestamp.toString());
@@ -257,7 +260,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             });
             healthProfessionalApplicationTo.setRequestId((String) result[7]);
             healthProfessionalApplicationTo.setRegistrationNo((String) result[8]);
-            healthProfessionalApplicationTo.setCreatedAt((String) result[9]);
+//            healthProfessionalApplicationTo.setCreatedAt((String) result[9]);
             healthProfessionalApplicationTo.setCouncilName((String) result[10]);
             healthProfessionalApplicationTo.setApplicantFullName((String) result[11]);
             healthProfessionalApplicationTo.setApplicationTypeId((BigInteger) result[12]);

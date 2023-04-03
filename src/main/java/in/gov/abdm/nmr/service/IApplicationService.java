@@ -19,7 +19,7 @@ public interface IApplicationService {
      * @return a string indicating the result of the suspension request.
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
-    SuspendRequestResponseTo suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException;
+    SuspendRequestResponseTo suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException;
 
     /**
      * This method is used to reactivate a health professional based on the request provided.

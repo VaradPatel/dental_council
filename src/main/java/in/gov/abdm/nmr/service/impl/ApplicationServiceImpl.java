@@ -149,23 +149,27 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
     @Override
-    public SuspendRequestResponseTo suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
+    public SuspendRequestResponseTo suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
 
         log.info("In ApplicationServiceImpl: suspendRequest method ");
 
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
-
-        log.debug("Building a new request_id");
-        String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
+        if (Objects.equals(HpProfileStatus.APPROVED.getId(), hpProfile.getHpProfileStatus().getId())) {
+            log.debug("Building a new request_id");
+            String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
 //        HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
-        initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
-        SuspendRequestResponseTo suspendRequestResponseTo = new SuspendRequestResponseTo();
-        suspendRequestResponseTo.setProfileId(hpProfile.getId().toString());
-        suspendRequestResponseTo.setMessage(SUCCESS_RESPONSE);
+            initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
+            SuspendRequestResponseTo suspendRequestResponseTo = new SuspendRequestResponseTo();
+            suspendRequestResponseTo.setProfileId(hpProfile.getId().toString());
+            suspendRequestResponseTo.setMessage(SUCCESS_RESPONSE);
 
-        log.info("ApplicationServiceImpl: suspendRequest method: Execution Successful. ");
+            log.info("ApplicationServiceImpl: suspendRequest method: Execution Successful. ");
 
-        return suspendRequestResponseTo;
+            return suspendRequestResponseTo;
+        }else {
+            throw new NmrException("Approved profile can only be suspended", HttpStatus.FORBIDDEN);
+        }
+
     }
 
     /**
@@ -182,7 +186,7 @@ public class ApplicationServiceImpl implements IApplicationService {
 
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
         ReactivateRequestResponseTo reactivateRequestResponseTo = new ReactivateRequestResponseTo();
-        if (HpProfileStatus.SUSPENDED.getId() == hpProfile.getHpProfileStatus().getId() || HpProfileStatus.BLACKLISTED.getId() == hpProfile.getHpProfileStatus().getId()) {
+        if (Objects.equals(HpProfileStatus.SUSPENDED.getId(), hpProfile.getHpProfileStatus().getId()) || Objects.equals(HpProfileStatus.BLACKLISTED.getId(), hpProfile.getHpProfileStatus().getId())) {
             log.debug("Proceeding to Reactivate the profile since the profile is currently in Suspended / Black Listed state");
 
             log.debug("Building Request id.");
