@@ -553,7 +553,5 @@ public class NMRConstants {
 
     //kafka config
     public static final String KAFKA_TOPIC = "esign_topic";
-    public static final String KAFKA_GROUP_ID = "esign_group_id";
-    public static final String KAFKA_CAPACITY = "103554432";
-
+    public static final String KAFKA_GROUP_ID = "NMR_esign_group";
 }

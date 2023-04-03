@@ -37,7 +37,7 @@ public class KafkaListenerNotificationService {
         try {
             FileESignedEventTO eSignedEvent = objectMapper.readValue(eventMessage, FileESignedEventTO.class);
             String transactionId = eSignedEvent.getTransactionId().substring(0, eSignedEvent.getTransactionId().lastIndexOf("."));
-            log.info("council Kafka topic name :{} Request received for transaction ID: {} ", NMRConstants.KAFKA_TOPIC, transactionId);
+            log.info("council Kafka topic name :{} and group Id :{} Request received for transaction ID: {} ", NMRConstants.KAFKA_TOPIC, NMRConstants.KAFKA_GROUP_ID, transactionId);
             HpProfile hpProfile = iHpProfileRepository.findByTransactionId(transactionId);
             if (hpProfile != null) {
                 log.debug("Fetched hp profile detail successfully for hp profile ID: {}", hpProfile.getId());
@@ -55,11 +55,9 @@ public class KafkaListenerNotificationService {
                     }
                 } else {
                     log.error("Invalid request input data transaction id: {}, was not matched error Council Address Data.", transactionId);
-                    throw new InvalidRequestException("given input data was not matched error Council Data.");
                 }
             } else {
                 log.error("Invalid request input data transaction id: {}, was not matched error Council hp profile Data.", transactionId);
-                throw new InvalidRequestException("given input data was not matched error Council Data.");
             }
         } catch (Exception ex) {
             log.error("Error occurred while processing message: {}", eventMessage, ex);

@@ -33,7 +33,7 @@ public class RestTemplateConfig {
         Map<String, Object> config = new HashMap<>();
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
         config.put(ConsumerConfig.GROUP_ID_CONFIG, NMRConstants.KAFKA_GROUP_ID);
-        config.put("message.assembler.buffer.capacity", NMRConstants.KAFKA_CAPACITY);
+        config.put("message.assembler.buffer.capacity", 103554432);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         return new DefaultKafkaConsumerFactory<>(config);
