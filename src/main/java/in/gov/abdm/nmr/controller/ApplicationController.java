@@ -45,8 +45,10 @@ public class ApplicationController {
      *                           to perform the suspension request and return the result of the process.
      */
     @PostMapping(ProtectedPaths.SUSPENSION_REQUEST_URL)
-    public SuspendRequestResponseTo suspensionHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException {
-
+    public SuspendRequestResponseTo suspensionHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
+        if(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(applicationRequestTo.getHpProfileId())){
+            throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.FORBIDDEN);
+        }
         log.info("In Application Controller: suspensionHealthProfessional method ");
         log.debug("Request Payload: ApplicationRequestTo: ");
         log.debug(applicationRequestTo.toString());
