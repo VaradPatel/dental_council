@@ -551,4 +551,12 @@ public class NMRConstants {
 
     public static final Integer NO = 0;
 
+    //kafka config
+    public static final String KAFKA_TOPIC = "esign_topic";
+    public static final String KAFKA_GROUP_ID = "NMR_esign_group";
+
+    public static final String GATEWAY_SERVICE = "gateway";
+    public static final String GATEWAY_SERVICE_ENDPOINT = "${gateway.endpoint}";
+
+    public static final String SESSION_URL = "/gateway/v0.5/sessions";
 }
