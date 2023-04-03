@@ -33,7 +33,7 @@ public class KafkaListenerNotificationService {
     IAddressRepository iAddressRepository;
 
     @KafkaListener(topics = NMRConstants.KAFKA_TOPIC, groupId = NMRConstants.KAFKA_GROUP_ID)
-    public void consume(String eventMessage) throws JsonProcessingException, InvalidRequestException {
+    public void consume(String eventMessage) throws JsonProcessingException {
         try {
             FileESignedEventTO eSignedEvent = objectMapper.readValue(eventMessage, FileESignedEventTO.class);
             String transactionId = eSignedEvent.getTransactionId().substring(0, eSignedEvent.getTransactionId().lastIndexOf("."));
