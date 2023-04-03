@@ -62,14 +62,13 @@ public class KafkaListenerNotificationService {
                         log.info("updated e sign status:{} for Transaction ID: {}", NMRConstants.E_SIGN_FAILURE_STATUS, transactionId);
                     }
                 } else {
-                    log.error("Invalid request input data transaction id: {}, was not matched error Council Address Data.", transactionId);
+                    log.error("transaction id: {}, could not be found.", transactionId);
                 }
             } else {
-                log.error("Invalid request input data transaction id: {}, was not matched error Council hp profile Data.", transactionId);
+                log.error("transaction id: {}, could not be found.", transactionId);
             }
         } catch (Exception ex) {
             log.error("Error occurred while processing message: {}", eventMessage, ex);
-            throw ex;
         }
     }
 
