@@ -32,12 +32,12 @@ public class KafkaListenerNotificationService {
     @Autowired
     IAddressRepository iAddressRepository;
 
-    @KafkaListener(topics = "esign_topic", groupId = "esign_group_id")
+    @KafkaListener(topics = NMRConstants.KAFKA_TOPIC, groupId = NMRConstants.KAFKA_GROUP_ID)
     public void consume(String eventMessage) throws JsonProcessingException, InvalidRequestException {
         try {
             FileESignedEventTO eSignedEvent = objectMapper.readValue(eventMessage, FileESignedEventTO.class);
             String transactionId = eSignedEvent.getTransactionId().substring(0, eSignedEvent.getTransactionId().lastIndexOf("."));
-            log.info("council Kafka topic name :{} Request received for transaction ID: {} ", "esign_topic", transactionId);
+            log.info("council Kafka topic name :{} Request received for transaction ID: {} ", NMRConstants.KAFKA_TOPIC, transactionId);
             HpProfile hpProfile = iHpProfileRepository.findByTransactionId(transactionId);
             if (hpProfile != null) {
                 log.debug("Fetched hp profile detail successfully for hp profile ID: {}", hpProfile.getId());
@@ -78,5 +78,4 @@ public class KafkaListenerNotificationService {
         }
         return dob.getYear();
     }
-
 }
