@@ -20,6 +20,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.logging.Level;
 
+/**
+ * This is a service implementation class for Kafka listener notification service
+ */
 @Service
 @Slf4j
 public class KafkaListenerNotificationService {
@@ -32,6 +35,11 @@ public class KafkaListenerNotificationService {
     @Autowired
     IAddressRepository iAddressRepository;
 
+    /**
+     * This method consumes a message from Kafka topic and updates the e-sign status of a health profile if the message contains valid details.
+     * * @param eventMessage the message to be consumed from Kafka topic
+     * * @throws JsonProcessingException if an error occurs while processing the JSON message
+     */
     @KafkaListener(topics = NMRConstants.KAFKA_TOPIC, groupId = NMRConstants.KAFKA_GROUP_ID)
     public void consume(String eventMessage) throws JsonProcessingException {
         try {
@@ -65,6 +73,15 @@ public class KafkaListenerNotificationService {
         }
     }
 
+    /**
+     * Returns the birth year of a person given their date of birth.
+     * <p>
+     * The date of birth should be in the format "yyyy-MM-dd".
+     *
+     * @param dateOfBirth the date of birth of the person
+     * @return the birth year of the person
+     * @throws DateTimeParseException if the date of birth is in an invalid format
+     */
     public static int getBirthYear(String dateOfBirth) throws DateTimeParseException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate dob;
