@@ -15,4 +15,5 @@ public class LoginResponseTO {
     private BigInteger userGroupId;
     private Boolean hpRegistered;
     private Boolean blacklisted;
+    private String esignStatus;
 }

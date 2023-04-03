@@ -75,6 +75,7 @@ public class AuthServiceImpl implements IAuthService {
                 loginResponseTO.setProfileId(hp.getId());
                 loginResponseTO.setHpRegistered(StringUtils.isBlank(hp.getNmrId()));
                 loginResponseTO.setBlacklisted(HpProfileStatus.BLACKLISTED.getId() == hp.getHpProfileStatus().getId() || HpProfileStatus.SUSPENDED.getId() == hp.getHpProfileStatus().getId());
+                loginResponseTO.setEsignStatus(hp.getESignStatus());
             }
         } else if (UserTypeEnum.COLLEGE.getCode().equals(user.getUserType().getId())) {
             BigInteger userSubTypeId = user.getUserSubType().getId();
