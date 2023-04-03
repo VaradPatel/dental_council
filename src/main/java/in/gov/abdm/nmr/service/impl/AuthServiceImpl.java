@@ -78,11 +78,16 @@ public class AuthServiceImpl implements IAuthService {
                 loginResponseTO.setEsignStatus(hp.getESignStatus());
             }
         } else if (UserTypeEnum.COLLEGE.getCode().equals(user.getUserType().getId())) {
-            loginResponseTO.setUserSubType(user.getUserSubType().getId());
+            BigInteger userSubTypeId = user.getUserSubType().getId();
+            loginResponseTO.setUserSubType(userSubTypeId);
 
             CollegeProfile collegeProfile = collegeProfileDaoService.findByUserId(user.getId());
-            loginResponseTO.setProfileId(collegeProfile.getId());
-            loginResponseTO.setParentProfileId(collegeProfile.getCollege().getId());
+            if (UserSubTypeEnum.COLLEGE.getCode().equals(userSubTypeId)) {
+                loginResponseTO.setProfileId(collegeProfile.getCollege().getId());
+            } else {
+                loginResponseTO.setProfileId(collegeProfile.getId());
+                loginResponseTO.setParentProfileId(collegeProfile.getCollege().getId());
+            }
 
         } else if (UserTypeEnum.STATE_MEDICAL_COUNCIL.getCode().equals(user.getUserType().getId())) {
             loginResponseTO.setProfileId(smcProfileDaoService.findByUserId(user.getId()).getId());
