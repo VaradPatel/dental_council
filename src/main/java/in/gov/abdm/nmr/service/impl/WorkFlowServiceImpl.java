@@ -2,13 +2,17 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.INextGroup;
 import in.gov.abdm.nmr.repository.*;
-import in.gov.abdm.nmr.service.*;
+import in.gov.abdm.nmr.service.INotificationService;
+import in.gov.abdm.nmr.service.IUserDaoService;
+import in.gov.abdm.nmr.service.IWorkFlowService;
+import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +26,7 @@ import java.util.List;
 import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
 
 @Service
+@Slf4j
 public class WorkFlowServiceImpl implements IWorkFlowService {
 
     /**
@@ -97,26 +102,35 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         HpProfile hpProfile = iHpProfileRepository.findById(requestTO.getHpProfileId()).orElse(new HpProfile());
         INextGroup iNextGroup = null;
         if (workFlow == null) {
+            log.debug("Proceeding to create a new Workflow entry since there are no existing entries with the given request_id");
             if (Group.HEALTH_PROFESSIONAL.getId().equals(requestTO.getActorId())) {
                 if (!ApplicationType.getAllHpApplicationTypeIds().contains(requestTO.getApplicationTypeId()) ||
-                        !Action.SUBMIT.getId().equals(requestTO.getActionId()))
-                    throw new WorkFlowException("Invalid  Request", HttpStatus.BAD_REQUEST);
+                        !Action.SUBMIT.getId().equals(requestTO.getActionId())) {
+                    log.debug("Health Professional is the Actor but either Action is not Submit or Application type is invalid");
+                    throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
+                }
             } else if (Group.SMC.getId().equals(requestTO.getActorId()) || Group.NMC.getId().equals(requestTO.getActorId())) {
                 if (//!ApplicationType.HP_TEMPORARY_SUSPENSION.equals(requestTO.getApplicationTypeId()) ||
                     //!ApplicationType.HP_PERMANENT_SUSPENSION.equals(requestTO.getApplicationTypeId()) ||
                         !Action.PERMANENT_SUSPEND.getId().equals(requestTO.getActionId()) &&
                                 !Action.TEMPORARY_SUSPEND.getId().equals(requestTO.getActionId())) {
+                    log.debug("SMC or NMC is the Actor but Action is not Temporary Suspend or Permanent Suspend");
                     throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
                 }
             }
 
+            log.debug("Fetching the Next Group to assign this request to and the work_flow_status using Application type, Application sub type, Actor and Action");
             iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(requestTO.getApplicationTypeId(), requestTO.getActorId(), requestTO.getActionId(), requestTO.getApplicationSubTypeId());
             workFlow = buildNewWorkFlow(requestTO, iNextGroup, hpProfile, user);
             iWorkFlowRepository.save(workFlow);
+            log.debug("Work Flow Creation Successful");
         } else {
+            log.debug("Proceeding to update the existing Workflow entry since there is an existing entry with the given request_id");
             if (!workFlow.getApplicationType().getId().equals(requestTO.getApplicationTypeId()) || workFlow.getCurrentGroup() == null || !workFlow.getCurrentGroup().getId().equals(requestTO.getActorId())) {
+                log.debug("Invalid Request since either the given application type matches the fetched application type from the workflow or current group fetched from the workflow is null or current group id fetched from the workflow matches the given actor id");
                 throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
             }
+            log.debug("Fetching the Next Group to assign this request to and the work_flow_status using Application type, Application sub type, Actor and Action");
             iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(workFlow.getApplicationType().getId(), workFlow.getCurrentGroup().getId(), requestTO.getActionId(), requestTO.getApplicationSubTypeId());
             if (iNextGroup != null) {
                 workFlow.setUpdatedAt(null);
@@ -126,15 +140,19 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
                 workFlow.setRemarks(requestTO.getRemarks());
                 workFlow.setUserId(user);
+                log.debug("Work Flow Updation Successful");
             } else {
                 throw new WorkFlowException("Next Group Not Found", HttpStatus.BAD_REQUEST);
             }
         }
         if (isLastStepOfWorkFlow(iNextGroup) &&
                 APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES.contains(workFlow.getWorkFlowStatus().getId())) {
+            log.debug("Performing Post Workflow updates since either the Last step of Workflow is reached or work_flow_status is Approved/Suspended/Blacklisted ");
             workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
         }
+        log.debug("Saving an entry in the work_flow_audit table");
         iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
+        log.debug("Initiating a notification to indicate the change of status.");
         notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
 
     }

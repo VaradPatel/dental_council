@@ -88,28 +88,28 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
         return sb.toString();
     };
 
-    private static final Function<ReactivateHealthProfessionalRequestParam, String> GET_RECORD_COUNT = reactivateHealthProfessionalRequestParam -> {
-        StringBuilder sb = new StringBuilder();
-        sb.append(NMRConstants.FETCH_COUNT_OF_REACTIVATION_RECORDS);
-        String parameters = REACTIVATION_SEARCH_PARAMETERS.apply(reactivateHealthProfessionalRequestParam);
-        if (Objects.nonNull(parameters) && !parameters.isEmpty()) {
-            sb.append(parameters);
-        }
-        return sb.toString();
-    };
-
-    private BigInteger getCount(ReactivateHealthProfessionalRequestParam reactivateHealthProfessionalRequestParam) {
-        BigInteger totalRecords = null;
-        try {
-            Query query = entityManager.createNativeQuery(GET_RECORD_COUNT.apply(reactivateHealthProfessionalRequestParam));
-
-            Object result = query.getSingleResult();
-            totalRecords = (BigInteger) result;
-        } catch (Exception e) {
-            log.error("Repository: getRecords " + e.getMessage());
-        }
-        return totalRecords;
-    }
+//    private static final Function<ReactivateHealthProfessionalRequestParam, String> GET_RECORD_COUNT = reactivateHealthProfessionalRequestParam -> {
+//        StringBuilder sb = new StringBuilder();
+//        sb.append(NMRConstants.FETCH_COUNT_OF_REACTIVATION_RECORDS);
+//        String parameters = REACTIVATION_SEARCH_PARAMETERS.apply(reactivateHealthProfessionalRequestParam);
+//        if (Objects.nonNull(parameters) && !parameters.isEmpty()) {
+//            sb.append(parameters);
+//        }
+//        return sb.toString();
+//    };
+//
+//    private BigInteger getCount(ReactivateHealthProfessionalRequestParam reactivateHealthProfessionalRequestParam) {
+//        BigInteger totalRecords = null;
+//        try {
+//            Query query = entityManager.createNativeQuery(GET_RECORD_COUNT.apply(reactivateHealthProfessionalRequestParam));
+//
+//            Object result = query.getSingleResult();
+//            totalRecords = (BigInteger) result;
+//        } catch (Exception e) {
+//            log.error("Repository: getRecords " + e.getMessage());
+//        }
+//        return totalRecords;
+//    }
 
     /**
      * Customized  method for fetching the reactivation records
@@ -124,6 +124,7 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
     @Override
     public ReactivateHealthProfessionalResponseTO getReactivationRecordsOfHealthProfessionalsToNmc(ReactivateHealthProfessionalRequestParam reactivateHealthProfessionalQueryParam, Pageable pageable) {
         ReactivateHealthProfessionalResponseTO reactivateHealthProfessionalResponseTO = new ReactivateHealthProfessionalResponseTO();
+        reactivateHealthProfessionalResponseTO.setTotalNoOfRecords(BigInteger.ZERO);
         List<ReactivateHealthProfessionalTO> reactivateHealthProfessionalTOList = new ArrayList<>();
         Query query = entityManager.createNativeQuery(REACTIVATE_HEALTH_PROFESSIONAL.apply(reactivateHealthProfessionalQueryParam));
 
@@ -142,12 +143,13 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
             reactivateHealthProfessionalTO.setGender((String) result[6]);
             reactivateHealthProfessionalTO.setEmailId((String) result[7]);
             reactivateHealthProfessionalTO.setMobileNumber((String) result[8]);
-            reactivateHealthProfessionalTO.setTypeOfSuspension((String) result[9]);
+            reactivateHealthProfessionalTO.setTypeOfSuspension((BigInteger) result[9]);
             reactivateHealthProfessionalTO.setRemarks((String) result[10]);
+            reactivateHealthProfessionalResponseTO.setTotalNoOfRecords((BigInteger) result[11]);
             reactivateHealthProfessionalTOList.add(reactivateHealthProfessionalTO);
         });
         reactivateHealthProfessionalResponseTO.setHealthProfessionalDetails(reactivateHealthProfessionalTOList);
-        reactivateHealthProfessionalResponseTO.setTotalNoOfRecords(getCount(reactivateHealthProfessionalQueryParam));
+//        reactivateHealthProfessionalResponseTO.setTotalNoOfRecords(getCount(reactivateHealthProfessionalQueryParam));
         return reactivateHealthProfessionalResponseTO;
     }
 }

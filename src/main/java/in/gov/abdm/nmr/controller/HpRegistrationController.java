@@ -65,7 +65,18 @@ public class HpRegistrationController {
     public HpProfilePersonalResponseTO addHealthProfessionalPersonalDetail(
             @Valid @RequestBody HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO)
             throws InvalidRequestException, WorkFlowException {
-        return hpService.addOrUpdateHpPersonalDetail(null, hpPersonalUpdateRequestTO);
+
+        log.info("In HP Registration Controller: addHealthProfessionalPersonalDetail method ");
+        log.debug("Request Payload: HpPersonalUpdateRequestTO: ");
+        log.debug(hpPersonalUpdateRequestTO.toString());
+
+        HpProfilePersonalResponseTO hpProfilePersonalResponseTO = hpService.addOrUpdateHpPersonalDetail(null, hpPersonalUpdateRequestTO);
+
+        log.info("HP Registration Controller: addHealthProfessionalPersonalDetail method: Execution Successful. ");
+        log.debug("Response Payload: HpProfilePersonalResponseTO: ");
+        log.debug(hpProfilePersonalResponseTO.toString());
+
+        return hpProfilePersonalResponseTO;
     }
 
     /**
@@ -82,7 +93,18 @@ public class HpRegistrationController {
             @Valid @RequestBody HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO,
             @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId)
             throws InvalidRequestException, WorkFlowException {
-        return hpService.addOrUpdateHpPersonalDetail(hpProfileId, hpPersonalUpdateRequestTO);
+
+        log.info("In HP Registration Controller: updateHealthProfessionalPersonalDetail method ");
+        log.debug("Request Payload: HpPersonalUpdateRequestTO: ");
+        log.debug(hpPersonalUpdateRequestTO.toString());
+
+        HpProfilePersonalResponseTO hpProfilePersonalResponseTO = hpService.addOrUpdateHpPersonalDetail(hpProfileId, hpPersonalUpdateRequestTO);
+
+        log.info("HP Registration Controller: updateHealthProfessionalPersonalDetail method: Execution Successful. ");
+        log.debug("Response Payload: HpProfilePersonalResponseTO: ");
+        log.debug(hpProfilePersonalResponseTO.toString());
+
+        return hpProfilePersonalResponseTO;
     }
 
     /**
@@ -116,7 +138,17 @@ public class HpRegistrationController {
                                                                                       @RequestPart("data") HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO,
                                                                                       @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, WorkFlowException, NmrException {
 
-        return hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequestTO, registrationCertificate, degreeCertificate);
+        log.info("In HP Registration Controller: updateHealthProfessionalRegistrationDetail method ");
+        log.debug("Request Payload: HpRegistrationUpdateRequestTO: ");
+        log.debug(hpRegistrationUpdateRequestTO.toString());
+
+        HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequestTO, registrationCertificate, degreeCertificate);
+
+        log.info("HP Registration Controller: updateHealthProfessionalRegistrationDetail method: Execution Successful. ");
+        log.debug("Response Payload: HpProfileRegistrationResponseTO: ");
+        log.debug(hpProfileRegistrationResponseTO.toString());
+
+        return hpProfileRegistrationResponseTO;
     }
 
     /**
@@ -148,7 +180,18 @@ public class HpRegistrationController {
                                                                                     @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
                                                                                     @RequestParam(value = "proof", required = false) List<MultipartFile> proofs)
             throws InvalidRequestException, WorkFlowException, NmrException {
-        return hpService.addOrUpdateWorkProfileDetail(hpProfileId, hpWorkProfileUpdateRequestTO, proofs);
+
+        log.info("In HP Registration Controller: updateHealthProfessionalWorkProfileDetail method ");
+        log.debug("Request Payload: HpWorkProfileUpdateRequestTO: ");
+        log.debug(hpWorkProfileUpdateRequestTO.toString());
+
+        HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = hpService.addOrUpdateWorkProfileDetail(hpProfileId, hpWorkProfileUpdateRequestTO, proofs);
+
+        log.info("HP Registration Controller: updateHealthProfessionalWorkProfileDetail method: Execution Successful. ");
+        log.debug("Response Payload: HpProfileWorkDetailsResponseTO: ");
+        log.debug(hpProfileWorkDetailsResponseTO.toString());
+
+        return hpProfileWorkDetailsResponseTO;
     }
 
     /**
@@ -184,7 +227,6 @@ public class HpRegistrationController {
 
     /**
      * Uploads the profile picture for a given HP profile.
-     *
      * @param file        The profile picture file to be uploaded
      * @param hpProfileId The ID of the HP profile for which the picture is being uploaded
      * @return A response object containing information about the uploaded profile picture
@@ -209,7 +251,19 @@ public class HpRegistrationController {
     @PostMapping(path = "health-professional/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileAddResponseTO submit(@Valid @RequestBody HpSubmitRequestTO hpSubmitRequestTO)
             throws InvalidRequestException, WorkFlowException {
-        return hpService.submitHpProfile(hpSubmitRequestTO);
+
+        log.info("In HP Registration Controller: submit method ");
+        log.debug("Request Payload: HpSubmitRequestTO: ");
+        log.debug(hpSubmitRequestTO.toString());
+
+        HpProfileAddResponseTO hpProfileAddResponseTO = hpService.submitHpProfile(hpSubmitRequestTO);
+
+        log.info("HP Registration Controller: updateHealthProfessionalWorkProfileDetail method: Execution Successful. ");
+        log.debug("Response Payload: HpProfileAddResponseTO: ");
+        log.debug(hpProfileAddResponseTO.toString());
+
+        return hpProfileAddResponseTO;
+
     }
 
     /**
