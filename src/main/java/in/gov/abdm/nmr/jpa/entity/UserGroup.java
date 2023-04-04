@@ -19,5 +19,6 @@ public class UserGroup extends CommonAuditEntity {
     @Id
     private BigInteger id;
     private String name;
+    private String applicationPendencyInDays;
 
 }

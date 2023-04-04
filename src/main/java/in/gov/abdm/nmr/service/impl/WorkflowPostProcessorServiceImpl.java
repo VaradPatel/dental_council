@@ -5,6 +5,7 @@ import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.jpa.entity.*;
 import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.jpa.entity.*;
 import in.gov.abdm.nmr.jpa.repository.*;
@@ -133,11 +134,14 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     @Autowired
     INotificationService notificationService;
 
+    @Autowired
+    private IWorkFlowRepository iWorkFlowRepository;
+
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
     public void performPostWorkflowUpdates(WorkFlowRequestTO requestTO, HpProfile transactionHpProfile, INextGroup iNextGroup) {
-
+        WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
         updateTransactionHealthProfessionalDetails(requestTO, iNextGroup, transactionHpProfile);
 
         HpProfileMaster masterHpProfileDetails = updateHpProfileToMaster(transactionHpProfile.getId(), transactionHpProfile.getRegistrationId());
@@ -149,7 +153,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         updateNmrHprLinkageToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
         updateQualificationDetailsToMaster(transactionHpProfile.getId(), masterHpProfileDetails, registrationMaster);
         try {
-            updateElasticDB(iNextGroup, masterHpProfileDetails);
+            updateElasticDB(workFlow, masterHpProfileDetails);
         } catch (WorkFlowException e) {
             throw new RuntimeException(e);
         }
@@ -353,14 +357,22 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     }
 
     @Override
-    public void updateElasticDB(INextGroup iNextGroup, HpProfileMaster hpProfileMaster) throws WorkFlowException {
+    public void updateElasticDB(WorkFlow workFlow, HpProfileMaster hpProfileMaster) throws WorkFlowException {
         log.debug("Updating the Elastic DB");
         try {
-            elasticsearchDaoService.indexHP(hpProfileMaster.getId());
+            if (!isVoluntarySuspension(workFlow)) {
+                elasticsearchDaoService.indexHP(hpProfileMaster.getId());
+            }
         } catch (ElasticsearchException | IOException e) {
             LOGGER.error("Exception while indexing HP", e);
             throw new WorkFlowException("Exception while indexing HP", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private boolean isVoluntarySuspension(WorkFlow workFlow) {
+        return (ApplicationType.HP_TEMPORARY_SUSPENSION.getId().equals(workFlow.getApplicationType().getId()) ||
+                ApplicationType.HP_PERMANENT_SUSPENSION.getId().equals(workFlow.getApplicationType().getId()))
+                && Group.HEALTH_PROFESSIONAL.getId().equals(workFlow.getPreviousGroup().getId());
     }
 
     @Override

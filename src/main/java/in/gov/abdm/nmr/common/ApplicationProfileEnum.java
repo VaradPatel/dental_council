@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public enum ApplicationProfileEnum {
 
-    LOCAL("local"), DEV("dev"), QA("qa"), SANDBOX("sandbox"), UAT("uat"), PRODUCTION("prod");
+    LOCAL("local"), DEV("dev"), QA("qa"), SANDBOX("sandbox"), STAGING("staging"), PRODUCTION("prod");
 
     private final String code;
 }

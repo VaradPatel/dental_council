@@ -66,7 +66,6 @@ public class NMRConstants {
     public static final String QUERY_CLOSED_STATUS = "closed";
     public static final String QUERY_OPEN_STATUS = "open";
     public static final String GLOBAL_NOTIFICATION_ENDPOINT = "${global.notification.endpoint}";
-
     public static final String GLOBAL_LGD_ENDPOINT = "${global.lgd.endpoint}";
 
     public static final String LGD_API_VERSION = "/internal/v3/abdm";
@@ -557,6 +556,5 @@ public class NMRConstants {
 
     public static final String GATEWAY_SERVICE = "gateway";
     public static final String GATEWAY_SERVICE_ENDPOINT = "${gateway.endpoint}";
-
     public static final String SESSION_URL = "/gateway/v0.5/sessions";
 }
