@@ -2,7 +2,7 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.CountryTO;
 import in.gov.abdm.nmr.mapper.CountryDtoMapper;
-import in.gov.abdm.nmr.repository.CountryRepository;
+import in.gov.abdm.nmr.jpa.repository.CountryRepository;
 import in.gov.abdm.nmr.service.ICountryService;
 import org.springframework.stereotype.Service;
 

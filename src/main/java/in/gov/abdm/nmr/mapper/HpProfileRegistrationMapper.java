@@ -2,9 +2,10 @@ package in.gov.abdm.nmr.mapper;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
-import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.repository.CountryRepository;
-import in.gov.abdm.nmr.repository.CourseRepository;
+import in.gov.abdm.nmr.jpa.entity.*;
+import in.gov.abdm.nmr.jpa.entity.*;
+import in.gov.abdm.nmr.jpa.repository.CountryRepository;
+import in.gov.abdm.nmr.jpa.repository.CourseRepository;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

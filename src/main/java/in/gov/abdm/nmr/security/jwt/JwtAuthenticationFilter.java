@@ -24,7 +24,7 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.stereotype.Component;
 
 import brave.Tracer;
-import in.gov.abdm.nmr.entity.SecurityAuditTrail;
+import in.gov.abdm.nmr.jpa.entity.SecurityAuditTrail;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 

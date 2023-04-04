@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.mapper;
 
-import in.gov.abdm.nmr.entity.NmrHprLinkage;
-import in.gov.abdm.nmr.entity.NmrHprLinkageMaster;
+import in.gov.abdm.nmr.jpa.entity.NmrHprLinkage;
+import in.gov.abdm.nmr.jpa.entity.NmrHprLinkageMaster;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
 

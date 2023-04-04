@@ -2,11 +2,11 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.UniversityMasterTo;
 import in.gov.abdm.nmr.dto.UniversityTO;
-import in.gov.abdm.nmr.entity.UniversityMaster;
+import in.gov.abdm.nmr.jpa.entity.UniversityMaster;
 import in.gov.abdm.nmr.mapper.IUniversityMasterToMapper;
 import in.gov.abdm.nmr.mapper.UniversityDtoMapper;
-import in.gov.abdm.nmr.repository.IUniversityRepository;
-import in.gov.abdm.nmr.repository.UniversityMasterRepository;
+import in.gov.abdm.nmr.jpa.repository.IUniversityRepository;
+import in.gov.abdm.nmr.jpa.repository.UniversityMasterRepository;
 import in.gov.abdm.nmr.service.IUniversityMasterService;
 import in.gov.abdm.nmr.service.IUniversityService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,9 +1,9 @@
 package in.gov.abdm.nmr.service;
 
-import in.gov.abdm.nmr.entity.ApplicationType;
-import in.gov.abdm.nmr.entity.RequestCounter;
+import in.gov.abdm.nmr.jpa.entity.ApplicationType;
+import in.gov.abdm.nmr.jpa.entity.RequestCounter;
 import in.gov.abdm.nmr.exception.WorkFlowException;
-import in.gov.abdm.nmr.repository.IRequestCounterRepository;
+import in.gov.abdm.nmr.jpa.repository.IRequestCounterRepository;
 import in.gov.abdm.nmr.service.impl.RequestCounterServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

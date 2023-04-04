@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.mapper;
 
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.entity.Address;
-import in.gov.abdm.nmr.entity.HpProfile;
+import in.gov.abdm.nmr.jpa.entity.Address;
+import in.gov.abdm.nmr.jpa.entity.HpProfile;
 import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.experimental.UtilityClass;
 

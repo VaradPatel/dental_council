@@ -2,7 +2,7 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.StateTO;
 import in.gov.abdm.nmr.mapper.StateDtoMapper;
-import in.gov.abdm.nmr.repository.IStateRepository;
+import in.gov.abdm.nmr.jpa.repository.IStateRepository;
 import in.gov.abdm.nmr.service.IStateService;
 import org.springframework.stereotype.Service;
 

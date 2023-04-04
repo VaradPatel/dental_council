@@ -2,7 +2,7 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.SubDistrictTO;
 import in.gov.abdm.nmr.mapper.SubDistrictDtoMapper;
-import in.gov.abdm.nmr.repository.SubDistrictRepository;
+import in.gov.abdm.nmr.jpa.repository.SubDistrictRepository;
 import in.gov.abdm.nmr.service.ISubDistrictService;
 import org.springframework.stereotype.Service;
 

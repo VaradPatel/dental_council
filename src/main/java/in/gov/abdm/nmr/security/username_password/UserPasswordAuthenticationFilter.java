@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import brave.Tracer;
 import in.gov.abdm.nmr.dto.LoginRequestTO;
-import in.gov.abdm.nmr.entity.SecurityAuditTrail;
+import in.gov.abdm.nmr.jpa.entity.SecurityAuditTrail;
 import in.gov.abdm.nmr.enums.LoginTypeEnum;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.security.common.RsaUtil;

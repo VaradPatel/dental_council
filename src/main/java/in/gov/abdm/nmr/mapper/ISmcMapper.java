@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.mapper;
 
 import in.gov.abdm.nmr.dto.SMCProfileTO;
-import in.gov.abdm.nmr.entity.SMCProfile;
+import in.gov.abdm.nmr.jpa.entity.SMCProfile;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 

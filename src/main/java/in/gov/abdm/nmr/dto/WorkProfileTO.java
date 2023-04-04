@@ -1,6 +1,6 @@
 package in.gov.abdm.nmr.dto;
 
-import in.gov.abdm.nmr.entity.Address;
+import in.gov.abdm.nmr.jpa.entity.Address;
 import lombok.Data;
 
 import java.math.BigInteger;

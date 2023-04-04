@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.entity.NbeProfile;
-import in.gov.abdm.nmr.repository.INbeProfileRepository;
+import in.gov.abdm.nmr.jpa.entity.NbeProfile;
+import in.gov.abdm.nmr.jpa.repository.INbeProfileRepository;
 import in.gov.abdm.nmr.service.INbeDaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.entity.HpProfile;
-import in.gov.abdm.nmr.entity.RegistrationDetails;
+import in.gov.abdm.nmr.jpa.entity.HpProfile;
+import in.gov.abdm.nmr.jpa.entity.RegistrationDetails;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;

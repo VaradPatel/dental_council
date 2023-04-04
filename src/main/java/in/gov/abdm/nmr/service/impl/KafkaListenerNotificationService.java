@@ -3,12 +3,11 @@ package in.gov.abdm.nmr.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.dto.FileESignedEventTO;
-import in.gov.abdm.nmr.entity.Address;
-import in.gov.abdm.nmr.entity.HpProfile;
+import in.gov.abdm.nmr.jpa.entity.Address;
+import in.gov.abdm.nmr.jpa.entity.HpProfile;
 import in.gov.abdm.nmr.enums.AddressType;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
-import in.gov.abdm.nmr.repository.IAddressRepository;
-import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.jpa.repository.IAddressRepository;
+import in.gov.abdm.nmr.jpa.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.logging.Level;
 
 /**
  * This is a service implementation class for Kafka listener notification service

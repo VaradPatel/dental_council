@@ -2,7 +2,10 @@ package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
+import in.gov.abdm.nmr.mongodb.entity.Council;
 import in.gov.abdm.nmr.exception.*;
+import in.gov.abdm.nmr.mongodb.repository.ICouncilRepository;
+import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IQueriesService;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -17,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.text.ParseException;
 import java.util.List;
 
 import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
@@ -38,6 +42,16 @@ public class HpRegistrationController {
     @Autowired
     private IQueriesService queryService;
 
+    @Autowired
+    private ICouncilService councilService;
+
+    @GetMapping(path = "mongodb")
+    public List<Council> getCouncilDetails(
+            @RequestParam("id") String  id,
+            @RequestParam("councilname") String  councilName){
+        List<Council> council = councilService.getCouncilByRegistrationNumberAndCouncilName(id,councilName);
+        return council;
+    }
 
     /**
      * This method is used to fetch SMC registration detail information.
@@ -289,8 +303,10 @@ public class HpRegistrationController {
     }
 
     @PostMapping(path = NMRConstants.SAVE_KYC_DETAILS, produces = MediaType.APPLICATION_JSON_VALUE)
-    public KycResponseMessageTo saveUserKycDetails(@PathVariable("registrationNumber") String registrationNumber,@RequestBody UserKycTo userKycTo){
-        return hpService.saveUserKycDetails(registrationNumber,userKycTo);
+    public KycResponseMessageTo saveUserKycDetails(@PathVariable("registrationNumber") String registrationNumber,
+                                                   @RequestParam("councilId") BigInteger councilId,
+                                                   @RequestBody UserKycTo userKycTo) throws ParseException {
+        return hpService.saveUserKycDetails(registrationNumber,councilId,userKycTo);
     }
 
     @PostMapping(path = "health-professional", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

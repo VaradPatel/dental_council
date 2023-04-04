@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
-import in.gov.abdm.nmr.entity.HpProfile;
-import in.gov.abdm.nmr.entity.HpProfileMaster;
+import in.gov.abdm.nmr.jpa.entity.HpProfile;
+import in.gov.abdm.nmr.jpa.entity.HpProfileMaster;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.INextGroup;
 

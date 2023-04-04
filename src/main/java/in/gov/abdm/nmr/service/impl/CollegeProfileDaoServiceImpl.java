@@ -5,9 +5,9 @@ import java.math.BigInteger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import in.gov.abdm.nmr.entity.CollegeProfile;
+import in.gov.abdm.nmr.jpa.entity.CollegeProfile;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
-import in.gov.abdm.nmr.repository.ICollegeProfileRepository;
+import in.gov.abdm.nmr.jpa.repository.ICollegeProfileRepository;
 import in.gov.abdm.nmr.service.ICollegeProfileDaoService;
 
 @Service

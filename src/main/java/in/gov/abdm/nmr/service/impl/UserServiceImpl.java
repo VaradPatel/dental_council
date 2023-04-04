@@ -1,17 +1,18 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.jpa.entity.*;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.OtpException;
+import in.gov.abdm.nmr.jpa.entity.*;
 import in.gov.abdm.nmr.mapper.INbeMapper;
 import in.gov.abdm.nmr.mapper.INmcMapper;
 import in.gov.abdm.nmr.mapper.ISmcMapper;
-import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.jpa.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.service.IPasswordDaoService;

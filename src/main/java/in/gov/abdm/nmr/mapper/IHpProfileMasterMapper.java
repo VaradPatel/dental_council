@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.mapper;
 
-import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.jpa.entity.*;
+import in.gov.abdm.nmr.jpa.entity.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
 

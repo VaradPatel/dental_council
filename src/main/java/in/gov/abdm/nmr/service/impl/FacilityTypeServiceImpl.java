@@ -2,7 +2,7 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.FacilityTypeTO;
 import in.gov.abdm.nmr.mapper.FacilityTypeDtoMapper;
-import in.gov.abdm.nmr.repository.FacilityTypeRepository;
+import in.gov.abdm.nmr.jpa.repository.FacilityTypeRepository;
 import in.gov.abdm.nmr.service.IFacilityTypeService;
 import org.springframework.stereotype.Service;
 

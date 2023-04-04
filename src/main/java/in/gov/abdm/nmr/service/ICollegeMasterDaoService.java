@@ -3,7 +3,7 @@ package in.gov.abdm.nmr.service;
 import java.math.BigInteger;
 import java.util.List;
 
-import in.gov.abdm.nmr.entity.CollegeMaster;
+import in.gov.abdm.nmr.jpa.entity.CollegeMaster;
 
 public interface ICollegeMasterDaoService {
 

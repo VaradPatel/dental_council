@@ -2,7 +2,7 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.VillagesTO;
 import in.gov.abdm.nmr.mapper.VillagesDtoMapper;
-import in.gov.abdm.nmr.repository.VillagesRepository;
+import in.gov.abdm.nmr.jpa.repository.VillagesRepository;
 import in.gov.abdm.nmr.service.IVillagesService;
 import org.springframework.stereotype.Service;
 

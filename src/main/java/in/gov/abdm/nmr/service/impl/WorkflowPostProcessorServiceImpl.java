@@ -2,12 +2,14 @@ package in.gov.abdm.nmr.service.impl;
 
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
-import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.jpa.entity.*;
 import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.jpa.entity.*;
+import in.gov.abdm.nmr.jpa.repository.*;
 import in.gov.abdm.nmr.mapper.*;
-import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.jpa.repository.*;
 import in.gov.abdm.nmr.service.IElasticsearchDaoService;
 import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;

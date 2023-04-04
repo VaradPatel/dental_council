@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.mapper;
 
 import in.gov.abdm.nmr.dto.FetchTrackApplicationResponseTO;
-import in.gov.abdm.nmr.entity.FetchTrackApplication;
+import in.gov.abdm.nmr.jpa.entity.FetchTrackApplication;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;

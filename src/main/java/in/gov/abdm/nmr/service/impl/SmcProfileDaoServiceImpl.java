@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.entity.SMCProfile;
-import in.gov.abdm.nmr.repository.ISmcProfileRepository;
+import in.gov.abdm.nmr.jpa.entity.SMCProfile;
+import in.gov.abdm.nmr.jpa.repository.ISmcProfileRepository;
 import in.gov.abdm.nmr.service.ISmcProfileDaoService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

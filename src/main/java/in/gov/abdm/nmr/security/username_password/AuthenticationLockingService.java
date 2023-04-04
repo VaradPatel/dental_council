@@ -1,6 +1,6 @@
 package in.gov.abdm.nmr.security.username_password;
 
-import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.jpa.entity.User;
 import in.gov.abdm.nmr.service.impl.UserDaoServiceImpl;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.apache.logging.log4j.LogManager;

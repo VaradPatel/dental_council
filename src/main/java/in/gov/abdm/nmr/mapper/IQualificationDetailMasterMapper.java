@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.mapper;
 
-import in.gov.abdm.nmr.entity.QualificationDetails;
-import in.gov.abdm.nmr.entity.QualificationDetailsMaster;
+import in.gov.abdm.nmr.jpa.entity.QualificationDetails;
+import in.gov.abdm.nmr.jpa.entity.QualificationDetailsMaster;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
 

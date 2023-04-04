@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.entity.RegistrationDetails;
-import in.gov.abdm.nmr.repository.IRegistrationDetailRepository;
+import in.gov.abdm.nmr.jpa.entity.RegistrationDetails;
+import in.gov.abdm.nmr.jpa.repository.IRegistrationDetailRepository;
 import in.gov.abdm.nmr.service.IRegistrationDetailDaoService;
 import org.springframework.stereotype.Service;
 

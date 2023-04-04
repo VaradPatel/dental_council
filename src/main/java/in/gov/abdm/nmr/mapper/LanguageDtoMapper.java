@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.mapper;
 
 import in.gov.abdm.nmr.dto.LanguageTO;
-import in.gov.abdm.nmr.entity.Language;
+import in.gov.abdm.nmr.jpa.entity.Language;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
 

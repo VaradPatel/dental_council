@@ -1,6 +1,6 @@
 package in.gov.abdm.nmr.dto;
 
-import in.gov.abdm.nmr.entity.HpNbeDetails;
+import in.gov.abdm.nmr.jpa.entity.HpNbeDetails;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

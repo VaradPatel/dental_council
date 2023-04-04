@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.mapper;
 
-import in.gov.abdm.nmr.entity.WorkFlow;
-import in.gov.abdm.nmr.entity.WorkFlowAudit;
+import in.gov.abdm.nmr.jpa.entity.WorkFlow;
+import in.gov.abdm.nmr.jpa.entity.WorkFlowAudit;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
 

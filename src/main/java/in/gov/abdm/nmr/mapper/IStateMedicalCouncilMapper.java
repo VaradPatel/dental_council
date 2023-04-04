@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.mapper;
 
 import in.gov.abdm.nmr.dto.StateMedicalCouncilTO;
-import in.gov.abdm.nmr.entity.StateMedicalCouncil;
+import in.gov.abdm.nmr.jpa.entity.StateMedicalCouncil;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
 
