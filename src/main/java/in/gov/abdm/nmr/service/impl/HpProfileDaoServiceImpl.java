@@ -419,7 +419,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         String encodedPhoto=Base64.getEncoder().encodeToString(file.getBytes());
 
-        Map<String, String> form = new HashMap<>();
+      /*  Map<String, String> form = new HashMap<>();
 
         form.put("grant_type", "client_credentials");
 
@@ -431,9 +431,10 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         ProfileImageCompareTo imageCompareTo=new ProfileImageCompareTo(hpProfile.getProfilePhoto(),encodedPhoto);
 
-        //imageFClient.compareImages(imageCompareTo,"Bearer "+imageTokenTo.getAccessToken()));
+        imageFClient.compareImages(imageCompareTo,"Bearer "+imageTokenTo.getAccessToken()));
 
-        //if condition here
+        if condition here
+        */
 
         hpProfile.setProfilePhoto(file != null ? encodedPhoto : null);
         hpProfile.setPicName(file.getOriginalFilename());
