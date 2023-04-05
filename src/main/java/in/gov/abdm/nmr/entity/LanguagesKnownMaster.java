@@ -20,11 +20,13 @@ public class LanguagesKnownMaster extends CommonAuditEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private BigInteger id;
-
-	@OneToOne
-	@JoinColumn(name = "hpProfileId", referencedColumnName = ID)
-	private HpProfileMaster hpProfileMaster;
 	
-	private BigInteger languageId;
+	@ManyToOne
+	@JoinColumn(name = "language_id",referencedColumnName = "id")
+	private Language language;
+
+	@ManyToOne
+	@JoinColumn(name = "user_id",referencedColumnName = "id")
+	private User user;
 
 }

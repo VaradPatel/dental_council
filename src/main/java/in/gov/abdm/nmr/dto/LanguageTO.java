@@ -9,6 +9,6 @@ import java.math.BigInteger;
 @Builder
 public class LanguageTO {
 
-    private BigInteger id;
+    private BigInteger languageId;
     private String name;
 }

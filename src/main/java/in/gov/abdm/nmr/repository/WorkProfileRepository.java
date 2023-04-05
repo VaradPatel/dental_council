@@ -14,7 +14,7 @@ public interface WorkProfileRepository extends JpaRepository<WorkProfile, BigInt
     @Query(value = FETCH_WORK_PROFILE_RECORDS_BY_HP_ID, nativeQuery = true)
     List<WorkProfile> getWorkProfileDetailsByHPId(@Param(HP_PROFILE_ID) BigInteger hpId);
 
-    @Query(value = FETCH_WORK_PROFILE_RECORDS_BY_REG_NO, nativeQuery = true)
-    List<WorkProfile> getWorkProfileDetailsByRegNo(@Param(REGISTRATION_NUMBER) String registrationNumber);
+    @Query(value = FETCH_WORK_PROFILE_RECORDS_BY_USER_ID, nativeQuery = true)
+    List<WorkProfile> getWorkProfileDetailsByUserId(@Param(USER_ID) BigInteger userId);
 
 }
