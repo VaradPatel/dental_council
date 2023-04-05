@@ -17,4 +17,5 @@ public class StateTO {
 
     private BigInteger id;
     private String name;
+    private String isoCode;
 }
