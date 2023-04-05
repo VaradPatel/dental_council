@@ -21,6 +21,12 @@ public class RegistrationDetails {
     private String registrationDate;
     @Field(name = "medical_registration_date")
     private String medicalRegistrationDate;
+    @Field(name = "is_renewable_registration")
+    private boolean  isRenewableRegistration;
+    @Field(name = "renewable_registration_date")
+    private String renewableRegistrationDate;
+    @Field(name = "type")
+    private String type;
     @Field(name = "qualification_details")
     private List<QualificationDetails> qualificationDetails;
 }

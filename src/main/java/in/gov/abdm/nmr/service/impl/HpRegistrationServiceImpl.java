@@ -32,6 +32,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static in.gov.abdm.nmr.util.NMRConstants.NO_MATCHING_REGISTRATION_DETAILS_FOUND;
 import static in.gov.abdm.nmr.util.NMRConstants.NO_MATCHING_WORK_PROFILE_DETAILS_FOUND;
@@ -155,6 +156,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Autowired
     private IStateMedicalCouncilRepository stateMedicalCouncilRepository;
+
+    @Autowired
+    private UniversityMasterRepository universityMasterRepository;
+
+    @Autowired
+    private IQualificationDetailRepository iQualificationDetailRepository;
 
     /**
      * This method fetches the SMC registration details for a given request.
@@ -458,7 +465,22 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     @Override
-    public void addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException {
+    public void addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException, ParseException {
+        //save qualifications details from mongodb
+        //registration date and renewable date and renewablw type
+        // ask fe to pass council ID
+        // api wil be called every time
+        //
+        in.gov.abdm.nmr.jpa.entity.StateMedicalCouncil stateMedicalCouncil =
+                stateMedicalCouncilRepository.findStateMedicalCouncilById(BigInteger.valueOf(Long.parseLong(request.getSmcId())));
+        List<Council> councils = councilService.getCouncilByRegistrationNumberAndCouncilName(request.getRegistrationNumber(), stateMedicalCouncil.getName());
+        Council council = councils.get(0);
+
+        in.gov.abdm.nmr.mongodb.entity.RegistrationDetails registrationDetails1 = council.getRegistrationDetails().get(0);
+        List<in.gov.abdm.nmr.mongodb.entity.QualificationDetails> qualificationDetailsList = registrationDetails1.getQualificationDetails()
+                .stream().filter(qualificationDetails1 -> qualificationDetails1.getName().equals("MBBS")).toList();
+        in.gov.abdm.nmr.mongodb.entity.QualificationDetails qualificationDetails1 = qualificationDetailsList.get(0);
+
         HpProfile hpProfile = new HpProfile();
         hpProfile.setAadhaarToken(request.getAadhaarToken() != null ? request.getAadhaarToken() : null);
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
@@ -468,6 +490,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         } catch (ParseException e) {
             throw new DateException(NMRError.DATE_EXCEPTION.getCode(), NMRError.DATE_EXCEPTION.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString());
         }
+
         hpProfile.setEmailId(request.getEmail() != null ? request.getEmail() : null);
         hpProfile.setFullName(request.getName());
         hpProfile.setGender(request.getGender());
@@ -482,12 +505,20 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile = iHpProfileRepository.save(hpProfile);
 
         RegistrationDetails registrationDetails = new RegistrationDetails();
-        registrationDetails.setStateMedicalCouncil(iStateMedicalCouncilRepository.findById(new BigInteger(request.getSmcId())).get());
+        registrationDetails.setStateMedicalCouncil(stateMedicalCouncil);
         registrationDetails.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
         registrationDetails.setRegistrationNo(request.getRegistrationNumber());
         registrationDetails.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         registrationDetails.setHpProfileId(hpProfile);
+        boolean isRenewable = registrationDetails1.isRenewableRegistration();
+        if(isRenewable){
+            registrationDetails.setIsRenewable("1");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy");
+            registrationDetails.setRenewableRegistrationDate(simpleDateFormat.parse(registrationDetails1.getRenewableRegistrationDate() != null ?
+                    registrationDetails1.getRenewableRegistrationDate() : null));
+        }
         iRegistrationDetailRepository.save(registrationDetails);
+
 
         Address address = new Address();
         address.setPincode(request.getPincode());
@@ -508,6 +539,17 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         address.setDistrict(districtRepository.findByDistrictNameAndStateId(request.getDistrict().toUpperCase(), address.getState().getId()));
         address.setCountry(stateRepository.findByName(request.getState().toUpperCase()).getCountry());
         iAddressRepository.save(address);
+
+        QualificationDetails qualificationDetails = new QualificationDetails();
+        qualificationDetails.setQualificationYear(qualificationDetails1.getQualificationYear() != null ? qualificationDetails1.getQualificationYear() : null);
+        qualificationDetails.setQualificationMonth(qualificationDetails1.getQualificationMonth() != null ? qualificationDetails1.getQualificationMonth() : null);
+        qualificationDetails.setSystemOfMedicine(qualificationDetails1.getSystemOfMedicine() != null ? qualificationDetails1.getSystemOfMedicine() : null);
+        String university = qualificationDetails1.getUniversity();
+        if(university!=null){
+            UniversityMaster university1 = universityMasterRepository.findUniversityByName(university);
+            qualificationDetails.setUniversity(university1);
+        }
+        iQualificationDetailRepository.save(qualificationDetails);
     }
 
     @Override

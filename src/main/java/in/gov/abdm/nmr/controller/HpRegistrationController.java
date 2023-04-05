@@ -310,7 +310,7 @@ public class HpRegistrationController {
     }
 
     @PostMapping(path = "health-professional", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseMessageTo> addNewHealthProfessional(@Valid @RequestBody NewHealthPersonalRequestTO request) throws DateException {
+    public ResponseEntity<ResponseMessageTo> addNewHealthProfessional(@Valid @RequestBody NewHealthPersonalRequestTO request) throws DateException, ParseException {
         hpService.addNewHealthProfessional(request);
         return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
     }

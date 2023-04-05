@@ -116,7 +116,7 @@ public interface IHpRegistrationService {
 
     KycResponseMessageTo saveUserKycDetails(String registrationNumber,BigInteger councilId, UserKycTo userKycTo) throws ParseException;
 
-    void addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException;
+    void addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException, ParseException;
 
     void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException;
 }
