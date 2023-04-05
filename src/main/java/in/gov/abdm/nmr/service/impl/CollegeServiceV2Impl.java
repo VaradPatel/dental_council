@@ -233,8 +233,12 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
             }
 
             User user = collegeProfile.getUser();
-            if (!collegeMasterTOV2.getEmailId().equals(user.getEmail()) || !collegeMasterTOV2.getMobileNumber().equals(user.getMobileNumber())) {
-                duplicateContactsCheck(collegeMasterTOV2.getEmailId(), collegeMasterTOV2.getMobileNumber());
+            if (!collegeMasterTOV2.getEmailId().equals(user.getEmail())) {
+                duplicateEmailCheck(collegeMasterTOV2.getEmailId());
+            }
+
+            if (!collegeMasterTOV2.getMobileNumber().equals(user.getMobileNumber())) {
+                duplicateMobileNumberCheck(collegeMasterTOV2.getMobileNumber());
             }
 
             if (!loggedInUser.getId().equals(collegeProfile.getUser().getId())) {
@@ -292,12 +296,19 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
     }
 
     private void duplicateContactsCheck(String emailId, String mobileNumber) throws NmrException {
-        if (userDaoService.existsByEmail(emailId)) {
-            throw new NmrException("Email id already registered", HttpStatus.NOT_FOUND);
-        }
+        duplicateEmailCheck(emailId);
+        duplicateMobileNumberCheck(mobileNumber);
+    }
 
+    private void duplicateMobileNumberCheck(String mobileNumber) throws NmrException {
         if (userDaoService.existsByMobileNumber(mobileNumber)) {
-            throw new NmrException("Mobile number already registered", HttpStatus.NOT_FOUND);
+            throw new NmrException("Mobile number already registered", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void duplicateEmailCheck(String emailId) throws NmrException {
+        if (userDaoService.existsByEmail(emailId)) {
+            throw new NmrException("Email id already registered", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -308,8 +319,12 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         }
 
         User user = collegeProfile.getUser();
-        if (!collegeProfileTOV2.getEmailId().equals(user.getEmail()) || !collegeProfileTOV2.getMobileNumber().equals(user.getMobileNumber())) {
-            duplicateContactsCheck(collegeProfileTOV2.getEmailId(), collegeProfileTOV2.getMobileNumber());
+        if (!collegeProfileTOV2.getEmailId().equals(user.getEmail())) {
+            duplicateEmailCheck(collegeProfileTOV2.getEmailId());
+        }
+
+        if (!collegeProfileTOV2.getMobileNumber().equals(user.getMobileNumber())) {
+            duplicateMobileNumberCheck(collegeProfileTOV2.getMobileNumber());
         }
 
         if (!loggedInUser.getId().equals(collegeProfile.getUser().getId())) {
