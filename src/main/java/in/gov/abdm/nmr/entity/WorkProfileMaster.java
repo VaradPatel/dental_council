@@ -27,12 +27,13 @@ public class WorkProfileMaster {
     private byte[] proofOfWorkAttachment;
     private String url;
     private BigInteger userId;
-    private BigInteger broadSpecialityId;
     private BigInteger workNatureId;
     private BigInteger workStatusId;
     private BigInteger hpProfileId;
     private String workOrganization;
     private String organizationType;
     private String requestId;
+
+    private Integer experienceInYears;
 
 }

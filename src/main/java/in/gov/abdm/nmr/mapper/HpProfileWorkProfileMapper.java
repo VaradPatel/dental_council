@@ -1,7 +1,6 @@
 package in.gov.abdm.nmr.mapper;
 
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.entity.SuperSpeciality;
 import in.gov.abdm.nmr.entity.WorkProfile;
 import lombok.experimental.UtilityClass;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,18 +15,11 @@ public final class HpProfileWorkProfileMapper {
     @Autowired
     IAddressMapper addressMapper;
 
-    public static HpProfileWorkDetailsResponseTO convertEntitiesToWorkDetailResponseTo(List<SuperSpeciality> superSpecialities, List<WorkProfile> workProfile) {
+    public static HpProfileWorkDetailsResponseTO convertEntitiesToWorkDetailResponseTo(List<WorkProfile> workProfile) {
         HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = new HpProfileWorkDetailsResponseTO();
         List<CurrentWorkDetailsTO> currentWorkDetailsTOList = new ArrayList<>();
-        SpecialityDetailsTO specialityDetailsTO = new SpecialityDetailsTO();
         WorkDetailsTO workDetailsTO = new WorkDetailsTO();
 
-        specialityDetailsTO.setSuperSpeciality(superSpecialities.stream().map(superSpeciality -> SuperSpecialityTO.builder().id(superSpeciality.getId()).name(superSpeciality.getName()).build()).toList());
-        if (workProfile.get(0).getBroadSpeciality() != null) {
-            specialityDetailsTO.setBroadSpeciality(BroadSpecialityTO.builder().name(workProfile.get(0).getBroadSpeciality().getName()).id(workProfile.get(0).getBroadSpeciality().getId()).build());
-        } else {
-            specialityDetailsTO.setBroadSpeciality(null);
-        }
         if (workProfile.get(0).getWorkNature() != null) {
             workDetailsTO.setWorkNature(WorkNatureTO.builder().id(workProfile.get(0).getWorkNature().getId()).name(workProfile.get(0).getWorkNature().getName()).build());
         } else {
@@ -67,13 +59,16 @@ public final class HpProfileWorkProfileMapper {
             currentWorkDetailsTO.setAddress(address);
             currentWorkDetailsTO.setProof(workProfileObj.getProofOfWorkAttachment());
             currentWorkDetailsTO.setRegistrationNo(workProfileObj.getRegistrationNo());
+            currentWorkDetailsTO.setExperienceInYears(workProfileObj.getExperienceInYears());
             currentWorkDetailsTOList.add(currentWorkDetailsTO);
         });
-        hpProfileWorkDetailsResponseTO.setSpecialityDetails(specialityDetailsTO);
         hpProfileWorkDetailsResponseTO.setWorkDetails(workDetailsTO);
         hpProfileWorkDetailsResponseTO.setCurrentWorkDetails(currentWorkDetailsTOList);
         hpProfileWorkDetailsResponseTO.setRequestId(workProfile.get(0).getRequestId());
         hpProfileWorkDetailsResponseTO.setHpProfileId(workProfile.get(0).getHpProfileId());
+
+
+
         return hpProfileWorkDetailsResponseTO;
     }
 }
