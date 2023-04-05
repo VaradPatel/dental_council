@@ -28,9 +28,7 @@ public class WorkProfile {
     private byte[] proofOfWorkAttachment;
     private String url;
     private BigInteger userId;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "broad_speciality_id", referencedColumnName = "id")
-    private BroadSpeciality broadSpeciality;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "work_nature_id", referencedColumnName = "id")
     private WorkNature workNature;
@@ -49,4 +47,6 @@ public class WorkProfile {
     private String requestId;
     private String pincode;
     private String registrationNo;
+
+    private Integer experienceInYears;
 }

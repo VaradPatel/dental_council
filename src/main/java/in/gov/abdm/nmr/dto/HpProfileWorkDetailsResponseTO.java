@@ -7,10 +7,10 @@ import java.util.List;
 
 @Data
 public class HpProfileWorkDetailsResponseTO {
-    private SpecialityDetailsTO specialityDetails;
     private WorkDetailsTO workDetails;
     private List<CurrentWorkDetailsTO> currentWorkDetails;
     private BigInteger hpProfileId;
     private String requestId;
+    private List<BigInteger> languagesKnownIds;
 
 }
