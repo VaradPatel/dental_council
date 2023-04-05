@@ -2,7 +2,10 @@ package in.gov.abdm.nmr.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.client.DscFClient;
+import in.gov.abdm.nmr.client.ImageFClient;
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.dto.image.ImageTokenTo;
+import in.gov.abdm.nmr.dto.image.ProfileImageCompareTo;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
@@ -18,8 +21,10 @@ import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
@@ -29,10 +34,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static in.gov.abdm.nmr.util.NMRUtil.*;
@@ -112,6 +114,15 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private ICollegeMasterRepository collegeMasterRepository;
     @Autowired
     private UniversityMasterRepository universityMasterRepository;
+
+    @Autowired
+    private ImageFClient imageFClient;
+
+    @Value("${image.api.username}")
+    private String imageApiUsername;
+
+    @Value("${image.api.password}")
+    private String imageApiPassword;
 
     public HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NmrException {
         HpSmcDetailTO hpSmcDetailTO = new HpSmcDetailTO();
@@ -382,7 +393,28 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             throw new InvalidRequestException(file.getOriginalFilename() + " is not a allowed file type !!");
         }
 
-        hpProfile.setProfilePhoto(file != null ? Base64.getEncoder().encodeToString(file.getBytes()) : null);
+        String encodedPhoto=Base64.getEncoder().encodeToString(file.getBytes());
+
+        Map<String, String> form = new HashMap<>();
+
+        form.put("grant_type", "client_credentials");
+
+        byte[] encodedBytes = Base64Utils.encode((imageApiUsername + ":" + imageApiPassword).getBytes());
+
+        String authHeader = "Basic " + new String(encodedBytes);
+
+        ImageTokenTo imageTokenTo=imageFClient.getToken(authHeader,form);
+
+        ProfileImageCompareTo imageCompareTo=new ProfileImageCompareTo(hpProfile.getProfilePhoto(),encodedPhoto);
+
+        System.out.println(imageCompareTo);
+
+        System.out.println(imageFClient.compareImages(imageCompareTo,"Bearer "+imageTokenTo.getAccessToken()));
+
+
+        //if condition here
+
+        hpProfile.setProfilePhoto(file != null ? encodedPhoto : null);
         hpProfile.setPicName(file.getOriginalFilename());
         HpProfile insertedData = iHpProfileRepository.save(hpProfile);
         HpProfilePictureResponseTO hpProfilePictureResponseTO = new HpProfilePictureResponseTO();
