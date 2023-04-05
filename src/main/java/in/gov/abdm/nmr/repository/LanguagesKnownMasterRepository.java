@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.repository;
 
+import in.gov.abdm.nmr.entity.LanguagesKnown;
 import in.gov.abdm.nmr.entity.LanguagesKnownMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,4 +13,6 @@ public interface LanguagesKnownMasterRepository extends JpaRepository<LanguagesK
 
 	@Query(value = "select * from languages_known_master where hp_profile_id = :hpProfileId", nativeQuery = true)
 	List<LanguagesKnownMaster> getLanguagesKnownByHpProfileId(BigInteger hpProfileId);
+
+	List<LanguagesKnownMaster> findByUserId(BigInteger userId);
 }

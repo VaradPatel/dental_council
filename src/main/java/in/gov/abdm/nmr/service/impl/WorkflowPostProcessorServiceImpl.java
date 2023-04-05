@@ -267,19 +267,19 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         }
     }
 
-    private void updateLanguagesKnownToMaster(BigInteger transactionHpProfileId, HpProfileMaster masterHpProfile) {
+    private void updateLanguagesKnownToMaster(BigInteger transactionUserId, BigInteger masterUserId) {
 
-        List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(transactionHpProfileId);
+        List<LanguagesKnown> languagesKnown = languagesKnownRepository.findByUserId(transactionUserId);
 
-        if (!languagesKnown.isEmpty()) {
+        if (languagesKnown !=null && !languagesKnown.isEmpty()) {
             List<LanguagesKnownMaster> languagesKnownMasters = languagesKnownMasterMapper.languagesKnownToLanguagesKnownMaster(languagesKnown);
-            List<LanguagesKnownMaster> fetchedFromMasters = languagesKnownMasterRepository.getLanguagesKnownByHpProfileId(masterHpProfile.getId());
+
+            List<LanguagesKnownMaster> fetchedFromMasters = languagesKnownMasterRepository.findByUserId(masterUserId);
 
             for (int i = 0; i < languagesKnownMasters.size(); i++) {
                 if (!fetchedFromMasters.isEmpty() && fetchedFromMasters.get(i) != null) {
                     languagesKnownMasters.get(i).setId(fetchedFromMasters.get(i).getId());
                 }
-                languagesKnownMasters.get(i).setHpProfileMaster(masterHpProfile);
             }
             languagesKnownMasterRepository.saveAll(languagesKnownMasters);
         }

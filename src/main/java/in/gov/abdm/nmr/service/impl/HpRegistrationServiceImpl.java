@@ -30,13 +30,10 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import static in.gov.abdm.nmr.util.NMRConstants.NO_MATCHING_REGISTRATION_DETAILS_FOUND;
-import static in.gov.abdm.nmr.util.NMRConstants.NO_MATCHING_WORK_PROFILE_DETAILS_FOUND;
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static in.gov.abdm.nmr.util.NMRUtil.validateQualificationDetailsAndProofs;
 import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetails;
 
@@ -198,10 +195,14 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
         }
         hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs);
+
         return "Success";
     }
 
-
+    private void mapSuperSpecialityToEntity(BigInteger hpProfileId, SuperSpecialityTO speciality, SuperSpeciality superSpeciality) {
+        superSpeciality.setName(speciality.getName());
+        superSpeciality.setHpProfileId(hpProfileId);
+    }
     @Override
     public HpProfilePersonalResponseTO addOrUpdateHpPersonalDetail(BigInteger hpProfileId,
                                                                    HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException {
@@ -350,20 +351,33 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Override
     public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) throws NmrException {
         HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = null;
-        List<SuperSpeciality> superSpecialities = NMRUtil.coalesceCollection(superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId), superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId));
-        List<String> registrationNos = iRegistrationDetailRepository.getRegistrationNosByHpProfileId(hpProfileId);
-
         List<WorkProfile> workProfileList = new ArrayList<>();
-        if (!registrationNos.isEmpty()) {
-            workProfileList = workProfileRepository.getWorkProfileDetailsByRegNo(registrationNos.get(0));
-        } else {
-            throw new NmrException(NO_MATCHING_REGISTRATION_DETAILS_FOUND, HttpStatus.NOT_FOUND);
+        List<LanguagesKnown> languagesKnown = new ArrayList<>();
+        List<BigInteger> languagesKnownIds = new ArrayList<>();
+        Optional<HpProfile> hpProfileOptional = iHpProfileRepository.findById(hpProfileId);
+        if(hpProfileOptional.isPresent()) {
+            User user = hpProfileOptional.get().getUser();
+            if (user != null) {
+                BigInteger userId = user.getId();
+                workProfileList = workProfileRepository.getWorkProfileDetailsByUserId(userId);
+                languagesKnown = languagesKnownRepository.findByUserId(userId);
+            } else {
+                throw new NmrException(NO_MATCHING_USER_DETAILS_FOUND, HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        if(languagesKnown != null && !languagesKnown.isEmpty()){
+            languagesKnownIds = languagesKnown.stream().map(languageKnown -> {
+                Language language = languageKnown.getLanguage();
+                return language != null ? language.getId() : null ;
+            }).collect(Collectors.toList());
         }
 
         if (!workProfileList.isEmpty()) {
-            hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(superSpecialities, workProfileList);
+            hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(workProfileList);
+            hpProfileWorkDetailsResponseTO.setLanguagesKnownIds(languagesKnownIds);
         } else {
-            throw new NmrException(NO_MATCHING_WORK_PROFILE_DETAILS_FOUND, HttpStatus.NOT_FOUND);
+            throw new NmrException(NO_MATCHING_WORK_PROFILE_DETAILS_FOUND, HttpStatus.BAD_REQUEST);
         }
         return hpProfileWorkDetailsResponseTO;
     }

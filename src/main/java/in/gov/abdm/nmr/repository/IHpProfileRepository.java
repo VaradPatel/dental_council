@@ -148,4 +148,5 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
     @Transactional
     @Query(value = "UPDATE hp_profile SET e_sign_status =:status  WHERE id =:hpProfileId", nativeQuery = true)
     void updateEsignStatus(BigInteger hpProfileId, String status);
+
 }
