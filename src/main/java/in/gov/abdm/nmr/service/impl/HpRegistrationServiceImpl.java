@@ -512,19 +512,39 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     @Override
-    public void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException {
+    public void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException, InvalidRequestException {
+
         String transactionId = request.getTransactionId();
-        if (otpService.isOtpVerified(transactionId)) {
-            throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage(),
-                    HttpStatus.UNAUTHORIZED.toString());
+        if(request.getEmail() != null || request.getMobileNumber() != null ){
+            if(transactionId == null){
+                throw new InvalidRequestException(MISSING_TRANSACTION_ID_ERROR);
+            } else {
+                if (otpService.isOtpVerified(transactionId)) {
+                    throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage(),
+                            HttpStatus.UNAUTHORIZED.toString());
+                }
+            }
         }
+
         if (request.getEmail() != null) {
             iHpProfileRepository.updateHpProfileEmail(hpProfileId, request.getEmail());
             iAddressRepository.updateAddressEmail(hpProfileId, request.getEmail(), AddressType.COMMUNICATION.getId());
         }
+
         if (request.getMobileNumber() != null) {
             iHpProfileRepository.updateHpProfileMobile(hpProfileId, request.getMobileNumber());
         }
+
+        String eSignTransactionId = request.getESignTransactionId();
+        if(eSignTransactionId != null && !eSignTransactionId.isBlank()){
+            HpProfile hpProfile = iHpProfileRepository.findHpProfileById(hpProfileId);
+            if(hpProfile != null){
+                hpProfile.setTransactionId(eSignTransactionId);
+                iHpProfileRepository.save(hpProfile);
+            }
+
+        }
+
         BigInteger masterHpProfileId = iHpProfileRepository.findMasterHpProfileByHpProfileId(hpProfileId);
         if (masterHpProfileId != null) {
             if (request.getEmail() != null) {
@@ -533,6 +553,14 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             }
             if (request.getMobileNumber() != null) {// update mobile_number hp_profile_master by hp_profile_master.id
                 iHpProfileMasterRepository.updateMasterHpProfileMobile(masterHpProfileId, request.getMobileNumber());
+            }
+            if(eSignTransactionId != null && !eSignTransactionId.isBlank()){
+                HpProfileMaster hpProfileMaster = iHpProfileMasterRepository.findHpProfileMasterById(masterHpProfileId);
+                if(hpProfileMaster != null){
+                    hpProfileMaster.setTransactionId(eSignTransactionId);
+                    iHpProfileMasterRepository.save(hpProfileMaster);
+                }
+
             }
         }
     }
