@@ -7,6 +7,7 @@ import java.util.List;
 import in.gov.abdm.nmr.dto.CollegeMasterDataTO;
 import in.gov.abdm.nmr.dto.CollegeMasterTOV2;
 import in.gov.abdm.nmr.dto.CollegeProfileTOV2;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 
 public interface ICollegeServiceV2 {
@@ -15,9 +16,9 @@ public interface ICollegeServiceV2 {
 
     CollegeMasterTOV2 getCollege(BigInteger id) throws NmrException;
 
-    CollegeMasterTOV2 createOrUpdateCollege(CollegeMasterTOV2 collegeMasterTOV2) throws NmrException;
+    CollegeMasterTOV2 createOrUpdateCollege(CollegeMasterTOV2 collegeMasterTOV2) throws NmrException, InvalidRequestException;
 
-    CollegeProfileTOV2 createOrUpdateCollegeVerifier(CollegeProfileTOV2 collegeProfileTOV2) throws GeneralSecurityException, NmrException;
+    CollegeProfileTOV2 createOrUpdateCollegeVerifier(CollegeProfileTOV2 collegeProfileTOV2) throws GeneralSecurityException, NmrException, InvalidRequestException;
 
     List<CollegeMasterDataTO> getAllCollegeVerifiersDesignation() throws NmrException;
 

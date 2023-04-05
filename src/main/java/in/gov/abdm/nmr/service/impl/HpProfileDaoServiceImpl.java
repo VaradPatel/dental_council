@@ -407,10 +407,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         ProfileImageCompareTo imageCompareTo=new ProfileImageCompareTo(hpProfile.getProfilePhoto(),encodedPhoto);
 
-        System.out.println(imageCompareTo);
-
-        System.out.println(imageFClient.compareImages(imageCompareTo,"Bearer "+imageTokenTo.getAccessToken()));
-
+        //imageFClient.compareImages(imageCompareTo,"Bearer "+imageTokenTo.getAccessToken()));
 
         //if condition here
 

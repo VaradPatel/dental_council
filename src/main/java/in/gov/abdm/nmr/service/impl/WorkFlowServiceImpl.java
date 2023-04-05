@@ -96,6 +96,11 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                     throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
                 }
             }
+            else if (UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode().equals(user.getUserType().getId())) {
+                if (!UserSubTypeEnum.NMC_VERIFIER.getCode().equals(user.getUserSubType().getId())) {
+                    throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
+                }
+            }
         }
 
         WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
