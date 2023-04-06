@@ -2,7 +2,6 @@ package in.gov.abdm.nmr.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.client.DscFClient;
-import in.gov.abdm.nmr.client.ImageFClient;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.image.ImageTokenTo;
 import in.gov.abdm.nmr.dto.image.ProfileImageCompareTo;
@@ -115,14 +114,14 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @Autowired
     private UniversityMasterRepository universityMasterRepository;
 
-    @Autowired
+/*    @Autowired
     private ImageFClient imageFClient;
 
     @Value("${image.api.username}")
     private String imageApiUsername;
 
     @Value("${image.api.password}")
-    private String imageApiPassword;
+    private String imageApiPassword;*/
 
     @Autowired
     private LanguagesKnownRepository languagesKnownRepository;
