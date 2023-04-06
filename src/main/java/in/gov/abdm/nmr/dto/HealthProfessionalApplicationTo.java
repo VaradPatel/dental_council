@@ -20,7 +20,7 @@ public class HealthProfessionalApplicationTo {
     private String applicantFullName;
     private BigInteger applicationTypeId;
     private String applicationTypeName;
-    private Double pendency;
+    private int pendency;
     private BigInteger workFlowStatusId;
     private String doctorActionDate;
     private String smcActionDate;
