@@ -562,4 +562,6 @@ public class NMRConstants {
     public static final String GATEWAY_SERVICE = "gateway";
     public static final String GATEWAY_SERVICE_ENDPOINT = "${gateway.endpoint}";
     public static final String SESSION_URL = "/gateway/v0.5/sessions";
+
+    public static final String MISSING_TRANSACTION_ID_ERROR = "The field Transaction id is mandatory.";
 }
