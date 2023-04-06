@@ -58,6 +58,7 @@ public class NMRConstants {
 
     public static final String APPLICATION_DETAILS = "/applications/{requestId}";
     public static final String NOTIFICATION_SERVICE = "notification";
+    public static final String IMAGE_SERVICE = "image";
     public static final String FACILITY_SERVICE = "facility";
     public static final String NOTIFICATION_DB_SERVICE = "notification-db";
 
@@ -66,6 +67,10 @@ public class NMRConstants {
     public static final String QUERY_CLOSED_STATUS = "closed";
     public static final String QUERY_OPEN_STATUS = "open";
     public static final String GLOBAL_NOTIFICATION_ENDPOINT = "${global.notification.endpoint}";
+    public static final String GLOBAL_IMAGE_ENDPOINT = "${global.image.endpoint}";
+    public static final String IMAGE_API_TOKEN_ENDPOINT = "/auth/realms/3scale-sso/protocol/openid-connect/token";
+    public static final String IMAGE_API_ENDPOINT = "/fromb64";
+
     public static final String GLOBAL_LGD_ENDPOINT = "${global.lgd.endpoint}";
 
     public static final String LGD_API_VERSION = "/internal/v3/abdm";
