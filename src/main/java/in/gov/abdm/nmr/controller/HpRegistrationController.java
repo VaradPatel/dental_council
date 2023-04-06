@@ -301,9 +301,9 @@ public class HpRegistrationController {
 
     @PatchMapping(path = "health-professional/{healthProfessionalId}/personal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseMessageTo> updateHealthProfessionalEmailMobile(
-            @Valid @RequestBody HealthProfessionalPersonalRequestTo request,
-            @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws OtpException {
-        hpService.updateHealthProfessionalEmailMobile (hpProfileId, request);
+            @RequestBody HealthProfessionalPersonalRequestTo request,
+            @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws OtpException, InvalidRequestException {
+        hpService.updateHealthProfessionalEmailMobile(hpProfileId, request);
         return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
     }
 }
