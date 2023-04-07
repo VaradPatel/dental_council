@@ -118,7 +118,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
 //                }
             } else {
                 if (groupId.equals(Group.SMC.getId())) {
-                    sb.append(" AND smc_status NOT IN ('FORWARDED','NOT YET RECEIVED') ");
+                    sb.append(" AND smc_status NOT IN ('SUBMITTED','FORWARDED','NOT YET RECEIVED') ");
                 } else if (groupId.equals(Group.COLLEGE.getId()) && !dashboardRequestParamsTO.getApplicationTypeId().equals("1,8")) {
                     sb.append(" AND college_status NOT IN ('NOT YET RECEIVED') ");
 //                } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
@@ -185,6 +185,8 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             String sortRecords = SORT_RECORDS.apply(dashboardRequestParamsTO);
             sb.append(sortRecords);
         }
+
+        log.debug("Query : {}", sb.toString());
         return sb.toString();
     };
 
@@ -254,7 +256,9 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         Query query = entityManager.createNativeQuery(DASHBOARD.apply(dashboardRequestParamsTO));
 
         query.setFirstResult((pagination.getPageNumber() - 1) * pagination.getPageSize());
+
         query.setMaxResults(pagination.getPageSize());
+
 
         List<Object[]> results = query.getResultList();
         results.forEach(result -> {
