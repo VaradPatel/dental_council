@@ -47,6 +47,7 @@ import in.gov.abdm.nmr.service.IUserDaoService;
 @Transactional
 public class CollegeServiceV2Impl implements ICollegeServiceV2 {
 
+    private static final List<BigInteger> ALLOWED_SUBTYPE_FOR_COLLEGE_UPDATES = List.of(UserSubTypeEnum.COLLEGE.getCode(), UserSubTypeEnum.NMC_ADMIN.getCode());
     private static final String UNSUPPORTED_OPERATION = "Unsupported operation";
 
     private static final String ACCESS_DENIED = "Access denied";
@@ -153,7 +154,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         CollegeMaster collegeMaster = null;
         CollegeProfile collegeProfile = null;
 
-        if(!getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.NMC_ADMIN.getCode())){
+        if(!ALLOWED_SUBTYPE_FOR_COLLEGE_UPDATES.contains(getLoggedInUser().getUserSubType().getId())){
             throw new InvalidRequestException("Invalid Request!");
         }
 
