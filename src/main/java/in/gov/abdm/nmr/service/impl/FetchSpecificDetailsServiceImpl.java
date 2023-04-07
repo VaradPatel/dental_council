@@ -154,7 +154,8 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         columnToSortMap.put("createdAt", " rd.created_at");
         columnToSortMap.put("councilName", " stmc.name");
         columnToSortMap.put("applicantFullName", " hp.full_name");
-        return columnToSortMap.getOrDefault(columnToSort, " rd.created_at ");
+        columnToSortMap.put("pendency", " pendency");
+        return columnToSortMap.getOrDefault(columnToSort, " pendency ");
     }
 
     private void setApplicationTypeIdAndUserGroupStatus(String applicationTypeId, String userGroupStatus,

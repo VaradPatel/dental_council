@@ -478,7 +478,7 @@ public class NMRConstants {
             updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years FROM work_profile where user_id =:""" + USER_ID;
 
     public static final int MAX_DATA_SIZE = 500;
-    public static final String DEFAULT_SORT_ORDER = "ASC";
+    public static final String DEFAULT_SORT_ORDER = "DESC";
     public static final String NO_DATA_FOUND = "No data found";
     public static final String USER_NAME_ALREADY_EXISTS = "Username already exist";
     public static final String SMS_AND_EMAIL_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY = "sms-email-reset";
