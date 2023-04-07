@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 
 import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
@@ -170,22 +171,20 @@ public class HpRegistrationController {
      *
      * @param hpWorkProfileUpdateRequestTO The updated work details of the health professional, in JSON format.
      * @param hpProfileId                      The ID of the health professional's profile.
-     * @param proofs                            The proof of the updated work details, as a file.
      * @return A {@link HpProfileWorkDetailsResponseTO} object containing the updated work details.
      * @throws InvalidRequestException If the request is invalid or missing required information.
      * @throws WorkFlowException       If there is a problem with the work flow during the update process.
      */
-    @PutMapping(path = "health-professional/{healthProfessionalId}/work-profile", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public HpProfileWorkDetailsResponseTO updateHealthProfessionalWorkProfileDetail(@RequestPart("data") HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO,
-                                                                                    @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
-                                                                                    @RequestParam(value = "proof", required = false) List<MultipartFile> proofs)
+    @PutMapping(path = "health-professional/{healthProfessionalId}/work-profile", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public HpProfileWorkDetailsResponseTO updateHealthProfessionalWorkProfileDetail(@RequestBody HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO,
+                                                                                    @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId)
             throws InvalidRequestException, WorkFlowException, NmrException {
 
         log.info("In HP Registration Controller: updateHealthProfessionalWorkProfileDetail method ");
         log.debug("Request Payload: HpWorkProfileUpdateRequestTO: ");
         log.debug(hpWorkProfileUpdateRequestTO.toString());
 
-        HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = hpService.addOrUpdateWorkProfileDetail(hpProfileId, hpWorkProfileUpdateRequestTO, proofs);
+        HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = hpService.addOrUpdateWorkProfileDetail(hpProfileId, hpWorkProfileUpdateRequestTO, Collections.emptyList());
 
         log.info("HP Registration Controller: updateHealthProfessionalWorkProfileDetail method: Execution Successful. ");
         log.debug("Response Payload: HpProfileWorkDetailsResponseTO: ");

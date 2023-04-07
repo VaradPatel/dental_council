@@ -57,7 +57,7 @@ public final class HpProfileWorkProfileMapper {
                 address = null;
             }
             currentWorkDetailsTO.setAddress(address);
-            currentWorkDetailsTO.setProof(workProfileObj.getProofOfWorkAttachment());
+           // currentWorkDetailsTO.setProof(workProfileObj.getProofOfWorkAttachment());
             currentWorkDetailsTO.setRegistrationNo(workProfileObj.getRegistrationNo());
             currentWorkDetailsTO.setExperienceInYears(workProfileObj.getExperienceInYears());
             currentWorkDetailsTOList.add(currentWorkDetailsTO);

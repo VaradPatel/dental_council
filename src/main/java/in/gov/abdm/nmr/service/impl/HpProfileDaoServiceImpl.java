@@ -319,7 +319,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         log.info("In HpProfileDaoServiceImpl : updateWorkProfileDetails method");
 
-        if (proofs != null) {
+        if (proofs != null && proofs.size() > 1) {
             log.debug("Initiating Addition of Proofs since Proofs are provided as a part of input payload. ");
             validateWorkProfileDetailsAndProofs(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails(), proofs);
 
