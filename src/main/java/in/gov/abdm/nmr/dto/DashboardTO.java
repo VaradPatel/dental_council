@@ -19,7 +19,7 @@ public class DashboardTO {
     private String councilName;
     private String applicantFullName;
     private BigInteger workFlowStatusId;
-    private Double pendency;
+    private int pendency;
     private String gender;
     private String emailId;
     private String mobileNumber;
