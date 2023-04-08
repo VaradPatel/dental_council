@@ -282,13 +282,10 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             log.debug("Initiating Registration details Updation flow since there was an existing Registration detail for the given hp_profile_id. ");
             mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile,registrationCertificate);
         }
-        if (degreeCertificate != null) {
-            log.debug("Validating Degree Certificates against the List of Qualifications accepted as payload");
-            validateQualificationDetailsAndProofs(hpRegistrationUpdateRequestTO.getQualificationDetails(), List.of(degreeCertificate));
-            saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), List.of(degreeCertificate));
-        } else {
-            validateQualificationDetailsAndProofs(hpRegistrationUpdateRequestTO.getQualificationDetails(), new ArrayList<>());
-            saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), new ArrayList<>());
+        if (hpRegistrationUpdateRequestTO.getQualificationDetails() != null && !hpRegistrationUpdateRequestTO.getQualificationDetails().isEmpty()) {
+            log.debug("Saving Qualification Details");
+//            validateQualificationDetailsAndProofs(hpRegistrationUpdateRequestTO.getQualificationDetails(), List.of(degreeCertificate));
+            saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), degreeCertificate != null ? List.of(degreeCertificate) : Collections.emptyList());
         }
 
         HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByHpProfileId(hpProfileId);
@@ -519,9 +516,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             QualificationDetails qualification = new QualificationDetails();
             if (indianQualification.getId() != null) {
                 qualification = qualificationDetailRepository.findById(indianQualification.getId()).get();
-                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification, proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)));
+                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification, !proofs.isEmpty() ? proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)) : null);
             } else {
-                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification, proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)));
+                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification, !proofs.isEmpty() ? proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)) : null);
                 qualificationDetails.add(qualification);
             }
         }
@@ -545,11 +542,13 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 coalesce(indianQualification.getRequestId(), hpProfile.getRequestId()));
         qualification.setBroadSpecialityId(indianQualification.getBroadSpecialityId());
         qualification.setSuperSpecialityName(indianQualification.getSuperSpecialityName());
-        qualification.setFileName(proof != null ? proof.getOriginalFilename() : null);
-        try {
-            qualification.setCertificate(proof.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if(proof != null && !proof.isEmpty()) {
+            qualification.setFileName(proof.getOriginalFilename());
+            try {
+                qualification.setCertificate(proof.getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -561,9 +560,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             ForeignQualificationDetails customQualification = new ForeignQualificationDetails();
             if (internationalQualification.getId() != null) {
                 customQualification = iCustomQualificationDetailRepository.findById(internationalQualification.getId()).get();
-                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification, proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)));
+                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification, !proofs.isEmpty() ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null);
             } else {
-                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification, proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)));
+                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification, !proofs.isEmpty() ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null);
                 internationQualifications.add(customQualification);
             }
         }
@@ -588,11 +587,13 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         customQualification.setHpProfile(hpProfile);
         customQualification.setBroadSpecialityId(newCustomQualification.getBroadSpecialityId());
         customQualification.setSuperSpecialityName(newCustomQualification.getSuperSpecialityName());
-        customQualification.setFileName(proof != null ? proof.getOriginalFilename() : null);
-        try {
-            customQualification.setCertificate(proof.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if(proof != null && !proof.isEmpty()) {
+            customQualification.setFileName(proof.getOriginalFilename());
+            try {
+                customQualification.setCertificate(proof.getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -695,8 +696,10 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 registrationDetail.setRenewableRegistrationDate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRenewableRegistrationDate());
             }
             registrationDetail.setIsNameChange(hpRegistrationUpdateRequestTO.getRegistrationDetail().getIsNameChange());
-            registrationDetail.setCertificate(registrationCertificate.getBytes());
-            registrationDetail.setFileName(hpRegistrationUpdateRequestTO.getRegistrationDetail().getFileName());
+           if(registrationCertificate != null && !registrationCertificate.isEmpty()) {
+               registrationDetail.setCertificate(registrationCertificate.getBytes());
+               registrationDetail.setFileName(hpRegistrationUpdateRequestTO.getRegistrationDetail().getFileName());
+           }
         }
         registrationDetail.setHpProfileId(hpProfile);
         registrationDetail.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
