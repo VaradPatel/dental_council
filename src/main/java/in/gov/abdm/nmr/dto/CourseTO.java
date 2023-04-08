@@ -15,4 +15,5 @@ public class CourseTO {
 
     private BigInteger id;
     private String courseName;
+    private String name;
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.List;
 
 @Component
@@ -79,6 +80,7 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
                     qualificationDetailResponseTo.setFileName(indianQualification.getFileName().substring(0, indianQualification.getFileName().lastIndexOf(".")));
                     qualificationDetailResponseTo.setFileType(indianQualification.getFileName().substring(indianQualification.getFileName().lastIndexOf(".") + 1));
                 }
+                qualificationDetailResponseTo.setCreatedAt(indianQualification.getCreatedAt());
 
                 return qualificationDetailResponseTo;
             }).toList());
@@ -112,11 +114,12 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
                     qualificationDetailResponseTo.setFileName(internationalQualification.getFileName().substring(0, internationalQualification.getFileName().lastIndexOf(".")));
                     qualificationDetailResponseTo.setFileType(internationalQualification.getFileName().substring(internationalQualification.getFileName().lastIndexOf(".") + 1));
                 }
+                qualificationDetailResponseTo.setCreatedAt(internationalQualification.getCreatedAt());
                 return qualificationDetailResponseTo;
             }).toList());
         }
 
-
+        qualifications.sort(Comparator.comparing(QualificationDetailResponseTo::getCreatedAt));
         hpProfileRegistrationResponseTO.setRegistrationDetailTO(registrationDetailsTo);
         hpProfileRegistrationResponseTO.setNbeResponseTo(nbeResponseTo);
         hpProfileRegistrationResponseTO.setQualificationDetailResponseTos(qualifications);
