@@ -80,6 +80,8 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
                     qualificationDetailResponseTo.setFileName(indianQualification.getFileName().substring(0, indianQualification.getFileName().lastIndexOf(".")));
                     qualificationDetailResponseTo.setFileType(indianQualification.getFileName().substring(indianQualification.getFileName().lastIndexOf(".") + 1));
                 }
+                qualificationDetailResponseTo.setRequestId(indianQualification.getRequestId());
+                qualificationDetailResponseTo.setIsVerified(indianQualification.getIsVerified());
                 qualificationDetailResponseTo.setCreatedAt(indianQualification.getCreatedAt());
 
                 return qualificationDetailResponseTo;
@@ -114,6 +116,8 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
                     qualificationDetailResponseTo.setFileName(internationalQualification.getFileName().substring(0, internationalQualification.getFileName().lastIndexOf(".")));
                     qualificationDetailResponseTo.setFileType(internationalQualification.getFileName().substring(internationalQualification.getFileName().lastIndexOf(".") + 1));
                 }
+                qualificationDetailResponseTo.setRequestId(internationalQualification.getRequestId());
+                qualificationDetailResponseTo.setIsVerified(internationalQualification.getIsVerified());
                 qualificationDetailResponseTo.setCreatedAt(internationalQualification.getCreatedAt());
                 return qualificationDetailResponseTo;
             }).toList());

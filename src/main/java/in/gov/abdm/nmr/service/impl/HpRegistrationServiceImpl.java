@@ -290,16 +290,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
             registrationDetails.setRequestId(requestId);
 
-            log.debug("Updating the request_id in work_profile table");
-            List<WorkProfile> workProfileList = new ArrayList<>();
-            List<WorkProfile> workProfiles = workProfileRepository.getWorkProfileDetailsByHPId(hpSubmitRequestTO.getHpProfileId());
-            String finalRequestId = requestId;
-            workProfiles.forEach(workProfile -> {
-                workProfile.setRequestId(finalRequestId);
-                workProfileList.add(workProfile);
-            });
             registrationDetailRepository.save(registrationDetails);
-            workProfileRepository.saveAll(workProfileList);
             iHpProfileRepository.save(hpProfileById);
 
             List<QualificationDetails> qualificationDetailsList = new ArrayList<>();
