@@ -44,7 +44,7 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
             if(registrationDetails.getCertificate() != null) {
                 registrationDetailsTo.setRegistrationCertificate( new String(Base64.getEncoder().encodeToString(registrationDetails.getCertificate())));
             }
-            if (registrationDetails.getFileName() != null) {
+            if (registrationDetails.getFileName() != null && !registrationDetails.getFileName().isEmpty()) {
                 registrationDetailsTo.setFileName(registrationDetails.getFileName().substring(0,registrationDetails.getFileName().lastIndexOf(".")));
                 registrationDetailsTo.setFileType(registrationDetails.getFileName().substring(registrationDetails.getFileName().lastIndexOf(".")+1));
 
