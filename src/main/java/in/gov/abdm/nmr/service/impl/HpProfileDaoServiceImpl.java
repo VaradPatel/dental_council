@@ -600,8 +600,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private void mapAddressRequestToEntity(BigInteger hpProfileId, HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO, Address addressData) {
         addressData.setAddressLine1(hpPersonalUpdateRequestTO.getCommunicationAddress().getAddressLine1());
         addressData.setPincode(hpPersonalUpdateRequestTO.getCommunicationAddress().getPincode());
-        addressData.setEmail(hpPersonalUpdateRequestTO.getCommunicationAddress().getEmail());
-        addressData.setMobile(hpPersonalUpdateRequestTO.getCommunicationAddress().getMobile());
+        addressData.setEmail(hpPersonalUpdateRequestTO.getPersonalDetails().getEmail());
+        addressData.setMobile(hpPersonalUpdateRequestTO.getPersonalDetails().getMobile());
 
         Country communicationCountry = countryRepository
                 .findById(hpPersonalUpdateRequestTO.getCommunicationAddress().getCountry().getId())
