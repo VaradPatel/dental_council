@@ -653,7 +653,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         hpProfile.setSpouseName(hpPersonalUpdateRequestTO.getPersonalDetails().getSpouseName());
         hpProfile.setGender(hpPersonalUpdateRequestTO.getPersonalDetails().getGender());
         hpProfile.setDateOfBirth(hpPersonalUpdateRequestTO.getPersonalDetails().getDateOfBirth());
-        hpProfile.setRequestId(hpPersonalUpdateRequestTO.getRequestId());
+        if(hpPersonalUpdateRequestTO.getRequestId() != null){
+            hpProfile.setRequestId(hpPersonalUpdateRequestTO.getRequestId());
+        }
         hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
         hpProfile.setIsSameAddress(hpPersonalUpdateRequestTO.getCommunicationAddress().getIsSameAddress());
 //        Schedule schedule = iScheduleRepository
