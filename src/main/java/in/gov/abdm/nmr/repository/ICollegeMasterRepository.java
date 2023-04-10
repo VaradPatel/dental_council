@@ -8,7 +8,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 public interface ICollegeMasterRepository extends JpaRepository<CollegeMaster, BigInteger> {
-    @Query(value = "SELECT *  FROM college_master WHERE state_id= :stateId", nativeQuery = true)
+    @Query(value = "SELECT *  FROM college_master WHERE state_id= :stateId order by name asc", nativeQuery = true)
     List<CollegeMaster> getCollegesByStateId(BigInteger stateId);
 
     @Query(value = "SELECT *  FROM college_master WHERE id= :id", nativeQuery = true)
