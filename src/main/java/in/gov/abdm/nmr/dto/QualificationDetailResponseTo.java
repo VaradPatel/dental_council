@@ -1,9 +1,11 @@
 package in.gov.abdm.nmr.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
 import lombok.Data;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
 
 @Data
 public class QualificationDetailResponseTo {
@@ -22,4 +24,6 @@ public class QualificationDetailResponseTo {
     private String degreeCertificate;
     private String fileName;
     private String fileType;
+    @JsonIgnore
+    private Timestamp createdAt;
 }

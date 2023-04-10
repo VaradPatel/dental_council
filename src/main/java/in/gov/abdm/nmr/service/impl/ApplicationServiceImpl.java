@@ -557,6 +557,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         columnToSortMap.put("councilName", " stmc.name");
         columnToSortMap.put("applicantFullName", " hp.full_name");
         columnToSortMap.put("applicationTypeId", " application_type_id");
-        return columnToSortMap.getOrDefault(columnToSort, " rd.created_at ");
+        columnToSortMap.put("pendency", " pendency");
+        return columnToSortMap.getOrDefault(columnToSort, " pendency ");
     }
 }

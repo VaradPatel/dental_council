@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,6 +47,7 @@ import in.gov.abdm.nmr.service.IUserDaoService;
 @Transactional
 public class CollegeServiceV2Impl implements ICollegeServiceV2 {
 
+    private static final List<BigInteger> ALLOWED_SUBTYPE_FOR_COLLEGE_UPDATES = List.of(UserSubTypeEnum.COLLEGE.getCode(), UserSubTypeEnum.NMC_ADMIN.getCode());
     private static final String UNSUPPORTED_OPERATION = "Unsupported operation";
 
     private static final String ACCESS_DENIED = "Access denied";
@@ -148,9 +150,13 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
     }
 
     @Override
-    public CollegeMasterTOV2 createOrUpdateCollege(CollegeMasterTOV2 collegeMasterTOV2) throws NmrException {
+    public CollegeMasterTOV2 createOrUpdateCollege(CollegeMasterTOV2 collegeMasterTOV2) throws NmrException, InvalidRequestException {
         CollegeMaster collegeMaster = null;
         CollegeProfile collegeProfile = null;
+
+        if(!ALLOWED_SUBTYPE_FOR_COLLEGE_UPDATES.contains(getLoggedInUser().getUserSubType().getId())){
+            throw new InvalidRequestException("Invalid Request!");
+        }
 
         if (collegeMasterTOV2.getId() != null) {
             collegeMaster = collegeMasterDaoService.findById(collegeMasterTOV2.getId());
@@ -256,8 +262,12 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
     }
 
     @Override
-    public CollegeProfileTOV2 createOrUpdateCollegeVerifier(CollegeProfileTOV2 collegeProfileTOV2) throws GeneralSecurityException, NmrException {
+    public CollegeProfileTOV2 createOrUpdateCollegeVerifier(CollegeProfileTOV2 collegeProfileTOV2) throws GeneralSecurityException, NmrException, InvalidRequestException {
         CollegeProfile collegeProfile = null;
+
+        if(!getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.NMC_ADMIN.getCode())){
+            throw new InvalidRequestException("Invalid Request!");
+        }
 
         if (collegeProfileTOV2.getId() != null) {
             collegeProfile = collegeProfileDaoService.findById(collegeProfileTOV2.getId());

@@ -96,6 +96,8 @@ public class AuthServiceImpl implements IAuthService {
 
         } else if (UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode().equals(user.getUserType().getId())) {
             loginResponseTO.setProfileId(nmcDaoService.findByUserId(user.getId()).getId());
+            BigInteger userSubTypeId = user.getUserSubType().getId();
+            loginResponseTO.setUserSubType(userSubTypeId);
         } else if (UserTypeEnum.NBE.getCode().equals(user.getUserType().getId())) {
             loginResponseTO.setProfileId(nbeDaoService.findByUserId(user.getId()).getId());
         }

@@ -13,7 +13,9 @@ public enum UserSubTypeEnum {
 
     COLLEGE(BigInteger.valueOf(1), COLLEGE_CONSTANT, COLLEGE_CONSTANT),
     COLLEGE_REGISTRAR(BigInteger.valueOf(2), "College Registrar", COLLEGE_CONSTANT),
-    COLLEGE_DEAN(BigInteger.valueOf(3), "College Dean", COLLEGE_CONSTANT);
+    COLLEGE_DEAN(BigInteger.valueOf(3), "College Dean", COLLEGE_CONSTANT),
+    NMC_ADMIN(BigInteger.valueOf(6), "NMC Admin", COLLEGE_CONSTANT),
+    NMC_VERIFIER(BigInteger.valueOf(7), "NMC Verifier", COLLEGE_CONSTANT);
 
     private BigInteger code;
     private String name;

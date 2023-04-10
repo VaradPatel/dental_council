@@ -32,9 +32,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import static in.gov.abdm.nmr.util.NMRConstants.NO_MATCHING_REGISTRATION_DETAILS_FOUND;
-import static in.gov.abdm.nmr.util.NMRConstants.NO_MATCHING_WORK_PROFILE_DETAILS_FOUND;
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static in.gov.abdm.nmr.util.NMRUtil.validateQualificationDetailsAndProofs;
 import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetails;
 
@@ -208,10 +209,14 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
         }
         hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs);
+
         return "Success";
     }
 
-
+    private void mapSuperSpecialityToEntity(BigInteger hpProfileId, SuperSpecialityTO speciality, SuperSpeciality superSpeciality) {
+        superSpeciality.setName(speciality.getName());
+        superSpeciality.setHpProfileId(hpProfileId);
+    }
     @Override
     public HpProfilePersonalResponseTO addOrUpdateHpPersonalDetail(BigInteger hpProfileId,
                                                                    HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException {
@@ -273,7 +278,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         WorkFlow lastWorkFlowForHealthProfessional = workFlowRepository.findLastWorkFlowForHealthProfessional(hpSubmitRequestTO.getHpProfileId());
         if (lastWorkFlowForHealthProfessional != null && WorkflowStatus.QUERY_RAISED.getId().equals(lastWorkFlowForHealthProfessional.getWorkFlowStatus().getId())) {
             log.debug("Calling assignQueriesBackToQueryCreator method since there is an existing workflow with 'Query Raised' work flow status. ");
-            iWorkFlowService.assignQueriesBackToQueryCreator(hpSubmitRequestTO.getRequestId());
+            iWorkFlowService.assignQueriesBackToQueryCreator(lastWorkFlowForHealthProfessional.getRequestId());
             iQueriesService.markQueryAsClosed(hpSubmitRequestTO.getHpProfileId());
 
         } else {
@@ -299,16 +304,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
             registrationDetails.setRequestId(requestId);
 
-            log.debug("Updating the request_id in work_profile table");
-            List<WorkProfile> workProfileList = new ArrayList<>();
-            List<WorkProfile> workProfiles = workProfileRepository.getWorkProfileDetailsByHPId(hpSubmitRequestTO.getHpProfileId());
-            String finalRequestId = requestId;
-            workProfiles.forEach(workProfile -> {
-                workProfile.setRequestId(finalRequestId);
-                workProfileList.add(workProfile);
-            });
             registrationDetailRepository.save(registrationDetails);
-            workProfileRepository.saveAll(workProfileList);
             iHpProfileRepository.save(hpProfileById);
 
             List<QualificationDetails> qualificationDetailsList = new ArrayList<>();
@@ -360,20 +356,33 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Override
     public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) throws NmrException {
         HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = null;
-        List<SuperSpeciality> superSpecialities = NMRUtil.coalesceCollection(superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId), superSpecialityRepository.getSuperSpecialityFromHpProfileId(hpProfileId));
-        List<String> registrationNos = iRegistrationDetailRepository.getRegistrationNosByHpProfileId(hpProfileId);
-
         List<WorkProfile> workProfileList = new ArrayList<>();
-        if (!registrationNos.isEmpty()) {
-            workProfileList = workProfileRepository.getWorkProfileDetailsByRegNo(registrationNos.get(0));
-        } else {
-            throw new NmrException(NO_MATCHING_REGISTRATION_DETAILS_FOUND, HttpStatus.NOT_FOUND);
+        List<LanguagesKnown> languagesKnown = new ArrayList<>();
+        List<BigInteger> languagesKnownIds = new ArrayList<>();
+        Optional<HpProfile> hpProfileOptional = iHpProfileRepository.findById(hpProfileId);
+        if(hpProfileOptional.isPresent()) {
+            User user = hpProfileOptional.get().getUser();
+            if (user != null) {
+                BigInteger userId = user.getId();
+                workProfileList = workProfileRepository.getWorkProfileDetailsByUserId(userId);
+                languagesKnown = languagesKnownRepository.findByUserId(userId);
+            } else {
+                throw new NmrException(NO_MATCHING_USER_DETAILS_FOUND, HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        if(languagesKnown != null && !languagesKnown.isEmpty()){
+            languagesKnownIds = languagesKnown.stream().map(languageKnown -> {
+                Language language = languageKnown.getLanguage();
+                return language != null ? language.getId() : null ;
+            }).collect(Collectors.toList());
         }
 
         if (!workProfileList.isEmpty()) {
-            hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(superSpecialities, workProfileList);
+            hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(workProfileList);
+            hpProfileWorkDetailsResponseTO.setLanguagesKnownIds(languagesKnownIds);
         } else {
-            throw new NmrException(NO_MATCHING_WORK_PROFILE_DETAILS_FOUND, HttpStatus.NOT_FOUND);
+            throw new NmrException(NO_MATCHING_WORK_PROFILE_DETAILS_FOUND, HttpStatus.BAD_REQUEST);
         }
         return hpProfileWorkDetailsResponseTO;
     }
@@ -552,19 +561,39 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     @Override
-    public void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException {
+    public void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException, InvalidRequestException {
+
         String transactionId = request.getTransactionId();
-        if (otpService.isOtpVerified(transactionId)) {
-            throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage(),
-                    HttpStatus.UNAUTHORIZED.toString());
+        if(request.getEmail() != null || request.getMobileNumber() != null ){
+            if(transactionId == null){
+                throw new InvalidRequestException(MISSING_TRANSACTION_ID_ERROR);
+            } else {
+                if (otpService.isOtpVerified(transactionId)) {
+                    throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage(),
+                            HttpStatus.UNAUTHORIZED.toString());
+                }
+            }
         }
+
         if (request.getEmail() != null) {
             iHpProfileRepository.updateHpProfileEmail(hpProfileId, request.getEmail());
             iAddressRepository.updateAddressEmail(hpProfileId, request.getEmail(), AddressType.COMMUNICATION.getId());
         }
+
         if (request.getMobileNumber() != null) {
             iHpProfileRepository.updateHpProfileMobile(hpProfileId, request.getMobileNumber());
         }
+
+        String eSignTransactionId = request.getESignTransactionId();
+        if(eSignTransactionId != null && !eSignTransactionId.isBlank()){
+            HpProfile hpProfile = iHpProfileRepository.findHpProfileById(hpProfileId);
+            if(hpProfile != null){
+                hpProfile.setTransactionId(eSignTransactionId);
+                iHpProfileRepository.save(hpProfile);
+            }
+
+        }
+
         BigInteger masterHpProfileId = iHpProfileRepository.findMasterHpProfileByHpProfileId(hpProfileId);
         if (masterHpProfileId != null) {
             if (request.getEmail() != null) {
@@ -573,6 +602,14 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             }
             if (request.getMobileNumber() != null) {// update mobile_number hp_profile_master by hp_profile_master.id
                 iHpProfileMasterRepository.updateMasterHpProfileMobile(masterHpProfileId, request.getMobileNumber());
+            }
+            if(eSignTransactionId != null && !eSignTransactionId.isBlank()){
+                HpProfileMaster hpProfileMaster = iHpProfileMasterRepository.findHpProfileMasterById(masterHpProfileId);
+                if(hpProfileMaster != null){
+                    hpProfileMaster.setTransactionId(eSignTransactionId);
+                    iHpProfileMasterRepository.save(hpProfileMaster);
+                }
+
             }
         }
     }

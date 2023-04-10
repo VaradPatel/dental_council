@@ -90,5 +90,7 @@ public class QualificationDetailRequestTO {
     private BigInteger broadSpecialityId;
 
     private String superSpecialityName;
+
     private String fileName;
+
 }

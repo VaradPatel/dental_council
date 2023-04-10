@@ -15,7 +15,7 @@ import java.sql.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class QualificationDetailsMaster {
+public class QualificationDetailsMaster extends CommonAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

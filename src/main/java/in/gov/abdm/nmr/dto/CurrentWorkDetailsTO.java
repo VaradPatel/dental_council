@@ -18,5 +18,6 @@ public class CurrentWorkDetailsTO {
     private AddressTO address;
     private String registrationNo;
     private byte[] proof;
+    private Integer experienceInYears;
 
 }

@@ -3,10 +3,7 @@ package in.gov.abdm.nmr.service.impl;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -131,6 +128,7 @@ public class SearchServiceImpl implements ISearchService {
             HpSearchProfileQualificationTO hpSearchProfileQualificationTO = new HpSearchProfileQualificationTO();
             hpSearchProfileQualificationTO.setQualification(indianQualification.getCourse() != null ? indianQualification.getCourse().getCourseName() : null);
             hpSearchProfileQualificationTO.setQualificationYear(indianQualification.getQualificationYear());
+            hpSearchProfileQualificationTO.setCreatedAt(indianQualification.getCreatedAt());
             if (Objects.nonNull(indianQualification.getUniversity())) {
                 hpSearchProfileQualificationTO.setUniversityName(indianQualification.getUniversity().getName());
             }
@@ -142,8 +140,11 @@ public class SearchServiceImpl implements ISearchService {
             hpSearchProfileQualificationTO.setQualification(internationalQualification.getCourse());
             hpSearchProfileQualificationTO.setQualificationYear(internationalQualification.getQualificationYear());
             hpSearchProfileQualificationTO.setUniversityName(internationalQualification.getUniversity());
+            hpSearchProfileQualificationTO.setCreatedAt(internationalQualification.getCreatedAt());
+
             return hpSearchProfileQualificationTO;
         }).toList());
+        qualificationTOs.sort(Comparator.comparing(HpSearchProfileQualificationTO::getCreatedAt));
         hpSearchProfileTO.setQualifications(qualificationTOs);
         return hpSearchProfileTO;
     }

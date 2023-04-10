@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.List;
 
 @Component
@@ -43,7 +44,7 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
             if(registrationDetails.getCertificate() != null) {
                 registrationDetailsTo.setRegistrationCertificate( new String(Base64.getEncoder().encodeToString(registrationDetails.getCertificate())));
             }
-            if (registrationDetails.getFileName() != null) {
+            if (registrationDetails.getFileName() != null && !registrationDetails.getFileName().isEmpty()) {
                 registrationDetailsTo.setFileName(registrationDetails.getFileName().substring(0,registrationDetails.getFileName().lastIndexOf(".")));
                 registrationDetailsTo.setFileType(registrationDetails.getFileName().substring(registrationDetails.getFileName().lastIndexOf(".")+1));
 
@@ -79,6 +80,9 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
                     qualificationDetailResponseTo.setFileName(indianQualification.getFileName().substring(0, indianQualification.getFileName().lastIndexOf(".")));
                     qualificationDetailResponseTo.setFileType(indianQualification.getFileName().substring(indianQualification.getFileName().lastIndexOf(".") + 1));
                 }
+                qualificationDetailResponseTo.setRequestId(indianQualification.getRequestId());
+                qualificationDetailResponseTo.setIsVerified(indianQualification.getIsVerified());
+                qualificationDetailResponseTo.setCreatedAt(indianQualification.getCreatedAt());
 
                 return qualificationDetailResponseTo;
             }).toList());
@@ -112,11 +116,14 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
                     qualificationDetailResponseTo.setFileName(internationalQualification.getFileName().substring(0, internationalQualification.getFileName().lastIndexOf(".")));
                     qualificationDetailResponseTo.setFileType(internationalQualification.getFileName().substring(internationalQualification.getFileName().lastIndexOf(".") + 1));
                 }
+                qualificationDetailResponseTo.setRequestId(internationalQualification.getRequestId());
+                qualificationDetailResponseTo.setIsVerified(internationalQualification.getIsVerified());
+                qualificationDetailResponseTo.setCreatedAt(internationalQualification.getCreatedAt());
                 return qualificationDetailResponseTo;
             }).toList());
         }
 
-
+        qualifications.sort(Comparator.comparing(QualificationDetailResponseTo::getCreatedAt));
         hpProfileRegistrationResponseTO.setRegistrationDetailTO(registrationDetailsTo);
         hpProfileRegistrationResponseTO.setNbeResponseTo(nbeResponseTo);
         hpProfileRegistrationResponseTO.setQualificationDetailResponseTos(qualifications);

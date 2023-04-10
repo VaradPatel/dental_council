@@ -29,7 +29,6 @@ public class CommunicationAddressTO {
     @NotBlank(message = NOT_BLANK_ERROR_MSG)
     private String addressLine1;
 
-    @NotBlank(message = NOT_BLANK_ERROR_MSG)
     private String house;
 
     private String street;

@@ -118,7 +118,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
 //                }
             } else {
                 if (groupId.equals(Group.SMC.getId())) {
-                    sb.append(" AND smc_status NOT IN ('FORWARDED','NOT YET RECEIVED') ");
+                    sb.append(" AND smc_status NOT IN ('SUBMITTED','FORWARDED','NOT YET RECEIVED') ");
                 } else if (groupId.equals(Group.COLLEGE.getId()) && !dashboardRequestParamsTO.getApplicationTypeId().equals("1,8")) {
                     sb.append(" AND college_status NOT IN ('NOT YET RECEIVED') ");
 //                } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
@@ -167,11 +167,11 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         sb.append(FETCH_CARD_DETAILS_QUERY);
 
         if (Objects.nonNull(dashboardRequestParamsTO.getCollegeId()) && !dashboardRequestParamsTO.getCollegeId().isEmpty()) {
-            sb.append("INNER JOIN main.qualification_details as qd on qd.hp_profile_id = rd.hp_profile_id AND qd.request_id = rd.request_id ");
+            sb.append("INNER JOIN main.qualification_details as qd on qd.hp_profile_id = rd.hp_profile_id AND qd.request_id = calculate.request_id ");
         }
 
         if (Objects.nonNull(groupId) && groupId.equals(Group.NBE.getId())) {
-            sb.append("INNER JOIN main.foreign_qualification_details as fqd on fqd.hp_profile_id = rd.hp_profile_id AND fqd.request_id = rd.request_id ");
+            sb.append("INNER JOIN main.foreign_qualification_details as fqd on fqd.hp_profile_id = rd.hp_profile_id AND fqd.request_id = calculate.request_id ");
         }
 
         sb.append(" WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 " + "AND calculate.application_type_id IN ( ").append(dashboardRequestParamsTO.getApplicationTypeId()).append( " ) ");
@@ -185,6 +185,8 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             String sortRecords = SORT_RECORDS.apply(dashboardRequestParamsTO);
             sb.append(sortRecords);
         }
+
+        log.debug("Query : {}", sb.toString());
         return sb.toString();
     };
 
@@ -254,7 +256,9 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         Query query = entityManager.createNativeQuery(DASHBOARD.apply(dashboardRequestParamsTO));
 
         query.setFirstResult((pagination.getPageNumber() - 1) * pagination.getPageSize());
+
         query.setMaxResults(pagination.getPageSize());
+
 
         List<Object[]> results = query.getResultList();
         results.forEach(result -> {
@@ -272,7 +276,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setCouncilName((String) result[10]);
             dashBoardTO.setApplicantFullName((String) result[11]);
             dashBoardTO.setWorkFlowStatusId((BigInteger) result[12]);
-            dashBoardTO.setPendency((Double) result[13]);
+            dashBoardTO.setPendency((int) Math.floor((Double) result[13]));
             dashBoardTO.setGender((String) result[14]);
             dashBoardTO.setEmailId((String) result[15]);
             dashBoardTO.setMobileNumber((String) result[16]);

@@ -118,5 +118,5 @@ public interface IHpRegistrationService {
 
     void addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException, ParseException;
 
-    void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException;
+    void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException, InvalidRequestException;
 }
