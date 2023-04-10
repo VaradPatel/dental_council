@@ -2,7 +2,7 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.mapper.ICollegeMasterMapper;
-import in.gov.abdm.nmr.jpa.repository.ICollegeMasterRepository;
+import in.gov.abdm.nmr.repository.ICollegeMasterRepository;
 import in.gov.abdm.nmr.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

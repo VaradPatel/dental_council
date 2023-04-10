@@ -1,13 +1,12 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.jpa.entity.*;
+import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.exception.NmrException;
-import in.gov.abdm.nmr.jpa.entity.*;
-import in.gov.abdm.nmr.jpa.repository.INbeProfileRepository;
-import in.gov.abdm.nmr.jpa.repository.INmcProfileRepository;
-import in.gov.abdm.nmr.jpa.repository.ISmcProfileRepository;
-import in.gov.abdm.nmr.jpa.repository.IUserRepository;
+import in.gov.abdm.nmr.repository.INbeProfileRepository;
+import in.gov.abdm.nmr.repository.INmcProfileRepository;
+import in.gov.abdm.nmr.repository.ISmcProfileRepository;
+import in.gov.abdm.nmr.repository.IUserRepository;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;

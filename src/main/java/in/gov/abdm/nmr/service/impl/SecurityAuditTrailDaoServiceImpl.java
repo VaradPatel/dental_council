@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.jpa.entity.SecurityAuditTrail;
-import in.gov.abdm.nmr.jpa.repository.ISecurityAuditTrailRepository;
+import in.gov.abdm.nmr.entity.SecurityAuditTrail;
+import in.gov.abdm.nmr.repository.ISecurityAuditTrailRepository;
 import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.jpa.entity.RequestCounter;
+import in.gov.abdm.nmr.entity.RequestCounter;
 import in.gov.abdm.nmr.exception.WorkFlowException;
-import in.gov.abdm.nmr.jpa.repository.IRequestCounterRepository;
+import in.gov.abdm.nmr.repository.IRequestCounterRepository;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

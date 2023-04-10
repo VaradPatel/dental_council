@@ -3,16 +3,16 @@ package in.gov.abdm.nmr.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.client.DscFClient;
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.NoDataFoundException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
-import in.gov.abdm.nmr.jpa.entity.*;
-import in.gov.abdm.nmr.jpa.repository.*;
 import in.gov.abdm.nmr.mapper.IHpProfileMapper;
-import in.gov.abdm.nmr.mongodb.entity.Council;
-import in.gov.abdm.nmr.mongodb.repository.ICouncilRepository;
+import in.gov.abdm.nmr.nosql.entity.Council;
+import in.gov.abdm.nmr.nosql.repository.ICouncilRepository;
+import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpProfileDaoService;
 import in.gov.abdm.nmr.service.IRequestCounterService;
@@ -133,7 +133,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 //        String councilName = Arrays.stream(StateMedicalCouncil.values()).filter(i -> i.getId().equals(BigInteger.valueOf(councilId)))
 //                .map(StateMedicalCouncil::getDescription).collect(Collectors.joining());
 
-        in.gov.abdm.nmr.jpa.entity.StateMedicalCouncil stateMedicalCouncil =
+        StateMedicalCouncil stateMedicalCouncil =
                 stateMedicalCouncilRepository.findStateMedicalCouncilById(BigInteger.valueOf(councilId));
 
         Pageable pageable = PageRequest.of(0,1, Sort.by("_id").descending());
@@ -638,7 +638,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         hpProfile.setGender(hpPersonalUpdateRequestTO.getPersonalDetails().getGender());
         hpProfile.setDateOfBirth(hpPersonalUpdateRequestTO.getPersonalDetails().getDateOfBirth());
         hpProfile.setRequestId(hpPersonalUpdateRequestTO.getRequestId());
-        hpProfile.setHpProfileStatus(in.gov.abdm.nmr.jpa.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
+        hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
         hpProfile.setIsSameAddress(hpPersonalUpdateRequestTO.getCommunicationAddress().getIsSameAddress());
 //        Schedule schedule = iScheduleRepository
 //                .findById(hpPersonalUpdateRequestTO.getPersonalDetails().getSchedule().getId()).orElse(null);

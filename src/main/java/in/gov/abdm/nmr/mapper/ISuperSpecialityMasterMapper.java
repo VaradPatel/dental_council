@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.mapper;
 
-import in.gov.abdm.nmr.jpa.entity.SuperSpeciality;
-import in.gov.abdm.nmr.jpa.entity.SuperSpecialityMaster;
+import in.gov.abdm.nmr.entity.SuperSpeciality;
+import in.gov.abdm.nmr.entity.SuperSpecialityMaster;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
 

@@ -1,10 +1,10 @@
 package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.jpa.entity.NbeProfile;
-import in.gov.abdm.nmr.jpa.entity.NmcProfile;
-import in.gov.abdm.nmr.jpa.entity.SMCProfile;
-import in.gov.abdm.nmr.jpa.entity.User;
+import in.gov.abdm.nmr.entity.NbeProfile;
+import in.gov.abdm.nmr.entity.NmcProfile;
+import in.gov.abdm.nmr.entity.SMCProfile;
+import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.exception.NmrException;
 
 import java.math.BigInteger;

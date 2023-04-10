@@ -2,7 +2,7 @@ package in.gov.abdm.nmr.service;
 
 import java.math.BigInteger;
 
-import in.gov.abdm.nmr.jpa.entity.CollegeProfile;
+import in.gov.abdm.nmr.entity.CollegeProfile;
 
 public interface ICollegeProfileDaoService {
     

@@ -2,7 +2,7 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.SuperSpecialityTO;
 import in.gov.abdm.nmr.mapper.SuperSpecialityDtoMapper;
-import in.gov.abdm.nmr.jpa.repository.SuperSpecialityRepository;
+import in.gov.abdm.nmr.repository.SuperSpecialityRepository;
 import in.gov.abdm.nmr.service.ISuperSpecialityService;
 import org.springframework.stereotype.Service;
 

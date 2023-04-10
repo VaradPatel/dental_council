@@ -2,7 +2,7 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.RegistrationRenewationTypeTO;
 import in.gov.abdm.nmr.mapper.RegistrationRenewationTypeDtoMapper;
-import in.gov.abdm.nmr.jpa.repository.RegistrationRenewationTypeRepository;
+import in.gov.abdm.nmr.repository.RegistrationRenewationTypeRepository;
 import in.gov.abdm.nmr.service.IRegistrationRenewationTypeService;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.mapper;
 
 import in.gov.abdm.nmr.dto.UniversityMasterTo;
-import in.gov.abdm.nmr.jpa.entity.UniversityMaster;
+import in.gov.abdm.nmr.entity.UniversityMaster;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 

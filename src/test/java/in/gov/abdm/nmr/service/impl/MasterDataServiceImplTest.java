@@ -33,7 +33,7 @@ import in.gov.abdm.nmr.dto.UniversityTO;
 import in.gov.abdm.nmr.dto.VillagesTO;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
-import in.gov.abdm.nmr.jpa.entity.Course;
+import in.gov.abdm.nmr.entity.Course;
 import in.gov.abdm.nmr.mapper.IMasterDataMapper;
 import in.gov.abdm.nmr.service.ICourseService;
 import in.gov.abdm.nmr.service.IFacilityTypeService;

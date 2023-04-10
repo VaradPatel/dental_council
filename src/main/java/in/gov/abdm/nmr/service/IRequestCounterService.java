@@ -1,6 +1,6 @@
 package in.gov.abdm.nmr.service;
 
-import in.gov.abdm.nmr.jpa.entity.RequestCounter;
+import in.gov.abdm.nmr.entity.RequestCounter;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 
 import java.math.BigInteger;

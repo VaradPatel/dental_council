@@ -1,6 +1,6 @@
 package in.gov.abdm.nmr.service;
 
-import in.gov.abdm.nmr.jpa.entity.RegistrationDetailsMaster;
+import in.gov.abdm.nmr.entity.RegistrationDetailsMaster;
 
 import java.math.BigInteger;
 

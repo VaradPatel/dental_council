@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.mapper;
 
 import in.gov.abdm.nmr.dto.UserKycTo;
-import in.gov.abdm.nmr.jpa.entity.UserKyc;
+import in.gov.abdm.nmr.entity.UserKyc;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
 

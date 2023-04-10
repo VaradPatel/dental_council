@@ -2,7 +2,7 @@ package in.gov.abdm.nmr.util;
 
 import in.gov.abdm.nmr.dto.CurrentWorkDetailsTO;
 import in.gov.abdm.nmr.dto.QualificationDetailRequestTO;
-import in.gov.abdm.nmr.jpa.entity.RequestCounter;
+import in.gov.abdm.nmr.entity.RequestCounter;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import lombok.experimental.UtilityClass;
 import org.springframework.web.multipart.MultipartFile;

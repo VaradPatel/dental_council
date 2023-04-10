@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.jpa.entity.HpProfileMaster;
-import in.gov.abdm.nmr.jpa.repository.IHpProfileMasterRepository;
+import in.gov.abdm.nmr.entity.HpProfileMaster;
+import in.gov.abdm.nmr.repository.IHpProfileMasterRepository;
 import in.gov.abdm.nmr.service.IHpProfileMasterDaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

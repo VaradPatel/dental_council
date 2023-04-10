@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import in.gov.abdm.nmr.jpa.entity.Password;
-import in.gov.abdm.nmr.jpa.repository.IPasswordRepository;
+import in.gov.abdm.nmr.entity.Password;
+import in.gov.abdm.nmr.repository.IPasswordRepository;
 import in.gov.abdm.nmr.service.IPasswordDaoService;
 
 @Service

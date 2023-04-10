@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.jpa.entity.User;
-import in.gov.abdm.nmr.jpa.repository.IUserRepository;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.repository.IUserRepository;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;

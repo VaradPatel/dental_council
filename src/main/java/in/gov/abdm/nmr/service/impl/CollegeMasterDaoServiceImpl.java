@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import in.gov.abdm.nmr.jpa.entity.CollegeMaster;
-import in.gov.abdm.nmr.jpa.repository.ICollegeMasterRepository;
+import in.gov.abdm.nmr.entity.CollegeMaster;
+import in.gov.abdm.nmr.repository.ICollegeMasterRepository;
 import in.gov.abdm.nmr.service.ICollegeMasterDaoService;
 
 @Service

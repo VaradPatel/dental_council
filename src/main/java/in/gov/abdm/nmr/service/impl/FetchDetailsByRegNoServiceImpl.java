@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
-import in.gov.abdm.nmr.jpa.repository.IFetchDetailsByRegNoRepository;
+import in.gov.abdm.nmr.repository.IFetchDetailsByRegNoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

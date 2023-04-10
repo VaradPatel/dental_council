@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.mapper;
 
 import in.gov.abdm.nmr.dto.AddressTO;
-import in.gov.abdm.nmr.jpa.entity.Address;
+import in.gov.abdm.nmr.entity.Address;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
 

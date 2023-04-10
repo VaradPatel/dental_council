@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.mapper;
 
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.jpa.entity.SuperSpeciality;
-import in.gov.abdm.nmr.jpa.entity.WorkProfile;
+import in.gov.abdm.nmr.entity.SuperSpeciality;
+import in.gov.abdm.nmr.entity.WorkProfile;
 import lombok.experimental.UtilityClass;
 import org.springframework.beans.factory.annotation.Autowired;
 

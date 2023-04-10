@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.mongodb.entity.Council;
-import in.gov.abdm.nmr.mongodb.repository.ICouncilRepository;
+import in.gov.abdm.nmr.nosql.entity.Council;
+import in.gov.abdm.nmr.nosql.repository.ICouncilRepository;
 import in.gov.abdm.nmr.service.ICouncilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;

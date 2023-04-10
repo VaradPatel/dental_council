@@ -2,9 +2,8 @@ package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
-import in.gov.abdm.nmr.mongodb.entity.Council;
+import in.gov.abdm.nmr.nosql.entity.Council;
 import in.gov.abdm.nmr.exception.*;
-import in.gov.abdm.nmr.mongodb.repository.ICouncilRepository;
 import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IQueriesService;

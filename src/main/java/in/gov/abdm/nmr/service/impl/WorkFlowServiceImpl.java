@@ -1,15 +1,13 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
-import in.gov.abdm.nmr.jpa.entity.*;
+import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.WorkFlowException;
-import in.gov.abdm.nmr.jpa.entity.*;
-import in.gov.abdm.nmr.jpa.repository.*;
 import in.gov.abdm.nmr.mapper.INextGroup;
-import in.gov.abdm.nmr.jpa.repository.*;
+import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.service.IWorkFlowService;

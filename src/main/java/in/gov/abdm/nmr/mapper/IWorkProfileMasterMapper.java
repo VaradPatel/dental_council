@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.mapper;
 
-import in.gov.abdm.nmr.jpa.entity.WorkProfile;
-import in.gov.abdm.nmr.jpa.entity.WorkProfileMaster;
+import in.gov.abdm.nmr.entity.WorkProfile;
+import in.gov.abdm.nmr.entity.WorkProfileMaster;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
 

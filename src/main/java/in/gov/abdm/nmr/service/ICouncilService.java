@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.service;
 
 
-import in.gov.abdm.nmr.mongodb.entity.Council;
+import in.gov.abdm.nmr.nosql.entity.Council;
 
 import java.util.List;
 

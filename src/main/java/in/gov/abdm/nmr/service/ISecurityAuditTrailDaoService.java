@@ -1,6 +1,6 @@
 package in.gov.abdm.nmr.service;
 
-import in.gov.abdm.nmr.jpa.entity.SecurityAuditTrail;
+import in.gov.abdm.nmr.entity.SecurityAuditTrail;
 
 import java.sql.Timestamp;
 import java.util.List;

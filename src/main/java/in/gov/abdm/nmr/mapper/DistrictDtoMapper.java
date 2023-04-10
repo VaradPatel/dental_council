@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.mapper;
 
 import in.gov.abdm.nmr.dto.DistrictTO;
-import in.gov.abdm.nmr.jpa.entity.District;
+import in.gov.abdm.nmr.entity.District;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;

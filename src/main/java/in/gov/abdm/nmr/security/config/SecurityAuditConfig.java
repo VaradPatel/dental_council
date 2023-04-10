@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.security.config;
 
 import brave.Tracer;
-import in.gov.abdm.nmr.jpa.entity.SecurityAuditTrail;
+import in.gov.abdm.nmr.entity.SecurityAuditTrail;
 import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

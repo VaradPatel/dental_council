@@ -2,7 +2,7 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.LanguageTO;
 import in.gov.abdm.nmr.mapper.LanguageDtoMapper;
-import in.gov.abdm.nmr.jpa.repository.LanguageRepository;
+import in.gov.abdm.nmr.repository.LanguageRepository;
 import in.gov.abdm.nmr.service.ILanguageService;
 import org.springframework.stereotype.Service;
 

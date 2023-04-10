@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.security.config;
 
 import brave.Tracer;
-import in.gov.abdm.nmr.jpa.entity.SecurityAuditTrail;
+import in.gov.abdm.nmr.entity.SecurityAuditTrail;
 import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;

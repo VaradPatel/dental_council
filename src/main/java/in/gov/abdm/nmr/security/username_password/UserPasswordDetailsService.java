@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import in.gov.abdm.nmr.dto.UserSearchTO;
-import in.gov.abdm.nmr.jpa.entity.User;
+import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.service.IUserDaoService;
 
 @Component

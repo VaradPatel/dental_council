@@ -1,14 +1,14 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.jpa.entity.Password;
-import in.gov.abdm.nmr.jpa.entity.PasswordResetToken;
-import in.gov.abdm.nmr.jpa.entity.User;
+import in.gov.abdm.nmr.entity.Password;
+import in.gov.abdm.nmr.entity.PasswordResetToken;
+import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.OtpException;
-import in.gov.abdm.nmr.jpa.repository.IHpProfileRepository;
-import in.gov.abdm.nmr.jpa.repository.PasswordResetTokenRepository;
+import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.PasswordResetTokenRepository;
 import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRConstants;

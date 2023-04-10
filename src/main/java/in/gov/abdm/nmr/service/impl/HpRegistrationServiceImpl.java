@@ -2,16 +2,16 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
+import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.*;
-import in.gov.abdm.nmr.jpa.entity.*;
-import in.gov.abdm.nmr.jpa.repository.*;
 import in.gov.abdm.nmr.mapper.*;
-import in.gov.abdm.nmr.mongodb.entity.Council;
+import in.gov.abdm.nmr.nosql.entity.Council;
+import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
@@ -32,7 +32,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static in.gov.abdm.nmr.util.NMRConstants.NO_MATCHING_REGISTRATION_DETAILS_FOUND;
 import static in.gov.abdm.nmr.util.NMRConstants.NO_MATCHING_WORK_PROFILE_DETAILS_FOUND;
@@ -394,7 +393,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Transactional
     public KycResponseMessageTo saveUserKycDetails(String registrationNumber, BigInteger councilId, UserKycTo userKycTo) throws ParseException {
 
-        in.gov.abdm.nmr.jpa.entity.StateMedicalCouncil stateMedicalCouncil =
+        in.gov.abdm.nmr.entity.StateMedicalCouncil stateMedicalCouncil =
                 stateMedicalCouncilRepository.findStateMedicalCouncilById(councilId);
 
         List<Council> councils = councilService.getCouncilByRegistrationNumberAndCouncilName(registrationNumber, stateMedicalCouncil.getName());
@@ -471,15 +470,15 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         // ask fe to pass council ID
         // api wil be called every time
         //
-        in.gov.abdm.nmr.jpa.entity.StateMedicalCouncil stateMedicalCouncil =
+        in.gov.abdm.nmr.entity.StateMedicalCouncil stateMedicalCouncil =
                 stateMedicalCouncilRepository.findStateMedicalCouncilById(BigInteger.valueOf(Long.parseLong(request.getSmcId())));
         List<Council> councils = councilService.getCouncilByRegistrationNumberAndCouncilName(request.getRegistrationNumber(), stateMedicalCouncil.getName());
         Council council = councils.get(0);
 
-        in.gov.abdm.nmr.mongodb.entity.RegistrationDetails registrationDetails1 = council.getRegistrationDetails().get(0);
-        List<in.gov.abdm.nmr.mongodb.entity.QualificationDetails> qualificationDetailsList = registrationDetails1.getQualificationDetails()
+        in.gov.abdm.nmr.nosql.entity.RegistrationDetails registrationDetails1 = council.getRegistrationDetails().get(0);
+        List<in.gov.abdm.nmr.nosql.entity.QualificationDetails> qualificationDetailsList = registrationDetails1.getQualificationDetails()
                 .stream().filter(qualificationDetails1 -> qualificationDetails1.getName().equals("MBBS")).toList();
-        in.gov.abdm.nmr.mongodb.entity.QualificationDetails qualificationDetails1 = qualificationDetailsList.get(0);
+        in.gov.abdm.nmr.nosql.entity.QualificationDetails qualificationDetails1 = qualificationDetailsList.get(0);
 
         HpProfile hpProfile = new HpProfile();
         hpProfile.setAadhaarToken(request.getAadhaarToken() != null ? request.getAadhaarToken() : null);
@@ -532,7 +531,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         address.setLandmark(request.getLandmark() != null ? request.getLandmark() : null);
         address.setLandmark(request.getLandmark() != null ? request.getLandmark() : null);
         address.setHpProfileId(hpProfile.getId());
-        address.setAddressTypeId(new in.gov.abdm.nmr.jpa.entity.AddressType(AddressType.KYC.getId(), AddressType.KYC.name()));
+        address.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.KYC.getId(), AddressType.KYC.name()));
         address.setVillage(request.getVillageTownCity() != null ? villagesRepository.findByName(request.getLocality()) : null);
         address.setSubDistrict(request.getSubDist() != null ? subDistrictRepository.findByName(request.getSubDist()) : null);
         address.setState(stateRepository.findByName(request.getState().toUpperCase()));

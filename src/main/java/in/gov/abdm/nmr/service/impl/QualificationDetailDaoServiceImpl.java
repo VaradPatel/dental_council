@@ -1,6 +1,6 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.jpa.repository.IQualificationDetailRepository;
+import in.gov.abdm.nmr.repository.IQualificationDetailRepository;
 import in.gov.abdm.nmr.service.IQualificationDetailDaoService;
 import org.springframework.stereotype.Service;
 
