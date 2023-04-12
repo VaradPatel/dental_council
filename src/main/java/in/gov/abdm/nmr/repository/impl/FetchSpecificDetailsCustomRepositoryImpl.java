@@ -14,7 +14,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.math.BigInteger;
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -281,7 +281,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setEmailId((String) result[15]);
             dashBoardTO.setMobileNumber((String) result[16]);
             dashBoardTO.setNmrId((String)result[17]);
-            dashBoardTO.setYearOfRegistration(((Date) result[18]).toString());
+            dashBoardTO.setYearOfRegistration(((Timestamp) result[18]).toString());
             dashBoardTO.setCollegeStatus((String) result[19]);
             dashBoardTO.setApplicationTypeId((BigInteger) result[20]);
             dashBoardResponseTO.setTotalNoOfRecords((BigInteger) result[21]);
