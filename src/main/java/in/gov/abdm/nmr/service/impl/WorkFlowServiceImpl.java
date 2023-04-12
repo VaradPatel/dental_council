@@ -96,8 +96,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 if (UserSubTypeEnum.COLLEGE.getCode().equals(user.getUserSubType().getId())) {
                     throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
                 }
-            }
-            else if (UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode().equals(user.getUserType().getId())) {
+            } else if (UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode().equals(user.getUserType().getId())) {
                 if (!UserSubTypeEnum.NMC_VERIFIER.getCode().equals(user.getUserSubType().getId())) {
                     throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
                 }
@@ -165,7 +164,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
             if (user.getUserType().getId().equals(UserTypeEnum.HEALTH_PROFESSIONAL.getCode())) {
 
-                verifier = NMRConstants.VERIFIER_DOCTOR;
+                verifier = "";
 
             } else if (user.getUserType().getId().equals(UserTypeEnum.COLLEGE.getCode())) {
 
@@ -182,10 +181,12 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             } else if (user.getUserType().getId().equals(UserTypeEnum.NBE.getCode())) {
 
                 verifier = NMRConstants.VERIFIER_NBE;
-            }
-        } else {
 
-            verifier = NMRConstants.VERIFIER_SYSTEM;
+            } else if (user.getUserType().getId().equals(UserTypeEnum.SYSTEM.getCode())){
+
+                verifier = NMRConstants.VERIFIER_SYSTEM;
+
+            }
         }
         notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + verifier, workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
 
