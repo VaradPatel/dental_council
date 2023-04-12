@@ -561,9 +561,10 @@ public class NMRConstants {
 
     public static final String MISSING_TRANSACTION_ID_ERROR = "The field Transaction id is mandatory.";
 
-    public static final String VERIFIER_COLLEGE="College";
-    public static final String VERIFIER_SMC="SMC";
-    public static final String VERIFIER_NMC="NMC";
-    public static final String VERIFIER_NBE="NBE";
-    public static final String VERIFIER_SYSTEM="System";
+    public static final String VERIFIER_DOCTOR="successfully";
+    public static final String VERIFIER_COLLEGE="by College";
+    public static final String VERIFIER_SMC="by SMC";
+    public static final String VERIFIER_NMC="by NMC";
+    public static final String VERIFIER_NBE="by NBE";
+    public static final String VERIFIER_SYSTEM="by System";
 }

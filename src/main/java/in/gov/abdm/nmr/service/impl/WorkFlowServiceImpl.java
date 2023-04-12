@@ -162,7 +162,12 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
         String verifier = null;
         if (user != null) {
-            if (user.getUserType().getId().equals(UserTypeEnum.COLLEGE.getCode())) {
+
+            if (user.getUserType().getId().equals(UserTypeEnum.HEALTH_PROFESSIONAL.getCode())) {
+
+                verifier = NMRConstants.VERIFIER_DOCTOR;
+
+            } else if (user.getUserType().getId().equals(UserTypeEnum.COLLEGE.getCode())) {
 
                 verifier = NMRConstants.VERIFIER_COLLEGE;
 
@@ -182,7 +187,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
             verifier = NMRConstants.VERIFIER_SYSTEM;
         }
-        notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + " by " + verifier, workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+        notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + verifier, workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
 
     }
 
