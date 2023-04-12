@@ -159,7 +159,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
         log.debug("Initiating a notification to indicate the change of status.");
 
-        String verifier = null;
+        String verifier = "";
         if (user != null) {
 
             if (user.getUserType().getId().equals(UserTypeEnum.HEALTH_PROFESSIONAL.getCode())) {
@@ -182,14 +182,13 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
                 verifier = NMRConstants.VERIFIER_NBE;
 
-            } else if (user.getUserType().getId().equals(UserTypeEnum.SYSTEM.getCode())){
+            } else if (user.getUserType().getId().equals(UserTypeEnum.SYSTEM.getCode())) {
 
                 verifier = NMRConstants.VERIFIER_SYSTEM;
 
             }
         }
         notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + verifier, workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
-
     }
 
     @Override
