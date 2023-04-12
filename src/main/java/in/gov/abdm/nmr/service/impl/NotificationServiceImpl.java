@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.client.NotificationDBFClient;
 import in.gov.abdm.nmr.client.NotificationFClient;
 import in.gov.abdm.nmr.dto.*;
@@ -10,6 +11,7 @@ import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.TemplatedStringBuilder;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -27,6 +29,7 @@ import java.util.UUID;
 /**
  * Implementation of methods to generate and validate OTP
  */
+@Slf4j
 @Service
 public class NotificationServiceImpl implements INotificationService {
 
@@ -274,7 +277,11 @@ public class NotificationServiceImpl implements INotificationService {
         NotificationResponseTo response;
         try {
 
-            response = notificationFClient.sendNotification(notificationRequestTo, Timestamp.valueOf(LocalDateTime.now()), UUID.randomUUID().toString());
+            String requestId=UUID.randomUUID().toString();
+            response = notificationFClient.sendNotification(notificationRequestTo, Timestamp.valueOf(LocalDateTime.now()), requestId);
+            ObjectMapper objectMapper=new ObjectMapper();
+            log.info(objectMapper.writeValueAsString(notificationRequestTo));
+            log.info(requestId+" "+response);
 
         } catch (Exception e) {
             return new ResponseMessageTo(e.getLocalizedMessage());
