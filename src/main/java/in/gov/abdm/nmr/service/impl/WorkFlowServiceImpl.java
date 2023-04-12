@@ -12,6 +12,7 @@ import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;
+import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -90,7 +91,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
         user = userDetailService.findByUsername(userName);
 
-        if(user!=null) {
+        if (user != null) {
             if (UserTypeEnum.COLLEGE.getCode().equals(user.getUserType().getId())) {
                 if (UserSubTypeEnum.COLLEGE.getCode().equals(user.getUserSubType().getId())) {
                     throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
@@ -158,7 +159,30 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         log.debug("Saving an entry in the work_flow_audit table");
         iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
         log.debug("Initiating a notification to indicate the change of status.");
-        notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+
+        String verifier = null;
+        if (user != null) {
+            if (user.getUserType().getId().equals(UserTypeEnum.COLLEGE.getCode())) {
+
+                verifier = NMRConstants.VERIFIER_COLLEGE;
+
+            } else if (user.getUserType().getId().equals(UserTypeEnum.STATE_MEDICAL_COUNCIL.getCode())) {
+
+                verifier = NMRConstants.VERIFIER_SMC;
+
+            } else if (user.getUserType().getId().equals(UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode())) {
+
+                verifier = NMRConstants.VERIFIER_NMC;
+
+            } else if (user.getUserType().getId().equals(UserTypeEnum.NBE.getCode())) {
+
+                verifier = NMRConstants.VERIFIER_NBE;
+            }
+        } else {
+
+            verifier = NMRConstants.VERIFIER_SYSTEM;
+        }
+        notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + " by " + verifier, workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
 
     }
 
