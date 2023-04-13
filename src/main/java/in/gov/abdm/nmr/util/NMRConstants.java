@@ -395,7 +395,7 @@ public class NMRConstants {
     public static final String TEMPLATE_VAR1 = "var1";
     public static final String TEMPLATE_VAR2 = "var2";
     public static final String TEMPLATE_VAR3 = "var3";
-    public static final String MESSAGE_SENDER = "National Medical Repository.";
+    public static final String MESSAGE_SENDER = "National Medical Register.";
     public static final String NMR_ACCOUNT = "NMR Account";
     public static final String DEFAULT_COUNTRY_AADHAR = "India";
     public static final int DEFAULT_ADDRESS_TYPE_AADHAR = 4;
@@ -560,6 +560,12 @@ public class NMRConstants {
     public static final String SESSION_URL = "/gateway/v0.5/sessions";
 
     public static final String MISSING_TRANSACTION_ID_ERROR = "The field Transaction id is mandatory.";
+
+    public static final String VERIFIER_COLLEGE=" by College";
+    public static final String VERIFIER_SMC=" by SMC";
+    public static final String VERIFIER_NMC=" by NMC";
+    public static final String VERIFIER_NBE=" by NBE";
+    public static final String VERIFIER_SYSTEM=" by System";
 
     public static final String DOCTOR_QUALIFICATION="MBBS";
     public static final String DOCTOR_QUALIFICATION_PATTERN="[^A-Za-z]+";

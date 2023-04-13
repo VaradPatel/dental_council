@@ -170,7 +170,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
                 User user = userRepository.findById(hpProfile.getUser().getId()).get();
                 user.setNmrId(hpProfile.getNmrId());
                 log.debug("Initiating a notification indicating the NMR creation");
-                notificationService.sendNotificationForNMRCreation(user.getNmrId(),user.getMobileNumber());
+                notificationService.sendNotificationForNMRCreation(user.getNmrId(),user.getMobileNumber(),user.getEmail());
             }
         }
         log.debug("Marking all the qualification details associated with the current request_id as verified.");

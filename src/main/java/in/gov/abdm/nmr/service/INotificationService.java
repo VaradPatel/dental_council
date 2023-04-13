@@ -17,6 +17,6 @@ public interface INotificationService {
 
     ResponseMessageTo sendNotificationForVerifiedOTP(String type, String receiver);
     ResponseMessageTo sendNotificationForAccountCreation(String username,String mobile);
-    ResponseMessageTo sendNotificationForNMRCreation(String username,String mobile);
+    ResponseMessageTo sendNotificationForNMRCreation(String username,String mobile, String email);
 
 }
