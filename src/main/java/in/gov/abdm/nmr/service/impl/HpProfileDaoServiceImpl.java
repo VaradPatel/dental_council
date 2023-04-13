@@ -3,8 +3,6 @@ package in.gov.abdm.nmr.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.client.DscFClient;
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.dto.image.ImageTokenTo;
-import in.gov.abdm.nmr.dto.image.ProfileImageCompareTo;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
@@ -12,7 +10,10 @@ import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.NoDataFoundException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.IHpProfileMapper;
+import in.gov.abdm.nmr.nosql.entity.Council;
+import in.gov.abdm.nmr.nosql.repository.ICouncilRepository;
 import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpProfileDaoService;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -20,10 +21,11 @@ import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
@@ -36,7 +38,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
-import static in.gov.abdm.nmr.util.NMRUtil.*;
+import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
+import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetailsAndProofs;
 
 @Service
 @Slf4j
@@ -114,6 +117,15 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @Autowired
     private UniversityMasterRepository universityMasterRepository;
 
+    @Autowired
+    private ICouncilRepository councilRepository;
+
+    @Autowired
+    private ICouncilService councilService;
+
+    @Autowired
+    private IStateMedicalCouncilRepository stateMedicalCouncilRepository;
+
 /*    @Autowired
     private ImageFClient imageFClient;
 
@@ -131,32 +143,65 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         HpSmcDetailTO hpSmcDetailTO = new HpSmcDetailTO();
 
         Tuple hpProfile = iHpProfileRepository.fetchSmcRegistrationDetail(registrationNumber, councilId);
-        if (hpProfile != null) {
-            if (hpProfile.get(USER_ID_COLUMN, BigInteger.class) != null) {
-                throw new NmrException(USER_ALREADY_EXISTS_EXCEPTION, HttpStatus.BAD_REQUEST);
+//        if (hpProfile != null) {
+//            if (hpProfile.get(USER_ID_COLUMN, BigInteger.class) != null) {
+//                throw new NmrException(USER_ALREADY_EXISTS_EXCEPTION, HttpStatus.BAD_REQUEST);
+//            }
+
+//        String councilName = Arrays.stream(StateMedicalCouncil.values()).filter(i -> i.getId().equals(BigInteger.valueOf(councilId)))
+//                .map(StateMedicalCouncil::getDescription).collect(Collectors.joining());
+
+            StateMedicalCouncil stateMedicalCouncil =
+                    stateMedicalCouncilRepository.findStateMedicalCouncilById(BigInteger.valueOf(councilId));
+
+            Pageable pageable = PageRequest.of(0, 1, Sort.by("_id").descending());
+
+//        List<Council> councils = councilRepository.findCouncilByRegistrationNumberAndCouncilName(stateMedicalCouncil.getName(),
+//                registrationNumber, pageable);
+            String councilName = stateMedicalCouncil.getName();
+            List<Council> councils = councilService.getCouncilByRegistrationNumberAndCouncilName(registrationNumber, councilName);
+
+            Council council = councils.get(0);
+            if (council == null) {
+                throw new NoDataFoundException(NO_DATA_FOUND);
             }
-            /*else {
-                String primaryContactNo = hpProfile.get(PRIMARY_CONTACT_NO_COLUMN, String.class);
-                if(primaryContactNo != null && iUserRepository.findFirstByMobileNumber(primaryContactNo) != null){
-                    throw new NmrException(USER_ALREADY_EXISTS_EXCEPTION, HttpStatus.BAD_REQUEST);
-                }
-                String email = hpProfile.get(EMAIL_ID_COLUMN, String.class);
-                if(email != null && iUserRepository.findFirstByEmail(email) != null){
-                    throw new NmrException(USER_ALREADY_EXISTS_EXCEPTION, HttpStatus.BAD_REQUEST);
-                }
-            }*/
 
-            hpSmcDetailTO.setHpName(hpProfile.get(FULL_NAME_COLUMN, String.class));
-            hpSmcDetailTO.setCouncilName(hpProfile.get(NAME_COLUMN, String.class));
-            hpSmcDetailTO.setRegistrationNumber(hpProfile.get(REGISTRATION_NO_COLUMN, String.class));
-            hpSmcDetailTO.setHpProfileId(hpProfile.get(HP_PROFILE_ID_COLUMN, BigInteger.class));
-            hpSmcDetailTO.setEmailId(hpProfile.get(EMAIL_ID_COLUMN, String.class));
-        } else {
-            throw new NoDataFoundException(NO_DATA_FOUND);
+            hpSmcDetailTO.setHpName(council.getFullName());
+            hpSmcDetailTO.setCouncilName(council.getRegistrationsDetails().get(0).getCouncilName());
+            hpSmcDetailTO.setRegistrationNumber(council.getRegistrationsDetails().get(0).getRegistrationNo());
+//        hpSmcDetailTO.setHpProfileId(hpProfile.get(HP_PROFILE_ID_COLUMN, BigInteger.class));
+            hpSmcDetailTO.setEmailId(council.getEmail());
+            return hpSmcDetailTO;
+
+
+//        Tuple hpProfile = iHpProfileRepository.fetchSmcRegistrationDetail(registrationNumber, councilId);
+//
+//        if (hpProfile != null) {
+//            if (hpProfile.get(USER_ID_COLUMN, BigInteger.class) != null) {
+//                throw new NmrException(USER_ALREADY_EXISTS_EXCEPTION, HttpStatus.BAD_REQUEST);
+//            }
+//            else {
+//                String primaryContactNo = hpProfile.get(PRIMARY_CONTACT_NO_COLUMN, String.class);
+//                if(primaryContactNo != null && iUserRepository.findFirstByMobileNumber(primaryContactNo) != null){
+//                    throw new NmrException(USER_ALREADY_EXISTS_EXCEPTION, HttpStatus.BAD_REQUEST);
+//                }
+//                String email = hpProfile.get(EMAIL_ID_COLUMN, String.class);
+//                if(email != null && iUserRepository.findFirstByEmail(email) != null){
+//                    throw new NmrException(USER_ALREADY_EXISTS_EXCEPTION, HttpStatus.BAD_REQUEST);
+//                }
+//            }
+//
+//            hpSmcDetailTO.setHpName(hpProfile.get(FULL_NAME_COLUMN, String.class));
+//            hpSmcDetailTO.setCouncilName(hpProfile.get(NAME_COLUMN, String.class));
+//            hpSmcDetailTO.setRegistrationNumber(hpProfile.get(REGISTRATION_NO_COLUMN, String.class));
+//            hpSmcDetailTO.setHpProfileId(hpProfile.get(HP_PROFILE_ID_COLUMN, BigInteger.class));
+//            hpSmcDetailTO.setEmailId(hpProfile.get(EMAIL_ID_COLUMN, String.class));
+//        } else {
+//            throw new NoDataFoundException(NO_DATA_FOUND);
+//        }
+//        return hpSmcDetailTO;
+//        }
         }
-        return hpSmcDetailTO;
-    }
-
     @Override
     public HpProfileUpdateResponseTO updateHpPersonalDetails(BigInteger hpProfileId,
                                                              HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException {
@@ -194,7 +239,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, existingHpProfile);
             updatedHpProfileId = existingHpProfile.getId();
         }
-        if (hpPersonalUpdateRequestTO.getCommunicationAddress() != null && copiedExistingHpProfile!=null) {
+        if (hpPersonalUpdateRequestTO.getCommunicationAddress() != null && copiedExistingHpProfile != null) {
             Address address = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(copiedExistingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId()), new Address());
             Address newAddress = new Address();
             org.springframework.beans.BeanUtils.copyProperties(address, newAddress);
@@ -276,11 +321,11 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         if (registrationDetail == null) {
             log.debug("Initiating Registration details Insertion flow since there were no matching Registration details found for the given hp_profile_id. ");
             registrationDetail = new RegistrationDetails();
-            mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile,registrationCertificate);
+            mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile, registrationCertificate);
             registrationDetailRepository.save(registrationDetail);
         } else {
             log.debug("Initiating Registration details Updation flow since there was an existing Registration detail for the given hp_profile_id. ");
-            mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile,registrationCertificate);
+            mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile, registrationCertificate);
         }
         if (hpRegistrationUpdateRequestTO.getQualificationDetails() != null && !hpRegistrationUpdateRequestTO.getQualificationDetails().isEmpty()) {
             log.debug("Saving Qualification Details");
@@ -684,7 +729,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     @SneakyThrows
-    private void mapRegistrationRequestToEntity(HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, RegistrationDetails registrationDetail, HpProfile hpProfile,MultipartFile registrationCertificate) {
+    private void mapRegistrationRequestToEntity(HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, RegistrationDetails registrationDetail, HpProfile hpProfile, MultipartFile registrationCertificate) {
         log.debug("In HpProfileDaoServiceImpl : mapRegistrationRequestToEntity method");
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
             registrationDetail.setHpProfileId(hpProfile);
@@ -694,7 +739,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                     .findById(hpRegistrationUpdateRequestTO.getRegistrationDetail().getStateMedicalCouncil().getId()).get());
             String isRenewable = hpRegistrationUpdateRequestTO.getRegistrationDetail().getIsRenewable();
             registrationDetail.setIsRenewable(isRenewable);
-            if(NMRConstants.RENEWABLE_REGISTRATION_CODE.equalsIgnoreCase(isRenewable)) {
+            if (NMRConstants.RENEWABLE_REGISTRATION_CODE.equalsIgnoreCase(isRenewable)) {
                 registrationDetail.setRenewableRegistrationDate(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRenewableRegistrationDate());
             }
             registrationDetail.setIsNameChange(hpRegistrationUpdateRequestTO.getRegistrationDetail().getIsNameChange());

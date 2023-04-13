@@ -8,6 +8,7 @@ import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.OtpException;
+import in.gov.abdm.nmr.repository.IRegistrationDetailRepository;
 import in.gov.abdm.nmr.mapper.INbeMapper;
 import in.gov.abdm.nmr.mapper.INmcMapper;
 import in.gov.abdm.nmr.mapper.ISmcMapper;
@@ -26,7 +27,6 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -60,6 +60,9 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     OtpServiceImpl otpService;
+
+    @Autowired
+    IRegistrationDetailRepository iRegistrationDetailRepository;
 
     public UserServiceImpl(IUserDaoService userDaoService) {
         this.userDaoService = userDaoService;
@@ -140,17 +143,26 @@ public class UserServiceImpl implements IUserService {
 
             Password password = new Password(null, hashedPassword, userDetail);
             passwordDaoService.save(password);
-
-            List<HpProfile> hpProfileList = hpProfileRepository.findHpProfileByRegistrationId(createHpUserAccountTo.getRegistrationNumber());
-            List<HpProfile> hpProfiles = new ArrayList<>();
-            hpProfileList.forEach(hpProfile -> {
-                hpProfile.setUser(userDetail);
-                if (StringUtils.isNotBlank(createHpUserAccountTo.getMobile())) {
+            RegistrationDetails registrationDetails =
+            iRegistrationDetailRepository.
+                    fetchHpProfileIdByRegistrationNumberAndStateMedicalCouncilId(createHpUserAccountTo.getRegistrationNumber(), createHpUserAccountTo.getStateMedicalCouncilId());
+            HpProfile hpProfile = registrationDetails.getHpProfileId();
+ //            List<HpProfile> hpProfileList = hpProfileRepository.findHpProfileByRegistrationId(createHpUserAccountTo.getRegistrationNumber());
+//            List<HpProfile> hpProfiles = new ArrayList<>();
+//            hpProfileList.forEach(hpProfile -> {
+//                hpProfile.setUser(userDetail);
+//                if (StringUtils.isNotBlank(createHpUserAccountTo.getMobile())) {
+//                    hpProfile.setMobileNumber(createHpUserAccountTo.getMobile());
+//                }
+//                hpProfiles.add(hpProfile);
+//            });
+//
+//            hpProfileRepository.saveAll(hpProfiles);
+            hpProfile.setUser(userDetail);
+            if (StringUtils.isNotBlank(createHpUserAccountTo.getMobile())) {
                     hpProfile.setMobileNumber(createHpUserAccountTo.getMobile());
                 }
-                hpProfiles.add(hpProfile);
-            });
-            hpProfileRepository.saveAll(hpProfiles);
+            hpProfileRepository.save(hpProfile);
             notificationService.sendNotificationForAccountCreation(createHpUserAccountTo.getUsername(),createHpUserAccountTo.getMobile());
             return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
 

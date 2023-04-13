@@ -15,28 +15,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class UserKycTo {
 
-	private BigInteger id;
-	private BigInteger hpProfileId;
-	private String txnId;
-	private String mobileNumber;
-	private String photo;
 	private String gender;
 	private String name;
-	private String email;
-	private String pincode;
 	private Date birthDate;
-	private String careOf;
-	private String house;
-	private String street;
-	private String landmark;
-	private String locality;
-	private String villageTownCity;
-	private String subDist;
-	private String district;
-	private String state;
-	private String postOffice;
-	private String address;
-	private Timestamp createdAt;
-	private Timestamp updatedAt;
-	private String registrationNo;
 }

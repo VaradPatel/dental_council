@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.repository;
 
-import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.entity.UserKyc;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
