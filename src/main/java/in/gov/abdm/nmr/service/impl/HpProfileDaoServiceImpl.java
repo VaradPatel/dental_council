@@ -167,8 +167,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             }
 
             hpSmcDetailTO.setHpName(council.getFullName());
-            hpSmcDetailTO.setCouncilName(council.getRegistrationDetails().get(0).getCouncilName());
-            hpSmcDetailTO.setRegistrationNumber(council.getRegistrationDetails().get(0).getRegistrationNo());
+            hpSmcDetailTO.setCouncilName(council.getRegistrationsDetails().get(0).getCouncilName());
+            hpSmcDetailTO.setRegistrationNumber(council.getRegistrationsDetails().get(0).getRegistrationNo());
 //        hpSmcDetailTO.setHpProfileId(hpProfile.get(HP_PROFILE_ID_COLUMN, BigInteger.class));
             hpSmcDetailTO.setEmailId(council.getEmail());
             return hpSmcDetailTO;

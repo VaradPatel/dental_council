@@ -114,7 +114,7 @@ public interface IHpRegistrationService {
      */
     HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(BigInteger hpProfileId);
 
-    KycResponseMessageTo saveUserKycDetails(String registrationNumber,BigInteger councilId, UserKycTo userKycTo) throws ParseException;
+    KycResponseMessageTo userKycFuzzyMatch(String registrationNumber,BigInteger councilId, UserKycTo userKycTo) throws ParseException;
 
     void addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException, ParseException;
 

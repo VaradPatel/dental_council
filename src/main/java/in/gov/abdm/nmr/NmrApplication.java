@@ -11,7 +11,6 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableFeignClients
-//@EnableJpaRepositories(excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "in.gov.abdm.nmr.redis.*"))
 @EnableJpaRepositories(basePackages = {"in.gov.abdm.nmr.repository"})
 @EnableRedisRepositories(basePackages = {"in.gov.abdm.nmr.redis"})
 @EnableMongoRepositories(basePackages = {"in.gov.abdm.nmr.nosql"})

@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-
 import java.util.List;
 
 @Data
@@ -47,6 +46,7 @@ public class Council {
 
     @Field(name = "last_name")
     private String lastName;
+
     @Field(name = "father_name")
     private String fatherName;
 
@@ -55,111 +55,39 @@ public class Council {
 
     @Field(name = "marital_status")
     private String maritalStatus;
+
     @Field(name = "spouse_name")
     private String spouseName;
+
     @Field(name = "changed_name")
     private String changedName;
+
     @Field(name = "official_telephone")
     private String officialTelephone;
+
     @Field(name = "aadhar_number")
     private String aadharNumber;
+
     @Field(name = "landline_code")
     private String landlineCode;
+
     @Field(name = "landline_public")
     private String landlinePublic;
 
 
     private String nationality;
-    //    private Object placeOfBirth;
+
     @Field(name = "system_of_medicine")
     private String systemOfMedicine;
 
     @Field(name = "professional_type")
     private String professionalType;
-    //  private boolean hasValidMobileNumber;
-//  private boolean hasValidEmail;
+
     private String name;
 
     private List<Address> address;
 
     @Field(name = "registration_details")
-    private List<RegistrationDetails> registrationDetails;
-
-
-//
-//
-//
-//    private String categoryName;
-//
-
-
-//    private Object councilRecordMetadata;
-
-//    private String dateOfBirth;
-//
-//    private String email;
-//
-//    private String emptyMandatoryFields;
-
-
-//    private String fullName;
-//    private String gender;
-//
-//    private String id;
-//    private String identifiedStateName;
-//
-//    private boolean isManually;
-//
-
-
-//    private List<String> languagesSpoken;
-//
-
-//
-
-
-//    private Object metaData;
-
-//    private String middleName;
-//
-//    private String mobileNumber;
-//
-
-//
-//
-//
-
-//
-
-//
-//    private String otherCategory;
-//
-//    private String panNumber;
-
-
-//    private String primaryContactNo;
-//
-//
-//
-//    private String profilePhoto;
-//
-
-//
-//    private String salutation;
-
-//    private List<String> specialities;
-
-
-//
-
-
-//    private Object workDetails;
-
-//    private String workExperienceInYear;
-
-
-//  private List<Specialities> specialities;
-
-//  private Metadata metadata;
+    private List<RegistrationsDetails> registrationsDetails;
 
 }

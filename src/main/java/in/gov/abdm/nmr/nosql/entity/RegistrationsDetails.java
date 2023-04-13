@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RegistrationDetails {
+public class RegistrationsDetails {
     @Field(name = "system_of_medicine")
     private String systemOfMedicine;
     @Field(name = "council_name")
@@ -28,5 +28,5 @@ public class RegistrationDetails {
     @Field(name = "type")
     private String type;
     @Field(name = "qualification_details")
-    private List<QualificationDetails> qualificationDetails;
+    private List<QualificationsDetails> qualificationsDetails;
 }

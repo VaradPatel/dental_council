@@ -45,14 +45,6 @@ public class HpRegistrationController {
     @Autowired
     private ICouncilService councilService;
 
-    @GetMapping(path = "mongodb")
-    public List<Council> getCouncilDetails(
-            @RequestParam("id") String  id,
-            @RequestParam("councilname") String  councilName){
-        List<Council> council = councilService.getCouncilByRegistrationNumberAndCouncilName(id,councilName);
-        return council;
-    }
-
     /**
      * This method is used to fetch SMC registration detail information.
      *
@@ -138,10 +130,10 @@ public class HpRegistrationController {
     /**
      * This method updates the health professional registration details.
      *
-     * @param registrationCertificate                       The health professional's certificate file.
-     * @param degreeCertificate                             The health professional's proof file.
+     * @param registrationCertificate       The health professional's certificate file.
+     * @param degreeCertificate             The health professional's proof file.
      * @param hpRegistrationUpdateRequestTO The health professional registration update request in string format.
-     * @param hpProfileId                       The health professional profile id.
+     * @param hpProfileId                   The health professional profile id.
      * @return The updated health professional registration response in a transfer object.
      * @throws InvalidRequestException If the provided request is invalid.
      * @throws WorkFlowException       If there is an error in the workflow.
@@ -183,7 +175,7 @@ public class HpRegistrationController {
      * Updates the work details of a health professional in the system.
      *
      * @param hpWorkProfileUpdateRequestTO The updated work details of the health professional, in JSON format.
-     * @param hpProfileId                      The ID of the health professional's profile.
+     * @param hpProfileId                  The ID of the health professional's profile.
      * @return A {@link HpProfileWorkDetailsResponseTO} object containing the updated work details.
      * @throws InvalidRequestException If the request is invalid or missing required information.
      * @throws WorkFlowException       If there is a problem with the work flow during the update process.
@@ -223,22 +215,23 @@ public class HpRegistrationController {
     /**
      * Adds qualifications to a healthcare provider's profile.
      *
-     * @param hpProfileId                   the id of the healthcare provider's profile
+     * @param hpProfileId                  the id of the healthcare provider's profile
      * @param qualificationDetailRequestTO the list of qualifications to be added
      * @return a string indicating the result of the operation
      * @throws WorkFlowException if there is an error during the operation
      */
-    @PostMapping(path = "/health-professional/{healthProfessionalId}/qualifications", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/health-professional/{healthProfessionalId}/qualifications", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String addQualifications(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
                                     @RequestPart("data") QualificationRequestTO qualificationDetailRequestTO,
                                     @RequestParam(value = "degreeCertificates") List<MultipartFile> degreeCertificates
-                                    ) throws WorkFlowException, InvalidRequestException, NmrException {
-        log.info(degreeCertificates!=null?String.valueOf(degreeCertificates.size()):null);
+    ) throws WorkFlowException, InvalidRequestException, NmrException {
+        log.info(degreeCertificates != null ? String.valueOf(degreeCertificates.size()) : null);
         return hpService.addQualification(hpProfileId, qualificationDetailRequestTO.getQualificationDetailRequestTos(), degreeCertificates);
     }
 
     /**
      * Uploads the profile picture for a given HP profile.
+     *
      * @param file        The profile picture file to be uploaded
      * @param hpProfileId The ID of the HP profile for which the picture is being uploaded
      * @return A response object containing information about the uploaded profile picture
@@ -250,7 +243,6 @@ public class HpRegistrationController {
             @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws IOException {
         return hpService.uploadHpProfilePicture(file, hpProfileId);
     }
-
 
     /**
      * Submit the health professional's profile for review.
@@ -300,11 +292,11 @@ public class HpRegistrationController {
         return queryService.getQueriesByHpProfileId(healthProfessionalId);
     }
 
-    @PostMapping(path = NMRConstants.SAVE_KYC_DETAILS, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = NMRConstants.KYC_FUZZY_MATCH, produces = MediaType.APPLICATION_JSON_VALUE)
     public KycResponseMessageTo saveUserKycDetails(@PathVariable("registrationNumber") String registrationNumber,
                                                    @RequestParam("councilId") BigInteger councilId,
                                                    @RequestBody UserKycTo userKycTo) throws ParseException {
-        return hpService.saveUserKycDetails(registrationNumber,councilId,userKycTo);
+        return hpService.userKycFuzzyMatch(registrationNumber, councilId, userKycTo);
     }
 
     @PostMapping(path = "health-professional", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

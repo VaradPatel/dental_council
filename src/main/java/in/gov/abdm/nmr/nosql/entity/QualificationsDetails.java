@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class QualificationDetails {
+public class QualificationsDetails {
     @Field(name = "qualification_year")
     private String qualificationYear;
     @Field(name = "qualification_month")
