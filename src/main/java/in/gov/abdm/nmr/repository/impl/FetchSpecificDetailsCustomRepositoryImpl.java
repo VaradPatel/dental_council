@@ -4,6 +4,7 @@ import in.gov.abdm.nmr.dto.DashboardRequestParamsTO;
 import in.gov.abdm.nmr.dto.DashboardResponseTO;
 import in.gov.abdm.nmr.dto.DashboardTO;
 import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.repository.IFetchSpecificDetailsCustomRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -164,7 +165,10 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         StringBuilder sb = new StringBuilder();
         BigInteger groupId = dashboardRequestParamsTO.getUserGroupId();
 
-        sb.append(FETCH_CARD_DETAILS_QUERY);
+        //sb.append(FETCH_CARD_DETAILS_QUERY);
+        sb.append("""
+                select d.work_flow_status_id doctor_status, smc_status, nmc_status, nbe_status, d.hp_profile_id, d.request_id, rd.registration_no, rd.created_at, stmc.name, hp.full_name,  work_flow_status_id,(SELECT CASE WHEN ( wf.work_flow_status_id in(2, 4, 5, 6) ) THEN DATE_PART( 'day', (wf.updated_at - wf.created_at) ) WHEN ( wf.work_flow_status_id in(1, 3) ) THEN DATE_PART( 'day', (now() - wf.created_at) ) END FROM main.work_flow wf where wf.request_id = d.request_id ) as pendency, hp.gender, hp.email_id, hp.mobile_number, hp.nmr_id, rd.registration_date, college_status,d.application_type_id, count(*) OVER() AS total_count from main.dashboard d INNER JOIN main.registration_details as rd on rd.hp_profile_id = d.hp_profile_id INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id 
+                """);
 
         if (Objects.nonNull(dashboardRequestParamsTO.getCollegeId()) && !dashboardRequestParamsTO.getCollegeId().isEmpty()) {
             sb.append("INNER JOIN main.qualification_details as qd on qd.hp_profile_id = rd.hp_profile_id AND qd.request_id = calculate.request_id ");
@@ -174,7 +178,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             sb.append("INNER JOIN main.foreign_qualification_details as fqd on fqd.hp_profile_id = rd.hp_profile_id AND fqd.request_id = calculate.request_id ");
         }
 
-        sb.append(" WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 " + "AND calculate.application_type_id IN ( ").append(dashboardRequestParamsTO.getApplicationTypeId()).append( " ) ");
+        sb.append(" WHERE d.hp_profile_id IS NOT NULL AND d.application_type_id IN ( ").append(dashboardRequestParamsTO.getApplicationTypeId()).append( " ) ");
 
         String parameters = DASHBOARD_PARAMETERS.apply(dashboardRequestParamsTO);
 
@@ -263,28 +267,28 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         List<Object[]> results = query.getResultList();
         results.forEach(result -> {
             DashboardTO dashBoardTO = new DashboardTO();
-            dashBoardTO.setDoctorStatus((String) result[0]);
-            dashBoardTO.setSmcStatus((String) result[1]);
-            dashBoardTO.setCollegeDeanStatus((String) result[2]);
-            dashBoardTO.setCollegeRegistrarStatus((String) result[3]);
-            dashBoardTO.setNmcStatus((String) result[4]);
-            dashBoardTO.setNbeStatus((String) result[5]);
-            dashBoardTO.setHpProfileId((BigInteger) result[6]);
-            dashBoardTO.setRequestId((String) result[7]);
-            dashBoardTO.setRegistrationNo((String) result[8]);
-            dashBoardTO.setCreatedAt((String) result[9]);
-            dashBoardTO.setCouncilName((String) result[10]);
-            dashBoardTO.setApplicantFullName((String) result[11]);
-            dashBoardTO.setWorkFlowStatusId((BigInteger) result[12]);
-            dashBoardTO.setPendency((int) Math.floor((Double) result[13]));
-            dashBoardTO.setGender((String) result[14]);
-            dashBoardTO.setEmailId((String) result[15]);
-            dashBoardTO.setMobileNumber((String) result[16]);
-            dashBoardTO.setNmrId((String)result[17]);
-            dashBoardTO.setYearOfRegistration(((Date) result[18]).toString());
-            dashBoardTO.setCollegeStatus((String) result[19]);
-            dashBoardTO.setApplicationTypeId((BigInteger) result[20]);
-            dashBoardResponseTO.setTotalNoOfRecords((BigInteger) result[21]);
+            dashBoardTO.setDoctorStatus(result[0] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[0]).getDescription() : "0");
+            dashBoardTO.setSmcStatus(result[1] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[1]).getDescription() : "0");
+            //dashBoardTO.setCollegeDeanStatus(result[2] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[2]).getDescription() : "0");
+            //dashBoardTO.setCollegeRegistrarStatus(result[3] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[3]).getDescription() : "0");
+            dashBoardTO.setNmcStatus(result[2] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[2]).getDescription() : "");
+            dashBoardTO.setNbeStatus(result[3] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[3]).getDescription() : "");
+            dashBoardTO.setHpProfileId((BigInteger) result[4]);
+            dashBoardTO.setRequestId((String) result[5]);
+            dashBoardTO.setRegistrationNo((String) result[6]);
+            dashBoardTO.setCreatedAt((String) result[7]);
+            dashBoardTO.setCouncilName((String) result[8]);
+            dashBoardTO.setApplicantFullName((String) result[9]);
+            dashBoardTO.setWorkFlowStatusId((BigInteger) result[10]);
+            dashBoardTO.setPendency((int) Math.floor((Double) result[11]));
+            dashBoardTO.setGender((String) result[12]);
+            dashBoardTO.setEmailId((String) result[13]);
+            dashBoardTO.setMobileNumber((String) result[14]);
+            dashBoardTO.setNmrId((String) result[15]);
+            dashBoardTO.setYearOfRegistration(((Date) result[16]).toString());
+            dashBoardTO.setCollegeStatus(result[17] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[17]).getDescription() : "");
+            dashBoardTO.setApplicationTypeId((BigInteger) result[18]);
+            dashBoardResponseTO.setTotalNoOfRecords((BigInteger) result[19]);
             dashboardTOList.add(dashBoardTO);
         });
         dashBoardResponseTO.setDashboardTOList(dashboardTOList);

@@ -15,4 +15,6 @@ public interface IFetchCountOnCardService {
      * @return ResponseTO
      */
     FetchCountOnCardResponseTO fetchCountOnCard() throws InvalidRequestException, AccessDeniedException;
+
+    FetchCountOnCardResponseTO fetchCountOnCard1() throws AccessDeniedException;
 }

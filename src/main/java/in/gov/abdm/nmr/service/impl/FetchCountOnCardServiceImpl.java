@@ -7,8 +7,10 @@ import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.entity.UserGroup;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.mapper.IStatusCount;
 import in.gov.abdm.nmr.mapper.IStatusWiseCount;
 import in.gov.abdm.nmr.mapper.IStatusWiseCountMapper;
 import in.gov.abdm.nmr.repository.*;
@@ -20,8 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.nio.file.AccessDeniedException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
@@ -59,6 +60,14 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
     ICollegeProfileDaoService iCollegeProfileDaoService;
 
     private BigInteger counter = BigInteger.ZERO;
+
+    private static final Map<String, List<BigInteger>> applicationIds =
+            Map.of("hp_registration_request", List.of(ApplicationType.HP_REGISTRATION.getId(), ApplicationType.FOREIGN_HP_REGISTRATION.getId()),
+                    "hp_modification_request", List.of(ApplicationType.HP_MODIFICATION.getId(), ApplicationType.QUALIFICATION_ADDITION.getId()),
+                    "temporary_suspension_request", List.of(ApplicationType.HP_TEMPORARY_SUSPENSION.getId()),
+                    "permanent_suspension_request", List.of(ApplicationType.HP_PERMANENT_SUSPENSION.getId()));
+    //  "consolidated_suspension_request", List.of(ApplicationType.HP_TEMPORARY_SUSPENSION.getId(), ApplicationType.HP_PERMANENT_SUSPENSION.getId()));
+
 
     @Override
     public FetchCountOnCardResponseTO fetchCountOnCard() throws InvalidRequestException, AccessDeniedException {
@@ -482,6 +491,57 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
         return responseTO;
     }
 
+    @Override
+    public FetchCountOnCardResponseTO fetchCountOnCard1() throws AccessDeniedException {
+        User loggedInUser = accessControlService.getLoggedInUser();
+        String groupName = loggedInUser.getGroup().getName();
+        if (loggedInUser == null) {
+            throw new AccessDeniedException(ACCESS_FORBIDDEN);
+        }
+        FetchCountOnCardResponseTO responseTO = new FetchCountOnCardResponseTO();
+        final List<StatusWiseCountTO> statusWiseCountResponseTos = getDefault();
+        BigInteger totalCount = BigInteger.ZERO;
+        List<IStatusCount> statusCounts = iFetchCountOnCardRepository.fetchCountForSmc();
+        List<BigInteger> hpProfileStatuses = Arrays.stream(HpProfileStatus.values()).map(s -> s.getId()).collect(Collectors.toList());
+
+        if (Group.SMC.getDescription().equals(groupName)) {
+            //getCardResponse(responseTO, statusWiseCountResponseTos, totalCount, statusCounts, hpProfileStatuses,"hp_registration_request", TOTAL_HP_REGISTRATION_REQUESTS);
+            responseTO.setHpRegistrationRequest(FetchCountOnCardInnerResponseTO.builder()
+                    .applicationTypeIds(applicationIds.get("hp_registration_request").toString())
+                    .build());
+            responseTO.getHpRegistrationRequest().setStatusWiseCount(getCardResponse(statusWiseCountResponseTos, totalCount, statusCounts, hpProfileStatuses,"hp_registration_request", TOTAL_HP_REGISTRATION_REQUESTS));
+            totalCount = BigInteger.ZERO;
+
+            //getCardResponse(responseTO, statusWiseCountResponseTos, totalCount, statusCounts, hpProfileStatuses, "hp_modification_request", TOTAL_HP_MODIFICATION_REQUESTS);
+            responseTO.setHpModificationRequest(FetchCountOnCardInnerResponseTO.builder()
+                    .applicationTypeIds(applicationIds.get("hp_modification_request").toString())
+                    .build());
+            responseTO.getHpModificationRequest().setStatusWiseCount(getCardResponse(statusWiseCountResponseTos, totalCount, statusCounts, hpProfileStatuses, "hp_modification_request", TOTAL_HP_MODIFICATION_REQUESTS));
+
+//            getCardResponse(responseTO, statusWiseCountResponseTos, totalCount, statusCounts, hpProfileStatuses,"permanent_suspension_request");
+//            responseTO.getHpModificationRequest().setStatusWiseCount(statusWiseCountResponseTos);
+        }
+        return responseTO;
+    }
+
+    private static List<StatusWiseCountTO> getCardResponse(List<StatusWiseCountTO> statusWiseCountResponseTos, BigInteger totalCount, List<IStatusCount> statusCounts, List<BigInteger> hpProfileStatuses, String applicationType, String totalKey) {
+        for (BigInteger status : hpProfileStatuses) {
+            for (IStatusCount sc : statusCounts) {
+                if (status.equals(sc.getProfileStatus()) && applicationIds.get(applicationType).contains(sc.getApplicationTypeId())) {
+                    Optional<StatusWiseCountTO> first = statusWiseCountResponseTos.stream()
+                            .filter(r -> r.getId().equals(sc.getProfileStatus())).findFirst();
+                    if (first.isPresent()) {
+                        first.get().setCount(first.get().getCount().add(sc.getCount()));
+                        totalCount = totalCount.add(sc.getCount());
+                    }
+                }
+            }
+        }
+        StatusWiseCountTO count = new StatusWiseCountTO(totalKey, totalCount, BigInteger.ZERO);
+        statusWiseCountResponseTos.add(count);
+        return statusWiseCountResponseTos;
+    }
+
     private List<StatusWiseCountTO> fetchStatusWiseCountBasedOnLoggedInUser(BigInteger applicationTypeId, User loggedInUser) throws InvalidRequestException {
 
         UserGroup group = loggedInUser.getGroup();
@@ -594,5 +654,14 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
         }).collect(Collectors.toList());
     }
 
-
+    public List<StatusWiseCountTO> getDefault() {
+        List<StatusWiseCountTO> response = new ArrayList<>();
+        response.add(StatusWiseCountTO.builder().id(WorkflowStatus.PENDING.getId()).name(WorkflowStatus.PENDING.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(WorkflowStatus.APPROVED.getId()).name(WorkflowStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(WorkflowStatus.QUERY_RAISED.getId()).name(WorkflowStatus.QUERY_RAISED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(WorkflowStatus.REJECTED.getId()).name(WorkflowStatus.REJECTED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(WorkflowStatus.SUSPENDED.getId()).name(WorkflowStatus.SUSPENDED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(WorkflowStatus.BLACKLISTED.getId()).name(WorkflowStatus.BLACKLISTED.getDescription()).count(BigInteger.ZERO).build());
+        return response;
+    }
 }

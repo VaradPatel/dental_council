@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.enums;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 /**
  * Enums for all possible actions in NMR
@@ -30,6 +31,10 @@ public enum Action {
 
     public String getDescription() {
         return description;
+    }
+
+    public static Action getAction(BigInteger id) {
+        return Arrays.stream(Action.values()).filter(action -> action.getId().equals(id)).findFirst().get();
     }
 
 }
