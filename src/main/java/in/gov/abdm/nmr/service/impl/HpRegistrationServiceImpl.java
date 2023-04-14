@@ -235,6 +235,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         superSpeciality.setName(speciality.getName());
         superSpeciality.setHpProfileId(hpProfileId);
     }
+
     @Override
     public HpProfilePersonalResponseTO addOrUpdateHpPersonalDetail(BigInteger hpProfileId,
                                                                    HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException {
@@ -516,8 +517,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                     registrationDetails.setRenewableRegistrationDate(simpleDateFormat.parse(registrationsDetails.getRenewableRegistrationDate() != null ?
                             registrationsDetails.getRenewableRegistrationDate() : null));
 
-                }
-                else {
+                } else {
                     registrationDetails.setIsRenewable("0");
                     registrationDetails.setRenewableRegistrationDate(null);
                 }
@@ -553,7 +553,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             kycAddress.setVillage(request.getVillageTownCity() != null ? villagesRepository.findByName(request.getLocality()) : null);
             kycAddress.setSubDistrict(request.getSubDist() != null ? subDistrictRepository.findByName(request.getSubDist()) : null);
             kycAddress.setState(stateRepository.findByName(request.getState().toUpperCase()));
-            kycAddress.setDistrict(districtRepository.findByDistrictNameAndStateId(request.getDistrict().toUpperCase(),kycAddress.getState().getId()));
+            kycAddress.setDistrict(districtRepository.findByDistrictNameAndStateId(request.getDistrict().toUpperCase(), kycAddress.getState().getId()));
             kycAddress.setCountry(stateRepository.findByName(request.getState().toUpperCase()).getCountry());
 
             in.gov.abdm.nmr.entity.Address communicationAddress = new in.gov.abdm.nmr.entity.Address();
@@ -576,7 +576,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             communicationAddress.setVillage(addressNoSql.getCity() != null ? villagesRepository.findByName(addressNoSql.getCity()) : null);
             communicationAddress.setSubDistrict(addressNoSql.getSubDistricts() != null ? subDistrictRepository.findByName(addressNoSql.getSubDistricts()) : null);
             communicationAddress.setState(addressNoSql.getState() != null ? stateRepository.findByName(addressNoSql.getState().toUpperCase()) : null);
-            communicationAddress.setDistrict(addressNoSql.getDistrict() != null ? districtRepository.findByDistrictNameAndStateId(addressNoSql.getDistrict().toUpperCase(),communicationAddress.getState().getId()) : null);
+            communicationAddress.setDistrict(addressNoSql.getDistrict() != null ? districtRepository.findByDistrictNameAndStateId(addressNoSql.getDistrict().toUpperCase(), communicationAddress.getState().getId()) : null);
             communicationAddress.setCountry(addressNoSql.getCountry() != null ? countryRepository.findByName(addressNoSql.getCountry()) : null);
 
             iAddressRepository.saveAll(List.of(kycAddress, communicationAddress));
@@ -637,34 +637,39 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
      */
     @Override
     public ResponseMessageTo getEmailVerificationLink(BigInteger hpProfileId, VerifyEmailLinkTo verifyEmailLinkTo) {
+
         try {
 
             HpProfile hpProfile = iHpProfileRepository.findHpProfileById(hpProfileId);
 
-            if (!userDaoService.existsByEmail(verifyEmailLinkTo.getEmail())) {
+            if (hpProfile != null) {
 
-                if (hpProfile != null) {
+                if (!(hpProfile.getUser().isEmailVerified() && hpProfile.getUser().getEmail().equals(verifyEmailLinkTo.getEmail()))) {
 
-                    hpProfile.setEmailId(verifyEmailLinkTo.getEmail());
-                    User user = userDaoService.findById(hpProfile.getUser().getId());
-                    user.setEmail(verifyEmailLinkTo.getEmail());
-                    user.setEmailVerified(false);
-                    userDaoService.save(user);
-                    iHpProfileRepository.save(hpProfile);
-                    return notificationService.sendNotificationForEmailVerificationLink(verifyEmailLinkTo.getEmail(), generateLink(new SendLinkOnMailTo(verifyEmailLinkTo.getEmail())));
+                    if (!userDaoService.checkEmailUsedByOtherUser(hpProfile.getUser().getId(), verifyEmailLinkTo.getEmail())) {
 
+                        hpProfile.setEmailId(verifyEmailLinkTo.getEmail());
+                        User user = userDaoService.findById(hpProfile.getUser().getId());
+                        user.setEmail(verifyEmailLinkTo.getEmail());
+                        user.setEmailVerified(false);
+                        userDaoService.save(user);
+                        iHpProfileRepository.save(hpProfile);
+                        return notificationService.sendNotificationForEmailVerificationLink(verifyEmailLinkTo.getEmail(), generateLink(new SendLinkOnMailTo(verifyEmailLinkTo.getEmail())));
+                    } else {
+
+                        return new ResponseMessageTo(NMRConstants.EMAIL_USED_BY_OTHER_USER);
+                    }
                 } else {
-                    return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
+                    return new ResponseMessageTo(NMRConstants.EMAIL_ALREADY_VERIFIED);
                 }
+            } else {
+                return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
             }
-            else {
-                return new ResponseMessageTo(EMAIL_ALREADY_EXISTS);
-            }
-
         } catch (Exception e) {
             return new ResponseMessageTo(e.getLocalizedMessage());
         }
     }
+
 
     @Override
     public String generateLink(SendLinkOnMailTo sendLinkOnMailTo) {

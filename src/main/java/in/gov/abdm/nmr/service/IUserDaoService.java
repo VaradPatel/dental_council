@@ -45,4 +45,6 @@ public interface IUserDaoService {
     NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException;
 
     NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException;
+
+    boolean checkEmailUsedByOtherUser(BigInteger id, String email);
 }

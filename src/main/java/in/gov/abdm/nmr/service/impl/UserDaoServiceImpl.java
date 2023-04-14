@@ -222,4 +222,8 @@ public class UserDaoServiceImpl implements IUserDaoService {
         nbeProfile.setMobileNo(nbeProfileTO.getMobileNo());
         return nbeProfileRepository.saveAndFlush(nbeProfile);
     }
+
+    public boolean checkEmailUsedByOtherUser(BigInteger id, String email){
+        return userDetailRepository.checkEmailUsedByOtherUser(id,email);
+    }
 }
