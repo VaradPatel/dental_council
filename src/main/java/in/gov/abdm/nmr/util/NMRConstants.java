@@ -42,6 +42,7 @@ public class NMRConstants {
     public static final String KYC_FUZZY_MATCH = "/health-professional/{registrationNumber}/kyc";
     public static final String GET_QUERIES = "health-professional/{healthProfessionalId}/queries";
     public static final String PASSWORD_LINK = "/user/password-link";
+    public static final String VERIFY_EMAIL = "/user/verify-email";
     public static final String SET_PASSWORD = "/user/set-password";
     public static final String E_SIGN = "/e-signature";
 
@@ -99,6 +100,7 @@ public class NMRConstants {
     public static final String INFO_EMAIL_VERIFICATION_SUCCESSFUL_SUBJECT = "NMR : Verification Successful";
     public static final String INFO_EMAIL_SET_PASSWORD_SUBJECT = "NMR : Set New Password";
     public static final String ACCOUNT_CREATED_SUBJECT = "Account Created";
+    public static final String VERIFY_EMAIL_SUBJECT = "NMR: Verify Email";
     public static final String OTP_CONTENT_TYPE = "otp";
     public static final String SMS_OTP_MESSAGE_PROPERTIES_KEY = "sms-otp";
     public static final String EMAIL_OTP_MESSAGE_PROPERTIES_KEY = "email-otp";
@@ -570,4 +572,5 @@ public class NMRConstants {
     public static final String DOCTOR_QUALIFICATION="MBBS";
     public static final String DOCTOR_QUALIFICATION_PATTERN="[^A-Za-z]+";
 
+    public static final String EMAIL_VERIFICATION_TEMPLATE="email-verification-link";
 }

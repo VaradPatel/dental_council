@@ -14,7 +14,7 @@ import java.util.Date;
 
 @Entity
 @Data
-public class PasswordResetToken {
+public class ResetToken {
 
     private static final int EXPIRATION = NMRConstants.RESET_PASSWORD_LINK_EXPIRY_HOURS;
 
@@ -26,18 +26,18 @@ public class PasswordResetToken {
     private String token;
     private Timestamp expiryDate;
 
-    public PasswordResetToken() {
+    public ResetToken() {
         super();
     }
 
-    public PasswordResetToken(final String token) {
+    public ResetToken(final String token) {
         super();
 
         this.token = token;
         this.expiryDate = calculateExpiryDate(EXPIRATION);
     }
 
-    public PasswordResetToken(final String token, final String userName) {
+    public ResetToken(final String token, final String userName) {
         super();
 
         this.token = token;

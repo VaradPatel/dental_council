@@ -65,6 +65,9 @@ public class User extends CommonAuditEntity {
     @Column(name = "is_new")
     private boolean isNew;
 
+    @Column(name = "is_email_verified")
+    private boolean isEmailVerified;
+
     public User(BigInteger id, String email, String userName, String mobileNumber, String nmrId, String password, String refreshTokenId, boolean isSmsNotificationEnabled, boolean isEmailNotificationEnabled, UserType userType, UserSubType userSubType, UserGroup group, boolean accountNonLocked, int failedAttempt, Timestamp lockTime) {
         this.id = id;
         this.email = email;

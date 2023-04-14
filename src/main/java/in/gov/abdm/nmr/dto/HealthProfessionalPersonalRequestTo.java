@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class HealthProfessionalPersonalRequestTo {
     private String mobileNumber;
-    private String email;
     private String transactionId;
     @JsonProperty("e_sign_transaction_id")
     private String eSignTransactionId;

@@ -15,5 +15,6 @@ public class HpProfilePersonalResponseTO {
     private String nmrId;
     private BigInteger hpProfileStatusId;
     private BigInteger workFlowStatusId;
+    private boolean isEmailVerified;
 
 }

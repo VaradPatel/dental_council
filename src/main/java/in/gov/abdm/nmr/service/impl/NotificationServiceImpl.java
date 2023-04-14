@@ -216,6 +216,17 @@ public class NotificationServiceImpl implements INotificationService {
 
     }
 
+    @Override
+    public ResponseMessageTo sendNotificationForEmailVerificationLink(String email,String link) {
+
+        Template template = getMessageTemplate(NMRConstants.EMAIL_VERIFICATION_TEMPLATE);
+        String message = new TemplatedStringBuilder(template.getMessage())
+                .replace(NMRConstants.TEMPLATE_VAR1, link)
+                .finish();
+        return sendNotification(NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.VERIFY_EMAIL_SUBJECT, message, null, email,NMRConstants.EMAIL_VERIFICATION_TEMPLATE);
+
+    }
+
     @SneakyThrows
     Template getMessageTemplate(String propertiesKey) {
         Template template;

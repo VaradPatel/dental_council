@@ -204,7 +204,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         if (user == null) {
             user = new User(null, collegeMasterTOV2.getEmailId(), collegeMasterTOV2.getMobileNumber(), null, null, null, false, false, //
                     entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), // 
-                    entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false);
+                    entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false,false);
         } else {
             user.setEmail(collegeMasterTOV2.getEmailId());
             user.setMobileNumber(collegeMasterTOV2.getMobileNumber());
@@ -281,7 +281,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
             user = new User(null, collegeProfileTOV2.getEmailId(), collegeProfileTOV2.getMobileNumber(), null, //
                     null, null, false, false, entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), //
                     entityManager.getReference(UserSubType.class, collegeProfileTOV2.getDesignation()), //
-                    entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false);
+                    entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false,false);
         } else {
             user.setEmail(collegeProfileTOV2.getEmailId());
             user.setMobileNumber(collegeProfileTOV2.getMobileNumber());
