@@ -39,7 +39,7 @@ public class NMRConstants {
     public static final String PATH_HP_PROFILE = "/health-professional/user";
 
     public static final String RAISE_QUERY = "/health-professional/queries";
-    public static final String SAVE_KYC_DETAILS = "/health-professional/{registrationNumber}/kyc";
+    public static final String KYC_FUZZY_MATCH = "/health-professional/{registrationNumber}/kyc";
     public static final String GET_QUERIES = "health-professional/{healthProfessionalId}/queries";
     public static final String PASSWORD_LINK = "/user/password-link";
     public static final String VERIFY_EMAIL = "/user/verify-email";
@@ -568,5 +568,9 @@ public class NMRConstants {
     public static final String VERIFIER_NMC=" by NMC";
     public static final String VERIFIER_NBE=" by NBE";
     public static final String VERIFIER_SYSTEM=" by System";
+
+    public static final String DOCTOR_QUALIFICATION="MBBS";
+    public static final String DOCTOR_QUALIFICATION_PATTERN="[^A-Za-z]+";
+
     public static final String EMAIL_VERIFICATION_TEMPLATE="email-verification-link";
 }

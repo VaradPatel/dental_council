@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -113,9 +114,9 @@ public interface IHpRegistrationService {
      */
     HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(BigInteger hpProfileId);
 
-    KycResponseMessageTo saveUserKycDetails(String registrationNumber,UserKycTo userKycTo);
+    KycResponseMessageTo userKycFuzzyMatch(String registrationNumber,BigInteger councilId, UserKycTo userKycTo) throws ParseException;
 
-    void addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException;
+    void addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException, ParseException;
 
     void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException, InvalidRequestException;
 

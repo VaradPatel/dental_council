@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import java.math.BigInteger;
 
 @Data
 @AllArgsConstructor
@@ -32,5 +33,5 @@ public class CreateHpUserAccountTo {
 
     private boolean isNew;
 
-
+    private BigInteger stateMedicalCouncilId;
 }

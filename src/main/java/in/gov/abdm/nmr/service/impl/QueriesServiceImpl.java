@@ -6,7 +6,6 @@ import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.entity.Queries;
 import in.gov.abdm.nmr.enums.Action;
-import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.QueriesDtoMapper;
 import in.gov.abdm.nmr.repository.QueriesRepository;
