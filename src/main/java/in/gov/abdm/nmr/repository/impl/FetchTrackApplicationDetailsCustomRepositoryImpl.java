@@ -272,7 +272,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setMobileNumber((String) result[16]);
             healthProfessionalApplicationTo.setNmrId((String)result[17]);
             healthProfessionalApplicationTo.setYearOfRegistration(((Timestamp) result[18]).toString());
-            healthProfessionalApplicationTo.setCollegeStatus(Action.getAction((BigInteger) result[19]).getStatus());
+            healthProfessionalApplicationTo.setCollegeStatus(result[19] != null ? Action.getAction((BigInteger) result[19]).getStatus() : "");
             healthProfessionalApplicationResponseTo.setTotalNoOfRecords((BigInteger) result[20]);
             healthProfessionalApplicationTo.setCouncilName((String) result[8]);
             healthProfessionalApplicationTo.setApplicantFullName((String) result[9]);
