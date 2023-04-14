@@ -468,62 +468,63 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         List<Council> councils = councilService.getCouncilByRegistrationNumberAndCouncilName(request.getRegistrationNumber(), stateMedicalCouncil.getName());
 
         Council council = councils.isEmpty() ? null : councils.get(0);
-        RegistrationsDetails registrationsDetails = null;
+        RegistrationsDetails imrRegistrationsDetails = null;
+        List<QualificationsDetails> qualificationDetailsList = new ArrayList<>();
         if (council != null) {
-
-            registrationsDetails = council.getRegistrationsDetails().isEmpty() ? null : council.getRegistrationsDetails().get(0);
-            List<QualificationsDetails> qualificationDetailsList = new ArrayList<>();
-            for (QualificationsDetails qualificationsDetails : registrationsDetails.getQualificationsDetails()) {
+            imrRegistrationsDetails = council.getRegistrationsDetails().isEmpty() ? null : council.getRegistrationsDetails().get(0);
+            for (QualificationsDetails qualificationsDetails : imrRegistrationsDetails.getQualificationsDetails()) {
                 if (qualificationsDetails.getName().replaceAll(DOCTOR_QUALIFICATION_PATTERN, "").equalsIgnoreCase(DOCTOR_QUALIFICATION)) {
                     qualificationDetailsList.add(qualificationsDetails);
                 }
             }
+        }
 
-            HpProfile hpProfile = new HpProfile();
-            hpProfile.setAadhaarToken(request.getAadhaarToken() != null ? request.getAadhaarToken() : null);
-            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
-            try {
-                java.util.Date dt = df.parse(request.getBirthdate());
-                hpProfile.setDateOfBirth(new java.sql.Date(dt.getTime()));
-            } catch (ParseException e) {
-                throw new DateException(NMRError.DATE_EXCEPTION.getCode(), NMRError.DATE_EXCEPTION.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString());
+        HpProfile hpProfile = new HpProfile();
+        hpProfile.setAadhaarToken(request.getAadhaarToken() != null ? request.getAadhaarToken() : null);
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        try {
+            java.util.Date dt = df.parse(request.getBirthdate());
+            hpProfile.setDateOfBirth(new java.sql.Date(dt.getTime()));
+        } catch (ParseException e) {
+            throw new DateException(NMRError.DATE_EXCEPTION.getCode(), NMRError.DATE_EXCEPTION.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString());
+        }
+
+        hpProfile.setEmailId(request.getEmail() != null ? request.getEmail() : null);
+        hpProfile.setFullName(request.getName());
+        hpProfile.setGender(request.getGender());
+        hpProfile.setMobileNumber(request.getMobileNumber() != null ? request.getMobileNumber() : null);
+        hpProfile.setSalutation(NMRConstants.SALUTATION_DR);
+        hpProfile.setProfilePhoto(request.getPhoto() != null ? new String(Base64.getDecoder().decode(request.getPhoto())) : null);
+        hpProfile.setRegistrationId(request.getRegistrationNumber());
+        hpProfile.setIsSameAddress(String.valueOf(false));
+        hpProfile.setCountryNationality(countryRepository.findByName(NMRConstants.DEFAULT_COUNTRY_AADHAR));
+        hpProfile.setIsNew(NMRConstants.YES);
+        hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.PENDING.getId()).get());
+        hpProfile = iHpProfileRepository.save(hpProfile);
+
+        RegistrationDetails registrationDetails = new RegistrationDetails();
+        registrationDetails.setStateMedicalCouncil(stateMedicalCouncil);
+        registrationDetails.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
+        registrationDetails.setRegistrationNo(request.getRegistrationNumber());
+        registrationDetails.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+        registrationDetails.setHpProfileId(hpProfile);
+
+        if (imrRegistrationsDetails != null) {
+            boolean isRenewable = imrRegistrationsDetails.isRenewableRegistration();
+            if (isRenewable) {
+                registrationDetails.setIsRenewable("1");
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy");
+                registrationDetails.setRenewableRegistrationDate(simpleDateFormat.parse(imrRegistrationsDetails.getRenewableRegistrationDate() != null ?
+                        imrRegistrationsDetails.getRenewableRegistrationDate() : null));
+
+            } else {
+                registrationDetails.setIsRenewable("0");
+                registrationDetails.setRenewableRegistrationDate(null);
             }
+        }
+        iRegistrationDetailRepository.save(registrationDetails);
 
-            hpProfile.setEmailId(request.getEmail() != null ? request.getEmail() : null);
-            hpProfile.setFullName(request.getName());
-            hpProfile.setGender(request.getGender());
-            hpProfile.setMobileNumber(request.getMobileNumber() != null ? request.getMobileNumber() : null);
-            hpProfile.setSalutation(NMRConstants.SALUTATION_DR);
-            hpProfile.setProfilePhoto(request.getPhoto() != null ? new String(Base64.getDecoder().decode(request.getPhoto())) : null);
-            hpProfile.setRegistrationId(request.getRegistrationNumber());
-            hpProfile.setIsSameAddress(String.valueOf(false));
-            hpProfile.setCountryNationality(countryRepository.findByName(NMRConstants.DEFAULT_COUNTRY_AADHAR));
-            hpProfile.setIsNew(NMRConstants.YES);
-            hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.PENDING.getId()).get());
-            hpProfile = iHpProfileRepository.save(hpProfile);
-
-            RegistrationDetails registrationDetails = new RegistrationDetails();
-            registrationDetails.setStateMedicalCouncil(stateMedicalCouncil);
-            registrationDetails.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
-            registrationDetails.setRegistrationNo(request.getRegistrationNumber());
-            registrationDetails.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
-            registrationDetails.setHpProfileId(hpProfile);
-
-            if (registrationDetails != null) {
-                boolean isRenewable = registrationsDetails.isRenewableRegistration();
-                if (isRenewable) {
-                    registrationDetails.setIsRenewable("1");
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy");
-                    registrationDetails.setRenewableRegistrationDate(simpleDateFormat.parse(registrationsDetails.getRenewableRegistrationDate() != null ?
-                            registrationsDetails.getRenewableRegistrationDate() : null));
-
-                } else {
-                    registrationDetails.setIsRenewable("0");
-                    registrationDetails.setRenewableRegistrationDate(null);
-                }
-            }
-            iRegistrationDetailRepository.save(registrationDetails);
-
+        if (!qualificationDetailsList.isEmpty()) {
             QualificationsDetails qualificationsDetails = qualificationDetailsList.get(0);
 
             QualificationDetails qualificationDetails = new QualificationDetails();
@@ -537,50 +538,61 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 qualificationDetails.setUniversity(universityMaster);
             }
             iQualificationDetailRepository.save(qualificationDetails);
-            in.gov.abdm.nmr.entity.Address kycAddress = new in.gov.abdm.nmr.entity.Address();
-            kycAddress.setPincode(request.getPincode());
-            kycAddress.setMobile(request.getMobileNumber());
-            kycAddress.setAddressLine1(request.getAddress());
-            kycAddress.setEmail(request.getEmail() != null ? request.getEmail() : null);
-            kycAddress.setHouse(request.getHouse() != null ? request.getHouse() : null);
-            kycAddress.setStreet(request.getStreet() != null ? request.getStreet() : null);
-            kycAddress.setLocality(request.getLocality() != null ? request.getLocality() : null);
-            kycAddress.setHouse(request.getHouse() != null ? request.getHouse() : null);
-            kycAddress.setLandmark(request.getLandmark() != null ? request.getLandmark() : null);
-            kycAddress.setLandmark(request.getLandmark() != null ? request.getLandmark() : null);
-            kycAddress.setHpProfileId(hpProfile.getId());
-            kycAddress.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.KYC.getId(), AddressType.KYC.name()));
-            kycAddress.setVillage(request.getVillageTownCity() != null ? villagesRepository.findByName(request.getLocality()) : null);
-            kycAddress.setSubDistrict(request.getSubDist() != null ? subDistrictRepository.findByName(request.getSubDist()) : null);
-            kycAddress.setState(stateRepository.findByName(request.getState().toUpperCase()));
-            kycAddress.setDistrict(districtRepository.findByDistrictNameAndStateId(request.getDistrict().toUpperCase(), kycAddress.getState().getId()));
-            kycAddress.setCountry(stateRepository.findByName(request.getState().toUpperCase()).getCountry());
+        }
 
-            in.gov.abdm.nmr.entity.Address communicationAddress = new in.gov.abdm.nmr.entity.Address();
-            Address addressNoSql = new Address();
+        in.gov.abdm.nmr.entity.Address kycAddress = new in.gov.abdm.nmr.entity.Address();
+        kycAddress.setPincode(request.getPincode());
+        kycAddress.setMobile(request.getMobileNumber());
+        kycAddress.setAddressLine1(request.getAddress());
+        kycAddress.setEmail(request.getEmail() != null ? request.getEmail() : null);
+        kycAddress.setHouse(request.getHouse() != null ? request.getHouse() : null);
+        kycAddress.setStreet(request.getStreet() != null ? request.getStreet() : null);
+        kycAddress.setLocality(request.getLocality() != null ? request.getLocality() : null);
+        kycAddress.setHouse(request.getHouse() != null ? request.getHouse() : null);
+        kycAddress.setLandmark(request.getLandmark() != null ? request.getLandmark() : null);
+        kycAddress.setLandmark(request.getLandmark() != null ? request.getLandmark() : null);
+        kycAddress.setHpProfileId(hpProfile.getId());
+        kycAddress.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.KYC.getId(), AddressType.KYC.name()));
+        kycAddress.setVillage(request.getVillageTownCity() != null ? villagesRepository.findByName(request.getLocality()) : null);
+        kycAddress.setSubDistrict(request.getSubDist() != null ? subDistrictRepository.findByName(request.getSubDist()) : null);
+        kycAddress.setState(stateRepository.findByName(request.getState().toUpperCase()));
+        kycAddress.setDistrict(districtRepository.findByDistrictNameAndStateId(request.getDistrict().toUpperCase(), kycAddress.getState().getId()));
+        kycAddress.setCountry(stateRepository.findByName(request.getState().toUpperCase()).getCountry());
+
+        if (council != null) {
+            in.gov.abdm.nmr.entity.Address communicationAddressEntity = new in.gov.abdm.nmr.entity.Address();
+            Address communicationAddress = new Address();
             for (Address address : council.getAddress()) {
                 if (address.getType().equalsIgnoreCase(AddressType.COMMUNICATION.name())) {
-                    addressNoSql = address;
+                    communicationAddress = address;
                 }
             }
-            communicationAddress.setPincode(addressNoSql.getPincode() != null ? addressNoSql.getPincode() : null);
-            communicationAddress.setMobile(council.getMobileNumber() != null ? council.getMobileNumber() : null);
-            communicationAddress.setAddressLine1(addressNoSql.getAddressLine1() != null ? addressNoSql.getAddressLine1() : null);
-            communicationAddress.setEmail(council.getEmail() != null ? council.getEmail() : null);
-            communicationAddress.setHouse(null);
-            communicationAddress.setStreet(null);
-            communicationAddress.setLocality(null);
-            communicationAddress.setLandmark(null);
-            communicationAddress.setHpProfileId(hpProfile.getId());
-            communicationAddress.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.COMMUNICATION.getId(), AddressType.COMMUNICATION.name()));
-            communicationAddress.setVillage(addressNoSql.getCity() != null ? villagesRepository.findByName(addressNoSql.getCity()) : null);
-            communicationAddress.setSubDistrict(addressNoSql.getSubDistricts() != null ? subDistrictRepository.findByName(addressNoSql.getSubDistricts()) : null);
-            communicationAddress.setState(addressNoSql.getState() != null ? stateRepository.findByName(addressNoSql.getState().toUpperCase()) : null);
-            communicationAddress.setDistrict(addressNoSql.getDistrict() != null ? districtRepository.findByDistrictNameAndStateId(addressNoSql.getDistrict().toUpperCase(), communicationAddress.getState().getId()) : null);
-            communicationAddress.setCountry(addressNoSql.getCountry() != null ? countryRepository.findByName(addressNoSql.getCountry()) : null);
+            if (communicationAddress != null) {
+                communicationAddressEntity.setPincode(communicationAddress.getPincode() != null ? communicationAddress.getPincode() : null);
+                communicationAddressEntity.setMobile(council.getMobileNumber() != null ? council.getMobileNumber() : null);
+                communicationAddressEntity.setAddressLine1(communicationAddress.getAddressLine1() != null ? communicationAddress.getAddressLine1() : null);
+                communicationAddressEntity.setEmail(council.getEmail() != null ? council.getEmail() : null);
+                communicationAddressEntity.setHouse(null);
+                communicationAddressEntity.setStreet(null);
+                communicationAddressEntity.setLocality(null);
+                communicationAddressEntity.setLandmark(null);
+                communicationAddressEntity.setHpProfileId(hpProfile.getId());
+                communicationAddressEntity.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.COMMUNICATION.getId(), AddressType.COMMUNICATION.name()));
+                communicationAddressEntity.setVillage(communicationAddress.getCity() != null ? villagesRepository.findByName(communicationAddress.getCity()) : null);
+                communicationAddressEntity.setSubDistrict(communicationAddress.getSubDistricts() != null ? subDistrictRepository.findByName(communicationAddress.getSubDistricts()) : null);
+                communicationAddressEntity.setState(communicationAddress.getState() != null ? stateRepository.findByName(communicationAddress.getState().toUpperCase()) : null);
+                communicationAddressEntity.setDistrict(communicationAddress.getDistrict() != null ? districtRepository.findByDistrictNameAndStateId(communicationAddress.getDistrict().toUpperCase(), communicationAddressEntity.getState().getId()) : null);
+                communicationAddressEntity.setCountry(communicationAddress.getCountry() != null ? countryRepository.findByName(communicationAddress.getCountry()) : null);
 
-            iAddressRepository.saveAll(List.of(kycAddress, communicationAddress));
+                iAddressRepository.saveAll(List.of(kycAddress, communicationAddressEntity));
+            }else{
+                iAddressRepository.saveAll(List.of(kycAddress));
+            }
+
+        }else{
+            iAddressRepository.saveAll(List.of(kycAddress));
         }
+
 
     }
 
