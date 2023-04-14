@@ -118,4 +118,9 @@ public interface IHpRegistrationService {
     void addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException;
 
     void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException, InvalidRequestException;
+
+    ResponseMessageTo getEmailVerificationLink(BigInteger hpProfileId,VerifyEmailLinkTo verifyEmailLinkTo);
+
+    String generateLink(SendLinkOnMailTo sendLinkOnMailTo);
+
 }

@@ -30,4 +30,6 @@ public interface IUserService {
     ResponseMessageTo createHpUserAccount(CreateHpUserAccountTo createHpUserAccountTo);
 
     String retrieveUser(RetrieveUserRequestTo retrieveUserRequestTo) throws OtpException;
+
+    ResponseMessageTo verifyEmail(VerifyEmailTo verifyEmailTo);
 }

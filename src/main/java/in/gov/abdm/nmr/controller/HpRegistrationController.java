@@ -305,4 +305,18 @@ public class HpRegistrationController {
         hpService.updateHealthProfessionalEmailMobile(hpProfileId, request);
         return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
     }
+
+    /**
+     * Sends email verification link on email/mobile
+     *
+     * @param verifyEmailLinkTo receiver email/mobile
+     * @return Success/Fail message
+     */
+
+    @PatchMapping(path = "health-professional/{healthProfessionalId}/email", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseMessageTo getVerifyEmailLink(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId, @RequestBody VerifyEmailLinkTo verifyEmailLinkTo) {
+
+        return hpService.getEmailVerificationLink(hpProfileId,verifyEmailLinkTo);
+
+    }
 }

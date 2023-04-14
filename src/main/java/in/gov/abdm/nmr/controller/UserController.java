@@ -84,4 +84,17 @@ public class UserController {
     public String retrieveUser(@Valid @RequestBody RetrieveUserRequestTo retrieveUserRequestTo) throws OtpException {
         return userService.retrieveUser(retrieveUserRequestTo);
     }
+
+
+    /**
+     * mark email id as verified
+     * @param verifyEmailTo receiver email/mobile
+     * @return Success/Fail message
+     */
+    @PostMapping(NMRConstants.VERIFY_EMAIL)
+    public ResponseMessageTo verifyEmail(@RequestBody VerifyEmailTo verifyEmailTo) {
+
+        return userService.verifyEmail(verifyEmailTo);
+
+    }
 }

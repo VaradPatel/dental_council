@@ -12,6 +12,7 @@ import in.gov.abdm.nmr.mapper.INbeMapper;
 import in.gov.abdm.nmr.mapper.INmcMapper;
 import in.gov.abdm.nmr.mapper.ISmcMapper;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.ResetTokenRepository;
 import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.service.IPasswordDaoService;
@@ -26,6 +27,8 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +63,9 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     OtpServiceImpl otpService;
+
+    @Autowired
+    private ResetTokenRepository resetTokenRepository;
 
     public UserServiceImpl(IUserDaoService userDaoService) {
         this.userDaoService = userDaoService;
@@ -135,7 +141,7 @@ public class UserServiceImpl implements IUserService {
         try {
             String hashedPassword = bCryptPasswordEncoder.encode(rsaUtil.decrypt(createHpUserAccountTo.getPassword()));
             User userDetail = new User(null, createHpUserAccountTo.getEmail(), createHpUserAccountTo.getMobile(), null, hashedPassword, null, true, true, //
-                    entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null, createHpUserAccountTo.getUsername(), createHpUserAccountTo.getHprId(), createHpUserAccountTo.getHprIdNumber(),createHpUserAccountTo.isNew() );
+                    entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null, createHpUserAccountTo.getUsername(), createHpUserAccountTo.getHprId(), createHpUserAccountTo.getHprIdNumber(),createHpUserAccountTo.isNew(),false);
             userDaoService.save(userDetail);
 
             Password password = new Password(null, hashedPassword, userDetail);
@@ -171,5 +177,39 @@ public class UserServiceImpl implements IUserService {
             return user.getUserName();
         }
         return user.getEmail();
+    }
+
+    /**
+     * Creates new unique token for reset password transaction
+     *
+     * @param verifyEmailTo email/mobile to send link
+     * @return ResponseMessageTo with message
+     */
+    @Override
+    public ResponseMessageTo verifyEmail(VerifyEmailTo verifyEmailTo) {
+        try {
+
+            resetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
+
+            ResetToken resetToken = resetTokenRepository.findByToken(verifyEmailTo.getToken());
+
+            if (resetToken != null) {
+
+                if (resetToken.getExpiryDate().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0) {
+
+                    return new ResponseMessageTo(NMRConstants.LINK_EXPIRED);
+                }
+
+                User user = userDaoService.findByUsername(resetToken.getUserName());
+                user.setEmailVerified(true);
+                userDaoService.save(user);
+                return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
+
+            } else {
+                return new ResponseMessageTo(NMRConstants.LINK_EXPIRED);
+            }
+        } catch (Exception e) {
+            return new ResponseMessageTo(e.getLocalizedMessage());
+        }
     }
 }
