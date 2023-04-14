@@ -202,8 +202,8 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         }
         dashboard.setCreatedAt(Timestamp.from(Instant.now()));
         dashboard.setUpdatedAt(Timestamp.from(Instant.now()));
-        Dashboard save = iDashboardRepository.save(dashboard);
-        System.out.println(save.getId());
+        iDashboardRepository.save(dashboard);
+
     }
 
     private static void setDashboardStatus(BigInteger actionPerformedId, BigInteger userGroup, Dashboard dashboard) {
