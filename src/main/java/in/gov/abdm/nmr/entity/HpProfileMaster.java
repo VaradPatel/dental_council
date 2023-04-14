@@ -1,7 +1,6 @@
 package in.gov.abdm.nmr.entity;
 
 import lombok.*;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.math.BigInteger;

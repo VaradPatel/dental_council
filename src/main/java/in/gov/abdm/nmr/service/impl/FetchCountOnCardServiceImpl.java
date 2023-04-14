@@ -3,17 +3,20 @@ package in.gov.abdm.nmr.service.impl;
 import in.gov.abdm.nmr.dto.FetchCountOnCardInnerResponseTO;
 import in.gov.abdm.nmr.dto.FetchCountOnCardResponseTO;
 import in.gov.abdm.nmr.dto.StatusWiseCountTO;
-import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.entity.UserGroup;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.mapper.IStatusCount;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.entity.UserGroup;
+import in.gov.abdm.nmr.repository.IFetchCountOnCardRepository;
+import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.INbeProfileRepository;
+import in.gov.abdm.nmr.repository.ISmcProfileRepository;
 import in.gov.abdm.nmr.mapper.IStatusWiseCount;
 import in.gov.abdm.nmr.mapper.IStatusWiseCountMapper;
-import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.ICollegeProfileDaoService;
 import in.gov.abdm.nmr.service.IFetchCountOnCardService;
@@ -690,16 +693,13 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
             } else if (ApplicationType.HP_MODIFICATION.getId().equals(applicationTypeId)) {
                 List<IStatusWiseCount> qualificationAdditionStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForSmc(ApplicationType.QUALIFICATION_ADDITION.getId(), groupId, smcProfileId);
                 return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, qualificationAdditionStatusWiseCount);
-            }
-            else if (ApplicationType.HP_TEMPORARY_SUSPENSION.getId().equals(applicationTypeId)) {
+            } else if (ApplicationType.HP_TEMPORARY_SUSPENSION.getId().equals(applicationTypeId)) {
                 List<IStatusWiseCount> temporarySuspensionStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificSuspensionAndActivateStatusWiseCountForSmc(ApplicationType.HP_TEMPORARY_SUSPENSION.getId(), smcProfileId);
                 return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, temporarySuspensionStatusWiseCount);
-            }
-            else if (ApplicationType.HP_PERMANENT_SUSPENSION.getId().equals(applicationTypeId)) {
+            } else if (ApplicationType.HP_PERMANENT_SUSPENSION.getId().equals(applicationTypeId)) {
                 List<IStatusWiseCount> permanentSuspensionStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificSuspensionAndActivateStatusWiseCountForSmc(ApplicationType.HP_PERMANENT_SUSPENSION.getId(), smcProfileId);
                 return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, permanentSuspensionStatusWiseCount);
-            }
-            else if (ApplicationType.HP_ACTIVATE_LICENSE.getId().equals(applicationTypeId)) {
+            } else if (ApplicationType.HP_ACTIVATE_LICENSE.getId().equals(applicationTypeId)) {
                 List<IStatusWiseCount> activateLicenseStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificSuspensionAndActivateStatusWiseCountForSmc(ApplicationType.HP_ACTIVATE_LICENSE.getId(), smcProfileId);
                 return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, activateLicenseStatusWiseCount);
             }
@@ -718,16 +718,13 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
             } else if (ApplicationType.HP_MODIFICATION.getId().equals(applicationTypeId)) {
                 List<IStatusWiseCount> qualificationAdditionStatusWiseCount = iFetchCountOnCardRepository.fetchStatusWiseCount(ApplicationType.QUALIFICATION_ADDITION.getId(), groupId);
                 return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, qualificationAdditionStatusWiseCount);
-            }
-            else if (ApplicationType.HP_TEMPORARY_SUSPENSION.getId().equals(applicationTypeId)) {
+            } else if (ApplicationType.HP_TEMPORARY_SUSPENSION.getId().equals(applicationTypeId)) {
                 List<IStatusWiseCount> temporarySuspensionStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificSuspensionAndActivateStatusWiseCountForNmc(ApplicationType.HP_TEMPORARY_SUSPENSION.getId());
                 return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, temporarySuspensionStatusWiseCount);
-            }
-            else if (ApplicationType.HP_PERMANENT_SUSPENSION.getId().equals(applicationTypeId)) {
+            } else if (ApplicationType.HP_PERMANENT_SUSPENSION.getId().equals(applicationTypeId)) {
                 List<IStatusWiseCount> permanentSuspensionStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificSuspensionAndActivateStatusWiseCountForNmc(ApplicationType.HP_PERMANENT_SUSPENSION.getId());
                 return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, permanentSuspensionStatusWiseCount);
-            }
-            else if (ApplicationType.HP_ACTIVATE_LICENSE.getId().equals(applicationTypeId)) {
+            } else if (ApplicationType.HP_ACTIVATE_LICENSE.getId().equals(applicationTypeId)) {
                 List<IStatusWiseCount> activateLicenseStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificSuspensionAndActivateStatusWiseCountForNmc(ApplicationType.HP_ACTIVATE_LICENSE.getId());
                 return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, activateLicenseStatusWiseCount);
             }

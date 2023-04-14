@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
 
 @Service
 public class ElasticsearchDaoServiceImpl implements IElasticsearchDaoService {
