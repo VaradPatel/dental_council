@@ -1,14 +1,15 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.Password;
-import in.gov.abdm.nmr.entity.PasswordResetToken;
+import in.gov.abdm.nmr.entity.ResetToken;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.OtpException;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
-import in.gov.abdm.nmr.repository.PasswordResetTokenRepository;
+import in.gov.abdm.nmr.repository.ResetTokenRepository;
 import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -46,7 +47,7 @@ public class PasswordServiceImpl implements IPasswordService {
     IUserDaoService userDaoService;
 
     @Autowired
-    private PasswordResetTokenRepository passwordResetTokenRepository;
+    private ResetTokenRepository resetTokenRepository;
 
     @Autowired
     INotificationService notificationService;
@@ -59,7 +60,7 @@ public class PasswordServiceImpl implements IPasswordService {
 
     @Autowired
     IHpProfileRepository hpProfileRepository;
-    
+
     @Autowired
     private IPasswordDaoService passwordDaoService;
 
@@ -77,34 +78,19 @@ public class PasswordServiceImpl implements IPasswordService {
         try {
 
 
-                passwordResetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
+            resetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
 
-                if (userDaoService.existsByEmail(sendLinkOnMailTo.getEmail())) {
-                    return passwordReset(sendLinkOnMailTo);
-                } else {
-                    return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
-                }
+            if (userDaoService.existsByEmail(sendLinkOnMailTo.getEmail())) {
+                return notificationService.sendNotificationForResetPasswordLink(sendLinkOnMailTo.getEmail(), generateLink(sendLinkOnMailTo));
+            } else {
+                return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
+            }
 
         } catch (Exception e) {
             return new ResponseMessageTo(e.getLocalizedMessage());
         }
     }
 
-    public ResponseMessageTo passwordReset(SendLinkOnMailTo sendLinkOnMailTo) {
-        String token = RandomString.make(30);
-        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByUserName(sendLinkOnMailTo.getEmail());
-
-        if (passwordResetToken != null) {
-            passwordResetToken.setToken(token);
-        } else {
-            passwordResetToken = new PasswordResetToken(token, sendLinkOnMailTo.getEmail());
-        }
-        passwordResetTokenRepository.save(passwordResetToken);
-
-        String resetPasswordLink = resetPasswordUrl + "/" + token;
-
-        return notificationService.sendNotificationForResetPasswordLink(sendLinkOnMailTo.getEmail(), resetPasswordLink);
-    }
 
     /**
      * find user by unique token
@@ -116,29 +102,31 @@ public class PasswordServiceImpl implements IPasswordService {
     public ResponseMessageTo setNewPassword(SetNewPasswordTo newPasswordTo) {
         try {
 
-            PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(newPasswordTo.getToken());
+            resetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
 
-            User user = userDaoService.findByUsername(passwordResetToken.getUserName());
+            ResetToken resetToken = resetTokenRepository.findByToken(newPasswordTo.getToken());
+
+            User user = userDaoService.findByUsername(resetToken.getUserName());
 
             if (null == user) {
                 return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
             }
-            if (passwordResetToken.getExpiryDate().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0) {
+            if (resetToken.getExpiryDate().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0) {
 
                 return new ResponseMessageTo(NMRConstants.LINK_EXPIRED);
             }
-            
+
             String decryptedNewPassword = rsaUtil.decrypt(newPasswordTo.getPassword());
             for (Password password : passwordDaoService.findLast5(user.getId())) {
                 if (bCryptPasswordEncoder.matches(decryptedNewPassword, password.getValue())) {
                     throw new InvalidRequestException("Current password should not be same as last 5 passwords");
                 }
             }
-            
+
             String hashedPassword = bCryptPasswordEncoder.encode(decryptedNewPassword);
             user.setPassword(hashedPassword);
             userDaoService.save(user);
-            
+
             Password password = new Password(null, hashedPassword, user);
             passwordDaoService.save(password);
 
@@ -153,20 +141,20 @@ public class PasswordServiceImpl implements IPasswordService {
      *
      * @param resetPasswordRequestTo coming from Service
      * @return ResetPasswordResponseTo Object
-     * @throws GeneralSecurityException 
-     * @throws InvalidRequestException 
+     * @throws GeneralSecurityException
+     * @throws InvalidRequestException
      */
     @Override
     public ResponseMessageTo resetPassword(ResetPasswordRequestTo resetPasswordRequestTo) throws GeneralSecurityException, InvalidRequestException, OtpException {
         String transactionId = resetPasswordRequestTo.getTransactionId();
-        if(otpService.isOtpVerified(transactionId)){
+        if (otpService.isOtpVerified(transactionId)) {
             throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage(),
                     HttpStatus.UNAUTHORIZED.toString());
         }
         User user = userDaoService.findByUsername(resetPasswordRequestTo.getUsername());
 
         if (null != user) {
-            
+
             String decryptedNewPassword = rsaUtil.decrypt(resetPasswordRequestTo.getPassword());
             for (Password password : passwordDaoService.findLast5(user.getId())) {
                 if (bCryptPasswordEncoder.matches(decryptedNewPassword, password.getValue())) {
@@ -196,10 +184,10 @@ public class PasswordServiceImpl implements IPasswordService {
      *
      * @param changePasswordRequestTo coming from controller
      * @return Success or failure message
-     * @throws GeneralSecurityException 
+     * @throws GeneralSecurityException
      */
     @Override
-    public ResponseMessageTo changePassword(ChangePasswordRequestTo changePasswordRequestTo) throws InvalidRequestException, GeneralSecurityException{
+    public ResponseMessageTo changePassword(ChangePasswordRequestTo changePasswordRequestTo) throws InvalidRequestException, GeneralSecurityException {
 
         User user = userDaoService.findById(changePasswordRequestTo.getUserId());
         if (user != null) {
@@ -208,21 +196,21 @@ public class PasswordServiceImpl implements IPasswordService {
             if (loggedInUser.getId().equals(user.getId())) {
 
                 if (bCryptPasswordEncoder.matches(rsaUtil.decrypt(changePasswordRequestTo.getOldPassword()), user.getPassword())) {
-                    
+
                     String decryptedNewPassword = rsaUtil.decrypt(changePasswordRequestTo.getNewPassword());
                     for (Password password : passwordDaoService.findLast5(user.getId())) {
                         if (bCryptPasswordEncoder.matches(decryptedNewPassword, password.getValue())) {
                             throw new InvalidRequestException("Current password should not be same as last 5 passwords");
                         }
                     }
-                    
+
                     String hashedPassword = bCryptPasswordEncoder.encode(decryptedNewPassword);
                     user.setPassword(hashedPassword);
                     try {
                         user = userDaoService.save(user);
                         Password password = new Password(null, hashedPassword, user);
                         passwordDaoService.save(password);
-                        
+
                         return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
                     } catch (Exception e) {
                         return new ResponseMessageTo(NMRConstants.PROBLEM_OCCURRED);
@@ -240,5 +228,25 @@ public class PasswordServiceImpl implements IPasswordService {
         }
 
     }
+
+    @Override
+    public String generateLink(SendLinkOnMailTo sendLinkOnMailTo) {
+
+
+        String token = RandomString.make(30);
+        ResetToken resetToken = resetTokenRepository.findByUserName(sendLinkOnMailTo.getEmail());
+
+        if (resetToken != null) {
+            resetToken.setToken(token);
+        } else {
+            resetToken = new ResetToken(token, sendLinkOnMailTo.getEmail());
+        }
+        resetTokenRepository.save(resetToken);
+
+        String resetPasswordLink = resetPasswordUrl + "/" + token;
+
+        return resetPasswordLink;
+    }
+
 }
 

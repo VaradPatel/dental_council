@@ -20,10 +20,12 @@ import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.utility.RandomString;
 import org.apache.commons.codec.language.Metaphone;
 import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -166,6 +168,19 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Autowired
     private IQualificationDetailRepository iQualificationDetailRepository;
 
+    @Autowired
+    INotificationService notificationService;
+
+    @Autowired
+    private ResetTokenRepository resetTokenRepository;
+
+    @Value("${council.email-verify.url}")
+    private String emailVerifyUrl;
+
+    @Autowired
+    private IUserDaoService userDaoService;
+
+
     /**
      * This method fetches the SMC registration details for a given request.
      *
@@ -220,7 +235,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         superSpeciality.setName(speciality.getName());
         superSpeciality.setHpProfileId(hpProfileId);
     }
-
     @Override
     public HpProfilePersonalResponseTO addOrUpdateHpPersonalDetail(BigInteger hpProfileId,
                                                                    HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException {
@@ -574,7 +588,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException, InvalidRequestException {
 
         String transactionId = request.getTransactionId();
-        if (request.getEmail() != null || request.getMobileNumber() != null) {
+        if (request.getMobileNumber() != null) {
             if (transactionId == null) {
                 throw new InvalidRequestException(MISSING_TRANSACTION_ID_ERROR);
             } else {
@@ -583,11 +597,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                             HttpStatus.UNAUTHORIZED.toString());
                 }
             }
-        }
-
-        if (request.getEmail() != null) {
-            iHpProfileRepository.updateHpProfileEmail(hpProfileId, request.getEmail());
-            iAddressRepository.updateAddressEmail(hpProfileId, request.getEmail(), AddressType.COMMUNICATION.getId());
         }
 
         if (request.getMobileNumber() != null) {
@@ -606,10 +615,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         BigInteger masterHpProfileId = iHpProfileRepository.findMasterHpProfileByHpProfileId(hpProfileId);
         if (masterHpProfileId != null) {
-            if (request.getEmail() != null) {
-                iHpProfileMasterRepository.updateMasterHpProfileEmail(masterHpProfileId, request.getEmail());
-                iAddressMasterRepository.updateMasterAddressEmail(masterHpProfileId, request.getEmail(), AddressType.COMMUNICATION.getId());
-            }
             if (request.getMobileNumber() != null) {// update mobile_number hp_profile_master by hp_profile_master.id
                 iHpProfileMasterRepository.updateMasterHpProfileMobile(masterHpProfileId, request.getMobileNumber());
             }
@@ -622,6 +627,62 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
             }
         }
+    }
+
+    /**
+     * Creates new unique token for reset password transaction
+     *
+     * @param verifyEmailLinkTo email/mobile to send link
+     * @return ResponseMessageTo with message
+     */
+    @Override
+    public ResponseMessageTo getEmailVerificationLink(BigInteger hpProfileId, VerifyEmailLinkTo verifyEmailLinkTo) {
+        try {
+
+            HpProfile hpProfile = iHpProfileRepository.findHpProfileById(hpProfileId);
+
+            if (!userDaoService.existsByEmail(verifyEmailLinkTo.getEmail())) {
+
+                if (hpProfile != null) {
+
+                    hpProfile.setEmailId(verifyEmailLinkTo.getEmail());
+                    User user = userDaoService.findById(hpProfile.getUser().getId());
+                    user.setEmail(verifyEmailLinkTo.getEmail());
+                    user.setEmailVerified(false);
+                    userDaoService.save(user);
+                    iHpProfileRepository.save(hpProfile);
+                    return notificationService.sendNotificationForEmailVerificationLink(verifyEmailLinkTo.getEmail(), generateLink(new SendLinkOnMailTo(verifyEmailLinkTo.getEmail())));
+
+                } else {
+                    return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
+                }
+            }
+            else {
+                return new ResponseMessageTo(EMAIL_ALREADY_EXISTS);
+            }
+
+        } catch (Exception e) {
+            return new ResponseMessageTo(e.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    public String generateLink(SendLinkOnMailTo sendLinkOnMailTo) {
+
+
+        String token = RandomString.make(30);
+        ResetToken resetToken = resetTokenRepository.findByUserName(sendLinkOnMailTo.getEmail());
+
+        if (resetToken != null) {
+            resetToken.setToken(token);
+        } else {
+            resetToken = new ResetToken(token, sendLinkOnMailTo.getEmail());
+        }
+        resetTokenRepository.save(resetToken);
+
+        String resetPasswordLink = emailVerifyUrl + "/" + token;
+
+        return resetPasswordLink;
     }
 
     /**

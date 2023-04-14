@@ -19,4 +19,6 @@ public interface INotificationService {
     ResponseMessageTo sendNotificationForAccountCreation(String username,String mobile);
     ResponseMessageTo sendNotificationForNMRCreation(String username,String mobile, String email);
 
+    ResponseMessageTo sendNotificationForEmailVerificationLink(String email,String link);
+
 }
