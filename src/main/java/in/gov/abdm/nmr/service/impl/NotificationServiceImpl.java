@@ -223,7 +223,7 @@ public class NotificationServiceImpl implements INotificationService {
         String message = new TemplatedStringBuilder(template.getMessage())
                 .replace(NMRConstants.TEMPLATE_VAR1, link)
                 .finish();
-        return sendNotification(NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.VERIFY_EMAIL_SUBJECT, message, null, email);
+        return sendNotification(NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.VERIFY_EMAIL_SUBJECT, message, null, email,NMRConstants.EMAIL_VERIFICATION_TEMPLATE);
 
     }
 
