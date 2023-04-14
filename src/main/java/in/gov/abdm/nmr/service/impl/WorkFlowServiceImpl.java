@@ -112,6 +112,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
         HpProfile hpProfile = iHpProfileRepository.findById(requestTO.getHpProfileId()).orElse(new HpProfile());
         INextGroup iNextGroup = null;
+        Dashboard dashboard=null;
         if (workFlow == null) {
             log.debug("Proceeding to create a new Workflow entry since there are no existing entries with the given request_id");
             if (Group.HEALTH_PROFESSIONAL.getId().equals(requestTO.getActorId())) {
@@ -135,7 +136,9 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             workFlow = buildNewWorkFlow(requestTO, iNextGroup, hpProfile, user);
             iWorkFlowRepository.save(workFlow);
             log.debug("Work Flow Creation Successful");
+            dashboard =new Dashboard();
         } else {
+            dashboard = iDashboardRepository.findByRequestId(workFlow.getRequestId());
             log.debug("Proceeding to update the existing Workflow entry since there is an existing entry with the given request_id");
             if (!workFlow.getApplicationType().getId().equals(requestTO.getApplicationTypeId()) || workFlow.getCurrentGroup() == null || !workFlow.getCurrentGroup().getId().equals(requestTO.getActorId())) {
                 log.debug("Invalid Request since either the given application type matches the fetched application type from the workflow or current group fetched from the workflow is null or current group id fetched from the workflow matches the given actor id");
@@ -194,34 +197,36 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
             }
         }
-        
-        // Insert in dashboard
-        Dashboard dashboard = new Dashboard();
+        updateDashboardDetail(requestTO, workFlow, iNextGroup, dashboard);
+        // notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + verifier, workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+    }
+
+    private void updateDashboardDetail(WorkFlowRequestTO requestTO, WorkFlow workFlow, INextGroup iNextGroup, Dashboard dashboard) {
         dashboard.setApplicationTypeId(requestTO.getApplicationTypeId());
         dashboard.setRequestId(requestTO.getRequestId());
         dashboard.setHpProfileId(requestTO.getHpProfileId());
         dashboard.setWorkFlowStatusId(workFlow.getWorkFlowStatus().getId());
-        setDashboardStatus(workFlow.getAction().getId(), workFlow.getCurrentGroup().getId(), dashboard );
+        setDashboardStatus(requestTO.getActionId(), requestTO.getActorId(), dashboard);
         if(!isLastStepOfWorkFlow(iNextGroup)){
-            setDashboardStatus(HpProfileStatus.PENDING.getId(), iNextGroup.getAssignTo(), dashboard );
+            setDashboardStatus(HpProfileStatus.PENDING.getId(), iNextGroup.getAssignTo(), dashboard);
         }
         dashboard.setCreatedAt(Timestamp.from(Instant.now()));
         dashboard.setUpdatedAt(Timestamp.from(Instant.now()));
-        iDashboardRepository.save(dashboard);
-        notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + verifier, workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+        Dashboard save = iDashboardRepository.save(dashboard);
+        System.out.println(save.getId());
     }
 
     private static void setDashboardStatus(BigInteger actionPerformedId, BigInteger userGroup, Dashboard dashboard) {
-        if (userGroup.equals(2)) {
+        if (userGroup.equals(Group.SMC.getId())) {
             dashboard.setSmcStatus(actionPerformedId);
         }
-        if (userGroup.equals(3)) {
+        if (userGroup.equals(Group.NMC.getId())) {
             dashboard.setNmcStatus(actionPerformedId);
         }
-        if (userGroup.equals(4)) {
+        if (userGroup.equals(Group.COLLEGE.getId())) {
             dashboard.setCollegeStatus(actionPerformedId);
         }
-        if (userGroup.equals(7)) {
+        if (userGroup.equals(Group.NBE.getId())) {
             dashboard.setNbeStatus(actionPerformedId);
         }
     }
