@@ -172,11 +172,11 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         sb.append(FETCH_CARD_DETAILS_QUERY);
 
         if (Objects.nonNull(dashboardRequestParamsTO.getCollegeId()) && !dashboardRequestParamsTO.getCollegeId().isEmpty()) {
-            sb.append("INNER JOIN main.qualification_details as qd on qd.hp_profile_id = rd.hp_profile_id AND qd.request_id = calculate.request_id ");
+            sb.append("INNER JOIN main.qualification_details as qd on qd.hp_profile_id = rd.hp_profile_id AND qd.request_id = d.request_id ");
         }
 
         if (Objects.nonNull(groupId) && groupId.equals(Group.NBE.getId())) {
-            sb.append("INNER JOIN main.foreign_qualification_details as fqd on fqd.hp_profile_id = rd.hp_profile_id AND fqd.request_id = calculate.request_id ");
+            sb.append("INNER JOIN main.foreign_qualification_details as fqd on fqd.hp_profile_id = rd.hp_profile_id AND fqd.request_id = d.request_id ");
         }
 
         sb.append(" WHERE d.hp_profile_id IS NOT NULL AND d.application_type_id IN ( ").append(dashboardRequestParamsTO.getApplicationTypeId()).append( " ) ");
