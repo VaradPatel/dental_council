@@ -17,8 +17,8 @@ import in.gov.abdm.nmr.mapper.IStatusWiseCountMapper;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.ICollegeProfileDaoService;
 import in.gov.abdm.nmr.service.IFetchCountOnCardService;
-import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -510,30 +510,30 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
             BigInteger smcProfileId = iSmcProfileRepository.getSmcIdByUserId(loggedInUser.getId()).get(0);
             List<IStatusCount> statusCounts = iFetchCountOnCardRepository.fetchCountForSmc(smcProfileId);
             log.debug("Fetched statusCounts detail successfully for SMC : {}", loggedInUser.getUserName());
-            final List<StatusWiseCountTO> hpRegistration = getDefault();
+            final List<StatusWiseCountTO> hpRegistration = getDefaultCards(TOTAL_HP_REGISTRATION_REQUESTS);
             responseTO.setHpRegistrationRequest(FetchCountOnCardInnerResponseTO.builder()
-                    .applicationTypeIds(applicationIds.get("hp_registration_request").toString()).build());
+                    .applicationTypeIds(StringUtils.join(applicationIds.get("hp_registration_request"), ",")).build());
             responseTO.getHpRegistrationRequest().setStatusWiseCount(getCardResponse(
                     hpRegistration, totalCount, statusCounts, hpProfileStatuses, "hp_registration_request",
                     TOTAL_HP_REGISTRATION_REQUESTS));
 
-            final List<StatusWiseCountTO> hpModification = getDefault();
+            final List<StatusWiseCountTO> hpModification = getDefaultCards(TOTAL_HP_MODIFICATION_REQUESTS);
             responseTO.setHpModificationRequest(FetchCountOnCardInnerResponseTO.builder()
-                    .applicationTypeIds(applicationIds.get("hp_modification_request").toString()).build());
+                    .applicationTypeIds(StringUtils.join(applicationIds.get("hp_modification_request"), ",")).build());
             responseTO.getHpModificationRequest().setStatusWiseCount(getCardResponse(
                     hpModification, totalCount, statusCounts, hpProfileStatuses, "hp_modification_request",
                     TOTAL_HP_MODIFICATION_REQUESTS));
 
-            final List<StatusWiseCountTO> temporarySuspension = getDefault();
+            final List<StatusWiseCountTO> temporarySuspension = getDefaultCards(TOTAL_TEMPORARY_SUSPENSION_REQUESTS);
             responseTO.setTemporarySuspensionRequest(FetchCountOnCardInnerResponseTO.builder()
-                    .applicationTypeIds(applicationIds.get("temporary_suspension_request").toString()).build());
+                    .applicationTypeIds(StringUtils.join(applicationIds.get("temporary_suspension_request"), ",")).build());
             responseTO.getTemporarySuspensionRequest().setStatusWiseCount(getCardResponse(
                     temporarySuspension, totalCount, statusCounts, hpProfileStatuses, "temporary_suspension_request",
                     TOTAL_TEMPORARY_SUSPENSION_REQUESTS));
 
-            final List<StatusWiseCountTO> permanentSuspension = getDefault();
+            final List<StatusWiseCountTO> permanentSuspension = getDefaultCards(TOTAL_PERMANENT_SUSPENSION_REQUESTS);
             responseTO.setPermanentSuspensionRequest(FetchCountOnCardInnerResponseTO.builder()
-                    .applicationTypeIds(applicationIds.get("permanent_suspension_request").toString()).build());
+                    .applicationTypeIds(StringUtils.join(applicationIds.get("permanent_suspension_request"), ",")).build());
             responseTO.getPermanentSuspensionRequest().setStatusWiseCount(getCardResponse(
                     permanentSuspension, totalCount, statusCounts, hpProfileStatuses, "permanent_suspension_request",
                     TOTAL_PERMANENT_SUSPENSION_REQUESTS));
@@ -544,28 +544,28 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
             BigInteger collegeId = iCollegeProfileDaoService.findByUserId(loggedInUser.getId()).getCollege().getId();
             List<IStatusCount> statusCounts = iFetchCountOnCardRepository.fetchCountForCollege(collegeId);
             log.debug("Fetched statusCounts detail successfully for college : {}", loggedInUser.getUserName());
-            final List<StatusWiseCountTO> hpRegistration = getDefault();
+            final List<StatusWiseCountTO> hpRegistration = getDefaultCards(TOTAL_HP_REGISTRATION_REQUESTS);
             responseTO.setHpRegistrationRequest(FetchCountOnCardInnerResponseTO.builder()
                     .applicationTypeIds(applicationIds.get("hp_registration_request").toString()).build());
             responseTO.getHpRegistrationRequest().setStatusWiseCount(getCardResponse(
                     hpRegistration, totalCount, statusCounts, hpProfileStatuses, "hp_registration_request",
                     TOTAL_HP_REGISTRATION_REQUESTS));
 
-            final List<StatusWiseCountTO> hpModification = getDefault();
+            final List<StatusWiseCountTO> hpModification = getDefaultCards(TOTAL_HP_MODIFICATION_REQUESTS);
             responseTO.setHpModificationRequest(FetchCountOnCardInnerResponseTO.builder()
                     .applicationTypeIds(applicationIds.get("hp_modification_request").toString()).build());
             responseTO.getHpModificationRequest().setStatusWiseCount(getCardResponse(
                     hpModification, totalCount, statusCounts, hpProfileStatuses, "hp_modification_request",
                     TOTAL_HP_MODIFICATION_REQUESTS));
 
-            final List<StatusWiseCountTO> temporarySuspension = getDefault();
+            final List<StatusWiseCountTO> temporarySuspension = getDefaultCards(TOTAL_TEMPORARY_SUSPENSION_REQUESTS);
             responseTO.setTemporarySuspensionRequest(FetchCountOnCardInnerResponseTO.builder()
                     .applicationTypeIds(applicationIds.get("temporary_suspension_request").toString()).build());
             responseTO.getTemporarySuspensionRequest().setStatusWiseCount(getCardResponse(
                     temporarySuspension, totalCount, statusCounts, hpProfileStatuses, "temporary_suspension_request",
                     TOTAL_TEMPORARY_SUSPENSION_REQUESTS));
 
-            final List<StatusWiseCountTO> permanentSuspension = getDefault();
+            final List<StatusWiseCountTO> permanentSuspension = getDefaultCards(TOTAL_PERMANENT_SUSPENSION_REQUESTS);
             responseTO.setPermanentSuspensionRequest(FetchCountOnCardInnerResponseTO.builder()
                     .applicationTypeIds(applicationIds.get("permanent_suspension_request").toString()).build());
             responseTO.getPermanentSuspensionRequest().setStatusWiseCount(getCardResponse(
@@ -576,28 +576,28 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
         if (Group.NMC.getDescription().equals(groupName)) {
             List<IStatusCount> statusCounts = iFetchCountOnCardRepository.fetchCountForNmc();
             log.debug("Fetched statusCounts detail successfully for NMC : {}", loggedInUser.getUserName());
-            final List<StatusWiseCountTO> hpRegistration = getDefault();
+            final List<StatusWiseCountTO> hpRegistration = getDefaultCards(TOTAL_HP_REGISTRATION_REQUESTS);
             responseTO.setHpRegistrationRequest(FetchCountOnCardInnerResponseTO.builder()
                     .applicationTypeIds(applicationIds.get("hp_registration_request").toString()).build());
             responseTO.getHpRegistrationRequest().setStatusWiseCount(getCardResponse(
                     hpRegistration, totalCount, statusCounts, hpProfileStatuses, "hp_registration_request",
                     TOTAL_HP_REGISTRATION_REQUESTS));
 
-            final List<StatusWiseCountTO> hpModification = getDefault();
+            final List<StatusWiseCountTO> hpModification = getDefaultCards(TOTAL_HP_MODIFICATION_REQUESTS);
             responseTO.setHpModificationRequest(FetchCountOnCardInnerResponseTO.builder()
                     .applicationTypeIds(applicationIds.get("hp_modification_request").toString()).build());
             responseTO.getHpModificationRequest().setStatusWiseCount(getCardResponse(
                     hpModification, totalCount, statusCounts, hpProfileStatuses, "hp_modification_request",
                     TOTAL_HP_MODIFICATION_REQUESTS));
 
-            final List<StatusWiseCountTO> temporarySuspension = getDefault();
+            final List<StatusWiseCountTO> temporarySuspension = getDefaultCards(TOTAL_TEMPORARY_SUSPENSION_REQUESTS);
             responseTO.setTemporarySuspensionRequest(FetchCountOnCardInnerResponseTO.builder()
                     .applicationTypeIds(applicationIds.get("temporary_suspension_request").toString()).build());
             responseTO.getTemporarySuspensionRequest().setStatusWiseCount(getCardResponse(
                     temporarySuspension, totalCount, statusCounts, hpProfileStatuses, "temporary_suspension_request",
                     TOTAL_TEMPORARY_SUSPENSION_REQUESTS));
 
-            final List<StatusWiseCountTO> permanentSuspension = getDefault();
+            final List<StatusWiseCountTO> permanentSuspension = getDefaultCards(TOTAL_PERMANENT_SUSPENSION_REQUESTS);
             responseTO.setPermanentSuspensionRequest(FetchCountOnCardInnerResponseTO.builder()
                     .applicationTypeIds(applicationIds.get("permanent_suspension_request").toString()).build());
             responseTO.getPermanentSuspensionRequest().setStatusWiseCount(getCardResponse(
@@ -609,28 +609,28 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
             log.info("Processing Cards service for NBE: {} ", loggedInUser.getUserName());
             List<IStatusCount> statusCounts = iFetchCountOnCardRepository.fetchCountForNbe();
             log.debug("Fetched statusCounts detail successfully for NBE : {}", loggedInUser.getUserName());
-            final List<StatusWiseCountTO> hpRegistration = getDefault();
+            final List<StatusWiseCountTO> hpRegistration = getDefaultCards(TOTAL_HP_REGISTRATION_REQUESTS);
             responseTO.setHpRegistrationRequest(FetchCountOnCardInnerResponseTO.builder()
                     .applicationTypeIds(applicationIds.get("hp_registration_request").toString()).build());
             responseTO.getHpRegistrationRequest().setStatusWiseCount(getCardResponse(
                     hpRegistration, totalCount, statusCounts, hpProfileStatuses, "hp_registration_request",
                     TOTAL_HP_REGISTRATION_REQUESTS));
 
-            final List<StatusWiseCountTO> hpModification = getDefault();
+            final List<StatusWiseCountTO> hpModification = getDefaultCards(TOTAL_HP_MODIFICATION_REQUESTS);
             responseTO.setHpModificationRequest(FetchCountOnCardInnerResponseTO.builder()
                     .applicationTypeIds(applicationIds.get("hp_modification_request").toString()).build());
             responseTO.getHpModificationRequest().setStatusWiseCount(getCardResponse(
                     hpModification, totalCount, statusCounts, hpProfileStatuses, "hp_modification_request",
                     TOTAL_HP_MODIFICATION_REQUESTS));
 
-            final List<StatusWiseCountTO> temporarySuspension = getDefault();
+            final List<StatusWiseCountTO> temporarySuspension = getDefaultCards(TOTAL_TEMPORARY_SUSPENSION_REQUESTS);
             responseTO.setTemporarySuspensionRequest(FetchCountOnCardInnerResponseTO.builder()
                     .applicationTypeIds(applicationIds.get("temporary_suspension_request").toString()).build());
             responseTO.getTemporarySuspensionRequest().setStatusWiseCount(getCardResponse(
                     temporarySuspension, totalCount, statusCounts, hpProfileStatuses, "temporary_suspension_request",
                     TOTAL_TEMPORARY_SUSPENSION_REQUESTS));
 
-            final List<StatusWiseCountTO> permanentSuspension = getDefault();
+            final List<StatusWiseCountTO> permanentSuspension = getDefaultCards(TOTAL_PERMANENT_SUSPENSION_REQUESTS);
             responseTO.setPermanentSuspensionRequest(FetchCountOnCardInnerResponseTO.builder()
                     .applicationTypeIds(applicationIds.get("permanent_suspension_request").toString()).build());
             responseTO.getPermanentSuspensionRequest().setStatusWiseCount(getCardResponse(
@@ -647,7 +647,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
             for (IStatusCount sc : statusCounts) {
                 if (status.equals(sc.getProfileStatus()) && sc.getApplicationTypeId() != null && applicationIds.get(applicationType).contains(sc.getApplicationTypeId())) {
                     Optional<StatusWiseCountTO> first = statusWiseCountResponseTos.stream()
-                            .filter(r -> r.getId().equals(sc.getProfileStatus())).findFirst();
+                            .filter(r -> r.getId() != null && r.getId().equals(sc.getProfileStatus())).findFirst();
                     if (first.isPresent()) {
                         first.get().setCount(first.get().getCount().add(sc.getCount()));
                         totalCount = totalCount.add(sc.getCount());
@@ -656,8 +656,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
                 }
             }
         }
-        StatusWiseCountTO count = new StatusWiseCountTO(totalKey, totalCount, BigInteger.ZERO);
-        statusWiseCountResponseTos.add(count);
+        statusWiseCountResponseTos.get(0).setCount(totalCount);
         return statusWiseCountResponseTos;
     }
 
@@ -767,8 +766,9 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
         }).collect(Collectors.toList());
     }
 
-    public List<StatusWiseCountTO> getDefault() {
+    public List<StatusWiseCountTO> getDefaultCards(String totalCardLabel) {
         List<StatusWiseCountTO> response = new ArrayList<>();
+        response.add(StatusWiseCountTO.builder().name(totalCardLabel).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(Action.SUBMIT.getId()).name(WorkflowStatus.PENDING.getDescription()).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(Action.APPROVED.getId()).name(WorkflowStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(Action.QUERY_RAISE.getId()).name(WorkflowStatus.QUERY_RAISED.getDescription()).count(BigInteger.ZERO).build());
