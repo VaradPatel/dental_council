@@ -207,8 +207,9 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         dashboard.setHpProfileId(requestTO.getHpProfileId());
         dashboard.setWorkFlowStatusId(workFlow.getWorkFlowStatus().getId());
         setDashboardStatus(requestTO.getActionId(), requestTO.getActorId(), dashboard);
-        if(!isLastStepOfWorkFlow(iNextGroup)){
-            setDashboardStatus(HpProfileStatus.PENDING.getId(), iNextGroup.getAssignTo(), dashboard);
+        if(!isLastStepOfWorkFlow(iNextGroup)) {
+            //submit is equivalent to pending status.
+            setDashboardStatus(Action.SUBMIT.getId(), iNextGroup.getAssignTo(), dashboard);
         }
         dashboard.setCreatedAt(Timestamp.from(Instant.now()));
         dashboard.setUpdatedAt(Timestamp.from(Instant.now()));

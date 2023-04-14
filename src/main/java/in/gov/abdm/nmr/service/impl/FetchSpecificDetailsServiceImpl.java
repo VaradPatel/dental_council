@@ -7,6 +7,7 @@ import in.gov.abdm.nmr.dto.FetchSpecificDetailsResponseTO;
 import in.gov.abdm.nmr.entity.CollegeProfile;
 import in.gov.abdm.nmr.entity.SMCProfile;
 import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
@@ -19,6 +20,7 @@ import in.gov.abdm.nmr.repository.ISmcProfileRepository;
 import in.gov.abdm.nmr.service.ICollegeProfileDaoService;
 import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
 import in.gov.abdm.nmr.service.IUserDaoService;
+import in.gov.abdm.nmr.util.NMRConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -163,23 +165,23 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         if (TEMPORARY_AND_PERMANENT_SUSPENSION_APPLICATION_TYPE_ID.equals(applicationTypeId)) {
             if (CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setApplicationTypeId(TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID);
-                dashboardRequestParamsTO.setUserGroupStatus(PENDING);
+                dashboardRequestParamsTO.setUserGroupStatus(Action.SUBMIT.getId().toString());
             } else if (CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setApplicationTypeId(TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID);
-                dashboardRequestParamsTO.setUserGroupStatus(APPROVED);
+                dashboardRequestParamsTO.setUserGroupStatus(Action.APPROVED.getId().toString());
             } else if (CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setApplicationTypeId(PERMANENT_SUSPENSION_APPLICATION_TYPE_ID);
-                dashboardRequestParamsTO.setUserGroupStatus(PENDING);
+                dashboardRequestParamsTO.setUserGroupStatus(Action.SUBMIT.getId().toString());
             } else if (CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setApplicationTypeId(PERMANENT_SUSPENSION_APPLICATION_TYPE_ID);
-                dashboardRequestParamsTO.setUserGroupStatus(APPROVED);
+                dashboardRequestParamsTO.setUserGroupStatus(Action.APPROVED.getId().toString());
             } else if (TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setUserGroupStatus(TOTAL);
                 dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
             }
         } else {
             dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
-            dashboardRequestParamsTO.setUserGroupStatus(userGroupStatus);
+            dashboardRequestParamsTO.setUserGroupStatus(!userGroupStatus.equalsIgnoreCase(TOTAL)?Action.getAction(userGroupStatus).getId().toString():TOTAL);
         }
     }
 

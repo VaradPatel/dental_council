@@ -3,7 +3,9 @@ package in.gov.abdm.nmr.repository.impl;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestParamsTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationTo;
+import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
+import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -55,7 +57,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         StringBuilder sb = new StringBuilder();
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId()) && !healthProfessionalApplicationRequestParamsTo.getApplicationTypeId().isEmpty()) {
-            sb.append("AND calculate.application_type_id IN (").append(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId()).append(") ");
+            sb.append("AND d.application_type_id IN (").append(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId()).append(") ");
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getRegistrationNumber()) && !healthProfessionalApplicationRequestParamsTo.getRegistrationNumber().isEmpty()) {
@@ -225,12 +227,12 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         List<Object[]> results = query.getResultList();
         results.forEach(result -> {
             HealthProfessionalApplicationTo healthProfessionalApplicationTo = new HealthProfessionalApplicationTo();
-            healthProfessionalApplicationTo.setDoctorStatus(result[0] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[0]).getDescription() : "0");
-            healthProfessionalApplicationTo.setSmcStatus(result[1] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[1]).getDescription() : "0");
+            healthProfessionalApplicationTo.setDoctorStatus(result[0] != null ? WorkflowStatus.getWorkflowStatus((BigInteger) result[0]).getDescription() : "");
+            healthProfessionalApplicationTo.setSmcStatus(result[1] != null ? Action.getAction((BigInteger) result[1]).getStatus() : "");
             //healthProfessionalApplicationTo.setCollegeDeanStatus(result[2] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[2]).getDescription() : "0");
             //healthProfessionalApplicationTo.setCollegeRegistrarStatus(result[3] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[3]).getDescription() : "0");
-            healthProfessionalApplicationTo.setNmcStatus(result[2] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[2]).getDescription() : "0");
-            healthProfessionalApplicationTo.setNbeStatus(result[3] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[3]).getDescription() : "0");
+            healthProfessionalApplicationTo.setNmcStatus(result[2] != null ? Action.getAction((BigInteger) result[2]).getStatus() : "");
+            healthProfessionalApplicationTo.setNbeStatus(result[3] != null ? Action.getAction((BigInteger) result[3]).getStatus() : "");
             healthProfessionalApplicationTo.setHpProfileId((BigInteger) result[4]);
             String requestId = (String) result[5];
             Query queryDate = entityManager.createNativeQuery(UPDATED_DATES.apply(requestId));
@@ -264,20 +266,6 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             });
             healthProfessionalApplicationTo.setRequestId((String) result[5]);
             healthProfessionalApplicationTo.setRegistrationNo((String) result[6]);
-//            healthProfessionalApplicationTo.setCreatedAt((String) result[9]);
-            healthProfessionalApplicationTo.setCouncilName((String) result[10]);
-            healthProfessionalApplicationTo.setApplicantFullName((String) result[11]);
-            healthProfessionalApplicationTo.setApplicationTypeId((BigInteger) result[12]);
-            healthProfessionalApplicationTo.setApplicationTypeName((String) result[13]);
-            healthProfessionalApplicationTo.setPendency((int) Math.floor((Double) result[14]));
-            healthProfessionalApplicationTo.setWorkFlowStatusId((BigInteger) result[15]);
-            healthProfessionalApplicationTo.setGender((String) result[16]);
-            healthProfessionalApplicationTo.setEmailId((String) result[17]);
-            healthProfessionalApplicationTo.setMobileNumber((String) result[18]);
-            healthProfessionalApplicationTo.setNmrId((String)result[19]);
-            healthProfessionalApplicationTo.setYearOfRegistration(((Timestamp) result[20]).toString());
-            healthProfessionalApplicationTo.setCollegeStatus((String) result[21]);
-            healthProfessionalApplicationResponseTo.setTotalNoOfRecords((BigInteger) result[22]);
             healthProfessionalApplicationTo.setCouncilName((String) result[8]);
             healthProfessionalApplicationTo.setApplicantFullName((String) result[9]);
             healthProfessionalApplicationTo.setApplicationTypeId((BigInteger) result[10]);
@@ -288,8 +276,21 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setEmailId((String) result[15]);
             healthProfessionalApplicationTo.setMobileNumber((String) result[16]);
             healthProfessionalApplicationTo.setNmrId((String)result[17]);
-            healthProfessionalApplicationTo.setYearOfRegistration(((Date) result[18]).toString());
-            healthProfessionalApplicationTo.setCollegeStatus(result[19] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[19]).getDescription() : "");
+            healthProfessionalApplicationTo.setYearOfRegistration(((Timestamp) result[18]).toString());
+            healthProfessionalApplicationTo.setCollegeStatus(Action.getAction((BigInteger) result[19]).getStatus());
+            healthProfessionalApplicationResponseTo.setTotalNoOfRecords((BigInteger) result[20]);
+            healthProfessionalApplicationTo.setCouncilName((String) result[8]);
+            healthProfessionalApplicationTo.setApplicantFullName((String) result[9]);
+            healthProfessionalApplicationTo.setApplicationTypeId((BigInteger) result[10]);
+            healthProfessionalApplicationTo.setApplicationTypeName((String) result[11]);
+            healthProfessionalApplicationTo.setPendency((int) Math.floor((Double) result[12]));
+            healthProfessionalApplicationTo.setWorkFlowStatusId((BigInteger) result[13]);
+            healthProfessionalApplicationTo.setGender((String) result[14]);
+            healthProfessionalApplicationTo.setEmailId((String) result[15]);
+            healthProfessionalApplicationTo.setMobileNumber((String) result[16]);
+            healthProfessionalApplicationTo.setNmrId((String)result[17]);
+            healthProfessionalApplicationTo.setYearOfRegistration(((Timestamp) result[18]).toString());
+            healthProfessionalApplicationTo.setCollegeStatus(result[19] != null ? Action.getAction((BigInteger) result[19]).getStatus() : "");
             healthProfessionalApplicationResponseTo.setTotalNoOfRecords((BigInteger) result[20]);
 
             healthProfessionalApplicationToList.add(healthProfessionalApplicationTo);

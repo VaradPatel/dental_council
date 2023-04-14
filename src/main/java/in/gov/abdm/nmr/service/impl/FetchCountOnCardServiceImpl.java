@@ -3,10 +3,7 @@ package in.gov.abdm.nmr.service.impl;
 import in.gov.abdm.nmr.dto.FetchCountOnCardInnerResponseTO;
 import in.gov.abdm.nmr.dto.FetchCountOnCardResponseTO;
 import in.gov.abdm.nmr.dto.StatusWiseCountTO;
-import in.gov.abdm.nmr.enums.ApplicationType;
-import in.gov.abdm.nmr.enums.Group;
-import in.gov.abdm.nmr.enums.HpProfileStatus;
-import in.gov.abdm.nmr.enums.WorkflowStatus;
+import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.mapper.IStatusCount;
 import in.gov.abdm.nmr.entity.User;
@@ -766,12 +763,12 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
 
     public List<StatusWiseCountTO> getDefault() {
         List<StatusWiseCountTO> response = new ArrayList<>();
-        response.add(StatusWiseCountTO.builder().id(WorkflowStatus.PENDING.getId()).name(WorkflowStatus.PENDING.getDescription()).count(BigInteger.ZERO).build());
-        response.add(StatusWiseCountTO.builder().id(WorkflowStatus.APPROVED.getId()).name(WorkflowStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build());
-        response.add(StatusWiseCountTO.builder().id(WorkflowStatus.QUERY_RAISED.getId()).name(WorkflowStatus.QUERY_RAISED.getDescription()).count(BigInteger.ZERO).build());
-        response.add(StatusWiseCountTO.builder().id(WorkflowStatus.REJECTED.getId()).name(WorkflowStatus.REJECTED.getDescription()).count(BigInteger.ZERO).build());
-        response.add(StatusWiseCountTO.builder().id(WorkflowStatus.SUSPENDED.getId()).name(WorkflowStatus.SUSPENDED.getDescription()).count(BigInteger.ZERO).build());
-        response.add(StatusWiseCountTO.builder().id(WorkflowStatus.BLACKLISTED.getId()).name(WorkflowStatus.BLACKLISTED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(Action.SUBMIT.getId()).name(WorkflowStatus.PENDING.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(Action.APPROVED.getId()).name(WorkflowStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(Action.QUERY_RAISE.getId()).name(WorkflowStatus.QUERY_RAISED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(Action.REJECT.getId()).name(WorkflowStatus.REJECTED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(Action.PERMANENT_SUSPEND.getId()).name(WorkflowStatus.SUSPENDED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(Action.TEMPORARY_SUSPEND.getId()).name(WorkflowStatus.BLACKLISTED.getDescription()).count(BigInteger.ZERO).build());
         return response;
     }
 }
