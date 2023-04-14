@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +27,9 @@ public class StatusWiseCountTO {
      * Count of applications according to their status at that point in time
      */
     private BigInteger count;
+
+    @JsonIgnore
+    private BigInteger id;
 
 
 }

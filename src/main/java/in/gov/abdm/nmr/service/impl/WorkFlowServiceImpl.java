@@ -5,6 +5,7 @@ import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.*;
+import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.INextGroup;
 import in.gov.abdm.nmr.repository.*;
@@ -22,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 
 import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
@@ -81,6 +84,9 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     @Autowired
     private IUserDaoService userDetailService;
 
+    @Autowired
+    IDashboardRepository iDashboardRepository;
+
     private static final List APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES = List.of(WorkflowStatus.APPROVED.getId(), WorkflowStatus.BLACKLISTED.getId(), WorkflowStatus.SUSPENDED.getId());
 
     @Override
@@ -106,6 +112,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
         HpProfile hpProfile = iHpProfileRepository.findById(requestTO.getHpProfileId()).orElse(new HpProfile());
         INextGroup iNextGroup = null;
+        Dashboard dashboard=null;
         if (workFlow == null) {
             log.debug("Proceeding to create a new Workflow entry since there are no existing entries with the given request_id");
             if (Group.HEALTH_PROFESSIONAL.getId().equals(requestTO.getActorId())) {
@@ -129,7 +136,9 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             workFlow = buildNewWorkFlow(requestTO, iNextGroup, hpProfile, user);
             iWorkFlowRepository.save(workFlow);
             log.debug("Work Flow Creation Successful");
+            dashboard =new Dashboard();
         } else {
+            dashboard = iDashboardRepository.findByRequestId(workFlow.getRequestId());
             log.debug("Proceeding to update the existing Workflow entry since there is an existing entry with the given request_id");
             if (!workFlow.getApplicationType().getId().equals(requestTO.getApplicationTypeId()) || workFlow.getCurrentGroup() == null || !workFlow.getCurrentGroup().getId().equals(requestTO.getActorId())) {
                 log.debug("Invalid Request since either the given application type matches the fetched application type from the workflow or current group fetched from the workflow is null or current group id fetched from the workflow matches the given actor id");
@@ -188,7 +197,39 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
             }
         }
-        notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + verifier, workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+        updateDashboardDetail(requestTO, workFlow, iNextGroup, dashboard);
+        // notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + verifier, workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+    }
+
+    private void updateDashboardDetail(WorkFlowRequestTO requestTO, WorkFlow workFlow, INextGroup iNextGroup, Dashboard dashboard) {
+        dashboard.setApplicationTypeId(requestTO.getApplicationTypeId());
+        dashboard.setRequestId(requestTO.getRequestId());
+        dashboard.setHpProfileId(requestTO.getHpProfileId());
+        dashboard.setWorkFlowStatusId(workFlow.getWorkFlowStatus().getId());
+        setDashboardStatus(requestTO.getActionId(), requestTO.getActorId(), dashboard);
+        if(!isLastStepOfWorkFlow(iNextGroup)) {
+            //submit is equivalent to pending status.
+            setDashboardStatus(Action.SUBMIT.getId(), iNextGroup.getAssignTo(), dashboard);
+        }
+        dashboard.setCreatedAt(Timestamp.from(Instant.now()));
+        dashboard.setUpdatedAt(Timestamp.from(Instant.now()));
+        Dashboard save = iDashboardRepository.save(dashboard);
+        System.out.println(save.getId());
+    }
+
+    private static void setDashboardStatus(BigInteger actionPerformedId, BigInteger userGroup, Dashboard dashboard) {
+        if (userGroup.equals(Group.SMC.getId())) {
+            dashboard.setSmcStatus(actionPerformedId);
+        }
+        if (userGroup.equals(Group.NMC.getId())) {
+            dashboard.setNmcStatus(actionPerformedId);
+        }
+        if (userGroup.equals(Group.COLLEGE.getId())) {
+            dashboard.setCollegeStatus(actionPerformedId);
+        }
+        if (userGroup.equals(Group.NBE.getId())) {
+            dashboard.setNbeStatus(actionPerformedId);
+        }
     }
 
     @Override

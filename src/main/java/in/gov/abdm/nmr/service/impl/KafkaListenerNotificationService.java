@@ -43,7 +43,7 @@ public class KafkaListenerNotificationService {
         try {
             FileESignedEventTO eSignedEvent = objectMapper.readValue(eventMessage, FileESignedEventTO.class);
             String transactionId = eSignedEvent.getTransactionId().substring(0, eSignedEvent.getTransactionId().lastIndexOf("."));
-            log.info("council Kafka topic name :{} and group Id :{} Request received for transaction ID: {} ", NMRConstants.KAFKA_TOPIC, NMRConstants.KAFKA_GROUP_ID, transactionId);
+            log.debug("council Kafka topic name :{} and group Id :{} Request received for transaction ID: {} ", NMRConstants.KAFKA_TOPIC, NMRConstants.KAFKA_GROUP_ID, transactionId);
             HpProfile hpProfile = iHpProfileRepository.findByTransactionId(transactionId);
             if (hpProfile != null) {
                 log.debug("Fetched hp profile detail successfully for hp profile ID: {}", hpProfile.getId());
@@ -54,10 +54,10 @@ public class KafkaListenerNotificationService {
                             getBirthYear(hpProfile.getDateOfBirth().toString()) == Integer.parseInt(eSignedEvent.getYob()) &&
                             address.getPincode().equalsIgnoreCase(eSignedEvent.getPincode())) {
                         iHpProfileRepository.updateEsignStatus(hpProfile.getId(), NMRConstants.E_SIGN_SUCCESS_STATUS);
-                        log.info("updated e sign status:{} for Transaction ID: {}", NMRConstants.E_SIGN_SUCCESS_STATUS, transactionId);
+                        log.debug("updated e sign status:{} for Transaction ID: {}", NMRConstants.E_SIGN_SUCCESS_STATUS, transactionId);
                     } else {
                         iHpProfileRepository.updateEsignStatus(hpProfile.getId(), NMRConstants.E_SIGN_FAILURE_STATUS);
-                        log.info("updated e sign status:{} for Transaction ID: {}", NMRConstants.E_SIGN_FAILURE_STATUS, transactionId);
+                        log.debug("updated e sign status:{} for Transaction ID: {}", NMRConstants.E_SIGN_FAILURE_STATUS, transactionId);
                     }
                 } else {
                     log.error("transaction id: {}, could not be found.", transactionId);
