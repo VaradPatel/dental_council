@@ -183,7 +183,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
             }
         } else {
             dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
-            dashboardRequestParamsTO.setUserGroupStatus(!userGroupStatus.equalsIgnoreCase(TOTAL)?Action.getAction(userGroupStatus).getId().toString():TOTAL);
+            dashboardRequestParamsTO.setUserGroupStatus(!userGroupStatus.contains(TOTAL) ? Action.getAction(userGroupStatus).getId().toString() : TOTAL);
         }
     }
 

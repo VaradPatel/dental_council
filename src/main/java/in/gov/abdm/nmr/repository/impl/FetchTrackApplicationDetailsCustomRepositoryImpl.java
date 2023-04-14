@@ -225,9 +225,9 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         results.forEach(result -> {
             HealthProfessionalApplicationTo healthProfessionalApplicationTo = new HealthProfessionalApplicationTo();
             healthProfessionalApplicationTo.setDoctorStatus(result[0] != null ? WorkflowStatus.getWorkflowStatus((BigInteger) result[0]).getDescription() : "");
-            healthProfessionalApplicationTo.setSmcStatus(result[1] != null ? Action.getAction((BigInteger) result[1]).getStatus() : "");
-            healthProfessionalApplicationTo.setNmcStatus(result[2] != null ? Action.getAction((BigInteger) result[2]).getStatus() : "");
-            healthProfessionalApplicationTo.setNbeStatus(result[3] != null ? Action.getAction((BigInteger) result[3]).getStatus() : "");
+            healthProfessionalApplicationTo.setSmcStatus(result[1] != null ? Action.getAction((BigInteger) result[1]).getStatus() : NOT_YET_RECEIVED);
+            healthProfessionalApplicationTo.setNmcStatus(result[2] != null ? Action.getAction((BigInteger) result[2]).getStatus() : NOT_YET_RECEIVED);
+            healthProfessionalApplicationTo.setNbeStatus(result[3] != null ? Action.getAction((BigInteger) result[3]).getStatus() : NOT_YET_RECEIVED);
             healthProfessionalApplicationTo.setHpProfileId((BigInteger) result[4]);
             String requestId = (String) result[5];
             Query queryDate = entityManager.createNativeQuery(UPDATED_DATES.apply(requestId));
@@ -272,7 +272,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setMobileNumber((String) result[16]);
             healthProfessionalApplicationTo.setNmrId((String)result[17]);
             healthProfessionalApplicationTo.setYearOfRegistration(((Timestamp) result[18]).toString());
-            healthProfessionalApplicationTo.setCollegeStatus(result[19] != null ? Action.getAction((BigInteger) result[19]).getStatus() : "");
+            healthProfessionalApplicationTo.setCollegeStatus(result[19] != null ? Action.getAction((BigInteger) result[19]).getStatus() : NOT_YET_RECEIVED);
             healthProfessionalApplicationResponseTo.setTotalNoOfRecords((BigInteger) result[20]);
             healthProfessionalApplicationTo.setCouncilName((String) result[8]);
             healthProfessionalApplicationTo.setApplicantFullName((String) result[9]);

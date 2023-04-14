@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import static in.gov.abdm.nmr.util.NMRConstants.FETCH_CARD_DETAILS_QUERY;
+import static in.gov.abdm.nmr.util.NMRConstants.NOT_YET_RECEIVED;
 
 /**
  * A class that implements all the methods of the Custom Repository interface IFetchSpecificDetailsCustomRepository
@@ -264,9 +265,9 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         results.forEach(result -> {
             DashboardTO dashBoardTO = new DashboardTO();
             dashBoardTO.setDoctorStatus(result[0] != null ? WorkflowStatus.getWorkflowStatus((BigInteger) result[0]).getDescription() : "");
-            dashBoardTO.setSmcStatus(result[1] != null ? Action.getAction((BigInteger) result[1]).getStatus() : "");
-            dashBoardTO.setNmcStatus(result[2] != null ? Action.getAction((BigInteger) result[2]).getStatus() : "");
-            dashBoardTO.setNbeStatus(result[3] != null ? Action.getAction((BigInteger) result[3]).getStatus() : "");
+            dashBoardTO.setSmcStatus(result[1] != null ? Action.getAction((BigInteger) result[1]).getStatus() : NOT_YET_RECEIVED);
+            dashBoardTO.setNmcStatus(result[2] != null ? Action.getAction((BigInteger) result[2]).getStatus() : NOT_YET_RECEIVED);
+            dashBoardTO.setNbeStatus(result[3] != null ? Action.getAction((BigInteger) result[3]).getStatus() : NOT_YET_RECEIVED);
             dashBoardTO.setHpProfileId((BigInteger) result[4]);
             dashBoardTO.setRequestId((String) result[5]);
             dashBoardTO.setRegistrationNo((String) result[6]);
@@ -280,7 +281,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setMobileNumber((String) result[14]);
             dashBoardTO.setNmrId((String) result[15]);
             dashBoardTO.setYearOfRegistration(((Date) result[16]).toString());
-            dashBoardTO.setCollegeStatus(result[17] != null ? Action.getAction((BigInteger) result[17]).getStatus() : "");
+            dashBoardTO.setCollegeStatus(result[17] != null ? Action.getAction((BigInteger) result[17]).getStatus() : NOT_YET_RECEIVED);
             dashBoardTO.setApplicationTypeId((BigInteger) result[18]);
             dashBoardResponseTO.setTotalNoOfRecords((BigInteger) result[19]);
             dashboardTOList.add(dashBoardTO);
