@@ -122,6 +122,8 @@ public class NMRConstants {
     public static final String FAILURE_RESPONSE = "Fail";
     public static final String SENT_RESPONSE = "sent";
     public static final String USER_NOT_FOUND = "User not found";
+    public static final String EMAIL_ALREADY_VERIFIED = "This email is already verified";
+    public static final String EMAIL_USED_BY_OTHER_USER = "Email is already used by other user";
     public static final String COLLEGE_CONSTANT = "College";
     public static final String USER_ALREADY_EXISTS = "User already exists";
     public static final String MAIL_NOT_EXISTS = "User with this mail not exists";
