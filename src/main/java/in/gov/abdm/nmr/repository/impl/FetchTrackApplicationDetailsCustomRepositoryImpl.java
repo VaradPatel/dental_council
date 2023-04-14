@@ -229,8 +229,6 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             HealthProfessionalApplicationTo healthProfessionalApplicationTo = new HealthProfessionalApplicationTo();
             healthProfessionalApplicationTo.setDoctorStatus(result[0] != null ? WorkflowStatus.getWorkflowStatus((BigInteger) result[0]).getDescription() : "");
             healthProfessionalApplicationTo.setSmcStatus(result[1] != null ? Action.getAction((BigInteger) result[1]).getStatus() : "");
-            //healthProfessionalApplicationTo.setCollegeDeanStatus(result[2] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[2]).getDescription() : "0");
-            //healthProfessionalApplicationTo.setCollegeRegistrarStatus(result[3] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[3]).getDescription() : "0");
             healthProfessionalApplicationTo.setNmcStatus(result[2] != null ? Action.getAction((BigInteger) result[2]).getStatus() : "");
             healthProfessionalApplicationTo.setNbeStatus(result[3] != null ? Action.getAction((BigInteger) result[3]).getStatus() : "");
             healthProfessionalApplicationTo.setHpProfileId((BigInteger) result[4]);
@@ -292,7 +290,6 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setYearOfRegistration(((Timestamp) result[18]).toString());
             healthProfessionalApplicationTo.setCollegeStatus(result[19] != null ? Action.getAction((BigInteger) result[19]).getStatus() : "");
             healthProfessionalApplicationResponseTo.setTotalNoOfRecords((BigInteger) result[20]);
-
             healthProfessionalApplicationToList.add(healthProfessionalApplicationTo);
         });
         healthProfessionalApplicationResponseTo.setHealthProfessionalApplications(healthProfessionalApplicationToList);

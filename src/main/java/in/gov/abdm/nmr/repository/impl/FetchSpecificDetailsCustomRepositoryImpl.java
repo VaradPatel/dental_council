@@ -259,21 +259,15 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         DashboardResponseTO dashBoardResponseTO = new DashboardResponseTO();
         dashBoardResponseTO.setTotalNoOfRecords(BigInteger.ZERO);
         List<DashboardTO> dashboardTOList = new ArrayList<>();
-
         Query query = entityManager.createNativeQuery(DASHBOARD.apply(dashboardRequestParamsTO));
-
+        log.debug("Fetched dashboard detail successfully.");
         query.setFirstResult((pagination.getPageNumber() - 1) * pagination.getPageSize());
-
         query.setMaxResults(pagination.getPageSize());
-
-
         List<Object[]> results = query.getResultList();
         results.forEach(result -> {
             DashboardTO dashBoardTO = new DashboardTO();
             dashBoardTO.setDoctorStatus(result[0] != null ? WorkflowStatus.getWorkflowStatus((BigInteger) result[0]).getDescription() : "");
             dashBoardTO.setSmcStatus(result[1] != null ? Action.getAction((BigInteger) result[1]).getStatus() : "");
-            //dashBoardTO.setCollegeDeanStatus(result[2] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[2]).getDescription() : "0");
-            //dashBoardTO.setCollegeRegistrarStatus(result[3] != null ? HpProfileStatus.getHpProfileStatus((BigInteger) result[3]).getDescription() : "0");
             dashBoardTO.setNmcStatus(result[2] != null ? Action.getAction((BigInteger) result[2]).getStatus() : "");
             dashBoardTO.setNbeStatus(result[3] != null ? Action.getAction((BigInteger) result[3]).getStatus() : "");
             dashBoardTO.setHpProfileId((BigInteger) result[4]);
@@ -292,7 +286,6 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setCollegeStatus(result[17] != null ? Action.getAction((BigInteger) result[17]).getStatus() : "");
             dashBoardTO.setApplicationTypeId((BigInteger) result[18]);
             dashBoardResponseTO.setTotalNoOfRecords((BigInteger) result[19]);
-
             dashboardTOList.add(dashBoardTO);
         });
         dashBoardResponseTO.setDashboardTOList(dashboardTOList);

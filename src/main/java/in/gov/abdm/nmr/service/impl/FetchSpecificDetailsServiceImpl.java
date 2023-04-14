@@ -21,6 +21,7 @@ import in.gov.abdm.nmr.service.ICollegeProfileDaoService;
 import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -39,6 +40,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
  * which deals with dashboard count, dashboard fetch specific details
  */
 @Service
+@Slf4j
 public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsService {
 
     /**
@@ -247,6 +249,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                                                 String search, String value, int pageNo, int offset,
                                                 String sortBy, String sortOrder) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("Processing card-detail service for : {} ", userName);
         User userDetail = userDaoService.findByUsername(userName);
         BigInteger groupId = userDetail.getGroup().getId();
         BigInteger userId = userDetail.getId();

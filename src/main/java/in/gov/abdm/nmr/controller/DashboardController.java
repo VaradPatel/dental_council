@@ -37,21 +37,23 @@ public class DashboardController {
     @Autowired
     private IFetchSpecificDetailsService iFetchSpecificDetailsService;
 
-       /**
-     * This endpoint can be accessed to retrieve the count of applications according to their status
-     *
-     * @return FetchCountOnCardResponseTO
-     */
+
 /*    @GetMapping(ProtectedPaths.PATH_DASHBOARD_CARD_COUNT)
     @SecurityRequirement(name = "bearerAuth")
     public FetchCountOnCardResponseTO fetchCountOnCard() throws InvalidRequestException, AccessDeniedException {
         return iFetchCountOnCardService.fetchCountOnCard();
     }*/
 
+
+    /**
+     * This endpoint can be accessed to retrieve the count of applications according to their status
+     *
+     * @return FetchCountOnCardResponseTO
+     */
     @GetMapping(ProtectedPaths.PATH_DASHBOARD_CARD_COUNT)
     @SecurityRequirement(name = "bearerAuth")
-    public FetchCountOnCardResponseTO fetchCountOnCard1() throws InvalidRequestException, AccessDeniedException {
-        return iFetchCountOnCardService.fetchCountOnCard1();
+    public FetchCountOnCardResponseTO fetchCountOnCard() throws AccessDeniedException {
+        return iFetchCountOnCardService.fetchCountOnCard();
     }
 
     /**
