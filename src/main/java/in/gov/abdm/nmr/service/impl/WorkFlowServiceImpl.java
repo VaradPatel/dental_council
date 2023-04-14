@@ -168,37 +168,26 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
         log.debug("Initiating a notification to indicate the change of status.");
 
+        updateDashboardDetail(requestTO, workFlow, iNextGroup, dashboard);
+        notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+    }
+
+    private String getVerifierNameForNotification(User user) {
         String verifier = "";
         if (user != null) {
-
-            if (user.getUserType().getId().equals(UserTypeEnum.HEALTH_PROFESSIONAL.getCode())) {
-
-                verifier = "";
-
-            } else if (user.getUserType().getId().equals(UserTypeEnum.COLLEGE.getCode())) {
-
+            if (user.getUserType().getId().equals(UserTypeEnum.COLLEGE.getCode())) {
                 verifier = NMRConstants.VERIFIER_COLLEGE;
-
             } else if (user.getUserType().getId().equals(UserTypeEnum.STATE_MEDICAL_COUNCIL.getCode())) {
-
                 verifier = NMRConstants.VERIFIER_SMC;
-
             } else if (user.getUserType().getId().equals(UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode())) {
-
                 verifier = NMRConstants.VERIFIER_NMC;
-
             } else if (user.getUserType().getId().equals(UserTypeEnum.NBE.getCode())) {
-
                 verifier = NMRConstants.VERIFIER_NBE;
-
             } else if (user.getUserType().getId().equals(UserTypeEnum.SYSTEM.getCode())) {
-
                 verifier = NMRConstants.VERIFIER_SYSTEM;
-
             }
         }
-        updateDashboardDetail(requestTO, workFlow, iNextGroup, dashboard);
-        // notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + verifier, workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+        return verifier;
     }
 
     private void updateDashboardDetail(WorkFlowRequestTO requestTO, WorkFlow workFlow, INextGroup iNextGroup, Dashboard dashboard) {
