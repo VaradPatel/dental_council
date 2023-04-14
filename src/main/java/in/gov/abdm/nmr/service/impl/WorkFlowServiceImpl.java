@@ -5,6 +5,7 @@ import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.*;
+import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.INextGroup;
 import in.gov.abdm.nmr.repository.*;
@@ -22,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 
 import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
@@ -80,6 +83,9 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
     @Autowired
     private IUserDaoService userDetailService;
+
+    @Autowired
+    IDashboardRepository iDashboardRepository;
 
     private static final List APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES = List.of(WorkflowStatus.APPROVED.getId(), WorkflowStatus.BLACKLISTED.getId(), WorkflowStatus.SUSPENDED.getId());
 
@@ -188,7 +194,36 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
             }
         }
+        
+        // Insert in dashboard
+        Dashboard dashboard = new Dashboard();
+        dashboard.setApplicationTypeId(requestTO.getApplicationTypeId());
+        dashboard.setRequestId(requestTO.getRequestId());
+        dashboard.setHpProfileId(requestTO.getHpProfileId());
+        dashboard.setWorkFlowStatusId(workFlow.getWorkFlowStatus().getId());
+        setDashboardStatus(workFlow.getAction().getId(), workFlow.getCurrentGroup().getId(), dashboard );
+        if(!isLastStepOfWorkFlow(iNextGroup)){
+            setDashboardStatus(HpProfileStatus.PENDING.getId(), iNextGroup.getAssignTo(), dashboard );
+        }
+        dashboard.setCreatedAt(Timestamp.from(Instant.now()));
+        dashboard.setUpdatedAt(Timestamp.from(Instant.now()));
+        iDashboardRepository.save(dashboard);
         notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + verifier, workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+    }
+
+    private static void setDashboardStatus(BigInteger actionPerformedId, BigInteger userGroup, Dashboard dashboard) {
+        if (userGroup.equals(2)) {
+            dashboard.setSmcStatus(actionPerformedId);
+        }
+        if (userGroup.equals(3)) {
+            dashboard.setNmcStatus(actionPerformedId);
+        }
+        if (userGroup.equals(4)) {
+            dashboard.setCollegeStatus(actionPerformedId);
+        }
+        if (userGroup.equals(7)) {
+            dashboard.setNbeStatus(actionPerformedId);
+        }
     }
 
     @Override

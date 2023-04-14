@@ -40,7 +40,14 @@ public interface IFetchCountOnCardRepository extends JpaRepository<HpVerificatio
     @Query(value = FETCH_USER_SPECIFIC_SUSPENSION_AND_ACTIVATE_STATUS_WISE_COUNT_QUERY_FOR_NMC,nativeQuery = true)
     List<IStatusWiseCount> fetchUserSpecificSuspensionAndActivateStatusWiseCountForNmc(@Param(APPLICATION_TYPE_ID) BigInteger applicationTypeId);
 
-    //@Query(value = "select d.application_type_id as applicationTypeId, wfs.name , COALESCE(count(*),0) count from main.dashboard d right join main.work_flow_status wfs on d.smc_status = wfs.id join main.registration_details rd on rd.hp_profile_id = d.hp_profile_id where d.application_type_id in (:applicationTypeId) and rd.state_medical_council_id = :smcProfileId group by d.application_type_id , wfs.name ",nativeQuery = true)
-    @Query(value = "SELECT application_type_id as applicationTypeId, hps.id profileStatus , coalesce(result1.count,0) count FROM (SELECT application_type_id, smc_status, count(*) as count FROM main.dashboard group by application_type_id, smc_status) as result1 RIGHT JOIN main.hp_profile_status hps on hps.id = result1.smc_status ",nativeQuery = true)
-    List<IStatusCount> fetchCountForSmc();
+    @Query(value = "SELECT application_type_id as applicationTypeId, smc_status as profileStatus, count(*) as count FROM main.dashboard d join main.registration_details rd on rd.hp_profile_id = d.hp_profile_id where application_type_id in (1,2,3,4,7,8) and rd.state_medical_council_id =:smcProfileId group by application_type_id, smc_status ", nativeQuery = true)
+    List<IStatusCount> fetchCountForSmc(BigInteger smcProfileId);
+
+    @Query(value = "SELECT application_type_id as applicationTypeId, college_status as profileStatus, count(*) as count FROM main.dashboard d join main.qualification_details qd on qd.hp_profile_id = d.hp_profile_id where application_type_id in (1,8) and qd.college_id =:collegeId group by application_type_id, college_status ", nativeQuery = true)
+    List<IStatusCount> fetchCountForCollege(BigInteger collegeId);
+    @Query(value = "SELECT application_type_id as applicationTypeId, nmc_status as profileStatus, count(*) as count FROM main.dashboard d where application_type_id in (1,2,3,4,7,8) group by application_type_id , nmc_status ", nativeQuery = true)
+    List<IStatusCount> fetchCountForNmc();
+
+    @Query(value = "SELECT application_type_id as applicationTypeId, nbe_status as profileStatus, count(*) as count FROM main.dashboard d where application_type_id in (7) group by application_type_id , nbe_status ", nativeQuery = true)
+    List<IStatusCount> fetchCountForNbe();
 }
