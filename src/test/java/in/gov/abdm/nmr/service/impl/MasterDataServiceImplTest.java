@@ -124,7 +124,7 @@ class MasterDataServiceImplTest {
 
     @Test
     void testSmcs() {
-        when(stateMedicalCouncilService.smcs()).thenReturn(smcList);
+        when(stateMedicalCouncilService.getAllStateMedicalCouncil()).thenReturn(smcList);
         when(masterDataMapper.stateMedicalCouncilsToMasterDataTOs(smcList)).thenReturn(expected);
         List<MasterDataTO> result = masterDataService.smcs();
         assertEquals(expected, result);
@@ -132,7 +132,7 @@ class MasterDataServiceImplTest {
 
     @Test
     void testSmcsNullTest() {
-        when(stateMedicalCouncilService.smcs()).thenReturn(null);
+        when(stateMedicalCouncilService.getAllStateMedicalCouncil()).thenReturn(null);
         List<MasterDataTO> res = masterDataService.smcs();
         assertTrue(res.isEmpty());
     }

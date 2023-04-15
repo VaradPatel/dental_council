@@ -17,20 +17,17 @@ public class StateMedicalCouncilDaoServiceImpl implements IStateMedicalCouncilDa
 
     private IStateMedicalCouncilRepository stateMedicalCouncilRepository;
 
-    private IStateMedicalCouncilMapper stateMedicalCouncilMapper;
-
-    public StateMedicalCouncilDaoServiceImpl(IStateMedicalCouncilRepository stateMedicalCouncilRepository, IStateMedicalCouncilMapper stateMedicalCouncilMapper) {
+    public StateMedicalCouncilDaoServiceImpl(IStateMedicalCouncilRepository stateMedicalCouncilRepository) {
         this.stateMedicalCouncilRepository = stateMedicalCouncilRepository;
-        this.stateMedicalCouncilMapper = stateMedicalCouncilMapper;
     }
 
     @Override
-    public List<StateMedicalCouncilTO> smcs() {
-        return stateMedicalCouncilMapper.stateMedicalCouncilsToDtos(stateMedicalCouncilRepository.findAll());
+    public List<StateMedicalCouncilTO> getAllStateMedicalCouncil() {
+        return IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(stateMedicalCouncilRepository.findAll());
     }
 
     @Override
-    public StateMedicalCouncil findbyState(String stateId) {
+    public StateMedicalCouncil findByState(String stateId) {
         return stateMedicalCouncilRepository.findByState(stateId);
     }
 }

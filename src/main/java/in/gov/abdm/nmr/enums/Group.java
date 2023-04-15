@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.enums;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 /**
  * Enum for Actor Groups
@@ -29,6 +30,10 @@ public enum Group {
 
     public String getDescription() {
         return description;
+    }
+
+    public static Group getGroup(BigInteger id) {
+        return Arrays.stream(Group.values()).filter(group -> group.getId().equals(id)).findFirst().get();
     }
 
 }

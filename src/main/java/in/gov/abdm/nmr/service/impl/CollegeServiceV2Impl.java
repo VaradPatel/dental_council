@@ -119,7 +119,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         collegeMasterTO.setUniversityId(university != null && !university.isEmpty() ? university.get(0).getId() : null);
 
         if (collegeMaster.getStateMedicalCouncil() == null && collegeMaster.getState() != null) {
-            StateMedicalCouncil stateMedicalCouncil = stateMedicalCouncilDaoService.findbyState(String.valueOf(collegeMaster.getState().getId()));
+            StateMedicalCouncil stateMedicalCouncil = stateMedicalCouncilDaoService.findByState(String.valueOf(collegeMaster.getState().getId()));
             collegeMasterTO.setStateMedicalCouncilId(stateMedicalCouncil != null ? stateMedicalCouncil.getId() : null);
         } else {
             collegeMasterTO.setStateMedicalCouncilId(collegeMaster.getStateMedicalCouncil().getId());
