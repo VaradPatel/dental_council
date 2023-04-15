@@ -75,4 +75,8 @@ public class QualificationDetailsMaster extends CommonAuditEntity {
     private String superSpecialityName;
     private String fileName;
 
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
 }

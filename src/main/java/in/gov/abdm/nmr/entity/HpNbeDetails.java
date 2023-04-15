@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 
@@ -30,6 +27,11 @@ public class HpNbeDetails {
 	private String requestId;
 	private Timestamp createdAt;
 	private Timestamp updatedAt;
-	private BigInteger hpProfileId;
 	private String passportNumber;
+	@OneToOne
+	@JoinColumn(name = "user_id", referencedColumnName = "id")
+	private User user;
+	@OneToOne
+	@JoinColumn(name = "hpProfileId", referencedColumnName = "id")
+	private HpProfile hpProfile;
 }

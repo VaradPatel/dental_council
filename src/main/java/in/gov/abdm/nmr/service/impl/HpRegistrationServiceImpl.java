@@ -181,6 +181,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     private IUserDaoService userDaoService;
 
 
+
+
     /**
      * This method fetches the SMC registration details for a given request.
      *
@@ -288,7 +290,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             throws InvalidRequestException, WorkFlowException {
 
         log.info("In HpRegistrationServiceImpl : submitHpProfile method");
-
         String requestId = null;
         if (hpSubmitRequestTO.getHpProfileId() != null &&
                 iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(hpSubmitRequestTO.getHpProfileId())) {
@@ -329,7 +330,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             List<QualificationDetails> qualificationDetailsList = new ArrayList<>();
             if (hpSubmitRequestTO.getApplicationTypeId().equals(ApplicationType.HP_REGISTRATION.getId())) {
                 log.debug("Updating the request_id in qualification_details table");
-                List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getQualificationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
+                List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getQualificationDetailsByUserId(hpProfileById.getUser().getId());
                 String finalRequestId1 = requestId;
                 qualificationDetails.forEach(qualifications -> {
                     qualifications.setRequestId(finalRequestId1);
@@ -340,7 +341,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             List<ForeignQualificationDetails> foreignQualificationDetails = new ArrayList<>();
             if (hpSubmitRequestTO.getApplicationTypeId().equals(ApplicationType.FOREIGN_HP_REGISTRATION.getId())) {
                 log.debug("Updating the request_id in foreign_qualification_details table");
-                List<ForeignQualificationDetails> qualificationDetails = customQualificationDetailRepository.getQualificationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
+                List<ForeignQualificationDetails> qualificationDetails = customQualificationDetailRepository.getQualificationDetailsByUserId(hpProfileById.getUser().getId());
                 String finalRequestId1 = requestId;
                 qualificationDetails.forEach(qualifications -> {
                     qualifications.setRequestId(finalRequestId1);
@@ -410,9 +411,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(BigInteger hpProfileId) {
 
         RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId);
-        HpNbeDetails nbeDetails = hpNbeDetailsRepository.findByHpProfileId(hpProfileId);
-        List<QualificationDetails> indianQualifications = qualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId);
-        List<ForeignQualificationDetails> internationalQualifications = customQualificationDetailRepository.getQualificationDetailsByHpProfileId(hpProfileId);
+        HpNbeDetails nbeDetails = hpNbeDetailsRepository.findByUserId(registrationDetails.getHpProfileId().getUser().getId());
+        List<QualificationDetails> indianQualifications = qualificationDetailRepository.getQualificationDetailsByUserId(registrationDetails.getHpProfileId().getUser().getId());
+        List<ForeignQualificationDetails> internationalQualifications = customQualificationDetailRepository.getQualificationDetailsByUserId(registrationDetails.getHpProfileId().getUser().getId());
         HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = hpProfileRegistrationMapper.convertEntitiesToRegistrationResponseTo(registrationDetails, nbeDetails, indianQualifications, internationalQualifications);
         hpProfileRegistrationResponseTO.setHpProfileId(hpProfileId);
         return hpProfileRegistrationResponseTO;

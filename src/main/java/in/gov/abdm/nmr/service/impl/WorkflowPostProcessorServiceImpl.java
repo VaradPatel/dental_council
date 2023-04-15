@@ -146,10 +146,10 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
         RegistrationDetailsMaster registrationMaster = updateRegistrationDetailsToMaster(transactionHpProfile.getId(), masterHpProfileDetails);
         updateAddressToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
-        updateForeignQualificationToMaster(transactionHpProfile.getId(), masterHpProfileDetails, registrationMaster);
-        updateHpNbeDetailsToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
+        updateForeignQualificationToMaster(transactionHpProfile, masterHpProfileDetails, registrationMaster);
+        updateHpNbeDetailsToMaster(transactionHpProfile, masterHpProfileDetails);
         updateNmrHprLinkageToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
-        updateQualificationDetailsToMaster(transactionHpProfile.getId(), masterHpProfileDetails, registrationMaster);
+        updateQualificationDetailsToMaster(transactionHpProfile, masterHpProfileDetails, registrationMaster);
         try {
             updateElasticDB(workFlow, masterHpProfileDetails);
         } catch (WorkFlowException e) {
@@ -233,10 +233,10 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         }
     }
 
-    private void updateForeignQualificationToMaster(BigInteger transactionHpProfileId, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
+    private void updateForeignQualificationToMaster(HpProfile transactionHpProfile, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
         log.debug("Mapping the Foreign Qualification Details to Foreign Qualification Details Master table");
 
-        List<ForeignQualificationDetails> qualificationDetails = customQualificationDetailRepository.getQualificationDetailsByHpProfileId(transactionHpProfileId);
+        List<ForeignQualificationDetails> qualificationDetails = customQualificationDetailRepository.getQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
         List<String> masterCourseIds = customQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId())
                 .stream().map(qualificationDetailsMaster -> qualificationDetailsMaster.getCourse()).collect(Collectors.toList());
         List<ForeignQualificationDetails> filterQualifications = qualificationDetails.stream().filter(qualificationDetail -> !masterCourseIds.contains(qualificationDetail.getCourse())).toList();
@@ -250,18 +250,18 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         }
     }
 
-    private void updateHpNbeDetailsToMaster(BigInteger transactionHpProfileId, BigInteger masterHpProfileId) {
+    private void updateHpNbeDetailsToMaster(HpProfile transactionHpProfile, HpProfileMaster masterHpProfile) {
         log.debug("Mapping the current HP NBE Details to Hp Nbe Details Master table");
-        HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByHpProfileId(transactionHpProfileId);
+        HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByHpProfileId(transactionHpProfile.getUser().getId());
 
         if (hpNbeDetails != null) {
             HpNbeDetailsMaster hpNbeDetailsMaster = iHpNbeMasterMapper.hpNbeToHpNbeMaster(hpNbeDetails);
-            HpNbeDetailsMaster fetchedFromMaster = hpNbeDetailsMasterRepository.findByHpProfileId(masterHpProfileId);
+            HpNbeDetailsMaster fetchedFromMaster = hpNbeDetailsMasterRepository.findByHpProfileId(masterHpProfile.getId());
             if (fetchedFromMaster != null) {
                 hpNbeDetailsMaster.setId(fetchedFromMaster.getId());
 
             }
-            hpNbeDetailsMaster.setHpProfileId(masterHpProfileId);
+            hpNbeDetailsMaster.setHpProfile(masterHpProfile);
             hpNbeDetailsMasterRepository.save(hpNbeDetailsMaster);
 
         }
@@ -301,10 +301,10 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         }
     }
 
-    private void updateQualificationDetailsToMaster(BigInteger transactionHpProfileId, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
+    private void updateQualificationDetailsToMaster(HpProfile transactionHpProfile, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
         log.debug("Mapping the current Qualification Details to Qualification Details Master table");
 
-        List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getQualificationDetailsByHpProfileId(transactionHpProfileId);
+        List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
         List<BigInteger> masterCourseIds = qualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId())
                 .stream().map(qualificationDetailsMaster -> qualificationDetailsMaster.getCourse().getId()).collect(Collectors.toList());
         List<QualificationDetails> filterQualifications = qualificationDetails.stream().filter(qualificationDetail -> !masterCourseIds.contains(qualificationDetail.getCourse().getId())).toList();

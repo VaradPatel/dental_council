@@ -55,4 +55,8 @@ public class ForeignQualificationDetails extends CommonAuditEntity {
     private BigInteger broadSpecialityId;
     private String superSpecialityName;
     private String fileName;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 }

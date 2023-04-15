@@ -16,6 +16,9 @@ public interface IQualificationDetailRepository extends JpaRepository<Qualificat
     @Query(value = "SELECT * FROM qualification_details where hp_profile_id = :hpProfileId", nativeQuery = true)
     List<QualificationDetails> getQualificationDetailsByHpProfileId(BigInteger hpProfileId);
 
+    @Query(value = "SELECT * FROM qualification_details where user_id = :userId", nativeQuery = true)
+    List<QualificationDetails> getQualificationDetailsByUserId(BigInteger userId);
+
     
     @Query(value = "SELECT qd.name as qualificationName, qd.qualification_year as qualificationYear, u.name as universityName FROM qualification_details qd " + //
             "left join universities u on qd.university_id = u.id where qd.hp_profile_id =:hpprofileId", nativeQuery = true)

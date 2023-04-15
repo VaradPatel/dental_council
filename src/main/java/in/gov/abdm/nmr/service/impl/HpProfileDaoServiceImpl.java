@@ -16,6 +16,7 @@ import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpProfileDaoService;
 import in.gov.abdm.nmr.service.IRequestCounterService;
+import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.SneakyThrows;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -125,6 +127,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @Autowired
     private IStateMedicalCouncilRepository stateMedicalCouncilRepository;
+
+    @Autowired
+    private IUserDaoService userDetailService;
 
 /*    @Autowired
     private ImageFClient imageFClient;
@@ -228,36 +233,36 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 iAddressRepository.save(newKycAddress);
             }
 
-            List<QualificationDetails> qualificationDetails = new ArrayList<>();
-            List<QualificationDetails> qualificationDetailsList = iQualificationDetailRepository.getQualificationDetailsByHpProfileId(copiedExistingHpProfile.getId());
-            for (QualificationDetails qualificationDetail : qualificationDetailsList) {
-                QualificationDetails newQualificationDetails = new QualificationDetails();
-                org.springframework.beans.BeanUtils.copyProperties(qualificationDetail, newQualificationDetails);
-                newQualificationDetails.setId(null);
-                newQualificationDetails.setHpProfile(targetedHpProfile);
-                qualificationDetails.add(newQualificationDetails);
-            }
-            iQualificationDetailRepository.saveAll(qualificationDetails);
-
-            List<ForeignQualificationDetails> customQualificationDetailsList = new ArrayList<>();
-            List<ForeignQualificationDetails> customQualificationDetails = iForeignQualificationDetailRepository.getQualificationDetailsByHpProfileId(copiedExistingHpProfile.getId());
-            for (ForeignQualificationDetails customQualificationDetail : customQualificationDetails) {
-                ForeignQualificationDetails newCustomQualificationDetails = new ForeignQualificationDetails();
-                org.springframework.beans.BeanUtils.copyProperties(customQualificationDetail, newCustomQualificationDetails);
-                newCustomQualificationDetails.setId(null);
-                newCustomQualificationDetails.setHpProfile(targetedHpProfile);
-                customQualificationDetailsList.add(newCustomQualificationDetails);
-            }
-            iForeignQualificationDetailRepository.saveAll(customQualificationDetailsList);
-
-            HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByHpProfileId(copiedExistingHpProfile.getId());
-            if (hpNbeDetails != null) {
-                log.debug("Setting NBE Details");
-                HpNbeDetails newHpNbeDetails = new HpNbeDetails();
-                org.springframework.beans.BeanUtils.copyProperties(hpNbeDetails, newHpNbeDetails);
-                newHpNbeDetails.setId(null);
-                newHpNbeDetails.setHpProfileId(targetedHpProfile.getId());
-            }
+//            List<QualificationDetails> qualificationDetails = new ArrayList<>();
+//            List<QualificationDetails> qualificationDetailsList = iQualificationDetailRepository.getQualificationDetailsByHpProfileId(copiedExistingHpProfile.getId());
+//            for (QualificationDetails qualificationDetail : qualificationDetailsList) {
+//                QualificationDetails newQualificationDetails = new QualificationDetails();
+//                org.springframework.beans.BeanUtils.copyProperties(qualificationDetail, newQualificationDetails);
+//                newQualificationDetails.setId(null);
+//                newQualificationDetails.setHpProfile(targetedHpProfile);
+//                qualificationDetails.add(newQualificationDetails);
+//            }
+//            iQualificationDetailRepository.saveAll(qualificationDetails);
+//
+//            List<ForeignQualificationDetails> customQualificationDetailsList = new ArrayList<>();
+//            List<ForeignQualificationDetails> customQualificationDetails = iForeignQualificationDetailRepository.getQualificationDetailsByHpProfileId(copiedExistingHpProfile.getId());
+//            for (ForeignQualificationDetails customQualificationDetail : customQualificationDetails) {
+//                ForeignQualificationDetails newCustomQualificationDetails = new ForeignQualificationDetails();
+//                org.springframework.beans.BeanUtils.copyProperties(customQualificationDetail, newCustomQualificationDetails);
+//                newCustomQualificationDetails.setId(null);
+//                newCustomQualificationDetails.setHpProfile(targetedHpProfile);
+//                customQualificationDetailsList.add(newCustomQualificationDetails);
+//            }
+//            iForeignQualificationDetailRepository.saveAll(customQualificationDetailsList);
+//
+//            HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByHpProfileId(copiedExistingHpProfile.getId());
+//            if (hpNbeDetails != null) {
+//                log.debug("Setting NBE Details");
+//                HpNbeDetails newHpNbeDetails = new HpNbeDetails();
+//                org.springframework.beans.BeanUtils.copyProperties(hpNbeDetails, newHpNbeDetails);
+//                newHpNbeDetails.setId(null);
+//                newHpNbeDetails.setHpProfileId(targetedHpProfile.getId());
+//            }
         }
         log.info("HpProfileDaoServiceImpl : updateHpPersonalDetails method : Execution Successful. ");
         return new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", updatedHpProfileId);
@@ -292,7 +297,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), degreeCertificate != null ? List.of(degreeCertificate) : Collections.emptyList());
         }
 
-        HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByHpProfileId(hpProfileId);
+        HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByUserId(hpProfile.getUser().getId());
         if (hpNbeDetails == null) {
             log.debug("Initiating NBE details Insertion flow since there were no matching NBE details found for the given hp_profile_id. ");
             hpNbeDetails = new HpNbeDetails();
@@ -530,6 +535,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     private void mapIndianQualificationRequestToEntity(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, QualificationDetailRequestTO indianQualification, QualificationDetails qualification, MultipartFile proof) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userDetailService.findByUsername(userName);
+
         qualification.setCountry(countryRepository.findById(indianQualification.getCountry().getId()).get());
         qualification.setState(stateRepository.findById(indianQualification.getState().getId()).get());
         qualification.setCollege(collegeMasterRepository.findCollegeMasterById(indianQualification.getCollege().getId()));
@@ -545,6 +553,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 coalesce(indianQualification.getRequestId(), hpProfile.getRequestId()));
         qualification.setBroadSpecialityId(indianQualification.getBroadSpecialityId());
         qualification.setSuperSpecialityName(indianQualification.getSuperSpecialityName());
+        qualification.setUser(user);
         if (proof != null && !proof.isEmpty()) {
             qualification.setFileName(proof.getOriginalFilename());
             try {
@@ -573,6 +582,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     private void mapQualificationRequestToEntity(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, QualificationDetailRequestTO newCustomQualification, ForeignQualificationDetails customQualification, MultipartFile proof) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userDetailService.findByUsername(userName);
         customQualification.setCountry(newCustomQualification.getCountry().getName());
         customQualification.setState(newCustomQualification.getState() != null ? newCustomQualification.getState().getName() : null);
         customQualification.setCollege(newCustomQualification.getCollege().getName());
@@ -590,6 +601,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         customQualification.setHpProfile(hpProfile);
         customQualification.setBroadSpecialityId(newCustomQualification.getBroadSpecialityId());
         customQualification.setSuperSpecialityName(newCustomQualification.getSuperSpecialityName());
+        customQualification.setUser(user);
         if (proof != null && !proof.isEmpty()) {
             customQualification.setFileName(proof.getOriginalFilename());
             try {
@@ -675,13 +687,16 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     private void mapNbeRequestDetailsToEntity(HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, HpNbeDetails hpNbeDetails, HpProfile hpProfile) {
         if (hpRegistrationUpdateRequestTO.getHpNbeDetails() != null) {
+            String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userDetailService.findByUsername(userName);
             hpNbeDetails.setMarksObtained(hpRegistrationUpdateRequestTO.getHpNbeDetails().getMarksObtained());
             hpNbeDetails.setMonthOfPassing(hpRegistrationUpdateRequestTO.getHpNbeDetails().getMonthOfPassing());
             hpNbeDetails.setRollNo(hpRegistrationUpdateRequestTO.getHpNbeDetails().getRollNo());
             hpNbeDetails.setUserResult(hpRegistrationUpdateRequestTO.getHpNbeDetails().getUserResult());
             hpNbeDetails.setYearOfPassing(hpRegistrationUpdateRequestTO.getHpNbeDetails().getYearOfPassing());
             hpNbeDetails.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
-            hpNbeDetails.setHpProfileId(hpProfile.getId());
+            hpNbeDetails.setHpProfile(hpProfile);
+            hpNbeDetails.setUser(user);
             hpNbeDetails.setPassportNumber(hpRegistrationUpdateRequestTO.getHpNbeDetails().getPassportNumber());
         }
     }

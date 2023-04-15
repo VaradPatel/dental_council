@@ -13,5 +13,8 @@ public interface HpNbeDetailsRepository extends JpaRepository<HpNbeDetails, BigI
 
 	@Query(value = "Select * from hp_nbe_details where hp_profile_id = :hpProfileId ", nativeQuery = true)
 	HpNbeDetails findByHpProfileId(BigInteger hpProfileId);
+
+	@Query(value = "Select * from hp_nbe_details where user_id = :userId ", nativeQuery = true)
+	HpNbeDetails findByUserId(BigInteger userId);
 	
 }
