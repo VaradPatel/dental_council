@@ -229,38 +229,9 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setNmcStatus(result[2] != null ? Action.getAction((BigInteger) result[2]).getStatus() : NOT_YET_RECEIVED);
             healthProfessionalApplicationTo.setNbeStatus(result[3] != null ? Action.getAction((BigInteger) result[3]).getStatus() : NOT_YET_RECEIVED);
             healthProfessionalApplicationTo.setHpProfileId((BigInteger) result[4]);
-            String requestId = (String) result[5];
-            Query queryDate = entityManager.createNativeQuery(UPDATED_DATES.apply(requestId));
-            List<Object[]> resultsDate = queryDate.getResultList();
-            Timestamp submissionDate = (Timestamp)resultsDate.get(0)[2];
-            healthProfessionalApplicationTo.setCreatedAt(submissionDate.toString());
-            resultsDate.forEach(objects -> {
-                BigInteger previousGroupId = (BigInteger) objects[1];
-                Timestamp timestamp = (Timestamp) objects[2];
-                switch (previousGroupId.intValue()) {
-                    case 1:
-                        healthProfessionalApplicationTo.setDoctorActionDate(timestamp.toString());
-                        break;
-                    case 2:
-                        healthProfessionalApplicationTo.setSmcActionDate(timestamp.toString());
-                        break;
-                    case 3:
-                        healthProfessionalApplicationTo.setNmcActionDate(timestamp.toString());
-                        break;
-                    case 4:
-//                        healthProfessionalApplicationTo.setCollegeDeanActionDate(timestamp.toString());
-                        healthProfessionalApplicationTo.setCollegeActionDate(timestamp.toString());
-                        break;
-                    case 5:
-                        healthProfessionalApplicationTo.setCollegeRegistrarActionDate(timestamp.toString());
-                        break;
-                    case 7:
-                        healthProfessionalApplicationTo.setNbeActionDate(timestamp.toString());
-                        break;
-                }
-            });
             healthProfessionalApplicationTo.setRequestId((String) result[5]);
             healthProfessionalApplicationTo.setRegistrationNo((String) result[6]);
+            healthProfessionalApplicationTo.setCreatedAt((String) result[7]);
             healthProfessionalApplicationTo.setCouncilName((String) result[8]);
             healthProfessionalApplicationTo.setApplicantFullName((String) result[9]);
             healthProfessionalApplicationTo.setApplicationTypeId((BigInteger) result[10]);
@@ -273,19 +244,6 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setNmrId((String)result[17]);
             healthProfessionalApplicationTo.setYearOfRegistration(((Timestamp) result[18]).toString());
             healthProfessionalApplicationTo.setCollegeStatus(result[19] != null ? Action.getAction((BigInteger) result[19]).getStatus() : NOT_YET_RECEIVED);
-            healthProfessionalApplicationResponseTo.setTotalNoOfRecords((BigInteger) result[20]);
-            healthProfessionalApplicationTo.setCouncilName((String) result[8]);
-            healthProfessionalApplicationTo.setApplicantFullName((String) result[9]);
-            healthProfessionalApplicationTo.setApplicationTypeId((BigInteger) result[10]);
-            healthProfessionalApplicationTo.setApplicationTypeName((String) result[11]);
-            healthProfessionalApplicationTo.setPendency((int) Math.floor((Double) result[12]));
-            healthProfessionalApplicationTo.setWorkFlowStatusId((BigInteger) result[13]);
-            healthProfessionalApplicationTo.setGender((String) result[14]);
-            healthProfessionalApplicationTo.setEmailId((String) result[15]);
-            healthProfessionalApplicationTo.setMobileNumber((String) result[16]);
-            healthProfessionalApplicationTo.setNmrId((String)result[17]);
-            healthProfessionalApplicationTo.setYearOfRegistration(((Timestamp) result[18]).toString());
-            healthProfessionalApplicationTo.setCollegeStatus(result[19] != null ? Action.getAction((BigInteger) result[19]).getStatus() : "");
             healthProfessionalApplicationResponseTo.setTotalNoOfRecords((BigInteger) result[20]);
             healthProfessionalApplicationToList.add(healthProfessionalApplicationTo);
         });
