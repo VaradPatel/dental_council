@@ -73,11 +73,11 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
     @Override
     public FetchCountOnCardResponseTO fetchCountOnCard() throws AccessDeniedException {
         User loggedInUser = accessControlService.getLoggedInUser();
-        String groupName = loggedInUser.getGroup().getName();
         if (loggedInUser == null) {
-            log.error("User :{} don't have permission to access on this server", loggedInUser.getUserName());
+            log.error("User don't have permission to access on dashboard card details");
             throw new AccessDeniedException(ACCESS_FORBIDDEN);
         }
+        String groupName = loggedInUser.getGroup().getName();
         FetchCountOnCardResponseTO responseTO = new FetchCountOnCardResponseTO();
         BigInteger totalCount = BigInteger.ZERO;
         List<BigInteger> hpProfileStatuses = Arrays.stream(HpProfileStatus.values()).map(s -> s.getId()).collect(Collectors.toList());

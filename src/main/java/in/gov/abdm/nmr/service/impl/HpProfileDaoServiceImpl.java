@@ -440,7 +440,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         if condition here
         */
 
-        hpProfile.setProfilePhoto(file != null ? encodedPhoto : null);
+        hpProfile.setProfilePhoto(encodedPhoto);
         hpProfile.setPicName(file.getOriginalFilename());
         HpProfile insertedData = iHpProfileRepository.save(hpProfile);
         HpProfilePictureResponseTO hpProfilePictureResponseTO = new HpProfilePictureResponseTO();

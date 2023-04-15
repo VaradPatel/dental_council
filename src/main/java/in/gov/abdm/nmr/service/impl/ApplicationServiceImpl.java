@@ -424,7 +424,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         ApplicationDetailsTo detailsTo;
         List<WorkFlowAudit> workFlowAudit = iWorkFlowAuditRepository.fetchApplicationDetails(requestId);
         if (workFlowAudit == null || workFlowAudit.isEmpty()) {
-            log.error("unable to complete fetch application details process due {} workflow audit records for request ID: {}", workFlowAudit.size(), requestId);
+            log.error("unable to complete fetch application details process due workflow audit records for request ID: {}", requestId);
             throw new InvalidRequestException("Invalid input request ID: " + requestId + ". Please enter a valid input and try again");
         }
         log.debug("Fetched {} workflow audit records for request ID: {}", workFlowAudit.size(), requestId);

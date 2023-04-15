@@ -110,8 +110,6 @@ public class NMRConstants {
     public static final String SMS_VERIFIED_MESSAGE_PROPERTIES_KEY = "sms-verified";
     public static final String EMAIL_VERIFIED_MESSAGE_PROPERTIES_KEY = "email-verified";
     public static final String STATUS_CHANGED_MESSAGE_PROPERTIES_KEY = "status-changed";
-    public static final String SMS_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY = "sms-reset";
-    public static final String EMAIL_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY = "email-reset";
     public static final String INFO_CONTENT_TYPE = "info";
     public static final String COLLEGE_PREFIX_TO_GET_WORKFLOW_STATUS = "college-";
     public static final String CONTACT_NOT_NULL = "Contact cannot be null or empty";
@@ -484,7 +482,7 @@ public class NMRConstants {
     public static final String DEFAULT_SORT_ORDER = "DESC";
     public static final String NO_DATA_FOUND = "No data found";
     public static final String USER_NAME_ALREADY_EXISTS = "Username already exist";
-    public static final String SMS_AND_EMAIL_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY = "sms-email-reset";
+    public static final String SMS_AND_EMAIL_RESET_MESSAGE_PROPERTIES_KEY = "sms-email-reset";
     public static final String ACCOUNT_CREATED = "account-created";
     public static final String NMR_ID_CREATED = "nmr-id-created";
     public static final String TYPE_NOT_NULL = "Type cannot be null";

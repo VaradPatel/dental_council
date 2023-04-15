@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static in.gov.abdm.nmr.util.NMRConstants.COLLEGE_CONSTANT;
 
@@ -26,6 +27,7 @@ public enum UserSubTypeEnum {
     private Group group;
 
     public static UserSubTypeEnum getUserSubType(BigInteger userSubTypeId) {
-        return Arrays.stream(UserSubTypeEnum.values()).filter(userSubType -> userSubType.getCode().equals(userSubTypeId)).findFirst().get();
+        Optional<UserSubTypeEnum> optionalUserSubTypeEnum = Arrays.stream(UserSubTypeEnum.values()).filter(userSubType -> userSubType.getCode().equals(userSubTypeId)).findFirst();
+        return optionalUserSubTypeEnum.isPresent() ? optionalUserSubTypeEnum.get() : null;
     }
 }

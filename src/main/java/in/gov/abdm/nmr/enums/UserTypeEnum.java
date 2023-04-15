@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Getter
@@ -25,10 +26,12 @@ public enum UserTypeEnum {
 
 
     public static UserTypeEnum getUserSubType(BigInteger userTypeId) {
-        return Arrays.stream(UserTypeEnum.values()).filter(userType -> userType.getCode().equals(userTypeId)).findFirst().get();
+        Optional<UserTypeEnum> optionalUserTypeEnum = Arrays.stream(UserTypeEnum.values()).filter(userType -> userType.getCode().equals(userTypeId)).findFirst();
+        return optionalUserTypeEnum.isPresent() ? optionalUserTypeEnum.get() : null;
     }
 
     public static UserTypeEnum getUserSubType(String name) {
-        return Arrays.stream(UserTypeEnum.values()).filter(userType -> userType.getName().equals(name)).findFirst().get();
+        Optional<UserTypeEnum> optionalUserTypeEnum = Arrays.stream(UserTypeEnum.values()).filter(userType -> userType.getName().equals(name)).findFirst();
+        return optionalUserTypeEnum.isPresent() ? optionalUserTypeEnum.get() : null;
     }
 }

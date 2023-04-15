@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.enums;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Optional;
 
 public enum HpProfileStatus {
     PENDING(BigInteger.valueOf(1), "Pending"),
@@ -30,8 +31,7 @@ public enum HpProfileStatus {
     }
 
     public static HpProfileStatus getHpProfileStatus(BigInteger id) {
-        return Arrays.stream(HpProfileStatus.values()).filter(profileStatus -> profileStatus.getId().equals(id)).findFirst().get();
+        Optional<HpProfileStatus> optionalHpProfileStatus = Arrays.stream(HpProfileStatus.values()).filter(profileStatus -> profileStatus.getId().equals(id)).findFirst();
+        return optionalHpProfileStatus.isPresent() ? optionalHpProfileStatus.get() : null;
     }
-
-
 }

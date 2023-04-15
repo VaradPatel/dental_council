@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.enums;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Enum for Actor Groups
@@ -33,7 +34,8 @@ public enum Group {
     }
 
     public static Group getGroup(BigInteger id) {
-        return Arrays.stream(Group.values()).filter(group -> group.getId().equals(id)).findFirst().get();
+        Optional<Group> optionalGroup = Arrays.stream(Group.values()).filter(group -> group.getId().equals(id)).findFirst();
+        return optionalGroup.isPresent() ? optionalGroup.get() : null;
     }
 
 }
