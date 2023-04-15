@@ -211,6 +211,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
      * @throws WorkFlowException If an error occurs while initiating the submission workflow.
      */
     @Override
+    @Transactional
     public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws NmrException, InvalidRequestException, WorkFlowException {
         HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
         if (hpProfile.getNmrId() == null) {
