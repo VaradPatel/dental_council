@@ -535,8 +535,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     private void mapIndianQualificationRequestToEntity(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, QualificationDetailRequestTO indianQualification, QualificationDetails qualification, MultipartFile proof) {
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userDetailService.findByUsername(userName);
 
         qualification.setCountry(countryRepository.findById(indianQualification.getCountry().getId()).get());
         qualification.setState(stateRepository.findById(indianQualification.getState().getId()).get());
@@ -553,7 +551,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 coalesce(indianQualification.getRequestId(), hpProfile.getRequestId()));
         qualification.setBroadSpecialityId(indianQualification.getBroadSpecialityId());
         qualification.setSuperSpecialityName(indianQualification.getSuperSpecialityName());
-        qualification.setUser(user);
+        qualification.setUser(hpProfile.getUser());
         if (proof != null && !proof.isEmpty()) {
             qualification.setFileName(proof.getOriginalFilename());
             try {
@@ -582,8 +580,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     private void mapQualificationRequestToEntity(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, QualificationDetailRequestTO newCustomQualification, ForeignQualificationDetails customQualification, MultipartFile proof) {
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userDetailService.findByUsername(userName);
         customQualification.setCountry(newCustomQualification.getCountry().getName());
         customQualification.setState(newCustomQualification.getState() != null ? newCustomQualification.getState().getName() : null);
         customQualification.setCollege(newCustomQualification.getCollege().getName());
@@ -601,7 +597,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         customQualification.setHpProfile(hpProfile);
         customQualification.setBroadSpecialityId(newCustomQualification.getBroadSpecialityId());
         customQualification.setSuperSpecialityName(newCustomQualification.getSuperSpecialityName());
-        customQualification.setUser(user);
+        customQualification.setUser(hpProfile.getUser());
         if (proof != null && !proof.isEmpty()) {
             customQualification.setFileName(proof.getOriginalFilename());
             try {
@@ -687,8 +683,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     private void mapNbeRequestDetailsToEntity(HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, HpNbeDetails hpNbeDetails, HpProfile hpProfile) {
         if (hpRegistrationUpdateRequestTO.getHpNbeDetails() != null) {
-            String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-            User user = userDetailService.findByUsername(userName);
             hpNbeDetails.setMarksObtained(hpRegistrationUpdateRequestTO.getHpNbeDetails().getMarksObtained());
             hpNbeDetails.setMonthOfPassing(hpRegistrationUpdateRequestTO.getHpNbeDetails().getMonthOfPassing());
             hpNbeDetails.setRollNo(hpRegistrationUpdateRequestTO.getHpNbeDetails().getRollNo());
@@ -696,7 +690,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             hpNbeDetails.setYearOfPassing(hpRegistrationUpdateRequestTO.getHpNbeDetails().getYearOfPassing());
             hpNbeDetails.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
             hpNbeDetails.setHpProfile(hpProfile);
-            hpNbeDetails.setUser(user);
+            hpNbeDetails.setUser(hpProfile.getUser());
             hpNbeDetails.setPassportNumber(hpRegistrationUpdateRequestTO.getHpNbeDetails().getPassportNumber());
         }
     }
