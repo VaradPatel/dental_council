@@ -16,15 +16,12 @@ public class DistrictServiceImpl implements IDistrictService {
 
     private DistrictRepository districtRepository;
 
-    private DistrictDtoMapper districtDtoMapper;
-
-    public DistrictServiceImpl(DistrictRepository districtRepository, DistrictDtoMapper districtDtoMapper) {
+    public DistrictServiceImpl(DistrictRepository districtRepository) {
         this.districtRepository = districtRepository;
-        this.districtDtoMapper = districtDtoMapper;
     }
 
     @Override
     public List<DistrictTO> getDistrictData(BigInteger stateId) {
-    	return districtDtoMapper.districtDataToDto(districtRepository.getDistrict(stateId));
+    	return DistrictDtoMapper.DISTRICT_DTO_MAPPER.districtDataToDto(districtRepository.getDistrict(stateId));
     }
 }

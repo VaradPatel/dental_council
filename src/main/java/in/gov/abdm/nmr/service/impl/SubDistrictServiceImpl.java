@@ -16,15 +16,12 @@ public class SubDistrictServiceImpl implements ISubDistrictService {
 
     private SubDistrictRepository subDistrictRepository;
 
-    private SubDistrictDtoMapper subDistrictDtoMapper;
-
-    public SubDistrictServiceImpl(SubDistrictRepository subDistrictRepository, SubDistrictDtoMapper subDistrictDtoMapper) {
+    public SubDistrictServiceImpl(SubDistrictRepository subDistrictRepository) {
         this.subDistrictRepository = subDistrictRepository;
-        this.subDistrictDtoMapper = subDistrictDtoMapper;
     }
 
     @Override
     public List<SubDistrictTO> getSubDistrictData(BigInteger districtId) {
-    	return subDistrictDtoMapper.subDistrictDataToDto(subDistrictRepository.getSubDistrict(districtId));
+    	return SubDistrictDtoMapper.SUB_DISTRICT_DTO_MAPPER.subDistrictDataToDto(subDistrictRepository.getSubDistrict(districtId));
     }
 }

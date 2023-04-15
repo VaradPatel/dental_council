@@ -15,15 +15,12 @@ public class CourseServiceImpl implements ICourseService {
 
     private CourseRepository courseRepository;
 
-    private CourseDtoMapper courseDtoMapper;
-
-    public CourseServiceImpl(CourseRepository courseRepository, CourseDtoMapper courseDtoMapper) {
+    public CourseServiceImpl(CourseRepository courseRepository) {
         this.courseRepository = courseRepository;
-        this.courseDtoMapper = courseDtoMapper;
     }
 
     @Override
     public List<CourseTO> getCourseData() {
-        return courseDtoMapper.courseDataToDto(courseRepository.getCourse());
+        return CourseDtoMapper.COURSE_DTO_MAPPER.courseDataToDto(courseRepository.getCourse());
     }
 }

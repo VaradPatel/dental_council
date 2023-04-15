@@ -15,15 +15,12 @@ public class BroadSpecialityServiceImpl implements IBroadSpecialityService {
 
     private BroadSpecialityRepository broadSpecialityRepository;
 
-    private BroadSpecialityDtoMapper broadSpecialityDtoMapper;
-
-    public BroadSpecialityServiceImpl(BroadSpecialityRepository broadSpecialityRepository, BroadSpecialityDtoMapper broadSpecialityDtoMapper) {
+    public BroadSpecialityServiceImpl(BroadSpecialityRepository broadSpecialityRepository) {
         this.broadSpecialityRepository = broadSpecialityRepository;
-        this.broadSpecialityDtoMapper = broadSpecialityDtoMapper;
     }
 
     @Override
     public List<BroadSpecialityTO> getSpecialityData() {
-        return broadSpecialityDtoMapper.specialityDataToDto(broadSpecialityRepository.getSpeciality());
+        return BroadSpecialityDtoMapper.BROAD_SPECIALITY_DTO_MAPPER.specialityDataToDto(broadSpecialityRepository.getSpeciality());
     }
 }

@@ -266,32 +266,6 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         iWorkFlowAuditRepository.save(workFlowAudit);
     }
 
-    private WorkFlow buildNewCollegeWorkFlow(String requestId, BigInteger applicationTypeId, BigInteger actionId, BigInteger actorId, INextGroup iNextGroup, User user) {
-        UserGroup actorGroup = iGroupRepository.findById(actorId).get();
-        return WorkFlow.builder().requestId(requestId)
-                .applicationType(iApplicationTypeRepository.findById(applicationTypeId).get())
-                .createdBy(actorGroup)
-                .action(iActionRepository.findById(actionId).get())
-                .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get())
-                .previousGroup(actorGroup)
-                .currentGroup(iGroupRepository.findById(iNextGroup.getAssignTo()).get())
-                .userId(user)
-                .build();
-    }
-
-    private WorkFlowAudit buildNewCollegeWorkFlowAudit(String requestId, BigInteger applicationTypeId, BigInteger actionId, BigInteger actorId, INextGroup iNextGroup, User user) {
-        UserGroup actorGroup = iGroupRepository.findById(actorId).get();
-        return WorkFlowAudit.builder().requestId(requestId)
-                .applicationType(iApplicationTypeRepository.findById(applicationTypeId).get())
-                .createdBy(actorGroup)
-                .action(iActionRepository.findById(actionId).get())
-                .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get())
-                .previousGroup(actorGroup)
-                .currentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null)
-                .userId(user)
-                .build();
-    }
-
     private WorkFlow buildNewWorkFlow(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile, User user) {
 
         UserGroup actorGroup = iGroupRepository.findById(requestTO.getActorId()).get();

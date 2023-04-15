@@ -4,6 +4,7 @@ import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.mapper.INextGroup;
 
 import java.math.BigInteger;
 import java.sql.Date;
@@ -18,7 +19,7 @@ public class CommonTestData {
     public static final BigInteger ID =  BigInteger.valueOf(1);
     public static final BigInteger STATE_ID =  BigInteger.valueOf(20);
     public static final String STATE_NAME = "Maharashtra";
-    public static final String CODE = "20";
+    public static final String ISO_CODE = "20";
     public static final String STATE_SHORT_NAME = "MAH";
     public static final String PROFILE_DISPLAY_NAME = "John Doe";
     public static final String FIRST_NAME = "John";
@@ -31,7 +32,21 @@ public class CommonTestData {
     public static final String REQUEST_ID = "NMR1001";
     public static final String PROFILE_PHOTO = "Base 64";
     public static final Date DATE_OF_BIRTH =  Date.valueOf("1990-12-01");
-
+    public static final String BROAD_SPECIALITY = "BS";
+    public static final String COLLEGE_CODE = "123";
+    public static final String COURSE_NAME = "MBBS";
+    public static final String DISTRICT_NAME = "Pune";
+    public static final String COLLEGE_NAME = "Govt. college of science, Akola";
+    public static final String ADDRESS_LINE_1 = "Line1";
+    public static final String ADDRESS_LINE_2 = "Line2";
+    public static final String PIN_CODE = "123456";
+    public static final BigInteger COLLEGE_STATUS = BigInteger.valueOf(1);
+    public static final BigInteger COLLEGE_VISIBLE_STATUS = BigInteger.valueOf(1);
+    public static final BigInteger SYSTEM_OF_MEDICINE = BigInteger.valueOf(1);
+    public static final String WEBSITE = "abc@xyz.com";
+    public static final String VILLAGE_NAME = "Pune";
+    public static final String SUB_DISTRICT_NAME = "Pune";
+    public static final String LANGUAGE_NAME = "English";
 
     public static UserGroup getUserGroup(BigInteger userGroupId){
         Group group = Group.getGroup(userGroupId);
@@ -74,7 +89,7 @@ public class CommonTestData {
         StateMedicalCouncil stateMedicalCouncil = new StateMedicalCouncil();
         stateMedicalCouncil.setState(STATE_NAME);
         stateMedicalCouncil.setId(ID);
-        stateMedicalCouncil.setCode(CODE);
+        stateMedicalCouncil.setCode(ISO_CODE);
         stateMedicalCouncil.setNameShort(STATE_SHORT_NAME);
         stateMedicalCouncil.setName(STATE_NAME);
         return stateMedicalCouncil;
@@ -115,7 +130,7 @@ public class CommonTestData {
         State state =  new State();
         state.setCountry(getCountry());
         state.setId(STATE_ID);
-        state.setIsoCode(CODE);
+        state.setIsoCode(ISO_CODE);
         state.setName(STATE_NAME);
         return state;
     }
@@ -138,5 +153,71 @@ public class CommonTestData {
         return hpProfile;
     }
 
+    public static BroadSpeciality getBroadSpeciality(){
+        BroadSpeciality broadSpeciality = new BroadSpeciality();
+        broadSpeciality.setId(ID);
+        broadSpeciality.setName(BROAD_SPECIALITY);
+        return broadSpeciality;
+    }
 
+    public static Course getCourse(){
+        Course course = new Course();
+        course.setCourseName(COURSE_NAME);
+        course.setId(ID);
+        return course;
+    }
+
+    public static District getDistrict(){
+        District district =  new District();
+        district.setId(ID);
+        district.setName(DISTRICT_NAME);
+        district.setIsoCode(ISO_CODE);
+        district.setState(getState());
+        return district;
+    }
+
+    public static CollegeMaster getCollegeMaster(){
+        CollegeMaster collegeMaster =  new CollegeMaster();
+        collegeMaster.setId(ID);
+        collegeMaster.setCollegeCode(COLLEGE_CODE);
+        collegeMaster.setCourse(getCourse());
+        collegeMaster.setDistrict(getDistrict());
+        collegeMaster.setName(COLLEGE_NAME);
+        collegeMaster.setAddressLine1(ADDRESS_LINE_1);
+        collegeMaster.setAddressLine2(ADDRESS_LINE_2);
+        collegeMaster.setPinCode(PIN_CODE);
+        collegeMaster.setStateMedicalCouncil(getStateMedicalCouncil());
+        collegeMaster.setStatus(COLLEGE_STATUS);
+        collegeMaster.setVisibleStatus(COLLEGE_VISIBLE_STATUS);
+        collegeMaster.setSystemOfMedicineId(SYSTEM_OF_MEDICINE);
+        collegeMaster.setVillage(getVillage());
+        collegeMaster.setWebsite(WEBSITE);
+        collegeMaster.setState(getState());
+        return collegeMaster;
+    }
+
+    public static Villages getVillage() {
+        Villages villages =  new Villages();
+        villages.setId(ID);
+        villages.setName(VILLAGE_NAME);
+        villages.setSubdistrict(getSubDistrict());
+        villages.setIsoCode(ISO_CODE);
+        return villages;
+    }
+
+    public static SubDistrict getSubDistrict() {
+        SubDistrict subDistrict =  new SubDistrict();
+        subDistrict.setIsoCode(ISO_CODE);
+        subDistrict.setName(SUB_DISTRICT_NAME);
+        subDistrict.setId(ID);
+        subDistrict.setDistrictCode(getDistrict());
+        return subDistrict;
+    }
+
+    public static Language getLanguage(){
+        Language language = new Language();
+        language.setId(ID);
+        language.setName(LANGUAGE_NAME);
+        return language;
+    }
 }

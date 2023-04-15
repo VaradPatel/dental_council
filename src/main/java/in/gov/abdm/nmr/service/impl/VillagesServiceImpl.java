@@ -16,15 +16,13 @@ public class VillagesServiceImpl implements IVillagesService {
 
     private VillagesRepository villagesRepository;
 
-    private VillagesDtoMapper villagesDtoMapper;
 
-    public VillagesServiceImpl(VillagesRepository villagesRepository, VillagesDtoMapper villagesDtoMapper) {
+    public VillagesServiceImpl(VillagesRepository villagesRepository) {
         this.villagesRepository = villagesRepository;
-        this.villagesDtoMapper = villagesDtoMapper;
     }
 
     @Override
     public List<VillagesTO> getCityData(BigInteger subdistrictId) {
-    	return villagesDtoMapper.villageDataToDto(villagesRepository.getVillage(subdistrictId));
+    	return VillagesDtoMapper.VILLAGES_DTO_MAPPER.villageDataToDto(villagesRepository.getVillage(subdistrictId));
     }
 }

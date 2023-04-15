@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.service;
 
-import in.gov.abdm.nmr.dto.StateTO;
-import in.gov.abdm.nmr.repository.IStateRepository;
-import in.gov.abdm.nmr.service.impl.StateServiceImpl;
+import in.gov.abdm.nmr.dto.VillagesTO;
+import in.gov.abdm.nmr.repository.VillagesRepository;
+import in.gov.abdm.nmr.service.impl.VillagesServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,22 +19,21 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class StateServiceTest {
+class VillagesServiceTest {
 
     @Mock
-    IStateRepository stateRepository;
+    VillagesRepository villagesRepository;
 
     @InjectMocks
-    StateServiceImpl stateService;
+    VillagesServiceImpl villagesService;
 
     @Test
     void testGetStateDataShouldReturnValidResponse(){
-        when(stateRepository.getState(any(BigInteger.class))).thenReturn(List.of(getState()));
-        List<StateTO> states = stateService.getStateData(ID);
-        assertTrue(states.size() == 1);
-        assertEquals(STATE_ID, states.get(0).getId());
-        assertEquals(STATE_NAME, states.get(0).getName());
-        assertEquals(ISO_CODE, states.get(0).getIsoCode());
+        when(villagesRepository.getVillage(any(BigInteger.class))).thenReturn(List.of(getVillage()));
+        List<VillagesTO> villages = villagesService.getCityData(ID);
+        assertTrue(villages.size() == 1);
+        assertEquals(ID, villages.get(0).getId());
+        assertEquals(VILLAGE_NAME, villages.get(0).getName());
     }
 
 }

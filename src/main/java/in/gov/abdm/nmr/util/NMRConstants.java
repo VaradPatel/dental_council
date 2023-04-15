@@ -3,6 +3,9 @@ package in.gov.abdm.nmr.util;
 
 import lombok.experimental.UtilityClass;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static in.gov.abdm.nmr.enums.ApplicationType.COLLEGE_REGISTRATION;
 import static in.gov.abdm.nmr.enums.ApplicationType.HP_ACTIVATE_LICENSE;
 
@@ -581,4 +584,12 @@ public class NMRConstants {
     public static final String FETCH_COUNT_QUERY_FOR_NBE = "SELECT application_type_id as applicationTypeId, nbe_status as profileStatus, count(*) as count FROM main.dashboard d where application_type_id in (7) group by application_type_id , nbe_status ";
 
     public static final String NOT_YET_RECEIVED = "Not Yet Received";
+
+    public static final String OPERATOR_MINUS = "-";
+
+    public static final String OPERATOR_PLUS = "+";
+
+    public static final String OPERATOR_MULTIPLICATION = "*";
+
+    public static final List<String> OPERATORS = Arrays.asList(OPERATOR_PLUS, OPERATOR_MINUS, OPERATOR_MULTIPLICATION);
 }
