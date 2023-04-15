@@ -157,7 +157,6 @@ public class ApplicationServiceImpl implements IApplicationService {
         if (Objects.equals(HpProfileStatus.APPROVED.getId(), hpProfile.getHpProfileStatus().getId())) {
             log.debug("Building a new request_id");
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
-//        HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
             initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
             SuspendRequestResponseTo suspendRequestResponseTo = new SuspendRequestResponseTo();
             suspendRequestResponseTo.setProfileId(hpProfile.getId().toString());
@@ -191,7 +190,6 @@ public class ApplicationServiceImpl implements IApplicationService {
 
             log.debug("Building Request id.");
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
-//            HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
             WorkFlow workFlow = iWorkFlowRepository.findLastWorkFlowForHealthProfessional(hpProfile.getId());
             if (Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
                 log.debug("Proceeding to reactivate through SMC since the profile was suspended by NMC");

@@ -6,6 +6,7 @@ import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 
 import java.math.BigInteger;
+import java.sql.Date;
 import java.util.List;
 
 public class CommonTestData {
@@ -27,6 +28,9 @@ public class CommonTestData {
     public static final Integer NDHM_ENROLLMENT_NUMBER = 1;
     public static final String MOBILE_NUMBER = "9090909090";
     public static final String SUPER_SPECIALITY = "MS";
+    public static final String REQUEST_ID = "NMR1001";
+    public static final String PROFILE_PHOTO = "Base 64";
+    public static final Date DATE_OF_BIRTH =  Date.valueOf("1990-12-01");
 
 
     public static UserGroup getUserGroup(BigInteger userGroupId){
@@ -115,4 +119,24 @@ public class CommonTestData {
         state.setName(STATE_NAME);
         return state;
     }
+
+    public static HpProfile getHpProfile(){
+        HpProfile hpProfile = new HpProfile();
+        hpProfile.setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.PENDING.getId()).build());
+        hpProfile.setId(ID);
+        hpProfile.setFullName(PROFILE_DISPLAY_NAME);
+        hpProfile.setMobileNumber(MOBILE_NUMBER);
+        hpProfile.setESignStatus(NMRConstants.SUCCESS);
+        hpProfile.setIsNew(0);
+        hpProfile.setRequestId(REQUEST_ID);
+        hpProfile.setNmrId(NMR_ID);
+        hpProfile.setCountryNationality(getCountry());
+        hpProfile.setEmailId(EMAIL_ID);
+        hpProfile.setProfilePhoto(PROFILE_PHOTO);
+        hpProfile.setDateOfBirth(DATE_OF_BIRTH);
+        hpProfile.setGender("M");
+        return hpProfile;
+    }
+
+
 }

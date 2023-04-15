@@ -14,57 +14,37 @@ import java.util.List;
 
 @Service
 public class MasterDataServiceImpl implements IMasterDataService {
-
+    @Autowired
     private StateMedicalCouncilDaoServiceImpl stateMedicalCouncilService;
-
+    @Autowired
     private CountryServiceImpl countryService;
-
+    @Autowired
     private StateServiceImpl stateService;
-
+    @Autowired
     private DistrictServiceImpl districtService;
-
+    @Autowired
     private SubDistrictServiceImpl subDistrictService;
-
+    @Autowired
     private VillagesServiceImpl villagesServiceImpl;
-
+    @Autowired
     private BroadSpecialityServiceImpl broadSpecialityServiceImpl;
-
+    @Autowired
     private UniversityServiceImpl universityService;
-
+    @Autowired
     private LanguageServiceImpl languageService;
-
+    @Autowired
     private IMasterDataMapper masterDataMapper;
-
+    @Autowired
     private ICourseService courseService;
-
+    @Autowired
     private IRegistrationRenewationTypeService registrationRenewationTypeService;
-
+    @Autowired
     private IFacilityTypeService facilityTypeService;
     @Autowired
     private ICollegeMasterService collegeMasterService;
     @Autowired
     private IUniversityMasterService universityMasterService;
 
-    public MasterDataServiceImpl(StateMedicalCouncilDaoServiceImpl stateMedicalCouncilService, IMasterDataMapper masterDataMapper,
-                                 CountryServiceImpl countryService, StateServiceImpl stateService, DistrictServiceImpl districtService, SubDistrictServiceImpl subDistrictService,
-                                 VillagesServiceImpl villagesServiceImpl, BroadSpecialityServiceImpl broadSpecialityServiceImpl, UniversityServiceImpl universityService,
-                                 LanguageServiceImpl languageService, ICourseService courseService, IRegistrationRenewationTypeService registrationRenewationTypeService,
-                                 IFacilityTypeService facilityTypeService) {
-        super();
-        this.stateMedicalCouncilService = stateMedicalCouncilService;
-        this.masterDataMapper = masterDataMapper;
-        this.countryService = countryService;
-        this.stateService = stateService;
-        this.districtService = districtService;
-        this.subDistrictService = subDistrictService;
-        this.villagesServiceImpl = villagesServiceImpl;
-        this.broadSpecialityServiceImpl = broadSpecialityServiceImpl;
-        this.universityService = universityService;
-        this.languageService = languageService;
-        this.courseService = courseService;
-        this.registrationRenewationTypeService = registrationRenewationTypeService;
-        this.facilityTypeService = facilityTypeService;
-    }
 
     @Override
     public List<MasterDataTO> smcs() {
