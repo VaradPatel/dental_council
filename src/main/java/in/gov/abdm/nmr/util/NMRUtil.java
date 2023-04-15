@@ -7,9 +7,9 @@ import in.gov.abdm.nmr.exception.InvalidRequestException;
 import lombok.experimental.UtilityClass;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 
@@ -19,7 +19,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
 @UtilityClass
 public final class NMRUtil {
 
-    private static final Random RANDOM = new Random();
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     public static String buildRequestIdForWorkflow(RequestCounter requestCounter){
         return requestCounter.getApplicationType().getRequestPrefixId().concat(String.valueOf(requestCounter.getCounter()));

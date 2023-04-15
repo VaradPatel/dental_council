@@ -185,7 +185,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 if (HpProfileStatus.PENDING.getId().equals(latestHpProfile.getHpProfileStatus().getId())) {
                     throw new InvalidRequestException("Please use the latest ongoing HP Profile id for updation.");
                 }
-                registrationId = existingHpProfile.getRegistrationId();
             }
 
             targetedHpProfile = new HpProfile();
@@ -232,37 +231,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 newKycAddress.setHpProfileId(updatedHpProfileId);
                 iAddressRepository.save(newKycAddress);
             }
-
-//            List<QualificationDetails> qualificationDetails = new ArrayList<>();
-//            List<QualificationDetails> qualificationDetailsList = iQualificationDetailRepository.getQualificationDetailsByHpProfileId(copiedExistingHpProfile.getId());
-//            for (QualificationDetails qualificationDetail : qualificationDetailsList) {
-//                QualificationDetails newQualificationDetails = new QualificationDetails();
-//                org.springframework.beans.BeanUtils.copyProperties(qualificationDetail, newQualificationDetails);
-//                newQualificationDetails.setId(null);
-//                newQualificationDetails.setHpProfile(targetedHpProfile);
-//                qualificationDetails.add(newQualificationDetails);
-//            }
-//            iQualificationDetailRepository.saveAll(qualificationDetails);
-//
-//            List<ForeignQualificationDetails> customQualificationDetailsList = new ArrayList<>();
-//            List<ForeignQualificationDetails> customQualificationDetails = iForeignQualificationDetailRepository.getQualificationDetailsByHpProfileId(copiedExistingHpProfile.getId());
-//            for (ForeignQualificationDetails customQualificationDetail : customQualificationDetails) {
-//                ForeignQualificationDetails newCustomQualificationDetails = new ForeignQualificationDetails();
-//                org.springframework.beans.BeanUtils.copyProperties(customQualificationDetail, newCustomQualificationDetails);
-//                newCustomQualificationDetails.setId(null);
-//                newCustomQualificationDetails.setHpProfile(targetedHpProfile);
-//                customQualificationDetailsList.add(newCustomQualificationDetails);
-//            }
-//            iForeignQualificationDetailRepository.saveAll(customQualificationDetailsList);
-//
-//            HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByHpProfileId(copiedExistingHpProfile.getId());
-//            if (hpNbeDetails != null) {
-//                log.debug("Setting NBE Details");
-//                HpNbeDetails newHpNbeDetails = new HpNbeDetails();
-//                org.springframework.beans.BeanUtils.copyProperties(hpNbeDetails, newHpNbeDetails);
-//                newHpNbeDetails.setId(null);
-//                newHpNbeDetails.setHpProfileId(targetedHpProfile.getId());
-//            }
         }
         log.info("HpProfileDaoServiceImpl : updateHpPersonalDetails method : Execution Successful. ");
         return new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", updatedHpProfileId);
