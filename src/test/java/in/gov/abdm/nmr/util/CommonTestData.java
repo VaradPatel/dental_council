@@ -19,6 +19,7 @@ public class CommonTestData {
     public static final BigInteger ID =  BigInteger.valueOf(1);
     public static final BigInteger STATE_ID =  BigInteger.valueOf(20);
     public static final String STATE_NAME = "Maharashtra";
+    public static final String STATE_MEDICAL_COUNCIL = "Maharashtra Medical Council";
     public static final String ISO_CODE = "20";
     public static final String STATE_SHORT_NAME = "MAH";
     public static final String PROFILE_DISPLAY_NAME = "John Doe";
@@ -32,6 +33,8 @@ public class CommonTestData {
     public static final String REQUEST_ID = "NMR1001";
     public static final String PROFILE_PHOTO = "Base 64";
     public static final Date DATE_OF_BIRTH =  Date.valueOf("1990-12-01");
+    public static final Date REGISTRATION_DATE =  Date.valueOf("1990-12-01");
+    public static final String REGISTRATION_NUMBER = "MAH-123";
     public static final String BROAD_SPECIALITY = "BS";
     public static final String COLLEGE_CODE = "123";
     public static final String COURSE_NAME = "MBBS";
@@ -47,6 +50,10 @@ public class CommonTestData {
     public static final String VILLAGE_NAME = "Pune";
     public static final String SUB_DISTRICT_NAME = "Pune";
     public static final String LANGUAGE_NAME = "English";
+    public static final String PERMANENT_RENEWATION = "Permanent";
+    public static final String QUERY_COMMENT = "Comment";
+    public static final String QUERY_ON = "Name";
+    public static final String QUERY_SECTION = "Personal";
 
     public static UserGroup getUserGroup(BigInteger userGroupId){
         Group group = Group.getGroup(userGroupId);
@@ -219,5 +226,41 @@ public class CommonTestData {
         language.setId(ID);
         language.setName(LANGUAGE_NAME);
         return language;
+    }
+
+    public static HpProfileMaster getMasterHpProfile(){
+        HpProfileMaster hpProfileMaster = new HpProfileMaster();
+        hpProfileMaster.setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.PENDING.getId()).build());
+        hpProfileMaster.setId(ID);
+        hpProfileMaster.setProfilePhoto(PROFILE_PHOTO);
+        hpProfileMaster.setCountryNationality(getCountry());
+        hpProfileMaster.setFullName(PROFILE_DISPLAY_NAME);
+        hpProfileMaster.setMobileNumber(MOBILE_NUMBER);
+        hpProfileMaster.setRequestId(REQUEST_ID);
+        hpProfileMaster.setNmrId(NMR_ID);
+        hpProfileMaster.setCountryNationality(getCountry());
+        hpProfileMaster.setEmailId(EMAIL_ID);
+        hpProfileMaster.setProfilePhoto(PROFILE_PHOTO);
+        hpProfileMaster.setDateOfBirth(DATE_OF_BIRTH);
+        hpProfileMaster.setGender("M");
+        return hpProfileMaster;
+    }
+
+    public static RegistrationDetailsMaster getMasterRegistrationDetails(){
+        RegistrationDetailsMaster registrationDetailsMaster =  new RegistrationDetailsMaster();
+        registrationDetailsMaster.setId(1);
+        registrationDetailsMaster.setHpProfileMaster(getMasterHpProfile());
+        registrationDetailsMaster.setRegistrationNo(REGISTRATION_NUMBER);
+        registrationDetailsMaster.setRegistrationDate(REGISTRATION_DATE);
+        registrationDetailsMaster.setStateMedicalCouncil(getStateMedicalCouncil());
+        return registrationDetailsMaster;
+
+    }
+
+    public static RegistrationRenewationType getRegistrationRenewationType(){
+        RegistrationRenewationType registrationRenewationType =  new RegistrationRenewationType();
+        registrationRenewationType.setId(ID);
+        registrationRenewationType.setName(PERMANENT_RENEWATION);
+        return registrationRenewationType;
     }
 }

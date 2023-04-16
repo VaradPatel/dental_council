@@ -29,9 +29,6 @@ public class QueriesServiceImpl implements IQueriesService {
 
     @Autowired
     QueriesRepository queriesRepository;
-
-    @Autowired
-    private QueriesDtoMapper queriesDtoMapper;
     @Autowired
     private IWorkFlowService workFlowService;
 
@@ -78,7 +75,7 @@ public class QueriesServiceImpl implements IQueriesService {
      */
     @Override
     public List<QueryResponseTo> getQueriesByHpProfileId(BigInteger hpProfileId) {
-        return queriesDtoMapper.queryDataToOpenQueriesDto(queriesRepository.findOpenQueriesByHpProfileId(hpProfileId));
+        return QueriesDtoMapper.QUERIES_DTO_MAPPER.queryDataToOpenQueriesDto(queriesRepository.findOpenQueriesByHpProfileId(hpProfileId));
     }
 
     /**
