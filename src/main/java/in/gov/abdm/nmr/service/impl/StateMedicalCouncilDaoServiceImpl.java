@@ -2,6 +2,8 @@ package in.gov.abdm.nmr.service.impl;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +15,7 @@ import in.gov.abdm.nmr.service.IStateMedicalCouncilDaoService;
 
 @Service
 @Transactional
+@Slf4j
 public class StateMedicalCouncilDaoServiceImpl implements IStateMedicalCouncilDaoService {
 
     private IStateMedicalCouncilRepository stateMedicalCouncilRepository;
@@ -23,7 +26,8 @@ public class StateMedicalCouncilDaoServiceImpl implements IStateMedicalCouncilDa
 
     @Override
     public List<StateMedicalCouncilTO> getAllStateMedicalCouncil() {
-        return IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(stateMedicalCouncilRepository.findAll());
+        log.info("Fetching state-medical-council details.");
+        return IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(stateMedicalCouncilRepository.findAll(Sort.by("name").ascending()));
     }
 
     @Override
