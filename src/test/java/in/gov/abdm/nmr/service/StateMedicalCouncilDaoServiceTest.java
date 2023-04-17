@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ import static in.gov.abdm.nmr.util.CommonTestData.STATE_NAME;
 import static in.gov.abdm.nmr.util.CommonTestData.getStateMedicalCouncil;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +40,7 @@ class StateMedicalCouncilDaoServiceTest {
 
     @Test
     void testGetAllStateMedicalCouncilShouldReturnAllCouncils(){
-        when(stateMedicalCouncilRepository.findAll()).thenReturn(List.of(getStateMedicalCouncil()));
+        when(stateMedicalCouncilRepository.findAll(any(Sort.class))).thenReturn(List.of(getStateMedicalCouncil()));
         List<StateMedicalCouncilTO> stateMedicalCouncils = stateMedicalCouncilDaoService.getAllStateMedicalCouncil();
         assertTrue(stateMedicalCouncils.size() == 1);
         assertEquals(STATE_NAME,stateMedicalCouncils.get(0).getName());
