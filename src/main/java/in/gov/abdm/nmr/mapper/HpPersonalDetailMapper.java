@@ -99,7 +99,7 @@ public final class HpPersonalDetailMapper {
         hpProfilePersonalResponseTO.setNmrId(hpProfile.getNmrId());
         hpProfilePersonalResponseTO.setHpProfileStatusId(hpProfile.getHpProfileStatus() != null ? hpProfile.getHpProfileStatus().getId() : null);
         hpProfilePersonalResponseTO.setWorkFlowStatusId(workFlowStatusId);
-        hpProfilePersonalResponseTO.setEmailVerified(hpProfile.getUser().isEmailVerified());
+        hpProfilePersonalResponseTO.setEmailVerified(hpProfile.getUser() != null && hpProfile.getUser().isEmailVerified());
 
         return hpProfilePersonalResponseTO;
     }
