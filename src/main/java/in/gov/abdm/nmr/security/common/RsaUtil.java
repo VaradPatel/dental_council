@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.security.common;
 
 import in.gov.abdm.nmr.common.ApplicationProfileEnum;
+import in.gov.abdm.nmr.util.NMRConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,8 +24,6 @@ public class RsaUtil {
 
     private static final String KEY_ALIAS = "api";
 
-    private static final String RSA_PADDING = "RSA/ECB/PKCS1Padding";
-
     private KeyUtil keyUtil;
 
     private String privateKeyPass;
@@ -42,7 +41,7 @@ public class RsaUtil {
             return encrypted;
         }
         try {
-            Cipher decryptCipher = Cipher.getInstance(RSA_PADDING);
+            Cipher decryptCipher = Cipher.getInstance(NMRConstants.RSA_PADDING);
             decryptCipher.init(Cipher.DECRYPT_MODE, keyUtil.getPrivateKey(KEY_ALIAS, privateKeyPass));
             return new String(decryptCipher.doFinal(Base64.getDecoder().decode(encrypted)), StandardCharsets.UTF_8);
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException | NoSuchAlgorithmException |
