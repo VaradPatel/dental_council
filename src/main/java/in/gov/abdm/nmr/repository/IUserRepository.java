@@ -13,14 +13,11 @@ public interface IUserRepository extends JpaRepository<User, BigInteger> {
             OR usr.user_name = :username or usr.nmr_id= :username""", nativeQuery = true)
     User findByUsername(String username);
 
-    //@Query(value = "(SELECT COUNT(usr) from user usr WHERE usr.hpr_id=:username)>0", nativeQuery = true)
     boolean existsByUserName(String userName);
 
     boolean existsByMobileNumber(String mobileNumber);
 
     boolean existsByEmail(String email);
-
-    User findFirstByEmail(String email);
 
     User findFirstByMobileNumber(String mobileNumber);
 

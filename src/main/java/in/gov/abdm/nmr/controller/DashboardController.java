@@ -37,14 +37,6 @@ public class DashboardController {
     @Autowired
     private IFetchSpecificDetailsService iFetchSpecificDetailsService;
 
-
-/*    @GetMapping(ProtectedPaths.PATH_DASHBOARD_CARD_COUNT)
-    @SecurityRequirement(name = "bearerAuth")
-    public FetchCountOnCardResponseTO fetchCountOnCard() throws InvalidRequestException, AccessDeniedException {
-        return iFetchCountOnCardService.fetchCountOnCard();
-    }*/
-
-
     /**
      * This endpoint can be accessed to retrieve the count of applications according to their status
      *

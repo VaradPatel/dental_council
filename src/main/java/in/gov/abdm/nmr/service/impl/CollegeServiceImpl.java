@@ -26,35 +26,6 @@ public class CollegeServiceImpl implements ICollegeService, ICollegeMasterServic
     @Autowired
     private ICollegeMasterMapper collegeMasterMapper;
 
-    private String getColumnToSort(String columnToSort) {
-        Map<String, String> columns;
-        if (columnToSort != null && columnToSort.length() > 0) {
-            columns = mapColumnToTable();
-            if (columns.containsKey(columnToSort)) {
-                return columns.get(columnToSort);
-            } else {
-                return " wf.created_at ";
-            }
-        } else {
-            return " wf.created_at ";
-        }
-    }
-
-    private Map<String, String> mapColumnToTable() {
-        Map<String, String> columnToSortMap = new HashMap<>();
-        columnToSortMap.put("createdAt", " wf.created_at");
-        columnToSortMap.put("collegeId", " c.college_code");
-        columnToSortMap.put("collegeName", " c.name");
-        columnToSortMap.put("councilName", " smc.name");
-        columnToSortMap.put("status", "  wfs.name");
-        columnToSortMap.put("pendency", " pendency");
-        return columnToSortMap;
-    }
-
-    private boolean collegeRegistrationStatus() {
-        return false;
-    }
-
     @Override
     public List<CollegeMasterTo> getCollegesByStateId(BigInteger stateId) {
         return collegeMasterMapper.collegeMasterTo(stateId != null ? collegeMaster.getCollegesByStateId(stateId) : collegeMaster.getColleges());

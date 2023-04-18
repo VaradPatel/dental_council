@@ -32,7 +32,6 @@ public class UserController {
     }
 
     @GetMapping(path = ProtectedPaths.PATH_SMC_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
-    //---
     @RolesAllowed({RoleConstants.STATE_MEDICAL_COUNCIL})
     @SecurityRequirement(name = "bearerAuth")
     public SMCProfileTO smcProfile(@PathVariable(name = "id") BigInteger id) throws NmrException, InvalidIdException {
@@ -40,7 +39,6 @@ public class UserController {
     }
 
     @GetMapping(path = ProtectedPaths.PATH_NMC_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
-    //---
     @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL})
     @SecurityRequirement(name = "bearerAuth")
     public NmcProfileTO nmcProfile(@PathVariable(name = "id") BigInteger id) throws NmrException, InvalidIdException {
@@ -48,7 +46,6 @@ public class UserController {
     }
 
     @GetMapping(path = ProtectedPaths.PATH_NBE_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
-    //---
     @RolesAllowed({RoleConstants.NBE})
     @SecurityRequirement(name = "bearerAuth")
     public NbeProfileTO nbeProfile(@PathVariable(name = "id") BigInteger id) throws NmrException, InvalidIdException {

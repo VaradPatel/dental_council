@@ -10,12 +10,6 @@ import java.util.List;
 
 public interface IQualificationDetailRepository extends JpaRepository<QualificationDetails, BigInteger> {
 
-    @Query(value = "SELECT * FROM qualification_details where registration_details_id = :registrationId", nativeQuery = true)
-    List<QualificationDetails> getQualificationDetailsByRegistrationId(Integer registrationId);
-
-    @Query(value = "SELECT * FROM qualification_details where hp_profile_id = :hpProfileId", nativeQuery = true)
-    List<QualificationDetails> getQualificationDetailsByHpProfileId(BigInteger hpProfileId);
-
     @Query(value = "SELECT * FROM qualification_details where user_id = :userId", nativeQuery = true)
     List<QualificationDetails> getQualificationDetailsByUserId(BigInteger userId);
 
