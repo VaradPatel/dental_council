@@ -23,7 +23,7 @@ public interface IHpRegistrationService {
      * @param registrationNumber
      * @return SmcRegistrationDetailResponseTO The SMC registration detail response transfer object which contains the SMC registration details of the user.
      */
-    SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NmrException;
+    SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NmrException, NoDataFoundException;
 
     /**
      * Uploads the profile picture for the given HP profile ID.
@@ -33,7 +33,7 @@ public interface IHpRegistrationService {
      * @return An instance of {@link HpProfilePictureResponseTO} containing information about the uploaded profile picture.
      * @throws IOException If there is an error reading the file or uploading it to the server.
      */
-    HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException;
+    HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException, InvalidRequestException;
 
     /**
      * Adds qualifications to a HP profile.
@@ -77,7 +77,7 @@ public interface IHpRegistrationService {
      * @throws Exception In case of any error during the update process.
      */
     HpProfileWorkDetailsResponseTO addOrUpdateWorkProfileDetail(BigInteger hpProfileId,
-                                                                HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws NmrException, InvalidRequestException;
+                                                                HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws NmrException, InvalidRequestException, NotFoundException;
 
     /**
      * Submit the HP profile using the provided request data.
@@ -104,7 +104,7 @@ public interface IHpRegistrationService {
      * @param hpProfileId The unique identifier for the health professional's profile.
      * @return An instance of {@link HpProfileWorkDetailsResponseTO} containing the work details of the health professional.
      */
-    HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) throws NmrException;
+    HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) throws NmrException, InvalidRequestException;
 
     /**
      * This method is used to retrieve the registration details of a health professional based on their profile ID.

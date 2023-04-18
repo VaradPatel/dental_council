@@ -5,6 +5,8 @@ import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import in.gov.abdm.nmr.exception.InvalidIDException;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -63,32 +65,32 @@ public class SearchServiceImpl implements ISearchService {
     }
 
     @Override
-    public HpSearchResponseTO searchHP(HpSearchRequestTO hpSearchRequestTO, Pageable pageable) throws NmrException {
+    public HpSearchResponseTO searchHP(HpSearchRequestTO hpSearchRequestTO, Pageable pageable) throws InvalidRequestException {
         try {
             if (hpSearchRequestTO != null && hpSearchRequestTO.getProfileStatusId() != null && !PROFILE_STATUS_CODES.contains(hpSearchRequestTO.getProfileStatusId())) {
-                throw new NmrException("Invalid profile status code", HttpStatus.BAD_REQUEST);
+                throw new InvalidRequestException("Invalid profile status code");
             }
             SearchResponse<HpSearchResultTO> results = elasticsearchDaoService.searchHP(hpSearchRequestTO, pageable);
             return new HpSearchResponseTO(results.hits().hits().stream().map(Hit::source).toList(), results.hits().total().value());
 
-        } catch (ElasticsearchException | IOException e) {
+        } catch (ElasticsearchException | IOException | InvalidRequestException e) {
             LOGGER.error("Exception while searching for HP", e);
-            throw new NmrException("Exception while searching for HP", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InvalidRequestException("Exception while searching for HP");
         }
     }
 
     @Override
-    public HpSearchProfileTO getHpSearchProfileById(BigInteger profileId) throws NmrException {
+    public HpSearchProfileTO getHpSearchProfileById(BigInteger profileId) throws InvalidIDException, NmrException {
         try {
             if (!elasticsearchDaoService.doesHpExists(profileId)) {
-                throw new NmrException("No resource found for id", HttpStatus.NOT_FOUND);
+                throw new InvalidIDException();
             }
-        } catch (ElasticsearchException | IOException | NmrException e) {
-            if (e instanceof NmrException ne) {
+        } catch (ElasticsearchException | IOException | InvalidIDException e) {
+            if (e instanceof InvalidIDException ne) {
                 throw ne;
             }
             LOGGER.error("Exception while retrieving HP profile", e);
-            throw new NmrException("Exception while retrieving HP profile", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new NmrException("Exception while retrieving HP profile");
         }
 
         HpProfileMaster hpProfileMaster = iHpProfileMasterRepository.findById(profileId).get();

@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.exception.InvalidIDException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.OtpException;
 
@@ -15,17 +16,17 @@ public interface IUserService {
 
     List<NotificationToggleResponseTO> toggleNotification(NotificationToggleRequestTO notificationToggleRequestTO);
 
-    SMCProfileTO getSmcProfile(BigInteger id) throws NmrException;
+    SMCProfileTO getSmcProfile(BigInteger id) throws NmrException, InvalidIDException;
 
-    NmcProfileTO getNmcProfile(BigInteger id) throws NmrException;
+    NmcProfileTO getNmcProfile(BigInteger id) throws NmrException, InvalidIDException;
 
-    NbeProfileTO getNbeProfile(BigInteger id) throws NmrException;
+    NbeProfileTO getNbeProfile(BigInteger id) throws NmrException, InvalidIDException;
 
-    SMCProfileTO updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException;
+    SMCProfileTO updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException, InvalidIDException;
 
-    NmcProfileTO updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException;
+    NmcProfileTO updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException, InvalidIDException;
 
-    NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException;
+    NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIDException;
 
     ResponseMessageTo createHpUserAccount(CreateHpUserAccountTo createHpUserAccountTo);
 

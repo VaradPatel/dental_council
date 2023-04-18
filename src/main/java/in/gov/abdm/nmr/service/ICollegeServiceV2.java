@@ -7,20 +7,19 @@ import java.util.List;
 import in.gov.abdm.nmr.dto.CollegeMasterDataTO;
 import in.gov.abdm.nmr.dto.CollegeMasterTOV2;
 import in.gov.abdm.nmr.dto.CollegeProfileTOV2;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
-import in.gov.abdm.nmr.exception.NmrException;
+import in.gov.abdm.nmr.exception.*;
 
 public interface ICollegeServiceV2 {
 
     List<CollegeMasterDataTO> getAllColleges() throws NmrException;
 
-    CollegeMasterTOV2 getCollege(BigInteger id) throws NmrException;
+    CollegeMasterTOV2 getCollege(BigInteger id) throws NmrException, InvalidIDException, NotFoundException;
 
-    CollegeMasterTOV2 createOrUpdateCollege(CollegeMasterTOV2 collegeMasterTOV2) throws NmrException, InvalidRequestException;
+    CollegeMasterTOV2 createOrUpdateCollege(CollegeMasterTOV2 collegeMasterTOV2) throws NmrException, InvalidRequestException, InvalidIDException, ResourceAlreadyExistException, NotFoundException;
 
-    CollegeProfileTOV2 createOrUpdateCollegeVerifier(CollegeProfileTOV2 collegeProfileTOV2) throws GeneralSecurityException, NmrException, InvalidRequestException;
+    CollegeProfileTOV2 createOrUpdateCollegeVerifier(CollegeProfileTOV2 collegeProfileTOV2) throws GeneralSecurityException, NmrException, InvalidRequestException, InvalidIDException, ResourceAlreadyExistException;
 
     List<CollegeMasterDataTO> getAllCollegeVerifiersDesignation() throws NmrException;
 
-    CollegeProfileTOV2 getCollegeVerifier(BigInteger collegeId, BigInteger verifierId) throws NmrException;
+    CollegeProfileTOV2 getCollegeVerifier(BigInteger collegeId, BigInteger verifierId) throws NmrException, InvalidIDException;
 }

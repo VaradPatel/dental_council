@@ -191,14 +191,14 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
      * @return SmcRegistrationDetailResponseTO A TO (Transfer Object) containing the SMC registration information that was fetched.
      */
     @Override
-    public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NmrException {
+    public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NmrException, NoDataFoundException {
         return iHpProfileMapper
                 .smcRegistrationToDto(hpProfileDaoService.fetchSmcRegistrationDetail(councilId, registrationNumber));
     }
 
 
     @Override
-    public HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException {
+    public HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException, InvalidRequestException {
         return iHpProfileMapper.hpProfilePictureUploadToDto(hpProfileDaoService.uploadHpProfilePhoto(file, hpProfileId));
     }
 
@@ -215,7 +215,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws NmrException, InvalidRequestException, WorkFlowException {
         HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
         if (hpProfile.getNmrId() == null) {
-            throw new NmrException("You cannot raise additional qualification request until NMR Id is generated", HttpStatus.BAD_REQUEST);
+            throw new WorkFlowException("You cannot raise additional qualification request until NMR Id is generated");
         }
         validateQualificationDetailsAndProofs(qualificationDetailRequestTOs, proofs);
         for (QualificationDetailRequestTO qualificationDetailRequestTO : qualificationDetailRequestTOs) {
@@ -268,7 +268,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Override
     public HpProfileWorkDetailsResponseTO addOrUpdateWorkProfileDetail(BigInteger hpProfileId,
-                                                                       HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws NmrException, InvalidRequestException {
+                                                                       HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws NmrException, InvalidRequestException, NotFoundException {
 
         log.info("In HpRegistrationServiceImpl : addOrUpdateWorkProfileDetail method");
 
@@ -375,7 +375,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     @Override
-    public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) throws NmrException {
+    public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) throws NmrException, InvalidRequestException {
         HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = null;
         List<WorkProfile> workProfileList = new ArrayList<>();
         List<LanguagesKnown> languagesKnown = new ArrayList<>();
@@ -388,7 +388,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 workProfileList = workProfileRepository.getWorkProfileDetailsByUserId(userId);
                 languagesKnown = languagesKnownRepository.findByUserId(userId);
             } else {
-                throw new NmrException(NO_MATCHING_USER_DETAILS_FOUND, HttpStatus.BAD_REQUEST);
+                throw new InvalidRequestException(NO_MATCHING_USER_DETAILS_FOUND);
             }
         }
 
@@ -403,7 +403,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(workProfileList);
             hpProfileWorkDetailsResponseTO.setLanguagesKnownIds(languagesKnownIds);
         } else {
-            throw new NmrException(NO_MATCHING_WORK_PROFILE_DETAILS_FOUND, HttpStatus.BAD_REQUEST);
+            throw new InvalidRequestException(NO_MATCHING_WORK_PROFILE_DETAILS_FOUND);
         }
         return hpProfileWorkDetailsResponseTO;
     }

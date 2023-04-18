@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.exception.InvalidIDException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.repository.INbeProfileRepository;
 import in.gov.abdm.nmr.repository.INmcProfileRepository;
@@ -142,40 +143,40 @@ public class UserDaoServiceImpl implements IUserDaoService {
     }
 
     @Override
-    public SMCProfile findSmcProfile(BigInteger id) throws NmrException {
+    public SMCProfile findSmcProfile(BigInteger id) throws InvalidIDException {
         SMCProfile smcProfileEntity = smcProfileRepository.findById(id).orElse(null);
         if (smcProfileEntity == null) {
-            throw new NmrException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
+            throw new InvalidIDException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
         }
         accessControlService.validateUser(smcProfileEntity.getUser().getId());
         return smcProfileEntity;
     }
 
     @Override
-    public NmcProfile findNmcProfile(BigInteger id) throws NmrException {
+    public NmcProfile findNmcProfile(BigInteger id) throws InvalidIDException {
         NmcProfile nmcProfileEntity = nmcProfileRepository.findById(id).orElse(null);
         if (nmcProfileEntity == null) {
-            throw new NmrException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
+            throw new InvalidIDException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
         }
         accessControlService.validateUser(nmcProfileEntity.getUser().getId());
         return nmcProfileEntity;
     }
 
     @Override
-    public NbeProfile findNbeProfile(BigInteger id) throws NmrException {
+    public NbeProfile findNbeProfile(BigInteger id) throws InvalidIDException {
         NbeProfile nbeProfileEntity = nbeProfileRepository.findById(id).orElse(null);
         if (nbeProfileEntity == null) {
-            throw new NmrException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
+            throw new InvalidIDException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
         }
         accessControlService.validateUser(nbeProfileEntity.getUser().getId());
         return nbeProfileEntity;
     }
 
     @Override
-    public SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException {
+    public SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws InvalidIDException {
         SMCProfile smcProfile = smcProfileRepository.findById(id).orElse(null);
         if (smcProfile == null) {
-            throw new NmrException(INVALID_PROFILE_ID, HttpStatus.BAD_REQUEST);
+            throw new InvalidIDException(INVALID_PROFILE_ID, HttpStatus.BAD_REQUEST);
         }
         smcProfile.setId(id);
         smcProfile.setFirstName(smcProfileTO.getFirstName());
@@ -194,10 +195,10 @@ public class UserDaoServiceImpl implements IUserDaoService {
     }
 
     @Override
-    public NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException {
+    public NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws InvalidIDException {
         NmcProfile nmcProfile = nmcProfileRepository.findById(id).orElse(null);
         if (nmcProfile == null) {
-            throw new NmrException(INVALID_PROFILE_ID, HttpStatus.BAD_REQUEST);
+            throw new InvalidIDException(INVALID_PROFILE_ID, HttpStatus.BAD_REQUEST);
         }
         nmcProfile.setId(id);
         nmcProfile.setFirstName(nmcProfileTO.getFirstName());
@@ -212,10 +213,10 @@ public class UserDaoServiceImpl implements IUserDaoService {
     }
 
     @Override
-    public NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException {
+    public NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws InvalidIDException {
         NbeProfile nbeProfile = nbeProfileRepository.findById(id).orElse(null);
         if (nbeProfile == null) {
-            throw new NmrException(INVALID_PROFILE_ID, HttpStatus.BAD_REQUEST);
+            throw new InvalidIDException(INVALID_PROFILE_ID, HttpStatus.BAD_REQUEST);
         }
         nbeProfile.setId(id);
         nbeProfile.setEmailId(nbeProfileTO.getEmailId());

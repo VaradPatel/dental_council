@@ -45,9 +45,9 @@ public class ApplicationController {
      *                           to perform the suspension request and return the result of the process.
      */
     @PostMapping(ProtectedPaths.SUSPENSION_REQUEST_URL)
-    public SuspendRequestResponseTo suspensionHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
+    public SuspendRequestResponseTo suspensionHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
         if(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(applicationRequestTo.getHpProfileId())){
-            throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.FORBIDDEN);
+            throw new WorkFlowException("Cant create new request until an existing request is closed.");
         }
         log.info("In Application Controller: suspensionHealthProfessional method ");
         log.debug("Request Payload: ApplicationRequestTo: ");
@@ -74,7 +74,7 @@ public class ApplicationController {
      *                           to perform the reactivate request and return the result of the process.
      */
     @PostMapping(ProtectedPaths.REACTIVATE_REQUEST_URL)
-    public ReactivateRequestResponseTo reactivateHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
+    public ReactivateRequestResponseTo reactivateHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
 
         log.info("In Application Controller: reactivateHealthProfessional method ");
         log.debug("Request Payload: ApplicationRequestTo: ");
@@ -163,7 +163,7 @@ public class ApplicationController {
      * @return
      */
     @PatchMapping(HEALTH_PROFESSIONAL_ACTION)
-    public ResponseEntity<ResponseMessageTo> executeActionOnHealthProfessional(@RequestBody WorkFlowRequestTO requestTO) throws WorkFlowException {
+    public ResponseEntity<ResponseMessageTo> executeActionOnHealthProfessional(@RequestBody WorkFlowRequestTO requestTO) throws WorkFlowException, InvalidRequestException {
         if (iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(requestTO.getHpProfileId(), requestTO.getApplicationTypeId())) {
             if (requestTO.getRequestId() == null || !iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(requestTO.getHpProfileId())) {
                 requestTO.setRequestId(NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(requestTO.getApplicationTypeId())));
@@ -172,7 +172,7 @@ public class ApplicationController {
             return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
 
         }
-        throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
+        throw new WorkFlowException("Cant create new request until an existing request is closed.");
     }
     /**
      * Retrieves the details of a specific application.

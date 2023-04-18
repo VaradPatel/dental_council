@@ -2,23 +2,18 @@ package in.gov.abdm.nmr.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class NmrException extends Exception {
+public class NmrException extends ABDMBaseException {
+    private static final long serialVersionUID = -5363377902805482437L;
 
-    private static final long serialVersionUID = -7017172960796901774L;
-
-    private final HttpStatus status;
-
-    public NmrException(String message, HttpStatus status) {
-        super(message);
-        this.status = status;
+    public NmrException() {
+        super(NMRError.NMR_EXCEPTION.getCode(), NMRError.NMR_EXCEPTION.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString());
     }
 
-    public NmrException(Throwable cause, HttpStatus status) {
-        super(cause);
-        this.status = status;
+    public NmrException(String message) {
+        super(NMRError.NMR_EXCEPTION.getCode(), message, HttpStatus.INTERNAL_SERVER_ERROR.toString());
     }
 
-    public HttpStatus getStatus() {
-        return status;
+    public NmrException(String message, HttpStatus code) {
+        super(code.toString(), message, HttpStatus.INTERNAL_SERVER_ERROR.toString());
     }
 }

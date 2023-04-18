@@ -5,10 +5,7 @@ import in.gov.abdm.nmr.client.DscFClient;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
-import in.gov.abdm.nmr.exception.NmrException;
-import in.gov.abdm.nmr.exception.NoDataFoundException;
-import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.mapper.IHpProfileMapper;
 import in.gov.abdm.nmr.nosql.entity.Council;
 import in.gov.abdm.nmr.nosql.repository.ICouncilRepository;
@@ -144,7 +141,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private LanguagesKnownRepository languagesKnownRepository;
 
 
-    public HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NmrException {
+    public HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NmrException, NoDataFoundException {
         HpSmcDetailTO hpSmcDetailTO = new HpSmcDetailTO();
 
         StateMedicalCouncil stateMedicalCouncil =
@@ -154,7 +151,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         List<Council> councils = councilService.getCouncilByRegistrationNumberAndCouncilName(registrationNumber, councilName);
 
         if(councils.isEmpty()){
-            throw new NoDataFoundException(NO_DATA_FOUND);
+            throw new NoDataFoundException();
         }
         Council council = councils.get(0);
 
@@ -288,7 +285,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @Override
     public HpProfileUpdateResponseTO updateWorkProfileDetails(BigInteger hpProfileId,
-                                                              HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws InvalidRequestException, NmrException {
+                                                              HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws InvalidRequestException, NmrException, NotFoundException {
 
         log.info("In HpProfileDaoServiceImpl : updateWorkProfileDetails method");
 
@@ -316,7 +313,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 userId = user.getId();
                 workProfile = workProfileRepository.getWorkProfileDetailsByUserId(userId);
             } else {
-                throw new NmrException(NO_MATCHING_USER_DETAILS_FOUND, HttpStatus.BAD_REQUEST);
+                throw new NotFoundException(NO_MATCHING_USER_DETAILS_FOUND);
             }
         }
         if (workProfile.size() == 0) {
@@ -373,7 +370,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @Override
     public HpProfilePictureResponseTO uploadHpProfilePhoto(MultipartFile file, BigInteger hpProfileId)
-            throws IOException {
+            throws IOException, InvalidRequestException {
 
         HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
         if (hpProfile == null) {

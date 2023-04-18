@@ -7,9 +7,10 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +35,6 @@ import in.gov.abdm.nmr.entity.Villages;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
-import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.service.ICollegeMasterDaoService;
 import in.gov.abdm.nmr.service.ICollegeProfileDaoService;
 import in.gov.abdm.nmr.service.ICollegeServiceV2;
@@ -42,6 +42,8 @@ import in.gov.abdm.nmr.service.IPasswordService;
 import in.gov.abdm.nmr.service.IStateMedicalCouncilDaoService;
 import in.gov.abdm.nmr.service.IUniversityMasterService;
 import in.gov.abdm.nmr.service.IUserDaoService;
+
+import static in.gov.abdm.nmr.util.NMRConstants.FORBIDDEN;
 
 @Service
 @Transactional
@@ -91,7 +93,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
     }
 
     @Override
-    public CollegeMasterTOV2 getCollege(BigInteger id) throws NmrException {
+    public CollegeMasterTOV2 getCollege(BigInteger id) throws NmrException, InvalidIDException, NotFoundException {
         CollegeMaster collegeMaster = preCollegeAccessChecks(id);
 
         CollegeMasterTOV2 collegeMasterTO = new CollegeMasterTOV2();
@@ -128,29 +130,29 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         return collegeMasterTO;
     }
 
-    private CollegeMaster preCollegeAccessChecks(BigInteger id) throws NmrException {
+    private CollegeMaster preCollegeAccessChecks(BigInteger id) throws NmrException, InvalidIDException, NotFoundException {
         User loggedInUser = getLoggedInUser();
         CollegeMaster collegeMaster = collegeMasterDaoService.findById(id);
         if (collegeMaster == null) {
-            throw new NmrException("No college found for id", HttpStatus.NOT_FOUND);
+            throw new InvalidIDException("No college found for id", HttpStatus.NOT_FOUND);
         }
 
         if (UserSubTypeEnum.COLLEGE.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {
             CollegeProfile collegeprofile = collegeProfileDaoService.findAdminByCollegeId(collegeMaster.getId());
 
             if (collegeprofile == null) {
-                throw new NmrException(UNSUPPORTED_OPERATION, HttpStatus.BAD_REQUEST);
+                throw new NotFoundException(UNSUPPORTED_OPERATION);
             }
 
             if (!loggedInUser.getId().equals(collegeprofile.getUser().getId())) {
-                throw new NmrException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
+                throw new AccessDeniedException(FORBIDDEN);
             }
         }
         return collegeMaster;
     }
 
     @Override
-    public CollegeMasterTOV2 createOrUpdateCollege(CollegeMasterTOV2 collegeMasterTOV2) throws NmrException, InvalidRequestException {
+    public CollegeMasterTOV2 createOrUpdateCollege(CollegeMasterTOV2 collegeMasterTOV2) throws NmrException, InvalidRequestException, InvalidIDException, ResourceAlreadyExistException, NotFoundException {
         CollegeMaster collegeMaster = null;
         CollegeProfile collegeProfile = null;
 
@@ -162,7 +164,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
             collegeMaster = collegeMasterDaoService.findById(collegeMasterTOV2.getId());
 
             if (collegeMaster == null) {
-                throw new NmrException("No college found for id", HttpStatus.NOT_FOUND);
+                throw new InvalidIDException("No college found for id", HttpStatus.NOT_FOUND);
             }
 
             collegeProfile = collegeProfileDaoService.findAdminByCollegeId(collegeMaster.getId());
@@ -226,16 +228,16 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         return collegeMasterTOV2;
     }
 
-    private CollegeProfile preCollegeUpdationChecks(CollegeMasterTOV2 collegeMasterTOV2, CollegeMaster collegeMaster, CollegeProfile collegeProfile) throws NmrException {
+    private CollegeProfile preCollegeUpdationChecks(CollegeMasterTOV2 collegeMasterTOV2, CollegeMaster collegeMaster, CollegeProfile collegeProfile) throws NmrException, InvalidIDException, ResourceAlreadyExistException, NotFoundException {
         User loggedInUser = getLoggedInUser();
 
         if (collegeMaster == null) {
-            throw new NmrException("No college found for id", HttpStatus.NOT_FOUND);
+            throw new InvalidIDException("No college found for id", HttpStatus.NOT_FOUND);
         }
 
         if (UserSubTypeEnum.COLLEGE.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {
             if (collegeProfile == null) {
-                throw new NmrException(UNSUPPORTED_OPERATION, HttpStatus.BAD_REQUEST);
+                throw new NotFoundException(UNSUPPORTED_OPERATION);
             }
 
             User user = collegeProfile.getUser();
@@ -248,7 +250,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
             }
 
             if (!loggedInUser.getId().equals(collegeProfile.getUser().getId())) {
-                throw new NmrException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
+                throw new AccessDeniedException(FORBIDDEN);
             }
         }
         return collegeProfile;
@@ -262,7 +264,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
     }
 
     @Override
-    public CollegeProfileTOV2 createOrUpdateCollegeVerifier(CollegeProfileTOV2 collegeProfileTOV2) throws GeneralSecurityException, NmrException, InvalidRequestException {
+    public CollegeProfileTOV2 createOrUpdateCollegeVerifier(CollegeProfileTOV2 collegeProfileTOV2) throws GeneralSecurityException, NmrException, InvalidRequestException, InvalidIDException, ResourceAlreadyExistException {
         CollegeProfile collegeProfile = null;
 
         if(!getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.NMC_ADMIN.getCode())){
@@ -305,27 +307,27 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         return collegeProfileTOV2;
     }
 
-    private void duplicateContactsCheck(String emailId, String mobileNumber) throws NmrException {
+    private void duplicateContactsCheck(String emailId, String mobileNumber) throws NmrException, ResourceAlreadyExistException {
         duplicateEmailCheck(emailId);
         duplicateMobileNumberCheck(mobileNumber);
     }
 
-    private void duplicateMobileNumberCheck(String mobileNumber) throws NmrException {
+    private void duplicateMobileNumberCheck(String mobileNumber) throws NmrException, ResourceAlreadyExistException {
         if (userDaoService.existsByMobileNumber(mobileNumber)) {
-            throw new NmrException("Mobile number already registered", HttpStatus.BAD_REQUEST);
+            throw new ResourceAlreadyExistException("Mobile number already registered");
         }
     }
 
-    private void duplicateEmailCheck(String emailId) throws NmrException {
+    private void duplicateEmailCheck(String emailId) throws NmrException, ResourceAlreadyExistException {
         if (userDaoService.existsByEmail(emailId)) {
-            throw new NmrException("Email id already registered", HttpStatus.BAD_REQUEST);
+            throw new ResourceAlreadyExistException("Email id already registered");
         }
     }
 
-    private void preVerifierUpdationChecks(CollegeProfileTOV2 collegeProfileTOV2, CollegeProfile collegeProfile) throws NmrException {
+    private void preVerifierUpdationChecks(CollegeProfileTOV2 collegeProfileTOV2, CollegeProfile collegeProfile) throws NmrException, InvalidIDException, ResourceAlreadyExistException {
         User loggedInUser = getLoggedInUser();
         if (collegeProfile == null) {
-            throw new NmrException("No college verifier found for id", HttpStatus.BAD_REQUEST);
+            throw new InvalidIDException("No college verifier found for id", HttpStatus.BAD_REQUEST);
         }
 
         User user = collegeProfile.getUser();
@@ -338,16 +340,16 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         }
 
         if (!loggedInUser.getId().equals(collegeProfile.getUser().getId())) {
-            throw new NmrException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
+            throw new AccessDeniedException(FORBIDDEN);
         }
 
         if (!collegeProfileTOV2.getCollegeId().equals(collegeProfile.getCollege().getId())) {
-            throw new NmrException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
+            throw new AccessDeniedException(FORBIDDEN);
         }
     }
 
     @Override
-    public CollegeProfileTOV2 getCollegeVerifier(BigInteger collegeId, BigInteger verifierId) throws NmrException {
+    public CollegeProfileTOV2 getCollegeVerifier(BigInteger collegeId, BigInteger verifierId) throws NmrException, InvalidIDException {
         CollegeProfile collegeProfile = preVerifierAccessChecks(collegeId, verifierId);
 
         CollegeProfileTOV2 collegeProfileTOV2 = new CollegeProfileTOV2();
@@ -362,20 +364,20 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         return collegeProfileTOV2;
     }
 
-    private CollegeProfile preVerifierAccessChecks(BigInteger collegeId, BigInteger verifierId) throws NmrException {
+    private CollegeProfile preVerifierAccessChecks(BigInteger collegeId, BigInteger verifierId) throws NmrException, InvalidIDException {
         User loggedInUser = getLoggedInUser();
         CollegeProfile collegeProfile = collegeProfileDaoService.findById(verifierId);
 
         if (collegeProfile == null) {
-            throw new NmrException("No college verifier found for id", HttpStatus.BAD_REQUEST);
+            throw new InvalidIDException("No college verifier found for id", HttpStatus.BAD_REQUEST);
         }
 
         if (!loggedInUser.getId().equals(collegeProfile.getUser().getId())) {
-            throw new NmrException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
+            throw new AccessDeniedException(FORBIDDEN);
         }
 
         if (!collegeId.equals(collegeProfile.getCollege().getId())) {
-            throw new NmrException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
+            throw new AccessDeniedException(FORBIDDEN);
         }
         return collegeProfile;
     }
