@@ -13,13 +13,13 @@ public interface ICollegeServiceV2 {
 
     List<CollegeMasterDataTO> getAllColleges() throws NmrException;
 
-    CollegeMasterTOV2 getCollege(BigInteger id) throws NmrException, InvalidIDException, NotFoundException;
+    CollegeMasterTOV2 getCollege(BigInteger id) throws NmrException, InvalidIdException, NotFoundException;
 
-    CollegeMasterTOV2 createOrUpdateCollege(CollegeMasterTOV2 collegeMasterTOV2) throws NmrException, InvalidRequestException, InvalidIDException, ResourceAlreadyExistException, NotFoundException;
+    CollegeMasterTOV2 createOrUpdateCollege(CollegeMasterTOV2 collegeMasterTOV2) throws NmrException, InvalidRequestException, InvalidIdException, ResourceExistsException, NotFoundException;
 
-    CollegeProfileTOV2 createOrUpdateCollegeVerifier(CollegeProfileTOV2 collegeProfileTOV2) throws GeneralSecurityException, NmrException, InvalidRequestException, InvalidIDException, ResourceAlreadyExistException;
+    CollegeProfileTOV2 createOrUpdateCollegeVerifier(CollegeProfileTOV2 collegeProfileTOV2) throws GeneralSecurityException, NmrException, InvalidRequestException, InvalidIdException, ResourceExistsException;
 
     List<CollegeMasterDataTO> getAllCollegeVerifiersDesignation() throws NmrException;
 
-    CollegeProfileTOV2 getCollegeVerifier(BigInteger collegeId, BigInteger verifierId) throws NmrException, InvalidIDException;
+    CollegeProfileTOV2 getCollegeVerifier(BigInteger collegeId, BigInteger verifierId) throws NmrException, InvalidIdException;
 }

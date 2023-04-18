@@ -5,7 +5,7 @@ import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
-import in.gov.abdm.nmr.exception.InvalidIDException;
+import in.gov.abdm.nmr.exception.InvalidIdException;
 import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.OtpException;
@@ -31,7 +31,6 @@ import javax.persistence.EntityManager;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -96,32 +95,32 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public SMCProfileTO getSmcProfile(BigInteger id) throws NmrException, InvalidIDException {
+    public SMCProfileTO getSmcProfile(BigInteger id) throws NmrException, InvalidIdException {
         return smcMapper.smcProfileToDto(userDaoService.findSmcProfile(id));
     }
 
     @Override
-    public NmcProfileTO getNmcProfile(BigInteger id) throws NmrException, InvalidIDException {
+    public NmcProfileTO getNmcProfile(BigInteger id) throws NmrException, InvalidIdException {
         return nmcMapper.nmcProfileToDto(userDaoService.findNmcProfile(id));
     }
 
     @Override
-    public NbeProfileTO getNbeProfile(BigInteger id) throws NmrException, InvalidIDException {
+    public NbeProfileTO getNbeProfile(BigInteger id) throws NmrException, InvalidIdException {
         return nbeMapper.nbeProfileToDto(userDaoService.findNbeProfile(id));
     }
 
     @Override
-    public SMCProfileTO updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException, InvalidIDException {
+    public SMCProfileTO updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException {
         return smcMapper.smcProfileToDto(userDaoService.updateSmcProfile(id, smcProfileTO));
     }
 
     @Override
-    public NmcProfileTO updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException, InvalidIDException {
+    public NmcProfileTO updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException {
         return nmcMapper.nmcProfileToDto(userDaoService.updateNmcProfile(id, nmcProfileTO));
     }
 
     @Override
-    public NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIDException {
+    public NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException {
         return nbeMapper.nbeProfileToDto(userDaoService.updateNbeProfile(id, nbeProfileTO));
     }
 

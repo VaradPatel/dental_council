@@ -9,7 +9,6 @@ import javax.persistence.EntityManager;
 
 import in.gov.abdm.nmr.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -93,7 +92,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
     }
 
     @Override
-    public CollegeMasterTOV2 getCollege(BigInteger id) throws NmrException, InvalidIDException, NotFoundException {
+    public CollegeMasterTOV2 getCollege(BigInteger id) throws NmrException, InvalidIdException, NotFoundException {
         CollegeMaster collegeMaster = preCollegeAccessChecks(id);
 
         CollegeMasterTOV2 collegeMasterTO = new CollegeMasterTOV2();
@@ -130,11 +129,11 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         return collegeMasterTO;
     }
 
-    private CollegeMaster preCollegeAccessChecks(BigInteger id) throws NmrException, InvalidIDException, NotFoundException {
+    private CollegeMaster preCollegeAccessChecks(BigInteger id) throws NmrException, InvalidIdException, NotFoundException {
         User loggedInUser = getLoggedInUser();
         CollegeMaster collegeMaster = collegeMasterDaoService.findById(id);
         if (collegeMaster == null) {
-            throw new InvalidIDException("No college found for id");
+            throw new InvalidIdException("No college found for id");
         }
 
         if (UserSubTypeEnum.COLLEGE.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {
@@ -152,7 +151,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
     }
 
     @Override
-    public CollegeMasterTOV2 createOrUpdateCollege(CollegeMasterTOV2 collegeMasterTOV2) throws NmrException, InvalidRequestException, InvalidIDException, ResourceAlreadyExistException, NotFoundException {
+    public CollegeMasterTOV2 createOrUpdateCollege(CollegeMasterTOV2 collegeMasterTOV2) throws NmrException, InvalidRequestException, InvalidIdException, ResourceExistsException, NotFoundException {
         CollegeMaster collegeMaster = null;
         CollegeProfile collegeProfile = null;
 
@@ -164,7 +163,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
             collegeMaster = collegeMasterDaoService.findById(collegeMasterTOV2.getId());
 
             if (collegeMaster == null) {
-                throw new InvalidIDException("No college found for id");
+                throw new InvalidIdException("No college found for id");
             }
 
             collegeProfile = collegeProfileDaoService.findAdminByCollegeId(collegeMaster.getId());
@@ -228,11 +227,11 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         return collegeMasterTOV2;
     }
 
-    private CollegeProfile preCollegeUpdationChecks(CollegeMasterTOV2 collegeMasterTOV2, CollegeMaster collegeMaster, CollegeProfile collegeProfile) throws NmrException, InvalidIDException, ResourceAlreadyExistException, NotFoundException {
+    private CollegeProfile preCollegeUpdationChecks(CollegeMasterTOV2 collegeMasterTOV2, CollegeMaster collegeMaster, CollegeProfile collegeProfile) throws NmrException, InvalidIdException, ResourceExistsException, NotFoundException {
         User loggedInUser = getLoggedInUser();
 
         if (collegeMaster == null) {
-            throw new InvalidIDException("No college found for id");
+            throw new InvalidIdException("No college found for id");
         }
 
         if (UserSubTypeEnum.COLLEGE.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {
@@ -264,7 +263,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
     }
 
     @Override
-    public CollegeProfileTOV2 createOrUpdateCollegeVerifier(CollegeProfileTOV2 collegeProfileTOV2) throws GeneralSecurityException, NmrException, InvalidRequestException, InvalidIDException, ResourceAlreadyExistException {
+    public CollegeProfileTOV2 createOrUpdateCollegeVerifier(CollegeProfileTOV2 collegeProfileTOV2) throws GeneralSecurityException, NmrException, InvalidRequestException, InvalidIdException, ResourceExistsException {
         CollegeProfile collegeProfile = null;
 
         if(!getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.NMC_ADMIN.getCode())){
@@ -307,27 +306,27 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         return collegeProfileTOV2;
     }
 
-    private void duplicateContactsCheck(String emailId, String mobileNumber) throws NmrException, ResourceAlreadyExistException {
+    private void duplicateContactsCheck(String emailId, String mobileNumber) throws NmrException, ResourceExistsException {
         duplicateEmailCheck(emailId);
         duplicateMobileNumberCheck(mobileNumber);
     }
 
-    private void duplicateMobileNumberCheck(String mobileNumber) throws NmrException, ResourceAlreadyExistException {
+    private void duplicateMobileNumberCheck(String mobileNumber) throws NmrException, ResourceExistsException {
         if (userDaoService.existsByMobileNumber(mobileNumber)) {
-            throw new ResourceAlreadyExistException("Mobile number already registered");
+            throw new ResourceExistsException("Mobile number already registered");
         }
     }
 
-    private void duplicateEmailCheck(String emailId) throws NmrException, ResourceAlreadyExistException {
+    private void duplicateEmailCheck(String emailId) throws NmrException, ResourceExistsException {
         if (userDaoService.existsByEmail(emailId)) {
-            throw new ResourceAlreadyExistException("Email id already registered");
+            throw new ResourceExistsException("Email id already registered");
         }
     }
 
-    private void preVerifierUpdationChecks(CollegeProfileTOV2 collegeProfileTOV2, CollegeProfile collegeProfile) throws NmrException, InvalidIDException, ResourceAlreadyExistException {
+    private void preVerifierUpdationChecks(CollegeProfileTOV2 collegeProfileTOV2, CollegeProfile collegeProfile) throws NmrException, InvalidIdException, ResourceExistsException {
         User loggedInUser = getLoggedInUser();
         if (collegeProfile == null) {
-            throw new InvalidIDException("No college verifier found for id");
+            throw new InvalidIdException("No college verifier found for id");
         }
 
         User user = collegeProfile.getUser();
@@ -349,7 +348,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
     }
 
     @Override
-    public CollegeProfileTOV2 getCollegeVerifier(BigInteger collegeId, BigInteger verifierId) throws NmrException, InvalidIDException {
+    public CollegeProfileTOV2 getCollegeVerifier(BigInteger collegeId, BigInteger verifierId) throws NmrException, InvalidIdException {
         CollegeProfile collegeProfile = preVerifierAccessChecks(collegeId, verifierId);
 
         CollegeProfileTOV2 collegeProfileTOV2 = new CollegeProfileTOV2();
@@ -364,12 +363,12 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         return collegeProfileTOV2;
     }
 
-    private CollegeProfile preVerifierAccessChecks(BigInteger collegeId, BigInteger verifierId) throws NmrException, InvalidIDException {
+    private CollegeProfile preVerifierAccessChecks(BigInteger collegeId, BigInteger verifierId) throws NmrException, InvalidIdException {
         User loggedInUser = getLoggedInUser();
         CollegeProfile collegeProfile = collegeProfileDaoService.findById(verifierId);
 
         if (collegeProfile == null) {
-            throw new InvalidIDException("No college verifier found for id");
+            throw new InvalidIdException("No college verifier found for id");
         }
 
         if (!loggedInUser.getId().equals(collegeProfile.getUser().getId())) {

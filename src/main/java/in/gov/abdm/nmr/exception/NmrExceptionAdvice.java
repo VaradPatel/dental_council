@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static in.gov.abdm.nmr.util.NMRConstants.*;
-
 /**
  * NmrExceptionAdvice is a class that provides advice for handling exceptions in a RESTful service.
  */
@@ -211,7 +209,7 @@ public class NmrExceptionAdvice {
         return new ResponseEntity<>(error, headers, HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    @ExceptionHandler({InvalidIDException.class})
+    @ExceptionHandler({InvalidIdException.class})
     public ResponseEntity<ErrorDTO> handleInvalidIDException(HttpServletRequest req, NmrException ex) {
         ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
         HttpHeaders headers = new HttpHeaders();
@@ -219,7 +217,7 @@ public class NmrExceptionAdvice {
         return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({ResourceAlreadyExistException.class})
+    @ExceptionHandler({ResourceExistsException.class})
     public ResponseEntity<ErrorDTO> handleResourceAlreadyExistException(HttpServletRequest req, NmrException ex) {
         ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
         HttpHeaders headers = new HttpHeaders();

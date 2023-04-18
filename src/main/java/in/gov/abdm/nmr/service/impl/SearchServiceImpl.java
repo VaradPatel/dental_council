@@ -5,14 +5,13 @@ import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import in.gov.abdm.nmr.exception.InvalidIDException;
+import in.gov.abdm.nmr.exception.InvalidIdException;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
@@ -80,13 +79,13 @@ public class SearchServiceImpl implements ISearchService {
     }
 
     @Override
-    public HpSearchProfileTO getHpSearchProfileById(BigInteger profileId) throws InvalidIDException, NmrException {
+    public HpSearchProfileTO getHpSearchProfileById(BigInteger profileId) throws InvalidIdException, NmrException {
         try {
             if (!elasticsearchDaoService.doesHpExists(profileId)) {
-                throw new InvalidIDException();
+                throw new InvalidIdException();
             }
-        } catch (ElasticsearchException | IOException | InvalidIDException e) {
-            if (e instanceof InvalidIDException ne) {
+        } catch (ElasticsearchException | IOException | InvalidIdException e) {
+            if (e instanceof InvalidIdException ne) {
                 throw ne;
             }
             LOGGER.error("Exception while retrieving HP profile", e);

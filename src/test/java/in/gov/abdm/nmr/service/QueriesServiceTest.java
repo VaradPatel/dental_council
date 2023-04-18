@@ -3,6 +3,7 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.Queries;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.repository.QueriesRepository;
 import in.gov.abdm.nmr.service.impl.QueriesServiceImpl;
@@ -34,7 +35,7 @@ class QueriesServiceTest {
     QueriesServiceImpl queriesService;
 
     @Test
-    void testCreateQueriesCreatesAndSavesQuery() throws WorkFlowException {
+    void testCreateQueriesCreatesAndSavesQuery() throws WorkFlowException, InvalidRequestException {
         when(queriesRepository.saveAll(any())).thenReturn(Collections.emptyList());
         doNothing().when(workFlowService).initiateSubmissionWorkFlow(any(WorkFlowRequestTO.class));
         ResponseMessageTo queries = queriesService.createQueries(getQueries());
