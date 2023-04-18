@@ -59,7 +59,6 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
     @Autowired
     ICollegeProfileDaoService iCollegeProfileDaoService;
 
-    private BigInteger counter = BigInteger.ZERO;
 
     private static final Map<String, List<BigInteger>> applicationIds =
             Map.of("hp_registration_request", List.of(ApplicationType.HP_REGISTRATION.getId(), ApplicationType.FOREIGN_HP_REGISTRATION.getId()),

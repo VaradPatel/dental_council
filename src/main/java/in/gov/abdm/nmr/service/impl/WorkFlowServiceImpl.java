@@ -123,9 +123,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                     throw new InvalidRequestException();
                 }
             } else if (Group.SMC.getId().equals(requestTO.getActorId()) || Group.NMC.getId().equals(requestTO.getActorId())) {
-                if (//!ApplicationType.HP_TEMPORARY_SUSPENSION.equals(requestTO.getApplicationTypeId()) ||
-                    //!ApplicationType.HP_PERMANENT_SUSPENSION.equals(requestTO.getApplicationTypeId()) ||
-                        !Action.PERMANENT_SUSPEND.getId().equals(requestTO.getActionId()) &&
+                if (!Action.PERMANENT_SUSPEND.getId().equals(requestTO.getActionId()) &&
                                 !Action.TEMPORARY_SUSPEND.getId().equals(requestTO.getActionId())) {
                     log.debug("SMC or NMC is the Actor but Action is not Temporary Suspend or Permanent Suspend");
                     throw new InvalidRequestException();

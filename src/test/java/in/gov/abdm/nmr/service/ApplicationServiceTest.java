@@ -52,7 +52,7 @@ class ApplicationServiceTest {
     @Test
     void testSuspendRequestShouldThrowNmrExceptionWhenHpProfileIsNotApproved(){
         when(hpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfile());
-        assertThrows(NmrException.class, () -> applicationService.suspendRequest(getApplicationRequestTo()));
+        assertThrows(WorkFlowException.class, () -> applicationService.suspendRequest(getApplicationRequestTo()));
     }
 
     @Test

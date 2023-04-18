@@ -8,9 +8,6 @@ import java.math.BigInteger;
 
 public interface HpNbeDetailsRepository extends JpaRepository<HpNbeDetails, BigInteger> {
 
-	@Query(value = "Select * from hp_nbe_details where request_id = :requestId ", nativeQuery = true)
-	HpNbeDetails findByRequestId(String requestId);
-
 	@Query(value = "Select * from hp_nbe_details where hp_profile_id = :hpProfileId ", nativeQuery = true)
 	HpNbeDetails findByHpProfileId(BigInteger hpProfileId);
 

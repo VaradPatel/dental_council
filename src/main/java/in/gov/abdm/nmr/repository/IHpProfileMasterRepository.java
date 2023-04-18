@@ -17,11 +17,6 @@ public interface IHpProfileMasterRepository extends JpaRepository<HpProfileMaste
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE hp_profile_master SET email_id =:email  WHERE id =:masterHpProfileId", nativeQuery = true)
-    void updateMasterHpProfileEmail(BigInteger masterHpProfileId, String email);
-
-    @Modifying
-    @Transactional
     @Query(value = "UPDATE hp_profile_master SET mobile_Number =:mobileNumber  WHERE id =:masterHpProfileId", nativeQuery = true)
     void updateMasterHpProfileMobile(BigInteger masterHpProfileId, String mobileNumber);
 

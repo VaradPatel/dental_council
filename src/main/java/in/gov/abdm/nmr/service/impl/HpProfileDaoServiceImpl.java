@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.client.DscFClient;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
@@ -19,17 +18,11 @@ import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -110,8 +103,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private IUserRepository iUserRepository;
 
     @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
     private ICollegeMasterRepository collegeMasterRepository;
     @Autowired
     private UniversityMasterRepository universityMasterRepository;
@@ -127,15 +118,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @Autowired
     private IUserDaoService userDetailService;
-
-/*    @Autowired
-    private ImageFClient imageFClient;
-
-    @Value("${image.api.username}")
-    private String imageApiUsername;
-
-    @Value("${image.api.password}")
-    private String imageApiPassword;*/
 
     @Autowired
     private LanguagesKnownRepository languagesKnownRepository;
@@ -175,7 +157,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         BigInteger updatedHpProfileId = null;
         if (existingHpProfile == null || HpProfileStatus.APPROVED.getId().equals(existingHpProfile.getHpProfileStatus().getId())) {
             log.debug("Initiating HP Profile Insertion flow since there are no existing HP Profiles with this hp_profile_id or The existing HP Profile is now Approved");
-            String registrationId = null;
             if (existingHpProfile != null) {
                 log.debug("There was an existing HP Profile with the given hp_profile_id which has been Approved. ");
                 HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileByRegistrationId(existingHpProfile.getRegistrationId());
@@ -258,7 +239,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         }
         if (hpRegistrationUpdateRequestTO.getQualificationDetails() != null && !hpRegistrationUpdateRequestTO.getQualificationDetails().isEmpty()) {
             log.debug("Saving Qualification Details");
-//            validateQualificationDetailsAndProofs(hpRegistrationUpdateRequestTO.getQualificationDetails(), List.of(degreeCertificate));
             saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), degreeCertificate != null ? List.of(degreeCertificate) : Collections.emptyList());
         }
 
@@ -634,10 +614,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         }
         hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
         hpProfile.setIsSameAddress(hpPersonalUpdateRequestTO.getCommunicationAddress().getIsSameAddress());
-//        Schedule schedule = iScheduleRepository
-//                .findById(hpPersonalUpdateRequestTO.getPersonalDetails().getSchedule().getId()).orElse(null);
-//        hpProfile.setSchedule(schedule);
-
         Country countryNationality = countryRepository
                 .findById(hpPersonalUpdateRequestTO.getPersonalDetails().getCountryNationality().getId())
                 .orElse(null);
@@ -771,25 +747,5 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         }
     }
 
-    @SneakyThrows
-    private String multipartFileToBase64(MultipartFile file) {
-        return Base64.getEncoder().encodeToString(file.getBytes());
-    }
-
-    @SneakyThrows
-    HpRegistrationUpdateRequestTO getHpRegistrationUpdateRequestTO(String hpRegistrationUpdateRequestString) {
-        return objectMapper.readValue(hpRegistrationUpdateRequestString, HpRegistrationUpdateRequestTO.class);
-    }
-
-    @SneakyThrows
-    HpWorkProfileUpdateRequestTO getUpdateWorkProfileDetailsTo(String getUpdateWorkProfileDetailsString) {
-        return objectMapper.readValue(getUpdateWorkProfileDetailsString, HpWorkProfileUpdateRequestTO.class);
-    }
-
-
-    @SneakyThrows
-    public List<QualificationDetailRequestTO> getQualificationDetailRequestTO(String qualificationDetailRequestTOString) {
-        return Arrays.asList(objectMapper.readValue(qualificationDetailRequestTOString, QualificationDetailRequestTO[].class));
-    }
 
 }

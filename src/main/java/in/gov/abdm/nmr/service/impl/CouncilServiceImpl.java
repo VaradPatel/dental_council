@@ -23,6 +23,5 @@ public class CouncilServiceImpl implements ICouncilService {
 
         Pageable pageable = PageRequest.of(0,1, Sort.by("_id").descending());
                 return councilRepository.findCouncilByRegistrationNumberAndCouncilName(registrationNumber,councilName,pageable);
-//        return councilRepository.findCouncilByRegistrationNumberAndCouncilName(registrationNumber,councilName,pageable);
     }
 }
