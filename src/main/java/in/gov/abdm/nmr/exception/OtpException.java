@@ -21,9 +21,4 @@ public class OtpException extends ABDMBaseException {
         super(code, message, httpStatus);
     }
 
-    public OtpException(Throwable throwable) {
-        super(String.valueOf(throwable));
-    }
-
-
 }

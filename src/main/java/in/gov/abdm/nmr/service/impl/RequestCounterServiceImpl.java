@@ -24,6 +24,6 @@ public class RequestCounterServiceImpl implements IRequestCounterService {
             requestCounter.get().setCounter(counter);
             return requestCounter.get();
         }
-        throw new WorkFlowException("Application Type Id do not exists", HttpStatus.BAD_REQUEST);
+        throw new WorkFlowException("Application Type Id do not exists");
     }
 }

@@ -134,7 +134,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         User loggedInUser = getLoggedInUser();
         CollegeMaster collegeMaster = collegeMasterDaoService.findById(id);
         if (collegeMaster == null) {
-            throw new InvalidIDException("No college found for id", HttpStatus.NOT_FOUND);
+            throw new InvalidIDException("No college found for id");
         }
 
         if (UserSubTypeEnum.COLLEGE.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {
@@ -164,7 +164,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
             collegeMaster = collegeMasterDaoService.findById(collegeMasterTOV2.getId());
 
             if (collegeMaster == null) {
-                throw new InvalidIDException("No college found for id", HttpStatus.NOT_FOUND);
+                throw new InvalidIDException("No college found for id");
             }
 
             collegeProfile = collegeProfileDaoService.findAdminByCollegeId(collegeMaster.getId());
@@ -232,7 +232,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         User loggedInUser = getLoggedInUser();
 
         if (collegeMaster == null) {
-            throw new InvalidIDException("No college found for id", HttpStatus.NOT_FOUND);
+            throw new InvalidIDException("No college found for id");
         }
 
         if (UserSubTypeEnum.COLLEGE.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {
@@ -327,7 +327,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
     private void preVerifierUpdationChecks(CollegeProfileTOV2 collegeProfileTOV2, CollegeProfile collegeProfile) throws NmrException, InvalidIDException, ResourceAlreadyExistException {
         User loggedInUser = getLoggedInUser();
         if (collegeProfile == null) {
-            throw new InvalidIDException("No college verifier found for id", HttpStatus.BAD_REQUEST);
+            throw new InvalidIDException("No college verifier found for id");
         }
 
         User user = collegeProfile.getUser();
@@ -369,7 +369,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         CollegeProfile collegeProfile = collegeProfileDaoService.findById(verifierId);
 
         if (collegeProfile == null) {
-            throw new InvalidIDException("No college verifier found for id", HttpStatus.BAD_REQUEST);
+            throw new InvalidIDException("No college verifier found for id");
         }
 
         if (!loggedInUser.getId().equals(collegeProfile.getUser().getId())) {

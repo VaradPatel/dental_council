@@ -146,7 +146,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public SMCProfile findSmcProfile(BigInteger id) throws InvalidIDException {
         SMCProfile smcProfileEntity = smcProfileRepository.findById(id).orElse(null);
         if (smcProfileEntity == null) {
-            throw new InvalidIDException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
+            throw new InvalidIDException(INVALID_COLLEGE_ID);
         }
         accessControlService.validateUser(smcProfileEntity.getUser().getId());
         return smcProfileEntity;
@@ -156,7 +156,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NmcProfile findNmcProfile(BigInteger id) throws InvalidIDException {
         NmcProfile nmcProfileEntity = nmcProfileRepository.findById(id).orElse(null);
         if (nmcProfileEntity == null) {
-            throw new InvalidIDException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
+            throw new InvalidIDException(INVALID_COLLEGE_ID);
         }
         accessControlService.validateUser(nmcProfileEntity.getUser().getId());
         return nmcProfileEntity;
@@ -166,7 +166,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NbeProfile findNbeProfile(BigInteger id) throws InvalidIDException {
         NbeProfile nbeProfileEntity = nbeProfileRepository.findById(id).orElse(null);
         if (nbeProfileEntity == null) {
-            throw new InvalidIDException(INVALID_COLLEGE_ID, HttpStatus.BAD_REQUEST);
+            throw new InvalidIDException(INVALID_COLLEGE_ID);
         }
         accessControlService.validateUser(nbeProfileEntity.getUser().getId());
         return nbeProfileEntity;
@@ -176,7 +176,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws InvalidIDException {
         SMCProfile smcProfile = smcProfileRepository.findById(id).orElse(null);
         if (smcProfile == null) {
-            throw new InvalidIDException(INVALID_PROFILE_ID, HttpStatus.BAD_REQUEST);
+            throw new InvalidIDException(INVALID_PROFILE_ID);
         }
         smcProfile.setId(id);
         smcProfile.setFirstName(smcProfileTO.getFirstName());
@@ -198,7 +198,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws InvalidIDException {
         NmcProfile nmcProfile = nmcProfileRepository.findById(id).orElse(null);
         if (nmcProfile == null) {
-            throw new InvalidIDException(INVALID_PROFILE_ID, HttpStatus.BAD_REQUEST);
+            throw new InvalidIDException(INVALID_PROFILE_ID);
         }
         nmcProfile.setId(id);
         nmcProfile.setFirstName(nmcProfileTO.getFirstName());
@@ -216,7 +216,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws InvalidIDException {
         NbeProfile nbeProfile = nbeProfileRepository.findById(id).orElse(null);
         if (nbeProfile == null) {
-            throw new InvalidIDException(INVALID_PROFILE_ID, HttpStatus.BAD_REQUEST);
+            throw new InvalidIDException(INVALID_PROFILE_ID);
         }
         nbeProfile.setId(id);
         nbeProfile.setEmailId(nbeProfileTO.getEmailId());

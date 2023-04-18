@@ -294,7 +294,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         String requestId = null;
         if (hpSubmitRequestTO.getHpProfileId() != null &&
                 iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(hpSubmitRequestTO.getHpProfileId())) {
-            throw new WorkFlowException("Cant create new request until an existing request is closed.", HttpStatus.BAD_REQUEST);
+            throw new WorkFlowException("Cant create new request until an existing request is closed.");
         }
         WorkFlow lastWorkFlowForHealthProfessional = workFlowRepository.findLastWorkFlowForHealthProfessional(hpSubmitRequestTO.getHpProfileId());
         if (lastWorkFlowForHealthProfessional != null && WorkflowStatus.QUERY_RAISED.getId().equals(lastWorkFlowForHealthProfessional.getWorkFlowStatus().getId())) {
