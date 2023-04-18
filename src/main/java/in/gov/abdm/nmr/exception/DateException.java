@@ -21,9 +21,4 @@ public class DateException extends ABDMBaseException {
         super(code, message, httpStatus);
     }
 
-    public DateException(Throwable throwable) {
-        super(String.valueOf(throwable));
-    }
-
-
 }

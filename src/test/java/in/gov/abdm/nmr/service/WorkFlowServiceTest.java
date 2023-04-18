@@ -7,6 +7,7 @@ import in.gov.abdm.nmr.entity.WorkFlow;
 import in.gov.abdm.nmr.entity.WorkFlowAudit;
 import in.gov.abdm.nmr.entity.WorkFlowStatus;
 import in.gov.abdm.nmr.enums.*;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.INextGroup;
 import in.gov.abdm.nmr.repository.*;
@@ -71,7 +72,7 @@ public class WorkFlowServiceTest {
     IWorkFlowStatusRepository workFlowStatusRepository;
 
     @Test
-    void testInitiateSubmissionFlow() throws WorkFlowException {
+    void testInitiateSubmissionFlow() throws WorkFlowException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode()));
         when(iWorkFlowRepository.findByRequestId(anyString())).thenReturn(null);

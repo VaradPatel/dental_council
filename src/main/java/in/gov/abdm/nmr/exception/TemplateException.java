@@ -20,9 +20,4 @@ public class TemplateException extends ABDMBaseException {
     public TemplateException(String code, String message, String httpStatus) {
         super(code, message, httpStatus);
     }
-
-    public TemplateException(Throwable throwable) {
-        super(String.valueOf(throwable));
-    }
-
 }

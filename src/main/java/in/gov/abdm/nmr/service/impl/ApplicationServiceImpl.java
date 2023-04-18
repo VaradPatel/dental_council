@@ -149,7 +149,7 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
     @Override
-    public SuspendRequestResponseTo suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
+    public SuspendRequestResponseTo suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
 
         log.info("In ApplicationServiceImpl: suspendRequest method ");
 
@@ -166,7 +166,7 @@ public class ApplicationServiceImpl implements IApplicationService {
 
             return suspendRequestResponseTo;
         }else {
-            throw new NmrException("Approved profile can only be suspended", HttpStatus.FORBIDDEN);
+            throw new WorkFlowException("Approved profile can only be suspended");
         }
 
     }
@@ -179,7 +179,7 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
     @Override
-    public ReactivateRequestResponseTo reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
+    public ReactivateRequestResponseTo reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
 
         log.info("In ApplicationServiceImpl: reactivateRequest method ");
 
@@ -208,7 +208,7 @@ public class ApplicationServiceImpl implements IApplicationService {
 
             return reactivateRequestResponseTo;
         } else {
-            throw new NmrException("Suspended profile can only be reactivated", HttpStatus.FORBIDDEN);
+            throw new WorkFlowException("Suspended profile can only be reactivated");
         }
     }
 
@@ -297,7 +297,7 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @param newHpProfile         the new health professional profile created as a result of the request
      * @throws WorkFlowException if there is any error while initiating the workflow
      */
-    private void initiateWorkFlow(ApplicationRequestTo applicationRequestTo, String requestId, HpProfile newHpProfile) throws WorkFlowException {
+    private void initiateWorkFlow(ApplicationRequestTo applicationRequestTo, String requestId, HpProfile newHpProfile) throws WorkFlowException, InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User userDetail = userDaoService.findByUsername(userName);
         WorkFlowRequestTO workFlowRequestTO = new WorkFlowRequestTO();

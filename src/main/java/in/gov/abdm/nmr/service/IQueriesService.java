@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.service;
 import in.gov.abdm.nmr.dto.QueryCreateTo;
 import in.gov.abdm.nmr.dto.QueryResponseTo;
 import in.gov.abdm.nmr.dto.ResponseMessageTo;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 
 import java.math.BigInteger;
@@ -16,7 +17,7 @@ public interface IQueriesService {
     /**
      * Creates query
      */
-    ResponseMessageTo createQueries(QueryCreateTo queryCreateTo) throws WorkFlowException;
+    ResponseMessageTo createQueries(QueryCreateTo queryCreateTo) throws WorkFlowException, InvalidRequestException;
 
     /**
      * Get queries by hpProfileId

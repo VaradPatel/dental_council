@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 
 import java.math.BigInteger;
@@ -10,7 +11,7 @@ import java.math.BigInteger;
  */
 public interface IWorkFlowService {
 
-    void initiateSubmissionWorkFlow(WorkFlowRequestTO requestTO) throws WorkFlowException;
+    void initiateSubmissionWorkFlow(WorkFlowRequestTO requestTO) throws WorkFlowException, InvalidRequestException;
 
     boolean isAnyActiveWorkflowForHealthProfessional(BigInteger hpProfileId);
 

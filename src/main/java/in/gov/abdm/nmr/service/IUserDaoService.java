@@ -5,6 +5,7 @@ import in.gov.abdm.nmr.entity.NbeProfile;
 import in.gov.abdm.nmr.entity.NmcProfile;
 import in.gov.abdm.nmr.entity.SMCProfile;
 import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.exception.InvalidIdException;
 import in.gov.abdm.nmr.exception.NmrException;
 
 import java.math.BigInteger;
@@ -34,17 +35,17 @@ public interface IUserDaoService {
 
     User toggleNotification(NotificationToggleRequestTO notificationToggleRequestTO);
 
-    SMCProfile findSmcProfile(BigInteger id) throws NmrException;
+    SMCProfile findSmcProfile(BigInteger id) throws NmrException, InvalidIdException;
 
-    NmcProfile findNmcProfile(BigInteger id) throws NmrException;
+    NmcProfile findNmcProfile(BigInteger id) throws NmrException, InvalidIdException;
 
-    NbeProfile findNbeProfile(BigInteger id) throws NmrException;
+    NbeProfile findNbeProfile(BigInteger id) throws NmrException, InvalidIdException;
 
-    SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException;
+    SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException;
 
-    NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException;
+    NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException;
 
-    NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException;
+    NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException;
 
     boolean checkEmailUsedByOtherUser(BigInteger id, String email);
 }

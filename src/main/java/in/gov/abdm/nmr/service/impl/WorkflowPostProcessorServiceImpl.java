@@ -363,7 +363,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
             }
         } catch (ElasticsearchException | IOException e) {
             LOGGER.error("Exception while indexing HP", e);
-            throw new WorkFlowException("Exception while indexing HP", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new WorkFlowException("Exception while indexing HP");
         }
     }
 

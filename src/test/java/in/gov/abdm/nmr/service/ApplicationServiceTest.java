@@ -7,6 +7,7 @@ import in.gov.abdm.nmr.entity.HpProfileStatus;
 import in.gov.abdm.nmr.entity.RequestCounter;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
@@ -55,7 +56,7 @@ class ApplicationServiceTest {
     }
 
     @Test
-    void testSuspendRequestShouldCreateSuspensionRequestForApprovedProfile() throws WorkFlowException, NmrException {
+    void testSuspendRequestShouldCreateSuspensionRequestForApprovedProfile() throws WorkFlowException, NmrException, InvalidRequestException {
         HpProfile hpProfile = getHpProfile();
         hpProfile.setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.APPROVED.getId()).build());
         RequestCounter requestCounter = RequestCounter.builder().counter(BigInteger.valueOf(1))

@@ -6,6 +6,7 @@ import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.INextGroup;
 import in.gov.abdm.nmr.repository.*;
@@ -91,7 +92,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
     @Override
     @Transactional
-    public void initiateSubmissionWorkFlow(WorkFlowRequestTO requestTO) throws WorkFlowException {
+    public void initiateSubmissionWorkFlow(WorkFlowRequestTO requestTO) throws WorkFlowException, InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = null;
 
@@ -100,11 +101,11 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         if (user != null) {
             if (UserTypeEnum.COLLEGE.getCode().equals(user.getUserType().getId())) {
                 if (UserSubTypeEnum.COLLEGE.getCode().equals(user.getUserSubType().getId())) {
-                    throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
+                    throw new InvalidRequestException();
                 }
             } else if (UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode().equals(user.getUserType().getId())) {
                 if (!UserSubTypeEnum.NMC_VERIFIER.getCode().equals(user.getUserSubType().getId())) {
-                    throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
+                    throw new InvalidRequestException();
                 }
             }
         }
@@ -119,7 +120,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 if (!ApplicationType.getAllHpApplicationTypeIds().contains(requestTO.getApplicationTypeId()) ||
                         !Action.SUBMIT.getId().equals(requestTO.getActionId())) {
                     log.debug("Health Professional is the Actor but either Action is not Submit or Application type is invalid");
-                    throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
+                    throw new InvalidRequestException();
                 }
             } else if (Group.SMC.getId().equals(requestTO.getActorId()) || Group.NMC.getId().equals(requestTO.getActorId())) {
                 if (//!ApplicationType.HP_TEMPORARY_SUSPENSION.equals(requestTO.getApplicationTypeId()) ||
@@ -127,7 +128,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                         !Action.PERMANENT_SUSPEND.getId().equals(requestTO.getActionId()) &&
                                 !Action.TEMPORARY_SUSPEND.getId().equals(requestTO.getActionId())) {
                     log.debug("SMC or NMC is the Actor but Action is not Temporary Suspend or Permanent Suspend");
-                    throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
+                    throw new InvalidRequestException();
                 }
             }
 
@@ -142,7 +143,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             log.debug("Proceeding to update the existing Workflow entry since there is an existing entry with the given request_id");
             if (!workFlow.getApplicationType().getId().equals(requestTO.getApplicationTypeId()) || workFlow.getCurrentGroup() == null || !workFlow.getCurrentGroup().getId().equals(requestTO.getActorId())) {
                 log.debug("Invalid Request since either the given application type matches the fetched application type from the workflow or current group fetched from the workflow is null or current group id fetched from the workflow matches the given actor id");
-                throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
+                throw new WorkFlowException("Invalid Request");
             }
             log.debug("Fetching the Next Group to assign this request to and the work_flow_status using Application type, Application sub type, Actor and Action");
             iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(workFlow.getApplicationType().getId(), workFlow.getCurrentGroup().getId(), requestTO.getActionId(), requestTO.getApplicationSubTypeId());
@@ -156,7 +157,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 workFlow.setUserId(user);
                 log.debug("Work Flow Updation Successful");
             } else {
-                throw new WorkFlowException("Next Group Not Found", HttpStatus.BAD_REQUEST);
+                throw new WorkFlowException("Next Group Not Found");
             }
         }
         if (isLastStepOfWorkFlow(iNextGroup) &&

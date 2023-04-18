@@ -6,6 +6,7 @@ import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.entity.Queries;
 import in.gov.abdm.nmr.enums.Action;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.QueriesDtoMapper;
 import in.gov.abdm.nmr.repository.QueriesRepository;
@@ -39,7 +40,7 @@ public class QueriesServiceImpl implements IQueriesService {
      * @return created list as it is
      */
     @Override
-    public ResponseMessageTo createQueries(QueryCreateTo queryCreateTo) throws WorkFlowException {
+    public ResponseMessageTo createQueries(QueryCreateTo queryCreateTo) throws WorkFlowException, InvalidRequestException {
 
         List<Queries> queries = new ArrayList<>();
         queryCreateTo.getQueries().forEach(queryTo -> {

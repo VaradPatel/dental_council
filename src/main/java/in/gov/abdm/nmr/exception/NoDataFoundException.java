@@ -8,9 +8,18 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * This exception class is used to indicate when a requested data could not be found.
  */
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class NoDataFoundException extends RuntimeException {
+public class NoDataFoundException extends ABDMBaseException {
+    private static final long serialVersionUID = -5363377902805482437L;
+
+    public NoDataFoundException() {
+        super(NMRError.NO_DATA_FOUND.getCode(), NMRError.NO_DATA_FOUND.getMessage(), HttpStatus.NOT_FOUND.toString());
+    }
+
     public NoDataFoundException(String message) {
-        super(message);
+        super(NMRError.NO_DATA_FOUND.getCode(), message, HttpStatus.NOT_FOUND.toString());
+    }
+
+    public NoDataFoundException(String message, HttpStatus code) {
+        super(code.toString(), message, HttpStatus.NOT_FOUND.toString());
     }
 }
-
