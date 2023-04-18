@@ -296,7 +296,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 throw new NotFoundException(NO_MATCHING_USER_DETAILS_FOUND);
             }
         }
-        if (workProfile.size() == 0) {
+        if (workProfile.isEmpty()) {
             log.debug("Initiation of Work Profile Insertion flow for Work Profile details since there are no matching Work Profiles found for the provided hp_profile_id");
             workProfile = new ArrayList<>();
             mapWorkRequestToEntity(hpWorkProfileUpdateRequestTO, workProfile, hpProfileId, userId);
@@ -310,9 +310,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             List<LanguagesKnown> languagesKnownEarlierList = languagesKnownRepository.findByUserId(userId);
             List<BigInteger> languagesKnownEarlierIds = new ArrayList<>();
             if (languagesKnownEarlierList != null && !languagesKnownEarlierList.isEmpty()) {
-                languagesKnownEarlierList.forEach(languagesKnownEarlier -> {
-                    languagesKnownEarlierIds.add(languagesKnownEarlier.getId());
-                });
+                languagesKnownEarlierList.forEach(languagesKnownEarlier ->
+                        languagesKnownEarlierIds.add(languagesKnownEarlier.getId())
+                );
             }
             List<LanguagesKnown> languagesKnownLater = new ArrayList<>();
             BigInteger tempUserId = userId;

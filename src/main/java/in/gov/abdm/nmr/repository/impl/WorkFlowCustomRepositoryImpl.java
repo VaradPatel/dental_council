@@ -88,29 +88,6 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
         return sb.toString();
     };
 
-//    private static final Function<ReactivateHealthProfessionalRequestParam, String> GET_RECORD_COUNT = reactivateHealthProfessionalRequestParam -> {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append(NMRConstants.FETCH_COUNT_OF_REACTIVATION_RECORDS);
-//        String parameters = REACTIVATION_SEARCH_PARAMETERS.apply(reactivateHealthProfessionalRequestParam);
-//        if (Objects.nonNull(parameters) && !parameters.isEmpty()) {
-//            sb.append(parameters);
-//        }
-//        return sb.toString();
-//    };
-//
-//    private BigInteger getCount(ReactivateHealthProfessionalRequestParam reactivateHealthProfessionalRequestParam) {
-//        BigInteger totalRecords = null;
-//        try {
-//            Query query = entityManager.createNativeQuery(GET_RECORD_COUNT.apply(reactivateHealthProfessionalRequestParam));
-//
-//            Object result = query.getSingleResult();
-//            totalRecords = (BigInteger) result;
-//        } catch (Exception e) {
-//            log.error("Repository: getRecords " + e.getMessage());
-//        }
-//        return totalRecords;
-//    }
-
     /**
      * Customized  method for fetching the reactivation records
      * of the health professionals for the NMC to approve or reject the reactivation request.

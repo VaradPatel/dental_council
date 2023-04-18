@@ -396,7 +396,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             languagesKnownIds = languagesKnown.stream().map(languageKnown -> {
                 Language language = languageKnown.getLanguage();
                 return language != null ? language.getId() : null;
-            }).collect(Collectors.toList());
+            }).toList();
         }
 
         if (!workProfileList.isEmpty()) {
@@ -451,7 +451,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 log.info("Exception occurred while parsing dob" + e.getMessage());
                 isDobMatching = false;
             }
-            fuzzyParameters.add(new FuzzyParameter(NMRConstants.FUZZY_PARAMETER_DOB, council.getDateOfBirth().toString(), userKycTo.getBirthDate().toString(), isDobMatching ? NMRConstants.SUCCESS_RESPONSE : NMRConstants.FAILURE_RESPONSE));
+            fuzzyParameters.add(new FuzzyParameter(NMRConstants.FUZZY_PARAMETER_DOB, council.getDateOfBirth(), userKycTo.getBirthDate().toString(), isDobMatching ? NMRConstants.SUCCESS_RESPONSE : NMRConstants.FAILURE_RESPONSE));
             if (isNameMatching && isDobMatching && isGenderMatching) {
                 return new KycResponseMessageTo(fuzzyParameters, NMRConstants.SUCCESS_RESPONSE);
             } else {

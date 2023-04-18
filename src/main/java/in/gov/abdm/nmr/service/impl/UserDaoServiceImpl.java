@@ -89,11 +89,6 @@ public class UserDaoServiceImpl implements IUserDaoService {
     }
 
     @Override
-    public boolean existsByUsername(String username) {
-        return findByUsername(username) != null;
-    }
-
-    @Override
     public boolean existsByUserName(String userName) {
         return userDetailRepository.existsByUserName(userName);
     }

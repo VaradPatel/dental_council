@@ -31,7 +31,7 @@ class VillagesServiceTest {
     void testGetStateDataShouldReturnValidResponse(){
         when(villagesRepository.getVillage(any(BigInteger.class))).thenReturn(List.of(getVillage()));
         List<VillagesTO> villages = villagesService.getCityData(ID);
-        assertTrue(villages.size() == 1);
+        assertEquals(1, villages.size());
         assertEquals(ID, villages.get(0).getId());
         assertEquals(VILLAGE_NAME, villages.get(0).getName());
     }

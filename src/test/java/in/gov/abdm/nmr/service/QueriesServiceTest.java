@@ -47,7 +47,7 @@ class QueriesServiceTest {
     void testGetQueriesByHpProfileIdShouldReturnListOfOpenQueries(){
         when(queriesRepository.findOpenQueriesByHpProfileId(any())).thenReturn(List.of(getQueriesEntity()));
         List<QueryResponseTo> queryResponse = queriesService.getQueriesByHpProfileId(ID);
-        assertTrue(queryResponse.size() == 1);
+        assertEquals(1, queryResponse.size());
         QueryResponseTo queryResponseTo = queryResponse.get(0);
         assertEquals(QUERY_COMMENT, queryResponseTo.getCommonComment());
         assertEquals(QUERY_ON, queryResponseTo.getFieldLabel());

@@ -29,7 +29,7 @@ class SuperSpecialityServiceTest {
     void testGetSpecialityDataShouldReturnValidResponse(){
         when(superSpecialityRepository.getSpeciality()).thenReturn(getSuperSpeciality());
         List<SuperSpecialityTO> superSpecialities = superSpecialityService.getSpecialityData();
-        assertTrue(superSpecialities.size() == 1);
+        assertEquals(1, superSpecialities.size());
         assertEquals(ID, superSpecialities.get(0).getId());
         assertEquals(SUPER_SPECIALITY, superSpecialities.get(0).getName());
     }

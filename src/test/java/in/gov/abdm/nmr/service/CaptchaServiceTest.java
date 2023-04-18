@@ -41,8 +41,8 @@ class CaptchaServiceTest {
     @Test
     void testGenerateCaptchaShouldGenerateValidCaptcha() throws NoSuchAlgorithmException, IOException {
         when(captchaDaoService.save(any(Captcha.class))).thenReturn(captcha);
-        GenerateCaptchaResponseTO generateCaptchaResponseTO = captchaService.generateCaptcha();
-        assertTrue(generateCaptchaResponseTO != null);
+        GenerateCaptchaResponseTO generateCaptchaResponseTo = captchaService.generateCaptcha();
+        assertNotNull(generateCaptchaResponseTo);
     }
 
     @Test
@@ -51,8 +51,8 @@ class CaptchaServiceTest {
         validateCaptchaRequestTO.setResult(2);
         validateCaptchaRequestTO.setTransactionId("123");
         when(captchaDaoService.findById(any())).thenReturn(null);
-        ValidateCaptchaResponseTO validateCaptchaResponseTO = captchaService.verifyCaptcha(validateCaptchaRequestTO);
-        assertFalse(validateCaptchaResponseTO.isValidity());
+        ValidateCaptchaResponseTO validateCaptchaResponseTo = captchaService.verifyCaptcha(validateCaptchaRequestTO);
+        assertFalse(validateCaptchaResponseTo.isValidity());
 
     }
 

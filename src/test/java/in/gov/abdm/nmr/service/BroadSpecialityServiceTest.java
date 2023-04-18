@@ -29,7 +29,7 @@ class BroadSpecialityServiceTest {
     void testGetSpecialityDataShouldReturnValidResponse(){
         when(broadSpecialityRepository.getSpeciality()).thenReturn(List.of(getBroadSpeciality()));
         List<BroadSpecialityTO> broadSpecialities = broadSpecialityService.getSpecialityData();
-        assertTrue(broadSpecialities.size() == 1);
+        assertEquals(1, broadSpecialities.size());
         assertEquals(ID, broadSpecialities.get(0).getId());
         assertEquals(BROAD_SPECIALITY, broadSpecialities.get(0).getName());
     }

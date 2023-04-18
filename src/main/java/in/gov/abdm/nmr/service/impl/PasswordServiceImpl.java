@@ -1,7 +1,6 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.Password;
 import in.gov.abdm.nmr.entity.ResetToken;
 import in.gov.abdm.nmr.entity.User;
@@ -37,6 +36,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.FORBIDDEN;
 @Transactional
 public class PasswordServiceImpl implements IPasswordService {
 
+    public static final String CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS = "Current password should not be same as last 5 passwords";
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -119,7 +119,7 @@ public class PasswordServiceImpl implements IPasswordService {
             String decryptedNewPassword = rsaUtil.decrypt(newPasswordTo.getPassword());
             for (Password password : passwordDaoService.findLast5(user.getId())) {
                 if (bCryptPasswordEncoder.matches(decryptedNewPassword, password.getValue())) {
-                    throw new InvalidRequestException("Current password should not be same as last 5 passwords");
+                    throw new InvalidRequestException(CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS);
                 }
             }
 
@@ -158,7 +158,7 @@ public class PasswordServiceImpl implements IPasswordService {
             String decryptedNewPassword = rsaUtil.decrypt(resetPasswordRequestTo.getPassword());
             for (Password password : passwordDaoService.findLast5(user.getId())) {
                 if (bCryptPasswordEncoder.matches(decryptedNewPassword, password.getValue())) {
-                    throw new InvalidRequestException("Current password should not be same as last 5 passwords");
+                    throw new InvalidRequestException(CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS);
                 }
             }
 
@@ -200,7 +200,7 @@ public class PasswordServiceImpl implements IPasswordService {
                     String decryptedNewPassword = rsaUtil.decrypt(changePasswordRequestTo.getNewPassword());
                     for (Password password : passwordDaoService.findLast5(user.getId())) {
                         if (bCryptPasswordEncoder.matches(decryptedNewPassword, password.getValue())) {
-                            throw new InvalidRequestException("Current password should not be same as last 5 passwords");
+                            throw new InvalidRequestException(CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS);
                         }
                     }
 
@@ -243,9 +243,8 @@ public class PasswordServiceImpl implements IPasswordService {
         }
         resetTokenRepository.save(resetToken);
 
-        String resetPasswordLink = resetPasswordUrl + "/" + token;
+        return resetPasswordUrl + "/" + token;
 
-        return resetPasswordLink;
     }
 
 }

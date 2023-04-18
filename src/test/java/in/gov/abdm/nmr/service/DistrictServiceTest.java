@@ -31,7 +31,7 @@ class DistrictServiceTest {
     void testGetDistrictDataShouldReturnListOfDistricts(){
         when(districtRepository.getDistrict(any(BigInteger.class))).thenReturn(List.of(getDistrict()));
         List<DistrictTO> districts = districtService.getDistrictData(ID);
-        assertTrue(districts.size() == 1);
+        assertEquals(1, districts.size());
         DistrictTO districtTO = districts.get(0);
         assertEquals(ID, districtTO.getId());
         assertEquals(DISTRICT_NAME, districtTO.getName());

@@ -4,7 +4,6 @@ import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestParamsTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationTo;
 import in.gov.abdm.nmr.enums.Action;
-import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +15,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.math.BigInteger;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +22,8 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static in.gov.abdm.nmr.util.NMRConstants.*;
+import static in.gov.abdm.nmr.util.NMRConstants.FETCH_TRACK_DETAILS_QUERY;
+import static in.gov.abdm.nmr.util.NMRConstants.NOT_YET_RECEIVED;
 
 /**
  * A class that implements all the methods of the Custom Repository interface IFetchTrackApplicationDetailsCustomRepository
@@ -41,10 +40,6 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      */
     @PersistenceContext
     private EntityManager entityManager;
-
-    private static final Function<String, String> UPDATED_DATES = requestId -> "SELECT * FROM (SELECT request_id,previous_group_id,updated_at, DENSE_RANK() OVER(PARTITION BY previous_group_id ORDER BY updated_at DESC) AS previous_group_id_rank " +
-            "FROM main.work_flow_audit WHERE request_id = '" + requestId + "' ORDER BY updated_at ASC) work_flow_details WHERE work_flow_details.previous_group_id_rank = 1";
-
 
     /**
      * Represents a functional interface to generates a dynamic WHERE clause based on the HealthProfessionalApplicationRequestParamsTo
@@ -147,59 +142,6 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         }
         return sb.toString();
     };
-
-    /**
-     * This method is used to retrieve the count of health professional application records based on the provided parameters.
-     *
-     * @param healthProfessionalApplicationRequestParamsTo - the parameters used to retrieve the health professional application records count
-     * @param hpProfiles
-     * @return totalRecords the count of health professional application requests
-     */
-    /*private BigInteger getCount(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, List<BigInteger> hpProfiles) {
-        BigInteger totalRecords = null;
-        try {
-            Query query = entityManager.createNativeQuery(GET_RECORD_COUNT.apply(healthProfessionalApplicationRequestParamsTo, hpProfiles));
-            Object result = query.getSingleResult();
-            totalRecords = (BigInteger) result;
-        } catch (Exception e) {
-            log.error("Repository:: getRecords " + e.getMessage());
-        }
-        return totalRecords;
-    }*/
-
-    /**
-     * Represents a functional interface to generates a dynamic WHERE clause based on the HealthProfessionalApplicationRequestParamsTo
-     * object passed as a parameter.
-     *
-     * @param healthProfessionalApplicationRequestParamsTo - an object that contains parameters for the function
-     * @return a query to get the count of the Health Professional's application requests.
-     */
-    /* private static final BiFunction<HealthProfessionalApplicationRequestParamsTo, List<BigInteger>, String> GET_RECORD_COUNT = (healthProfessionalApplicationRequestParamsTo, hpProfiles) -> {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(FETCH_TRACK_DETAILS_COUNT_QUERY);
-
-        sb.append(" where calculate.hp_profile_id IS NOT NULL and current_status = 1 ");
-
-        if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
-            StringBuilder hpIds = new StringBuilder();
-            hpProfiles.forEach(hpProfile -> {
-                if (hpProfiles.indexOf(hpProfile) == hpProfiles.size() - 1) {
-                    hpIds.append(hpProfile);
-                } else {
-                    hpIds.append(hpProfile).append(",");
-                }
-            });
-            sb.append("AND rd.hp_profile_id IN  (").append(hpIds).append(") ");
-        }
-
-        String parameters = TRACK_APPLICATION_PARAMETERS.apply(healthProfessionalApplicationRequestParamsTo);
-
-        if (Objects.nonNull(parameters) && !parameters.isEmpty()) {
-            sb.append(parameters);
-        }
-        return sb.toString();
-    };*/
 
     /**
      * Retrieves the details of health professional applications requests based on the provided parameters.

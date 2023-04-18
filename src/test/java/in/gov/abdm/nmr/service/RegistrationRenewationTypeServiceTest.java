@@ -35,7 +35,7 @@ class RegistrationRenewationTypeServiceTest {
         when(registrationRenewationTypeRepository.getRegistrationRenewationType()).thenReturn(List.of(getRegistrationRenewationType()));
         List<RegistrationRenewationTypeTO> registrationRenewationType = registrationRenewationTypeService.getRegistrationRenewationType();
 
-        assertTrue(registrationRenewationType.size() == 1);
+        assertEquals(1, registrationRenewationType.size());
         assertEquals(ID, registrationRenewationType.get(0).getId());
         assertEquals(PERMANENT_RENEWATION, registrationRenewationType.get(0).getName());
 

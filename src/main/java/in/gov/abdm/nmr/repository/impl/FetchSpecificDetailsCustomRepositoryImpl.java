@@ -109,35 +109,21 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                     sb.append("AND smc_status = '").append(userGroupStatus).append("' ");
                 } else if (groupId.equals(Group.COLLEGE.getId())) {
                     sb.append("AND college_status = '").append(userGroupStatus).append("' ");
-                }
-//                else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
-//                    sb.append("AND college_registrar_status = '").append(userGroupStatus).append("' ");
-                else if (groupId.equals(Group.NMC.getId())) {
+                } else if (groupId.equals(Group.NMC.getId())) {
                     sb.append("AND nmc_status = '").append(userGroupStatus).append("' ");
                 } else if (groupId.equals(Group.NBE.getId())) {
                     sb.append("AND nbe_status = '").append(userGroupStatus).append("' ");
                 }
-//                else if (groupId.equals(Group.COLLEGE_ADMIN.getId())) {
-//                    sb.append("AND college_registrar_status = '").append(userGroupStatus).append("' ");
-//                    sb.append("AND college_dean_status = '").append(userGroupStatus).append("' ");
-//                }
             } else {
                 if (groupId.equals(Group.SMC.getId())) {
                     sb.append(" AND smc_status IN (1,3,4,5,6,7) ");
                 } else if (groupId.equals(Group.COLLEGE.getId()) && !dashboardRequestParamsTO.getApplicationTypeId().equals("1,8")) {
                     sb.append(" AND college_status IN (1,3,4,5) ");
-//                } else if (groupId.equals(Group.COLLEGE_REGISTRAR.getId())) {
-//                    sb.append(" AND college_registrar_status NOT IN ('NOT YET RECEIVED') ");
-//                }
                 }else if (groupId.equals(Group.NMC.getId())) {
                     sb.append(" AND nmc_status IN (1,3,4,5,6,7) ");
                 } else if (groupId.equals(Group.NBE.getId()) && !dashboardRequestParamsTO.getApplicationTypeId().equals("7")) {
                     sb.append(" AND nbe_status IN (1,3,4,5) ");
                 }
-//                else if (groupId.equals(Group.COLLEGE_ADMIN.getId())) {
-//                    sb.append(" AND college_registrar_status NOT IN ('NOT YET RECEIVED') ");
-//                    sb.append(" AND college_dean_status NOT IN ('NOT YET RECEIVED') ");
-//                }
             }
         }
         return sb.toString();
@@ -195,54 +181,6 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         return sb.toString();
     };
 
-    /**
-     * This method is used to retrieve the count of Dashboard records based on the provided parameters.
-     *
-     * @param dashboardRequestParamsTO - the parameters used to retrieve the Dashboard records list.
-     * @return totalRecords the count of Dashboard records list.
-     */
-    /*private BigInteger getCount(DashboardRequestParamsTO dashboardRequestParamsTO) {
-        BigInteger totalRecords = null;
-        try {
-            Query query = entityManager.createNativeQuery(GET_RECORD_COUNT.apply(dashboardRequestParamsTO));
-            Object result = query.getSingleResult();
-            totalRecords = (BigInteger) result;
-        } catch (Exception e) {
-            log.error("Repository:: getRecords " + e.getMessage());
-        }
-        return totalRecords;
-    }*/
-
-    /**
-     * Represents a functional interface to generates a dynamic WHERE clause based on the DashboardRequestParamsTO
-     * object passed as a parameter.
-     *
-     * @param dashboardRequestParamsTO - an object that contains parameters for the function
-     * @return a query to get the count of the Dashboard records list.
-     */
-    /*private static final Function<DashboardRequestParamsTO, String> GET_RECORD_COUNT = dashboardRequestParamsTO -> {
-        StringBuilder sb = new StringBuilder();
-        BigInteger groupId = dashboardRequestParamsTO.getUserGroupId();
-
-        sb.append(FETCH_CARD_DETAILS_COUNT_QUERY);
-
-        if (Objects.nonNull(dashboardRequestParamsTO.getCollegeId()) && !dashboardRequestParamsTO.getCollegeId().isEmpty()) {
-            sb.append("INNER JOIN main.qualification_details as qd on qd.hp_profile_id = rd.hp_profile_id AND qd.request_id = rd.request_id ");
-        }
-
-        if (Objects.nonNull(groupId) && groupId.equals(Group.NBE.getId())) {
-            sb.append("INNER JOIN main.foreign_qualification_details as fqd on fqd.hp_profile_id = rd.hp_profile_id AND fqd.request_id = rd.request_id ");
-        }
-
-        sb.append(" WHERE calculate.hp_profile_id IS NOT NULL and current_status = 1 " + "AND calculate.application_type_id IN ( ").append(dashboardRequestParamsTO.getApplicationTypeId()).append( " ) ");
-
-        String parameters = DASHBOARD_PARAMETERS.apply(dashboardRequestParamsTO);
-
-        if (Objects.nonNull(parameters) && !parameters.isEmpty()) {
-            sb.append(parameters);
-        }
-        return sb.toString();
-    };*/
 
     /**
      * Retrieves the details of Dashboard records list based on the provided parameters.

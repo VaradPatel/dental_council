@@ -28,7 +28,7 @@ class CourseServiceTest {
     void testGetCountryDataShouldReturnValidListOfCountries(){
         when(courseRepository.getCourse()).thenReturn(List.of(getCourse()));
         List<CourseTO> courses = courseService.getCourseData();
-        assertTrue(courses.size() == 1);
+        assertEquals(1, courses.size());
         CourseTO courseTO = courses.get(0);
         assertEquals(ID, courseTO.getId());
         assertEquals(COURSE_NAME, courseTO.getCourseName());

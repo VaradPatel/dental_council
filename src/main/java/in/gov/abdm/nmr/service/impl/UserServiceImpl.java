@@ -136,10 +136,8 @@ public class UserServiceImpl implements IUserService {
             return new ResponseMessageTo(NMRConstants.MOBILE_NUMBER_ALREADY_EXISTS);
         }
 
-        if (createHpUserAccountTo.getEmail() != null) {
-            if (userDaoService.existsByEmail(createHpUserAccountTo.getEmail())) {
-                return new ResponseMessageTo(NMRConstants.EMAIL_ALREADY_EXISTS);
-            }
+        if (createHpUserAccountTo.getEmail() != null && userDaoService.existsByEmail(createHpUserAccountTo.getEmail())) {
+            return new ResponseMessageTo(NMRConstants.EMAIL_ALREADY_EXISTS);
         }
 
         try {

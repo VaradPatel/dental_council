@@ -31,7 +31,7 @@ class StateServiceTest {
     void testGetStateDataShouldReturnValidResponse(){
         when(stateRepository.getState(any(BigInteger.class))).thenReturn(List.of(getState()));
         List<StateTO> states = stateService.getStateData(ID);
-        assertTrue(states.size() == 1);
+        assertEquals(1, states.size());
         assertEquals(STATE_ID, states.get(0).getId());
         assertEquals(STATE_NAME, states.get(0).getName());
         assertEquals(ISO_CODE, states.get(0).getIsoCode());

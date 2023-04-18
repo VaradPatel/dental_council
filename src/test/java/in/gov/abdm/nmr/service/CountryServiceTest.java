@@ -30,7 +30,7 @@ class CountryServiceTest {
     void testGetCountryDataShouldReturnValidListOfCountries(){
         when(countryRepository.getCountry()).thenReturn(List.of(getCountry()));
         List<CountryTO> countries = countryService.getCountryData();
-        assertTrue(countries.size() == 1);
+        assertEquals(1, countries.size());
         CountryTO countryTO = countries.get(0);
         assertEquals(ID, countryTO.getId());
         assertEquals(NMRConstants.INDIA, countryTO.getName());

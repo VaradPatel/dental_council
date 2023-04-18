@@ -2,7 +2,6 @@ package in.gov.abdm.nmr.repository;
 
 import in.gov.abdm.nmr.entity.HpVerificationStatus;
 import in.gov.abdm.nmr.mapper.IStatusCount;
-import in.gov.abdm.nmr.mapper.IStatusWiseCount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

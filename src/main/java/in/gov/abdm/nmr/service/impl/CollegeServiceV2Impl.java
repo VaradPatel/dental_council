@@ -51,8 +51,6 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
     private static final List<BigInteger> ALLOWED_SUBTYPE_FOR_COLLEGE_UPDATES = List.of(UserSubTypeEnum.COLLEGE.getCode(), UserSubTypeEnum.NMC_ADMIN.getCode());
     private static final String UNSUPPORTED_OPERATION = "Unsupported operation";
 
-    private static final String ACCESS_DENIED = "Access denied";
-
     private ICollegeMasterDaoService collegeMasterDaoService;
 
     private IUniversityMasterService universityMasterService;
@@ -133,7 +131,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         User loggedInUser = getLoggedInUser();
         CollegeMaster collegeMaster = collegeMasterDaoService.findById(id);
         if (collegeMaster == null) {
-            throw new InvalidIdException("No college found for id");
+            throw new NotFoundException();
         }
 
         if (UserSubTypeEnum.COLLEGE.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {
@@ -163,7 +161,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
             collegeMaster = collegeMasterDaoService.findById(collegeMasterTOV2.getId());
 
             if (collegeMaster == null) {
-                throw new InvalidIdException("No college found for id");
+                throw new NotFoundException();
             }
 
             collegeProfile = collegeProfileDaoService.findAdminByCollegeId(collegeMaster.getId());
@@ -231,7 +229,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         User loggedInUser = getLoggedInUser();
 
         if (collegeMaster == null) {
-            throw new InvalidIdException("No college found for id");
+            throw new NotFoundException();
         }
 
         if (UserSubTypeEnum.COLLEGE.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {

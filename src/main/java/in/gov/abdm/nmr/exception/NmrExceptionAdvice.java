@@ -32,26 +32,6 @@ public class NmrExceptionAdvice {
      */
     private static final Logger LOGGER = LogManager.getLogger();
 
-    /**
-     * Constant for Timestamp of generated response
-     */
-    private static final String RESPONSE_TIMESTAMP = "timestamp";
-
-    /**
-     * Constant for logging
-     */
-    private static final String FAILED_TO_SEND_REQUEST_TO_SMS_GATEWAY = "Failed to send request to sms gateway";
-    /**
-     * constant for error response
-     */
-    private static final String MESSAGE = "message";
-
-    /**
-     * constant for error response
-     */
-    private static final String CODE = "code";
-
-
     @ExceptionHandler({NmrException.class})
     public ResponseEntity<ErrorDTO> handleApiException(HttpServletRequest req, NmrException ex) {
         ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());

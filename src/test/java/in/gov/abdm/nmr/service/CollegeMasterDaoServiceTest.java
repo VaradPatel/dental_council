@@ -16,8 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -63,14 +62,14 @@ class CollegeMasterDaoServiceTest {
     void testGetAllCollegesShouldReturnListOfColleges(){
         when(collegeMasterRepository.findAll()).thenReturn(List.of(collegeMaster));
         List<CollegeMaster> colleges = collegeMasterDaoService.getAllColleges();
-        assertTrue(colleges.size() == 1);
+        assertEquals(1, colleges.size());
     }
 
     @Test
     void testSaveCollegeShouldSaveCollege(){
         when(collegeMasterRepository.save(any(CollegeMaster.class))).thenReturn(collegeMaster);
         CollegeMaster result = collegeMasterDaoService.save(collegeMaster);
-        assertTrue(result != null);
+        assertNotNull(result);
     }
 
 

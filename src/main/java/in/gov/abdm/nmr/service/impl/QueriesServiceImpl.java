@@ -88,10 +88,8 @@ public class QueriesServiceImpl implements IQueriesService {
     @Override
     public ResponseMessageTo markQueryAsClosed(BigInteger hpProfileId) {
 
-        List<Queries> queries=queriesRepository.findOpenQueriesByHpProfileId(hpProfileId);
-        queries.forEach(query->{
-            query.setQueryStatus(NMRConstants.QUERY_CLOSED_STATUS);
-        });
+        List<Queries> queries = queriesRepository.findOpenQueriesByHpProfileId(hpProfileId);
+        queries.forEach(query -> query.setQueryStatus(NMRConstants.QUERY_CLOSED_STATUS));
         queriesRepository.saveAll(queries);
         return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
     }

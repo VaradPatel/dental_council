@@ -32,7 +32,7 @@ class SubDistrictServiceTest {
     void testGetStateDataShouldReturnValidResponse(){
         when(subDistrictRepository.getSubDistrict(any(BigInteger.class))).thenReturn(List.of(getSubDistrict()));
         List<SubDistrictTO> subDistricts = subDistrictService.getSubDistrictData(ID);
-        assertTrue(subDistricts.size() == 1);
+        assertEquals(1, subDistricts.size());
         assertEquals(ID, subDistricts.get(0).getId());
         assertEquals(SUB_DISTRICT_NAME, subDistricts.get(0).getName());
         assertEquals(ISO_CODE, subDistricts.get(0).getIsoCode());

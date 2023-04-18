@@ -29,7 +29,7 @@ class LanguageServiceTest {
     void testGetSpecialityDataShouldReturnValidResponse(){
         when(languageRepository.getLanguage()).thenReturn(List.of(getLanguage()));
         List<LanguageTO> languages = languageService.getLanguageData();
-        assertTrue(languages.size() == 1);
+        assertEquals(1, languages.size());
         assertEquals(ID, languages.get(0).getId());
         assertEquals(LANGUAGE_NAME, languages.get(0).getName());
     }

@@ -11,25 +11,25 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 
 @ExtendWith(MockitoExtension.class)
-public class HpRegistrationServiceImplTest {
+class HpRegistrationServiceImplTest {
 
     @InjectMocks
     HpRegistrationServiceImpl hpRegistrationService;
 
     @Test
-    public void testFuzzyScore() throws IOException {
+    void testFuzzyScore() throws IOException {
         double fuzzyScore = hpRegistrationService.getFuzzyScore("Govind Kedia", "Govind Dwarkadasji Kedia");
         Assertions.assertTrue(fuzzyScore >= NMRConstants.FUZZY_MATCH_LIMIT);
     }
 
     @Test
-    public void testFuzzyScoreLogic() throws IOException {
+    void testFuzzyScoreLogic() throws IOException {
         double fuzzyScore = hpRegistrationService.getFuzzyScore("Sathish Chonde", "Sathish Udhavroa Chonde");
         Assertions.assertTrue(fuzzyScore >= NMRConstants.FUZZY_MATCH_LIMIT);
     }
 
     @Test
-    public void testFuzzyScoreImplementaion() throws IOException {
+    void testFuzzyScoreImplementation() throws IOException {
         double fuzzyScore = hpRegistrationService.getFuzzyScore("Vijay Anthony Chandrasaekar", "Vijay Chandrasaekar");
         Assertions.assertTrue(fuzzyScore >= NMRConstants.FUZZY_MATCH_LIMIT);
     }

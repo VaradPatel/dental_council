@@ -21,7 +21,7 @@ public final class HpPersonalDetailMapper {
         personalDetailsTO.setAadhaarToken(hpProfile.getAadhaarToken());
         personalDetailsTO.setCountryNationality(NationalityTO.builder().id(hpProfile.getCountryNationality().getId()).name(hpProfile.getCountryNationality().getName()).build());
         personalDetailsTO.setDateOfBirth(hpProfile.getDateOfBirth());
-        personalDetailsTO.setProfilePhoto(hpProfile.getProfilePhoto() != null ? new String(hpProfile.getProfilePhoto()) : null);
+        personalDetailsTO.setProfilePhoto(hpProfile.getProfilePhoto() != null ? hpProfile.getProfilePhoto() : null);
         personalDetailsTO.setFatherName(hpProfile.getFatherName());
         personalDetailsTO.setGender(hpProfile.getGender());
         personalDetailsTO.setFirstName(hpProfile.getFirstName());
@@ -34,8 +34,6 @@ public final class HpPersonalDetailMapper {
         personalDetailsTO.setIsNew(NMRConstants.YES.equals(hpProfile.getIsNew()));
         personalDetailsTO.setEmail(hpProfile.getEmailId());
         personalDetailsTO.setMobile(hpProfile.getMobileNumber());
-
-//        personalDetailsTO.setSchedule(ScheduleTO.builder().id(hpProfile.getSchedule().getId()).name(hpProfile.getSchedule().getName()).build());
 
         if (address != null) {
             addressTO.setAddressLine1(address.getAddressLine1());

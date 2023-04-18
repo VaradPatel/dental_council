@@ -266,7 +266,7 @@ public class NotificationServiceImpl implements INotificationService {
             receiverEmail.setValue(email);
             notificationRequestTo.setReceiver(List.of(receiverMobile, receiverEmail));
 
-        } else if (mobile != null && email == null) {
+        } else if (mobile != null) {
 
             type.add(NotificationType.SMS.getNotificationType());
 
@@ -274,7 +274,7 @@ public class NotificationServiceImpl implements INotificationService {
             receiverMobile.setKey(NMRConstants.MOBILE);
             receiverMobile.setValue(mobile);
             notificationRequestTo.setReceiver(List.of(receiverMobile));
-        } else if (email != null && mobile == null) {
+        } else if (email != null) {
 
             type.add(NotificationType.EMAIL.getNotificationType());
 

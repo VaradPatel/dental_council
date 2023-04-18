@@ -21,8 +21,6 @@ public interface IUserDaoService {
     User findByUsername(String username);
 
     User findFirstByMobileNumber(String mobileNumber);
-    
-    boolean existsByUsername(String username);
 
     boolean existsByUserName(String userName);
 

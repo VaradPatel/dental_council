@@ -3,7 +3,6 @@ package in.gov.abdm.nmr.mapper;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.WorkProfile;
 import lombok.experimental.UtilityClass;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +10,6 @@ import java.util.List;
 
 @UtilityClass
 public final class HpProfileWorkProfileMapper {
-
-    @Autowired
-    IAddressMapper addressMapper;
 
     public static HpProfileWorkDetailsResponseTO convertEntitiesToWorkDetailResponseTo(List<WorkProfile> workProfile) {
         HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = new HpProfileWorkDetailsResponseTO();
@@ -57,7 +53,6 @@ public final class HpProfileWorkProfileMapper {
                 address = null;
             }
             currentWorkDetailsTO.setAddress(address);
-           // currentWorkDetailsTO.setProof(workProfileObj.getProofOfWorkAttachment());
             currentWorkDetailsTO.setRegistrationNo(workProfileObj.getRegistrationNo());
             currentWorkDetailsTO.setExperienceInYears(workProfileObj.getExperienceInYears());
             currentWorkDetailsTOList.add(currentWorkDetailsTO);

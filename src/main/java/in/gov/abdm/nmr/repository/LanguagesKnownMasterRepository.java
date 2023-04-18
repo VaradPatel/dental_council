@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.repository;
 
-import in.gov.abdm.nmr.entity.LanguagesKnown;
 import in.gov.abdm.nmr.entity.LanguagesKnownMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

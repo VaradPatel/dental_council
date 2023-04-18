@@ -14,7 +14,6 @@ public interface IFetchCountOnCardService {
      * This method retrieves the Count of applications according to their status
      * @return ResponseTO
      */
-  //  FetchCountOnCardResponseTO fetchCountOnCard() throws InvalidRequestException, AccessDeniedException;
 
     FetchCountOnCardResponseTO fetchCountOnCard() throws AccessDeniedException;
 }

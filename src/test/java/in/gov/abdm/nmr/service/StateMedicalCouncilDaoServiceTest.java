@@ -42,7 +42,7 @@ class StateMedicalCouncilDaoServiceTest {
     void testGetAllStateMedicalCouncilShouldReturnAllCouncils(){
         when(stateMedicalCouncilRepository.findAll(any(Sort.class))).thenReturn(List.of(getStateMedicalCouncil()));
         List<StateMedicalCouncilTO> stateMedicalCouncils = stateMedicalCouncilDaoService.getAllStateMedicalCouncil();
-        assertTrue(stateMedicalCouncils.size() == 1);
+        assertEquals(1, stateMedicalCouncils.size());
         assertEquals(STATE_NAME,stateMedicalCouncils.get(0).getName());
 
     }
