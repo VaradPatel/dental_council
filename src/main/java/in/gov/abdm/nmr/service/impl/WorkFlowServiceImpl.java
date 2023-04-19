@@ -16,6 +16,7 @@ import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;
 import in.gov.abdm.nmr.util.NMRConstants;
+import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -195,10 +196,15 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         dashboard.setRequestId(requestTO.getRequestId());
         dashboard.setHpProfileId(requestTO.getHpProfileId());
         dashboard.setWorkFlowStatusId(workFlow.getWorkFlowStatus().getId());
-        setDashboardStatus(requestTO.getActionId(), requestTO.getActorId(), dashboard);
-        if(!isLastStepOfWorkFlow(iNextGroup)) {
-            //submit is equivalent to pending status.
-            setDashboardStatus(Action.SUBMIT.getId(), iNextGroup.getAssignTo(), dashboard);
+        if(NMRUtil.isVoluntarySuspension(workFlow)){
+            dashboard.setNmcStatus(Action.APPROVED.getId());
+            dashboard.setSmcStatus(Action.APPROVED.getId());
+        }else {
+            setDashboardStatus(requestTO.getActionId(), requestTO.getActorId(), dashboard);
+            if (!isLastStepOfWorkFlow(iNextGroup)) {
+                //submit is equivalent to pending status.
+                setDashboardStatus(Action.SUBMIT.getId(), iNextGroup.getAssignTo(), dashboard);
+            }
         }
         dashboard.setCreatedAt(Timestamp.from(Instant.now()));
         dashboard.setUpdatedAt(Timestamp.from(Instant.now()));

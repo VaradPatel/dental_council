@@ -3,6 +3,9 @@ package in.gov.abdm.nmr.util;
 import in.gov.abdm.nmr.dto.CurrentWorkDetailsTO;
 import in.gov.abdm.nmr.dto.QualificationDetailRequestTO;
 import in.gov.abdm.nmr.entity.RequestCounter;
+import in.gov.abdm.nmr.entity.WorkFlow;
+import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
 import lombok.experimental.UtilityClass;
@@ -115,5 +118,11 @@ public final class NMRUtil {
             digits[i] = (char) (RANDOM.nextInt(10) + '0');
         }
         return Long.parseLong(new String(digits));
+    }
+
+    public static boolean isVoluntarySuspension(WorkFlow workFlow) {
+        return (ApplicationType.HP_TEMPORARY_SUSPENSION.getId().equals(workFlow.getApplicationType().getId()) ||
+                ApplicationType.HP_PERMANENT_SUSPENSION.getId().equals(workFlow.getApplicationType().getId()))
+                && Group.HEALTH_PROFESSIONAL.getId().equals(workFlow.getPreviousGroup().getId());
     }
 }
