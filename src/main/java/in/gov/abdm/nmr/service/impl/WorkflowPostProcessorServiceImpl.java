@@ -358,7 +358,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     public void updateElasticDB(WorkFlow workFlow, HpProfileMaster hpProfileMaster) throws WorkFlowException {
         log.debug("Updating the Elastic DB");
         try {
-            if (!isVoluntarySuspension(workFlow)) {
+            if (!NMRUtil.isVoluntarySuspension(workFlow)) {
                 elasticsearchDaoService.indexHP(hpProfileMaster.getId());
             }
         } catch (ElasticsearchException | IOException e) {
@@ -367,11 +367,6 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         }
     }
 
-    private boolean isVoluntarySuspension(WorkFlow workFlow) {
-        return (ApplicationType.HP_TEMPORARY_SUSPENSION.getId().equals(workFlow.getApplicationType().getId()) ||
-                ApplicationType.HP_PERMANENT_SUSPENSION.getId().equals(workFlow.getApplicationType().getId()))
-                && Group.HEALTH_PROFESSIONAL.getId().equals(workFlow.getPreviousGroup().getId());
-    }
 
     @Override
     public String generateNmrId() {
