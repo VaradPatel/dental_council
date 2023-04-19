@@ -215,7 +215,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws NmrException, InvalidRequestException, WorkFlowException {
         HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
         if (hpProfile.getNmrId() == null) {
-            throw new WorkFlowException(NMRError.CANNOT_RAISE_REQUEST.getCode(),NMRError.CANNOT_RAISE_REQUEST.getMessage());
+            throw new WorkFlowException(NMRError.QUALIFICATION_WORKFLOW_CREATION_FAIL.getCode(),NMRError.QUALIFICATION_WORKFLOW_CREATION_FAIL.getMessage());
         }
         validateQualificationDetailsAndProofs(qualificationDetailRequestTOs, proofs);
         for (QualificationDetailRequestTO qualificationDetailRequestTO : qualificationDetailRequestTOs) {
