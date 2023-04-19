@@ -7,6 +7,7 @@ import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.INextGroup;
 import in.gov.abdm.nmr.repository.*;
@@ -141,7 +142,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             log.debug("Proceeding to update the existing Workflow entry since there is an existing entry with the given request_id");
             if (!workFlow.getApplicationType().getId().equals(requestTO.getApplicationTypeId()) || workFlow.getCurrentGroup() == null || !workFlow.getCurrentGroup().getId().equals(requestTO.getActorId())) {
                 log.debug("Invalid Request since either the given application type matches the fetched application type from the workflow or current group fetched from the workflow is null or current group id fetched from the workflow matches the given actor id");
-                throw new WorkFlowException("Invalid Request");
+                throw new InvalidRequestException();
             }
             log.debug("Fetching the Next Group to assign this request to and the work_flow_status using Application type, Application sub type, Actor and Action");
             iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(workFlow.getApplicationType().getId(), workFlow.getCurrentGroup().getId(), requestTO.getActionId(), requestTO.getApplicationSubTypeId());
@@ -155,7 +156,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 workFlow.setUserId(user);
                 log.debug("Work Flow Updation Successful");
             } else {
-                throw new WorkFlowException("Next Group Not Found");
+                throw new WorkFlowException(NMRError.NEXT_GROUP_NOT_FOUND.getCode(), NMRError.NEXT_GROUP_NOT_FOUND.getMessage());
             }
         }
         if (isLastStepOfWorkFlow(iNextGroup) &&

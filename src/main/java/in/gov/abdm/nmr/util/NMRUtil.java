@@ -4,6 +4,7 @@ import in.gov.abdm.nmr.dto.CurrentWorkDetailsTO;
 import in.gov.abdm.nmr.dto.QualificationDetailRequestTO;
 import in.gov.abdm.nmr.entity.RequestCounter;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NMRError;
 import lombok.experimental.UtilityClass;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,10 +28,10 @@ public final class NMRUtil {
 
     public static void validateWorkProfileDetails(List<CurrentWorkDetailsTO> currentWorkDetailsTOS) throws InvalidRequestException {
         if(currentWorkDetailsTOS==null ){
-            throw new InvalidRequestException(WORK_PROFILE_DETAILS_NULL_ERROR);
+            throw new InvalidRequestException(NMRError.WORK_PROFILE_DETAILS_NULL_ERROR.getCode(), NMRError.WORK_PROFILE_DETAILS_NULL_ERROR.getMessage());
         }
         if(currentWorkDetailsTOS.isEmpty()){
-            throw new InvalidRequestException(WORK_PROFILE_DETAILS_EMPTY_ERROR);
+            throw new InvalidRequestException(NMRError.WORK_PROFILE_DETAILS_NULL_ERROR.getCode(), NMRError.WORK_PROFILE_DETAILS_NULL_ERROR.getMessage());
         }
     }
     /**
@@ -40,17 +41,17 @@ public final class NMRUtil {
      */
     public static void validateWorkProfileDetailsAndProofs(List<CurrentWorkDetailsTO> currentWorkDetailsTOS, List<MultipartFile> proofs) throws InvalidRequestException {
 
-        if(proofs.isEmpty()){
-            throw new InvalidRequestException(PROOFS_EMPTY_ERROR);
+        if (proofs.isEmpty()) {
+            throw new InvalidRequestException(NMRError.PROOFS_EMPTY_ERROR.getCode(), NMRError.PROOFS_EMPTY_ERROR.getMessage());
         }
-        if(currentWorkDetailsTOS.size() > proofs.size()){
-            throw new InvalidRequestException(MISSING_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR);
+        if (currentWorkDetailsTOS.size() > proofs.size()) {
+            throw new InvalidRequestException(NMRError.MISSING_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR.getCode(), NMRError.MISSING_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR.getMessage());
         }
-        if(currentWorkDetailsTOS.size() < proofs.size()){
-            throw new InvalidRequestException(EXCESS_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR);
+        if (currentWorkDetailsTOS.size() < proofs.size()) {
+            throw new InvalidRequestException(NMRError.EXCESS_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR.getCode(), NMRError.EXCESS_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR.getMessage());
         }
-        if(currentWorkDetailsTOS.size()>6){
-            throw new InvalidRequestException(WORK_PROFILE_DETAILS_LIMIT_EXCEEDED);
+        if (currentWorkDetailsTOS.size() > 6) {
+            throw new InvalidRequestException(NMRError.WORK_PROFILE_DETAILS_LIMIT_EXCEEDED.getCode(), NMRError.WORK_PROFILE_DETAILS_LIMIT_EXCEEDED.getMessage());
         }
 
     }
@@ -61,26 +62,26 @@ public final class NMRUtil {
      * @param proofs
      */
     public static void validateQualificationDetailsAndProofs(List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException {
-        if(qualificationDetailRequestTOs==null ){
-            throw new InvalidRequestException(QUALIFICATION_DETAILS_NULL_ERROR);
+        if (qualificationDetailRequestTOs == null) {
+            throw new InvalidRequestException(NMRError.QUALIFICATION_DETAILS_NULL_ERROR.getCode(), NMRError.QUALIFICATION_DETAILS_NULL_ERROR.getMessage());
         }
-        if(qualificationDetailRequestTOs.isEmpty()){
-            throw new InvalidRequestException(QUALIFICATION_DETAILS_EMPTY_ERROR);
+        if (qualificationDetailRequestTOs.isEmpty()) {
+            throw new InvalidRequestException(NMRError.QUALIFICATION_DETAILS_EMPTY_ERROR.getCode(), NMRError.QUALIFICATION_DETAILS_EMPTY_ERROR.getMessage());
         }
-        if(proofs==null){
-            throw new InvalidRequestException(PROOFS_NULL_ERROR);
+        if (proofs == null) {
+            throw new InvalidRequestException(NMRError.PROOFS_NULL_ERROR.getCode(), NMRError.PROOFS_NULL_ERROR.getMessage());
         }
-        if(proofs.isEmpty()){
-            throw new InvalidRequestException(PROOFS_EMPTY_ERROR);
+        if (proofs.isEmpty()) {
+            throw new InvalidRequestException(NMRError.PROOFS_EMPTY_ERROR.getCode(), NMRError.PROOFS_EMPTY_ERROR.getMessage());
         }
-        if(qualificationDetailRequestTOs.size() > proofs.size()){
-            throw new InvalidRequestException(MISSING_PROOFS_ERROR);
+        if (qualificationDetailRequestTOs.size() > proofs.size()) {
+            throw new InvalidRequestException(NMRError.MISSING_PROOFS_ERROR.getCode(), NMRError.MISSING_PROOFS_ERROR.getMessage());
         }
-        if(qualificationDetailRequestTOs.size() < proofs.size()){
-            throw new InvalidRequestException(EXCESS_PROOFS_ERROR);
+        if (qualificationDetailRequestTOs.size() < proofs.size()) {
+            throw new InvalidRequestException(NMRError.EXCESS_PROOFS_ERROR.getCode(), NMRError.EXCESS_PROOFS_ERROR.getMessage());
         }
-        if(qualificationDetailRequestTOs.size()>6){
-            throw new InvalidRequestException(QUALIFICATION_DETAILS_LIMIT_EXCEEDED);
+        if (qualificationDetailRequestTOs.size() > 6) {
+            throw new InvalidRequestException(NMRError.QUALIFICATION_DETAILS_LIMIT_EXCEEDED.getCode(), NMRError.QUALIFICATION_DETAILS_LIMIT_EXCEEDED.getMessage());
         }
 
     }

@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.repository.IUserRepository;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import org.springframework.security.access.AccessDeniedException;
@@ -25,7 +26,7 @@ public class AccessControlServiceImpl implements IAccessControlService {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedInUser = userRepository.findByUsername(userName);
         if (loggedInUser == null || !loggedInUser.getId().equals(userId)) {
-            throw new AccessDeniedException(FORBIDDEN);
+            throw new AccessDeniedException(NMRError.IN_VAVALID_USER.getMessage());
         }
     }
 

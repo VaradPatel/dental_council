@@ -7,6 +7,7 @@ import in.gov.abdm.nmr.enums.ApplicationSubType;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.repository.*;
@@ -165,8 +166,8 @@ public class ApplicationServiceImpl implements IApplicationService {
             log.info("ApplicationServiceImpl: suspendRequest method: Execution Successful. ");
 
             return suspendRequestResponseTo;
-        }else {
-            throw new WorkFlowException("Approved profile can only be suspended");
+        } else {
+            throw new WorkFlowException(NMRError.PROFILE_NOT_APPROVED.getCode(), NMRError.PROFILE_NOT_APPROVED.getMessage());
         }
 
     }
@@ -208,7 +209,7 @@ public class ApplicationServiceImpl implements IApplicationService {
 
             return reactivateRequestResponseTo;
         } else {
-            throw new WorkFlowException("Suspended profile can only be reactivated");
+            throw new WorkFlowException(NMRError.PROFILE_NOT_SUSPEND.getCode(), NMRError.PROFILE_NOT_SUSPEND.getMessage());
         }
     }
 
@@ -260,10 +261,10 @@ public class ApplicationServiceImpl implements IApplicationService {
                         reactivateHealthProfessionalQueryParam.setSearch(value);
                         break;
                     default:
-                        throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE);
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE.getMessage());
                 }
             } else {
-                throw new InvalidRequestException(MISSING_SEARCH_VALUE);
+                throw new InvalidRequestException(NMRError.MISSING_SEARCH_VALUE.getCode(), NMRError.MISSING_SEARCH_VALUE.getMessage());
             }
         }
         final String sortingOrder = sortType == null ? DEFAULT_SORT_ORDER : sortType;
@@ -365,10 +366,10 @@ public class ApplicationServiceImpl implements IApplicationService {
                         applicationRequestParamsTo.setYearOfRegistration(value);
                         break;
                     default:
-                        throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION);
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION.getMessage());
                 }
             } else {
-                throw new InvalidRequestException(MISSING_SEARCH_VALUE);
+                throw new InvalidRequestException(NMRError.MISSING_SEARCH_VALUE.getCode(), NMRError.MISSING_SEARCH_VALUE.getMessage());
             }
         }
         if (Objects.nonNull(smcId)) {

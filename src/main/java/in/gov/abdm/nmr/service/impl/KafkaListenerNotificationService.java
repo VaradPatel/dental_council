@@ -6,6 +6,8 @@ import in.gov.abdm.nmr.dto.FileESignedEventTO;
 import in.gov.abdm.nmr.entity.Address;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.enums.AddressType;
+import in.gov.abdm.nmr.exception.DateException;
+import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.repository.IAddressRepository;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -79,14 +81,14 @@ public class KafkaListenerNotificationService {
      * @return the birth year of the person
      * @throws DateTimeParseException if the date of birth is in an invalid format
      */
-    public static int getBirthYear(String dateOfBirth) throws DateTimeParseException {
+    public static int getBirthYear(String dateOfBirth) throws DateTimeParseException, DateException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate dob;
         try {
             dob = LocalDate.parse(dateOfBirth, formatter);
         } catch (DateTimeParseException ex) {
             log.error("Error parsing date of birth: {}", dateOfBirth);
-            throw new DateTimeParseException("Invalid date format", dateOfBirth, 0, ex);
+            throw new DateException();
         }
         return dob.getYear();
     }

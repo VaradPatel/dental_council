@@ -6,6 +6,7 @@ import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.Group;
+import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.*;
 import in.gov.abdm.nmr.repository.*;
@@ -363,7 +364,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
             }
         } catch (ElasticsearchException | IOException e) {
             LOGGER.error("Exception while indexing HP", e);
-            throw new WorkFlowException("Exception while indexing HP");
+            throw new WorkFlowException(NMRError.FAIL_ELASTIC_UPDATE.getCode(), NMRError.FAIL_ELASTIC_UPDATE.getMessage());
         }
     }
 

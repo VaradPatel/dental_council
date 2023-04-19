@@ -12,6 +12,7 @@ import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetails;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
 import in.gov.abdm.nmr.repository.IFetchSpecificDetailsCustomRepository;
@@ -122,19 +123,19 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
 
     private void validateGroupName(String groupName) throws InvalidRequestException {
         if (groupName == null || Arrays.stream(Group.values()).noneMatch(t -> t.getDescription().equals(groupName))) {
-            throw new InvalidRequestException(INVALID_GROUP);
+            throw new InvalidRequestException(NMRError.INVALID_GROUP.getCode(),NMRError.INVALID_GROUP.getMessage());
         }
     }
 
     private void validateApplicationType(String applicationType) throws InvalidRequestException {
         if (applicationType == null || Arrays.stream(ApplicationType.values()).noneMatch(t -> t.getDescription().equals(applicationType))) {
-            throw new InvalidRequestException(INVALID_APPLICATION_TYPE);
+            throw new InvalidRequestException(NMRError.INVALID_APPLICATION_TYPE.getCode(),NMRError.INVALID_APPLICATION_TYPE.getMessage());
         }
     }
 
     private void validateWorkFlowStatus(String workFlowStatus) throws InvalidRequestException {
         if (workFlowStatus == null || Arrays.stream(WorkflowStatus.values()).noneMatch(t -> t.getDescription().equals(workFlowStatus))) {
-            throw new InvalidRequestException(INVALID_WORK_FLOW_STATUS);
+            throw new InvalidRequestException(NMRError.INVALID_WORK_FLOW_STATUS.getCode(),NMRError.INVALID_WORK_FLOW_STATUS.getMessage());
         }
     }
 
@@ -223,10 +224,10 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                         dashboardRequestParamsTO.setSearch(value);
                         break;
                     default:
-                        throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL);
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL.getMessage());
                 }
             } else {
-                throw new InvalidRequestException(MISSING_SEARCH_VALUE);
+                throw new InvalidRequestException(NMRError.MISSING_SEARCH_VALUE.getCode(), NMRError.MISSING_SEARCH_VALUE.getMessage());
             }
         }
     }
@@ -316,10 +317,10 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                         dashboardRequestParamsTO.setSearch(dashboardRequestTO.getValue());
                         break;
                     default:
-                        throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_POST_CARD_DETAIL);
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_POST_CARD_DETAIL.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_POST_CARD_DETAIL.getMessage());
                 }
             } else {
-                throw new InvalidRequestException(MISSING_SEARCH_VALUE);
+                throw new InvalidRequestException(NMRError.MISSING_SEARCH_VALUE.getCode(),NMRError.MISSING_SEARCH_VALUE.getMessage());
             }
         }
 
