@@ -215,7 +215,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws NmrException, InvalidRequestException, WorkFlowException {
         HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
         if (hpProfile.getNmrId() == null) {
-            throw new WorkFlowException("You cannot raise additional qualification request until NMR Id is generated");
+            throw new WorkFlowException(NMRError.CANNOT_RAISE_REQUEST.getCode(),NMRError.CANNOT_RAISE_REQUEST.getMessage());
         }
         validateQualificationDetailsAndProofs(qualificationDetailRequestTOs, proofs);
         for (QualificationDetailRequestTO qualificationDetailRequestTO : qualificationDetailRequestTOs) {
@@ -294,7 +294,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         String requestId = null;
         if (hpSubmitRequestTO.getHpProfileId() != null &&
                 iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(hpSubmitRequestTO.getHpProfileId())) {
-            throw new WorkFlowException("Cant create new request until an existing request is closed.");
+            throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
         }
         WorkFlow lastWorkFlowForHealthProfessional = workFlowRepository.findLastWorkFlowForHealthProfessional(hpSubmitRequestTO.getHpProfileId());
         if (lastWorkFlowForHealthProfessional != null && WorkflowStatus.QUERY_RAISED.getId().equals(lastWorkFlowForHealthProfessional.getWorkFlowStatus().getId())) {
@@ -388,7 +388,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 workProfileList = workProfileRepository.getWorkProfileDetailsByUserId(userId);
                 languagesKnown = languagesKnownRepository.findByUserId(userId);
             } else {
-                throw new InvalidRequestException(NO_MATCHING_USER_DETAILS_FOUND);
+                throw new InvalidRequestException(NMRError.NO_MATCHING_USER_DETAILS_FOUND.getCode(), NMRError.NO_MATCHING_USER_DETAILS_FOUND.getMessage());
             }
         }
 
@@ -403,7 +403,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(workProfileList);
             hpProfileWorkDetailsResponseTO.setLanguagesKnownIds(languagesKnownIds);
         } else {
-            throw new InvalidRequestException(NO_MATCHING_WORK_PROFILE_DETAILS_FOUND);
+            throw new InvalidRequestException(NMRError.NO_MATCHING_WORK_PROFILE_DETAILS_FOUND.getCode(), NMRError.NO_MATCHING_WORK_PROFILE_DETAILS_FOUND.getMessage());
         }
         return hpProfileWorkDetailsResponseTO;
     }
@@ -490,7 +490,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             java.util.Date dt = df.parse(request.getBirthdate());
             hpProfile.setDateOfBirth(new java.sql.Date(dt.getTime()));
         } catch (ParseException e) {
-            throw new DateException(NMRError.DATE_EXCEPTION.getCode(), NMRError.DATE_EXCEPTION.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString());
+            throw new DateException(NMRError.DATE_EXCEPTION.getCode(), NMRError.DATE_EXCEPTION.getMessage());
         }
 
         hpProfile.setEmailId(request.getEmail() != null ? request.getEmail() : null);
@@ -606,11 +606,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         String transactionId = request.getTransactionId();
         if (request.getMobileNumber() != null) {
             if (transactionId == null) {
-                throw new InvalidRequestException(MISSING_TRANSACTION_ID_ERROR);
+                throw new InvalidRequestException(NMRError.MISSING_TRANSACTION_ID_ERROR.getCode(), NMRError.MISSING_TRANSACTION_ID_ERROR.getMessage());
             } else {
                 if (otpService.isOtpVerified(transactionId)) {
-                    throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage(),
-                            HttpStatus.UNAUTHORIZED.toString());
+                    throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());
                 }
             }
         }

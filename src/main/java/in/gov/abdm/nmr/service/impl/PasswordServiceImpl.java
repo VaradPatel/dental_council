@@ -119,7 +119,7 @@ public class PasswordServiceImpl implements IPasswordService {
             String decryptedNewPassword = rsaUtil.decrypt(newPasswordTo.getPassword());
             for (Password password : passwordDaoService.findLast5(user.getId())) {
                 if (bCryptPasswordEncoder.matches(decryptedNewPassword, password.getValue())) {
-                    throw new InvalidRequestException(CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS);
+                    throw new InvalidRequestException(NMRError.CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS.getCode(), NMRError.CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS.getMessage());
                 }
             }
 
@@ -148,8 +148,7 @@ public class PasswordServiceImpl implements IPasswordService {
     public ResponseMessageTo resetPassword(ResetPasswordRequestTo resetPasswordRequestTo) throws GeneralSecurityException, InvalidRequestException, OtpException {
         String transactionId = resetPasswordRequestTo.getTransactionId();
         if (otpService.isOtpVerified(transactionId)) {
-            throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage(),
-                    HttpStatus.UNAUTHORIZED.toString());
+            throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());
         }
         User user = userDaoService.findByUsername(resetPasswordRequestTo.getUsername());
 
@@ -158,7 +157,7 @@ public class PasswordServiceImpl implements IPasswordService {
             String decryptedNewPassword = rsaUtil.decrypt(resetPasswordRequestTo.getPassword());
             for (Password password : passwordDaoService.findLast5(user.getId())) {
                 if (bCryptPasswordEncoder.matches(decryptedNewPassword, password.getValue())) {
-                    throw new InvalidRequestException(CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS);
+                    throw new InvalidRequestException(NMRError.CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS.getCode(), NMRError.CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS.getMessage());
                 }
             }
 
@@ -200,7 +199,7 @@ public class PasswordServiceImpl implements IPasswordService {
                     String decryptedNewPassword = rsaUtil.decrypt(changePasswordRequestTo.getNewPassword());
                     for (Password password : passwordDaoService.findLast5(user.getId())) {
                         if (bCryptPasswordEncoder.matches(decryptedNewPassword, password.getValue())) {
-                            throw new InvalidRequestException(CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS);
+                            throw new InvalidRequestException(NMRError.CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS.getCode(), NMRError.CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS.getMessage());
                         }
                     }
 
@@ -220,7 +219,7 @@ public class PasswordServiceImpl implements IPasswordService {
                 }
             } else {
 
-                throw new AccessDeniedException(FORBIDDEN);
+                throw new AccessDeniedException(NMRError.ACCESS_FORBIDDEN.getMessage());
             }
         } else {
 

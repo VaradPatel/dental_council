@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
@@ -47,7 +48,7 @@ public class ApplicationController {
     @PostMapping(ProtectedPaths.SUSPENSION_REQUEST_URL)
     public SuspendRequestResponseTo suspensionHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
         if(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(applicationRequestTo.getHpProfileId())){
-            throw new WorkFlowException("Cant create new request until an existing request is closed.");
+            throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
         }
         log.info("In Application Controller: suspensionHealthProfessional method ");
         log.debug("Request Payload: ApplicationRequestTo: ");
@@ -172,7 +173,7 @@ public class ApplicationController {
             return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
 
         }
-        throw new WorkFlowException("Cant create new request until an existing request is closed.");
+        throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(),NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
     }
     /**
      * Retrieves the details of a specific application.

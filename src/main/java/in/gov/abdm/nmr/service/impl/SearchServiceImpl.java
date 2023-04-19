@@ -7,6 +7,7 @@ import java.util.*;
 
 import in.gov.abdm.nmr.exception.InvalidIdException;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NMRError;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,14 +68,14 @@ public class SearchServiceImpl implements ISearchService {
     public HpSearchResponseTO searchHP(HpSearchRequestTO hpSearchRequestTO, Pageable pageable) throws InvalidRequestException {
         try {
             if (hpSearchRequestTO != null && hpSearchRequestTO.getProfileStatusId() != null && !PROFILE_STATUS_CODES.contains(hpSearchRequestTO.getProfileStatusId())) {
-                throw new InvalidRequestException("Invalid profile status code");
+                throw new InvalidRequestException(NMRError.INVALID_PROFILE_STATUS_CODE.getCode(), NMRError.INVALID_PROFILE_STATUS_CODE.getMessage());
             }
             SearchResponse<HpSearchResultTO> results = elasticsearchDaoService.searchHP(hpSearchRequestTO, pageable);
             return new HpSearchResponseTO(results.hits().hits().stream().map(Hit::source).toList(), results.hits().total().value());
 
         } catch (ElasticsearchException | IOException | InvalidRequestException e) {
             LOGGER.error("Exception while searching for HP", e);
-            throw new InvalidRequestException("Exception while searching for HP");
+            throw new InvalidRequestException(NMRError.FAIL_TO_SEARCH_HP.getCode(), NMRError.FAIL_TO_SEARCH_HP.getMessage());
         }
     }
 
@@ -89,7 +90,7 @@ public class SearchServiceImpl implements ISearchService {
                 throw ne;
             }
             LOGGER.error("Exception while retrieving HP profile", e);
-            throw new NmrException("Exception while retrieving HP profile");
+            throw new NmrException(NMRError.FAIL_TO_RETRIEVE_HP.getCode(), NMRError.FAIL_TO_RETRIEVE_HP.getMessage());
         }
 
         HpProfileMaster hpProfileMaster = iHpProfileMasterRepository.findById(profileId).get();
