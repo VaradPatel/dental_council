@@ -6,11 +6,11 @@ public class ResourceExistsException extends ABDMBaseException {
     private static final long serialVersionUID = 1L;
 
     public ResourceExistsException() {
-        super(NMRError.ALREADY_EXIST_EXCEPTION.getCode(), NMRError.ALREADY_EXIST_EXCEPTION.getMessage(), HttpStatus.ALREADY_REPORTED.toString());
+        super(NMRError.RESOURCE_EXISTS_EXCEPTION.getCode(), NMRError.RESOURCE_EXISTS_EXCEPTION.getMessage(), HttpStatus.ALREADY_REPORTED.toString());
     }
 
     public ResourceExistsException(String message) {
-        super(NMRError.ALREADY_EXIST_EXCEPTION.getCode(), message, HttpStatus.ALREADY_REPORTED.toString());
+        super(NMRError.RESOURCE_EXISTS_EXCEPTION.getCode(), message, HttpStatus.ALREADY_REPORTED.toString());
     }
 
     public ResourceExistsException(String message, HttpStatus code) {

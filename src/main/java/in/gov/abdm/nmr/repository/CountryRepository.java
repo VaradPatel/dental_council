@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface CountryRepository extends JpaRepository<Country, BigInteger> {
 
-    @Query(value = "SELECT name, id, nationality, created_at, updated_at FROM country", nativeQuery = true)
+    @Query(value = "SELECT name, id, nationality, created_at, updated_at FROM country order by name asc ", nativeQuery = true)
     List<Country> getCountry();
 
 

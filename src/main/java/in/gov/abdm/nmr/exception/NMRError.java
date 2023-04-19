@@ -21,12 +21,12 @@ public enum NMRError {
     INPUT_VALIDATION_INTERNAL_ERROR_CODE("ABDM-NMR-013", "Invalid input"),
     INVALID_ID_EXCEPTION("ABDM-NMR-014", "invalid ID"),
     DATE_EXCEPTION("ABDM-NMR-015", "Invalid date format"),
-    ALREADY_EXIST_EXCEPTION("ABDM-NMR-016", "Resource Already Exists"),
+    RESOURCE_EXISTS_EXCEPTION("ABDM-NMR-016", "Resource Already Exists"),
     NOT_FOUND_EXCEPTION("ABDM-NMR-017", "Resource Not Found"),
     WORK_FLOW_CREATION_FAIL("ABDM-NMR-018", "Cant create new request until an existing request is closed."),
-    CANNOT_RAISE_REQUEST("ABDM-NMR-019", "You cannot raise additional qualification request until NMR Id is generated."),
+    QUALIFICATION_WORKFLOW_CREATION_FAIL("ABDM-NMR-019", "You cannot raise additional qualification request until NMR Id is generated."),
     CURRENT_WORK_DETAILS_MANDATORY("ABDM-NMR-020", "The field 'currentWorkDetails' is mandatory."),
-    IN_VAVALID_USER("ABDM-NMR-021", "In-Valid User."),
+    INVALID_USER("ABDM-NMR-021", "In-Valid User."),
     FAIL_ELASTIC_UPDATE("ABDM-NMR-022", "Exception while indexing HP."),
     PROFILE_NOT_APPROVED("ABDM-NMR-023", "Approved profile can only be suspended."),
     PROFILE_NOT_SUSPEND("ABDM-NMR-024", "Suspended profile can only be reactivated."),
@@ -66,7 +66,6 @@ public enum NMRError {
     QUALIFICATION_DETAILS_LIMIT_EXCEEDED("ABDM-NMR-058", "Please provide less than or equal to 6 qualifications at a time."),
     MOBILE_NUM_ALREADY_REGISTERED("ABDM-NMR-059", "Mobile number already registered."),
     EMAIL_NUM_ALREADY_REGISTERED("ABDM-NMR-059", "Email id already registered."),
-
 
     ;
     private final String code;
