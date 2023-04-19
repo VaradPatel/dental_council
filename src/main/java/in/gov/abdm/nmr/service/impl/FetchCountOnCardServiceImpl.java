@@ -5,6 +5,7 @@ import in.gov.abdm.nmr.dto.FetchCountOnCardResponseTO;
 import in.gov.abdm.nmr.dto.StatusWiseCountTO;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.enums.*;
+import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.mapper.IStatusCount;
 import in.gov.abdm.nmr.mapper.IStatusWiseCountMapper;
 import in.gov.abdm.nmr.repository.IFetchCountOnCardRepository;
@@ -79,7 +80,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
         User loggedInUser = accessControlService.getLoggedInUser();
         if (loggedInUser == null) {
             log.error("User don't have permission to access on dashboard card details");
-            throw new AccessDeniedException(ACCESS_FORBIDDEN);
+            throw new AccessDeniedException(NMRError.ACCESS_FORBIDDEN.getMessage());
         }
         String groupName = loggedInUser.getGroup().getName();
         FetchCountOnCardResponseTO responseTO = new FetchCountOnCardResponseTO();

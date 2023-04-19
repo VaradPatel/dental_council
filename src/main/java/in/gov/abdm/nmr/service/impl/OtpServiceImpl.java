@@ -108,7 +108,7 @@ public class OtpServiceImpl implements IOtpService {
         Otp otpDetails = otpDaoService.findById(transactionId);
 
         if (otpDetails == null || otpDetails.isExpired()) {
-            throw new OtpException(NMRError.OTP_EXPIRED.getCode(), NMRError.OTP_EXPIRED.getMessage(), HttpStatus.UNAUTHORIZED.toString());
+            throw new OtpException(NMRError.OTP_EXPIRED.getCode(), NMRError.OTP_EXPIRED.getMessage());
         }
 
         if (otpDetails.getAttempts() >= NMRConstants.OTP_MAX_ATTEMPTS) {
@@ -124,7 +124,7 @@ public class OtpServiceImpl implements IOtpService {
         } else {
             otpDetails.setAttempts(otpDetails.getAttempts() + 1);
             otpDaoService.save(otpDetails);
-            throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage(), HttpStatus.UNAUTHORIZED.toString());
+            throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());
         }
     }
 

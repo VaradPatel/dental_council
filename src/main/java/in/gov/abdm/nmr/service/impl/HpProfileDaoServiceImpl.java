@@ -161,7 +161,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 log.debug("There was an existing HP Profile with the given hp_profile_id which has been Approved. ");
                 HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileByRegistrationId(existingHpProfile.getRegistrationId());
                 if (HpProfileStatus.PENDING.getId().equals(latestHpProfile.getHpProfileStatus().getId())) {
-                    throw new InvalidRequestException("Please use the latest ongoing HP Profile id for updation.");
+                    throw new InvalidRequestException(NMRError.USE_LATEST_HP_ID.getCode(), NMRError.USE_LATEST_HP_ID.getMessage());
                 }
             }
 
@@ -293,7 +293,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 userId = user.getId();
                 workProfile = workProfileRepository.getWorkProfileDetailsByUserId(userId);
             } else {
-                throw new NotFoundException(NO_MATCHING_USER_DETAILS_FOUND);
+                throw new NotFoundException(NMRError.NO_MATCHING_USER_DETAILS_FOUND.getCode(), NMRError.NO_MATCHING_USER_DETAILS_FOUND.getMessage());
             }
         }
         if (workProfile.isEmpty()) {
@@ -354,7 +354,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
         if (hpProfile == null) {
-            throw new InvalidRequestException("Invalid Request!!");
+            throw new InvalidRequestException(NMRError.INVALID_REQUEST.getCode(), NMRError.INVALID_REQUEST.getMessage());
         }
         String originalHpProfilePhoto = file.getOriginalFilename();
 

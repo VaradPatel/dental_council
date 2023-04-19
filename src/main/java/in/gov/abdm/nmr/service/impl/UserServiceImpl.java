@@ -171,8 +171,7 @@ public class UserServiceImpl implements IUserService {
     public String retrieveUser(RetrieveUserRequestTo retrieveUserRequestTo) throws OtpException {
         String transactionId = retrieveUserRequestTo.getTransactionId();
         if (otpService.isOtpVerified(transactionId)) {
-            throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage(),
-                    HttpStatus.UNAUTHORIZED.toString());
+            throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());
         }
         User user = userDaoService.findFirstByMobileNumber(retrieveUserRequestTo.getContact());
         if (user.getUserName() != null) {

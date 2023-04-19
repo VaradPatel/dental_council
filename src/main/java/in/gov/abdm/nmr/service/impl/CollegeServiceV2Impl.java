@@ -154,7 +154,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         CollegeProfile collegeProfile = null;
 
         if(!ALLOWED_SUBTYPE_FOR_COLLEGE_UPDATES.contains(getLoggedInUser().getUserSubType().getId())){
-            throw new InvalidRequestException("Invalid Request!");
+            throw new InvalidRequestException();
         }
 
         if (collegeMasterTOV2.getId() != null) {
@@ -265,7 +265,7 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         CollegeProfile collegeProfile = null;
 
         if(!getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.NMC_ADMIN.getCode())){
-            throw new InvalidRequestException("Invalid Request!");
+            throw new InvalidRequestException();
         }
 
         if (collegeProfileTOV2.getId() != null) {
@@ -304,27 +304,27 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         return collegeProfileTOV2;
     }
 
-    private void duplicateContactsCheck(String emailId, String mobileNumber) throws NmrException, ResourceExistsException {
+    private void duplicateContactsCheck(String emailId, String mobileNumber) throws ResourceExistsException {
         duplicateEmailCheck(emailId);
         duplicateMobileNumberCheck(mobileNumber);
     }
 
-    private void duplicateMobileNumberCheck(String mobileNumber) throws NmrException, ResourceExistsException {
+    private void duplicateMobileNumberCheck(String mobileNumber) throws ResourceExistsException {
         if (userDaoService.existsByMobileNumber(mobileNumber)) {
-            throw new ResourceExistsException("Mobile number already registered");
+            throw new ResourceExistsException(NMRError.MOBILE_NUM_ALREADY_REGISTERED.getMessage());
         }
     }
 
-    private void duplicateEmailCheck(String emailId) throws NmrException, ResourceExistsException {
+    private void duplicateEmailCheck(String emailId) throws ResourceExistsException {
         if (userDaoService.existsByEmail(emailId)) {
-            throw new ResourceExistsException("Email id already registered");
+            throw new ResourceExistsException(NMRError.EMAIL_NUM_ALREADY_REGISTERED.getMessage());
         }
     }
 
     private void preVerifierUpdationChecks(CollegeProfileTOV2 collegeProfileTOV2, CollegeProfile collegeProfile) throws NmrException, InvalidIdException, ResourceExistsException {
         User loggedInUser = getLoggedInUser();
         if (collegeProfile == null) {
-            throw new InvalidIdException("No college verifier found for id");
+            throw new InvalidIdException(NMRError.COLLEGE_VERIFIER_FOUND.getCode(), NMRError.COLLEGE_VERIFIER_FOUND.getMessage());
         }
 
         User user = collegeProfile.getUser();
@@ -361,12 +361,12 @@ public class CollegeServiceV2Impl implements ICollegeServiceV2 {
         return collegeProfileTOV2;
     }
 
-    private CollegeProfile preVerifierAccessChecks(BigInteger collegeId, BigInteger verifierId) throws NmrException, InvalidIdException {
+    private CollegeProfile preVerifierAccessChecks(BigInteger collegeId, BigInteger verifierId) throws InvalidIdException {
         User loggedInUser = getLoggedInUser();
         CollegeProfile collegeProfile = collegeProfileDaoService.findById(verifierId);
 
         if (collegeProfile == null) {
-            throw new InvalidIdException("No college verifier found for id");
+            throw new InvalidIdException(NMRError.COLLEGE_VERIFIER_FOUND.getCode(), NMRError.COLLEGE_VERIFIER_FOUND.getMessage());
         }
 
         if (!loggedInUser.getId().equals(collegeProfile.getUser().getId())) {
