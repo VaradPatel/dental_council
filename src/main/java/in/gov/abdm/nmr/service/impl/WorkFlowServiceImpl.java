@@ -203,11 +203,14 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             setDashboardStatus(requestTO.getActionId(), requestTO.getActorId(), dashboard);
             if (!isLastStepOfWorkFlow(iNextGroup)) {
                 //submit is equivalent to pending status.
-                if(Group.COLLEGE.getId().equals(requestTO.getActorId()) && Action.APPROVED.getId().equals(requestTO.getActionId())){
-                    dashboard.setSmcStatus(DashboardStatus.COLLEGE_VERIFIED.getId());
-                }else {
+
+                // this has to uncomment when we need add college_verified.
+
+                //if(Group.COLLEGE.getId().equals(requestTO.getActorId()) && Action.APPROVED.getId().equals(requestTO.getActionId())){
+                 //   dashboard.setSmcStatus(DashboardStatus.COLLEGE_VERIFIED.getId());
+                //}else {
                     setDashboardStatus(DashboardStatus.PENDING.getId(), iNextGroup.getAssignTo(), dashboard);
-                }
+                //}
             }
         }
         dashboard.setCreatedAt(Timestamp.from(Instant.now()));
