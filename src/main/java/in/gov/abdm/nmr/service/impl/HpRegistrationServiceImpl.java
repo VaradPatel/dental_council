@@ -471,11 +471,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 stateMedicalCouncilRepository.findStateMedicalCouncilById(BigInteger.valueOf(Long.parseLong(request.getSmcId())));
         List<Council> councils = councilService.getCouncilByRegistrationNumberAndCouncilName(request.getRegistrationNumber(), stateMedicalCouncil.getName());
 
-        Council council = councils.isEmpty() ? null : councils.get(0);
+        Council imrProfileDetails = councils.isEmpty() ? null : councils.get(0);
         RegistrationsDetails imrRegistrationsDetails = null;
         List<QualificationsDetails> qualificationDetailsList = new ArrayList<>();
-        if (council != null) {
-            imrRegistrationsDetails = council.getRegistrationsDetails().isEmpty() ? null : council.getRegistrationsDetails().get(0);
+        HpProfile hpProfile = new HpProfile();
+        if (imrProfileDetails != null) {
+            imrRegistrationsDetails = imrProfileDetails.getRegistrationsDetails().isEmpty() ? null : imrProfileDetails.getRegistrationsDetails().get(0);
             for (QualificationsDetails qualificationsDetails : imrRegistrationsDetails.getQualificationsDetails()) {
                 if (qualificationsDetails.getName().replaceAll(DOCTOR_QUALIFICATION_PATTERN, "").equalsIgnoreCase(DOCTOR_QUALIFICATION)) {
                     qualificationDetailsList.add(qualificationsDetails);
@@ -483,7 +484,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             }
         }
 
-        HpProfile hpProfile = new HpProfile();
+
         hpProfile.setAadhaarToken(request.getAadhaarToken() != null ? request.getAadhaarToken() : null);
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         try {
@@ -502,8 +503,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setRegistrationId(request.getRegistrationNumber());
         hpProfile.setIsSameAddress(String.valueOf(false));
         hpProfile.setCountryNationality(countryRepository.findByName(NMRConstants.DEFAULT_COUNTRY_AADHAR));
-        hpProfile.setIsNew(NMRConstants.YES);
         hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.PENDING.getId()).get());
+        hpProfile.setIsNew(imrProfileDetails == null ? YES : NO);
         hpProfile = iHpProfileRepository.save(hpProfile);
 
         RegistrationDetails registrationDetails = new RegistrationDetails();
@@ -563,19 +564,19 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         kycAddress.setDistrict(districtRepository.findByDistrictNameAndStateId(request.getDistrict().toUpperCase(), kycAddress.getState().getId()));
         kycAddress.setCountry(stateRepository.findByName(request.getState().toUpperCase()).getCountry());
 
-        if (council != null) {
+        if (imrProfileDetails != null) {
             in.gov.abdm.nmr.entity.Address communicationAddressEntity = new in.gov.abdm.nmr.entity.Address();
             Address communicationAddress = new Address();
-            for (Address address : council.getAddress()) {
+            for (Address address : imrProfileDetails.getAddress()) {
                 if (address.getType().equalsIgnoreCase(AddressType.COMMUNICATION.name())) {
                     communicationAddress = address;
                 }
             }
             if (communicationAddress != null) {
                 communicationAddressEntity.setPincode(communicationAddress.getPincode() != null ? communicationAddress.getPincode() : null);
-                communicationAddressEntity.setMobile(council.getMobileNumber() != null ? council.getMobileNumber() : null);
+                communicationAddressEntity.setMobile(imrProfileDetails.getMobileNumber() != null ? imrProfileDetails.getMobileNumber() : null);
                 communicationAddressEntity.setAddressLine1(communicationAddress.getAddressLine1() != null ? communicationAddress.getAddressLine1() : null);
-                communicationAddressEntity.setEmail(council.getEmail() != null ? council.getEmail() : null);
+                communicationAddressEntity.setEmail(imrProfileDetails.getEmail() != null ? imrProfileDetails.getEmail() : null);
                 communicationAddressEntity.setHouse(null);
                 communicationAddressEntity.setStreet(null);
                 communicationAddressEntity.setLocality(null);
