@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface IStateRepository extends JpaRepository<State, BigInteger> {
 
-    @Query(value = "SELECT * FROM state where country=:country order by name asc", nativeQuery = true)
+    @Query(value = "SELECT id, iso_code, INITCAP(name) name ,country, created_at ,updated_at FROM state where country=:country order by name asc", nativeQuery = true)
     List<State> getState(BigInteger country);
 
 
