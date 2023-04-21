@@ -12,17 +12,7 @@ import java.util.List;
 @Repository
 public interface ICouncilRepository extends MongoRepository<Council, String> {
 
-    //@Query(value = "{ 'registrationDetails': { $elemMatch: { 'registrationDetails.registrationNo' : ?0  } }}")
-//    @Query("{$and :[{ 'registrationDetails': { $elemMatch: { 'registrationDetails.registrationNo' : ?0  } }},{ 'registrationDetails': { $elemMatch: { 'registrationDetails.council_name' : ?1  } }}] }")
-//    @Query("{ 'registration_details.registration_no' : '?0' , 'registration_details.council_name' : '?1' }, { sort: { '_id' : '-1' }, limit: '1' }")
-    @Query(value = "{ 'registration_details.registration_no' : '?0' , 'registration_details.council_name' : '?1'}",sort = "{ _id : -1 }")
-    List<Council> findCouncilByRegistrationNumberAndCouncilName(String registrationNumber, String councilName, Pageable pageable);
-//    List<Council> findCouncilByRegistrationNumber(String registrationNumber, String councilName);
+    @Query(value = "{ 'registration_details.registration_no' : '?0' , 'registration_details.council_name' : '?1'}")
+    List<Council> findCouncilByRegistrationNumberAndCouncilName(String registrationNumber, String councilName);
 
-//    List<Council> findCouncilByRegistrationNumberAndCouncilName(String registrationNumber, String councilName, Pageable pageable);
-
-    @Query("{id :'?0'}")
-    Tuple findCouncilById(String id);
-
-    //@Query("{$and :[{author: ?0},{cost: ?1}] }")
 }

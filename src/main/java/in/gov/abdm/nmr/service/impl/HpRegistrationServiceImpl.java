@@ -16,6 +16,7 @@ import in.gov.abdm.nmr.nosql.entity.Council;
 import in.gov.abdm.nmr.nosql.entity.QualificationsDetails;
 import in.gov.abdm.nmr.nosql.entity.RegistrationsDetails;
 import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
@@ -27,12 +28,15 @@ import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -180,8 +184,17 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Autowired
     private IUserDaoService userDaoService;
 
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Autowired
+    private EntityManager entityManager;
 
+    @Autowired
+    RsaUtil rsaUtil;
+
+    @Autowired
+    private IPasswordDaoService passwordDaoService;
 
     /**
      * This method fetches the SMC registration details for a given request.
@@ -215,7 +228,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws NmrException, InvalidRequestException, WorkFlowException {
         HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
         if (hpProfile.getNmrId() == null) {
-            throw new WorkFlowException(NMRError.QUALIFICATION_WORKFLOW_CREATION_FAIL.getCode(),NMRError.QUALIFICATION_WORKFLOW_CREATION_FAIL.getMessage());
+            throw new WorkFlowException(NMRError.QUALIFICATION_WORKFLOW_CREATION_FAIL.getCode(), NMRError.QUALIFICATION_WORKFLOW_CREATION_FAIL.getMessage());
         }
         validateQualificationDetailsAndProofs(qualificationDetailRequestTOs, proofs);
         for (QualificationDetailRequestTO qualificationDetailRequestTO : qualificationDetailRequestTOs) {
@@ -440,17 +453,16 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             boolean isGenderMatching = genderMatch > NMRConstants.FUZZY_MATCH_LIMIT;
             fuzzyParameters.add(new FuzzyParameter(NMRConstants.FUZZY_PARAMETER_GENDER, council.getGender(), userKycTo.getGender(), isGenderMatching ? NMRConstants.SUCCESS_RESPONSE : NMRConstants.FAILURE_RESPONSE));
 
-            SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd");
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy");
+            SimpleDateFormat kycDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat imrDateFormat = new SimpleDateFormat("MM/dd/yy");
 
             boolean isDobMatching;
             try {
-                Date dateOfBirth = simpleDateFormat.parse(council.getDateOfBirth());
-                isDobMatching = (s.format(dateOfBirth).compareTo(s.format(userKycTo.getBirthDate()))) == 0;
+                Date dateOfBirth = imrDateFormat.parse(council.getDateOfBirth());
+                isDobMatching = (kycDateFormat.format(dateOfBirth).compareTo(kycDateFormat.format(userKycTo.getBirthDate()))) == 0;
             } catch (ParseException e) {
                 log.info("Exception occurred while parsing dob" + e.getMessage());
                 e.printStackTrace();
-                System.out.println(e);
                 isDobMatching = false;
             }
             fuzzyParameters.add(new FuzzyParameter(NMRConstants.FUZZY_PARAMETER_DOB, council.getDateOfBirth(), userKycTo.getBirthDate().toString(), isDobMatching ? NMRConstants.SUCCESS_RESPONSE : NMRConstants.FAILURE_RESPONSE));
@@ -464,17 +476,37 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
     }
 
+    @Transactional
     @Override
-    public void addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException, ParseException {
+    public ResponseMessageTo addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException, ParseException, GeneralSecurityException {
 
-        StateMedicalCouncil stateMedicalCouncil =
-                stateMedicalCouncilRepository.findStateMedicalCouncilById(BigInteger.valueOf(Long.parseLong(request.getSmcId())));
-        List<Council> councils = councilService.getCouncilByRegistrationNumberAndCouncilName(request.getRegistrationNumber(), stateMedicalCouncil.getName());
+        if (userDaoService.existsByUserName(request.getUsername())) {
+            return new ResponseMessageTo(NMRConstants.USERNAME_ALREADY_EXISTS);
+        }
 
-        Council imrProfileDetails = councils.isEmpty() ? null : councils.get(0);
+        if (userDaoService.existsByMobileNumber(request.getMobileNumber())) {
+            return new ResponseMessageTo(NMRConstants.MOBILE_NUMBER_ALREADY_EXISTS);
+        }
+
+        if (request.getEmail() != null && userDaoService.existsByEmail(request.getEmail())) {
+            return new ResponseMessageTo(NMRConstants.EMAIL_ALREADY_EXISTS);
+        }
+
+        String hashedPassword = bCryptPasswordEncoder.encode(rsaUtil.decrypt(request.getPassword()));
+        User userDetail = new User(null, request.getEmail(), request.getMobileNumber(), null, hashedPassword, null, true, true, //
+
+                entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null, request.getUsername(), request.getHprId(), request.getHprIdNumber(), request.isNew(), false);
+        userDaoService.save(userDetail);
+        Password password = new Password(null, hashedPassword, userDetail);
+        passwordDaoService.save(password);
+
+        StateMedicalCouncil stateMedicalCouncil = stateMedicalCouncilRepository.findStateMedicalCouncilById(BigInteger.valueOf(Long.parseLong(request.getSmcId())));
+        List<Council> imrRecords = councilService.getCouncilByRegistrationNumberAndCouncilName(request.getRegistrationNumber(), stateMedicalCouncil.getName());
+
+        Council imrProfileDetails = imrRecords.isEmpty() ? null : imrRecords.get(0);
         RegistrationsDetails imrRegistrationsDetails = null;
         List<QualificationsDetails> qualificationDetailsList = new ArrayList<>();
-        HpProfile hpProfile = new HpProfile();
+
         if (imrProfileDetails != null) {
             imrRegistrationsDetails = imrProfileDetails.getRegistrationsDetails().isEmpty() ? null : imrProfileDetails.getRegistrationsDetails().get(0);
             for (QualificationsDetails qualificationsDetails : imrRegistrationsDetails.getQualificationsDetails()) {
@@ -485,6 +517,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
 
 
+        HpProfile hpProfile = new HpProfile();
         hpProfile.setAadhaarToken(request.getAadhaarToken() != null ? request.getAadhaarToken() : null);
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         try {
@@ -505,6 +538,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setCountryNationality(countryRepository.findByName(NMRConstants.DEFAULT_COUNTRY_AADHAR));
         hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.PENDING.getId()).get());
         hpProfile.setIsNew(imrProfileDetails == null ? YES : NO);
+        hpProfile.setUser(userDetail);
         hpProfile = iHpProfileRepository.save(hpProfile);
 
         RegistrationDetails registrationDetails = new RegistrationDetails();
@@ -542,6 +576,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 UniversityMaster universityMaster = universityMasterRepository.findUniversityByName(university);
                 qualificationDetails.setUniversity(universityMaster);
             }
+            qualificationDetails.setUser(userDetail);
             iQualificationDetailRepository.save(qualificationDetails);
         }
 
@@ -590,15 +625,19 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 communicationAddressEntity.setCountry(communicationAddress.getCountry() != null ? countryRepository.findByName(communicationAddress.getCountry()) : null);
 
                 iAddressRepository.saveAll(List.of(kycAddress, communicationAddressEntity));
-            }else{
+            } else {
                 iAddressRepository.saveAll(List.of(kycAddress));
             }
 
-        }else{
+        } else {
             iAddressRepository.saveAll(List.of(kycAddress));
         }
-
-
+        try {
+            notificationService.sendNotificationForAccountCreation(request.getUsername(), request.getMobileNumber());
+        } catch (Exception exception) {
+            log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
+        }
+        return new ResponseMessageTo(SUCCESS_RESPONSE);
     }
 
     @Override

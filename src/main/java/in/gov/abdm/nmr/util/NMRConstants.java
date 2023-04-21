@@ -95,6 +95,8 @@ public class NMRConstants {
     public static final String PROBLEM_OCCURRED = "Problem Occurred";
     public static final String USERNAME_NOT_NULL = "Username cannot be null or empty";
     public static final String PASSWORD_NOT_NULL = "Password cannot be null or empty";
+    public static final String REGISTRATION_NOT_NULL = "Registration number cannot be null or empty";
+    public static final String SMC_NOT_NULL = "SMC ID number cannot be null or empty";
     public static final String TOKEN_NOT_NULL = "Token cannot be null or empty";
     public static final int RESET_PASSWORD_LINK_EXPIRY_HOURS = 24;
     public static final String TEMPLATE_ID = "templateId";

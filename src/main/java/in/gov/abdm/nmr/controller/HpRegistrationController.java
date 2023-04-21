@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
@@ -292,9 +293,8 @@ public class HpRegistrationController {
     }
 
     @PostMapping(path = "health-professional", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseMessageTo> addNewHealthProfessional(@Valid @RequestBody NewHealthPersonalRequestTO request) throws DateException, ParseException {
-        hpService.addNewHealthProfessional(request);
-        return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
+    public ResponseEntity<ResponseMessageTo> addNewHealthProfessional(@Valid @RequestBody NewHealthPersonalRequestTO request) throws DateException, ParseException, GeneralSecurityException {
+        return ResponseEntity.ok(hpService.addNewHealthProfessional(request));
     }
 
     @PatchMapping(path = "health-professional/{healthProfessionalId}/personal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
