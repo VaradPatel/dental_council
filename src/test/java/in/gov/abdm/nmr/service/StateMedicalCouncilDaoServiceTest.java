@@ -14,10 +14,8 @@ import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
-import static in.gov.abdm.nmr.util.CommonTestData.STATE_NAME;
-import static in.gov.abdm.nmr.util.CommonTestData.getStateMedicalCouncil;
+import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -43,7 +41,7 @@ class StateMedicalCouncilDaoServiceTest {
         when(stateMedicalCouncilRepository.findAll(any(Sort.class))).thenReturn(List.of(getStateMedicalCouncil()));
         List<StateMedicalCouncilTO> stateMedicalCouncils = stateMedicalCouncilDaoService.getAllStateMedicalCouncil();
         assertEquals(1, stateMedicalCouncils.size());
-        assertEquals(STATE_NAME,stateMedicalCouncils.get(0).getName());
+        assertEquals(STATE_MEDICAL_COUNCIL,stateMedicalCouncils.get(0).getName());
 
     }
 }

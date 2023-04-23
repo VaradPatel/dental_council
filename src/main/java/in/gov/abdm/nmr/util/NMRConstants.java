@@ -299,4 +299,5 @@ public class NMRConstants {
     public static final String OPERATOR_MULTIPLICATION = "*";
     public static final List<String> OPERATORS = Arrays.asList(OPERATOR_PLUS, OPERATOR_MINUS, OPERATOR_MULTIPLICATION);
     public static final String RSA_PADDING = "RSA/ECB/PKCS1Padding";
+    public static final String STATE_MEDICAL_COUNCIL_URL = "/state-medical-councils";
 }

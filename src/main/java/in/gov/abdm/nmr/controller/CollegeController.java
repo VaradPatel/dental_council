@@ -25,7 +25,7 @@ import in.gov.abdm.nmr.service.ICollegeServiceV2;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
-public class CollegeControllerV2 {
+public class CollegeController {
 
     public static final String COLLEGES_COLLEGE_ID_VERIFIERS_VERIFIER_ID = "/colleges/{collegeId}/verifiers/{verifierId}";
 
@@ -39,7 +39,7 @@ public class CollegeControllerV2 {
 
     private ICollegeServiceV2 collegeServiceV2;
 
-    public CollegeControllerV2(ICollegeServiceV2 collegeServiceV2) {
+    public CollegeController(ICollegeServiceV2 collegeServiceV2) {
         this.collegeServiceV2 = collegeServiceV2;
     }
 

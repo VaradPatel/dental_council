@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigInteger;
 import java.util.List;
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @RestController
 public class MasterDataController {
@@ -23,8 +24,8 @@ public class MasterDataController {
         this.masterDataService = masterDataService;
     }
 
-    @GetMapping(path = "/state-medical-councils", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<MasterDataTO> smcs() {
+    @GetMapping(path = STATE_MEDICAL_COUNCIL_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<MasterDataTO> getStateMedicalCouncils() {
         return masterDataService.smcs();
     }
 
