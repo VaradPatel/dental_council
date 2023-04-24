@@ -46,24 +46,5 @@ public class FetchCountOnCardResponseTO {
      */
     private FetchCountOnCardInnerResponseTO consolidatedSuspensionRequest;
 
-    /**
-     * This holds the list of count of Activate License applications
-     * according to their status at that point in time
-     */
-    private FetchCountOnCardInnerResponseTO activateLicenseRequest;
-
-    /**
-     * This holds the list of count of College Registration applications
-     * according to their status at that point in time
-     */
-    private FetchCountOnCardInnerResponseTO collegeRegistrationRequest;
-
-
-    /**
-     * This holds the list of count of New Foreign applications
-     * according to their status at that point in time
-     */
-    private List<StatusWiseCountTO> foreignHpRegistrationRequests;
-
 
 }

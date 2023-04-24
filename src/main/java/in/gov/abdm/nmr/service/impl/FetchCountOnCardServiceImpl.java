@@ -196,7 +196,7 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
         return statusWiseCountResponseTos;
     }
 
-    public List<StatusWiseCountTO> getDefaultCards(String totalCardLabel) {
+    public static List<StatusWiseCountTO> getDefaultCards(String totalCardLabel) {
         List<StatusWiseCountTO> response = new ArrayList<>();
         response.add(StatusWiseCountTO.builder().name(totalCardLabel).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(Action.SUBMIT.getId()).name(WorkflowStatus.PENDING.getDescription()).count(BigInteger.ZERO).build());
