@@ -70,10 +70,8 @@ public class SearchServiceImpl implements ISearchService {
     @Override
     public HpSearchResponseTO searchHP(HpSearchRequestTO hpSearchRequestTO, Pageable pageable) throws InvalidRequestException {
         try {
-            /*if (hpSearchRequestTO != null && hpSearchRequestTO.getProfileStatusId() != null && !PROFILE_STATUS_CODES.contains(hpSearchRequestTO.getProfileStatusId())) {
-                throw new InvalidRequestException(NMRError.INVALID_PROFILE_STATUS_CODE.getCode(), NMRError.INVALID_PROFILE_STATUS_CODE.getMessage());
-            }*/
-            if (!hasCommonElement(hpSearchRequestTO.getProfileStatusId(),PROFILE_STATUS_CODES)){
+            if (hpSearchRequestTO != null && hpSearchRequestTO.getProfileStatusId() != null &&
+                    !hasCommonElement(hpSearchRequestTO.getProfileStatusId(), PROFILE_STATUS_CODES)) {
                 throw new InvalidRequestException(NMRError.INVALID_PROFILE_STATUS_CODE.getCode(), NMRError.INVALID_PROFILE_STATUS_CODE.getMessage());
             }
             SearchResponse<HpSearchResultTO> results = elasticsearchDaoService.searchHP(hpSearchRequestTO, pageable);
@@ -85,33 +83,16 @@ public class SearchServiceImpl implements ISearchService {
         }
     }
 
-    public static boolean hasCommonElement(List<FieldValue> list1, List<BigInteger> list2) {
-        for (FieldValue element1 : list1) {
-            for (BigInteger element2 : list2) {
-                if (element1.stringValue().contains(element2.toString())) {
+    public static boolean hasCommonElement(List<FieldValue> fieldValues, List<BigInteger> profileStatusCodes) {
+        for (FieldValue fieldValue : fieldValues) {
+            for (BigInteger profileStatusCode : profileStatusCodes) {
+                if (fieldValue.stringValue().contains(profileStatusCode.toString())) {
                     return true;
                 }
             }
         }
         return false;
     }
-
-    public static boolean hasCommonElement1(List<FieldValue> list1, List<BigInteger> list2) {
-        for (FieldValue element : list1) {
-            if (list2.containsAll(Collections.singleton(element))) {
-                System.out.println(element.stringValue() + "==" + (list2));
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean hasCommonElement2(List<FieldValue> list1, List<BigInteger> list2) {
-        boolean is = list2.containsAll(list1.stream().map(FieldValue::stringValue).collect(Collectors.toList()));
-        System.out.println(is);
-        return is;
-    }
-
 
     @Override
     public HpSearchProfileTO getHpSearchProfileById(BigInteger profileId) throws InvalidIdException, NmrException {
