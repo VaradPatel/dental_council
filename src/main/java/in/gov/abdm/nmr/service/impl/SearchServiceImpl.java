@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import co.elastic.clients.elasticsearch._types.FieldValue;
 import in.gov.abdm.nmr.exception.InvalidIdException;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
@@ -54,7 +56,8 @@ public class SearchServiceImpl implements ISearchService {
     @Autowired
     private LGDServiceFClient lgdServiceFClient;
 
-    private static final List<BigInteger> PROFILE_STATUS_CODES = Arrays.asList(BigInteger.valueOf(2l), BigInteger.valueOf(5l), BigInteger.valueOf(6l));
+    //private static final List<BigInteger> PROFILE_STATUS_CODES = Arrays.asList(BigInteger.valueOf(2l), BigInteger.valueOf(5l), BigInteger.valueOf(6l));
+    private static final List<BigInteger> PROFILE_STATUS_CODES = Arrays.asList(BigInteger.valueOf(2), BigInteger.valueOf(5), BigInteger.valueOf(6));
 
     public SearchServiceImpl(IElasticsearchDaoService elasticsearchDaoService, IHpProfileMasterRepository iHpProfileMasterRepository, RegistrationDetailMasterRepository registrationDetailMasterRepository, IQualificationDetailMasterRepository qualificationDetailMasterRepository, IForeignQualificationDetailMasterRepository foreignQualificationDetailMasterRepository) {
         this.elasticsearchDaoService = elasticsearchDaoService;
@@ -67,7 +70,10 @@ public class SearchServiceImpl implements ISearchService {
     @Override
     public HpSearchResponseTO searchHP(HpSearchRequestTO hpSearchRequestTO, Pageable pageable) throws InvalidRequestException {
         try {
-            if (hpSearchRequestTO != null && hpSearchRequestTO.getProfileStatusId() != null && !PROFILE_STATUS_CODES.contains(hpSearchRequestTO.getProfileStatusId())) {
+            /*if (hpSearchRequestTO != null && hpSearchRequestTO.getProfileStatusId() != null && !PROFILE_STATUS_CODES.contains(hpSearchRequestTO.getProfileStatusId())) {
+                throw new InvalidRequestException(NMRError.INVALID_PROFILE_STATUS_CODE.getCode(), NMRError.INVALID_PROFILE_STATUS_CODE.getMessage());
+            }*/
+            if (!hasCommonElement(hpSearchRequestTO.getProfileStatusId(),PROFILE_STATUS_CODES)){
                 throw new InvalidRequestException(NMRError.INVALID_PROFILE_STATUS_CODE.getCode(), NMRError.INVALID_PROFILE_STATUS_CODE.getMessage());
             }
             SearchResponse<HpSearchResultTO> results = elasticsearchDaoService.searchHP(hpSearchRequestTO, pageable);
@@ -78,6 +84,34 @@ public class SearchServiceImpl implements ISearchService {
             throw new InvalidRequestException(NMRError.FAIL_TO_SEARCH_HP.getCode(), NMRError.FAIL_TO_SEARCH_HP.getMessage());
         }
     }
+
+    public static boolean hasCommonElement(List<FieldValue> list1, List<BigInteger> list2) {
+        for (FieldValue element1 : list1) {
+            for (BigInteger element2 : list2) {
+                if (element1.stringValue().contains(element2.toString())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasCommonElement1(List<FieldValue> list1, List<BigInteger> list2) {
+        for (FieldValue element : list1) {
+            if (list2.containsAll(Collections.singleton(element))) {
+                System.out.println(element.stringValue() + "==" + (list2));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasCommonElement2(List<FieldValue> list1, List<BigInteger> list2) {
+        boolean is = list2.containsAll(list1.stream().map(FieldValue::stringValue).collect(Collectors.toList()));
+        System.out.println(is);
+        return is;
+    }
+
 
     @Override
     public HpSearchProfileTO getHpSearchProfileById(BigInteger profileId) throws InvalidIdException, NmrException {
