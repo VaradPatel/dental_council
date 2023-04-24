@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import co.elastic.clients.elasticsearch._types.FieldValue;
 import in.gov.abdm.nmr.exception.InvalidIdException;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
@@ -67,7 +69,8 @@ public class SearchServiceImpl implements ISearchService {
     @Override
     public HpSearchResponseTO searchHP(HpSearchRequestTO hpSearchRequestTO, Pageable pageable) throws InvalidRequestException {
         try {
-            if (hpSearchRequestTO != null && hpSearchRequestTO.getProfileStatusId() != null && !PROFILE_STATUS_CODES.contains(hpSearchRequestTO.getProfileStatusId())) {
+            if (hpSearchRequestTO != null && hpSearchRequestTO.getProfileStatusId() != null &&
+                    !hasCommonElement(hpSearchRequestTO.getProfileStatusId(), PROFILE_STATUS_CODES)) {
                 throw new InvalidRequestException(NMRError.INVALID_PROFILE_STATUS_CODE.getCode(), NMRError.INVALID_PROFILE_STATUS_CODE.getMessage());
             }
             SearchResponse<HpSearchResultTO> results = elasticsearchDaoService.searchHP(hpSearchRequestTO, pageable);
@@ -77,6 +80,17 @@ public class SearchServiceImpl implements ISearchService {
             LOGGER.error("Exception while searching for HP", e);
             throw new InvalidRequestException(NMRError.FAIL_TO_SEARCH_HP.getCode(), NMRError.FAIL_TO_SEARCH_HP.getMessage());
         }
+    }
+
+    public static boolean hasCommonElement(List<FieldValue> fieldValues, List<BigInteger> profileStatusCodes) {
+        for (FieldValue fieldValue : fieldValues) {
+            for (BigInteger profileStatusCode : profileStatusCodes) {
+                if (fieldValue.stringValue().contains(profileStatusCode.toString())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
