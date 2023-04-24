@@ -48,7 +48,7 @@ public class MasterDataServiceImpl implements IMasterDataService {
 
     @Override
     public List<MasterDataTO> smcs() {
-        return masterDataMapper.stateMedicalCouncilsToMasterDataTOs(stateMedicalCouncilService.getAllStateMedicalCouncil());
+        return IMasterDataMapper.MASTER_DATA_MAPPER.stateMedicalCouncilsToMasterDataTOs(stateMedicalCouncilService.getAllStateMedicalCouncil());
     }
 
     @Override

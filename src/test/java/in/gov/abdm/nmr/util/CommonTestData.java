@@ -1,10 +1,11 @@
 package in.gov.abdm.nmr.util;
 
+import in.gov.abdm.nmr.dto.StateMedicalCouncilTO;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
-import in.gov.abdm.nmr.mapper.INextGroup;
+import in.gov.abdm.nmr.mapper.IStateMedicalCouncilMapper;
 
 import java.math.BigInteger;
 import java.sql.Date;
@@ -34,6 +35,7 @@ public class CommonTestData {
     public static final String PROFILE_PHOTO = "Base 64";
     public static final Date DATE_OF_BIRTH =  Date.valueOf("1990-12-01");
     public static final Date REGISTRATION_DATE =  Date.valueOf("1990-12-01");
+    public static final String REGISTRATION_YEAR= "1990";
     public static final String REGISTRATION_NUMBER = "MAH-123";
     public static final String BROAD_SPECIALITY = "BS";
     public static final String COLLEGE_CODE = "123";
@@ -98,8 +100,12 @@ public class CommonTestData {
         stateMedicalCouncil.setId(ID);
         stateMedicalCouncil.setCode(ISO_CODE);
         stateMedicalCouncil.setNameShort(STATE_SHORT_NAME);
-        stateMedicalCouncil.setName(STATE_NAME);
+        stateMedicalCouncil.setName(STATE_MEDICAL_COUNCIL);
         return stateMedicalCouncil;
+    }
+
+    public static List<StateMedicalCouncilTO> getStateMedicalCouncilTo(){
+        return IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(List.of(getStateMedicalCouncil()));
     }
 
     public static User getUser(BigInteger userTypeId) {

@@ -65,7 +65,7 @@ public enum NMRError {
     EXCESS_PROOFS_ERROR("ABDM-NMR-057", "Please remove excess proofs to sync with the qualification details provided."),
     QUALIFICATION_DETAILS_LIMIT_EXCEEDED("ABDM-NMR-058", "Please provide less than or equal to 6 qualifications at a time."),
     MOBILE_NUM_ALREADY_REGISTERED("ABDM-NMR-059", "Mobile number already registered."),
-    EMAIL_NUM_ALREADY_REGISTERED("ABDM-NMR-059", "Email id already registered."),
+    EMAIL_NUM_ALREADY_REGISTERED("ABDM-NMR-060", "Email id already registered."),
 
     ;
     private final String code;
