@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import javax.validation.Valid;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -14,17 +15,21 @@ import javax.validation.Valid;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DscDocument {
-	
-	@JsonProperty("integratorName")
-	private String integratorName;
-	
-	@JsonProperty("templateId")
-	private String templateId;
 
-	@JsonProperty("signingPlace")
-	private String signingPlace;
+    @JsonProperty("integratorName")
+    private String integratorName;
 
-	@Valid
-	@JsonProperty("nmrDetails")
-	DocumentDetailsTO documentDetails;
+    @JsonProperty("templateId")
+    private String templateId;
+
+    @JsonProperty("signingPlace")
+    private String signingPlace;
+
+    @Valid
+    @JsonProperty("nmrDetails")
+    DocumentDetailsTO documentDetails;
+
+    @Valid
+    @JsonProperty("additionalQualification")
+    AdditionalQualificationDocumentDetailsTO additionalQualification;
 }
