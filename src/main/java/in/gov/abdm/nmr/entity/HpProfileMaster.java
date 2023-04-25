@@ -79,4 +79,6 @@ public class HpProfileMaster {
 	private String isSameAddress;
 	private String transactionId;
 	private String registrationId;
+	@Column(columnDefinition ="integer default 0")
+	private Integer consent;
 }

@@ -39,7 +39,9 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
             registrationDetailsTo.setRenewableRegistrationDate(registrationDetails.getRenewableRegistrationDate());
             registrationDetailsTo.setIsNameChange(registrationDetails.getIsNameChange());
             registrationDetailsTo.setRegistrationNumber(registrationDetails.getRegistrationNo());
-            registrationDetailsTo.setStateMedicalCouncil(StateMedicalCouncilTO.builder().id(registrationDetails.getStateMedicalCouncil().getId()).name(registrationDetails.getStateMedicalCouncil().getName()).build());
+            if (registrationDetails.getStateMedicalCouncil()!=null) {
+                registrationDetailsTo.setStateMedicalCouncil(StateMedicalCouncilTO.builder().id(registrationDetails.getStateMedicalCouncil().getId()).name(registrationDetails.getStateMedicalCouncil().getName()).build());
+            }
             registrationDetailsTo.setIsRenewable(registrationDetails.getIsRenewable());
             if(registrationDetails.getCertificate() != null) {
                 registrationDetailsTo.setRegistrationCertificate( new String(Base64.getEncoder().encodeToString(registrationDetails.getCertificate())));
@@ -68,11 +70,21 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
                 qualificationDetailResponseTo.setQualificationMonth(indianQualification.getQualificationMonth());
                 qualificationDetailResponseTo.setIsNameChange(indianQualification.getIsNameChange());
                 qualificationDetailResponseTo.setQualificationFrom(NMRConstants.INDIA);
-                qualificationDetailResponseTo.setCountry(CountryTO.builder().id(indianQualification.getCountry().getId()).name(indianQualification.getCountry().getName()).nationality(indianQualification.getCountry().getNationality()).build());
-                qualificationDetailResponseTo.setState(StateTO.builder().id(indianQualification.getState().getId()).name(indianQualification.getState().getName()).build());
-                qualificationDetailResponseTo.setCourse(CourseTO.builder().id(indianQualification.getCourse().getId()).courseName(indianQualification.getCourse().getCourseName()).build());
-                qualificationDetailResponseTo.setUniversity(UniversityTO.builder().id(indianQualification.getUniversity().getId()).name(indianQualification.getUniversity().getName()).build());
-                qualificationDetailResponseTo.setCollege(CollegeTO.builder().id(indianQualification.getCollege().getId()).name(indianQualification.getCollege().getName()).build());
+                if(indianQualification.getCountry()!=null) {
+                    qualificationDetailResponseTo.setCountry(CountryTO.builder().id(indianQualification.getCountry().getId()).name(indianQualification.getCountry().getName()).nationality(indianQualification.getCountry().getNationality()).build());
+                }
+                if(indianQualification.getState()!=null) {
+                    qualificationDetailResponseTo.setState(StateTO.builder().id(indianQualification.getState().getId()).name(indianQualification.getState().getName()).build());
+                }
+                if(indianQualification.getCourse()!=null) {
+                    qualificationDetailResponseTo.setCourse(CourseTO.builder().id(indianQualification.getCourse().getId()).courseName(indianQualification.getCourse().getCourseName()).build());
+                }
+                if(indianQualification.getUniversity()!=null) {
+                    qualificationDetailResponseTo.setUniversity(UniversityTO.builder().id(indianQualification.getUniversity().getId()).name(indianQualification.getUniversity().getName()).build());
+                }
+                if(indianQualification.getCollege()!=null) {
+                    qualificationDetailResponseTo.setCollege(CollegeTO.builder().id(indianQualification.getCollege().getId()).name(indianQualification.getCollege().getName()).build());
+                }
                 if(indianQualification.getCertificate() != null) {
                     qualificationDetailResponseTo.setDegreeCertificate(Base64.getEncoder().encodeToString(indianQualification.getCertificate()));
                 }

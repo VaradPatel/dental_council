@@ -84,4 +84,6 @@ public class HpProfile extends CommonAuditEntity {
 	private String registrationId;
 	private String isSameAddress;
 	private Integer isNew;
+	@Column(columnDefinition ="integer default 0")
+	private Integer consent;
 }

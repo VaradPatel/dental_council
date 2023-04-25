@@ -37,15 +37,21 @@ public final class HpPersonalDetailMapper {
 
         if (address != null) {
             addressTO.setAddressLine1(address.getAddressLine1());
-            addressTO.setCountry(CountryTO.builder().id(address.getCountry().getId()).name(address.getCountry().getName()).nationality(address.getCountry().getNationality()).build());
-            addressTO.setDistrict(DistrictTO.builder().id(address.getDistrict().getId()).name(address.getDistrict().getName()).isoCode(address.getDistrict().getIsoCode()).build());
+            if (address.getCountry() != null) {
+                addressTO.setCountry(CountryTO.builder().id(address.getCountry().getId()).name(address.getCountry().getName()).nationality(address.getCountry().getNationality()).build());
+            }
+            if (address.getDistrict() != null) {
+                addressTO.setDistrict(DistrictTO.builder().id(address.getDistrict().getId()).name(address.getDistrict().getName()).isoCode(address.getDistrict().getIsoCode()).build());
+            }
             if (address.getSubDistrict() != null) {
                 addressTO.setSubDistrict(SubDistrictTO.builder().id(address.getSubDistrict().getId()).name(address.getSubDistrict().getName()).isoCode(address.getSubDistrict().getIsoCode()).build());
             }
             if (address.getVillage() != null) {
                 addressTO.setVillage(VillagesTO.builder().id(address.getVillage().getId()).name(address.getVillage().getName()).build());
             }
-            addressTO.setState(StateTO.builder().id(address.getState().getId()).name(address.getState().getName()).build());
+            if (address.getState() != null) {
+                addressTO.setState(StateTO.builder().id(address.getState().getId()).name(address.getState().getName()).build());
+            }
             addressTO.setEmail(address.getEmail());
             addressTO.setMobile(hpProfile.getMobileNumber());
             addressTO.setId(address.getId());
