@@ -56,6 +56,7 @@ public class CommonTestData {
     public static final String QUERY_COMMENT = "Comment";
     public static final String QUERY_ON = "Name";
     public static final String QUERY_SECTION = "Personal";
+    public static final String GENDER = "M";
 
     public static UserGroup getUserGroup(BigInteger userGroupId){
         Group group = Group.getGroup(userGroupId);
