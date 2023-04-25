@@ -203,7 +203,14 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             setDashboardStatus(requestTO.getActionId(), requestTO.getActorId(), dashboard);
             if (!isLastStepOfWorkFlow(iNextGroup)) {
                 //submit is equivalent to pending status.
-                setDashboardStatus(Action.SUBMIT.getId(), iNextGroup.getAssignTo(), dashboard);
+
+                // this has to uncomment when we need add college_verified.
+
+                //if(Group.COLLEGE.getId().equals(requestTO.getActorId()) && Action.APPROVED.getId().equals(requestTO.getActionId())){
+                 //   dashboard.setSmcStatus(DashboardStatus.COLLEGE_VERIFIED.getId());
+                //}else {
+                    setDashboardStatus(DashboardStatus.PENDING.getId(), iNextGroup.getAssignTo(), dashboard);
+                //}
             }
         }
         dashboard.setCreatedAt(Timestamp.from(Instant.now()));
@@ -213,17 +220,15 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     }
 
     private static void setDashboardStatus(BigInteger actionPerformedId, BigInteger userGroup, Dashboard dashboard) {
+        BigInteger dashboardStatusId = DashboardStatus.getDashboardStatus(Action.getAction(actionPerformedId).getStatus()).getId();
         if (userGroup.equals(Group.SMC.getId())) {
-            dashboard.setSmcStatus(actionPerformedId);
-        }
-        if (userGroup.equals(Group.NMC.getId())) {
-            dashboard.setNmcStatus(actionPerformedId);
-        }
-        if (userGroup.equals(Group.COLLEGE.getId())) {
-            dashboard.setCollegeStatus(actionPerformedId);
-        }
-        if (userGroup.equals(Group.NBE.getId())) {
-            dashboard.setNbeStatus(actionPerformedId);
+            dashboard.setSmcStatus(dashboardStatusId);
+        }else if (userGroup.equals(Group.NMC.getId())) {
+            dashboard.setNmcStatus(dashboardStatusId);
+        }else if (userGroup.equals(Group.COLLEGE.getId())) {
+            dashboard.setCollegeStatus(dashboardStatusId);
+        }else if (userGroup.equals(Group.NBE.getId())) {
+            dashboard.setNbeStatus(dashboardStatusId);
         }
     }
 

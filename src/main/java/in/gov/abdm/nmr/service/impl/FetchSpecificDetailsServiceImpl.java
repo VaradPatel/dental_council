@@ -7,10 +7,7 @@ import in.gov.abdm.nmr.dto.FetchSpecificDetailsResponseTO;
 import in.gov.abdm.nmr.entity.CollegeProfile;
 import in.gov.abdm.nmr.entity.SMCProfile;
 import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.enums.Action;
-import in.gov.abdm.nmr.enums.ApplicationType;
-import in.gov.abdm.nmr.enums.Group;
-import in.gov.abdm.nmr.enums.WorkflowStatus;
+import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetails;
@@ -184,7 +181,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
             }
         } else {
             dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
-            dashboardRequestParamsTO.setUserGroupStatus(!userGroupStatus.contains(TOTAL) ? Action.getAction(userGroupStatus).getId().toString() : TOTAL);
+            dashboardRequestParamsTO.setUserGroupStatus(!userGroupStatus.contains(TOTAL) ? DashboardStatus.getDashboardStatus(userGroupStatus).getId().toString() : TOTAL);
         }
     }
 

@@ -4,6 +4,7 @@ import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestParamsTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationTo;
 import in.gov.abdm.nmr.enums.Action;
+import in.gov.abdm.nmr.enums.DashboardStatus;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -167,9 +168,9 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         results.forEach(result -> {
             HealthProfessionalApplicationTo healthProfessionalApplicationTo = new HealthProfessionalApplicationTo();
             healthProfessionalApplicationTo.setDoctorStatus(result[0] != null ? WorkflowStatus.getWorkflowStatus((BigInteger) result[0]).getDescription() : "");
-            healthProfessionalApplicationTo.setSmcStatus(result[1] != null ? Action.getAction((BigInteger) result[1]).getStatus() : NOT_YET_RECEIVED);
-            healthProfessionalApplicationTo.setNmcStatus(result[2] != null ? Action.getAction((BigInteger) result[2]).getStatus() : NOT_YET_RECEIVED);
-            healthProfessionalApplicationTo.setNbeStatus(result[3] != null ? Action.getAction((BigInteger) result[3]).getStatus() : NOT_YET_RECEIVED);
+            healthProfessionalApplicationTo.setSmcStatus(result[1] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[1]).getStatus() : NOT_YET_RECEIVED);
+            healthProfessionalApplicationTo.setNmcStatus(result[2] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[2]).getStatus() : NOT_YET_RECEIVED);
+            healthProfessionalApplicationTo.setNbeStatus(result[3] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[3]).getStatus() : NOT_YET_RECEIVED);
             healthProfessionalApplicationTo.setHpProfileId((BigInteger) result[4]);
             healthProfessionalApplicationTo.setRequestId((String) result[5]);
             healthProfessionalApplicationTo.setRegistrationNo((String) result[6]);
@@ -185,7 +186,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setMobileNumber((String) result[16]);
             healthProfessionalApplicationTo.setNmrId((String)result[17]);
             healthProfessionalApplicationTo.setYearOfRegistration(((Timestamp) result[18]).toString());
-            healthProfessionalApplicationTo.setCollegeStatus(result[19] != null ? Action.getAction((BigInteger) result[19]).getStatus() : NOT_YET_RECEIVED);
+            healthProfessionalApplicationTo.setCollegeStatus(result[19] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[19]).getStatus() : NOT_YET_RECEIVED);
             healthProfessionalApplicationResponseTo.setTotalNoOfRecords((BigInteger) result[20]);
             healthProfessionalApplicationToList.add(healthProfessionalApplicationTo);
         });

@@ -3,10 +3,7 @@ package in.gov.abdm.nmr.repository.impl;
 import in.gov.abdm.nmr.dto.DashboardRequestParamsTO;
 import in.gov.abdm.nmr.dto.DashboardResponseTO;
 import in.gov.abdm.nmr.dto.DashboardTO;
-import in.gov.abdm.nmr.enums.Action;
-import in.gov.abdm.nmr.enums.Group;
-import in.gov.abdm.nmr.enums.HpProfileStatus;
-import in.gov.abdm.nmr.enums.WorkflowStatus;
+import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.repository.IFetchSpecificDetailsCustomRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -203,9 +200,9 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         results.forEach(result -> {
             DashboardTO dashBoardTO = new DashboardTO();
             dashBoardTO.setDoctorStatus(result[0] != null ? WorkflowStatus.getWorkflowStatus((BigInteger) result[0]).getDescription() : "");
-            dashBoardTO.setSmcStatus(result[1] != null ? Action.getAction((BigInteger) result[1]).getStatus() : NOT_YET_RECEIVED);
-            dashBoardTO.setNmcStatus(result[2] != null ? Action.getAction((BigInteger) result[2]).getStatus() : NOT_YET_RECEIVED);
-            dashBoardTO.setNbeStatus(result[3] != null ? Action.getAction((BigInteger) result[3]).getStatus() : NOT_YET_RECEIVED);
+            dashBoardTO.setSmcStatus(result[1] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[1]).getStatus() : NOT_YET_RECEIVED);
+            dashBoardTO.setNmcStatus(result[2] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[2]).getStatus() : NOT_YET_RECEIVED);
+            dashBoardTO.setNbeStatus(result[3] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[3]).getStatus() : NOT_YET_RECEIVED);
             dashBoardTO.setHpProfileId((BigInteger) result[4]);
             dashBoardTO.setRequestId((String) result[5]);
             dashBoardTO.setRegistrationNo((String) result[6]);
@@ -219,7 +216,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setMobileNumber((String) result[14]);
             dashBoardTO.setNmrId((String) result[15]);
             dashBoardTO.setYearOfRegistration(((Date) result[16]).toString());
-            dashBoardTO.setCollegeStatus(result[17] != null ? Action.getAction((BigInteger) result[17]).getStatus() : NOT_YET_RECEIVED);
+            dashBoardTO.setCollegeStatus(result[17] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[17]).getStatus() : NOT_YET_RECEIVED);
             dashBoardTO.setApplicationTypeId((BigInteger) result[18]);
             dashBoardResponseTO.setTotalNoOfRecords((BigInteger) result[19]);
             dashboardTOList.add(dashBoardTO);
