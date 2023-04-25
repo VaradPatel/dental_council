@@ -24,4 +24,6 @@ public interface ICollegeMasterRepository extends JpaRepository<CollegeMaster, B
 
     @Query(value = "SELECT *  FROM college_master", nativeQuery = true)
     List<CollegeMaster> getColleges();
+    @Query(value = "SELECT *  FROM college_master WHERE name= :collegeName", nativeQuery = true)
+    CollegeMaster getCollegeByName(String collegeName);
 }

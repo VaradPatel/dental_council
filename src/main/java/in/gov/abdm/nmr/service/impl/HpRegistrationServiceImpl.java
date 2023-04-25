@@ -2,7 +2,6 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
-import in.gov.abdm.nmr.entity.StateMedicalCouncil;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.AddressType;
@@ -27,7 +26,6 @@ import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +40,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static in.gov.abdm.nmr.util.NMRUtil.validateQualificationDetailsAndProofs;
@@ -51,6 +48,10 @@ import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetails;
 @Service
 @Slf4j
 public class HpRegistrationServiceImpl implements IHpRegistrationService {
+    @Autowired
+    private ICollegeMasterRepository iCollegeMasterRepository;
+    @Autowired
+    private CourseRepository courseRepository;
     @Autowired
     private IHpProfileMapper iHpProfileMapper;
 
@@ -333,6 +334,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             hpProfileById.setTransactionId(hpSubmitRequestTO.getTransactionId());
             hpProfileById.setESignStatus(hpSubmitRequestTO.getESignStatus());
             hpProfileById.setRequestId(requestId);
+            hpProfileById.setConsent(hpSubmitRequestTO.getHprShareAcknowledgement());
 
             log.debug("Updating the request_id in registration_details table");
             RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
@@ -516,7 +518,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             }
         }
 
-
         HpProfile hpProfile = new HpProfile();
         hpProfile.setAadhaarToken(request.getAadhaarToken() != null ? request.getAadhaarToken() : null);
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
@@ -570,12 +571,18 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             qualificationDetails.setHpProfile(hpProfile);
             qualificationDetails.setQualificationYear(qualificationsDetails.getQualificationYear() != null ? qualificationsDetails.getQualificationYear() : null);
             qualificationDetails.setQualificationMonth(qualificationsDetails.getQualificationMonth() != null ? qualificationsDetails.getQualificationMonth() : null);
+            qualificationDetails.setCollege(qualificationsDetails.getCollege() != null ? iCollegeMasterRepository.getCollegeByName(qualificationsDetails.getCollege()) : null);
             qualificationDetails.setSystemOfMedicine(qualificationsDetails.getSystemOfMedicine() != null ? qualificationsDetails.getSystemOfMedicine() : null);
+            qualificationDetails.setCountry(qualificationsDetails.getCountry() != null ? countryRepository.findByName(qualificationsDetails.getCountry()) : null);
+            qualificationDetails.setCourse(qualificationsDetails.getCourse() != null ? courseRepository.getByCourseName(qualificationsDetails.getCourse()) : null);
+            qualificationDetails.setState(qualificationsDetails.getState() != null ? stateRepository.findByName(qualificationsDetails.getState()) : null);
+            qualificationDetails.setName(qualificationsDetails.getName() != null ? qualificationsDetails.getName() : null);
             String university = qualificationsDetails.getUniversity();
             if (university != null) {
                 UniversityMaster universityMaster = universityMasterRepository.findUniversityByName(university);
                 qualificationDetails.setUniversity(universityMaster);
             }
+            qualificationDetails.setRegistrationDetails(registrationDetails);
             qualificationDetails.setUser(userDetail);
             iQualificationDetailRepository.save(qualificationDetails);
         }
@@ -596,7 +603,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         kycAddress.setVillage(request.getVillageTownCity() != null ? villagesRepository.findByName(request.getLocality()) : null);
         kycAddress.setSubDistrict(request.getSubDist() != null ? subDistrictRepository.findByName(request.getSubDist()) : null);
         kycAddress.setState(stateRepository.findByName(request.getState().toUpperCase()));
-        kycAddress.setDistrict(districtRepository.findByDistrictNameAndStateId(request.getDistrict().toUpperCase(), kycAddress.getState().getId()));
+        if (kycAddress.getState() != null) {
+            kycAddress.setDistrict(districtRepository.findByDistrictNameAndStateId(request.getDistrict().toUpperCase(), kycAddress.getState().getId()));
+        }
         kycAddress.setCountry(stateRepository.findByName(request.getState().toUpperCase()).getCountry());
 
         if (imrProfileDetails != null) {

@@ -1,11 +1,11 @@
 package in.gov.abdm.nmr.service;
 
+import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import in.gov.abdm.nmr.dto.HpElasticDocumentTO;
 import in.gov.abdm.nmr.dto.HpSearchRequestTO;
 import in.gov.abdm.nmr.dto.HpSearchResultTO;
-import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.repository.IElasticsearchRepository;
 import in.gov.abdm.nmr.service.impl.ElasticsearchDaoServiceImpl;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -14,15 +14,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -82,7 +81,8 @@ class ElasticsearchDaoServiceTest {
     @Test
     void testSearchHpShouldReturnMatchingProfileBasedOnProfileStatus() throws IOException {
         HpSearchRequestTO hpSearchRequestTO =  new HpSearchRequestTO();
-        hpSearchRequestTO.setProfileStatusId(ID);
+        List<FieldValue> profileStatusIdList = new ArrayList<>();
+        hpSearchRequestTO.setProfileStatusId(profileStatusIdList);
         when(elasticsearchRepository.searchHP(any(BoolQuery.class),anyInt(), anyInt())).thenReturn(searchResponse);
         elasticsearchDaoService.searchHP(hpSearchRequestTO, Pageable.ofSize(1));
         verify(elasticsearchRepository, times(1)).searchHP(any(BoolQuery.class),anyInt(), anyInt());
