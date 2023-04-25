@@ -15,8 +15,8 @@ public enum NMRError {
     TEMPLATE_NOT_FOUND("ABDM-NMR-007", "Template not found"),
     TEMPLATE_ID_NOT_FOUND_IN_PROPERTIES("ABDM-NMR-008", "Template id not found in properties"),
     WORK_FLOW_EXCEPTION("ABDM-NMR-009", "Fail to Process work flow"),
-    ACCESS_DENIED_EXCEPTION("ABDM-NMR-010", "Fail to Process work flow"),
-    INTERNAL_SERVER_ERROR("ABDM-NMR-011", "Internal Server Error"),
+    ACCESS_DENIED_EXCEPTION("ABDM-NMR-010", "Not authorized"),
+    INTERNAL_SERVER_ERROR("ABDM-NMR-011", "Something went wrong"),
     INPUT_VALIDATION_ERROR_CODE("ABDM-NMR-012", "Invalid input"),
     INPUT_VALIDATION_INTERNAL_ERROR_CODE("ABDM-NMR-013", "Invalid input"),
     INVALID_ID_EXCEPTION("ABDM-NMR-014", "invalid ID"),
@@ -65,7 +65,7 @@ public enum NMRError {
     EXCESS_PROOFS_ERROR("ABDM-NMR-057", "Please remove excess proofs to sync with the qualification details provided."),
     QUALIFICATION_DETAILS_LIMIT_EXCEEDED("ABDM-NMR-058", "Please provide less than or equal to 6 qualifications at a time."),
     MOBILE_NUM_ALREADY_REGISTERED("ABDM-NMR-059", "Mobile number already registered."),
-    EMAIL_NUM_ALREADY_REGISTERED("ABDM-NMR-059", "Email id already registered."),
+    EMAIL_NUM_ALREADY_REGISTERED("ABDM-NMR-060", "Email id already registered."),
 
     ;
     private final String code;

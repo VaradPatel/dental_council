@@ -5,11 +5,13 @@ import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
+import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface IMasterDataMapper {
+    IMasterDataMapper MASTER_DATA_MAPPER = Mappers.getMapper(IMasterDataMapper.class);
 
     List<MasterDataTO> stateMedicalCouncilsToMasterDataTOs(List<StateMedicalCouncilTO> stateMedicalCouncils);
 

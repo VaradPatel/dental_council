@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.dto;
 
+import co.elastic.clients.elasticsearch._types.FieldValue;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -18,5 +20,5 @@ public class HpSearchRequestTO {
     private String registrationNumber;
     private String registrationYear;
     private BigInteger stateMedicalCouncilId;
-    private BigInteger profileStatusId;
+    private List<FieldValue> profileStatusId;
 }

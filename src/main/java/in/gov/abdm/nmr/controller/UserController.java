@@ -73,6 +73,7 @@ public class UserController {
         return userService.updateNbeProfile(id, nbeProfileTO);
     }
 
+    @Deprecated
     @PostMapping(path = NMRConstants.PATH_HP_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseMessageTo createHpUserAccount(@RequestBody CreateHpUserAccountTo createHpUserAccountTo){
         return userService.createHpUserAccount(createHpUserAccountTo);

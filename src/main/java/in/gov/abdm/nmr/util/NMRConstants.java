@@ -95,6 +95,8 @@ public class NMRConstants {
     public static final String PROBLEM_OCCURRED = "Problem Occurred";
     public static final String USERNAME_NOT_NULL = "Username cannot be null or empty";
     public static final String PASSWORD_NOT_NULL = "Password cannot be null or empty";
+    public static final String REGISTRATION_NOT_NULL = "Registration number cannot be null or empty";
+    public static final String SMC_NOT_NULL = "SMC ID number cannot be null or empty";
     public static final String TOKEN_NOT_NULL = "Token cannot be null or empty";
     public static final int RESET_PASSWORD_LINK_EXPIRY_HOURS = 24;
     public static final String TEMPLATE_ID = "templateId";
@@ -297,4 +299,5 @@ public class NMRConstants {
     public static final String OPERATOR_MULTIPLICATION = "*";
     public static final List<String> OPERATORS = Arrays.asList(OPERATOR_PLUS, OPERATOR_MINUS, OPERATOR_MULTIPLICATION);
     public static final String RSA_PADDING = "RSA/ECB/PKCS1Padding";
+    public static final String STATE_MEDICAL_COUNCIL_URL = "/state-medical-councils";
 }

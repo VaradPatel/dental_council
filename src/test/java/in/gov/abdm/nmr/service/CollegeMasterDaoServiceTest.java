@@ -47,7 +47,7 @@ class CollegeMasterDaoServiceTest {
         assertEquals(SYSTEM_OF_MEDICINE, collegeMaster.getSystemOfMedicineId());
         assertEquals(STATE_ID, collegeMaster.getState().getId());
         assertEquals(STATE_NAME, collegeMaster.getState().getName());
-        assertEquals(STATE_NAME, collegeMaster.getStateMedicalCouncil().getName());
+        assertEquals(STATE_MEDICAL_COUNCIL, collegeMaster.getStateMedicalCouncil().getName());
         assertEquals(COURSE_NAME, collegeMaster.getCourse().getCourseName());
         assertEquals(WEBSITE, collegeMaster.getWebsite());
         assertEquals(ADDRESS_LINE_1, collegeMaster.getAddressLine1());

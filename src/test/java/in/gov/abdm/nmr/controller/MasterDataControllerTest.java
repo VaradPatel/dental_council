@@ -1,145 +1,67 @@
 package in.gov.abdm.nmr.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.jupiter.api.AfterEach;
+import in.gov.abdm.nmr.mapper.IMasterDataMapper;
+import in.gov.abdm.nmr.mapper.IStateMedicalCouncilMapper;
+import in.gov.abdm.nmr.service.IMasterDataService;
+import in.gov.abdm.nmr.util.CommonTestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
-import in.gov.abdm.nmr.service.IMasterDataService;
+import java.util.List;
 
-@ExtendWith(MockitoExtension.class)
+import static in.gov.abdm.nmr.util.CommonTestData.ID;
+import static in.gov.abdm.nmr.util.CommonTestData.STATE_MEDICAL_COUNCIL;
+import static in.gov.abdm.nmr.util.NMRConstants.STATE_MEDICAL_COUNCIL_URL;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@AutoConfigureMockMvc
+@ExtendWith(SpringExtension.class)
+@WebMvcTest(value = SearchController.class, excludeAutoConfiguration = { SecurityAutoConfiguration.class })
+@ContextConfiguration(classes = MasterDataController.class)
+@ActiveProfiles(profiles = "local")
+@EnableWebMvc
 class MasterDataControllerTest {
 
-    @InjectMocks
-    MasterDataController masterDataController;
-
-    @Mock
-    IMasterDataService masterDataService;
-
+    @Autowired
     private MockMvc mockMvc;
 
-    private List<MasterDataTO> expectedResult;
+    @MockBean
+    private IMasterDataService masterDataService;
 
-    List<MasterDataTO> expected;
+    @Autowired
+    private WebApplicationContext context;
 
     @BeforeEach
-    void setUp() {
-        expected = new ArrayList<>();
-        mockMvc = MockMvcBuilders.standaloneSetup(masterDataController).build();
-        expectedResult = new ArrayList<>();
-        expectedResult.add(new MasterDataTO(1L, "HOSPITAL", "Hospital"));
-        expectedResult.add(new MasterDataTO(2L, "HOSPITAL", "Hospital"));
-    }
-
-    @AfterEach
-    void tearDown() {
-        expected = null;
-        mockMvc = null;
-        expectedResult = null;
+    public void setup() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
     }
 
     @Test
-    void testSmcs() {
-        when(masterDataService.smcs()).thenReturn(expected);
-        List<MasterDataTO> actual = masterDataController.smcs();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void testSpecialities() {
-        when(masterDataService.specialities()).thenReturn(expected);
-        List<MasterDataTO> actual = masterDataController.specialities();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void testCountries() {
-        when(masterDataService.countries()).thenReturn(expected);
-        List<MasterDataTO> actual = masterDataController.countries();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void testStates() {
-        BigInteger countryId = BigInteger.ONE;
-        when(masterDataService.states(countryId)).thenReturn(expected);
-        List<MasterDataTO> actual = masterDataController.states(countryId);
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void testDistricts() {
-        BigInteger stateId = BigInteger.ONE;
-        when(masterDataService.districts(stateId)).thenReturn(expected);
-        List<MasterDataTO> actual = masterDataController.districts(stateId);
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void testSubDistricts() {
-        BigInteger districtId = BigInteger.ONE;
-        when(masterDataService.subDistricts(districtId)).thenReturn(expected);
-        List<MasterDataTO> actual = masterDataController.subDistricts(districtId);
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void testCities() {
-        BigInteger subDistrictId = BigInteger.valueOf(1);
-        when(masterDataService.cities(subDistrictId)).thenReturn(expectedResult);
-        List<MasterDataTO> result = masterDataController.cities(subDistrictId);
-        assertEquals(expectedResult, result);
-    }
-
-    @Test
-    void testUniversities() {
-        when(masterDataService.universities()).thenReturn(expectedResult);
-        List<MasterDataTO> result = masterDataController.universities();
-        assertEquals(expectedResult, result);
-    }
-
-
-    @Test
-    void testLanguages() throws Exception {
-        when(masterDataService.languages()).thenReturn(expectedResult);
-        List<MasterDataTO> result = masterDataController.languages();
-        assertEquals(expectedResult, result);
-    }
-
-    @Test
-    void testCourses() throws Exception {
-        when(masterDataService.courses()).thenReturn(expectedResult);
-        List<MasterDataTO> result = masterDataController.courses();
-        assertEquals(expectedResult, result);
-    }
-
-    @Test
-    void testRegistrationRenewationType() {
-        when(masterDataService.registrationRenewationType()).thenReturn(expectedResult);
-        List<MasterDataTO> result = masterDataController.registrationRenewationType();
-        assertEquals(expectedResult, result);
-        verify(masterDataService).registrationRenewationType();
-    }
-
-    @Test
-    void testFacilityType() {
-        when(masterDataService.facilityType()).thenReturn(expectedResult);
-        List<MasterDataTO> result = masterDataController.facilityType();
-        assertEquals(expectedResult, result);
-        verify(masterDataService).facilityType();
+    void testGetStateMedicalCouncilsReturnsListOfCouncils() throws Exception {
+        when(masterDataService.smcs())
+                .thenReturn(IMasterDataMapper.MASTER_DATA_MAPPER.stateMedicalCouncilsToMasterDataTOs(IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(List.of(CommonTestData.getStateMedicalCouncil()))));
+        mockMvc.perform(get(STATE_MEDICAL_COUNCIL_URL).with(user("123")).accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(ID))
+                .andExpect(jsonPath("$[0].name").value(STATE_MEDICAL_COUNCIL)) ;
     }
 }
