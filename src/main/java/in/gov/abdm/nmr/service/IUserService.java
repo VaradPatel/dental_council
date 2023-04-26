@@ -28,8 +28,6 @@ public interface IUserService {
 
     NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException;
 
-    ResponseMessageTo createHpUserAccount(CreateHpUserAccountTo createHpUserAccountTo);
-
     String retrieveUser(RetrieveUserRequestTo retrieveUserRequestTo) throws OtpException;
 
     ResponseMessageTo verifyEmail(VerifyEmailTo verifyEmailTo);

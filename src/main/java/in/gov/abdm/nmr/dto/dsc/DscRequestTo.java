@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
@@ -16,11 +17,19 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class DscRequestTo {
 
-	@NotBlank
-	@JsonProperty("signingPlace")
-	private String signingPlace;
+    //@NotBlank
+    @JsonProperty("templateId")
+    private String templateId;
 
-	@Valid
-	@JsonProperty("nmrDetails")
-	private DocumentDetailsTO documentDetailsTO;
-}	
+    @NotBlank
+    @JsonProperty("signingPlace")
+    private String signingPlace;
+
+    @Valid
+    @JsonProperty("nmrDetails")
+    private DocumentDetailsTO documentDetailsTO;
+
+    @Valid
+    @JsonProperty("additionalQualification")
+    private AdditionalQualificationDocumentDetailsTO additionalQualification;
+}

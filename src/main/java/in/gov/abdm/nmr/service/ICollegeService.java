@@ -1,13 +1,25 @@
 package in.gov.abdm.nmr.service;
-import in.gov.abdm.nmr.dto.*;
+
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.util.List;
+
+import in.gov.abdm.nmr.dto.CollegeMasterDataTO;
+import in.gov.abdm.nmr.dto.CollegeResponseTo;
+import in.gov.abdm.nmr.dto.CollegeProfileTo;
+import in.gov.abdm.nmr.exception.*;
 
 public interface ICollegeService {
 
-    List<CollegeMasterTo> getCollegesByStateId(BigInteger stateId);
+    List<CollegeMasterDataTO> getAllColleges() throws NmrException;
 
+    CollegeResponseTo getCollege(BigInteger id) throws NmrException, InvalidIdException, NotFoundException;
 
-    List<CollegeMasterTo> getCollegesByUniversity(BigInteger universityId);
+    CollegeResponseTo createOrUpdateCollege(CollegeResponseTo collegeResponseTo) throws NmrException, InvalidRequestException, InvalidIdException, ResourceExistsException, NotFoundException;
 
+    CollegeProfileTo createOrUpdateCollegeVerifier(CollegeProfileTo collegeProfileTo) throws GeneralSecurityException, NmrException, InvalidRequestException, InvalidIdException, ResourceExistsException;
+
+    List<CollegeMasterDataTO> getAllCollegeVerifiersDesignation() throws NmrException;
+
+    CollegeProfileTo getCollegeVerifier(BigInteger collegeId, BigInteger verifierId) throws NmrException, InvalidIdException;
 }
