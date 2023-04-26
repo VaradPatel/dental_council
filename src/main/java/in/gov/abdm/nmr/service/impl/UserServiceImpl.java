@@ -125,49 +125,6 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public ResponseMessageTo createHpUserAccount(CreateHpUserAccountTo createHpUserAccountTo) {
-
-
-        if (userDaoService.existsByUserName(createHpUserAccountTo.getUsername())) {
-            return new ResponseMessageTo(NMRConstants.USERNAME_ALREADY_EXISTS);
-        }
-
-        if (userDaoService.existsByMobileNumber(createHpUserAccountTo.getMobile())) {
-            return new ResponseMessageTo(NMRConstants.MOBILE_NUMBER_ALREADY_EXISTS);
-        }
-
-        if (createHpUserAccountTo.getEmail() != null && userDaoService.existsByEmail(createHpUserAccountTo.getEmail())) {
-            return new ResponseMessageTo(NMRConstants.EMAIL_ALREADY_EXISTS);
-        }
-
-        try {
-
-            RegistrationDetails registrationDetails =
-                    iRegistrationDetailRepository.fetchHpProfileIdByRegistrationNumberAndStateMedicalCouncilId(createHpUserAccountTo.getRegistrationNumber(), createHpUserAccountTo.getStateMedicalCouncilId());
-            HpProfile hpProfile = registrationDetails.getHpProfileId();
-
-            String hashedPassword = bCryptPasswordEncoder.encode(rsaUtil.decrypt(createHpUserAccountTo.getPassword()));
-            User userDetail = new User(null, createHpUserAccountTo.getEmail(), createHpUserAccountTo.getMobile(), null, hashedPassword, null, true, true, //
-
-                    entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null, createHpUserAccountTo.getUsername(), createHpUserAccountTo.getHprId(), createHpUserAccountTo.getHprIdNumber(),createHpUserAccountTo.isNew(),false);
-            userDaoService.save(userDetail);
-            Password password = new Password(null, hashedPassword, userDetail);
-            passwordDaoService.save(password);
-
-            hpProfile.setUser(userDetail);
-            if (StringUtils.isNotBlank(createHpUserAccountTo.getMobile())) {
-                hpProfile.setMobileNumber(createHpUserAccountTo.getMobile());
-            }
-            hpProfileRepository.save(hpProfile);
-            notificationService.sendNotificationForAccountCreation(createHpUserAccountTo.getUsername(), createHpUserAccountTo.getMobile());
-            return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
-
-        } catch (Exception e) {
-            return new ResponseMessageTo(e.getLocalizedMessage());
-        }
-    }
-
-    @Override
     public String retrieveUser(RetrieveUserRequestTo retrieveUserRequestTo) throws OtpException {
         String transactionId = retrieveUserRequestTo.getTransactionId();
         if (otpService.isOtpVerified(transactionId)) {

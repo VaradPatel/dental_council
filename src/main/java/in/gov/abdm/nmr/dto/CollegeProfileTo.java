@@ -1,24 +1,32 @@
 package in.gov.abdm.nmr.dto;
 
-import lombok.Data;
-
 import java.math.BigInteger;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CollegeProfileTo {
+    
     private BigInteger id;
+    
+    private BigInteger collegeId;
+    
+    @NotNull
+    private BigInteger designation;
+    
+    @NotBlank
     private String name;
-    private String collegeCode;
-    private String phoneNumber;
+    
+    @NotBlank
+    private String mobileNumber;
+    
+    @NotBlank
     private String emailId;
-    private BigInteger userId;
-    private String stateName;
-    private String councilName;
-    private String universityName;
-    private String collegeId;
-    private String website;
-    private String address;
-    private String pinCode;
-    private String requestId;
-    private boolean isApproved;
 }

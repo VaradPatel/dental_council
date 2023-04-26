@@ -24,22 +24,6 @@ public class PasswordController {
     @Autowired
     IPasswordService passwordService;
 
-
-    /**
-     * Sends reset password link on email/mobile
-     *
-     * @param sendLinkOnMailTo receiver email/mobile
-     * @return Success/Fail message
-     */
-
-    @Deprecated
-    @PostMapping(NMRConstants.PASSWORD_LINK)
-    public ResponseMessageTo getResetPasswordLink(@RequestBody SendLinkOnMailTo sendLinkOnMailTo) {
-
-        return passwordService.getResetPasswordLink(sendLinkOnMailTo);
-
-    }
-
     /**
      * Performs reset password operation
      *

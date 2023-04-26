@@ -10,8 +10,6 @@ public interface IUniversityMasterService {
     
     List<UniversityMasterTo> getUniversitiesByCollegeId(BigInteger collegeId);
 
-    List<UniversityMasterTo> getUniversitiesByState(BigInteger stateId);
-
     UniversityMaster findById(BigInteger id);
     
     UniversityMaster save(UniversityMaster universityMaster);
