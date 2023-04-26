@@ -6,7 +6,6 @@ import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IMasterDataService;
 import in.gov.abdm.nmr.service.IUserService;
 import in.gov.abdm.nmr.util.NMRConstants;
-import org.hibernate.mapping.Any;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,13 +30,13 @@ import java.util.List;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
@@ -84,7 +83,6 @@ class UserControllerTest {
         response.setMode(NMRConstants.EMAIL);
         response.setEnabled(true);
         toggleResponseTOS.add(response);
-
         when(userService.toggleNotification(any(NotificationToggleRequestTO.class))).thenReturn(toggleResponseTOS);
         mockMvc.perform(put(ProtectedPaths.PATH_USER_NOTIFICATION_ENABLED)
                         .with(csrf())
@@ -93,9 +91,8 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].userId").value(USER_ID))
-        //.andExpect(jsonPath("$.[1].mode").value(NMRConstants.EMAIL))
-        //.andExpect(jsonPath("$.[2].enabled").value(true))
-        ;
+                .andExpect(jsonPath("$.[0].mode").value(NMRConstants.EMAIL))
+                .andExpect(jsonPath("$.[0].enabled").value(true));
     }
 
     @Test
@@ -118,7 +115,7 @@ class UserControllerTest {
         smcProfile.setEmailId(EMAIL_ID);
         smcProfile.setMobileNo(MOBILE_NUMBER);
         when(userService.getSmcProfile(any(BigInteger.class))).thenReturn(smcProfile);
-        mockMvc.perform(get("/smc/user/1").with(user("123"))
+        mockMvc.perform(get("/smc/user/1").with(user(TEST_USER))
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ID))
@@ -157,7 +154,7 @@ class UserControllerTest {
         nmcProfileTO.setEmailId(EMAIL_ID);
         nmcProfileTO.setMobileNo(MOBILE_NUMBER);
         when(userService.getNmcProfile(any(BigInteger.class))).thenReturn(nmcProfileTO);
-        mockMvc.perform(get("/nmc/user/1").with(user("123")).accept(MediaType.APPLICATION_JSON_VALUE))
+        mockMvc.perform(get("/nmc/user/1").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ID))
                 .andExpect(jsonPath("$.userId").value(USER_ID))
@@ -188,7 +185,7 @@ class UserControllerTest {
         nbeProfile.setMobileNo(MOBILE_NUMBER);
         when(userService.getNbeProfile(any(BigInteger.class))).thenReturn(nbeProfile);
         mockMvc.perform(get("/nbe/user/1")
-                        .with(user("123"))
+                        .with(user(TEST_USER))
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ID))
@@ -254,7 +251,7 @@ class UserControllerTest {
         nmcProfile.setEmailId(EMAIL_ID);
         nmcProfile.setMobileNo(MOBILE_NUMBER);
         when(userService.updateNmcProfile(any(BigInteger.class), any(NmcProfileTO.class))).thenReturn(nmcProfile);
-        mockMvc.perform(put("/nmc/user/1").with(user("123"))
+        mockMvc.perform(put("/nmc/user/1").with(user(TEST_USER))
                         .with(csrf())
                         .content(objectMapper.writeValueAsBytes(nmcProfile))
                         .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -285,7 +282,7 @@ class UserControllerTest {
         nbeProfile.setEmailId(EMAIL_ID);
         nbeProfile.setMobileNo(MOBILE_NUMBER);
         when(userService.updateNbeProfile(any(BigInteger.class), any(NbeProfileTO.class))).thenReturn(nbeProfile);
-        mockMvc.perform(put("/nbe/user/1").with(user("123"))
+        mockMvc.perform(put("/nbe/user/1").with(user(TEST_USER))
                         .with(csrf())
                         .content(objectMapper.writeValueAsBytes(nbeProfile))
                         .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -300,8 +297,9 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.emailId").value(EMAIL_ID))
                 .andExpect(jsonPath("$.mobileNo").value(MOBILE_NUMBER));
     }
-/*
 
+
+/*
     @Test
     @WithMockUser
     void testRetrieveUser() throws Exception {
@@ -319,6 +317,7 @@ class UserControllerTest {
     }
 */
 
+
     @Test
     @WithMockUser
     void testVerifyEmail() throws Exception {
@@ -327,7 +326,7 @@ class UserControllerTest {
         ResponseMessageTo responseMessageTo = new ResponseMessageTo();
         responseMessageTo.setMessage(NMRConstants.SUCCESS_RESPONSE);
         when(userService.verifyEmail(any(VerifyEmailTo.class))).thenReturn(responseMessageTo);
-        mockMvc.perform(post(NMRConstants.VERIFY_EMAIL).with(user("123"))
+        mockMvc.perform(post(NMRConstants.VERIFY_EMAIL).with(user(TEST_USER))
                         .with(csrf())
                         .content(objectMapper.writeValueAsBytes(verifyEmailTo))
                         .accept(MediaType.APPLICATION_JSON_VALUE)

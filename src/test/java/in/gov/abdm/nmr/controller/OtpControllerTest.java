@@ -1,7 +1,8 @@
 package in.gov.abdm.nmr.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.dto.OTPResponseMessageTo;
+import in.gov.abdm.nmr.dto.OtpGenerateRequestTo;
 import in.gov.abdm.nmr.service.IOtpService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.junit.jupiter.api.AfterEach;
@@ -24,7 +25,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -72,7 +72,7 @@ public class OtpControllerTest {
         otpResponseMessageTo.setMessage(NMRConstants.SUCCESS_RESPONSE);
         otpResponseMessageTo.setSentOn(MOBILE_NUMBER);
         when(otpService.generateOtp(nullable(OtpGenerateRequestTo.class))).thenReturn(otpResponseMessageTo);
-        mockMvc.perform(post("/notification/send-otp").with(user("123"))
+        mockMvc.perform(post("/notification/send-otp").with(user(TEST_USER))
                         .with(csrf())
                         .content(objectMapper.writeValueAsBytes(otpGenerateRequestTo))
                         .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -93,7 +93,7 @@ public class OtpControllerTest {
         otpValidateRequestTo.setOtp(OTP);
         OtpValidateResponseTo otpValidateResponseTo = new OtpValidateResponseTo(
                 new OtpValidateMessageTo(NMRConstants.SUCCESS_RESPONSE, TRANSACTION_ID, TYPE));
-        when(otpService.validateOtp(nullable(OtpValidateRequestTo.class), any(Boolean.class)))
+        when(otpService.validateOtp(eq(otpValidateRequestTo), eq(false)))
                 .thenReturn(otpValidateResponseTo);
         mockMvc.perform(post("/notification/verify-otp").with(user("123"))
                         .with(csrf())

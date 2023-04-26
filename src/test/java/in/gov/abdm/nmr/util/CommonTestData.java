@@ -39,8 +39,11 @@ public class CommonTestData {
     public static final String REGISTRATION_NUMBER = "MAH-123";
     public static final String BROAD_SPECIALITY = "BS";
     public static final String COLLEGE_CODE = "123";
+    public static final BigInteger COURSE_ID = BigInteger.valueOf(1);
     public static final String COURSE_NAME = "MBBS";
+    public static final BigInteger DISTRICT_ID = BigInteger.valueOf(1);
     public static final String DISTRICT_NAME = "Pune";
+    public static final String DISTRICT_CODE = "Pune";
     public static final String COLLEGE_NAME = "Govt. college of science, Akola";
     public static final String ADDRESS_LINE_1 = "Line1";
     public static final String ADDRESS_LINE_2 = "Line2";
@@ -50,8 +53,11 @@ public class CommonTestData {
     public static final BigInteger COLLEGE_STATUS = BigInteger.valueOf(1);
     public static final BigInteger COLLEGE_VISIBLE_STATUS = BigInteger.valueOf(1);
     public static final BigInteger SYSTEM_OF_MEDICINE = BigInteger.valueOf(1);
+    public static final String SYSTEM_OF_MEDICINE_CODE = "abcd";
     public static final String WEBSITE = "abc@xyz.com";
+    public static final BigInteger VILLAGE_ID = BigInteger.valueOf(1);
     public static final String VILLAGE_NAME = "Pune";
+    public static final String VILLAGE_CODE = "490";
     public static final String SUB_DISTRICT_NAME = "Pune";
     public static final String SUB_DISTRICT_CODE = "490";
     public static final String LANGUAGE_NAME = "English";
@@ -64,11 +70,20 @@ public class CommonTestData {
     public static final String TYPE = "SMS";
     public static final BigInteger USER_ID = BigInteger.valueOf(1);
     public static final BigInteger SMC_ID = BigInteger.valueOf(14);
+    public static final BigInteger UNIVERSITY_ID = BigInteger.valueOf(1);
     public static final String SMC_CODE = "MAH";
     public static final String SMC_NAME = "MAH";
     public static final String TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.";
-    public static final String OTP = "123321.";
-    public static final String STRING_ID = "1";
+    public static final String FACILITY_ID = "1";
+    public static final String FACILITY_NAME = "1";
+    public static final String FACILITY_STATUS = "1";
+    public static final String FACILITY_CODE = "1";
+    public static final String FACILITY_TYPE = "1";
+    public static final String OWNERSHIP_CODE = "1";
+    public static final String OWNERSHIP = "1";
+    public static final String STATE_CODE = "1";
+    public static final String OTP = "738775";
+    public static final String TEST_USER = "user1";
 
 
     public static UserGroup getUserGroup(BigInteger userGroupId) {
