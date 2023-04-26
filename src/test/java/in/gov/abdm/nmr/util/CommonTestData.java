@@ -17,8 +17,8 @@ public class CommonTestData {
     public static final String NMR_ID = "123456789012";
     public static final String HPR_ID = "test@hpr.abdm";
     public static final String HPR_NUMBER = "123456789012";
-    public static final BigInteger ID =  BigInteger.valueOf(1);
-    public static final BigInteger STATE_ID =  BigInteger.valueOf(20);
+    public static final BigInteger ID = BigInteger.valueOf(1);
+    public static final BigInteger STATE_ID = BigInteger.valueOf(20);
     public static final String STATE_NAME = "Maharashtra";
     public static final String STATE_MEDICAL_COUNCIL = "Maharashtra Medical Council";
     public static final String ISO_CODE = "20";
@@ -33,9 +33,9 @@ public class CommonTestData {
     public static final String SUPER_SPECIALITY = "MS";
     public static final String REQUEST_ID = "NMR1001";
     public static final String PROFILE_PHOTO = "Base 64";
-    public static final Date DATE_OF_BIRTH =  Date.valueOf("1990-12-01");
-    public static final Date REGISTRATION_DATE =  Date.valueOf("1990-12-01");
-    public static final String REGISTRATION_YEAR= "1990";
+    public static final Date DATE_OF_BIRTH = Date.valueOf("1990-12-01");
+    public static final Date REGISTRATION_DATE = Date.valueOf("1990-12-01");
+    public static final String REGISTRATION_YEAR = "1990";
     public static final String REGISTRATION_NUMBER = "MAH-123";
     public static final String BROAD_SPECIALITY = "BS";
     public static final String COLLEGE_CODE = "123";
@@ -45,31 +45,44 @@ public class CommonTestData {
     public static final String ADDRESS_LINE_1 = "Line1";
     public static final String ADDRESS_LINE_2 = "Line2";
     public static final String PIN_CODE = "123456";
+    public static final String LATITUDE = "10.990";
+    public static final String LONGITUDE = "10.990";
     public static final BigInteger COLLEGE_STATUS = BigInteger.valueOf(1);
     public static final BigInteger COLLEGE_VISIBLE_STATUS = BigInteger.valueOf(1);
     public static final BigInteger SYSTEM_OF_MEDICINE = BigInteger.valueOf(1);
     public static final String WEBSITE = "abc@xyz.com";
     public static final String VILLAGE_NAME = "Pune";
     public static final String SUB_DISTRICT_NAME = "Pune";
+    public static final String SUB_DISTRICT_CODE = "490";
     public static final String LANGUAGE_NAME = "English";
     public static final String PERMANENT_RENEWATION = "Permanent";
     public static final String QUERY_COMMENT = "Comment";
     public static final String QUERY_ON = "Name";
     public static final String QUERY_SECTION = "Personal";
     public static final String GENDER = "M";
+    public static final String TRANSACTION_ID = "6ce5d7cb-bf2d-4b0b-9b54-e91a996690bc";
+    public static final String TYPE = "SMS";
+    public static final BigInteger USER_ID = BigInteger.valueOf(1);
+    public static final BigInteger SMC_ID = BigInteger.valueOf(14);
+    public static final String SMC_CODE = "MAH";
+    public static final String SMC_NAME = "MAH";
+    public static final String TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.";
+    public static final String OTP = "123321.";
+    public static final String STRING_ID = "1";
 
-    public static UserGroup getUserGroup(BigInteger userGroupId){
+
+    public static UserGroup getUserGroup(BigInteger userGroupId) {
         Group group = Group.getGroup(userGroupId);
-        UserGroup userGroup =  new UserGroup();
+        UserGroup userGroup = new UserGroup();
         userGroup.setId(group.getId());
         userGroup.setName(group.getDescription());
         userGroup.setApplicationPendencyInDays("0");
         return userGroup;
     }
 
-    public static UserSubType getUserSubType(BigInteger userSubTypeId){
+    public static UserSubType getUserSubType(BigInteger userSubTypeId) {
         UserSubTypeEnum userSubTypeEnum = UserSubTypeEnum.getUserSubType(userSubTypeId);
-        UserSubType userSubType =  new UserSubType();
+        UserSubType userSubType = new UserSubType();
         userSubType.setGroup(getUserGroup(userSubTypeEnum.getGroup().getId()));
         userSubType.setName(userSubTypeEnum.getName());
         userSubType.setId(userSubTypeEnum.getCode());
@@ -77,18 +90,18 @@ public class CommonTestData {
         return userSubType;
     }
 
-    public static UserType getUserType(BigInteger userTypeId){
+    public static UserType getUserType(BigInteger userTypeId) {
         UserTypeEnum userTypeEnum = UserTypeEnum.getUserSubType(userTypeId);
-        UserType userType =  new UserType();
+        UserType userType = new UserType();
         userType.setId(userTypeEnum.getCode());
         userType.setName(userType.getName());
         userType.setGroup(getUserGroup(userTypeEnum.getGroup().getId()));
         return userType;
     }
 
-    public static UserType getUserType(String userTypeName){
+    public static UserType getUserType(String userTypeName) {
         UserTypeEnum userTypeEnum = UserTypeEnum.getUserSubType(userTypeName);
-        UserType userType =  new UserType();
+        UserType userType = new UserType();
         userType.setId(userTypeEnum.getCode());
         userType.setName(userType.getName());
         userType.setGroup(getUserGroup(userTypeEnum.getGroup().getId()));
@@ -105,12 +118,12 @@ public class CommonTestData {
         return stateMedicalCouncil;
     }
 
-    public static List<StateMedicalCouncilTO> getStateMedicalCouncilTo(){
+    public static List<StateMedicalCouncilTO> getStateMedicalCouncilTo() {
         return IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(List.of(getStateMedicalCouncil()));
     }
 
     public static User getUser(BigInteger userTypeId) {
-        User user =  new User();
+        User user = new User();
         user.setEmail(EMAIL_ID);
         user.setAccountNonLocked(true);
         UserType userType = getUserType(userTypeId);
@@ -125,23 +138,23 @@ public class CommonTestData {
         return user;
     }
 
-    public static List<SuperSpeciality> getSuperSpeciality(){
-        SuperSpeciality superSpeciality =  new SuperSpeciality();
+    public static List<SuperSpeciality> getSuperSpeciality() {
+        SuperSpeciality superSpeciality = new SuperSpeciality();
         superSpeciality.setName(SUPER_SPECIALITY);
         superSpeciality.setId(ID);
         superSpeciality.setHpProfileId(ID);
         return List.of(superSpeciality);
     }
 
-    public static Country getCountry(){
-        Country  country =  new Country();
+    public static Country getCountry() {
+        Country country = new Country();
         country.setId(ID);
         country.setName(NMRConstants.INDIA);
         return country;
     }
 
-    public static State getState(){
-        State state =  new State();
+    public static State getState() {
+        State state = new State();
         state.setCountry(getCountry());
         state.setId(STATE_ID);
         state.setIsoCode(ISO_CODE);
@@ -149,7 +162,7 @@ public class CommonTestData {
         return state;
     }
 
-    public static HpProfile getHpProfile(){
+    public static HpProfile getHpProfile() {
         HpProfile hpProfile = new HpProfile();
         hpProfile.setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.PENDING.getId()).build());
         hpProfile.setId(ID);
@@ -167,22 +180,22 @@ public class CommonTestData {
         return hpProfile;
     }
 
-    public static BroadSpeciality getBroadSpeciality(){
+    public static BroadSpeciality getBroadSpeciality() {
         BroadSpeciality broadSpeciality = new BroadSpeciality();
         broadSpeciality.setId(ID);
         broadSpeciality.setName(BROAD_SPECIALITY);
         return broadSpeciality;
     }
 
-    public static Course getCourse(){
+    public static Course getCourse() {
         Course course = new Course();
         course.setCourseName(COURSE_NAME);
         course.setId(ID);
         return course;
     }
 
-    public static District getDistrict(){
-        District district =  new District();
+    public static District getDistrict() {
+        District district = new District();
         district.setId(ID);
         district.setName(DISTRICT_NAME);
         district.setIsoCode(ISO_CODE);
@@ -190,8 +203,8 @@ public class CommonTestData {
         return district;
     }
 
-    public static CollegeMaster getCollegeMaster(){
-        CollegeMaster collegeMaster =  new CollegeMaster();
+    public static CollegeMaster getCollegeMaster() {
+        CollegeMaster collegeMaster = new CollegeMaster();
         collegeMaster.setId(ID);
         collegeMaster.setCollegeCode(COLLEGE_CODE);
         collegeMaster.setCourse(getCourse());
@@ -211,7 +224,7 @@ public class CommonTestData {
     }
 
     public static Villages getVillage() {
-        Villages villages =  new Villages();
+        Villages villages = new Villages();
         villages.setId(ID);
         villages.setName(VILLAGE_NAME);
         villages.setSubdistrict(getSubDistrict());
@@ -220,7 +233,7 @@ public class CommonTestData {
     }
 
     public static SubDistrict getSubDistrict() {
-        SubDistrict subDistrict =  new SubDistrict();
+        SubDistrict subDistrict = new SubDistrict();
         subDistrict.setIsoCode(ISO_CODE);
         subDistrict.setName(SUB_DISTRICT_NAME);
         subDistrict.setId(ID);
@@ -228,14 +241,14 @@ public class CommonTestData {
         return subDistrict;
     }
 
-    public static Language getLanguage(){
+    public static Language getLanguage() {
         Language language = new Language();
         language.setId(ID);
         language.setName(LANGUAGE_NAME);
         return language;
     }
 
-    public static HpProfileMaster getMasterHpProfile(){
+    public static HpProfileMaster getMasterHpProfile() {
         HpProfileMaster hpProfileMaster = new HpProfileMaster();
         hpProfileMaster.setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.PENDING.getId()).build());
         hpProfileMaster.setId(ID);
@@ -253,8 +266,8 @@ public class CommonTestData {
         return hpProfileMaster;
     }
 
-    public static RegistrationDetailsMaster getMasterRegistrationDetails(){
-        RegistrationDetailsMaster registrationDetailsMaster =  new RegistrationDetailsMaster();
+    public static RegistrationDetailsMaster getMasterRegistrationDetails() {
+        RegistrationDetailsMaster registrationDetailsMaster = new RegistrationDetailsMaster();
         registrationDetailsMaster.setId(1);
         registrationDetailsMaster.setHpProfileMaster(getMasterHpProfile());
         registrationDetailsMaster.setRegistrationNo(REGISTRATION_NUMBER);
@@ -264,8 +277,8 @@ public class CommonTestData {
 
     }
 
-    public static RegistrationRenewationType getRegistrationRenewationType(){
-        RegistrationRenewationType registrationRenewationType =  new RegistrationRenewationType();
+    public static RegistrationRenewationType getRegistrationRenewationType() {
+        RegistrationRenewationType registrationRenewationType = new RegistrationRenewationType();
         registrationRenewationType.setId(ID);
         registrationRenewationType.setName(PERMANENT_RENEWATION);
         return registrationRenewationType;

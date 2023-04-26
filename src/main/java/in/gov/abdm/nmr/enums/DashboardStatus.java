@@ -11,7 +11,7 @@ public enum DashboardStatus {
 
     PENDING(BigInteger.valueOf(1), "Pending", "Pending"),
     FORWARD(BigInteger.valueOf(2), "Forwarded", "Forwarded"),
-    QUERY_RAISE(BigInteger.valueOf(3), "Raise a Query", "Query Raised"),
+    QUERY_RAISE(BigInteger.valueOf(3), "Query Raised", "Query Raised"),
     APPROVED(BigInteger.valueOf(4), "Approved", "Approved"),
     REJECT(BigInteger.valueOf(5), "Rejected", "Rejected"),
     TEMPORARY_SUSPEND(BigInteger.valueOf(6), "Temporary Suspend", "Blacklisted"),
