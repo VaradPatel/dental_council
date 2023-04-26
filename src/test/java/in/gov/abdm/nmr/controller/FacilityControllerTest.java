@@ -1,18 +1,11 @@
 package in.gov.abdm.nmr.controller;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.enums.Action;
-import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.dto.FacilitySearchRequestTO;
+import in.gov.abdm.nmr.dto.FacilitySearchResponseTO;
+import in.gov.abdm.nmr.dto.FacilityTO;
 import in.gov.abdm.nmr.exception.NmrExceptionAdvice;
-import in.gov.abdm.nmr.mapper.IMasterDataMapper;
-import in.gov.abdm.nmr.mapper.IStateMedicalCouncilMapper;
-import in.gov.abdm.nmr.security.common.ProtectedPaths;
-import in.gov.abdm.nmr.service.IApplicationService;
 import in.gov.abdm.nmr.service.IFacilityService;
-import in.gov.abdm.nmr.service.IRequestCounterService;
-import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.CommonTestData;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,30 +26,24 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
-import static in.gov.abdm.nmr.util.NMRConstants.MESSAGE_SENDER;
-import static in.gov.abdm.nmr.util.NMRConstants.STATE_MEDICAL_COUNCIL_URL;
-import static org.mockito.ArgumentMatchers.any;
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(value = FacilityControllerTest.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
-@ContextConfiguration(classes = {NmrExceptionAdvice.class, FacilityControllerTest.class})
+@WebMvcTest(value = FacilityController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
+@ContextConfiguration(classes = {NmrExceptionAdvice.class, FacilityController.class})
 @ActiveProfiles(profiles = "local")
 @EnableWebMvc
 public class FacilityControllerTest {
@@ -75,80 +62,80 @@ public class FacilityControllerTest {
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
     }
-/*
+
     @Test
     @WithMockUser
     void testSearchFacility() throws Exception {
         FacilitySearchRequestTO facilitySearchRequestTO = new FacilitySearchRequestTO();
-        facilitySearchRequestTO.setFacilityId("1");
-        facilitySearchRequestTO.setFacilityName("a");
-        facilitySearchRequestTO.setOwnershipCode("a");
-        facilitySearchRequestTO.setStateLgdCode("a");
+        facilitySearchRequestTO.setFacilityId(FACILITY_ID);
+        facilitySearchRequestTO.setFacilityName(FACILITY_NAME);
+        facilitySearchRequestTO.setOwnershipCode(OWNERSHIP_CODE);
+        facilitySearchRequestTO.setStateLgdCode(STATE_CODE);
         facilitySearchRequestTO.setDistrictLgdCode(SUB_DISTRICT_CODE);
         facilitySearchRequestTO.setSubDistrictLgdCode(SUB_DISTRICT_CODE);
-        facilitySearchRequestTO.setPincode(PIN_CODE);
+        facilitySearchRequestTO.setPincode(CommonTestData.PIN_CODE);
         facilitySearchRequestTO.setPage(1);
         facilitySearchRequestTO.setResultsPerPage(1);
 
         FacilitySearchResponseTO facilitySearchResponseTO = new FacilitySearchResponseTO();
-        facilitySearchResponseTO.setMessage(MESSAGE_SENDER);
+        facilitySearchResponseTO.setMessage(SUCCESS_RESPONSE);
         List<FacilityTO> facilities = new ArrayList<>();
         FacilityTO facilityTO = new FacilityTO();
-        facilityTO.setFacilityId(STRING_ID);
-        facilityTO.setFacilityName(COURSE_NAME);
-        facilityTO.setOwnership("a");
-        facilityTO.setOwnershipCode("a");
-        facilityTO.setStateName("a");
-        facilityTO.setStateLGDCode("a");
-        facilityTO.setDistrictName("a");
-        facilityTO.setSubDistrictName("a");
-        facilityTO.setVillageCityTownName("a");
-        facilityTO.setDistrictLGDCode("a");
-        facilityTO.setSubDistrictLGDCode("a");
-        facilityTO.setVillageCityTownLGDCode("a");
+        facilityTO.setFacilityId(FACILITY_ID);
+        facilityTO.setFacilityName(FACILITY_NAME);
+        facilityTO.setOwnership(OWNERSHIP);
+        facilityTO.setOwnershipCode(OWNERSHIP_CODE);
+        facilityTO.setStateName(STATE_NAME);
+        facilityTO.setStateLGDCode(STATE_CODE);
+        facilityTO.setDistrictName(DISTRICT_NAME);
+        facilityTO.setSubDistrictName(SUB_DISTRICT_NAME);
+        facilityTO.setVillageCityTownName(VILLAGE_NAME);
+        facilityTO.setDistrictLGDCode(DISTRICT_CODE);
+        facilityTO.setSubDistrictLGDCode(SUB_DISTRICT_CODE);
+        facilityTO.setVillageCityTownLGDCode(VILLAGE_CODE);
         facilityTO.setAddress(ADDRESS_LINE_1);
-        facilityTO.setPincode(PIN_CODE);
+        facilityTO.setPincode(CommonTestData.PIN_CODE);
         facilityTO.setLatitude(LATITUDE);
         facilityTO.setLongitude(LONGITUDE);
-        facilityTO.setSystemOfMedicineCode("a");
-        facilityTO.setSystemOfMedicine("a");
-        facilityTO.setFacilityTypeCode("a");
-        facilityTO.setFacilityStatus("a");
-        facilityTO.setFacilityType("a");
+        facilityTO.setSystemOfMedicineCode(SYSTEM_OF_MEDICINE_CODE);
+        facilityTO.setSystemOfMedicine(SYSTEM_OF_MEDICINE_CODE);
+        facilityTO.setFacilityTypeCode(FACILITY_CODE);
+        facilityTO.setFacilityStatus(FACILITY_STATUS);
+        facilityTO.setFacilityType(FACILITY_TYPE);
         facilities.add(facilityTO);
         facilitySearchResponseTO.setFacilities(facilities);
         facilitySearchResponseTO.setTotalFacilities(1);
         facilitySearchResponseTO.setNumberOfPages(1);
-        when(facilityService.findFacility(any(FacilitySearchRequestTO.class))).thenReturn(facilitySearchResponseTO);
-        mockMvc.perform(post("/facilities/search").with(user("123"))
+        when(facilityService.findFacility(nullable(FacilitySearchRequestTO.class))).thenReturn(facilitySearchResponseTO);
+        mockMvc.perform(post(PATH_FACILITY_ROOT + PATH_FACILITY_SEARCH).with(user(TEST_USER))
                         .with(csrf())
-                        .content(objectMapper.writeValueAsBytes(facilitySearchResponseTO))
+                        .content(objectMapper.writeValueAsBytes(facilitySearchRequestTO))
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(NMRConstants.SUCCESS_RESPONSE))
-                .andExpect(jsonPath("$[0].facilities.facilityId").value(COURSE_NAME))
-                .andExpect(jsonPath("$[1].facilities.facilityName").value("a"))
-                .andExpect(jsonPath("$[2].facilities.ownership").value("a"))
-                .andExpect(jsonPath("$[3].facilities.ownershipCode").value("a"))
-                .andExpect(jsonPath("$[4].facilities.stateName").value("a"))
-                .andExpect(jsonPath("$[5].facilities.stateLGDCode").value("a"))
-                .andExpect(jsonPath("$[6].facilities.districtName").value("a"))
-                .andExpect(jsonPath("$[7].facilities.subDistrictName").value("a"))
-                .andExpect(jsonPath("$[8].facilities.villageCityTownName").value("a"))
-                .andExpect(jsonPath("$[9].facilities.districtLGDCode").value("a"))
-                .andExpect(jsonPath("$[10].facilities.subDistrictLGDCode").value("a"))
-                .andExpect(jsonPath("$[11].facilities.villageCityTownLGDCode").value("a"))
-                .andExpect(jsonPath("$[12].facilities.address").value(ADDRESS_LINE_1))
-                .andExpect(jsonPath("$[13].facilities.pincode").value(PIN_CODE))
-                .andExpect(jsonPath("$[14].facilities.latitude").value(LATITUDE))
-                .andExpect(jsonPath("$[15].facilities.longitude").value(LONGITUDE))
-                .andExpect(jsonPath("$[16].facilities.systemOfMedicineCode").value("a"))
-                .andExpect(jsonPath("$[17].facilities.systemOfMedicine").value("a"))
-                .andExpect(jsonPath("$[18].facilities.facilityTypeCode").value("a"))
-                .andExpect(jsonPath("$[19].facilities.facilityStatus").value("a"))
-                .andExpect(jsonPath("$[20].facilities.facilityType").value("a"))
+                .andExpect(jsonPath("$.facilities[0].facilityId").value(FACILITY_ID))
+                .andExpect(jsonPath("$.facilities[0].facilityName").value(FACILITY_NAME))
+                .andExpect(jsonPath("$.facilities[0].ownership").value(OWNERSHIP))
+                .andExpect(jsonPath("$.facilities[0].ownershipCode").value(OWNERSHIP_CODE))
+                .andExpect(jsonPath("$.facilities[0].stateName").value(STATE_NAME))
+                .andExpect(jsonPath("$.facilities[0].stateLGDCode").value(STATE_CODE))
+                .andExpect(jsonPath("$.facilities[0].districtName").value(DISTRICT_NAME))
+                .andExpect(jsonPath("$.facilities[0].subDistrictName").value(SUB_DISTRICT_NAME))
+                .andExpect(jsonPath("$.facilities[0].villageCityTownName").value(VILLAGE_NAME))
+                .andExpect(jsonPath("$.facilities[0].districtLGDCode").value(DISTRICT_CODE))
+                .andExpect(jsonPath("$.facilities[0].subDistrictLGDCode").value(SUB_DISTRICT_CODE))
+                .andExpect(jsonPath("$.facilities[0].villageCityTownLGDCode").value(VILLAGE_CODE))
+                .andExpect(jsonPath("$.facilities[0].address").value(ADDRESS_LINE_1))
+                .andExpect(jsonPath("$.facilities[0].pincode").value(CommonTestData.PIN_CODE))
+                .andExpect(jsonPath("$.facilities[0].latitude").value(LATITUDE))
+                .andExpect(jsonPath("$.facilities[0].longitude").value(LONGITUDE))
+                .andExpect(jsonPath("$.facilities[0].systemOfMedicineCode").value(SYSTEM_OF_MEDICINE_CODE))
+                .andExpect(jsonPath("$.facilities[0].systemOfMedicine").value(SYSTEM_OF_MEDICINE_CODE))
+                .andExpect(jsonPath("$.facilities[0].facilityTypeCode").value(FACILITY_CODE))
+                .andExpect(jsonPath("$.facilities[0].facilityStatus").value(FACILITY_STATUS))
+                .andExpect(jsonPath("$.facilities[0].facilityType").value(FACILITY_TYPE))
                 .andExpect(jsonPath("$.totalFacilities").value(1))
                 .andExpect(jsonPath("$.numberOfPages").value(1));
-    }*/
+    }
 }
