@@ -14,8 +14,8 @@ public enum DashboardStatus {
     QUERY_RAISE(BigInteger.valueOf(3), "Query Raised", "Query Raised"),
     APPROVED(BigInteger.valueOf(4), "Approved", "Approved"),
     REJECT(BigInteger.valueOf(5), "Rejected", "Rejected"),
-    TEMPORARY_SUSPEND(BigInteger.valueOf(6), "Temporary Suspend", "Blacklisted"),
-    PERMANENT_SUSPEND(BigInteger.valueOf(7), "Permanent Suspend", "Suspended"),
+    TEMPORARY_SUSPEND(BigInteger.valueOf(6), "Blacklisted", "Blacklisted"),
+    PERMANENT_SUSPEND(BigInteger.valueOf(7), "Suspended", "Suspended"),
     COLLEGE_VERIFIED(BigInteger.valueOf(8), "college_verified", "college_verified");
 
     private final BigInteger id;
