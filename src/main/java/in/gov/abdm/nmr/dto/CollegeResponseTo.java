@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CollegeMasterTOV2 {
+public class CollegeResponseTo {
 
     private BigInteger id;
     

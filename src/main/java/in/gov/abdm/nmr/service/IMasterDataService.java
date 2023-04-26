@@ -23,8 +23,6 @@ public interface IMasterDataService {
 
     List<MasterDataTO> cities(BigInteger subDistrictId);
 
-    List<MasterDataTO> universities();
-
     List<MasterDataTO> languages();
 
     List<MasterDataTO> courses();
@@ -36,8 +34,4 @@ public interface IMasterDataService {
     List<CollegeMasterResponseTo> getCollegesByState(BigInteger stateId);
 
     List<UniversityMasterResponseTo> getUniversitiesByCollege(BigInteger collegeId);
-
-    List<CollegeMasterResponseTo> getCollegesByUniversity(BigInteger universityId);
-
-    List<UniversityMasterResponseTo> getUniversitiesByState(BigInteger stateId);
 }
