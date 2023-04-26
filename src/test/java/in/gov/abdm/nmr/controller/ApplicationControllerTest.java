@@ -5,6 +5,7 @@ import in.gov.abdm.nmr.dto.ApplicationRequestTo;
 import in.gov.abdm.nmr.dto.SuspendRequestResponseTo;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.exception.NmrExceptionAdvice;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IApplicationService;
 import in.gov.abdm.nmr.service.IRequestCounterService;
@@ -34,6 +35,7 @@ import java.time.LocalDateTime;
 
 import static in.gov.abdm.nmr.util.CommonTestData.ID;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -43,8 +45,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(value = ApplicationController.class, excludeAutoConfiguration = { SecurityAutoConfiguration.class })
-@ContextConfiguration(classes = ApplicationController.class)
+@WebMvcTest(value = ApplicationController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
+@ContextConfiguration(classes = {NmrExceptionAdvice.class, ApplicationController.class})
 @ActiveProfiles(profiles = "local")
 @EnableWebMvc
 public class ApplicationControllerTest {
@@ -67,10 +69,11 @@ public class ApplicationControllerTest {
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
     }
+
     @Test
     @WithMockUser
     void testSuspendHealthProfessionalShouldSuspendHealthProfessional() throws Exception {
-        ApplicationRequestTo applicationRequestTo =  new ApplicationRequestTo();
+        ApplicationRequestTo applicationRequestTo = new ApplicationRequestTo();
         applicationRequestTo.setApplicationTypeId(ApplicationType.HP_PERMANENT_SUSPENSION.getId());
         applicationRequestTo.setToDate(Timestamp.valueOf(LocalDateTime.now()));
         applicationRequestTo.setHpProfileId(ID);
@@ -90,6 +93,27 @@ public class ApplicationControllerTest {
                         .content(objectMapper.writeValueAsBytes(applicationRequestTo))
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
-                        .andExpect(status().isOk());
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    void testSuspendHealthProfessionalShouldThrowWhenActiveWorkFlowForHealthProfessional() throws Exception {
+        ApplicationRequestTo applicationRequestTo = new ApplicationRequestTo();
+        applicationRequestTo.setApplicationTypeId(ApplicationType.HP_PERMANENT_SUSPENSION.getId());
+        applicationRequestTo.setToDate(Timestamp.valueOf(LocalDateTime.now()));
+        applicationRequestTo.setHpProfileId(ID);
+        applicationRequestTo.setActionId(Action.SUBMIT.getId());
+        applicationRequestTo.setRemarks("Remarks");
+
+        when(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(nullable(BigInteger.class))).thenReturn(true);
+
+        mockMvc.perform(post(ProtectedPaths.SUSPENSION_REQUEST_URL)
+                        .with(user("123"))
+                        .with(csrf())
+                        .content(objectMapper.writeValueAsBytes(applicationRequestTo))
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is4xxClientError());
     }
 }
