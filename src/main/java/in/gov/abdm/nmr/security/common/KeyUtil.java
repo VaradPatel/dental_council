@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.security.common;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.KeyStore;
@@ -19,13 +20,16 @@ public class KeyUtil {
 
     private KeyStore keyStore;
 
-    public KeyUtil(KeyStore keyStore) {
+    private String password;
+
+    public KeyUtil(KeyStore keyStore, @Value("${nmr.keystore.pass}") String password) {
         this.keyStore = keyStore;
+        this.password=password;
     }
 
-    public RSAPrivateKey getPrivateKey(String keyAlias, String privateKeyPass) {
+    public RSAPrivateKey getPrivateKey() {
         try {
-            if (keyStore.getKey(keyAlias, privateKeyPass.toCharArray()) instanceof RSAPrivateKey privateKey) {
+            if (keyStore.getKey("1", password.toCharArray()) instanceof RSAPrivateKey privateKey) {
                 return privateKey;
             }
         } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
@@ -34,9 +38,9 @@ public class KeyUtil {
         throw new IllegalArgumentException("Unable to load private key");
     }
 
-    public RSAPublicKey getPublicKey(String keyAlias) {
+    public RSAPublicKey getPublicKey() {
         try {
-            Certificate certificate = keyStore.getCertificate(keyAlias);
+            Certificate certificate = keyStore.getCertificate("1");
             if (certificate.getPublicKey() instanceof RSAPublicKey publicKey) {
                 return publicKey;
             }

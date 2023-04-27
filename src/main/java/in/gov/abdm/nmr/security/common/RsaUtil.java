@@ -22,17 +22,12 @@ public class RsaUtil {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private static final String KEY_ALIAS = "api";
-
     private KeyUtil keyUtil;
-
-    private String privateKeyPass;
 
     private String activeProfile;
 
-    public RsaUtil(KeyUtil keyUtil, @Value("${nmr.api.private.key.pass}") String privateKeyPass, @Value("${spring.profiles.active}") String activeProfile) {
+    public RsaUtil(KeyUtil keyUtil, @Value("${spring.profiles.active}") String activeProfile) {
         this.keyUtil = keyUtil;
-        this.privateKeyPass = privateKeyPass;
         this.activeProfile = activeProfile;
     }
 
@@ -42,7 +37,7 @@ public class RsaUtil {
         }
         try {
             Cipher decryptCipher = Cipher.getInstance(NMRConstants.RSA_PADDING);
-            decryptCipher.init(Cipher.DECRYPT_MODE, keyUtil.getPrivateKey(KEY_ALIAS, privateKeyPass));
+            decryptCipher.init(Cipher.DECRYPT_MODE, keyUtil.getPrivateKey());
             return new String(decryptCipher.doFinal(Base64.getDecoder().decode(encrypted)), StandardCharsets.UTF_8);
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException | NoSuchAlgorithmException |
                  NoSuchPaddingException e) {

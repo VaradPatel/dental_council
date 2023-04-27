@@ -30,15 +30,11 @@ public class JwtUtil {
 
     private static final String TOKEN_TYPE_LABEL = "type";
 
-    private static final String KEY_ALIAS = "jwt";
-
     private static final String ISSUER_VALUE = "nmc";
 
     private static final String AUDIENCE_VALUE = "nmr";
 
     private KeyUtil keyUtil;
-
-    private String privateKeyPass;
 
     private Long accessTokenExpirySeconds;
 
@@ -46,10 +42,9 @@ public class JwtUtil {
 
     private IUserDaoService userDetailService;
 
-    public JwtUtil(KeyUtil keyUtil, @Value("${nmr.jwt.private.key.pass}") String privateKeyPass, @Value("${nmr.access.token.expiry}") Long accessTokenExpirySeconds, //
+    public JwtUtil(KeyUtil keyUtil, @Value("${nmr.access.token.expiry}") Long accessTokenExpirySeconds, //
                    @Value("${nmr.refresh.token.expiry}") Long refreshTokenExpirySeconds, IUserDaoService userDetailService) {
         this.keyUtil = keyUtil;
-        this.privateKeyPass = privateKeyPass;
         this.accessTokenExpirySeconds = accessTokenExpirySeconds;
         this.refreshTokenExpirySeconds = refreshTokenExpirySeconds;
         this.userDetailService = userDetailService;
@@ -79,13 +74,13 @@ public class JwtUtil {
             tokenBuilder.withClaim(USER_PROFILE_ID_LABEL, profileId.longValueExact());
         }
 
-        return tokenBuilder.sign(Algorithm.RSA512(keyUtil.getPublicKey(KEY_ALIAS), keyUtil.getPrivateKey(KEY_ALIAS, privateKeyPass)));
+        return tokenBuilder.sign(Algorithm.RSA512(keyUtil.getPublicKey(), keyUtil.getPrivateKey()));
     }
 
     public DecodedJWT verifyToken(String token, JwtTypeEnum type) {
         LOGGER.info("Verifying {}", type);
 
-        Verification verification = JWT.require(Algorithm.RSA512(keyUtil.getPublicKey(KEY_ALIAS), keyUtil.getPrivateKey(KEY_ALIAS, privateKeyPass))).withIssuer(ISSUER_VALUE);
+        Verification verification = JWT.require(Algorithm.RSA512(keyUtil.getPublicKey(), keyUtil.getPrivateKey())).withIssuer(ISSUER_VALUE);
         return verification.withClaim(TOKEN_TYPE_LABEL, type.getCode()).build().verify(token);
     }
 

@@ -46,7 +46,7 @@ public class WebSecurityConfig {
 
     @Bean
     public KeyStore keyStore(@Value("${spring.profiles.active}") String activeProfile, @Value("${nmr.keystore.pass}") String password) {
-        String keystorePath = "classpath:keystore/nmr-".concat(activeProfile).concat(".pfx");
+        String keystorePath = "classpath:keystore/nhat-900.pfx";
         try {
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             Resource keystoreFile = new DefaultResourceLoader().getResource(keystorePath);
