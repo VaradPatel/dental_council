@@ -213,6 +213,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
             throw new InvalidIdException(NMRError.INVALID_PROFILE_ID.getCode(),NMRError.INVALID_PROFILE_ID.getMessage());
         }
         nbeProfile.setId(id);
+        nbeProfile.setDisplayName(nbeProfileTO.getDisplayName());
         nbeProfile.setEmailId(nbeProfileTO.getEmailId());
         nbeProfile.setMobileNo(nbeProfileTO.getMobileNo());
         return nbeProfileRepository.saveAndFlush(nbeProfile);
