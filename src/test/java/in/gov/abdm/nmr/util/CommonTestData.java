@@ -9,6 +9,8 @@ import in.gov.abdm.nmr.mapper.IStateMedicalCouncilMapper;
 
 import java.math.BigInteger;
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.List;
 
 public class CommonTestData {
@@ -44,10 +46,18 @@ public class CommonTestData {
     public static final BigInteger DISTRICT_ID = BigInteger.valueOf(1);
     public static final String DISTRICT_NAME = "Pune";
     public static final String DISTRICT_CODE = "Pune";
+    public static final BigInteger COLLEGE_ID = BigInteger.valueOf(1);
     public static final String COLLEGE_NAME = "Govt. college of science, Akola";
+    public static final BigInteger DESIGNATION = BigInteger.valueOf(1);
+    public static final Integer ADDRESS_TYPE_ID = 1;
+    public static final String ADDRESS_TYPE_NAME = "Line1";
     public static final String ADDRESS_LINE_1 = "Line1";
     public static final String ADDRESS_LINE_2 = "Line2";
     public static final String PIN_CODE = "123456";
+    public static final String HOUSE = "Tech Park";
+    public static final String STREET = "Laxmi Society";
+    public static final String LOCALITY = "Model Colony";
+    public static final String LANDMARK = "Icc Trade Tower";
     public static final String LATITUDE = "10.990";
     public static final String LONGITUDE = "10.990";
     public static final BigInteger COLLEGE_STATUS = BigInteger.valueOf(1);
@@ -58,6 +68,9 @@ public class CommonTestData {
     public static final BigInteger VILLAGE_ID = BigInteger.valueOf(1);
     public static final String VILLAGE_NAME = "Pune";
     public static final String VILLAGE_CODE = "490";
+
+    public static final BigInteger SUB_DISTRICT_ID = BigInteger.valueOf(1);
+
     public static final String SUB_DISTRICT_NAME = "Pune";
     public static final String SUB_DISTRICT_CODE = "490";
     public static final String LANGUAGE_NAME = "English";
@@ -74,6 +87,7 @@ public class CommonTestData {
     public static final String SMC_CODE = "MAH";
     public static final String SMC_NAME = "MAH";
     public static final String TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.";
+    public static final String PASSWORD = "Test@123";
     public static final String FACILITY_ID = "1";
     public static final String FACILITY_NAME = "1";
     public static final String FACILITY_STATUS = "1";
@@ -85,6 +99,13 @@ public class CommonTestData {
     public static final String OTP = "738775";
     public static final String TEST_USER = "user1";
 
+    public static final BigInteger HP_ID = BigInteger.valueOf(1);
+    public static final String HP_NAME = "MAH";
+    public static final BigInteger COUNTRY_ID = BigInteger.valueOf(1);
+    public static final String COUNTRY_NAME = "INDIA";
+    public static final BigInteger SCHEDULE_ID = BigInteger.valueOf(1);
+    public static final String SCHEDULE_NAME = "schedule 1";
+    public static final String CURRENT_DATE = String.valueOf(new Timestamp(Calendar.getInstance().getTimeInMillis()));
 
     public static UserGroup getUserGroup(BigInteger userGroupId) {
         Group group = Group.getGroup(userGroupId);
