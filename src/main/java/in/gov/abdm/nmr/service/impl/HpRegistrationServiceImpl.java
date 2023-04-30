@@ -551,9 +551,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         if (imrRegistrationsDetails != null) {
             boolean isRenewable = imrRegistrationsDetails.isRenewableRegistration();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy");
             if (isRenewable) {
                 registrationDetails.setIsRenewable("1");
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy");
                 registrationDetails.setRenewableRegistrationDate(simpleDateFormat.parse(imrRegistrationsDetails.getRenewableRegistrationDate() != null ?
                         imrRegistrationsDetails.getRenewableRegistrationDate() : null));
 
@@ -561,6 +561,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 registrationDetails.setIsRenewable("0");
                 registrationDetails.setRenewableRegistrationDate(null);
             }
+            registrationDetails.setRegistrationDate(imrRegistrationsDetails.getRegistrationDate() !=null ? simpleDateFormat.parse(imrRegistrationsDetails.getRegistrationDate()): null);
         }
         iRegistrationDetailRepository.save(registrationDetails);
 
