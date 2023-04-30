@@ -1,8 +1,7 @@
 package in.gov.abdm.nmr.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import in.gov.abdm.nmr.dto.OTPResponseMessageTo;
-import in.gov.abdm.nmr.dto.OtpGenerateRequestTo;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.service.IOtpService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.junit.jupiter.api.AfterEach;
@@ -22,7 +21,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static org.mockito.ArgumentMatchers.nullable;
@@ -39,7 +37,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = OtpController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @ContextConfiguration(classes = OtpController.class)
 @ActiveProfiles(profiles = "local")
-@EnableWebMvc
 public class OtpControllerTest {
 
     @Autowired
@@ -78,11 +75,11 @@ public class OtpControllerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.transactionId").value(TRANSACTION_ID))
+                .andExpect(jsonPath("$.transaction_id").value(TRANSACTION_ID))
                 .andExpect(jsonPath("$.message").value(NMRConstants.SUCCESS_RESPONSE))
-                .andExpect(jsonPath("$.sentOn").value(MOBILE_NUMBER));
+                .andExpect(jsonPath("$.sent_on").value(MOBILE_NUMBER));
     }
-/*
+
     @Test
     @WithMockUser
     void testValidateOtp() throws Exception {
@@ -93,7 +90,7 @@ public class OtpControllerTest {
         otpValidateRequestTo.setOtp(OTP);
         OtpValidateResponseTo otpValidateResponseTo = new OtpValidateResponseTo(
                 new OtpValidateMessageTo(NMRConstants.SUCCESS_RESPONSE, TRANSACTION_ID, TYPE));
-        when(otpService.validateOtp(eq(otpValidateRequestTo), eq(false)))
+        when(otpService.validateOtp(nullable(OtpValidateRequestTo.class), nullable(Boolean.class)))
                 .thenReturn(otpValidateResponseTo);
         mockMvc.perform(post("/notification/verify-otp").with(user("123"))
                         .with(csrf())
@@ -104,5 +101,5 @@ public class OtpControllerTest {
                 .andExpect(jsonPath("$.message.status").value(NMRConstants.SUCCESS_RESPONSE))
                 .andExpect(jsonPath("$.message.transaction_id").value(TRANSACTION_ID))
                 .andExpect(jsonPath("$.message.type").value(TYPE));
-    }*/
+    }
 }

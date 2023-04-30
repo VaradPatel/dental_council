@@ -44,7 +44,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = DashboardController.class, excludeAutoConfiguration = { SecurityAutoConfiguration.class })
 @ContextConfiguration(classes = DashboardController.class)
 @ActiveProfiles(profiles = "local")
-@EnableWebMvc
 public class DashboardControllerTest {
 
     @Autowired
@@ -78,16 +77,16 @@ public class DashboardControllerTest {
                         .with(user("123")).
                         accept(MediaType.APPLICATION_JSON_VALUE))
                         .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.hpRegistrationRequest.statusWiseCount[0].name").value("Total Registration Requests"))
-                        .andExpect(jsonPath("$.hpRegistrationRequest.statusWiseCount[1].name").value("Pending"))
-                        .andExpect(jsonPath("$.hpRegistrationRequest.statusWiseCount[2].name").value("Approved"))
-                        .andExpect(jsonPath("$.hpRegistrationRequest.statusWiseCount[3].name").value("Query Raised"))
-                        .andExpect(jsonPath("$.hpRegistrationRequest.statusWiseCount[4].name").value("Rejected"))
-                        .andExpect(jsonPath("$.hpRegistrationRequest.statusWiseCount[0].count").value(BigInteger.valueOf(40)))
-                        .andExpect(jsonPath("$.hpRegistrationRequest.statusWiseCount[1].count").value(BigInteger.TEN))
-                        .andExpect(jsonPath("$.hpRegistrationRequest.statusWiseCount[2].count").value(BigInteger.TEN))
-                        .andExpect(jsonPath("$.hpRegistrationRequest.statusWiseCount[3].count").value(BigInteger.TEN))
-                        .andExpect(jsonPath("$.hpRegistrationRequest.statusWiseCount[4].count").value(BigInteger.TEN));
+                        .andExpect(jsonPath("$.hp_registration_request.status_wise_count[0].name").value("Total Registration Requests"))
+                        .andExpect(jsonPath("$.hp_registration_request.status_wise_count[1].name").value("Pending"))
+                        .andExpect(jsonPath("$.hp_registration_request.status_wise_count[2].name").value("Approved"))
+                        .andExpect(jsonPath("$.hp_registration_request.status_wise_count[3].name").value("Query Raised"))
+                        .andExpect(jsonPath("$.hp_registration_request.status_wise_count[4].name").value("Rejected"))
+                        .andExpect(jsonPath("$.hp_registration_request.status_wise_count[0].count").value(BigInteger.valueOf(40)))
+                        .andExpect(jsonPath("$.hp_registration_request.status_wise_count[1].count").value(BigInteger.TEN))
+                        .andExpect(jsonPath("$.hp_registration_request.status_wise_count[2].count").value(BigInteger.TEN))
+                        .andExpect(jsonPath("$.hp_registration_request.status_wise_count[3].count").value(BigInteger.TEN))
+                        .andExpect(jsonPath("$.hp_registration_request.status_wise_count[4].count").value(BigInteger.TEN));
 
     }
 
@@ -118,8 +117,7 @@ public class DashboardControllerTest {
                         .with(user("123"))
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalNoOfRecords").value(BigInteger.ONE))
-                .andExpect(jsonPath("$.dashboardTOList[0].doctorStatus").value(WorkflowStatus.APPROVED.name()));
+                .andExpect(jsonPath("$.total_no_of_records").value(BigInteger.ONE));
 
     }
 

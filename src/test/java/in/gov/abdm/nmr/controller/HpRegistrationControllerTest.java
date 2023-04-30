@@ -1,32 +1,41 @@
 package in.gov.abdm.nmr.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import in.gov.abdm.nmr.dto.SmcRegistrationDetailResponseTO;
 import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IQueriesService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import static in.gov.abdm.nmr.util.CommonTestData.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(value = HpRegistrationController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @ContextConfiguration(classes = HpRegistrationController.class)
 @ActiveProfiles(profiles = "local")
-@EnableWebMvc
 class HpRegistrationControllerTest {
 
     @Autowired
@@ -50,7 +59,7 @@ class HpRegistrationControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
     }
 
-/*
+
     @Test
     @WithMockUser
     void testFetchSmcRegistrationDetail() throws Exception {
@@ -62,22 +71,22 @@ class HpRegistrationControllerTest {
         detailResponseTO.setEmailId(EMAIL_ID);
         when(hpService.fetchSmcRegistrationDetail(any(Integer.class), any(String.class)))
                 .thenReturn(detailResponseTO);
-        mockMvc.perform(get("/health-professional")
+        mockMvc.perform(get("/health-professional").queryParam("smcId","13").queryParam("registrationNumber","123")
                         .with(user(TEST_USER))
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.hpName").value(HP_NAME))
-                .andExpect(jsonPath("$.registrationNumber").value(REGISTRATION_NUMBER))
-                .andExpect(jsonPath("$.councilName").value(COLLEGE_NAME))
-                .andExpect(jsonPath("$.hpProfileId").value(HP_ID))
-                .andExpect(jsonPath("$.emailId").value(EMAIL_ID));
+                .andExpect(jsonPath("$.hp_name").value(HP_NAME))
+                .andExpect(jsonPath("$.registration_number").value(REGISTRATION_NUMBER))
+                .andExpect(jsonPath("$.council_name").value(STATE_MEDICAL_COUNCIL))
+                .andExpect(jsonPath("$.hp_profile_id").value(HP_ID))
+                .andExpect(jsonPath("$.email_id").value(EMAIL_ID));
 
     }
-*/
 
 
-/*
-    @Test
+
+
+    /*@Test
     @WithMockUser
     void testAddHealthProfessionalPersonalDetail() throws Exception {
         HpPersonalUpdateRequestTO requestTO = new HpPersonalUpdateRequestTO();
@@ -247,10 +256,10 @@ class HpRegistrationControllerTest {
                 .andExpect(jsonPath("$.workFlowStatusId").value(CommonTestData.ID))
                 .andExpect(jsonPath("$.isEmailVerified").value(true));
     }
-*/
 
 
-/*    @Test
+
+    @Test
     @WithMockUser
     void testUpdateHealthProfessionalPersonalDetail() throws Exception {
         HpPersonalUpdateRequestTO requestTO = new HpPersonalUpdateRequestTO();

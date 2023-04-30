@@ -18,7 +18,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.math.BigInteger;
 import java.util.Collections;
@@ -37,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = SearchController.class, excludeAutoConfiguration = { SecurityAutoConfiguration.class })
 @ContextConfiguration(classes = SearchController.class)
 @ActiveProfiles(profiles = "local")
-@EnableWebMvc
 public class SearchControllerTest {
 
     @Autowired
@@ -74,15 +72,15 @@ public class SearchControllerTest {
         when(searchService.getHpSearchProfileById(any(BigInteger.class))).thenReturn(hpSearchProfileTO);
         mockMvc.perform(get("/health-professional/1").with(user("123")).accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.fullName").value(PROFILE_DISPLAY_NAME))
+                .andExpect(jsonPath("$.full_name").value(PROFILE_DISPLAY_NAME))
                 .andExpect(jsonPath("$.salutation").value(NMRConstants.SALUTATION_DR))
-                .andExpect(jsonPath("$.stateMedicalCouncil").value(STATE_MEDICAL_COUNCIL))
+                .andExpect(jsonPath("$.state_medical_council").value(STATE_MEDICAL_COUNCIL))
                 .andExpect(jsonPath("$.email").value(EMAIL_ID))
-                .andExpect(jsonPath("$.profilePhoto").value(PROFILE_PHOTO))
-                .andExpect(jsonPath("$.dateOfRegistration").value(REGISTRATION_DATE.toString()))
-                .andExpect(jsonPath("$.nmrId").value(NMR_ID))
-                .andExpect(jsonPath("$.registrationNumber").value(REGISTRATION_NUMBER))
-                .andExpect(jsonPath("$.mobileNumber").value(MOBILE_NUMBER));
+                .andExpect(jsonPath("$.profile_photo").value(PROFILE_PHOTO))
+                .andExpect(jsonPath("$.date_of_registration").value(REGISTRATION_DATE.toString()))
+                .andExpect(jsonPath("$.nmr_id").value(NMR_ID))
+                .andExpect(jsonPath("$.registration_number").value(REGISTRATION_NUMBER))
+                .andExpect(jsonPath("$.mobile_number").value(MOBILE_NUMBER));
 
     }
 }

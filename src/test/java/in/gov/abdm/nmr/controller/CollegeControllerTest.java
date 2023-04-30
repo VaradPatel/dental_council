@@ -22,7 +22,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -42,7 +41,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = CollegeController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @ContextConfiguration(classes = {NmrExceptionAdvice.class, CollegeController.class})
 @ActiveProfiles(profiles = "local")
-@EnableWebMvc
 class CollegeControllerTest {
 
     @Autowired
@@ -102,19 +100,19 @@ class CollegeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ID))
                 .andExpect(jsonPath("$.name").value(COLLEGE_NAME))
-                .andExpect(jsonPath("$.stateId").value(STATE_ID))
-                .andExpect(jsonPath("$.courseId").value(COURSE_ID))
-                .andExpect(jsonPath("$.collegeCode").value(COLLEGE_CODE))
+                .andExpect(jsonPath("$.state_id").value(STATE_ID))
+                .andExpect(jsonPath("$.course_id").value(COURSE_ID))
+                .andExpect(jsonPath("$.college_code").value(COLLEGE_CODE))
                 .andExpect(jsonPath("$.website").value(WEBSITE))
-                .andExpect(jsonPath("$.addressLine1").value(ADDRESS_LINE_1))
-                .andExpect(jsonPath("$.addressLine2").value(ADDRESS_LINE_2))
-                .andExpect(jsonPath("$.districtId").value(DISTRICT_ID))
-                .andExpect(jsonPath("$.villageId").value(VILLAGE_ID))
-                .andExpect(jsonPath("$.pinCode").value(PIN_CODE))
-                .andExpect(jsonPath("$.stateMedicalCouncilId").value(SMC_ID))
-                .andExpect(jsonPath("$.universityId").value(UNIVERSITY_ID))
-                .andExpect(jsonPath("$.emailId").value(EMAIL_ID))
-                .andExpect(jsonPath("$.mobileNumber").value(MOBILE_NUMBER));
+                .andExpect(jsonPath("$.address_line1").value(ADDRESS_LINE_1))
+                .andExpect(jsonPath("$.address_line2").value(ADDRESS_LINE_2))
+                .andExpect(jsonPath("$.district_id").value(DISTRICT_ID))
+                .andExpect(jsonPath("$.village_id").value(VILLAGE_ID))
+                .andExpect(jsonPath("$.pin_code").value(PIN_CODE))
+                .andExpect(jsonPath("$.state_medical_council_id").value(SMC_ID))
+                .andExpect(jsonPath("$.university_id").value(UNIVERSITY_ID))
+                .andExpect(jsonPath("$.email_id").value(EMAIL_ID))
+                .andExpect(jsonPath("$.mobile_number").value(MOBILE_NUMBER));
     }
 
 /*
@@ -261,10 +259,10 @@ class CollegeControllerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ID))
-                .andExpect(jsonPath("$.collegeId").value(COLLEGE_ID))
+                .andExpect(jsonPath("$.college_id").value(COLLEGE_ID))
                 .andExpect(jsonPath("$.designation").value(DESIGNATION))
                 .andExpect(jsonPath("$.name").value(COLLEGE_NAME))
-                .andExpect(jsonPath("$.mobileNumber").value(MOBILE_NUMBER))
-                .andExpect(jsonPath("$.emailId").value(EMAIL_ID));
+                .andExpect(jsonPath("$.mobile_number").value(MOBILE_NUMBER))
+                .andExpect(jsonPath("$.email_id").value(EMAIL_ID));
     }
 }
