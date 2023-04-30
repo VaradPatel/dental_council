@@ -74,8 +74,10 @@ public class OtpServiceImpl implements IOtpService {
 
         Otp otpEntity = new Otp(UUID.randomUUID().toString(), otp, 0, contact, false, 10);
         otpDaoService.save(otpEntity);
-        ResponseMessageTo notificationResponse = notificationService.sendNotificationForOTP(notificationType, otp, contact);
+        return getOtpResponseMessageTo(otpGenerateRequestTo, contact, otpEntity, notificationService.sendNotificationForOTP(notificationType, otp, contact));
+    }
 
+    private OTPResponseMessageTo getOtpResponseMessageTo(OtpGenerateRequestTo otpGenerateRequestTo, String contact, Otp otpEntity, ResponseMessageTo notificationResponse) {
         if (notificationResponse.getMessage().equalsIgnoreCase(NMRConstants.SUCCESS_RESPONSE)) {
 
             if (otpGenerateRequestTo.getType().equalsIgnoreCase(NMRConstants.SMS)) {

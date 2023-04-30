@@ -17,24 +17,57 @@ public final class HpPersonalDetailMapper {
         AddressTO addressTO = new AddressTO();
         AddressTO kycAddressTo = new AddressTO();
         IMRDetailsTO imrDetailsTO = new IMRDetailsTO();
+        mapPersonalDetails(hpProfile, personalDetailsTO);
+        mapCommunicationAddress(hpProfile, address, addressTO);
+        mapKycAddress(kycAddress, kycAddressTo);
+        imrDetailsTO.setRegistrationNumber(hpProfile.getRegistrationId());
+        imrDetailsTO.setYearOfInfo(hpProfile.getYearOfInfo());
+        imrDetailsTO.setNmrId(hpProfile.getNmrId());
 
-        personalDetailsTO.setAadhaarToken(hpProfile.getAadhaarToken());
-        personalDetailsTO.setCountryNationality(NationalityTO.builder().id(hpProfile.getCountryNationality().getId()).name(hpProfile.getCountryNationality().getName()).build());
-        personalDetailsTO.setDateOfBirth(hpProfile.getDateOfBirth());
-        personalDetailsTO.setProfilePhoto(hpProfile.getProfilePhoto() != null ? hpProfile.getProfilePhoto() : null);
-        personalDetailsTO.setFatherName(hpProfile.getFatherName());
-        personalDetailsTO.setGender(hpProfile.getGender());
-        personalDetailsTO.setFirstName(hpProfile.getFirstName());
-        personalDetailsTO.setMiddleName(hpProfile.getMiddleName());
-        personalDetailsTO.setLastName(hpProfile.getLastName());
-        personalDetailsTO.setSpouseName(hpProfile.getSpouseName());
-        personalDetailsTO.setFullName(hpProfile.getFullName());
-        personalDetailsTO.setMotherName(hpProfile.getMotherName());
-        personalDetailsTO.setSalutation(hpProfile.getSalutation());
-        personalDetailsTO.setIsNew(NMRConstants.YES.equals(hpProfile.getIsNew()));
-        personalDetailsTO.setEmail(hpProfile.getEmailId());
-        personalDetailsTO.setMobile(hpProfile.getMobileNumber());
+        hpProfilePersonalResponseTO.setHpProfileId(hpProfile.getId());
+        hpProfilePersonalResponseTO.setPersonalDetails(personalDetailsTO);
+        hpProfilePersonalResponseTO.setCommunicationAddress(addressTO);
+        hpProfilePersonalResponseTO.setKycAddress(kycAddressTo);
+        hpProfilePersonalResponseTO.setRequestId(requestId);
+        hpProfilePersonalResponseTO.setApplicationTypeId(applicationTypeId);
+        hpProfilePersonalResponseTO.setNmrId(hpProfile.getNmrId());
+        hpProfilePersonalResponseTO.setHpProfileStatusId(hpProfile.getHpProfileStatus() != null ? hpProfile.getHpProfileStatus().getId() : null);
+        hpProfilePersonalResponseTO.setWorkFlowStatusId(workFlowStatusId);
+        hpProfilePersonalResponseTO.setEmailVerified(hpProfile.getUser() != null && hpProfile.getUser().isEmailVerified());
 
+        return hpProfilePersonalResponseTO;
+    }
+
+    private static void mapKycAddress(Address kycAddress, AddressTO kycAddressTo) {
+        if (kycAddress != null) {
+            kycAddressTo.setAddressLine1(kycAddress.getAddressLine1());
+            if (kycAddress.getCountry() != null) {
+                kycAddressTo.setCountry(CountryTO.builder().id(kycAddress.getCountry().getId()).name(kycAddress.getCountry().getName()).nationality(kycAddress.getCountry().getNationality()).build());
+            }
+            if (kycAddress.getDistrict() != null) {
+                kycAddressTo.setDistrict(DistrictTO.builder().id(kycAddress.getDistrict().getId()).name(kycAddress.getDistrict().getName()).isoCode(kycAddress.getDistrict().getIsoCode()).build());
+            }
+            if (kycAddress.getSubDistrict() != null) {
+                kycAddressTo.setSubDistrict(SubDistrictTO.builder().id(kycAddress.getSubDistrict().getId()).name(kycAddress.getSubDistrict().getName()).isoCode(kycAddress.getSubDistrict().getIsoCode()).build());
+            }
+            if (kycAddress.getState() != null) {
+                kycAddressTo.setState(StateTO.builder().id(kycAddress.getState().getId()).name(kycAddress.getState().getName()).build());
+            }
+            if (kycAddress.getVillage() != null) {
+                kycAddressTo.setVillage(VillagesTO.builder().id(kycAddress.getVillage().getId()).name(kycAddress.getVillage().getName()).build());
+            }
+            kycAddressTo.setEmail(kycAddress.getEmail());
+            kycAddressTo.setMobile(kycAddress.getMobile());
+            kycAddressTo.setId(kycAddress.getId());
+            kycAddressTo.setPincode(kycAddress.getPincode());
+            kycAddressTo.setHouse(kycAddress.getHouse());
+            kycAddressTo.setStreet(kycAddress.getStreet());
+            kycAddressTo.setLocality(kycAddress.getLocality());
+            kycAddressTo.setLandmark(kycAddress.getLandmark());
+        }
+    }
+
+    private static void mapCommunicationAddress(HpProfile hpProfile, Address address, AddressTO addressTO) {
         if (address != null) {
             addressTO.setAddressLine1(address.getAddressLine1());
             if (address.getCountry() != null) {
@@ -62,50 +95,25 @@ public final class HpPersonalDetailMapper {
             addressTO.setLandmark(address.getLandmark());
             addressTO.setIsSameAddress(hpProfile.getIsSameAddress());
         }
+    }
 
-        if (kycAddress != null) {
-            kycAddressTo.setAddressLine1(kycAddress.getAddressLine1());
-            if (kycAddress.getCountry() != null) {
-                kycAddressTo.setCountry(CountryTO.builder().id(kycAddress.getCountry().getId()).name(kycAddress.getCountry().getName()).nationality(kycAddress.getCountry().getNationality()).build());
-            }
-            if (kycAddress.getDistrict() != null) {
-                kycAddressTo.setDistrict(DistrictTO.builder().id(kycAddress.getDistrict().getId()).name(kycAddress.getDistrict().getName()).isoCode(kycAddress.getDistrict().getIsoCode()).build());
-            }
-            if (kycAddress.getSubDistrict() != null) {
-                kycAddressTo.setSubDistrict(SubDistrictTO.builder().id(kycAddress.getSubDistrict().getId()).name(kycAddress.getSubDistrict().getName()).isoCode(kycAddress.getSubDistrict().getIsoCode()).build());
-            }
-            if (kycAddress.getState() != null) {
-                kycAddressTo.setState(StateTO.builder().id(kycAddress.getState().getId()).name(kycAddress.getState().getName()).build());
-            }
-            if (kycAddress.getVillage() != null) {
-                kycAddressTo.setVillage(VillagesTO.builder().id(kycAddress.getVillage().getId()).name(kycAddress.getVillage().getName()).build());
-            }
-            kycAddressTo.setEmail(kycAddress.getEmail());
-            kycAddressTo.setMobile(kycAddress.getMobile());
-            kycAddressTo.setId(kycAddress.getId());
-            kycAddressTo.setPincode(kycAddress.getPincode());
-            kycAddressTo.setHouse(kycAddress.getHouse());
-            kycAddressTo.setStreet(kycAddress.getStreet());
-            kycAddressTo.setLocality(kycAddress.getLocality());
-            kycAddressTo.setLandmark(kycAddress.getLandmark());
-        }
-
-        imrDetailsTO.setRegistrationNumber(hpProfile.getRegistrationId());
-        imrDetailsTO.setYearOfInfo(hpProfile.getYearOfInfo());
-        imrDetailsTO.setNmrId(hpProfile.getNmrId());
-
-        hpProfilePersonalResponseTO.setHpProfileId(hpProfile.getId());
-        hpProfilePersonalResponseTO.setPersonalDetails(personalDetailsTO);
-        hpProfilePersonalResponseTO.setCommunicationAddress(addressTO);
-        hpProfilePersonalResponseTO.setKycAddress(kycAddressTo);
-        hpProfilePersonalResponseTO.setRequestId(requestId);
-        hpProfilePersonalResponseTO.setApplicationTypeId(applicationTypeId);
-        hpProfilePersonalResponseTO.setNmrId(hpProfile.getNmrId());
-        hpProfilePersonalResponseTO.setHpProfileStatusId(hpProfile.getHpProfileStatus() != null ? hpProfile.getHpProfileStatus().getId() : null);
-        hpProfilePersonalResponseTO.setWorkFlowStatusId(workFlowStatusId);
-        hpProfilePersonalResponseTO.setEmailVerified(hpProfile.getUser() != null && hpProfile.getUser().isEmailVerified());
-
-        return hpProfilePersonalResponseTO;
+    private static void mapPersonalDetails(HpProfile hpProfile, PersonalDetailsTO personalDetailsTO) {
+        personalDetailsTO.setAadhaarToken(hpProfile.getAadhaarToken());
+        personalDetailsTO.setCountryNationality(NationalityTO.builder().id(hpProfile.getCountryNationality().getId()).name(hpProfile.getCountryNationality().getName()).build());
+        personalDetailsTO.setDateOfBirth(hpProfile.getDateOfBirth());
+        personalDetailsTO.setProfilePhoto(hpProfile.getProfilePhoto() != null ? hpProfile.getProfilePhoto() : null);
+        personalDetailsTO.setFatherName(hpProfile.getFatherName());
+        personalDetailsTO.setGender(hpProfile.getGender());
+        personalDetailsTO.setFirstName(hpProfile.getFirstName());
+        personalDetailsTO.setMiddleName(hpProfile.getMiddleName());
+        personalDetailsTO.setLastName(hpProfile.getLastName());
+        personalDetailsTO.setSpouseName(hpProfile.getSpouseName());
+        personalDetailsTO.setFullName(hpProfile.getFullName());
+        personalDetailsTO.setMotherName(hpProfile.getMotherName());
+        personalDetailsTO.setSalutation(hpProfile.getSalutation());
+        personalDetailsTO.setIsNew(NMRConstants.YES.equals(hpProfile.getIsNew()));
+        personalDetailsTO.setEmail(hpProfile.getEmailId());
+        personalDetailsTO.setMobile(hpProfile.getMobileNumber());
     }
 
 

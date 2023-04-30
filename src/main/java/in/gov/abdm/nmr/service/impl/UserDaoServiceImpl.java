@@ -25,9 +25,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import static in.gov.abdm.nmr.util.NMRConstants.INVALID_COLLEGE_ID;
-import static in.gov.abdm.nmr.util.NMRConstants.INVALID_PROFILE_ID;
-
 @Service
 @Transactional
 public class UserDaoServiceImpl implements IUserDaoService {
