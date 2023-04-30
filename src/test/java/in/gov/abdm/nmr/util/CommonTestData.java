@@ -6,14 +6,15 @@ import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.mapper.IStateMedicalCouncilMapper;
+import lombok.experimental.UtilityClass;
 
 import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
-
-public class CommonTestData {
+@UtilityClass
+public final class CommonTestData {
 
     public static final String EMAIL_ID = "test@gmail.com";
     public static final String NMR_ID = "123456789012";
@@ -86,8 +87,8 @@ public class CommonTestData {
     public static final BigInteger UNIVERSITY_ID = BigInteger.valueOf(1);
     public static final String SMC_CODE = "MAH";
     public static final String SMC_NAME = "MAH";
-    public static final String TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.";
-    public static final String PASSWORD = "Test@123";
+    public static final String TEMP_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.";
+    public static final String TEST_PSWD = "Test@123";
     public static final String FACILITY_ID = "1";
     public static final String FACILITY_NAME = "1";
     public static final String FACILITY_STATUS = "1";

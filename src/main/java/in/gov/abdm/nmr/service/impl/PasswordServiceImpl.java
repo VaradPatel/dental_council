@@ -15,7 +15,6 @@ import in.gov.abdm.nmr.util.NMRConstants;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,8 +25,6 @@ import javax.persistence.EntityManager;
 import java.security.GeneralSecurityException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-
-import static in.gov.abdm.nmr.util.NMRConstants.FORBIDDEN;
 
 /**
  * Implementations of methods for resetting and changing password

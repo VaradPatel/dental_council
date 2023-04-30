@@ -1,7 +1,6 @@
 package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.dto.FetchCountOnCardResponseTO;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
 
 import java.nio.file.AccessDeniedException;
 

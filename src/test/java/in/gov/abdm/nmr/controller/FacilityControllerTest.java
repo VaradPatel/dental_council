@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = FacilityController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @ContextConfiguration(classes = {NmrExceptionAdvice.class, FacilityController.class})
 @ActiveProfiles(profiles = "local")
-public class FacilityControllerTest {
+class FacilityControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

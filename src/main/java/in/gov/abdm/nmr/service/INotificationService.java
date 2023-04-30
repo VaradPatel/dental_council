@@ -9,8 +9,6 @@ public interface INotificationService {
 
     ResponseMessageTo sendNotificationOnStatusChangeForHP(String applicationType, String action, String mobile, String email);
 
-    ResponseMessageTo sendNotificationOnStatusChangeForCollege(String applicationType, String action, String mobile,String email);
-
     ResponseMessageTo sendNotificationForResetPasswordLink(String email, String link);
 
     ResponseMessageTo sendNotificationForOTP(String type, String otp, String receiver);

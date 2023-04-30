@@ -154,29 +154,6 @@ public class NotificationServiceImpl implements INotificationService {
     /**
      * Sends notification on each status change
      *
-     * @param applicationType what action performed
-     * @param action          what action performed
-     * @param mobile          mobile number to send message
-     * @param email           to send email
-     * @return success/failure
-     */
-    @Override
-    public ResponseMessageTo sendNotificationOnStatusChangeForCollege(String applicationType, String action, String mobile, String email) {
-
-        Template template = getMessageTemplate(NMRConstants.STATUS_CHANGED_MESSAGE_PROPERTIES_KEY);
-
-        String message = new TemplatedStringBuilder(template.getMessage())
-                .replace(NMRConstants.TEMPLATE_VAR1, applicationType)
-                .replace(NMRConstants.TEMPLATE_VAR2, action)
-                .replace(NMRConstants.TEMPLATE_VAR3, NMRConstants.MESSAGE_SENDER)
-                .finish();
-
-        return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SUBJECT, message, mobile, email, NMRConstants.STATUS_CHANGED_MESSAGE_PROPERTIES_KEY);
-    }
-
-    /**
-     * Sends notification on each status change
-     *
      * @param email email
      * @param link  link for reset password
      * @return success/failure

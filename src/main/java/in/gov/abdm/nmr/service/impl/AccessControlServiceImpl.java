@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 
-import static in.gov.abdm.nmr.util.NMRConstants.FORBIDDEN;
-
 @Service
 public class AccessControlServiceImpl implements IAccessControlService {
 

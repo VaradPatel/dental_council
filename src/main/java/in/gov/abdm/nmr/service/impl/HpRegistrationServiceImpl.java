@@ -464,7 +464,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 isDobMatching = (kycDateFormat.format(dateOfBirth).compareTo(kycDateFormat.format(userKycTo.getBirthDate()))) == 0;
             } catch (ParseException e) {
                 log.info("Exception occurred while parsing dob" + e.getMessage());
-                e.printStackTrace();
                 isDobMatching = false;
             }
             fuzzyParameters.add(new FuzzyParameter(NMRConstants.FUZZY_PARAMETER_DOB, council.getDateOfBirth(), userKycTo.getBirthDate().toString(), isDobMatching ? NMRConstants.SUCCESS_RESPONSE : NMRConstants.FAILURE_RESPONSE));

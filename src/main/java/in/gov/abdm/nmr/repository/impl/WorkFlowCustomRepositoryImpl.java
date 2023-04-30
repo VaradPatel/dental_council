@@ -126,7 +126,6 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
             reactivateHealthProfessionalTOList.add(reactivateHealthProfessionalTO);
         });
         reactivateHealthProfessionalResponseTO.setHealthProfessionalDetails(reactivateHealthProfessionalTOList);
-//        reactivateHealthProfessionalResponseTO.setTotalNoOfRecords(getCount(reactivateHealthProfessionalQueryParam));
         return reactivateHealthProfessionalResponseTO;
     }
 }

@@ -3,7 +3,6 @@ package in.gov.abdm.nmr.repository.impl;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestParamsTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationTo;
-import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.DashboardStatus;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;

@@ -64,10 +64,10 @@ class PasswordControllerTest {
 
     @Test
     @WithMockUser
-    public void testSetNewPassword() throws Exception {
+    void testSetNewPassword() throws Exception {
         SetNewPasswordTo newPasswordTo = new SetNewPasswordTo();
-        newPasswordTo.setToken(TOKEN);
-        newPasswordTo.setPassword(PASSWORD);
+        newPasswordTo.setToken(TEMP_TOKEN);
+        newPasswordTo.setPassword(TEST_PSWD);
         ResponseMessageTo responseMessageTo = new ResponseMessageTo();
         responseMessageTo.setMessage(NMRConstants.SUCCESS_RESPONSE);
         when(passwordService.setNewPassword(newPasswordTo)).thenReturn(responseMessageTo);

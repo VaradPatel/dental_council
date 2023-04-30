@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = DashboardController.class, excludeAutoConfiguration = { SecurityAutoConfiguration.class })
 @ContextConfiguration(classes = DashboardController.class)
 @ActiveProfiles(profiles = "local")
-public class DashboardControllerTest {
+class DashboardControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

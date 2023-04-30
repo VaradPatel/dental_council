@@ -32,15 +32,23 @@ public class NmrExceptionAdvice {
      */
     private static final Logger LOGGER = LogManager.getLogger();
 
-    @ExceptionHandler({NmrException.class})
-    public ResponseEntity<ErrorDTO> handleApiException(HttpServletRequest req, NmrException ex) {
+    /**
+     * Handles TemplateException and returns a JSON response entity with HTTP status code 400.
+     *
+     * @param ex  the TemplateException object containing the error details
+     * @param req the HttpServletRequest object representing the current request
+     * @return a ResponseEntity object containing an ErrorDTO object and HTTP status code 400
+     */
+    @ExceptionHandler(value = {WorkFlowException.class, InvalidRequestException.class, NmrException.class,
+            OtpException.class, TemplateException.class, NoDataFoundException.class, ResourceExistsException.class, InvalidIdException.class})
+    public ResponseEntity<ErrorDTO> handleBadRequest(ABDMBaseException ex, HttpServletRequest req) {
         ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({AccessDeniedException.class})
+   @ExceptionHandler({AccessDeniedException.class})
     public ResponseEntity<ErrorDTO> handleSecurityException(HttpServletRequest req, Throwable ex) {
         ErrorDTO error = new ErrorDTO(new Date(), NMRError.ACCESS_DENIED_EXCEPTION.getCode(), NMRError.DATE_EXCEPTION.getMessage(), req.getServletPath(), HttpStatus.FORBIDDEN.toString());
         HttpHeaders headers = new HttpHeaders();
@@ -56,28 +64,6 @@ public class NmrExceptionAdvice {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, headers, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    @ExceptionHandler({InvalidRequestException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorDTO> invalidRequest(HttpServletRequest req, InvalidRequestException ex) {
-        LOGGER.error(ex);
-        ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
-    }
-
-
-    @ExceptionHandler({WorkFlowException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorDTO> workflowExceptionHandler(HttpServletRequest req, WorkFlowException ex) {
-        LOGGER.error(ex);
-        ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
-    }
-
 
     /**
      * Exception handler for {@link MethodArgumentNotValidException}.
@@ -142,67 +128,12 @@ public class NmrExceptionAdvice {
         return errorInfo;
     }
 
-    /**
-     * Handles OtpException and returns a JSON response entity with HTTP status code 400.
-     *
-     * @param ex  the OtpException object containing the error details
-     * @param req the HttpServletRequest object representing the current request
-     * @return a ResponseEntity object containing an ErrorDTO object and HTTP status code 400
-     * @throws OtpException if an error occurs while handling the exception
-     */
-    @ExceptionHandler(OtpException.class)
-    public ResponseEntity<ErrorDTO> oTPExceptionHandler(OtpException ex, HttpServletRequest req) {
-        ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
-    }
-
-    /**
-     * Handles TemplateException and returns a JSON response entity with HTTP status code 400.
-     *
-     * @param ex  the TemplateException object containing the error details
-     * @param req the HttpServletRequest object representing the current request
-     * @return a ResponseEntity object containing an ErrorDTO object and HTTP status code 400
-     */
-    @ExceptionHandler(TemplateException.class)
-    public ResponseEntity<ErrorDTO> templateExceptionHandler(OtpException ex, HttpServletRequest req) {
-        ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(NoDataFoundException.class)
-    public ResponseEntity<ErrorDTO> handleNoDataFoundException(OtpException ex, HttpServletRequest req) {
-        ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(error, headers, HttpStatus.NOT_FOUND);
-    }
-
     @ExceptionHandler({DateException.class})
     public ResponseEntity<ErrorDTO> handleDateException(HttpServletRequest req, DateException ex) {
         ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, headers, HttpStatus.INTERNAL_SERVER_ERROR.value());
-    }
-
-    @ExceptionHandler({InvalidIdException.class})
-    public ResponseEntity<ErrorDTO> handleInvalidIDException(HttpServletRequest req, NmrException ex) {
-        ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler({ResourceExistsException.class})
-    public ResponseEntity<ErrorDTO> handleResourceAlreadyExistException(HttpServletRequest req, NmrException ex) {
-        ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
     }
 
 }

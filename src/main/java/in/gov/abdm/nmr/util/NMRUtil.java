@@ -15,8 +15,6 @@ import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.List;
 
-import static in.gov.abdm.nmr.util.NMRConstants.*;
-
 /**
  * Util class for NMR.
  */

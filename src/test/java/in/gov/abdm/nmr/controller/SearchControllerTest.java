@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = SearchController.class, excludeAutoConfiguration = { SecurityAutoConfiguration.class })
 @ContextConfiguration(classes = SearchController.class)
 @ActiveProfiles(profiles = "local")
-public class SearchControllerTest {
+class SearchControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

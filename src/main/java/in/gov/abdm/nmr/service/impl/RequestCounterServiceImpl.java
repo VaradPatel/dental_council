@@ -6,7 +6,6 @@ import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.repository.IRequestCounterRepository;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
