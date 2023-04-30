@@ -6,6 +6,8 @@ import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.mapper.IStateMedicalCouncilMapper;
+import in.gov.abdm.nmr.nosql.entity.Council;
+import in.gov.abdm.nmr.nosql.entity.RegistrationsDetails;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigInteger;
@@ -85,6 +87,7 @@ public final class CommonTestData {
     public static final BigInteger USER_ID = BigInteger.valueOf(1);
     public static final BigInteger SMC_ID = BigInteger.valueOf(14);
     public static final BigInteger UNIVERSITY_ID = BigInteger.valueOf(1);
+    public static final String UNIVERSITY_NAME = "Maharashtra University";
     public static final String SMC_CODE = "MAH";
     public static final String SMC_NAME = "MAH";
     public static final String TEMP_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.";
@@ -107,6 +110,7 @@ public final class CommonTestData {
     public static final BigInteger SCHEDULE_ID = BigInteger.valueOf(1);
     public static final String SCHEDULE_NAME = "schedule 1";
     public static final String CURRENT_DATE = String.valueOf(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+    public static final String DEGREE = "MBBS";
 
     public static UserGroup getUserGroup(BigInteger userGroupId) {
         Group group = Group.getGroup(userGroupId);
@@ -319,5 +323,17 @@ public final class CommonTestData {
         registrationRenewationType.setId(ID);
         registrationRenewationType.setName(PERMANENT_RENEWATION);
         return registrationRenewationType;
+    }
+
+    public static Council getImrCouncilDetails() {
+        Council council =  new Council();
+        council.setFullName(PROFILE_DISPLAY_NAME);
+        council.setGender(GENDER);
+        council.setDateOfBirth(DATE_OF_BIRTH.toString());
+        RegistrationsDetails registrationsDetails = new RegistrationsDetails();
+        registrationsDetails.setCouncilName(STATE_MEDICAL_COUNCIL);
+        registrationsDetails.setRegistrationNo(REGISTRATION_NUMBER);
+        council.setRegistrationsDetails(List.of(registrationsDetails));
+        return council;
     }
 }
