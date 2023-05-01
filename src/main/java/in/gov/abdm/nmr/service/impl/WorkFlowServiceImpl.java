@@ -149,10 +149,10 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(workFlow.getApplicationType().getId(), workFlow.getCurrentGroup().getId(), requestTO.getActionId(), requestTO.getApplicationSubTypeId());
             if (iNextGroup != null) {
                 workFlow.setUpdatedAt(null);
-                workFlow.setAction(iActionRepository.findById(requestTO.getActionId()).get());
+                workFlow.setAction(iActionRepository.findById(requestTO.getActionId()).orElseThrow(WorkFlowException::new));
                 workFlow.setPreviousGroup(workFlow.getCurrentGroup());
-                workFlow.setCurrentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null);
-                workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
+                workFlow.setCurrentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).orElseThrow(WorkFlowException::new) : null);
+                workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).orElseThrow(WorkFlowException::new));
                 workFlow.setRemarks(requestTO.getRemarks());
                 workFlow.setUserId(user);
                 log.debug("Work Flow Updation Successful");
@@ -247,7 +247,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     }
 
     @Override
-    public void assignQueriesBackToQueryCreator(String requestId) {
+    public void assignQueriesBackToQueryCreator(String requestId) throws WorkFlowException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = null;
         if (userName != null) {
@@ -258,16 +258,16 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         UserGroup currentGroup = workflow.getCurrentGroup();
         workflow.setCurrentGroup(previousGroup);
         workflow.setPreviousGroup(currentGroup);
-        workflow.setAction(iActionRepository.findById(Action.SUBMIT.getId()).get());
-        workflow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).get());
+        workflow.setAction(iActionRepository.findById(Action.SUBMIT.getId()).orElseThrow(WorkFlowException::new));
+        workflow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).orElseThrow(WorkFlowException::new));
         workflow.setUserId(user);
 
         WorkFlowAudit workFlowAudit = WorkFlowAudit.builder().requestId(requestId)
                 .hpProfile(workflow.getHpProfile())
                 .applicationType(workflow.getApplicationType())
                 .createdBy(workflow.getCreatedBy())
-                .action(iActionRepository.findById(Action.SUBMIT.getId()).get())
-                .workFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).get())
+                .action(iActionRepository.findById(Action.SUBMIT.getId()).orElseThrow(WorkFlowException::new))
+                .workFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).orElseThrow(WorkFlowException::new))
                 .previousGroup(currentGroup)
                 .currentGroup(previousGroup)
                 .startDate(workflow.getStartDate())
@@ -277,18 +277,18 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         iWorkFlowAuditRepository.save(workFlowAudit);
     }
 
-    private WorkFlow buildNewWorkFlow(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile, User user) {
+    private WorkFlow buildNewWorkFlow(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile, User user) throws WorkFlowException {
 
-        UserGroup actorGroup = iGroupRepository.findById(requestTO.getActorId()).get();
+        UserGroup actorGroup = iGroupRepository.findById(requestTO.getActorId()).orElseThrow(WorkFlowException::new);
 
         return WorkFlow.builder().requestId(requestTO.getRequestId())
-                .applicationType(iApplicationTypeRepository.findById(requestTO.getApplicationTypeId()).get())
+                .applicationType(iApplicationTypeRepository.findById(requestTO.getApplicationTypeId()).orElseThrow(WorkFlowException::new))
                 .createdBy(actorGroup)
-                .action(iActionRepository.findById(requestTO.getActionId()).get())
+                .action(iActionRepository.findById(requestTO.getActionId()).orElseThrow(WorkFlowException::new))
                 .hpProfile(hpProfile)
-                .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get())
+                .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).orElseThrow(WorkFlowException::new))
                 .previousGroup(actorGroup)
-                .currentGroup(iNextGroup.getAssignTo() != null ? coalesce(iGroupRepository.findById(iNextGroup.getAssignTo()).get(), null) : null)
+                .currentGroup(iNextGroup.getAssignTo() != null ? coalesce(iGroupRepository.findById(iNextGroup.getAssignTo()).orElseThrow(WorkFlowException::new), null) : null)
                 .startDate(requestTO.getStartDate())
                 .endDate(requestTO.getEndDate())
                 .remarks(requestTO.getRemarks())
@@ -296,17 +296,17 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 .build();
     }
 
-    private WorkFlowAudit buildNewWorkFlowAudit(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile, User user) {
+    private WorkFlowAudit buildNewWorkFlowAudit(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile, User user) throws WorkFlowException {
 
-        UserGroup actorGroup = iGroupRepository.findById(requestTO.getActorId()).get();
+        UserGroup actorGroup = iGroupRepository.findById(requestTO.getActorId()).orElseThrow(WorkFlowException::new);
         return WorkFlowAudit.builder().requestId(requestTO.getRequestId())
-                .applicationType(iApplicationTypeRepository.findById(requestTO.getApplicationTypeId()).get())
+                .applicationType(iApplicationTypeRepository.findById(requestTO.getApplicationTypeId()).orElseThrow(WorkFlowException::new))
                 .createdBy(actorGroup)
-                .action(iActionRepository.findById(requestTO.getActionId()).get())
+                .action(iActionRepository.findById(requestTO.getActionId()).orElseThrow(WorkFlowException::new))
                 .hpProfile(hpProfile)
-                .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get())
+                .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).orElseThrow(WorkFlowException::new))
                 .previousGroup(actorGroup)
-                .currentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null)
+                .currentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).orElseThrow(WorkFlowException::new) : null)
                 .startDate(requestTO.getStartDate())
                 .endDate(requestTO.getEndDate())
                 .remarks(requestTO.getRemarks())

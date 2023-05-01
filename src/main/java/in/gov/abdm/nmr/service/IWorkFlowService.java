@@ -17,7 +17,7 @@ public interface IWorkFlowService {
 
     boolean isAnyApprovedWorkflowForHealthProfessional(BigInteger hpProfileId);
 
-    void assignQueriesBackToQueryCreator(String requestId);
+    void assignQueriesBackToQueryCreator(String requestId) throws WorkFlowException;
 
     boolean isAnyActiveWorkflowWithOtherApplicationType(BigInteger hpProfileId, BigInteger applicationTypeId);
 }

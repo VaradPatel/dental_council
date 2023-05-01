@@ -155,17 +155,17 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
     }
 
-    private void updateTransactionHealthProfessionalDetails(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile) {
+    private void updateTransactionHealthProfessionalDetails(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile) throws WorkFlowException {
 
         if (!ApplicationType.QUALIFICATION_ADDITION.getId().equals(requestTO.getApplicationTypeId())) {
             log.debug("The given Application type is Qualification Addition. ");
             log.debug("Setting the hp_profile_status as the work_flow_status retrieved from nmr_work_flow_configuration. ");
-            hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
+            hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).orElseThrow(WorkFlowException::new));
             if (hpProfile.getNmrId() == null) {
                 log.debug("Generating NMR id as the hp_profile doesn't have an NMR id associated.");
                 log.debug("Updating NMR id in hp_profile and user table");
                 hpProfile.setNmrId(generateNmrId());
-                User user = userRepository.findById(hpProfile.getUser().getId()).get();
+                User user = userRepository.findById(hpProfile.getUser().getId()).orElseThrow(WorkFlowException::new);
                 user.setNmrId(hpProfile.getNmrId());
                 log.debug("Initiating a notification indicating the NMR creation");
                 notificationService.sendNotificationForNMRCreation(user.getNmrId(),user.getMobileNumber(),user.getEmail());
