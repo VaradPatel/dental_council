@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -17,5 +18,6 @@ public class AddressType extends CommonAuditEntity {
 
 	@Id
 	private Integer id;
-	private String addressType;
+	@Column(name = "addressType")
+	private String type;
 }

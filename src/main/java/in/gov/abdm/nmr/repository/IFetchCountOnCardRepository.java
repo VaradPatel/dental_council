@@ -1,6 +1,6 @@
 package in.gov.abdm.nmr.repository;
 
-import in.gov.abdm.nmr.entity.HpVerificationStatus;
+import in.gov.abdm.nmr.entity.Dashboard;
 import in.gov.abdm.nmr.mapper.IStatusCount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +13,7 @@ import java.util.List;
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @Repository
-public interface IFetchCountOnCardRepository extends JpaRepository<HpVerificationStatus, BigInteger> {
+public interface IFetchCountOnCardRepository extends JpaRepository<Dashboard, BigInteger> {
 
     @Query(value = FETCH_COUNT_QUERY_FOR_SMC, nativeQuery = true)
     List<IStatusCount> fetchCountForSmc(@Param(SMC_PROFILE_ID) BigInteger smcProfileId);
