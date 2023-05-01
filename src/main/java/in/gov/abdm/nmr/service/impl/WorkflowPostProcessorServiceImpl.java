@@ -139,7 +139,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
-    public void performPostWorkflowUpdates(WorkFlowRequestTO requestTO, HpProfile transactionHpProfile, INextGroup iNextGroup) {
+    public void performPostWorkflowUpdates(WorkFlowRequestTO requestTO, HpProfile transactionHpProfile, INextGroup iNextGroup) throws WorkFlowException {
         WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
         updateTransactionHealthProfessionalDetails(requestTO, iNextGroup, transactionHpProfile);
 
@@ -151,11 +151,8 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         updateHpNbeDetailsToMaster(transactionHpProfile, masterHpProfileDetails);
         updateNmrHprLinkageToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
         updateQualificationDetailsToMaster(transactionHpProfile, masterHpProfileDetails, registrationMaster);
-        try {
-            updateElasticDB(workFlow, masterHpProfileDetails);
-        } catch (WorkFlowException e) {
-            throw new RuntimeException(e);
-        }
+        updateElasticDB(workFlow, masterHpProfileDetails);
+
     }
 
     private void updateTransactionHealthProfessionalDetails(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile) {
@@ -239,7 +236,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
         List<ForeignQualificationDetails> qualificationDetails = customQualificationDetailRepository.getQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
         List<String> masterCourseIds = customQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId())
-                .stream().map(qualificationDetailsMaster -> qualificationDetailsMaster.getCourse()).collect(Collectors.toList());
+                .stream().map(ForeignQualificationDetailsMaster::getCourse).toList();
         List<ForeignQualificationDetails> filterQualifications = qualificationDetails.stream().filter(qualificationDetail -> !masterCourseIds.contains(qualificationDetail.getCourse())).toList();
         if (!filterQualifications.isEmpty()) {
             List<ForeignQualificationDetailsMaster> qualificationDetailsMasters = customQualificationDetailsMasterMapper.qualificationToQualificationMaster(filterQualifications);
@@ -268,24 +265,6 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         }
     }
 
-    private void updateLanguagesKnownToMaster(BigInteger transactionUserId, BigInteger masterUserId) {
-
-        List<LanguagesKnown> languagesKnown = languagesKnownRepository.findByUserId(transactionUserId);
-
-        if (languagesKnown !=null && !languagesKnown.isEmpty()) {
-            List<LanguagesKnownMaster> languagesKnownMasters = languagesKnownMasterMapper.languagesKnownToLanguagesKnownMaster(languagesKnown);
-
-            List<LanguagesKnownMaster> fetchedFromMasters = languagesKnownMasterRepository.findByUserId(masterUserId);
-
-            for (int i = 0; i < languagesKnownMasters.size(); i++) {
-                if (!fetchedFromMasters.isEmpty() && fetchedFromMasters.get(i) != null) {
-                    languagesKnownMasters.get(i).setId(fetchedFromMasters.get(i).getId());
-                }
-            }
-            languagesKnownMasterRepository.saveAll(languagesKnownMasters);
-        }
-    }
-
     private void updateNmrHprLinkageToMaster(BigInteger transactionHpProfileId, BigInteger masterHpProfileId) {
         log.debug("Mapping the current NmrHprLinkage to NmrHprLinkage Master table");
 
@@ -307,7 +286,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
         List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
         List<BigInteger> masterCourseIds = qualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId())
-                .stream().map(qualificationDetailsMaster -> qualificationDetailsMaster.getCourse().getId()).collect(Collectors.toList());
+                .stream().map(qualificationDetailsMaster -> qualificationDetailsMaster.getCourse().getId()).toList();
         List<QualificationDetails> filterQualifications = qualificationDetails.stream().filter(qualificationDetail -> !masterCourseIds.contains(qualificationDetail.getCourse().getId())).toList();
         if (!filterQualifications.isEmpty()) {
             List<QualificationDetailsMaster> qualificationDetailsMasters = qualificationDetailMasterMapper.qualificationDetailsToQualificationDetailsMaster(filterQualifications);
@@ -319,41 +298,6 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         }
     }
 
-    private void updateSuperSpecialityToMaster(BigInteger transactionHpProfileId, BigInteger masterHpProfileId) {
-
-        List<SuperSpeciality> superSpecialities = superSpecialityRepository.getSuperSpecialityFromHpProfileId(transactionHpProfileId);
-
-        if (!superSpecialities.isEmpty()) {
-            List<SuperSpecialityMaster> superSpecialityMasters = superSpecialityMasterMapper.superSpecialityToSuperSpecialityMaster(superSpecialities);
-            List<SuperSpecialityMaster> fetchedFromMasters = superSpecialityMasterRepository.getSuperSpecialityFromHpProfileId(masterHpProfileId);
-
-            for (int i = 0; i < superSpecialityMasters.size(); i++) {
-                if (!fetchedFromMasters.isEmpty() && fetchedFromMasters.get(i) != null) {
-                    superSpecialityMasters.get(i).setId(fetchedFromMasters.get(i).getId());
-                }
-                superSpecialityMasters.get(i).setHpProfileId(masterHpProfileId);
-            }
-            superSpecialityMasterRepository.saveAll(superSpecialityMasters);
-        }
-    }
-
-    private void updateWorkflowToMaster(BigInteger transactionHpProfileId, HpProfileMaster hpProfileMaster) {
-        List<WorkProfileMaster> workProfileMasterList = new ArrayList<>();
-        List<WorkProfile> workProfiles = workProfileRepository.getWorkProfileDetailsByHPId(transactionHpProfileId);
-        workProfiles.forEach(workProfile -> {
-            if (workProfile != null) {
-                WorkProfileMaster workProfileAudit = workProfileMasterMapper.workProfileToWorkProfileMaster(workProfile);
-                WorkProfileMaster fetchedFromMaster = workProfileAuditRepository.getWorkProfileByHpProfileId(hpProfileMaster.getId());
-
-                if (fetchedFromMaster != null) {
-                    workProfileAudit.setId(fetchedFromMaster.getId());
-                }
-                workProfileAudit.setHpProfileId(hpProfileMaster.getId());
-                workProfileMasterList.add(workProfileAudit);
-            }
-        });
-        workProfileAuditRepository.saveAll(workProfileMasterList);
-    }
 
     @Override
     public void updateElasticDB(WorkFlow workFlow, HpProfileMaster hpProfileMaster) throws WorkFlowException {

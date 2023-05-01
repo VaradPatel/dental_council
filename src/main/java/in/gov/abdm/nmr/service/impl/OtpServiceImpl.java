@@ -84,12 +84,10 @@ public class OtpServiceImpl implements IOtpService {
                 if (contact != null && !contact.isBlank()) {
                     contact = contact.replaceAll(contact.substring(0, 10 - 4), "xxxxxx");
                 }
-            } else if (otpGenerateRequestTo.getType().equalsIgnoreCase(NMRConstants.EMAIL)) {
-                if (contact != null && !contact.isBlank()) {
-                    String idPart = contact.substring(0, contact.lastIndexOf("@"));
-                    String domain = contact.substring(contact.lastIndexOf("@"), contact.length());
-                    contact = "x".repeat(idPart.length()) + domain;
-                }
+            } else if (otpGenerateRequestTo.getType().equalsIgnoreCase(NMRConstants.EMAIL) && contact != null && !contact.isBlank()) {
+                String idPart = contact.substring(0, contact.lastIndexOf("@"));
+                String domain = contact.substring(contact.lastIndexOf("@"), contact.length());
+                contact = "x".repeat(idPart.length()) + domain;
             }
             return new OTPResponseMessageTo(otpEntity.getId(), NMRConstants.SUCCESS_RESPONSE, contact);
         } else {

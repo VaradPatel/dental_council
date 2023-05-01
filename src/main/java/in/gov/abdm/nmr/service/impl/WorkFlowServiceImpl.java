@@ -90,7 +90,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     @Autowired
     IDashboardRepository iDashboardRepository;
 
-    private static final List APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES = List.of(WorkflowStatus.APPROVED.getId(), WorkflowStatus.BLACKLISTED.getId(), WorkflowStatus.SUSPENDED.getId());
+    private static final List<BigInteger> APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES = List.of(WorkflowStatus.APPROVED.getId(), WorkflowStatus.BLACKLISTED.getId(), WorkflowStatus.SUSPENDED.getId());
 
     @Override
     @Transactional

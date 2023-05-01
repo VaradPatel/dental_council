@@ -190,39 +190,40 @@ public class PasswordServiceImpl implements IPasswordService {
             String userName = SecurityContextHolder.getContext().getAuthentication().getName();
             User loggedInUser = userDaoService.findByUsername(userName);
             if (loggedInUser.getId().equals(user.getId())) {
-
-                if (bCryptPasswordEncoder.matches(rsaUtil.decrypt(changePasswordRequestTo.getOldPassword()), user.getPassword())) {
-
-                    String decryptedNewPassword = rsaUtil.decrypt(changePasswordRequestTo.getNewPassword());
-                    for (Password password : passwordDaoService.findLast5(user.getId())) {
-                        if (bCryptPasswordEncoder.matches(decryptedNewPassword, password.getValue())) {
-                            throw new InvalidRequestException(NMRError.CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS.getCode(), NMRError.CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS.getMessage());
-                        }
-                    }
-
-                    String hashedPassword = bCryptPasswordEncoder.encode(decryptedNewPassword);
-                    user.setPassword(hashedPassword);
-                    try {
-                        user = userDaoService.save(user);
-                        Password password = new Password(null, hashedPassword, user);
-                        passwordDaoService.save(password);
-
-                        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
-                    } catch (Exception e) {
-                        return new ResponseMessageTo(NMRConstants.PROBLEM_OCCURRED);
-                    }
-                } else {
-                    return new ResponseMessageTo(NMRConstants.OLD_PASSWORD_NOT_MATCHING);
-                }
+                return changePassword(changePasswordRequestTo, user);
             } else {
-
                 throw new AccessDeniedException(NMRError.ACCESS_FORBIDDEN.getMessage());
             }
         } else {
-
             return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
         }
 
+    }
+
+    private ResponseMessageTo changePassword(ChangePasswordRequestTo changePasswordRequestTo, User user) throws GeneralSecurityException, InvalidRequestException {
+        if (bCryptPasswordEncoder.matches(rsaUtil.decrypt(changePasswordRequestTo.getOldPassword()), user.getPassword())) {
+
+            String decryptedNewPassword = rsaUtil.decrypt(changePasswordRequestTo.getNewPassword());
+            for (Password password : passwordDaoService.findLast5(user.getId())) {
+                if (bCryptPasswordEncoder.matches(decryptedNewPassword, password.getValue())) {
+                    throw new InvalidRequestException(NMRError.CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS.getCode(), NMRError.CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS.getMessage());
+                }
+            }
+
+            String hashedPassword = bCryptPasswordEncoder.encode(decryptedNewPassword);
+            user.setPassword(hashedPassword);
+            try {
+                user = userDaoService.save(user);
+                Password password = new Password(null, hashedPassword, user);
+                passwordDaoService.save(password);
+
+                return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
+            } catch (Exception e) {
+                return new ResponseMessageTo(NMRConstants.PROBLEM_OCCURRED);
+            }
+        } else {
+            return new ResponseMessageTo(NMRConstants.OLD_PASSWORD_NOT_MATCHING);
+        }
     }
 
     @Override

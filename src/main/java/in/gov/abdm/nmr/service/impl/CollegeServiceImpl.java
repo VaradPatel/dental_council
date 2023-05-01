@@ -127,7 +127,7 @@ public class CollegeServiceImpl implements ICollegeService {
         return collegeMasterTO;
     }
 
-    private CollegeMaster preCollegeAccessChecks(BigInteger id) throws NmrException, InvalidIdException, NotFoundException {
+    private CollegeMaster preCollegeAccessChecks(BigInteger id) throws  NotFoundException {
         User loggedInUser = getLoggedInUser();
         CollegeMaster collegeMaster = collegeMasterDaoService.findById(id);
         if (collegeMaster == null) {
@@ -225,7 +225,7 @@ public class CollegeServiceImpl implements ICollegeService {
         return collegeResponseTo;
     }
 
-    private CollegeProfile preCollegeUpdationChecks(CollegeResponseTo collegeResponseTo, CollegeMaster collegeMaster, CollegeProfile collegeProfile) throws NmrException, InvalidIdException, ResourceExistsException, NotFoundException {
+    private CollegeProfile preCollegeUpdationChecks(CollegeResponseTo collegeResponseTo, CollegeMaster collegeMaster, CollegeProfile collegeProfile) throws  ResourceExistsException, NotFoundException {
         User loggedInUser = getLoggedInUser();
 
         if (collegeMaster == null) {
@@ -321,7 +321,7 @@ public class CollegeServiceImpl implements ICollegeService {
         }
     }
 
-    private void preVerifierUpdationChecks(CollegeProfileTo collegeProfileTo, CollegeProfile collegeProfile) throws NmrException, InvalidIdException, ResourceExistsException {
+    private void preVerifierUpdationChecks(CollegeProfileTo collegeProfileTo, CollegeProfile collegeProfile) throws  InvalidIdException, ResourceExistsException {
         User loggedInUser = getLoggedInUser();
         if (collegeProfile == null) {
             throw new InvalidIdException(NMRError.COLLEGE_VERIFIER_FOUND.getCode(), NMRError.COLLEGE_VERIFIER_FOUND.getMessage());

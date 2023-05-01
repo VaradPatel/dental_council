@@ -9,7 +9,7 @@ import in.gov.abdm.nmr.mapper.INextGroup;
 
 public interface IWorkflowPostProcessorService {
 
-    void performPostWorkflowUpdates(WorkFlowRequestTO requestTO,HpProfile transactionHpProfile, INextGroup iNextGroup);
+    void performPostWorkflowUpdates(WorkFlowRequestTO requestTO,HpProfile transactionHpProfile, INextGroup iNextGroup) throws WorkFlowException;
 
     void updateElasticDB(WorkFlow workFlow, HpProfileMaster hpProfile) throws WorkFlowException;
 
