@@ -12,7 +12,7 @@ import java.util.List;
 public class CouncilServiceImpl implements ICouncilService {
 
     @Autowired
-    private ICouncilRepository councilRepository;
+    ICouncilRepository councilRepository;
 
     @Override
     public List<Council> getCouncilByRegistrationNumberAndCouncilName(String registrationNumber, String councilName) {

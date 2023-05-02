@@ -6,30 +6,22 @@ import lombok.experimental.UtilityClass;
 import java.util.Arrays;
 import java.util.List;
 
-import static in.gov.abdm.nmr.enums.ApplicationType.COLLEGE_REGISTRATION;
-import static in.gov.abdm.nmr.enums.ApplicationType.HP_ACTIVATE_LICENSE;
-
 /**
  * This class holds all the constants associated with NMR application
  */
 @UtilityClass
 public class NMRConstants {
     public static final String NOTIFICATION_REQUEST_MAPPING = "/notification";
-    public static final String AADHAAR_REQUEST_MAPPING = "/aadhaar";
     public static final String SEND_OTP = "/send-otp";
     public static final String VERIFY_OTP = "/verify-otp";
     public static final String RETRIEVE_USER = "/retrieve-user";
     public static final String FACILITY_SERVICE_SEARCH = "/v1.5/facility/search";
-    public static final String AADHAR_SERVICE_SEND_OTP = "/api/v3/aadhaar/sendOtp";
-    public static final String AADHAR_SERVICE_VERIFY_OTP = "/api/v3/aadhaar/verifyOtp";
     public static final String NOTIFICATION_SERVICE_SEND_MESSAGE = "/internal/v3/notification/message";
     public static final String NOTIFICATION_DB_SERVICE_GET_TEMPLATE = "/internal/v3/notification/template/id/{id}";
     public static final String RESET_PASSWORD = "/user/reset-password";
-    public static final String PATH_HP_PROFILE = "/health-professional/user";
     public static final String RAISE_QUERY = "/health-professional/queries";
     public static final String KYC_FUZZY_MATCH = "/health-professional/{registrationNumber}/kyc";
     public static final String GET_QUERIES = "health-professional/{healthProfessionalId}/queries";
-    public static final String PASSWORD_LINK = "/user/password-link";
     public static final String VERIFY_EMAIL = "/user/verify-email";
     public static final String SET_PASSWORD = "/user/set-password";
     public static final String E_SIGN = "/e-signature";
@@ -43,7 +35,6 @@ public class NMRConstants {
     public static final String FACILITY_SERVICE = "facility";
     public static final String NOTIFICATION_DB_SERVICE = "notification-db";
     public static final String LGD_DB_SERVICE = "lgd-db";
-    public static final String AADHAAR_SERVICE = "aadhaar";
     public static final String QUERY_CLOSED_STATUS = "closed";
     public static final String QUERY_OPEN_STATUS = "open";
     public static final String GLOBAL_NOTIFICATION_ENDPOINT = "${global.notification.endpoint}";
@@ -55,7 +46,6 @@ public class NMRConstants {
     public static final String PIN_CODE = "pinCode";
     public static final String RENEWABLE_REGISTRATION_CODE = "1";
     public static final String VIEW = "view";
-    public static final String GLOBAL_AADHAAR_ENDPOINT = "${global.aadhaar.endpoint}";
     public static final String GLOBAL_FACILITY_ENDPOINT = "${global.facility.endpoint}";
     public static final String NO_SUCH_OTP_TYPE = "No such OTP Type";
     public static final String OTP_EMAIL_SUBJECT = "NMR : Email Verification OTP";
@@ -72,9 +62,6 @@ public class NMRConstants {
     public static final String STATUS_CHANGED_MESSAGE_PROPERTIES_KEY = "status-changed";
     public static final String INFO_CONTENT_TYPE = "info";
     public static final String CONTACT_NOT_NULL = "Contact cannot be null or empty";
-    public static final String AADHAR_NOT_NULL = "AADHAR Number cannot be null or empty";
-    public static final String MOBILE_NOT_NULL = "Mobile cannot be null or empty";
-    public static final String TRANSACTION_ID_NOT_NULL = "Transaction Id cannot be null or empty";
     public static final String OTP_NOT_NULL = "OTP cannot be null or empty";
 
     public static final String SUCCESS_RESPONSE = "Success";
@@ -140,9 +127,7 @@ public class NMRConstants {
     public static final String USER_TYPE_ID = "user_type_id";
     public static final String USER_TYPE = "userType";
 
-    public static final String USER_SUB_TYPE = "userSubType";
     public static final String USER_SUB_TYPE_ID = "user_sub_type_id";
-    public static final String APPLICATION_TYPE_ID = "applicationTypeId";
     public static final String APPLICATION_TYPE_NAME = "applicationTypeName";
     public static final String GROUP_ID_COLUMN = "group_id";
     public static final String SMC_PROFILE_ID = "smcProfileId";
@@ -181,28 +166,11 @@ public class NMRConstants {
             "AND a.name = :" + APPLICATION_TYPE_NAME + " " +
             "AND ws.name = :" + WORK_FLOW_STATUS + " ";
 
-    public static final String FETCH_COLLEGE_REGISTRATION_RECORDS = """
-             SELECT c.id AS Id, c.college_code AS College_Id, c.name AS College_Name, smc.name AS Council_Name, wfs.name AS Status, wf.created_at AS Date_Of_Submission, 
-            CASE WHEN (wf.updated_at> wf.created_at) THEN DATE_PART('day', (wf.updated_at- wf.created_at)) 
-               WHEN (wf.updated_at= wf.created_at) THEN DATE_PART('day', (now()- wf.created_at))END as pendency , wf.request_id as request_id
-              FROM work_flow wf  INNER JOIN colleges c  ON c.request_id= wf.request_id 
-               INNER JOIN  state_medical_council smc ON smc.id =c.state_medical_council 
-               JOIN work_flow_status wfs ON wfs.id= wf.work_flow_status_id  
-               WHERE  wf.application_type_id= """ + COLLEGE_REGISTRATION.getId() + "  AND  c.state_medical_council IS NOT NULL ";
-
-    public static final String FETCH_COUNT_OF_COLLEGE_REGISTRATION_RECORDS = """
-            SELECT COUNT(*)  
-              FROM work_flow wf  INNER JOIN colleges c  ON c.request_id= wf.request_id  
-              INNER JOIN  state_medical_council smc ON smc.id =c.state_medical_council 
-             JOIN work_flow_status wfs ON wfs.id= wf.work_flow_status_id  
-             WHERE  wf.application_type_id= """ + COLLEGE_REGISTRATION.getId() + "  AND  c.state_medical_council IS NOT NULL ";
-
     public static final String FETCH_CARD_DETAILS_QUERY = "select d.work_flow_status_id doctor_status, smc_status, nmc_status, nbe_status, d.hp_profile_id, d.request_id, rd.registration_no, rd.created_at, stmc.name, hp.full_name,  work_flow_status_id,(SELECT CASE WHEN ( wf.work_flow_status_id in(2, 4, 5, 6) ) THEN DATE_PART( 'day', (wf.updated_at - wf.created_at) ) WHEN ( wf.work_flow_status_id in(1, 3) ) THEN DATE_PART( 'day', (now() - wf.created_at) ) END FROM main.work_flow wf where wf.request_id = d.request_id ) as pendency, hp.gender, hp.email_id, hp.mobile_number, hp.nmr_id, rd.registration_date, college_status,d.application_type_id, count(*) OVER() AS total_count from main.dashboard d INNER JOIN main.registration_details as rd on rd.hp_profile_id = d.hp_profile_id INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id ";
 
     public static final String FETCH_TRACK_DETAILS_QUERY = "select d.work_flow_status_id doctor_status, smc_status, nmc_status, nbe_status, d.hp_profile_id, d.request_id, rd.registration_no, rd.created_at, stmc.name, hp.full_name, application_type_id, ( SELECT a.name FROM main.application_type a WHERE a.id = application_type_id ) as application_type_name, ( SELECT CASE WHEN ( wf.work_flow_status_id in(2, 4, 5, 6) ) THEN DATE_PART( 'day', (wf.updated_at - wf.created_at) ) WHEN ( wf.work_flow_status_id in(1, 3) ) THEN DATE_PART( 'day', (now() - wf.created_at) ) END FROM main.work_flow wf where wf.request_id = d.request_id ) as pendency, work_flow_status_id, hp.gender, hp.email_id, hp.mobile_number, hp.nmr_id, rd.registration_date, college_status, count(*) OVER() AS total_count from main.dashboard d INNER JOIN main.registration_details as rd on rd.hp_profile_id = d.hp_profile_id INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id ";
     public static final String STATE_MEDICAL_COUNCIL_ID = "state_medical_council_id";
     public static final String REGISTRATION_DETAILS_ID = "registration_details_id";
-    public static final String REGISTRATION_NUMBER = "registrationNumber";
     public static final String SUCCESS = "Success";
     public static final String DCS_INTEGRATOR_NAME = "NMR";
     public static final String E_SIGN_SUCCESS_STATUS = "success";
@@ -225,10 +193,8 @@ public class NMRConstants {
     public static final String INDIA = "India";
     public static final String INTERNATIONAL = "International";
     public static final String SALUTATION_DR = "Dr.";
-    public static final String COLLEGE_ID_IN_LOWER_CASE = "collegeid";
     public static final String COUNCIL_NAME_IN_LOWER_CASE = "councilname";
     public static final String SEARCH_IN_LOWER_CASE = "search";
-    public static final String NAME_IN_LOWER_CASE = "name";
     public static final String APPLICATION_TYPE_ID_IN_LOWER_CASE = "applicationtypeid";
     public static final String REGISTRATION_NUMBER_IN_LOWER_CASE = "registrationnumber";
     public static final String GENDER_IN_LOWER_CASE = "gender";
@@ -239,17 +205,6 @@ public class NMRConstants {
     public static final String WORK_FLOW_STATUS_IN_LOWER_CASE = "workflowstatus";
     public static final String WORK_FLOW_STATUS_ID_IN_LOWER_CASE = "workflowstatusid";
     public static final String APPLICANT_FULL_NAME_IN_LOWER_CASE = "applicantfullname";
-    public static final String REACTIVATION_RECORDS = """
-            WITH reactivate AS(
-            SELECT hp.id ,hp.registration_id ,wf.request_id,hp.full_name , wf.created_at, wf.start_date, hp.gender, hp.email_id, hp.mobile_number,
-            (
-            SELECT b.name FROM main.application_type b WHERE b.id = (SELECT wol.application_type_id FROM main.work_flow wol
-            WHERE wol.hp_profile_id = (
-            SELECT hpPr.id FROM main.hp_profile hpPr where hpPr.registration_id = hp.registration_id  ORDER BY id DESC LIMIT 1 OFFSET 1)
-            )) AS suspension_type,wf.remarks
-            FROM main.work_flow wf  INNER JOIN main.hp_profile hp ON wf.hp_profile_id=hp.id
-            JOIN main.application_type a ON wf.application_type_id=a.id WHERE wf.application_type_id= """ + HP_ACTIVATE_LICENSE.getId();
-
     public static final String FETCH_REACTIVATION_REQUESTS = "SELECT hp.id, hp.registration_id, wf.request_id, hp.full_name, wf.created_at, wf.start_date, hp.gender, hp.email_id, hp.mobile_number , hp.hp_profile_status_id, wf.remarks, COUNT(*) OVER() AS total_count FROM main.work_flow AS wf INNER JOIN main.hp_profile AS hp ON wf.hp_profile_id = hp.id WHERE application_type_id = 5";
     public static final String NOT_NULL_ERROR_MSG = "The {0} is mandatory.";
     public static final String NOT_BLANK_ERROR_MSG = "The {0} should not be blank.";

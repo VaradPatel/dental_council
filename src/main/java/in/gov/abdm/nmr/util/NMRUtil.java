@@ -9,6 +9,7 @@ import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
 import lombok.experimental.UtilityClass;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.SecureRandom;
@@ -28,10 +29,7 @@ public final class NMRUtil {
     }
 
     public static void validateWorkProfileDetails(List<CurrentWorkDetailsTO> currentWorkDetailsTOS) throws InvalidRequestException {
-        if(currentWorkDetailsTOS==null ){
-            throw new InvalidRequestException(NMRError.WORK_PROFILE_DETAILS_NULL_ERROR.getCode(), NMRError.WORK_PROFILE_DETAILS_NULL_ERROR.getMessage());
-        }
-        if(currentWorkDetailsTOS.isEmpty()){
+        if(CollectionUtils.isEmpty(currentWorkDetailsTOS)){
             throw new InvalidRequestException(NMRError.WORK_PROFILE_DETAILS_NULL_ERROR.getCode(), NMRError.WORK_PROFILE_DETAILS_NULL_ERROR.getMessage());
         }
     }

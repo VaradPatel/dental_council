@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = OtpController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @ContextConfiguration(classes = OtpController.class)
 @ActiveProfiles(profiles = "local")
-public class OtpControllerTest {
+class OtpControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

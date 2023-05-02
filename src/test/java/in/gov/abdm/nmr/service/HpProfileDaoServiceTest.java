@@ -36,16 +36,8 @@ class HpProfileDaoServiceTest {
 
     @Test
     void testFetchSmcRegistrationDetailShouldReturnMatchingHealthProfessionalDetails() throws NmrException, NoDataFoundException {
-        Council council =  new Council();
-        council.setFullName(PROFILE_DISPLAY_NAME);
-        council.setGender(GENDER);
-        council.setDateOfBirth(DATE_OF_BIRTH.toString());
-        RegistrationsDetails registrationsDetails = new RegistrationsDetails();
-        registrationsDetails.setCouncilName(STATE_MEDICAL_COUNCIL);
-        registrationsDetails.setRegistrationNo(REGISTRATION_NUMBER);
-        council.setRegistrationsDetails(List.of(registrationsDetails));
         when(stateMedicalCouncilRepository.findStateMedicalCouncilById(any(BigInteger.class))).thenReturn(CommonTestData.getStateMedicalCouncil());
-        when(councilService.getCouncilByRegistrationNumberAndCouncilName(anyString(),anyString())).thenReturn(List.of(council));
+        when(councilService.getCouncilByRegistrationNumberAndCouncilName(anyString(),anyString())).thenReturn(List.of(CommonTestData.getImrCouncilDetails()));
 
         HpSmcDetailTO hpSmcDetailTO = hpProfileDaoService.fetchSmcRegistrationDetail(1, REGISTRATION_NUMBER);
         assertEquals(PROFILE_DISPLAY_NAME, hpSmcDetailTO.getHpName());

@@ -19,7 +19,7 @@ import javax.validation.Valid;
 public class DscController {
 
 	@Autowired
-	private IDscService dscService;
+	IDscService dscService;
 
 	/**
 	 * @param dscRequestTo holds all user details which required for esign.

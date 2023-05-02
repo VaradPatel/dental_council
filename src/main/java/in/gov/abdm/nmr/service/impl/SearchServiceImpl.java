@@ -101,7 +101,7 @@ public class SearchServiceImpl implements ISearchService {
             throw new NmrException(NMRError.FAIL_TO_RETRIEVE_HP.getCode(), NMRError.FAIL_TO_RETRIEVE_HP.getMessage());
         }
 
-        HpProfileMaster hpProfileMaster = iHpProfileMasterRepository.findById(profileId).get();
+        HpProfileMaster hpProfileMaster = iHpProfileMasterRepository.findById(profileId).orElseThrow(InvalidIdException::new);
         HpSearchProfileTO hpSearchProfileTO = new HpSearchProfileTO();
         hpSearchProfileTO.setFullName(hpProfileMaster.getFullName());
         hpSearchProfileTO.setSalutation(hpProfileMaster.getSalutation());

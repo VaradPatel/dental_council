@@ -1,19 +1,17 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.enums.Group;
-import in.gov.abdm.nmr.enums.UserSubTypeEnum;
-import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.entity.ResetToken;
+import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.exception.InvalidIdException;
 import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.OtpException;
-import in.gov.abdm.nmr.repository.IRegistrationDetailRepository;
 import in.gov.abdm.nmr.mapper.INbeMapper;
 import in.gov.abdm.nmr.mapper.INmcMapper;
 import in.gov.abdm.nmr.mapper.ISmcMapper;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.IRegistrationDetailRepository;
 import in.gov.abdm.nmr.repository.ResetTokenRepository;
 import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.INotificationService;
@@ -21,9 +19,7 @@ import in.gov.abdm.nmr.service.IPasswordDaoService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.service.IUserService;
 import in.gov.abdm.nmr.util.NMRConstants;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
