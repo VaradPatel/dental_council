@@ -10,7 +10,7 @@ import java.math.BigInteger;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CurrentWorkDetailsTO {
-    private BigInteger facilityId;
+    private String facilityId;
     private BigInteger facilityTypeId;
     private String organizationType;
     private String workOrganization;
