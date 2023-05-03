@@ -327,14 +327,15 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             }
             List<LanguagesKnown> languagesKnownLater = new ArrayList<>();
             BigInteger tempUserId = userId;
-            languagesKnownIds.stream()
-                    .filter(languagesKnownId -> !languagesKnownEarlierIds.contains(languagesKnownId))
-                    .forEach(languagesKnownId -> {
-                        LanguagesKnown languagesKnown = new LanguagesKnown();
-                        languagesKnown.setLanguage(entityManager.getReference(Language.class, languagesKnownId));
-                        languagesKnown.setUser(entityManager.getReference(User.class, tempUserId));
-                        languagesKnownLater.add(languagesKnown);
-                    });
+            languagesKnownIds.removeAll( languagesKnownEarlierIds );
+            if(!languagesKnownIds.isEmpty()) {
+                languagesKnownIds.forEach(languagesKnown -> {
+                    LanguagesKnown languagesKnownObject = new LanguagesKnown();
+                    languagesKnownObject.setLanguage(entityManager.getReference(Language.class, languagesKnown));
+                    languagesKnownObject.setUser(entityManager.getReference(User.class, tempUserId));
+                    languagesKnownLater.add(languagesKnownObject);
+                });
+            }
             languagesKnownRepository.saveAll(languagesKnownLater);
         }
     }
@@ -676,26 +677,29 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 addWorkProfile.setWorkStatus(workStatusRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus().getId()).get());
             }
             addWorkProfile.setIsUserCurrentlyWorking(hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking());
-            hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().stream().filter(currentWorkDetails -> addWorkProfile.getFacilityId() == currentWorkDetails.getFacilityId()).forEach(currentWorkDetailsTO -> {
-                addWorkProfile.setFacilityId(currentWorkDetailsTO.getFacilityId());
-                addWorkProfile.setFacilityTypeId(currentWorkDetailsTO.getFacilityTypeId());
-                addWorkProfile.setUrl(currentWorkDetailsTO.getUrl());
-                addWorkProfile
-                        .setWorkOrganization(currentWorkDetailsTO.getWorkOrganization());
-                addWorkProfile.setOrganizationType(currentWorkDetailsTO.getOrganizationType());
-                if (currentWorkDetailsTO.getAddress() != null) {
-                    addWorkProfile.setAddress(currentWorkDetailsTO.getAddress().getAddressLine1());
-                    addWorkProfile.setState(stateRepository.findById(currentWorkDetailsTO.getAddress().getState().getId()).get());
-                    addWorkProfile.setDistrict(districtRepository.findById(currentWorkDetailsTO.getAddress().getDistrict().getId()).get());
-                    addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
+
+            hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> {
+                if (addWorkProfile.getFacilityId().equals(currentWorkDetailsTO.getFacilityId())) {
+                    addWorkProfile.setFacilityId(currentWorkDetailsTO.getFacilityId());
+                    addWorkProfile.setFacilityTypeId(currentWorkDetailsTO.getFacilityTypeId());
+                    addWorkProfile.setUrl(currentWorkDetailsTO.getUrl());
+                    addWorkProfile
+                            .setWorkOrganization(currentWorkDetailsTO.getWorkOrganization());
+                    addWorkProfile.setOrganizationType(currentWorkDetailsTO.getOrganizationType());
+                    if (currentWorkDetailsTO.getAddress() != null) {
+                        addWorkProfile.setAddress(currentWorkDetailsTO.getAddress().getAddressLine1());
+                        addWorkProfile.setState(currentWorkDetailsTO.getAddress().getState().getId() != null ? stateRepository.findById(currentWorkDetailsTO.getAddress().getState().getId()).get() : null);
+                        addWorkProfile.setDistrict(currentWorkDetailsTO.getAddress().getDistrict().getId() != null ? districtRepository.findById(currentWorkDetailsTO.getAddress().getDistrict().getId()).get() : null);
+                        addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
+                    }
+                    addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());
+                    addWorkProfile.setRegistrationNo(hpWorkProfileUpdateRequestTO.getRegistrationNo());
+                    addWorkProfile.setExperienceInYears(currentWorkDetailsTO.getExperienceInYears());
+                    workProfileDetailsList.add(addWorkProfile);
                 }
-                addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());
-                addWorkProfile.setRegistrationNo(hpWorkProfileUpdateRequestTO.getRegistrationNo());
-                addWorkProfile.setExperienceInYears(currentWorkDetailsTO.getExperienceInYears());
-                workProfileDetailsList.add(addWorkProfile);
             });
+            workProfileRepository.saveAll(workProfileDetailsList);
         });
-        workProfileRepository.saveAll(workProfileDetailsList);
     }
 
     private void saveWorkProfileRecords(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, BigInteger hpProfileId, BigInteger userId) {
@@ -719,8 +723,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             addWorkProfile.setOrganizationType(currentWorkDetailsTO.getOrganizationType());
             if (currentWorkDetailsTO.getAddress() != null) {
                 addWorkProfile.setAddress(currentWorkDetailsTO.getAddress().getAddressLine1());
-                addWorkProfile.setState(stateRepository.findById(currentWorkDetailsTO.getAddress().getState().getId()).get());
-                addWorkProfile.setDistrict(districtRepository.findById(currentWorkDetailsTO.getAddress().getDistrict().getId()).get());
+                addWorkProfile.setState(currentWorkDetailsTO.getAddress().getState().getId() != null ? stateRepository.findById(currentWorkDetailsTO.getAddress().getState().getId()).get() : null);
+                addWorkProfile.setDistrict(currentWorkDetailsTO.getAddress().getDistrict().getId() != null ? districtRepository.findById(currentWorkDetailsTO.getAddress().getDistrict().getId()).get() : null);
                 addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
             }
             addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());

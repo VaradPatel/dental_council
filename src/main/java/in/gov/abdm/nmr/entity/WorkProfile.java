@@ -21,7 +21,7 @@ public class WorkProfile {
     @Column(name = "id")
     private BigInteger id;
     private String address;
-    private BigInteger facilityId;
+    private String facilityId;
     private BigInteger facilityTypeId;
     private Integer isUserCurrentlyWorking;
     @Type(type = "org.hibernate.type.BinaryType")
