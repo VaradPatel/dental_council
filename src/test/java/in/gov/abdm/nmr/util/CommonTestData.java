@@ -90,7 +90,7 @@ public final class CommonTestData {
     public static final String UNIVERSITY_NAME = "Maharashtra University";
     public static final String SMC_CODE = "MAH";
     public static final String SMC_NAME = "MAH";
-    public static final String TEMP_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.";
+    public static final String TEMP_TOKN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.";
     public static final String TEST_PSWD = "Test@123";
     public static final String FACILITY_ID = "1";
     public static final String FACILITY_NAME = "1";
@@ -102,6 +102,7 @@ public final class CommonTestData {
     public static final String STATE_CODE = "1";
     public static final String OTP = "738775";
     public static final String TEST_USER = "user1";
+    public static final String LAST_FOUR_DIGIT_AADHAAR = "1859";
 
     public static final BigInteger HP_ID = BigInteger.valueOf(1);
     public static final String HP_NAME = "MAH";
@@ -218,6 +219,8 @@ public final class CommonTestData {
         hpProfile.setProfilePhoto(PROFILE_PHOTO);
         hpProfile.setDateOfBirth(DATE_OF_BIRTH);
         hpProfile.setGender("M");
+        hpProfile.setTransactionId(TRANSACTION_ID);
+
         return hpProfile;
     }
 
@@ -335,5 +338,28 @@ public final class CommonTestData {
         registrationsDetails.setRegistrationNo(REGISTRATION_NUMBER);
         council.setRegistrationsDetails(List.of(registrationsDetails));
         return council;
+    }
+
+    public static Address getCommunicationAddress(){
+        Address address = new Address();
+        address.setAddressLine1(ADDRESS_LINE_1);
+        AddressType addressType = new AddressType();
+        addressType.setId(in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId());
+        addressType.setType(in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getDescription());
+        address.setAddressTypeId(addressType);
+        address.setMobile(MOBILE_NUMBER);
+        address.setCountry(getCountry());
+        address.setHpProfileId(ID);
+        address.setHouse(HOUSE);
+        address.setDistrict(getDistrict());
+        address.setLandmark(LANDMARK);
+        address.setEmail(EMAIL_ID);
+        address.setPincode(PIN_CODE);
+        address.setState(getState());
+        address.setLocality(LOCALITY);
+        address.setVillage(getVillage());
+        address.setStreet(STREET);
+        address.setSubDistrict(getSubDistrict());
+        return address;
     }
 }

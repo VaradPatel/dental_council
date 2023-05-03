@@ -3,8 +3,6 @@ package in.gov.abdm.nmr.service;
 import in.gov.abdm.nmr.dto.HpSmcDetailTO;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.NoDataFoundException;
-import in.gov.abdm.nmr.nosql.entity.Council;
-import in.gov.abdm.nmr.nosql.entity.RegistrationsDetails;
 import in.gov.abdm.nmr.repository.IStateMedicalCouncilRepository;
 import in.gov.abdm.nmr.service.impl.HpProfileDaoServiceImpl;
 import in.gov.abdm.nmr.util.CommonTestData;
