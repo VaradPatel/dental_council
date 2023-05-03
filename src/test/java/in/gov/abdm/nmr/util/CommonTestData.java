@@ -102,6 +102,7 @@ public final class CommonTestData {
     public static final String STATE_CODE = "1";
     public static final String OTP = "738775";
     public static final String TEST_USER = "user1";
+    public static final String PASSWORD = "Test@123";
     public static final String LAST_FOUR_DIGIT_AADHAAR = "1859";
 
     public static final BigInteger HP_ID = BigInteger.valueOf(1);
@@ -112,6 +113,7 @@ public final class CommonTestData {
     public static final String SCHEDULE_NAME = "schedule 1";
     public static final String CURRENT_DATE = String.valueOf(new Timestamp(Calendar.getInstance().getTimeInMillis()));
     public static final String DEGREE = "MBBS";
+    public static final String SALUTATION_DR = "Dr.";
 
     public static UserGroup getUserGroup(BigInteger userGroupId) {
         Group group = Group.getGroup(userGroupId);

@@ -1,5 +1,7 @@
 package in.gov.abdm.nmr.controller;
 
+import in.gov.abdm.nmr.dto.CollegeMasterResponseTo;
+import in.gov.abdm.nmr.dto.UniversityMasterResponseTo;
 import in.gov.abdm.nmr.mapper.IMasterDataMapper;
 import in.gov.abdm.nmr.mapper.IStateMedicalCouncilMapper;
 import in.gov.abdm.nmr.service.IMasterDataService;
@@ -21,11 +23,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
-import static in.gov.abdm.nmr.util.CommonTestData.ID;
-import static in.gov.abdm.nmr.util.CommonTestData.STATE_MEDICAL_COUNCIL;
+import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static in.gov.abdm.nmr.util.NMRConstants.STATE_MEDICAL_COUNCIL_URL;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -35,10 +39,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(value = SearchController.class, excludeAutoConfiguration = { SecurityAutoConfiguration.class })
+@WebMvcTest(value = SearchController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @ContextConfiguration(classes = MasterDataController.class)
 @ActiveProfiles(profiles = "local")
-@EnableWebMvc
 class MasterDataControllerTest {
 
     @Autowired
@@ -62,6 +65,161 @@ class MasterDataControllerTest {
         mockMvc.perform(get(STATE_MEDICAL_COUNCIL_URL).with(user("123")).accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(ID))
-                .andExpect(jsonPath("$[0].name").value(STATE_MEDICAL_COUNCIL)) ;
+                .andExpect(jsonPath("$[0].name").value(STATE_MEDICAL_COUNCIL));
     }
+
+    @Test
+    void testSpecialities() throws Exception {
+        when(masterDataService.specialities())
+                .thenReturn(IMasterDataMapper.MASTER_DATA_MAPPER.stateMedicalCouncilsToMasterDataTOs(
+                        IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(
+                                List.of(CommonTestData.getStateMedicalCouncil()))));
+        mockMvc.perform(get("/specialities").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(ID))
+                .andExpect(jsonPath("$[0].name").value(STATE_MEDICAL_COUNCIL));
+    }
+
+    @Test
+    void testCountries() throws Exception {
+        when(masterDataService.countries())
+                .thenReturn(IMasterDataMapper.MASTER_DATA_MAPPER.stateMedicalCouncilsToMasterDataTOs(
+                        IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(
+                                List.of(CommonTestData.getStateMedicalCouncil()))));
+        mockMvc.perform(get("/countries").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(ID))
+                .andExpect(jsonPath("$[0].name").value(STATE_MEDICAL_COUNCIL));
+    }
+
+    @Test
+    void testStates() throws Exception {
+        when(masterDataService.states(any(BigInteger.class)))
+                .thenReturn(IMasterDataMapper.MASTER_DATA_MAPPER.stateMedicalCouncilsToMasterDataTOs(
+                        IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(
+                                List.of(CommonTestData.getStateMedicalCouncil()))));
+        mockMvc.perform(get("/countries/1/states").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(ID))
+                .andExpect(jsonPath("$[0].name").value(STATE_MEDICAL_COUNCIL));
+    }
+
+
+    @Test
+    void testDistricts() throws Exception {
+        when(masterDataService.districts(any(BigInteger.class)))
+                .thenReturn(IMasterDataMapper.MASTER_DATA_MAPPER.stateMedicalCouncilsToMasterDataTOs(
+                        IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(
+                                List.of(CommonTestData.getStateMedicalCouncil()))));
+        mockMvc.perform(get("/countries/states/1/districts").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(ID))
+                .andExpect(jsonPath("$[0].name").value(STATE_MEDICAL_COUNCIL));
+    }
+
+
+    @Test
+    void testSubDistricts() throws Exception {
+        when(masterDataService.subDistricts(any(BigInteger.class)))
+                .thenReturn(IMasterDataMapper.MASTER_DATA_MAPPER.stateMedicalCouncilsToMasterDataTOs(
+                        IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(
+                                List.of(CommonTestData.getStateMedicalCouncil()))));
+        mockMvc.perform(get("/countries/states/districts/1/sub_districts").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(ID))
+                .andExpect(jsonPath("$[0].name").value(STATE_MEDICAL_COUNCIL));
+    }
+
+    @Test
+    void testCities() throws Exception {
+        when(masterDataService.cities(any(BigInteger.class)))
+                .thenReturn(IMasterDataMapper.MASTER_DATA_MAPPER.stateMedicalCouncilsToMasterDataTOs(
+                        IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(
+                                List.of(CommonTestData.getStateMedicalCouncil()))));
+        mockMvc.perform(get("/countries/states/districts/sub-districts/1/cities").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(ID))
+                .andExpect(jsonPath("$[0].name").value(STATE_MEDICAL_COUNCIL));
+    }
+
+
+    @Test
+    void testLanguages() throws Exception {
+        when(masterDataService.languages())
+                .thenReturn(IMasterDataMapper.MASTER_DATA_MAPPER.stateMedicalCouncilsToMasterDataTOs(
+                        IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(
+                                List.of(CommonTestData.getStateMedicalCouncil()))));
+        mockMvc.perform(get("/languages").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(ID))
+                .andExpect(jsonPath("$[0].name").value(STATE_MEDICAL_COUNCIL));
+    }
+
+    @Test
+    void testCourses() throws Exception {
+        when(masterDataService.courses())
+                .thenReturn(IMasterDataMapper.MASTER_DATA_MAPPER.stateMedicalCouncilsToMasterDataTOs(
+                        IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(
+                                List.of(CommonTestData.getStateMedicalCouncil()))));
+        mockMvc.perform(get("/courses").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(ID))
+                .andExpect(jsonPath("$[0].name").value(STATE_MEDICAL_COUNCIL));
+    }
+
+    @Test
+    void testRegistrationRenewationType() throws Exception {
+        when(masterDataService.registrationRenewationType())
+                .thenReturn(IMasterDataMapper.MASTER_DATA_MAPPER.stateMedicalCouncilsToMasterDataTOs(
+                        IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(
+                                List.of(CommonTestData.getStateMedicalCouncil()))));
+        mockMvc.perform(get("/renewation-types").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(ID))
+                .andExpect(jsonPath("$[0].name").value(STATE_MEDICAL_COUNCIL));
+    }
+
+
+    @Test
+    void testFacilityType() throws Exception {
+        when(masterDataService.facilityType())
+                .thenReturn(IMasterDataMapper.MASTER_DATA_MAPPER.stateMedicalCouncilsToMasterDataTOs(
+                        IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(
+                                List.of(CommonTestData.getStateMedicalCouncil()))));
+        mockMvc.perform(get("/facility-types").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(ID))
+                .andExpect(jsonPath("$[0].name").value(STATE_MEDICAL_COUNCIL));
+    }
+
+    /*@Test
+    void testCollege() throws Exception {
+        List<CollegeMasterResponseTo> responseList = new ArrayList<>();
+        CollegeMasterResponseTo response = new CollegeMasterResponseTo();
+        response.setId(ID);
+        response.setCollegeId(COLLEGE_ID);
+        response.setName(COLLEGE_NAME);
+        response.setStateId(STATE_ID);
+        responseList.add(response);
+        when(masterDataService.getCollegesByState(any(BigInteger.class)))
+                .thenReturn(responseList);
+        mockMvc.perform(get("/college").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(ID))
+                .andExpect(jsonPath("$[0].college_id").value(COLLEGE_ID))
+                .andExpect(jsonPath("$[0].name").value(COLLEGE_NAME))
+                .andExpect(jsonPath("$[0].state_id").value(STATE_ID));
+    }*/
+
+    /*@Test
+    void testGetUniversitiesByCollege() throws Exception {
+        List<UniversityMasterResponseTo> responseToList = new ArrayList<>();
+        when(masterDataService.getUniversitiesByCollege(any(BigInteger.class))).thenReturn(responseToList);
+        mockMvc.perform(get("/university").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(ID))
+                .andExpect(jsonPath("$[0].university_id").value(COLLEGE_ID))
+                .andExpect(jsonPath("$[0].name").value(COLLEGE_NAME))
+                .andExpect(jsonPath("$[0].college_id").value(STATE_ID));
+    }*/
 }

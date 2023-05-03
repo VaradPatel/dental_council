@@ -30,20 +30,19 @@ import java.util.List;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(value = UserController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @ContextConfiguration(classes = UserController.class)
 @ActiveProfiles(profiles = "local")
-@EnableWebMvc
 class UserControllerTest {
 
     @Autowired
@@ -90,7 +89,7 @@ class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].userId").value(USER_ID))
+                .andExpect(jsonPath("$.[0].user_id").value(USER_ID))
                 .andExpect(jsonPath("$.[0].mode").value(NMRConstants.EMAIL))
                 .andExpect(jsonPath("$.[0].enabled").value(true));
     }
@@ -119,18 +118,18 @@ class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ID))
-                .andExpect(jsonPath("$.userId").value(USER_ID))
-                .andExpect(jsonPath("$.firstName").value(FIRST_NAME))
-                .andExpect(jsonPath("$.lastName").value(LAST_NAME))
-                .andExpect(jsonPath("$.middleName").value(MIDDLE_NAME))
-                .andExpect(jsonPath("$.stateMedicalCouncil.id").value(SMC_ID))
-                .andExpect(jsonPath("$.stateMedicalCouncil.code").value(SMC_CODE))
-                .andExpect(jsonPath("$.stateMedicalCouncil.name").value(SMC_NAME))
-                .andExpect(jsonPath("$.ndhmEnrollment").value(ENROLLED_NUMBER))
-                .andExpect(jsonPath("$.enrolledNumber").value(ENROLLED_NUMBER))
-                .andExpect(jsonPath("$.displayName").value(PROFILE_DISPLAY_NAME))
-                .andExpect(jsonPath("$.emailId").value(EMAIL_ID))
-                .andExpect(jsonPath("$.mobileNo").value(MOBILE_NUMBER));
+                .andExpect(jsonPath("$.user_id").value(USER_ID))
+                .andExpect(jsonPath("$.first_name").value(FIRST_NAME))
+                .andExpect(jsonPath("$.last_name").value(LAST_NAME))
+                .andExpect(jsonPath("$.middle_name").value(MIDDLE_NAME))
+                .andExpect(jsonPath("$.state_medical_council.id").value(SMC_ID))
+                .andExpect(jsonPath("$.state_medical_council.code").value(SMC_CODE))
+                .andExpect(jsonPath("$.state_medical_council.name").value(SMC_NAME))
+                .andExpect(jsonPath("$.ndhm_enrollment").value(ENROLLED_NUMBER))
+                .andExpect(jsonPath("$.enrolled_number").value(ENROLLED_NUMBER))
+                .andExpect(jsonPath("$.display_name").value(PROFILE_DISPLAY_NAME))
+                .andExpect(jsonPath("$.email_id").value(EMAIL_ID))
+                .andExpect(jsonPath("$.mobile_no").value(MOBILE_NUMBER));
     }
 
 
@@ -157,18 +156,18 @@ class UserControllerTest {
         mockMvc.perform(get("/nmc/user/1").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ID))
-                .andExpect(jsonPath("$.userId").value(USER_ID))
-                .andExpect(jsonPath("$.firstName").value(FIRST_NAME))
-                .andExpect(jsonPath("$.lastName").value(LAST_NAME))
-                .andExpect(jsonPath("$.middleName").value(MIDDLE_NAME))
-                .andExpect(jsonPath("$.stateMedicalCouncil.id").value(SMC_ID))
-                .andExpect(jsonPath("$.stateMedicalCouncil.code").value(SMC_CODE))
-                .andExpect(jsonPath("$.stateMedicalCouncil.name").value(SMC_NAME))
-                .andExpect(jsonPath("$.ndhmEnrollment").value(ENROLLED_NUMBER))
-                .andExpect(jsonPath("$.enrolledNumber").value(ENROLLED_NUMBER))
-                .andExpect(jsonPath("$.displayName").value(PROFILE_DISPLAY_NAME))
-                .andExpect(jsonPath("$.emailId").value(EMAIL_ID))
-                .andExpect(jsonPath("$.mobileNo").value(MOBILE_NUMBER));
+                .andExpect(jsonPath("$.user_id").value(USER_ID))
+                .andExpect(jsonPath("$.first_name").value(FIRST_NAME))
+                .andExpect(jsonPath("$.last_name").value(LAST_NAME))
+                .andExpect(jsonPath("$.middle_name").value(MIDDLE_NAME))
+                .andExpect(jsonPath("$.state_medical_council.id").value(SMC_ID))
+                .andExpect(jsonPath("$.state_medical_council.code").value(SMC_CODE))
+                .andExpect(jsonPath("$.state_medical_council.name").value(SMC_NAME))
+                .andExpect(jsonPath("$.ndhm_enrollment").value(ENROLLED_NUMBER))
+                .andExpect(jsonPath("$.enrolled_number").value(ENROLLED_NUMBER))
+                .andExpect(jsonPath("$.display_name").value(PROFILE_DISPLAY_NAME))
+                .andExpect(jsonPath("$.email_id").value(EMAIL_ID))
+                .andExpect(jsonPath("$.mobile_no").value(MOBILE_NUMBER));
     }
 
     @Test
@@ -189,13 +188,13 @@ class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ID))
-                .andExpect(jsonPath("$.userId").value(USER_ID))
-                .andExpect(jsonPath("$.firstName").value(FIRST_NAME))
-                .andExpect(jsonPath("$.lastName").value(LAST_NAME))
-                .andExpect(jsonPath("$.middleName").value(MIDDLE_NAME))
-                .andExpect(jsonPath("$.displayName").value(PROFILE_DISPLAY_NAME))
-                .andExpect(jsonPath("$.emailId").value(EMAIL_ID))
-                .andExpect(jsonPath("$.mobileNo").value(MOBILE_NUMBER));
+                .andExpect(jsonPath("$.user_id").value(USER_ID))
+                .andExpect(jsonPath("$.first_name").value(FIRST_NAME))
+                .andExpect(jsonPath("$.last_name").value(LAST_NAME))
+                .andExpect(jsonPath("$.middle_name").value(MIDDLE_NAME))
+                .andExpect(jsonPath("$.display_name").value(PROFILE_DISPLAY_NAME))
+                .andExpect(jsonPath("$.email_id").value(EMAIL_ID))
+                .andExpect(jsonPath("$.mobile_no").value(MOBILE_NUMBER));
     }
 
     @Test
@@ -221,18 +220,18 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ID))
-                .andExpect(jsonPath("$.userId").value(USER_ID))
-                .andExpect(jsonPath("$.firstName").value(FIRST_NAME))
-                .andExpect(jsonPath("$.lastName").value(LAST_NAME))
-                .andExpect(jsonPath("$.middleName").value(MIDDLE_NAME))
-                .andExpect(jsonPath("$.stateMedicalCouncil.id").value(SMC_ID))
-                .andExpect(jsonPath("$.stateMedicalCouncil.code").value(SMC_CODE))
-                .andExpect(jsonPath("$.stateMedicalCouncil.name").value(SMC_NAME))
-                .andExpect(jsonPath("$.ndhmEnrollment").value(ENROLLED_NUMBER))
-                .andExpect(jsonPath("$.enrolledNumber").value(ENROLLED_NUMBER))
-                .andExpect(jsonPath("$.displayName").value(PROFILE_DISPLAY_NAME))
-                .andExpect(jsonPath("$.emailId").value(EMAIL_ID))
-                .andExpect(jsonPath("$.mobileNo").value(MOBILE_NUMBER));
+                .andExpect(jsonPath("$.user_id").value(USER_ID))
+                .andExpect(jsonPath("$.first_name").value(FIRST_NAME))
+                .andExpect(jsonPath("$.last_name").value(LAST_NAME))
+                .andExpect(jsonPath("$.middle_name").value(MIDDLE_NAME))
+                .andExpect(jsonPath("$.state_medical_council.id").value(SMC_ID))
+                .andExpect(jsonPath("$.state_medical_council.code").value(SMC_CODE))
+                .andExpect(jsonPath("$.state_medical_council.name").value(SMC_NAME))
+                .andExpect(jsonPath("$.ndhm_enrollment").value(ENROLLED_NUMBER))
+                .andExpect(jsonPath("$.enrolled_number").value(ENROLLED_NUMBER))
+                .andExpect(jsonPath("$.display_name").value(PROFILE_DISPLAY_NAME))
+                .andExpect(jsonPath("$.email_id").value(EMAIL_ID))
+                .andExpect(jsonPath("$.mobile_no").value(MOBILE_NUMBER));
     }
 
     @Test
@@ -258,15 +257,18 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ID))
-                .andExpect(jsonPath("$.userId").value(USER_ID))
-                .andExpect(jsonPath("$.firstName").value(FIRST_NAME))
-                .andExpect(jsonPath("$.lastName").value(LAST_NAME))
-                .andExpect(jsonPath("$.middleName").value(MIDDLE_NAME))
-                .andExpect(jsonPath("$.ndhmEnrollment").value(NDHM_ENROLLMENT_NUMBER))
-                .andExpect(jsonPath("$.enrolledNumber").value(NDHM_ENROLLMENT_NUMBER))
-                .andExpect(jsonPath("$.displayName").value(PROFILE_DISPLAY_NAME))
-                .andExpect(jsonPath("$.emailId").value(EMAIL_ID))
-                .andExpect(jsonPath("$.mobileNo").value(MOBILE_NUMBER));
+                .andExpect(jsonPath("$.user_id").value(USER_ID))
+                .andExpect(jsonPath("$.first_name").value(FIRST_NAME))
+                .andExpect(jsonPath("$.last_name").value(LAST_NAME))
+                .andExpect(jsonPath("$.middle_name").value(MIDDLE_NAME))
+                .andExpect(jsonPath("$.state_medical_council.id").value(SMC_ID))
+                .andExpect(jsonPath("$.state_medical_council.code").value(SMC_CODE))
+                .andExpect(jsonPath("$.state_medical_council.name").value(SMC_NAME))
+                .andExpect(jsonPath("$.ndhm_enrollment").value(ENROLLED_NUMBER))
+                .andExpect(jsonPath("$.enrolled_number").value(ENROLLED_NUMBER))
+                .andExpect(jsonPath("$.display_name").value(PROFILE_DISPLAY_NAME))
+                .andExpect(jsonPath("$.email_id").value(EMAIL_ID))
+                .andExpect(jsonPath("$.mobile_no").value(MOBILE_NUMBER));
     }
 
     @Test
@@ -289,17 +291,16 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ID))
-                .andExpect(jsonPath("$.userId").value(USER_ID))
-                .andExpect(jsonPath("$.firstName").value(FIRST_NAME))
-                .andExpect(jsonPath("$.lastName").value(LAST_NAME))
-                .andExpect(jsonPath("$.middleName").value(MIDDLE_NAME))
-                .andExpect(jsonPath("$.displayName").value(PROFILE_DISPLAY_NAME))
-                .andExpect(jsonPath("$.emailId").value(EMAIL_ID))
-                .andExpect(jsonPath("$.mobileNo").value(MOBILE_NUMBER));
+                .andExpect(jsonPath("$.user_id").value(USER_ID))
+                .andExpect(jsonPath("$.first_name").value(FIRST_NAME))
+                .andExpect(jsonPath("$.last_name").value(LAST_NAME))
+                .andExpect(jsonPath("$.middle_name").value(MIDDLE_NAME))
+                .andExpect(jsonPath("$.display_name").value(PROFILE_DISPLAY_NAME))
+                .andExpect(jsonPath("$.email_id").value(EMAIL_ID))
+                .andExpect(jsonPath("$.mobile_no").value(MOBILE_NUMBER));
     }
 
 
-/*
     @Test
     @WithMockUser
     void testRetrieveUser() throws Exception {
@@ -315,7 +316,6 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(EMAIL_ID));
     }
-*/
 
 
     @Test

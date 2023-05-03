@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.HpSearchProfileTO;
+import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.ISearchService;
-import in.gov.abdm.nmr.util.NMRConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -20,10 +21,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
+import static in.gov.abdm.nmr.util.NMRConstants.SALUTATION_DR;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -33,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(value = SearchController.class, excludeAutoConfiguration = { SecurityAutoConfiguration.class })
+@WebMvcTest(value = SearchController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @ContextConfiguration(classes = SearchController.class)
 @ActiveProfiles(profiles = "local")
 class SearchControllerTest {
@@ -54,13 +59,13 @@ class SearchControllerTest {
 
     @Test
     void testGetHpSearchProfileByIdShouldReturnHealthProfessionalDetails() throws Exception {
-        HpSearchProfileTO hpSearchProfileTO =  new HpSearchProfileTO();
+        HpSearchProfileTO hpSearchProfileTO = new HpSearchProfileTO();
         hpSearchProfileTO.setProfilePhoto(PROFILE_PHOTO);
         hpSearchProfileTO.setDateOfBirth(DATE_OF_BIRTH.toString());
         hpSearchProfileTO.setEmail(EMAIL_ID);
         hpSearchProfileTO.setFullName(PROFILE_DISPLAY_NAME);
         hpSearchProfileTO.setDateOfRegistration(REGISTRATION_DATE.toString());
-        hpSearchProfileTO.setSalutation(NMRConstants.SALUTATION_DR);
+        hpSearchProfileTO.setSalutation(SALUTATION_DR);
         hpSearchProfileTO.setQualifications(Collections.emptyList());
         hpSearchProfileTO.setFatherHusbandName(FIRST_NAME);
         hpSearchProfileTO.setStateMedicalCouncil(STATE_MEDICAL_COUNCIL);
@@ -73,7 +78,7 @@ class SearchControllerTest {
         mockMvc.perform(get("/health-professional/1").with(user("123")).accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.full_name").value(PROFILE_DISPLAY_NAME))
-                .andExpect(jsonPath("$.salutation").value(NMRConstants.SALUTATION_DR))
+                .andExpect(jsonPath("$.salutation").value(SALUTATION_DR))
                 .andExpect(jsonPath("$.state_medical_council").value(STATE_MEDICAL_COUNCIL))
                 .andExpect(jsonPath("$.email").value(EMAIL_ID))
                 .andExpect(jsonPath("$.profile_photo").value(PROFILE_PHOTO))
@@ -81,6 +86,52 @@ class SearchControllerTest {
                 .andExpect(jsonPath("$.nmr_id").value(NMR_ID))
                 .andExpect(jsonPath("$.registration_number").value(REGISTRATION_NUMBER))
                 .andExpect(jsonPath("$.mobile_number").value(MOBILE_NUMBER));
-
     }
+
+/*    @Test
+    void testSearchHP() throws Exception {
+        HpSearchRequestTO searchRequestTO = new HpSearchRequestTO();
+        searchRequestTO.setFullName(PROFILE_DISPLAY_NAME);
+        searchRequestTO.setRegistrationNumber(REGISTRATION_NUMBER);
+        searchRequestTO.setRegistrationYear(REGISTRATION_YEAR);
+        searchRequestTO.setStateMedicalCouncilId(SMC_ID);
+        searchRequestTO.setProfileStatusId(Arrays.asList());
+        HpSearchResponseTO responseTO = new HpSearchResponseTO();
+        List<HpSearchResultTO> results = new ArrayList<>();
+        HpSearchResultTO resultTO = new HpSearchResultTO();
+        resultTO.setProfileId(ID);
+        resultTO.setFullName(PROFILE_DISPLAY_NAME);
+        resultTO.setSalutation(SALUTATION_DR);
+        resultTO.setRegistrationNumber(REGISTRATION_NUMBER);
+        resultTO.setRegistrationYear(REGISTRATION_YEAR);
+        resultTO.setStateMedicalCouncil(STATE_MEDICAL_COUNCIL);
+        resultTO.setProfilePhoto(PROFILE_PHOTO);
+        results.add(resultTO);
+        responseTO.setResults(results);
+        responseTO.setCount(1L);
+        when(searchService.searchHP(any(HpSearchRequestTO.class), any(Pageable.class))).thenReturn(responseTO);
+        mockMvc.perform(post("/health-professional/search/").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.results[0].profile_id").value(ID))
+                .andExpect(jsonPath("$.results[0].full_name").value(PROFILE_DISPLAY_NAME))
+                .andExpect(jsonPath("$.results[0].salutation").value(SALUTATION_DR))
+                .andExpect(jsonPath("$.results[0].registration_number").value(REGISTRATION_NUMBER))
+                .andExpect(jsonPath("$.results[0].registration_year").value(REGISTRATION_YEAR))
+                .andExpect(jsonPath("$.results[0].state_medical_council").value(STATE_MEDICAL_COUNCIL))
+                .andExpect(jsonPath("$.results[0].profile_photo").value(PROFILE_PHOTO))
+                .andExpect(jsonPath("$.count").value(1l));
+    }*/
+
+    /*@Test
+    @WithMockUser
+    void testFetchAddressByPinCodeFromLGD() throws Exception {
+        List list = new ArrayList<>();
+        when(searchService.fetchAddressByPinCodeFromLGD(nullable(String.class), nullable(String.class)))
+                .thenReturn(list);
+        mockMvc.perform(get(ProtectedPaths.PATH_DASHBOARD_ROOT + ProtectedPaths.PATH_DASHBOARD_FETCH_DETAILS)
+                        .with(user(TEST_USER))
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.List[0]").value(BigInteger.ONE));
+    }*/
 }

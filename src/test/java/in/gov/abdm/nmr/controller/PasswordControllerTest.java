@@ -1,8 +1,11 @@
 package in.gov.abdm.nmr.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import in.gov.abdm.nmr.dto.ChangePasswordRequestTo;
+import in.gov.abdm.nmr.dto.ResetPasswordRequestTo;
 import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.dto.SetNewPasswordTo;
+import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IMasterDataService;
 import in.gov.abdm.nmr.service.IPasswordService;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -38,7 +41,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = PasswordController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @ContextConfiguration(classes = PasswordController.class)
 @ActiveProfiles(profiles = "local")
-@EnableWebMvc
 class PasswordControllerTest {
 
     @Autowired
@@ -80,7 +82,7 @@ class PasswordControllerTest {
                 .andExpect(jsonPath("$.message").value(NMRConstants.SUCCESS_RESPONSE));
     }
 
-  /*  @Test
+    @Test
     @WithMockUser
     void testResetPassword() throws Exception {
         ResetPasswordRequestTo requestTo = new ResetPasswordRequestTo();
@@ -97,5 +99,24 @@ class PasswordControllerTest {
                         .content(objectMapper.writeValueAsBytes(requestTo)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(NMRConstants.SUCCESS_RESPONSE));
-    }*/
+    }
+
+    @Test
+    @WithMockUser
+    void testChangePassword() throws Exception {
+        ChangePasswordRequestTo requestTo = new ChangePasswordRequestTo();
+        requestTo.setUserId(ID);
+        requestTo.setOldPassword(PASSWORD);
+        requestTo.setNewPassword(PASSWORD);
+        ResponseMessageTo responseMessageTo = new ResponseMessageTo();
+        responseMessageTo.setMessage(NMRConstants.SUCCESS_RESPONSE);
+        when(passwordService.changePassword(requestTo)).thenReturn(responseMessageTo);
+        mockMvc.perform(post(ProtectedPaths.CHANGE_PASSWORD).with(user(TEST_USER))
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsBytes(requestTo)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(NMRConstants.SUCCESS_RESPONSE));
+    }
 }
