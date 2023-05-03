@@ -30,9 +30,10 @@ import java.util.List;
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -66,7 +67,6 @@ class CollegeControllerTest {
         collegeMasterDataTO.setId(ID);
         collegeMasterDataTO.setName(COLLEGE_NAME);
         collegeMasterDataTOES.add(collegeMasterDataTO);
-
         when(collegeServiceV2.getAllColleges()).thenReturn(collegeMasterDataTOES);
         mockMvc.perform(get("/colleges").with(user(TEST_USER))
                         .accept(MediaType.APPLICATION_JSON_VALUE))
@@ -115,7 +115,7 @@ class CollegeControllerTest {
                 .andExpect(jsonPath("$.mobile_number").value(MOBILE_NUMBER));
     }
 
-/*
+
     @Test
     @WithMockUser
     void testCreateCollege() throws Exception {
@@ -144,28 +144,27 @@ class CollegeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ID))
                 .andExpect(jsonPath("$.name").value(COLLEGE_NAME))
-                .andExpect(jsonPath("$.stateId").value(STATE_ID))
-                .andExpect(jsonPath("$.courseId").value(COURSE_ID))
-                .andExpect(jsonPath("$.collegeCode").value(COLLEGE_CODE))
+                .andExpect(jsonPath("$.state_id").value(STATE_ID))
+                .andExpect(jsonPath("$.course_id").value(COURSE_ID))
+                .andExpect(jsonPath("$.college_code").value(COLLEGE_CODE))
                 .andExpect(jsonPath("$.website").value(WEBSITE))
-                .andExpect(jsonPath("$.addressLine1").value(ADDRESS_LINE_1))
-                .andExpect(jsonPath("$.addressLine2").value(ADDRESS_LINE_2))
-                .andExpect(jsonPath("$.districtId").value(DISTRICT_ID))
-                .andExpect(jsonPath("$.villageId").value(VILLAGE_ID))
-                .andExpect(jsonPath("$.pinCode").value(PIN_CODE))
-                .andExpect(jsonPath("$.stateMedicalCouncilId").value(SMC_ID))
-                .andExpect(jsonPath("$.universityId").value(UNIVERSITY_ID))
-                .andExpect(jsonPath("$.emailId").value(EMAIL_ID))
-                .andExpect(jsonPath("$.mobileNumber").value(MOBILE_NUMBER));
+                .andExpect(jsonPath("$.address_line1").value(ADDRESS_LINE_1))
+                .andExpect(jsonPath("$.address_line2").value(ADDRESS_LINE_2))
+                .andExpect(jsonPath("$.district_id").value(DISTRICT_ID))
+                .andExpect(jsonPath("$.village_id").value(VILLAGE_ID))
+                .andExpect(jsonPath("$.pin_code").value(PIN_CODE))
+                .andExpect(jsonPath("$.state_medical_council_id").value(SMC_ID))
+                .andExpect(jsonPath("$.university_id").value(UNIVERSITY_ID))
+                .andExpect(jsonPath("$.email_id").value(EMAIL_ID))
+                .andExpect(jsonPath("$.mobile_number").value(MOBILE_NUMBER));
     }
-*/
 
 
-/*
     @Test
     @WithMockUser
     void testUpdateCollege() throws Exception {
         CollegeResponseTo collegeResponseTo = new CollegeResponseTo();
+        collegeResponseTo.setId(ID);
         collegeResponseTo.setName(COLLEGE_NAME);
         collegeResponseTo.setStateId(STATE_ID);
         collegeResponseTo.setCourseId(COURSE_ID);
@@ -189,21 +188,21 @@ class CollegeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ID))
                 .andExpect(jsonPath("$.name").value(COLLEGE_NAME))
-                .andExpect(jsonPath("$.stateId").value(STATE_ID))
-                .andExpect(jsonPath("$.courseId").value(COURSE_ID))
-                .andExpect(jsonPath("$.collegeCode").value(COLLEGE_CODE))
+                .andExpect(jsonPath("$.state_id").value(STATE_ID))
+                .andExpect(jsonPath("$.course_id").value(COURSE_ID))
+                .andExpect(jsonPath("$.college_code").value(COLLEGE_CODE))
                 .andExpect(jsonPath("$.website").value(WEBSITE))
-                .andExpect(jsonPath("$.addressLine1").value(ADDRESS_LINE_1))
-                .andExpect(jsonPath("$.addressLine2").value(ADDRESS_LINE_2))
-                .andExpect(jsonPath("$.districtId").value(DISTRICT_ID))
-                .andExpect(jsonPath("$.villageId").value(VILLAGE_ID))
-                .andExpect(jsonPath("$.pinCode").value(PIN_CODE))
-                .andExpect(jsonPath("$.stateMedicalCouncilId").value(SMC_ID))
-                .andExpect(jsonPath("$.universityId").value(UNIVERSITY_ID))
-                .andExpect(jsonPath("$.emailId").value(EMAIL_ID))
-                .andExpect(jsonPath("$.mobileNumber").value(MOBILE_NUMBER));
+                .andExpect(jsonPath("$.address_line1").value(ADDRESS_LINE_1))
+                .andExpect(jsonPath("$.address_line2").value(ADDRESS_LINE_2))
+                .andExpect(jsonPath("$.district_id").value(DISTRICT_ID))
+                .andExpect(jsonPath("$.village_id").value(VILLAGE_ID))
+                .andExpect(jsonPath("$.pin_code").value(PIN_CODE))
+                .andExpect(jsonPath("$.state_medical_council_id").value(SMC_ID))
+                .andExpect(jsonPath("$.university_id").value(UNIVERSITY_ID))
+                .andExpect(jsonPath("$.email_id").value(EMAIL_ID))
+                .andExpect(jsonPath("$.mobile_number").value(MOBILE_NUMBER));
     }
-*/
+
 
     @Test
     void testGetAllCollegeVerifiersDesignation() throws Exception {
@@ -219,32 +218,57 @@ class CollegeControllerTest {
                 .andExpect(jsonPath("$.[0]name").value(COLLEGE_NAME));
     }
 
-    /*
-        @Test
-        @WithMockUser
-        void testUpdateCollegeVerifier() throws Exception {
-            CollegeProfileTo collegeProfileTo = new CollegeProfileTo();
-            collegeProfileTo.setId(ID);
-            collegeProfileTo.setCollegeId(COLLEGE_ID);
-            collegeProfileTo.setDesignation(DESIGNATION);
-            collegeProfileTo.setName(COLLEGE_NAME);
-            collegeProfileTo.setMobileNumber(MOBILE_NUMBER);
-            collegeProfileTo.setEmailId(EMAIL_ID);
-            when(collegeServiceV2.createOrUpdateCollegeVerifier(any(CollegeProfileTo.class))).thenReturn(collegeProfileTo);
-            mockMvc.perform(put("/colleges/1/verifiers/1").with(user(TEST_USER))
-                            .with(csrf())
-                            .content(objectMapper.writeValueAsBytes(collegeProfileTo))
-                            .accept(MediaType.APPLICATION_JSON_VALUE)
-                            .contentType(MediaType.APPLICATION_JSON_VALUE))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(ID))
-                    .andExpect(jsonPath("$.collegeId").value(COLLEGE_ID))
-                    .andExpect(jsonPath("$.designation").value(DESIGNATION))
-                    .andExpect(jsonPath("$.name").value(COLLEGE_NAME))
-                    .andExpect(jsonPath("$.emailId").value(EMAIL_ID))
-                    .andExpect(jsonPath("$.mobileNo").value(MOBILE_NUMBER));
-        }
-    */
+
+    @Test
+    @WithMockUser
+    void testCreateCollegeVerifier() throws Exception {
+        CollegeProfileTo collegeProfileTo = new CollegeProfileTo();
+        collegeProfileTo.setId(ID);
+        collegeProfileTo.setCollegeId(COLLEGE_ID);
+        collegeProfileTo.setDesignation(DESIGNATION);
+        collegeProfileTo.setName(COLLEGE_NAME);
+        collegeProfileTo.setMobileNumber(MOBILE_NUMBER);
+        collegeProfileTo.setEmailId(EMAIL_ID);
+        when(collegeServiceV2.createOrUpdateCollegeVerifier(any(CollegeProfileTo.class))).thenReturn(collegeProfileTo);
+        mockMvc.perform(post("/colleges/1/verifiers").with(user(TEST_USER))
+                        .with(csrf())
+                        .content(objectMapper.writeValueAsBytes(collegeProfileTo))
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(ID))
+                .andExpect(jsonPath("$.college_id").value(COLLEGE_ID))
+                .andExpect(jsonPath("$.designation").value(DESIGNATION))
+                .andExpect(jsonPath("$.name").value(COLLEGE_NAME))
+                .andExpect(jsonPath("$.mobile_number").value(MOBILE_NUMBER))
+                .andExpect(jsonPath("$.email_id").value(EMAIL_ID));
+    }
+
+    @Test
+    @WithMockUser
+    void testUpdateCollegeVerifier() throws Exception {
+        CollegeProfileTo collegeProfileTo = new CollegeProfileTo();
+        collegeProfileTo.setId(ID);
+        collegeProfileTo.setCollegeId(COLLEGE_ID);
+        collegeProfileTo.setDesignation(DESIGNATION);
+        collegeProfileTo.setName(COLLEGE_NAME);
+        collegeProfileTo.setMobileNumber(MOBILE_NUMBER);
+        collegeProfileTo.setEmailId(EMAIL_ID);
+        when(collegeServiceV2.createOrUpdateCollegeVerifier(any(CollegeProfileTo.class))).thenReturn(collegeProfileTo);
+        mockMvc.perform(put("/colleges/1/verifiers/1").with(user(TEST_USER))
+                        .with(csrf())
+                        .content(objectMapper.writeValueAsBytes(collegeProfileTo))
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(ID))
+                .andExpect(jsonPath("$.college_id").value(COLLEGE_ID))
+                .andExpect(jsonPath("$.designation").value(DESIGNATION))
+                .andExpect(jsonPath("$.name").value(COLLEGE_NAME))
+                .andExpect(jsonPath("$.mobile_number").value(MOBILE_NUMBER))
+                .andExpect(jsonPath("$.email_id").value(EMAIL_ID));
+    }
+
     @Test
     void testGetCollegeVerifier() throws Exception {
         CollegeProfileTo collegeProfileTo = new CollegeProfileTo();

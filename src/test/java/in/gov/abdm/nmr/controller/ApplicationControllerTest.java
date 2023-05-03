@@ -33,6 +33,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import static in.gov.abdm.nmr.util.CommonTestData.ID;
+import static in.gov.abdm.nmr.util.CommonTestData.TEST_USER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
@@ -107,7 +108,7 @@ class ApplicationControllerTest {
         when(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(nullable(BigInteger.class))).thenReturn(true);
 
         mockMvc.perform(post(ProtectedPaths.SUSPENSION_REQUEST_URL)
-                        .with(user("123"))
+                        .with(user(TEST_USER))
                         .with(csrf())
                         .content(objectMapper.writeValueAsBytes(applicationRequestTo))
                         .accept(MediaType.APPLICATION_JSON_VALUE)
