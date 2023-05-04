@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.NMRError;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import in.gov.abdm.nmr.util.NMRConstants;
 /**
  * Implementation of methods to generate and validate OTP
  */
+@Slf4j
 @Service
 public class OtpServiceImpl implements IOtpService {
 
@@ -119,7 +121,11 @@ public class OtpServiceImpl implements IOtpService {
         String decryptedOtp = callInternal ? otpValidateRequestTo.getOtp() : rsaUtil.decrypt(otpValidateRequestTo.getOtp());
         if (decryptedOtp.equals(otpDetails.getOtp())) {
             otpDaoService.save(otpDetails);
-            notificationService.sendNotificationForVerifiedOTP(otpValidateRequestTo.getType(), otpValidateRequestTo.getContact());
+            try {
+                notificationService.sendNotificationForVerifiedOTP(otpValidateRequestTo.getType(), otpValidateRequestTo.getContact());
+            }catch (Exception exception){
+                log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
+            }
             return new OtpValidateResponseTo(new OtpValidateMessageTo(NMRConstants.SUCCESS_RESPONSE, otpDetails.getId(), otpValidateRequestTo.getType()));
         } else {
             otpDetails.setAttempts(otpDetails.getAttempts() + 1);
