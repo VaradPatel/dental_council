@@ -684,13 +684,5 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         workProfileRepository.saveAll(workProfileDetailsList);
     }
 
-    private String checkIsNullAndAddSeparator(String string) {
-        if (string == null) {
-            return "";
-        } else {
-            return string + ", ";
-        }
-    }
-
 
 }

@@ -17,11 +17,6 @@ public class FacilityTypeServiceImpl implements IFacilityTypeService {
 
     private FacilityTypeDtoMapper facilityTypeDtoMapper;
 
-    public FacilityTypeServiceImpl(FacilityTypeRepository facilityTypeRepository, FacilityTypeDtoMapper facilityTypeDtoMapper) {
-        this.facilityTypeRepository = facilityTypeRepository;
-        this.facilityTypeDtoMapper = facilityTypeDtoMapper;
-    }
-
     @Override
     public List<FacilityTypeTO> getFacilityType() {
         return facilityTypeDtoMapper.facilityTypeDataToDto(facilityTypeRepository.getFacilityType());

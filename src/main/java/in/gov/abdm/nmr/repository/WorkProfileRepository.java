@@ -11,8 +11,6 @@ import java.util.List;
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 public interface WorkProfileRepository extends JpaRepository<WorkProfile, BigInteger> {
-    @Query(value = FETCH_WORK_PROFILE_RECORDS_BY_HP_ID, nativeQuery = true)
-    List<WorkProfile> getWorkProfileDetailsByHPId(@Param(HP_PROFILE_ID) BigInteger hpId);
 
     @Query(value = FETCH_WORK_PROFILE_RECORDS_BY_USER_ID, nativeQuery = true)
     List<WorkProfile> getWorkProfileDetailsByUserId(@Param(USER_ID) BigInteger userId);

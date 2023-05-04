@@ -11,11 +11,5 @@ public interface SuperSpecialityRepository extends JpaRepository<SuperSpeciality
 
     @Query(value = "SELECT name, id FROM super_speciality", nativeQuery = true)
     List<SuperSpeciality> getSpeciality();
-    
-    @Query(value = "SELECT name, id, hp_profile_id FROM super_speciality where hp_profile_id = :hpProfileId", nativeQuery = true)
-    List<SuperSpeciality> getSuperSpecialityFromHpProfileId(BigInteger hpProfileId);
-    
-    @Query(value = "delete from super_speciality where hp_profile_id = :hpProfileId", nativeQuery = true)
-    void deleteAllByHpProfileId(BigInteger hpProfileId);
 
 }
