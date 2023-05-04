@@ -7,15 +7,10 @@ import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
 import java.util.Date;
-import java.util.stream.Stream;
 
 public interface ResetTokenRepository extends JpaRepository<ResetToken, Long> {
 
     ResetToken findByToken(String token);
-
-    Stream<ResetToken> findAllByExpiryDateLessThan(Date now);
-
-    void deleteByExpiryDateLessThan(Date now);
 
     @Modifying
     @Transactional

@@ -8,10 +8,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 public interface LanguagesKnownRepository extends JpaRepository<LanguagesKnown, BigInteger> {
-	
 
-	@Query(value = "select * from languages_known where hp_profile_id = :hpProfileId", nativeQuery = true)
-	List<LanguagesKnown> getLanguagesKnownByHpProfileId(BigInteger hpProfileId);
 
 	List<LanguagesKnown> findByUserId(BigInteger userId);
 }
