@@ -115,7 +115,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
         HpProfile hpProfile = iHpProfileRepository.findById(requestTO.getHpProfileId()).orElse(new HpProfile());
         INextGroup iNextGroup = null;
-        Dashboard dashboard=null;
+        Dashboard dashboard = null;
         if (workFlow == null) {
             log.debug("Proceeding to create a new Workflow entry since there are no existing entries with the given request_id");
             if (Group.HEALTH_PROFESSIONAL.getId().equals(requestTO.getActorId())) {
@@ -126,7 +126,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 }
             } else if (Group.SMC.getId().equals(requestTO.getActorId()) || Group.NMC.getId().equals(requestTO.getActorId())) {
                 if (!Action.PERMANENT_SUSPEND.getId().equals(requestTO.getActionId()) &&
-                                !Action.TEMPORARY_SUSPEND.getId().equals(requestTO.getActionId())) {
+                        !Action.TEMPORARY_SUSPEND.getId().equals(requestTO.getActionId())) {
                     log.debug("SMC or NMC is the Actor but Action is not Temporary Suspend or Permanent Suspend");
                     throw new InvalidRequestException();
                 }
@@ -137,7 +137,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             workFlow = buildNewWorkFlow(requestTO, iNextGroup, hpProfile, user);
             iWorkFlowRepository.save(workFlow);
             log.debug("Work Flow Creation Successful");
-            dashboard =new Dashboard();
+            dashboard = new Dashboard();
         } else {
             dashboard = iDashboardRepository.findByRequestId(workFlow.getRequestId());
             log.debug("Proceeding to update the existing Workflow entry since there is an existing entry with the given request_id");
@@ -171,7 +171,14 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
         updateDashboardDetail(requestTO, workFlow, iNextGroup, dashboard);
         try {
-            notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+            if (workFlow.getUserId().isSmsNotificationEnabled() && workFlow.getUserId().isEmailNotificationEnabled()) {
+                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+            } else if (workFlow.getUserId().isSmsNotificationEnabled()) {
+                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), workFlow.getHpProfile().getMobileNumber(), null);
+
+            } else if (workFlow.getUserId().isEmailNotificationEnabled()) {
+                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), null, workFlow.getHpProfile().getEmailId());
+            }
         } catch (Exception exception) {
             log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
         }
@@ -200,10 +207,10 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         dashboard.setRequestId(requestTO.getRequestId());
         dashboard.setHpProfileId(requestTO.getHpProfileId());
         dashboard.setWorkFlowStatusId(workFlow.getWorkFlowStatus().getId());
-        if(NMRUtil.isVoluntarySuspension(workFlow)){
+        if (NMRUtil.isVoluntarySuspension(workFlow)) {
             dashboard.setNmcStatus(Action.APPROVED.getId());
             dashboard.setSmcStatus(Action.APPROVED.getId());
-        }else {
+        } else {
             setDashboardStatus(requestTO.getActionId(), requestTO.getActorId(), dashboard);
             if (!isLastStepOfWorkFlow(iNextGroup)) {
                 //submit is equivalent to pending status.
@@ -211,9 +218,9 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 // this has to uncomment when we need add college_verified.
 
                 //if(Group.COLLEGE.getId().equals(requestTO.getActorId()) && Action.APPROVED.getId().equals(requestTO.getActionId())){
-                 //   dashboard.setSmcStatus(DashboardStatus.COLLEGE_VERIFIED.getId());
+                //   dashboard.setSmcStatus(DashboardStatus.COLLEGE_VERIFIED.getId());
                 //}else {
-                    setDashboardStatus(DashboardStatus.PENDING.getId(), iNextGroup.getAssignTo(), dashboard);
+                setDashboardStatus(DashboardStatus.PENDING.getId(), iNextGroup.getAssignTo(), dashboard);
                 //}
             }
         }
@@ -227,11 +234,11 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         BigInteger dashboardStatusId = DashboardStatus.getDashboardStatus(Action.getAction(actionPerformedId).getStatus()).getId();
         if (userGroup.equals(Group.SMC.getId())) {
             dashboard.setSmcStatus(dashboardStatusId);
-        }else if (userGroup.equals(Group.NMC.getId())) {
+        } else if (userGroup.equals(Group.NMC.getId())) {
             dashboard.setNmcStatus(dashboardStatusId);
-        }else if (userGroup.equals(Group.COLLEGE.getId())) {
+        } else if (userGroup.equals(Group.COLLEGE.getId())) {
             dashboard.setCollegeStatus(dashboardStatusId);
-        }else if (userGroup.equals(Group.NBE.getId())) {
+        } else if (userGroup.equals(Group.NBE.getId())) {
             dashboard.setNbeStatus(dashboardStatusId);
         }
     }

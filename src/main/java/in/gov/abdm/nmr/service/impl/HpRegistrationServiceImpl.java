@@ -489,7 +489,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
 
         String hashedPassword = bCryptPasswordEncoder.encode(rsaUtil.decrypt(request.getPassword()));
-        User userDetail = new User(null, request.getEmail(), request.getMobileNumber(), null, hashedPassword, null, true, true, //
+        User userDetail = new User(null, request.getEmail(), request.getMobileNumber(), null, hashedPassword, null, true, false, //
 
                 entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null, request.getUsername(), request.getHprId(), request.getHprIdNumber(), request.isNew(), false);
         userDaoService.save(userDetail);

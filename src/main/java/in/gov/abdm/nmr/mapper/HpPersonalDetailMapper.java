@@ -34,6 +34,8 @@ public final class HpPersonalDetailMapper {
         hpProfilePersonalResponseTO.setHpProfileStatusId(hpProfile.getHpProfileStatus() != null ? hpProfile.getHpProfileStatus().getId() : null);
         hpProfilePersonalResponseTO.setWorkFlowStatusId(workFlowStatusId);
         hpProfilePersonalResponseTO.setEmailVerified(hpProfile.getUser() != null && hpProfile.getUser().isEmailVerified());
+        hpProfilePersonalResponseTO.setSmsNotificationEnabled(hpProfile.getUser() != null && hpProfile.getUser().isSmsNotificationEnabled());
+        hpProfilePersonalResponseTO.setEmailNotificationEnabled(hpProfile.getUser() != null && hpProfile.getUser().isEmailNotificationEnabled());
 
         return hpProfilePersonalResponseTO;
     }
