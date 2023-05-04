@@ -248,11 +248,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         return "Success";
     }
 
-    private void mapSuperSpecialityToEntity(BigInteger hpProfileId, SuperSpecialityTO speciality, SuperSpeciality superSpeciality) {
-        superSpeciality.setName(speciality.getName());
-        superSpeciality.setHpProfileId(hpProfileId);
-    }
-
     @Override
     public HpProfilePersonalResponseTO addOrUpdateHpPersonalDetail(BigInteger hpProfileId,
                                                                    HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException {

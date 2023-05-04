@@ -7,6 +7,4 @@ import java.math.BigInteger;
 
 public interface IWorkFlowStatusRepository extends JpaRepository<WorkFlowStatus, BigInteger> {
 
-    WorkFlowStatus findWorkFLowStatusById(BigInteger id);
-
 }
