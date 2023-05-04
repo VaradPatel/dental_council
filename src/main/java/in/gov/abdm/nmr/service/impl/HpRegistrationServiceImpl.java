@@ -627,10 +627,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 communicationAddressEntity.setLandmark(null);
                 communicationAddressEntity.setHpProfileId(hpProfile.getId());
                 communicationAddressEntity.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.COMMUNICATION.getId(), AddressType.COMMUNICATION.name()));
-                communicationAddressEntity.setVillage(communicationAddress.getCity() != null ? villagesRepository.findByName(communicationAddress.getCity()) : null);
+                communicationAddressEntity.setVillage(communicationAddress.getCity() != null && communicationAddress.getSubDistricts() != null ? villagesRepository.getVillageByNameAndDistrictName(communicationAddress.getCity(), communicationAddress.getSubDistricts()) : null);
                 communicationAddressEntity.setSubDistrict(communicationAddress.getSubDistricts() != null ? subDistrictRepository.findByName(communicationAddress.getSubDistricts()) : null);
                 communicationAddressEntity.setState(communicationAddress.getState() != null ? stateRepository.findByName(communicationAddress.getState().toUpperCase()) : null);
-                communicationAddressEntity.setDistrict(communicationAddress.getDistrict() != null ? districtRepository.findByDistrictNameAndStateId(communicationAddress.getDistrict().toUpperCase(), communicationAddressEntity.getState().getId()) : null);
+                communicationAddressEntity.setDistrict(communicationAddress.getDistrict() != null && communicationAddressEntity.getState() != null ? districtRepository.findByDistrictNameAndStateId(communicationAddress.getDistrict().toUpperCase(), communicationAddressEntity.getState().getId()) : null);
                 communicationAddressEntity.setCountry(communicationAddress.getCountry() != null ? countryRepository.findByName(communicationAddress.getCountry()) : null);
 
                 iAddressRepository.saveAll(List.of(kycAddress, communicationAddressEntity));
