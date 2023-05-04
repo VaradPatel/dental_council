@@ -33,8 +33,4 @@ public interface IHpProfileDaoService {
     void saveQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
 								  List<QualificationDetailRequestTO> qualificationDetailRequestTOS,
 								  List<MultipartFile> proofs) throws InvalidRequestException;
-
-	ResponseMessageTo setHpProfilePhotoAndAddressThroughAadhaar(BigInteger id, AadhaarUserKycTo userKycTo);
-
-
 }
