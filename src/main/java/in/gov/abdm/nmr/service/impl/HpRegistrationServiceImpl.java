@@ -600,7 +600,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         kycAddress.setLandmark(request.getLandmark() != null ? request.getLandmark() : null);
         kycAddress.setHpProfileId(hpProfile.getId());
         kycAddress.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.KYC.getId(), AddressType.KYC.name()));
-        kycAddress.setVillage(request.getVillageTownCity() != null ? villagesRepository.findByName(request.getLocality()) : null);
+        kycAddress.setVillage(request.getVillageTownCity() != null ? villagesRepository.getVillageByNameAndDistrictName(request.getLocality(), request.getSubDist()) : null);
         kycAddress.setSubDistrict(request.getSubDist() != null ? subDistrictRepository.findByName(request.getSubDist()) : null);
         kycAddress.setState(stateRepository.findByName(request.getState().toUpperCase()));
         if (kycAddress.getState() != null) {

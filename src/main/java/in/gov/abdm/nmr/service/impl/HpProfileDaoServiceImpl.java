@@ -403,58 +403,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         return iHpProfileRepository.findById(id).orElse(null);
     }
 
-    @Override
-    public ResponseMessageTo setHpProfilePhotoAndAddressThroughAadhaar(BigInteger id, AadhaarUserKycTo userKycTo) {
-
-        String addressLine = checkIsNullAndAddSeparator(userKycTo.getHouse())
-                + checkIsNullAndAddSeparator(userKycTo.getStreet())
-                + checkIsNullAndAddSeparator(userKycTo.getLandmark())
-                + checkIsNullAndAddSeparator(userKycTo.getVillageTownCity())
-                + checkIsNullAndAddSeparator(userKycTo.getLocality())
-                + checkIsNullAndAddSeparator(userKycTo.getPincode())
-                + checkIsNullAndAddSeparator(userKycTo.getPostOffice());
-        try {
-            HpProfile hpProfile = iHpProfileRepository.findHpProfileById(id);
-            hpProfile.setProfilePhoto(userKycTo.getPhoto());
-            iHpProfileRepository.save(hpProfile);
-
-            Address address = iAddressRepository.getCommunicationAddressByHpProfileId(id,
-                    NMRConstants.DEFAULT_ADDRESS_TYPE_AADHAR);
-            address.setAddressLine1(addressLine);
-
-            Villages village = villagesRepository.findByName(userKycTo.getVillageTownCity());
-            if (village != null) {
-                address.setVillage(village);
-            }
-
-            SubDistrict subDistrict = subDistrictRepository.findByName(userKycTo.getSubDist());
-            if (subDistrict != null) {
-                address.setSubDistrict(subDistrict);
-            }
-            District district = districtRepository.findByName(userKycTo.getDistrict());
-            if (district != null) {
-                address.setDistrict(district);
-            }
-            State state = stateRepository.findByName(userKycTo.getState());
-            if (state != null) {
-                address.setState(state);
-            }
-
-            Country country = countryRepository.findByName(NMRConstants.DEFAULT_COUNTRY_AADHAR);
-            if (country != null) {
-                address.setCountry(country);
-            }
-
-            address.setPincode(userKycTo.getPincode());
-            address.setEmail(userKycTo.getEmail());
-            address.setMobile(userKycTo.getPhone());
-            iAddressRepository.save(address);
-        } catch (Exception e) {
-            return new ResponseMessageTo(NMRConstants.FAILURE_RESPONSE);
-        }
-        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
-    }
-
     private void saveIndianQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
                                                 List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs) throws InvalidRequestException {
 
