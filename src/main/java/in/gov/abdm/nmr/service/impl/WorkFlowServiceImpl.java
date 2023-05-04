@@ -170,7 +170,11 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         log.debug("Initiating a notification to indicate the change of status.");
 
         updateDashboardDetail(requestTO, workFlow, iNextGroup, dashboard);
-        notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+        try {
+            notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+        } catch (Exception exception) {
+            log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
+        }
     }
 
     private String getVerifierNameForNotification(User user) {
