@@ -544,7 +544,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         RegistrationDetails registrationDetails = new RegistrationDetails();
         registrationDetails.setStateMedicalCouncil(stateMedicalCouncil);
         registrationDetails.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
-        registrationDetails.setRegistrationNo(request.getRegistrationNumber());
         registrationDetails.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         registrationDetails.setHpProfileId(hpProfile);
 
@@ -560,6 +559,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 registrationDetails.setIsRenewable("0");
                 registrationDetails.setRenewableRegistrationDate(null);
             }
+            registrationDetails.setRegistrationNo(imrRegistrationsDetails.getRegistrationNo());
             registrationDetails.setRegistrationDate(imrRegistrationsDetails.getRegistrationDate() !=null ? simpleDateFormat.parse(imrRegistrationsDetails.getRegistrationDate()): null);
         }
         iRegistrationDetailRepository.save(registrationDetails);
