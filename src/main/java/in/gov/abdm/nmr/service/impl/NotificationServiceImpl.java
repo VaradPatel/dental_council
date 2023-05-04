@@ -182,14 +182,14 @@ public class NotificationServiceImpl implements INotificationService {
     }
 
     @Override
-    public ResponseMessageTo sendNotificationForNMRCreation(String nmrId, String email, String mobile) {
+    public ResponseMessageTo sendNotificationForNMRCreation(String nmrId, String mobile) {
 
         Template template = getMessageTemplate(NMRConstants.NMR_ID_CREATED);
         String message = new TemplatedStringBuilder(template.getMessage())
                 .replace(NMRConstants.TEMPLATE_VAR1, nmrId)
                 .replace(NMRConstants.TEMPLATE_VAR2, NMRConstants.MESSAGE_SENDER)
                 .finish();
-        return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.ACCOUNT_CREATED_SUBJECT, message, mobile, email, NMRConstants.NMR_ID_CREATED);
+        return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.ACCOUNT_CREATED_SUBJECT, message, mobile, null, NMRConstants.NMR_ID_CREATED);
 
     }
 
