@@ -16,5 +16,6 @@ public class HpProfilePersonalResponseTO {
     private BigInteger hpProfileStatusId;
     private BigInteger workFlowStatusId;
     private boolean isEmailVerified;
-
+    private boolean isSmsNotificationEnabled;
+    private boolean isEmailNotificationEnabled;
 }
