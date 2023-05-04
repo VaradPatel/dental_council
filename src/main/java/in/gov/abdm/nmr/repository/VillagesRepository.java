@@ -13,4 +13,7 @@ public interface VillagesRepository extends JpaRepository<Villages, BigInteger> 
     List<Villages> getVillage(BigInteger subDistrict);
 
     Villages findByName(String name);
+
+    @Query(value = "SELECT id, iso_code, name, sub_districts_code, updated_at, created_at FROM main.villages where name =:name and sub_districts_code in (select iso_code  from main.sub_district where name =:subDistrictName) ", nativeQuery = true)
+    Villages getVillageByNameAndDistrictName(String name, String subDistrictName);
 }
