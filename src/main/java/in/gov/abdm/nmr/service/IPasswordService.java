@@ -18,4 +18,5 @@ public interface IPasswordService {
 
     ResponseMessageTo setNewPassword(SetNewPasswordTo newPasswordTo);
 
+    String generateLink(SendLinkOnMailTo sendLinkOnMailTo);
 }

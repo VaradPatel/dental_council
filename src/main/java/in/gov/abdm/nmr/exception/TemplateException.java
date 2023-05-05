@@ -3,7 +3,7 @@ package in.gov.abdm.nmr.exception;
 import org.springframework.http.HttpStatus;
 
 public class TemplateException extends ABDMBaseException {
-    private static final long serialVersionUID = -5363377902805482437L;
+    private static final long serialVersionUID = 1L;
 
     public TemplateException() {
         super(NMRError.TEMPLATE_NOT_FOUND.getCode(), NMRError.TEMPLATE_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND.toString());
@@ -20,9 +20,4 @@ public class TemplateException extends ABDMBaseException {
     public TemplateException(String code, String message, String httpStatus) {
         super(code, message, httpStatus);
     }
-
-    public TemplateException(Throwable throwable) {
-        super(String.valueOf(throwable));
-    }
-
 }

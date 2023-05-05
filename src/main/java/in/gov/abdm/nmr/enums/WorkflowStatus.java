@@ -1,6 +1,8 @@
 package in.gov.abdm.nmr.enums;
 
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Enums for all possible actions in NMR
@@ -26,5 +28,10 @@ public enum WorkflowStatus {
 
     public String getDescription() {
         return description;
+    }
+
+    public static WorkflowStatus getWorkflowStatus(BigInteger id) {
+        Optional<WorkflowStatus> optionalWorkflowStatus = Arrays.stream(WorkflowStatus.values()).filter(workflowStatus -> workflowStatus.getId().equals(id)).findFirst();
+        return optionalWorkflowStatus.isPresent() ? optionalWorkflowStatus.get() : null;
     }
 }

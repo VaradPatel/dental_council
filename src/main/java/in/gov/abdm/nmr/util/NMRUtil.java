@@ -3,15 +3,18 @@ package in.gov.abdm.nmr.util;
 import in.gov.abdm.nmr.dto.CurrentWorkDetailsTO;
 import in.gov.abdm.nmr.dto.QualificationDetailRequestTO;
 import in.gov.abdm.nmr.entity.RequestCounter;
+import in.gov.abdm.nmr.entity.WorkFlow;
+import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NMRError;
 import lombok.experimental.UtilityClass;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
-
-import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 /**
  * Util class for NMR.
@@ -19,16 +22,15 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
 @UtilityClass
 public final class NMRUtil {
 
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     public static String buildRequestIdForWorkflow(RequestCounter requestCounter){
         return requestCounter.getApplicationType().getRequestPrefixId().concat(String.valueOf(requestCounter.getCounter()));
     }
 
     public static void validateWorkProfileDetails(List<CurrentWorkDetailsTO> currentWorkDetailsTOS) throws InvalidRequestException {
-        if(currentWorkDetailsTOS==null ){
-            throw new InvalidRequestException(WORK_PROFILE_DETAILS_NULL_ERROR);
-        }
-        if(currentWorkDetailsTOS.isEmpty()){
-            throw new InvalidRequestException(WORK_PROFILE_DETAILS_EMPTY_ERROR);
+        if(CollectionUtils.isEmpty(currentWorkDetailsTOS)){
+            throw new InvalidRequestException(NMRError.WORK_PROFILE_DETAILS_NULL_ERROR.getCode(), NMRError.WORK_PROFILE_DETAILS_NULL_ERROR.getMessage());
         }
     }
     /**
@@ -38,17 +40,17 @@ public final class NMRUtil {
      */
     public static void validateWorkProfileDetailsAndProofs(List<CurrentWorkDetailsTO> currentWorkDetailsTOS, List<MultipartFile> proofs) throws InvalidRequestException {
 
-        if(proofs.isEmpty()){
-            throw new InvalidRequestException(PROOFS_EMPTY_ERROR);
+        if (proofs.isEmpty()) {
+            throw new InvalidRequestException(NMRError.PROOFS_EMPTY_ERROR.getCode(), NMRError.PROOFS_EMPTY_ERROR.getMessage());
         }
-        if(currentWorkDetailsTOS.size() > proofs.size()){
-            throw new InvalidRequestException(MISSING_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR);
+        if (currentWorkDetailsTOS.size() > proofs.size()) {
+            throw new InvalidRequestException(NMRError.MISSING_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR.getCode(), NMRError.MISSING_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR.getMessage());
         }
-        if(currentWorkDetailsTOS.size() < proofs.size()){
-            throw new InvalidRequestException(EXCESS_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR);
+        if (currentWorkDetailsTOS.size() < proofs.size()) {
+            throw new InvalidRequestException(NMRError.EXCESS_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR.getCode(), NMRError.EXCESS_PROOFS_FOR_WORK_PROFILE_DETAILS_ERROR.getMessage());
         }
-        if(currentWorkDetailsTOS.size()>6){
-            throw new InvalidRequestException(WORK_PROFILE_DETAILS_LIMIT_EXCEEDED);
+        if (currentWorkDetailsTOS.size() > 6) {
+            throw new InvalidRequestException(NMRError.WORK_PROFILE_DETAILS_LIMIT_EXCEEDED.getCode(), NMRError.WORK_PROFILE_DETAILS_LIMIT_EXCEEDED.getMessage());
         }
 
     }
@@ -59,26 +61,26 @@ public final class NMRUtil {
      * @param proofs
      */
     public static void validateQualificationDetailsAndProofs(List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException {
-        if(qualificationDetailRequestTOs==null ){
-            throw new InvalidRequestException(QUALIFICATION_DETAILS_NULL_ERROR);
+        if (qualificationDetailRequestTOs == null) {
+            throw new InvalidRequestException(NMRError.QUALIFICATION_DETAILS_NULL_ERROR.getCode(), NMRError.QUALIFICATION_DETAILS_NULL_ERROR.getMessage());
         }
-        if(qualificationDetailRequestTOs.isEmpty()){
-            throw new InvalidRequestException(QUALIFICATION_DETAILS_EMPTY_ERROR);
+        if (qualificationDetailRequestTOs.isEmpty()) {
+            throw new InvalidRequestException(NMRError.QUALIFICATION_DETAILS_EMPTY_ERROR.getCode(), NMRError.QUALIFICATION_DETAILS_EMPTY_ERROR.getMessage());
         }
-        if(proofs==null){
-            throw new InvalidRequestException(PROOFS_NULL_ERROR);
+        if (proofs == null) {
+            throw new InvalidRequestException(NMRError.PROOFS_NULL_ERROR.getCode(), NMRError.PROOFS_NULL_ERROR.getMessage());
         }
-        if(proofs.isEmpty()){
-            throw new InvalidRequestException(PROOFS_EMPTY_ERROR);
+        if (proofs.isEmpty()) {
+            throw new InvalidRequestException(NMRError.PROOFS_EMPTY_ERROR.getCode(), NMRError.PROOFS_EMPTY_ERROR.getMessage());
         }
-        if(qualificationDetailRequestTOs.size() > proofs.size()){
-            throw new InvalidRequestException(MISSING_PROOFS_ERROR);
+        if (qualificationDetailRequestTOs.size() > proofs.size()) {
+            throw new InvalidRequestException(NMRError.MISSING_PROOFS_ERROR.getCode(), NMRError.MISSING_PROOFS_ERROR.getMessage());
         }
-        if(qualificationDetailRequestTOs.size() < proofs.size()){
-            throw new InvalidRequestException(EXCESS_PROOFS_ERROR);
+        if (qualificationDetailRequestTOs.size() < proofs.size()) {
+            throw new InvalidRequestException(NMRError.EXCESS_PROOFS_ERROR.getCode(), NMRError.EXCESS_PROOFS_ERROR.getMessage());
         }
-        if(qualificationDetailRequestTOs.size()>6){
-            throw new InvalidRequestException(QUALIFICATION_DETAILS_LIMIT_EXCEEDED);
+        if (qualificationDetailRequestTOs.size() > 6) {
+            throw new InvalidRequestException(NMRError.QUALIFICATION_DETAILS_LIMIT_EXCEEDED.getCode(), NMRError.QUALIFICATION_DETAILS_LIMIT_EXCEEDED.getMessage());
         }
 
     }
@@ -106,12 +108,17 @@ public final class NMRUtil {
     }
 
     public static long generateRandom(int length) {
-        Random random = new Random();
         char[] digits = new char[length];
-        digits[0] = (char) (random.nextInt(9) + '1');
+        digits[0] = (char) (RANDOM.nextInt(9) + '1');
         for (int i = 1; i < length; i++) {
-            digits[i] = (char) (random.nextInt(10) + '0');
+            digits[i] = (char) (RANDOM.nextInt(10) + '0');
         }
         return Long.parseLong(new String(digits));
+    }
+
+    public static boolean isVoluntarySuspension(WorkFlow workFlow) {
+        return (ApplicationType.HP_TEMPORARY_SUSPENSION.getId().equals(workFlow.getApplicationType().getId()) ||
+                ApplicationType.HP_PERMANENT_SUSPENSION.getId().equals(workFlow.getApplicationType().getId()))
+                && Group.HEALTH_PROFESSIONAL.getId().equals(workFlow.getPreviousGroup().getId());
     }
 }

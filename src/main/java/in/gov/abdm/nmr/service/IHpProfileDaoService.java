@@ -3,9 +3,7 @@ package in.gov.abdm.nmr.service;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.RegistrationDetails;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
-import in.gov.abdm.nmr.exception.NmrException;
-import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.exception.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -14,7 +12,7 @@ import java.util.List;
 
 public interface IHpProfileDaoService {
 
-	HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId,String registrationNumber) throws NmrException;
+	HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId,String registrationNumber) throws NmrException, NoDataFoundException;
 
 	HpProfileUpdateResponseTO updateHpPersonalDetails(BigInteger hpProfileId,
 			HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException;
@@ -23,10 +21,10 @@ public interface IHpProfileDaoService {
 														  HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, MultipartFile degreeCertificate) throws NmrException, InvalidRequestException;
 
 	HpProfileUpdateResponseTO updateWorkProfileDetails(BigInteger hpProfileId,
-													   HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws InvalidRequestException, NmrException;
+													   HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws InvalidRequestException, NmrException, NotFoundException;
 
 	HpProfilePictureResponseTO uploadHpProfilePhoto(MultipartFile file, BigInteger hpProfileId)
-			throws IOException;
+            throws IOException, InvalidRequestException;
 
 	HpProfile findLatestEntryByUserid(BigInteger userId);
 
@@ -34,9 +32,5 @@ public interface IHpProfileDaoService {
 
     void saveQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
 								  List<QualificationDetailRequestTO> qualificationDetailRequestTOS,
-								  List<MultipartFile> proofs);
-
-	ResponseMessageTo setHpProfilePhotoAndAddressThroughAadhaar(BigInteger id, AadhaarUserKycTo userKycTo);
-
-
+								  List<MultipartFile> proofs) throws InvalidRequestException;
 }

@@ -7,7 +7,7 @@ import in.gov.abdm.nmr.entity.StateMedicalCouncil;
 
 public interface IStateMedicalCouncilDaoService {
 
-    List<StateMedicalCouncilTO> smcs();
+    List<StateMedicalCouncilTO> getAllStateMedicalCouncil();
     
-    StateMedicalCouncil findbyState(String stateId);
+    StateMedicalCouncil findByState(String stateId);
 }

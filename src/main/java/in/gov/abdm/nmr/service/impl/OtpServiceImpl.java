@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.NMRError;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import in.gov.abdm.nmr.util.NMRConstants;
 /**
  * Implementation of methods to generate and validate OTP
  */
+@Slf4j
 @Service
 public class OtpServiceImpl implements IOtpService {
 
@@ -74,20 +76,20 @@ public class OtpServiceImpl implements IOtpService {
 
         Otp otpEntity = new Otp(UUID.randomUUID().toString(), otp, 0, contact, false, 10);
         otpDaoService.save(otpEntity);
-        ResponseMessageTo notificationResponse = notificationService.sendNotificationForOTP(notificationType, otp, contact);
+        return getOtpResponseMessageTo(otpGenerateRequestTo, contact, otpEntity, notificationService.sendNotificationForOTP(notificationType, otp, contact));
+    }
 
+    private OTPResponseMessageTo getOtpResponseMessageTo(OtpGenerateRequestTo otpGenerateRequestTo, String contact, Otp otpEntity, ResponseMessageTo notificationResponse) {
         if (notificationResponse.getMessage().equalsIgnoreCase(NMRConstants.SUCCESS_RESPONSE)) {
 
             if (otpGenerateRequestTo.getType().equalsIgnoreCase(NMRConstants.SMS)) {
                 if (contact != null && !contact.isBlank()) {
                     contact = contact.replaceAll(contact.substring(0, 10 - 4), "xxxxxx");
                 }
-            } else if (otpGenerateRequestTo.getType().equalsIgnoreCase(NMRConstants.EMAIL)) {
-                if (contact != null && !contact.isBlank()) {
-                    String idPart = contact.substring(0, contact.lastIndexOf("@"));
-                    String domain = contact.substring(contact.lastIndexOf("@"), contact.length());
-                    contact = "x".repeat(idPart.length()) + domain;
-                }
+            } else if (otpGenerateRequestTo.getType().equalsIgnoreCase(NMRConstants.EMAIL) && contact != null && !contact.isBlank()) {
+                String idPart = contact.substring(0, contact.lastIndexOf("@"));
+                String domain = contact.substring(contact.lastIndexOf("@"), contact.length());
+                contact = "x".repeat(idPart.length()) + domain;
             }
             return new OTPResponseMessageTo(otpEntity.getId(), NMRConstants.SUCCESS_RESPONSE, contact);
         } else {
@@ -108,7 +110,7 @@ public class OtpServiceImpl implements IOtpService {
         Otp otpDetails = otpDaoService.findById(transactionId);
 
         if (otpDetails == null || otpDetails.isExpired()) {
-            throw new OtpException(NMRError.OTP_EXPIRED.getCode(), NMRError.OTP_EXPIRED.getMessage(), HttpStatus.UNAUTHORIZED.toString());
+            throw new OtpException(NMRError.OTP_EXPIRED.getCode(), NMRError.OTP_EXPIRED.getMessage());
         }
 
         if (otpDetails.getAttempts() >= NMRConstants.OTP_MAX_ATTEMPTS) {
@@ -119,12 +121,16 @@ public class OtpServiceImpl implements IOtpService {
         String decryptedOtp = callInternal ? otpValidateRequestTo.getOtp() : rsaUtil.decrypt(otpValidateRequestTo.getOtp());
         if (decryptedOtp.equals(otpDetails.getOtp())) {
             otpDaoService.save(otpDetails);
-            notificationService.sendNotificationForVerifiedOTP(otpValidateRequestTo.getType(), otpValidateRequestTo.getContact());
+            try {
+                notificationService.sendNotificationForVerifiedOTP(otpValidateRequestTo.getType(), otpValidateRequestTo.getContact());
+            }catch (Exception exception){
+                log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
+            }
             return new OtpValidateResponseTo(new OtpValidateMessageTo(NMRConstants.SUCCESS_RESPONSE, otpDetails.getId(), otpValidateRequestTo.getType()));
         } else {
             otpDetails.setAttempts(otpDetails.getAttempts() + 1);
             otpDaoService.save(otpDetails);
-            throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage(), HttpStatus.UNAUTHORIZED.toString());
+            throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());
         }
     }
 

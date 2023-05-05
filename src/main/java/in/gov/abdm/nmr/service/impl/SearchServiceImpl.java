@@ -1,34 +1,18 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
+import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import in.gov.abdm.nmr.client.LGDServiceFClient;
-import in.gov.abdm.nmr.dto.HpSearchProfileQualificationTO;
-import in.gov.abdm.nmr.dto.HpSearchProfileTO;
-import in.gov.abdm.nmr.dto.HpSearchRequestTO;
-import in.gov.abdm.nmr.dto.HpSearchResponseTO;
-import in.gov.abdm.nmr.dto.HpSearchResultTO;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.ForeignQualificationDetailsMaster;
 import in.gov.abdm.nmr.entity.HpProfileMaster;
 import in.gov.abdm.nmr.entity.QualificationDetailsMaster;
 import in.gov.abdm.nmr.entity.RegistrationDetailsMaster;
+import in.gov.abdm.nmr.exception.InvalidIdException;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.repository.IForeignQualificationDetailMasterRepository;
 import in.gov.abdm.nmr.repository.IHpProfileMasterRepository;
@@ -36,6 +20,17 @@ import in.gov.abdm.nmr.repository.IQualificationDetailMasterRepository;
 import in.gov.abdm.nmr.repository.RegistrationDetailMasterRepository;
 import in.gov.abdm.nmr.service.IElasticsearchDaoService;
 import in.gov.abdm.nmr.service.ISearchService;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class SearchServiceImpl implements ISearchService {
@@ -66,35 +61,47 @@ public class SearchServiceImpl implements ISearchService {
     }
 
     @Override
-    public HpSearchResponseTO searchHP(HpSearchRequestTO hpSearchRequestTO, Pageable pageable) throws NmrException {
+    public HpSearchResponseTO searchHP(HpSearchRequestTO hpSearchRequestTO, Pageable pageable) throws InvalidRequestException {
         try {
-            if (hpSearchRequestTO != null && hpSearchRequestTO.getProfileStatusId() != null && !PROFILE_STATUS_CODES.contains(hpSearchRequestTO.getProfileStatusId())) {
-                throw new NmrException("Invalid profile status code", HttpStatus.BAD_REQUEST);
+            if (hpSearchRequestTO != null && hpSearchRequestTO.getProfileStatusId() != null &&
+                    !hasCommonElement(hpSearchRequestTO.getProfileStatusId(), PROFILE_STATUS_CODES)) {
+                throw new InvalidRequestException(NMRError.INVALID_PROFILE_STATUS_CODE.getCode(), NMRError.INVALID_PROFILE_STATUS_CODE.getMessage());
             }
             SearchResponse<HpSearchResultTO> results = elasticsearchDaoService.searchHP(hpSearchRequestTO, pageable);
             return new HpSearchResponseTO(results.hits().hits().stream().map(Hit::source).toList(), results.hits().total().value());
 
-        } catch (ElasticsearchException | IOException e) {
+        } catch (ElasticsearchException | IOException | InvalidRequestException e) {
             LOGGER.error("Exception while searching for HP", e);
-            throw new NmrException("Exception while searching for HP", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InvalidRequestException(NMRError.FAIL_TO_SEARCH_HP.getCode(), NMRError.FAIL_TO_SEARCH_HP.getMessage());
         }
     }
 
+    public static boolean hasCommonElement(List<FieldValue> fieldValues, List<BigInteger> profileStatusCodes) {
+        for (FieldValue fieldValue : fieldValues) {
+            for (BigInteger profileStatusCode : profileStatusCodes) {
+                if (fieldValue.stringValue().contains(profileStatusCode.toString())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
-    public HpSearchProfileTO getHpSearchProfileById(BigInteger profileId) throws NmrException {
+    public HpSearchProfileTO getHpSearchProfileById(BigInteger profileId) throws InvalidIdException, NmrException {
         try {
             if (!elasticsearchDaoService.doesHpExists(profileId)) {
-                throw new NmrException("No resource found for id", HttpStatus.NOT_FOUND);
+                throw new InvalidIdException();
             }
-        } catch (ElasticsearchException | IOException | NmrException e) {
-            if (e instanceof NmrException ne) {
+        } catch (ElasticsearchException | IOException | InvalidIdException e) {
+            if (e instanceof InvalidIdException ne) {
                 throw ne;
             }
             LOGGER.error("Exception while retrieving HP profile", e);
-            throw new NmrException("Exception while retrieving HP profile", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new NmrException(NMRError.FAIL_TO_RETRIEVE_HP.getCode(), NMRError.FAIL_TO_RETRIEVE_HP.getMessage());
         }
 
-        HpProfileMaster hpProfileMaster = iHpProfileMasterRepository.findById(profileId).get();
+        HpProfileMaster hpProfileMaster = iHpProfileMasterRepository.findById(profileId).orElseThrow(InvalidIdException::new);
         HpSearchProfileTO hpSearchProfileTO = new HpSearchProfileTO();
         hpSearchProfileTO.setFullName(hpProfileMaster.getFullName());
         hpSearchProfileTO.setSalutation(hpProfileMaster.getSalutation());
@@ -131,6 +138,7 @@ public class SearchServiceImpl implements ISearchService {
             HpSearchProfileQualificationTO hpSearchProfileQualificationTO = new HpSearchProfileQualificationTO();
             hpSearchProfileQualificationTO.setQualification(indianQualification.getCourse() != null ? indianQualification.getCourse().getCourseName() : null);
             hpSearchProfileQualificationTO.setQualificationYear(indianQualification.getQualificationYear());
+            hpSearchProfileQualificationTO.setCreatedAt(indianQualification.getCreatedAt());
             if (Objects.nonNull(indianQualification.getUniversity())) {
                 hpSearchProfileQualificationTO.setUniversityName(indianQualification.getUniversity().getName());
             }
@@ -142,8 +150,11 @@ public class SearchServiceImpl implements ISearchService {
             hpSearchProfileQualificationTO.setQualification(internationalQualification.getCourse());
             hpSearchProfileQualificationTO.setQualificationYear(internationalQualification.getQualificationYear());
             hpSearchProfileQualificationTO.setUniversityName(internationalQualification.getUniversity());
+            hpSearchProfileQualificationTO.setCreatedAt(internationalQualification.getCreatedAt());
+
             return hpSearchProfileQualificationTO;
         }).toList());
+        qualificationTOs.sort(Comparator.comparing(HpSearchProfileQualificationTO::getCreatedAt));
         hpSearchProfileTO.setQualifications(qualificationTOs);
         return hpSearchProfileTO;
     }

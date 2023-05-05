@@ -15,16 +15,14 @@ public class SuperSpecialityServiceImpl implements ISuperSpecialityService {
 
     private SuperSpecialityRepository superSpecialityRepository;
 
-    private SuperSpecialityDtoMapper superSpecialityDtoMapper;
-
-    public SuperSpecialityServiceImpl(SuperSpecialityRepository superSpecialityRepository, SuperSpecialityDtoMapper superSpecialityDtoMapper) {
+    public SuperSpecialityServiceImpl(SuperSpecialityRepository superSpecialityRepository) {
         this.superSpecialityRepository = superSpecialityRepository;
-        this.superSpecialityDtoMapper = superSpecialityDtoMapper;
+
     }
 
     @Override
     public List<SuperSpecialityTO> getSpecialityData() {
-        return superSpecialityDtoMapper.specialityDataToDto(superSpecialityRepository.getSpeciality());
+        return SuperSpecialityDtoMapper.SUPER_SPECIALITY_DTO_MAPPER.specialityDataToDto(superSpecialityRepository.getSpeciality());
 
     }
 }

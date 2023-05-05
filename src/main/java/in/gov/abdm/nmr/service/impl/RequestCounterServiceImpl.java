@@ -1,11 +1,11 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.entity.RequestCounter;
+import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.repository.IRequestCounterRepository;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -24,6 +24,6 @@ public class RequestCounterServiceImpl implements IRequestCounterService {
             requestCounter.get().setCounter(counter);
             return requestCounter.get();
         }
-        throw new WorkFlowException("Application Type Id do not exists", HttpStatus.BAD_REQUEST);
+        throw new WorkFlowException(NMRError.APPLICATION_TYPE_ID_NOT_EXIST.toString(), NMRError.APPLICATION_TYPE_ID_NOT_EXIST.getMessage());
     }
 }

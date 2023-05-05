@@ -6,7 +6,7 @@ import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.entity.Queries;
 import in.gov.abdm.nmr.enums.Action;
-import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.QueriesDtoMapper;
 import in.gov.abdm.nmr.repository.QueriesRepository;
@@ -30,9 +30,6 @@ public class QueriesServiceImpl implements IQueriesService {
 
     @Autowired
     QueriesRepository queriesRepository;
-
-    @Autowired
-    private QueriesDtoMapper queriesDtoMapper;
     @Autowired
     private IWorkFlowService workFlowService;
 
@@ -43,7 +40,7 @@ public class QueriesServiceImpl implements IQueriesService {
      * @return created list as it is
      */
     @Override
-    public ResponseMessageTo createQueries(QueryCreateTo queryCreateTo) throws WorkFlowException {
+    public ResponseMessageTo createQueries(QueryCreateTo queryCreateTo) throws WorkFlowException, InvalidRequestException {
 
         List<Queries> queries = new ArrayList<>();
         queryCreateTo.getQueries().forEach(queryTo -> {
@@ -79,7 +76,7 @@ public class QueriesServiceImpl implements IQueriesService {
      */
     @Override
     public List<QueryResponseTo> getQueriesByHpProfileId(BigInteger hpProfileId) {
-        return queriesDtoMapper.queryDataToOpenQueriesDto(queriesRepository.findOpenQueriesByHpProfileId(hpProfileId));
+        return QueriesDtoMapper.QUERIES_DTO_MAPPER.queryDataToOpenQueriesDto(queriesRepository.findOpenQueriesByHpProfileId(hpProfileId));
     }
 
     /**
@@ -91,10 +88,8 @@ public class QueriesServiceImpl implements IQueriesService {
     @Override
     public ResponseMessageTo markQueryAsClosed(BigInteger hpProfileId) {
 
-        List<Queries> queries=queriesRepository.findOpenQueriesByHpProfileId(hpProfileId);
-        queries.forEach(query->{
-            query.setQueryStatus(NMRConstants.QUERY_CLOSED_STATUS);
-        });
+        List<Queries> queries = queriesRepository.findOpenQueriesByHpProfileId(hpProfileId);
+        queries.forEach(query -> query.setQueryStatus(NMRConstants.QUERY_CLOSED_STATUS));
         queriesRepository.saveAll(queries);
         return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
     }

@@ -15,16 +15,13 @@ public class LanguageServiceImpl implements ILanguageService {
 
     private LanguageRepository languageRepository;
 
-    private LanguageDtoMapper languageDtoMapper;
-
-    public LanguageServiceImpl(LanguageRepository languageRepository, LanguageDtoMapper languageDtoMapper) {
+    public LanguageServiceImpl(LanguageRepository languageRepository) {
         this.languageRepository = languageRepository;
-        this.languageDtoMapper = languageDtoMapper;
     }
 
     @Override
     public List<LanguageTO> getLanguageData() {
-        return languageDtoMapper.languageDataToDto(languageRepository.getLanguage());
+        return LanguageDtoMapper.LANGUAGE_DTO_MAPPER.languageDataToDto(languageRepository.getLanguage());
 
     }
 }

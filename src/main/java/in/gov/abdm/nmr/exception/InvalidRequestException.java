@@ -1,20 +1,23 @@
 package in.gov.abdm.nmr.exception;
 
-import java.io.IOException;
+import org.springframework.http.HttpStatus;
 
-public class InvalidRequestException extends IOException {
+public class InvalidRequestException extends ABDMBaseException {
+    private static final long serialVersionUID = 1L;
 
-	private static final long serialVersionUID = -7523737201585567497L;
+    public InvalidRequestException() {
+        super(NMRError.INVALID_REQUEST.getCode(), NMRError.INVALID_REQUEST.getMessage(), HttpStatus.BAD_REQUEST.toString());
+    }
 
-	public InvalidRequestException() {
-		super();
-	}
+    public InvalidRequestException(String message) {
+        super(NMRError.INVALID_REQUEST.getCode(), message, HttpStatus.BAD_REQUEST.toString());
+    }
 
-	public InvalidRequestException(String message) {
-		super(message);
-	}
+    public InvalidRequestException(String code, String message) {
+        super(code, message, HttpStatus.BAD_REQUEST.toString());
+    }
 
-	public InvalidRequestException(Throwable cause) {
-		super(cause);
-	}
+    public InvalidRequestException(String code, String message, String httpStatus) {
+        super(code, message, httpStatus);
+    }
 }

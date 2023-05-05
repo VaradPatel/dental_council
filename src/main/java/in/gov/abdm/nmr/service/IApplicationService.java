@@ -19,7 +19,7 @@ public interface IApplicationService {
      * @return a string indicating the result of the suspension request.
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
-    SuspendRequestResponseTo suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException;
+    SuspendRequestResponseTo suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException;
 
     /**
      * This method is used to reactivate a health professional based on the request provided.
@@ -28,7 +28,7 @@ public interface IApplicationService {
      * @return a string indicating the result of the reactivate request.
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
-    ReactivateRequestResponseTo reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException;
+    ReactivateRequestResponseTo reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException;
 
     /**
      * Service for fetching the reactivation records of the health professionals

@@ -4,12 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import java.sql.Timestamp;
+import java.math.BigInteger;
 
 @Getter
 @Setter
@@ -19,34 +18,14 @@ import java.sql.Timestamp;
 public class Notification extends CommonAuditEntity {
 
     @Id
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private BigInteger id;
 
-    @ManyToOne
-    @JoinColumn(name = "sender_user_id", referencedColumnName = "id")
-    private User login;
-
-    private String subject;
-    private String description;
+    private String requestId;
+    private String templateId;
+    private String templateName;
+    private String message;
+    private String receiver;
     private String type;
     private String status;
-    private Timestamp created;
-    private Integer isRead;
-    private String doctorProfileDescription;
-
-    @ManyToOne
-    @JoinColumn(name = "from_user_id", referencedColumnName = "id")
-    private User fromUserId;
-
-    @ManyToOne
-    @JoinColumn(name = "to_user_id", referencedColumnName = "id")
-    private User toUserId;
-
-
-    private String fromRoleId;
-    private String toRoleId;
-    private String fromStateId;
-    private String toStateId;
-    private String fromSystemOfMedicineId;
-    private String toSystemOfMedicineId;
-
 }

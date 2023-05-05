@@ -7,10 +7,9 @@ import in.gov.abdm.nmr.dto.FetchSpecificDetailsResponseTO;
 import in.gov.abdm.nmr.entity.CollegeProfile;
 import in.gov.abdm.nmr.entity.SMCProfile;
 import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.enums.ApplicationType;
-import in.gov.abdm.nmr.enums.Group;
-import in.gov.abdm.nmr.enums.WorkflowStatus;
+import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetails;
 import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
 import in.gov.abdm.nmr.repository.IFetchSpecificDetailsCustomRepository;
@@ -19,6 +18,8 @@ import in.gov.abdm.nmr.repository.ISmcProfileRepository;
 import in.gov.abdm.nmr.service.ICollegeProfileDaoService;
 import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
 import in.gov.abdm.nmr.service.IUserDaoService;
+import in.gov.abdm.nmr.util.NMRConstants;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +38,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
  * which deals with dashboard count, dashboard fetch specific details
  */
 @Service
+@Slf4j
 public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsService {
 
     /**
@@ -118,19 +120,19 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
 
     private void validateGroupName(String groupName) throws InvalidRequestException {
         if (groupName == null || Arrays.stream(Group.values()).noneMatch(t -> t.getDescription().equals(groupName))) {
-            throw new InvalidRequestException(INVALID_GROUP);
+            throw new InvalidRequestException(NMRError.INVALID_GROUP.getCode(),NMRError.INVALID_GROUP.getMessage());
         }
     }
 
     private void validateApplicationType(String applicationType) throws InvalidRequestException {
         if (applicationType == null || Arrays.stream(ApplicationType.values()).noneMatch(t -> t.getDescription().equals(applicationType))) {
-            throw new InvalidRequestException(INVALID_APPLICATION_TYPE);
+            throw new InvalidRequestException(NMRError.INVALID_APPLICATION_TYPE.getCode(),NMRError.INVALID_APPLICATION_TYPE.getMessage());
         }
     }
 
     private void validateWorkFlowStatus(String workFlowStatus) throws InvalidRequestException {
         if (workFlowStatus == null || Arrays.stream(WorkflowStatus.values()).noneMatch(t -> t.getDescription().equals(workFlowStatus))) {
-            throw new InvalidRequestException(INVALID_WORK_FLOW_STATUS);
+            throw new InvalidRequestException(NMRError.INVALID_WORK_FLOW_STATUS.getCode(),NMRError.INVALID_WORK_FLOW_STATUS.getMessage());
         }
     }
 
@@ -154,7 +156,8 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         columnToSortMap.put("createdAt", " rd.created_at");
         columnToSortMap.put("councilName", " stmc.name");
         columnToSortMap.put("applicantFullName", " hp.full_name");
-        return columnToSortMap.getOrDefault(columnToSort, " rd.created_at ");
+        columnToSortMap.put("pendency", " pendency");
+        return columnToSortMap.getOrDefault(columnToSort, " pendency ");
     }
 
     private void setApplicationTypeIdAndUserGroupStatus(String applicationTypeId, String userGroupStatus,
@@ -162,23 +165,23 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         if (TEMPORARY_AND_PERMANENT_SUSPENSION_APPLICATION_TYPE_ID.equals(applicationTypeId)) {
             if (CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setApplicationTypeId(TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID);
-                dashboardRequestParamsTO.setUserGroupStatus(PENDING);
+                dashboardRequestParamsTO.setUserGroupStatus(Action.SUBMIT.getId().toString());
             } else if (CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setApplicationTypeId(TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID);
-                dashboardRequestParamsTO.setUserGroupStatus(APPROVED);
+                dashboardRequestParamsTO.setUserGroupStatus(Action.APPROVED.getId().toString());
             } else if (CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setApplicationTypeId(PERMANENT_SUSPENSION_APPLICATION_TYPE_ID);
-                dashboardRequestParamsTO.setUserGroupStatus(PENDING);
+                dashboardRequestParamsTO.setUserGroupStatus(Action.SUBMIT.getId().toString());
             } else if (CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setApplicationTypeId(PERMANENT_SUSPENSION_APPLICATION_TYPE_ID);
-                dashboardRequestParamsTO.setUserGroupStatus(APPROVED);
+                dashboardRequestParamsTO.setUserGroupStatus(Action.APPROVED.getId().toString());
             } else if (TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setUserGroupStatus(TOTAL);
                 dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
             }
         } else {
             dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
-            dashboardRequestParamsTO.setUserGroupStatus(userGroupStatus);
+            dashboardRequestParamsTO.setUserGroupStatus(!userGroupStatus.contains(TOTAL) ? DashboardStatus.getDashboardStatus(userGroupStatus).getId().toString() : TOTAL);
         }
     }
 
@@ -218,10 +221,10 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                         dashboardRequestParamsTO.setSearch(value);
                         break;
                     default:
-                        throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL);
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL.getMessage());
                 }
             } else {
-                throw new InvalidRequestException(MISSING_SEARCH_VALUE);
+                throw new InvalidRequestException(NMRError.MISSING_SEARCH_VALUE.getCode(), NMRError.MISSING_SEARCH_VALUE.getMessage());
             }
         }
     }
@@ -244,6 +247,7 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
                                                 String search, String value, int pageNo, int offset,
                                                 String sortBy, String sortOrder) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("Processing card-detail service for : {} ", userName);
         User userDetail = userDaoService.findByUsername(userName);
         BigInteger groupId = userDetail.getGroup().getId();
         BigInteger userId = userDetail.getId();
@@ -263,74 +267,6 @@ public class FetchSpecificDetailsServiceImpl implements IFetchSpecificDetailsSer
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
         final int dataLimit = Math.min(MAX_DATA_SIZE, offset);
         Pageable pageable = PageRequest.of(pageNo, dataLimit);
-        return iFetchSpecificDetailsCustomRepository.fetchDashboardData(dashboardRequestParamsTO, pageable);
-    }
-
-    /**
-     * This method fetches the dashboard data based on the input request.
-     *
-     * @param dashboardRequestTO The request object containing the parameters for fetching dashboard data.
-     * @return DashboardResponseTO The response object containing the details fetched from dashboard.
-     * @throws InvalidRequestException If the input request is invalid.
-     */
-    @Override
-    public DashboardResponseTO fetchDashboardData(DashboardRequestTO dashboardRequestTO) throws InvalidRequestException {
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userDaoService.findByUsername(userName);
-        String column = mapColumnToTable(dashboardRequestTO.getSortBy());
-        BigInteger groupId = userDetail.getGroup().getId();
-        BigInteger userId = userDetail.getId();
-        String sortOrder = dashboardRequestTO.getSortOrder();
-        DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();
-        dashboardRequestParamsTO.setWorkFlowStatusId(dashboardRequestTO.getWorkFlowStatusId());
-        dashboardRequestParamsTO.setApplicationTypeId(dashboardRequestTO.getApplicationTypeId());
-        if (dashboardRequestTO.getSearch() != null) {
-            if (dashboardRequestTO.getValue() != null && !dashboardRequestTO.getValue().isBlank()) {
-                switch (dashboardRequestTO.getSearch().toLowerCase()) {
-                    case COLLEGE_ID_IN_LOWER_CASE:
-                        dashboardRequestParamsTO.setCollegeId(dashboardRequestTO.getValue());
-                        break;
-                    case NAME_IN_LOWER_CASE:
-                        dashboardRequestParamsTO.setCouncilName(dashboardRequestTO.getValue());
-                        break;
-                    case REGISTRATION_NUMBER_IN_LOWER_CASE:
-                        dashboardRequestParamsTO.setRegistrationNumber(dashboardRequestTO.getValue());
-                        break;
-                    case SMC_ID_IN_LOWER_CASE: {
-                        if (groupId.equals(Group.COLLEGE.getId())
-                                || groupId.equals(Group.NMC.getId()) || groupId.equals(Group.NBE.getId())) {
-                            dashboardRequestParamsTO.setSmcId(dashboardRequestTO.getValue());
-                        }
-                    }
-                    break;
-                    case WORK_FLOW_STATUS_IN_LOWER_CASE:
-                        dashboardRequestParamsTO.setWorkFlowStatusId(dashboardRequestTO.getValue());
-                        break;
-                    case SEARCH_IN_LOWER_CASE:
-                        dashboardRequestParamsTO.setSearch(dashboardRequestTO.getValue());
-                        break;
-                    default:
-                        throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_POST_CARD_DETAIL);
-                }
-            } else {
-                throw new InvalidRequestException(MISSING_SEARCH_VALUE);
-            }
-        }
-
-        dashboardRequestParamsTO.setSortBy(column);
-        dashboardRequestParamsTO.setUserGroupId(groupId);
-        dashboardRequestParamsTO.setUserGroupStatus(dashboardRequestTO.getUserGroupStatus());
-        if (groupId.equals(Group.SMC.getId())) {
-            SMCProfile smcProfile = iSmcProfileRepository.findByUserId(userId);
-            dashboardRequestParamsTO.setCouncilId(smcProfile.getStateMedicalCouncil().getId().toString());
-        } else if (groupId.equals(Group.COLLEGE.getId())) {
-            CollegeProfile collegeProfile = collegeProfileDaoService.findByUserId(userId);
-            dashboardRequestParamsTO.setCollegeId(collegeProfile.getCollege().getId().toString());
-        }
-        final String sortingOrder = (sortOrder == null || sortOrder.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortOrder;
-        dashboardRequestParamsTO.setSortOrder(sortingOrder);
-        final int dataLimit = Math.min(MAX_DATA_SIZE, dashboardRequestTO.getOffset());
-        Pageable pageable = PageRequest.of(dashboardRequestTO.getPageNo(), dataLimit);
         return iFetchSpecificDetailsCustomRepository.fetchDashboardData(dashboardRequestParamsTO, pageable);
     }
 }

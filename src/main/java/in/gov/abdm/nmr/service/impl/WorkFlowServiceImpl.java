@@ -5,6 +5,9 @@ import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.*;
+import in.gov.abdm.nmr.enums.HpProfileStatus;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.INextGroup;
 import in.gov.abdm.nmr.repository.*;
@@ -12,6 +15,8 @@ import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;
+import in.gov.abdm.nmr.util.NMRConstants;
+import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 
 import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
@@ -80,20 +87,27 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     @Autowired
     private IUserDaoService userDetailService;
 
-    private static final List APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES = List.of(WorkflowStatus.APPROVED.getId(), WorkflowStatus.BLACKLISTED.getId(), WorkflowStatus.SUSPENDED.getId());
+    @Autowired
+    IDashboardRepository iDashboardRepository;
+
+    private static final List<BigInteger> APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES = List.of(WorkflowStatus.APPROVED.getId(), WorkflowStatus.BLACKLISTED.getId(), WorkflowStatus.SUSPENDED.getId());
 
     @Override
     @Transactional
-    public void initiateSubmissionWorkFlow(WorkFlowRequestTO requestTO) throws WorkFlowException {
+    public void initiateSubmissionWorkFlow(WorkFlowRequestTO requestTO) throws WorkFlowException, InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = null;
 
         user = userDetailService.findByUsername(userName);
 
-        if(user!=null) {
+        if (user != null) {
             if (UserTypeEnum.COLLEGE.getCode().equals(user.getUserType().getId())) {
                 if (UserSubTypeEnum.COLLEGE.getCode().equals(user.getUserSubType().getId())) {
-                    throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
+                    throw new InvalidRequestException();
+                }
+            } else if (UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode().equals(user.getUserType().getId())) {
+                if (!UserSubTypeEnum.NMC_VERIFIER.getCode().equals(user.getUserSubType().getId())) {
+                    throw new InvalidRequestException();
                 }
             }
         }
@@ -101,21 +115,20 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
         HpProfile hpProfile = iHpProfileRepository.findById(requestTO.getHpProfileId()).orElse(new HpProfile());
         INextGroup iNextGroup = null;
+        Dashboard dashboard = null;
         if (workFlow == null) {
             log.debug("Proceeding to create a new Workflow entry since there are no existing entries with the given request_id");
             if (Group.HEALTH_PROFESSIONAL.getId().equals(requestTO.getActorId())) {
                 if (!ApplicationType.getAllHpApplicationTypeIds().contains(requestTO.getApplicationTypeId()) ||
                         !Action.SUBMIT.getId().equals(requestTO.getActionId())) {
                     log.debug("Health Professional is the Actor but either Action is not Submit or Application type is invalid");
-                    throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
+                    throw new InvalidRequestException();
                 }
             } else if (Group.SMC.getId().equals(requestTO.getActorId()) || Group.NMC.getId().equals(requestTO.getActorId())) {
-                if (//!ApplicationType.HP_TEMPORARY_SUSPENSION.equals(requestTO.getApplicationTypeId()) ||
-                    //!ApplicationType.HP_PERMANENT_SUSPENSION.equals(requestTO.getApplicationTypeId()) ||
-                        !Action.PERMANENT_SUSPEND.getId().equals(requestTO.getActionId()) &&
-                                !Action.TEMPORARY_SUSPEND.getId().equals(requestTO.getActionId())) {
+                if (!Action.PERMANENT_SUSPEND.getId().equals(requestTO.getActionId()) &&
+                        !Action.TEMPORARY_SUSPEND.getId().equals(requestTO.getActionId())) {
                     log.debug("SMC or NMC is the Actor but Action is not Temporary Suspend or Permanent Suspend");
-                    throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
+                    throw new InvalidRequestException();
                 }
             }
 
@@ -124,25 +137,27 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             workFlow = buildNewWorkFlow(requestTO, iNextGroup, hpProfile, user);
             iWorkFlowRepository.save(workFlow);
             log.debug("Work Flow Creation Successful");
+            dashboard = new Dashboard();
         } else {
+            dashboard = iDashboardRepository.findByRequestId(workFlow.getRequestId());
             log.debug("Proceeding to update the existing Workflow entry since there is an existing entry with the given request_id");
             if (!workFlow.getApplicationType().getId().equals(requestTO.getApplicationTypeId()) || workFlow.getCurrentGroup() == null || !workFlow.getCurrentGroup().getId().equals(requestTO.getActorId())) {
                 log.debug("Invalid Request since either the given application type matches the fetched application type from the workflow or current group fetched from the workflow is null or current group id fetched from the workflow matches the given actor id");
-                throw new WorkFlowException("Invalid Request", HttpStatus.BAD_REQUEST);
+                throw new InvalidRequestException();
             }
             log.debug("Fetching the Next Group to assign this request to and the work_flow_status using Application type, Application sub type, Actor and Action");
             iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(workFlow.getApplicationType().getId(), workFlow.getCurrentGroup().getId(), requestTO.getActionId(), requestTO.getApplicationSubTypeId());
             if (iNextGroup != null) {
                 workFlow.setUpdatedAt(null);
-                workFlow.setAction(iActionRepository.findById(requestTO.getActionId()).get());
+                workFlow.setAction(iActionRepository.findById(requestTO.getActionId()).orElseThrow(WorkFlowException::new));
                 workFlow.setPreviousGroup(workFlow.getCurrentGroup());
-                workFlow.setCurrentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null);
-                workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get());
+                workFlow.setCurrentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).orElseThrow(WorkFlowException::new) : null);
+                workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).orElseThrow(WorkFlowException::new));
                 workFlow.setRemarks(requestTO.getRemarks());
                 workFlow.setUserId(user);
                 log.debug("Work Flow Updation Successful");
             } else {
-                throw new WorkFlowException("Next Group Not Found", HttpStatus.BAD_REQUEST);
+                throw new WorkFlowException(NMRError.NEXT_GROUP_NOT_FOUND.getCode(), NMRError.NEXT_GROUP_NOT_FOUND.getMessage());
             }
         }
         if (isLastStepOfWorkFlow(iNextGroup) &&
@@ -153,8 +168,79 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         log.debug("Saving an entry in the work_flow_audit table");
         iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
         log.debug("Initiating a notification to indicate the change of status.");
-        notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName(), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
 
+        updateDashboardDetail(requestTO, workFlow, iNextGroup, dashboard);
+        try {
+            if (workFlow.getUserId().isSmsNotificationEnabled() && workFlow.getUserId().isEmailNotificationEnabled()) {
+                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
+            } else if (workFlow.getUserId().isSmsNotificationEnabled()) {
+                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), workFlow.getHpProfile().getMobileNumber(), null);
+
+            } else if (workFlow.getUserId().isEmailNotificationEnabled()) {
+                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), null, workFlow.getHpProfile().getEmailId());
+            }
+        } catch (Exception exception) {
+            log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
+        }
+    }
+
+    private String getVerifierNameForNotification(User user) {
+        String verifier = "";
+        if (user != null) {
+            if (user.getUserType().getId().equals(UserTypeEnum.COLLEGE.getCode())) {
+                verifier = NMRConstants.VERIFIER_COLLEGE;
+            } else if (user.getUserType().getId().equals(UserTypeEnum.STATE_MEDICAL_COUNCIL.getCode())) {
+                verifier = NMRConstants.VERIFIER_SMC;
+            } else if (user.getUserType().getId().equals(UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode())) {
+                verifier = NMRConstants.VERIFIER_NMC;
+            } else if (user.getUserType().getId().equals(UserTypeEnum.NBE.getCode())) {
+                verifier = NMRConstants.VERIFIER_NBE;
+            } else if (user.getUserType().getId().equals(UserTypeEnum.SYSTEM.getCode())) {
+                verifier = NMRConstants.VERIFIER_SYSTEM;
+            }
+        }
+        return verifier;
+    }
+
+    private void updateDashboardDetail(WorkFlowRequestTO requestTO, WorkFlow workFlow, INextGroup iNextGroup, Dashboard dashboard) {
+        dashboard.setApplicationTypeId(requestTO.getApplicationTypeId());
+        dashboard.setRequestId(requestTO.getRequestId());
+        dashboard.setHpProfileId(requestTO.getHpProfileId());
+        dashboard.setWorkFlowStatusId(workFlow.getWorkFlowStatus().getId());
+        if (NMRUtil.isVoluntarySuspension(workFlow)) {
+            dashboard.setNmcStatus(Action.APPROVED.getId());
+            dashboard.setSmcStatus(Action.APPROVED.getId());
+        } else {
+            setDashboardStatus(requestTO.getActionId(), requestTO.getActorId(), dashboard);
+            if (!isLastStepOfWorkFlow(iNextGroup)) {
+                //submit is equivalent to pending status.
+
+                // this has to uncomment when we need add college_verified.
+
+                //if(Group.COLLEGE.getId().equals(requestTO.getActorId()) && Action.APPROVED.getId().equals(requestTO.getActionId())){
+                //   dashboard.setSmcStatus(DashboardStatus.COLLEGE_VERIFIED.getId());
+                //}else {
+                setDashboardStatus(DashboardStatus.PENDING.getId(), iNextGroup.getAssignTo(), dashboard);
+                //}
+            }
+        }
+        dashboard.setCreatedAt(Timestamp.from(Instant.now()));
+        dashboard.setUpdatedAt(Timestamp.from(Instant.now()));
+        iDashboardRepository.save(dashboard);
+
+    }
+
+    private static void setDashboardStatus(BigInteger actionPerformedId, BigInteger userGroup, Dashboard dashboard) {
+        BigInteger dashboardStatusId = DashboardStatus.getDashboardStatus(Action.getAction(actionPerformedId).getStatus()).getId();
+        if (userGroup.equals(Group.SMC.getId())) {
+            dashboard.setSmcStatus(dashboardStatusId);
+        } else if (userGroup.equals(Group.NMC.getId())) {
+            dashboard.setNmcStatus(dashboardStatusId);
+        } else if (userGroup.equals(Group.COLLEGE.getId())) {
+            dashboard.setCollegeStatus(dashboardStatusId);
+        } else if (userGroup.equals(Group.NBE.getId())) {
+            dashboard.setNbeStatus(dashboardStatusId);
+        }
     }
 
     @Override
@@ -172,7 +258,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     }
 
     @Override
-    public void assignQueriesBackToQueryCreator(String requestId) {
+    public void assignQueriesBackToQueryCreator(String requestId) throws WorkFlowException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = null;
         if (userName != null) {
@@ -183,16 +269,16 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         UserGroup currentGroup = workflow.getCurrentGroup();
         workflow.setCurrentGroup(previousGroup);
         workflow.setPreviousGroup(currentGroup);
-        workflow.setAction(iActionRepository.findById(Action.SUBMIT.getId()).get());
-        workflow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).get());
+        workflow.setAction(iActionRepository.findById(Action.SUBMIT.getId()).orElseThrow(WorkFlowException::new));
+        workflow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).orElseThrow(WorkFlowException::new));
         workflow.setUserId(user);
 
         WorkFlowAudit workFlowAudit = WorkFlowAudit.builder().requestId(requestId)
                 .hpProfile(workflow.getHpProfile())
                 .applicationType(workflow.getApplicationType())
                 .createdBy(workflow.getCreatedBy())
-                .action(iActionRepository.findById(Action.SUBMIT.getId()).get())
-                .workFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).get())
+                .action(iActionRepository.findById(Action.SUBMIT.getId()).orElseThrow(WorkFlowException::new))
+                .workFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).orElseThrow(WorkFlowException::new))
                 .previousGroup(currentGroup)
                 .currentGroup(previousGroup)
                 .startDate(workflow.getStartDate())
@@ -202,44 +288,18 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         iWorkFlowAuditRepository.save(workFlowAudit);
     }
 
-    private WorkFlow buildNewCollegeWorkFlow(String requestId, BigInteger applicationTypeId, BigInteger actionId, BigInteger actorId, INextGroup iNextGroup, User user) {
-        UserGroup actorGroup = iGroupRepository.findById(actorId).get();
-        return WorkFlow.builder().requestId(requestId)
-                .applicationType(iApplicationTypeRepository.findById(applicationTypeId).get())
-                .createdBy(actorGroup)
-                .action(iActionRepository.findById(actionId).get())
-                .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get())
-                .previousGroup(actorGroup)
-                .currentGroup(iGroupRepository.findById(iNextGroup.getAssignTo()).get())
-                .userId(user)
-                .build();
-    }
+    private WorkFlow buildNewWorkFlow(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile, User user) throws WorkFlowException {
 
-    private WorkFlowAudit buildNewCollegeWorkFlowAudit(String requestId, BigInteger applicationTypeId, BigInteger actionId, BigInteger actorId, INextGroup iNextGroup, User user) {
-        UserGroup actorGroup = iGroupRepository.findById(actorId).get();
-        return WorkFlowAudit.builder().requestId(requestId)
-                .applicationType(iApplicationTypeRepository.findById(applicationTypeId).get())
-                .createdBy(actorGroup)
-                .action(iActionRepository.findById(actionId).get())
-                .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get())
-                .previousGroup(actorGroup)
-                .currentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null)
-                .userId(user)
-                .build();
-    }
-
-    private WorkFlow buildNewWorkFlow(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile, User user) {
-
-        UserGroup actorGroup = iGroupRepository.findById(requestTO.getActorId()).get();
+        UserGroup actorGroup = iGroupRepository.findById(requestTO.getActorId()).orElseThrow(WorkFlowException::new);
 
         return WorkFlow.builder().requestId(requestTO.getRequestId())
-                .applicationType(iApplicationTypeRepository.findById(requestTO.getApplicationTypeId()).get())
+                .applicationType(iApplicationTypeRepository.findById(requestTO.getApplicationTypeId()).orElseThrow(WorkFlowException::new))
                 .createdBy(actorGroup)
-                .action(iActionRepository.findById(requestTO.getActionId()).get())
+                .action(iActionRepository.findById(requestTO.getActionId()).orElseThrow(WorkFlowException::new))
                 .hpProfile(hpProfile)
-                .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get())
+                .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).orElseThrow(WorkFlowException::new))
                 .previousGroup(actorGroup)
-                .currentGroup(iNextGroup.getAssignTo() != null ? coalesce(iGroupRepository.findById(iNextGroup.getAssignTo()).get(), null) : null)
+                .currentGroup(iNextGroup.getAssignTo() != null ? coalesce(iGroupRepository.findById(iNextGroup.getAssignTo()).orElseThrow(WorkFlowException::new), null) : null)
                 .startDate(requestTO.getStartDate())
                 .endDate(requestTO.getEndDate())
                 .remarks(requestTO.getRemarks())
@@ -247,17 +307,17 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 .build();
     }
 
-    private WorkFlowAudit buildNewWorkFlowAudit(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile, User user) {
+    private WorkFlowAudit buildNewWorkFlowAudit(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile, User user) throws WorkFlowException {
 
-        UserGroup actorGroup = iGroupRepository.findById(requestTO.getActorId()).get();
+        UserGroup actorGroup = iGroupRepository.findById(requestTO.getActorId()).orElseThrow(WorkFlowException::new);
         return WorkFlowAudit.builder().requestId(requestTO.getRequestId())
-                .applicationType(iApplicationTypeRepository.findById(requestTO.getApplicationTypeId()).get())
+                .applicationType(iApplicationTypeRepository.findById(requestTO.getApplicationTypeId()).orElseThrow(WorkFlowException::new))
                 .createdBy(actorGroup)
-                .action(iActionRepository.findById(requestTO.getActionId()).get())
+                .action(iActionRepository.findById(requestTO.getActionId()).orElseThrow(WorkFlowException::new))
                 .hpProfile(hpProfile)
-                .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).get())
+                .workFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).orElseThrow(WorkFlowException::new))
                 .previousGroup(actorGroup)
-                .currentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).get() : null)
+                .currentGroup(iNextGroup.getAssignTo() != null ? iGroupRepository.findById(iNextGroup.getAssignTo()).orElseThrow(WorkFlowException::new) : null)
                 .startDate(requestTO.getStartDate())
                 .endDate(requestTO.getEndDate())
                 .remarks(requestTO.getRemarks())

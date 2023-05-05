@@ -8,8 +8,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.math.BigInteger;
 
-import static in.gov.abdm.nmr.util.NMRConstants.ID;
-
 @Getter
 @Setter
 @AllArgsConstructor

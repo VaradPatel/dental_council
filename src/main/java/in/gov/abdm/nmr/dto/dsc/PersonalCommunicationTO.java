@@ -11,7 +11,6 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class PersonalCommunicationTO {
 
-	@NotBlank
 	@JsonProperty("house")
 	private String house;
 

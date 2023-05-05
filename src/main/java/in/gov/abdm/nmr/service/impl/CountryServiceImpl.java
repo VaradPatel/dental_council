@@ -15,15 +15,12 @@ public class CountryServiceImpl implements ICountryService {
 
     private CountryRepository countryRepository;
 
-    private CountryDtoMapper countryDtoMapper;
-
-    public CountryServiceImpl(CountryRepository countryRepository, CountryDtoMapper countryDtoMapper) {
+    public CountryServiceImpl(CountryRepository countryRepository) {
         this.countryRepository = countryRepository;
-        this.countryDtoMapper = countryDtoMapper;
     }
 
     @Override
     public List<CountryTO> getCountryData() {
-        return countryDtoMapper.countryDataToDto(countryRepository.getCountry());
+        return CountryDtoMapper.COUNTRY_DTO_MAPPER.countryDataToDto(countryRepository.getCountry());
     }
 }

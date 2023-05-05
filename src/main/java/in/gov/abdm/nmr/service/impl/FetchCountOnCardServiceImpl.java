@@ -4,30 +4,32 @@ import in.gov.abdm.nmr.dto.FetchCountOnCardInnerResponseTO;
 import in.gov.abdm.nmr.dto.FetchCountOnCardResponseTO;
 import in.gov.abdm.nmr.dto.StatusWiseCountTO;
 import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.entity.UserGroup;
-import in.gov.abdm.nmr.enums.ApplicationType;
-import in.gov.abdm.nmr.enums.Group;
-import in.gov.abdm.nmr.enums.WorkflowStatus;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
-import in.gov.abdm.nmr.mapper.IStatusWiseCount;
+import in.gov.abdm.nmr.enums.*;
+import in.gov.abdm.nmr.exception.NMRError;
+import in.gov.abdm.nmr.mapper.IStatusCount;
 import in.gov.abdm.nmr.mapper.IStatusWiseCountMapper;
-import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.repository.IFetchCountOnCardRepository;
+import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.INbeProfileRepository;
+import in.gov.abdm.nmr.repository.ISmcProfileRepository;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.ICollegeProfileDaoService;
 import in.gov.abdm.nmr.service.IFetchCountOnCardService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.nio.file.AccessDeniedException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 
 @Service
+@Slf4j
 public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
 
     /**
@@ -58,541 +60,181 @@ public class FetchCountOnCardServiceImpl implements IFetchCountOnCardService {
     @Autowired
     ICollegeProfileDaoService iCollegeProfileDaoService;
 
-    private BigInteger counter = BigInteger.ZERO;
+
+    private static final String HP_REGISTRATION_REQUEST = "hp_registration_request";
+    private static final String HP_MODIFICATION_REQUEST = "hp_modification_request";
+    private static final String TEMPORARY_SUSPENSION_REQUEST = "temporary_suspension_request";
+    private static final String PERMANENT_SUSPENSION_REQUEST = "permanent_suspension_request";
+    private static final String CONSOLIDATED_SUSPENSION_REQUEST = "consolidated_suspension_request";
+
+    private static final Map<String, List<BigInteger>> applicationIds =
+            Map.of(HP_REGISTRATION_REQUEST, List.of(ApplicationType.HP_REGISTRATION.getId(), ApplicationType.FOREIGN_HP_REGISTRATION.getId()),
+                    HP_MODIFICATION_REQUEST, List.of(ApplicationType.HP_MODIFICATION.getId(), ApplicationType.QUALIFICATION_ADDITION.getId()),
+                    TEMPORARY_SUSPENSION_REQUEST, List.of(ApplicationType.HP_TEMPORARY_SUSPENSION.getId()),
+                    PERMANENT_SUSPENSION_REQUEST, List.of(ApplicationType.HP_PERMANENT_SUSPENSION.getId()),
+                    CONSOLIDATED_SUSPENSION_REQUEST, List.of(ApplicationType.HP_TEMPORARY_SUSPENSION.getId(), ApplicationType.HP_PERMANENT_SUSPENSION.getId()));
+
 
     @Override
-    public FetchCountOnCardResponseTO fetchCountOnCard() throws InvalidRequestException, AccessDeniedException {
-
+    public FetchCountOnCardResponseTO fetchCountOnCard() throws AccessDeniedException {
         User loggedInUser = accessControlService.getLoggedInUser();
-        String groupName = loggedInUser.getGroup().getName();
         if (loggedInUser == null) {
-            throw new AccessDeniedException(ACCESS_FORBIDDEN);
+            log.error("User don't have permission to access on dashboard card details");
+            throw new AccessDeniedException(NMRError.ACCESS_FORBIDDEN.getMessage());
         }
-
+        String groupName = loggedInUser.getGroup().getName();
         FetchCountOnCardResponseTO responseTO = new FetchCountOnCardResponseTO();
+        BigInteger totalCount = BigInteger.ZERO;
+        List<BigInteger> dashboardStauses = Arrays.stream(DashboardStatus.values()).map(DashboardStatus::getId).toList();
 
-        /**
-         * Data retrieval - HP Registration
-         */
-        responseTO.setHpRegistrationRequest(FetchCountOnCardInnerResponseTO.builder()
-                .applicationTypeIds(ApplicationType.HP_REGISTRATION.getId().toString() + COMMA_SEPARATOR + ApplicationType.FOREIGN_HP_REGISTRATION.getId().toString())
-                .build());
-        if (Group.SMC.getDescription().equals(groupName) || Group.COLLEGE.getDescription().equals(groupName) || Group.NMC.getDescription().equals(groupName) || Group.NBE.getDescription().equals(groupName)) {
-            counter = BigInteger.ZERO;
-            List<StatusWiseCountTO> hpRegistrationRequests = fetchStatusWiseCountBasedOnLoggedInUser(ApplicationType.HP_REGISTRATION.getId(), loggedInUser)
-                    .stream()
-                    .map(statusWiseCountTO -> {
-                        counter = counter.add(statusWiseCountTO.getCount());
-                        return statusWiseCountTO;
-                    }).collect(Collectors.toList());
-
-            List<StatusWiseCountTO> tempHpRegistrationRequests = new ArrayList<>();
-
-            tempHpRegistrationRequests.add(StatusWiseCountTO.builder()
-                    .name(TOTAL_HP_REGISTRATION_REQUESTS)
-                    .count(counter)
-                    .build());
-
-            tempHpRegistrationRequests.add(hpRegistrationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.APPROVED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempHpRegistrationRequests.add(hpRegistrationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.PENDING.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.PENDING.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempHpRegistrationRequests.add(hpRegistrationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.QUERY_RAISED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.QUERY_RAISED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempHpRegistrationRequests.add(hpRegistrationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.REJECTED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.REJECTED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempHpRegistrationRequests.add(hpRegistrationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.SUSPENDED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.SUSPENDED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempHpRegistrationRequests.add(hpRegistrationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.BLACKLISTED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.BLACKLISTED.getDescription()).count(BigInteger.ZERO).build()));
-
-            responseTO.getHpRegistrationRequest().setStatusWiseCount(tempHpRegistrationRequests);
+        if (Group.SMC.getDescription().equals(groupName)) {
+            log.info("Processing Cards service for SMC: {} ", loggedInUser.getUserName());
+            BigInteger smcProfileId = iSmcProfileRepository.getSmcIdByUserId(loggedInUser.getId()).get(0);
+            List<IStatusCount> statusCounts = iFetchCountOnCardRepository.fetchCountForSmc(smcProfileId);
+            log.debug("Fetched statusCounts detail successfully for SMC : {}", loggedInUser.getUserName());
+            populateHealthProfessionalRegistrationAndModificationRequestsForSmc(responseTO, totalCount, dashboardStauses, statusCounts);
+            populateHealthProfessionalSuspensionRequests(responseTO, totalCount, dashboardStauses, statusCounts);
         }
 
-        /**
-         * Data retrieval - HP Modification
-         */
-        responseTO.setHpModificationRequest(FetchCountOnCardInnerResponseTO.builder()
-                .applicationTypeIds(ApplicationType.HP_MODIFICATION.getId().toString() + COMMA_SEPARATOR + ApplicationType.QUALIFICATION_ADDITION.getId().toString())
-                .build());
-        counter = BigInteger.ZERO;
-        if (Group.SMC.getDescription().equals(groupName) || Group.COLLEGE.getDescription().equals(groupName) || Group.NMC.getDescription().equals(groupName) || Group.NBE.getDescription().equals(groupName)) {
-            List<StatusWiseCountTO> hpModificationRequests = fetchStatusWiseCountBasedOnLoggedInUser(ApplicationType.HP_MODIFICATION.getId(), loggedInUser)
-                    .stream()
-                    .map(statusWiseCountTO -> {
-                        counter = counter.add(statusWiseCountTO.getCount());
-                        return statusWiseCountTO;
-                    })
-                    .collect(Collectors.toList());
-
-            List<StatusWiseCountTO> tempHpModificationRequests = new ArrayList<>();
-
-            tempHpModificationRequests.add(StatusWiseCountTO.builder()
-                    .name(TOTAL_HP_MODIFICATION_REQUESTS)
-                    .count(counter)
-                    .build());
-
-            tempHpModificationRequests.add(hpModificationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.APPROVED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempHpModificationRequests.add(hpModificationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.PENDING.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.PENDING.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempHpModificationRequests.add(hpModificationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.QUERY_RAISED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.QUERY_RAISED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempHpModificationRequests.add(hpModificationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.REJECTED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.REJECTED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempHpModificationRequests.add(hpModificationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.SUSPENDED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.SUSPENDED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempHpModificationRequests.add(hpModificationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.BLACKLISTED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.BLACKLISTED.getDescription()).count(BigInteger.ZERO).build()));
-
-            responseTO.getHpModificationRequest().setStatusWiseCount(tempHpModificationRequests);
+        if (Group.COLLEGE.getDescription().equals(groupName)) {
+            log.info("Processing Cards service for College: {} ", loggedInUser.getUserName());
+            BigInteger collegeId = iCollegeProfileDaoService.findByUserId(loggedInUser.getId()).getCollege().getId();
+            List<IStatusCount> statusCounts = iFetchCountOnCardRepository.fetchCountForCollege(collegeId);
+            log.debug("Fetched statusCounts detail successfully for college : {}", loggedInUser.getUserName());
+            populateHealthProfessionalRegistrationAndModificationRequests(responseTO, totalCount, dashboardStauses, statusCounts);
         }
 
-        /**
-         * Data retrieval - Temporary Suspension
-         */
-        responseTO.setTemporarySuspensionRequest(FetchCountOnCardInnerResponseTO.builder()
-                .applicationTypeIds(ApplicationType.HP_TEMPORARY_SUSPENSION.getId().toString())
-                .build());
-        List<StatusWiseCountTO> temporarySuspensionRequests = new ArrayList<>();
-        if (Group.SMC.getDescription().equals(groupName) || Group.NMC.getDescription().equals(groupName)) {
-            counter = BigInteger.ZERO;
-            temporarySuspensionRequests = fetchStatusWiseCountBasedOnLoggedInUser(ApplicationType.HP_TEMPORARY_SUSPENSION.getId(), loggedInUser)
-                    .stream()
-                    .map(statusWiseCountTO -> {
-                        counter = counter.add(statusWiseCountTO.getCount());
-                        return statusWiseCountTO;
-                    })
-                    .collect(Collectors.toList());
-
-            List<StatusWiseCountTO> tempTemporarySuspensionRequests = new ArrayList<>();
-
-            tempTemporarySuspensionRequests.add(StatusWiseCountTO.builder()
-                    .name(TOTAL_TEMPORARY_SUSPENSION_REQUESTS)
-                    .count(counter)
-                    .build());
-
-            tempTemporarySuspensionRequests.add(temporarySuspensionRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.APPROVED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempTemporarySuspensionRequests.add(temporarySuspensionRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.PENDING.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.PENDING.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempTemporarySuspensionRequests.add(temporarySuspensionRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.QUERY_RAISED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.QUERY_RAISED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempTemporarySuspensionRequests.add(temporarySuspensionRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.REJECTED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.REJECTED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempTemporarySuspensionRequests.add(temporarySuspensionRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.SUSPENDED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.SUSPENDED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempTemporarySuspensionRequests.add(temporarySuspensionRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.BLACKLISTED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.BLACKLISTED.getDescription()).count(BigInteger.ZERO).build()));
-
-
-            responseTO.getTemporarySuspensionRequest().setStatusWiseCount(tempTemporarySuspensionRequests);
-        }
-
-        /**
-         * Data retrieval - Permanent Suspension
-         */
-        List<StatusWiseCountTO> permanentSuspensionRequests = new ArrayList<>();
-        responseTO.setPermanentSuspensionRequest(FetchCountOnCardInnerResponseTO.builder()
-                .applicationTypeIds(ApplicationType.HP_PERMANENT_SUSPENSION.getId().toString())
-                .build());
-        if (Group.SMC.getDescription().equals(groupName) || Group.NMC.getDescription().equals(groupName)) {
-            counter = BigInteger.ZERO;
-            permanentSuspensionRequests = fetchStatusWiseCountBasedOnLoggedInUser(ApplicationType.HP_PERMANENT_SUSPENSION.getId(), loggedInUser)
-                    .stream()
-                    .map(statusWiseCountTO -> {
-                        counter = counter.add(statusWiseCountTO.getCount());
-                        return statusWiseCountTO;
-                    })
-                    .collect(Collectors.toList());
-
-            List<StatusWiseCountTO> tempPermanentSuspensionRequests = new ArrayList<>();
-
-            tempPermanentSuspensionRequests.add(StatusWiseCountTO.builder()
-                    .name(TOTAL_PERMANENT_SUSPENSION_REQUESTS)
-                    .count(counter)
-                    .build());
-
-            tempPermanentSuspensionRequests.add(permanentSuspensionRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.APPROVED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempPermanentSuspensionRequests.add(permanentSuspensionRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.PENDING.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.PENDING.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempPermanentSuspensionRequests.add(permanentSuspensionRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.QUERY_RAISED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.QUERY_RAISED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempPermanentSuspensionRequests.add(permanentSuspensionRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.REJECTED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.REJECTED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempPermanentSuspensionRequests.add(permanentSuspensionRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.SUSPENDED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.SUSPENDED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempPermanentSuspensionRequests.add(permanentSuspensionRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.BLACKLISTED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.BLACKLISTED.getDescription()).count(BigInteger.ZERO).build()));
-
-
-            responseTO.getPermanentSuspensionRequest().setStatusWiseCount(tempPermanentSuspensionRequests);
-        }
-
-        /**
-         * Consolidated Suspension Requests
-         */
-        List<StatusWiseCountTO> consolidatedSuspensionRequests = new ArrayList<>();
-        responseTO.setConsolidatedSuspensionRequest(FetchCountOnCardInnerResponseTO.builder()
-                .applicationTypeIds(ApplicationType.HP_TEMPORARY_SUSPENSION.getId().toString() + COMMA_SEPARATOR + ApplicationType.HP_PERMANENT_SUSPENSION.getId().toString())
-                .build());
-        if (Group.SMC.getDescription().equals(groupName) || Group.NMC.getDescription().equals(groupName)) {
-            counter = BigInteger.ZERO;
-            consolidatedSuspensionRequests.add(StatusWiseCountTO.builder()
-                    .name(CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS)
-                    .count(responseTO.getTemporarySuspensionRequest()
-                            .getStatusWiseCount().stream()
-                            .filter(statusWiseCountTO -> WorkflowStatus.PENDING.getDescription().equals(statusWiseCountTO.getName()))
-                            .findFirst()
-                            .orElse(StatusWiseCountTO.builder().count(BigInteger.ZERO).build())
-                            .getCount())
-                    .build());
-
-            consolidatedSuspensionRequests.add(StatusWiseCountTO.builder()
-                    .name(CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS)
-                    .count(responseTO.getTemporarySuspensionRequest()
-                            .getStatusWiseCount().stream()
-                            .filter(statusWiseCountTO -> WorkflowStatus.APPROVED.getDescription().equals(statusWiseCountTO.getName()))
-                            .findFirst()
-                            .orElse(StatusWiseCountTO.builder().count(BigInteger.ZERO).build())
-                            .getCount())
-                    .build());
-
-            consolidatedSuspensionRequests.add(StatusWiseCountTO.builder()
-                    .name(CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS)
-                    .count(responseTO.getPermanentSuspensionRequest()
-                            .getStatusWiseCount().stream()
-                            .filter(statusWiseCountTO -> WorkflowStatus.PENDING.getDescription().equals(statusWiseCountTO.getName()))
-                            .findFirst()
-                            .orElse(StatusWiseCountTO.builder().count(BigInteger.ZERO).build())
-                            .getCount())
-                    .build());
-
-            consolidatedSuspensionRequests.add(StatusWiseCountTO.builder()
-                    .name(CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS)
-                    .count(responseTO.getPermanentSuspensionRequest()
-                            .getStatusWiseCount().stream()
-                            .filter(statusWiseCountTO -> WorkflowStatus.APPROVED.getDescription().equals(statusWiseCountTO.getName()))
-                            .findFirst()
-                            .orElse(StatusWiseCountTO.builder().count(BigInteger.ZERO).build())
-                            .getCount())
-                    .build());
-
-            List<StatusWiseCountTO> tempConsolidatedSuspensionRequests = new ArrayList<>();
-
-            consolidatedSuspensionRequests.stream().forEach(statusWiseCountTO -> counter = counter.add(statusWiseCountTO.getCount()));
-
-            tempConsolidatedSuspensionRequests.add(StatusWiseCountTO.builder()
-                    .name(TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS)
-                    .count(counter)
-                    .build());
-
-            tempConsolidatedSuspensionRequests.addAll(consolidatedSuspensionRequests);
-
-            responseTO.getConsolidatedSuspensionRequest().setStatusWiseCount(tempConsolidatedSuspensionRequests);
-
-        }
-
-        /**
-         * Data retrieval - Activate License
-         */
-        List<StatusWiseCountTO> activateLicenseRequests;
-        responseTO.setActivateLicenseRequest(FetchCountOnCardInnerResponseTO.builder()
-                .applicationTypeIds(ApplicationType.HP_ACTIVATE_LICENSE.getId().toString())
-                .build());
-        if (Group.SMC.getDescription().equals(groupName) || Group.NMC.getDescription().equals(groupName)) {
-            counter = BigInteger.ZERO;
-
-            activateLicenseRequests = fetchStatusWiseCountBasedOnLoggedInUser(ApplicationType.HP_ACTIVATE_LICENSE.getId(), loggedInUser)
-                    .stream()
-                    .map(statusWiseCountTO -> {
-                        counter = counter.add(statusWiseCountTO.getCount());
-                        return statusWiseCountTO;
-                    })
-                    .collect(Collectors.toList());
-
-            List<StatusWiseCountTO> tempActivateLicenseRequests = new ArrayList<>();
-
-            tempActivateLicenseRequests.add(StatusWiseCountTO.builder()
-                    .name(TOTAL_ACTIVATE_LICENSE_REQUESTS)
-                    .count(counter)
-                    .build());
-
-            tempActivateLicenseRequests.add(activateLicenseRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.APPROVED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempActivateLicenseRequests.add(activateLicenseRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.PENDING.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.PENDING.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempActivateLicenseRequests.add(activateLicenseRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.QUERY_RAISED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.QUERY_RAISED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempActivateLicenseRequests.add(activateLicenseRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.REJECTED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.REJECTED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempActivateLicenseRequests.add(activateLicenseRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.SUSPENDED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.SUSPENDED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempActivateLicenseRequests.add(activateLicenseRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.BLACKLISTED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.BLACKLISTED.getDescription()).count(BigInteger.ZERO).build()));
-
-
-            responseTO.getActivateLicenseRequest().setStatusWiseCount(tempActivateLicenseRequests);
-        }
-
-        /**
-         * Data retrieval - College Registration
-         */
-        List<StatusWiseCountTO> collegeRegistrationRequests;
-        responseTO.setCollegeRegistrationRequest(FetchCountOnCardInnerResponseTO.builder()
-                .applicationTypeIds(ApplicationType.COLLEGE_REGISTRATION.getId().toString())
-                .build());
         if (Group.NMC.getDescription().equals(groupName)) {
-            counter = BigInteger.ZERO;
-            collegeRegistrationRequests = fetchStatusWiseCountBasedOnLoggedInUser(ApplicationType.COLLEGE_REGISTRATION.getId(), loggedInUser)
-                    .stream()
-                    .map(statusWiseCountTO -> {
-                        counter = counter.add(statusWiseCountTO.getCount());
-                        return statusWiseCountTO;
-                    })
-                    .collect(Collectors.toList());
-
-            List<StatusWiseCountTO> tempCollegeRegistrationRequests = new ArrayList<>();
-
-            tempCollegeRegistrationRequests.add(StatusWiseCountTO.builder()
-                    .name(TOTAL_COLLEGE_REGISTRATION_REQUESTS)
-                    .count(counter)
-                    .build());
-
-            tempCollegeRegistrationRequests.add(collegeRegistrationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.APPROVED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempCollegeRegistrationRequests.add(collegeRegistrationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.PENDING.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.PENDING.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempCollegeRegistrationRequests.add(collegeRegistrationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.QUERY_RAISED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.QUERY_RAISED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempCollegeRegistrationRequests.add(collegeRegistrationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.REJECTED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.REJECTED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempCollegeRegistrationRequests.add(collegeRegistrationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.SUSPENDED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.SUSPENDED.getDescription()).count(BigInteger.ZERO).build()));
-
-            tempCollegeRegistrationRequests.add(collegeRegistrationRequests.stream()
-                    .filter(statusWiseCountTO -> WorkflowStatus.BLACKLISTED.getDescription().equals(statusWiseCountTO.getName()))
-                    .findFirst()
-                    .orElse(StatusWiseCountTO.builder().name(WorkflowStatus.BLACKLISTED.getDescription()).count(BigInteger.ZERO).build()));
-
-
-            responseTO.getCollegeRegistrationRequest().setStatusWiseCount(tempCollegeRegistrationRequests);
+            List<IStatusCount> statusCounts = iFetchCountOnCardRepository.fetchCountForNmc();
+            log.debug("Fetched statusCounts detail successfully for NMC : {}", loggedInUser.getUserName());
+            populateHealthProfessionalRegistrationAndModificationRequests(responseTO, totalCount, dashboardStauses, statusCounts);
+            populateHealthProfessionalSuspensionRequests(responseTO, totalCount, dashboardStauses, statusCounts);
         }
 
+        if (Group.NBE.getDescription().equals(groupName)) {
+            log.info("Processing Cards service for NBE: {} ", loggedInUser.getUserName());
+            List<IStatusCount> statusCounts = iFetchCountOnCardRepository.fetchCountForNbe();
+            log.debug("Fetched statusCounts detail successfully for NBE : {}", loggedInUser.getUserName());
+            populateHealthProfessionalRegistrationAndModificationRequests(responseTO, totalCount, dashboardStauses, statusCounts);
+
+        }
         return responseTO;
     }
 
-    private List<StatusWiseCountTO> fetchStatusWiseCountBasedOnLoggedInUser(BigInteger applicationTypeId, User loggedInUser) throws InvalidRequestException {
+    private void populateHealthProfessionalSuspensionRequests(FetchCountOnCardResponseTO responseTO, BigInteger totalCount, List<BigInteger> dashboardStauses, List<IStatusCount> statusCounts) {
+        final List<StatusWiseCountTO> temporarySuspension = getDefaultCards(TOTAL_TEMPORARY_SUSPENSION_REQUESTS);
+        responseTO.setTemporarySuspensionRequest(FetchCountOnCardInnerResponseTO.builder()
+                .applicationTypeIds(StringUtils.join(applicationIds.get(TEMPORARY_SUSPENSION_REQUEST), ",")).build());
+        responseTO.getTemporarySuspensionRequest().setStatusWiseCount(getCardResponse(
+                temporarySuspension, totalCount, statusCounts, dashboardStauses, TEMPORARY_SUSPENSION_REQUEST));
 
-        UserGroup group = loggedInUser.getGroup();
-        BigInteger groupId = group.getId();
+        final List<StatusWiseCountTO> permanentSuspension = getDefaultCards(TOTAL_PERMANENT_SUSPENSION_REQUESTS);
+        responseTO.setPermanentSuspensionRequest(FetchCountOnCardInnerResponseTO.builder()
+                .applicationTypeIds(StringUtils.join(applicationIds.get(PERMANENT_SUSPENSION_REQUEST), ",")).build());
+        responseTO.getPermanentSuspensionRequest().setStatusWiseCount(getCardResponse(
+                permanentSuspension, totalCount, statusCounts, dashboardStauses, PERMANENT_SUSPENSION_REQUEST));
 
-        /**
-         * Group - College Dean
-         */
-        if (Group.COLLEGE.getDescription().equals(group.getName())) {
-            BigInteger collegeId = iCollegeProfileDaoService.findByUserId(loggedInUser.getId()).getCollege().getId();
-            List<IStatusWiseCount> primaryStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForDean(applicationTypeId, groupId, collegeId);
+        List<StatusWiseCountTO> consolidatedSuspensions  = new ArrayList<>();
+        consolidatedSuspensions.add(StatusWiseCountTO.builder().name(TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS).count(BigInteger.ZERO).build());
+        temporarySuspension.forEach(ts -> {
+            if(PENDING.equals(ts.getName())){
+                consolidatedSuspensions.add(StatusWiseCountTO.builder().name(CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS).count(ts.getCount()).build());
+            }else if (APPROVED.equals(ts.getName())){
+                consolidatedSuspensions.add(StatusWiseCountTO.builder().name(CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS).count(ts.getCount()).build());
+            }else if(TOTAL_TEMPORARY_SUSPENSION_REQUESTS.equals(ts.getName())){
+               consolidatedSuspensions.get(0).getCount().add(ts.getCount());
+            }
+        });
 
-            if (ApplicationType.HP_REGISTRATION.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> foreignHpStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForDean(ApplicationType.FOREIGN_HP_REGISTRATION.getId(), groupId, collegeId);
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, foreignHpStatusWiseCount);
-            } else if (ApplicationType.HP_MODIFICATION.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> qualificationAdditionStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForDean(ApplicationType.QUALIFICATION_ADDITION.getId(), groupId, collegeId);
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, qualificationAdditionStatusWiseCount);
+        permanentSuspension.forEach(ps -> {
+            if(PENDING.equals(ps.getName())){
+                consolidatedSuspensions.add(StatusWiseCountTO.builder().name(CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS).count(ps.getCount()).build());
+            }else if (APPROVED.equals(ps.getName())){
+                consolidatedSuspensions.add(StatusWiseCountTO.builder().name(CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS).count(ps.getCount()).build());
+            }else if(TOTAL_TEMPORARY_SUSPENSION_REQUESTS.equals(ps.getName())){
+                consolidatedSuspensions.get(0).getCount().add(ps.getCount());
             }
-            return primaryStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).toList();
-        }
+        });
 
-        /**
-         * Group - State Medical council
-         */
-        if (Group.SMC.getDescription().equals(group.getName())) {
-            BigInteger smcProfileId = iSmcProfileRepository.getSmcIdByUserId(loggedInUser.getId()).get(0);
-            List<IStatusWiseCount> primaryStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForSmc(applicationTypeId, groupId, smcProfileId);
+        responseTO.setConsolidatedSuspensionRequest(FetchCountOnCardInnerResponseTO.builder().
+                applicationTypeIds(StringUtils.join(applicationIds.get(CONSOLIDATED_SUSPENSION_REQUEST),",")).statusWiseCount(consolidatedSuspensions).build());
 
-            if (ApplicationType.HP_REGISTRATION.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> foreignHpStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForSmc(ApplicationType.FOREIGN_HP_REGISTRATION.getId(), groupId, smcProfileId);
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, foreignHpStatusWiseCount);
-            } else if (ApplicationType.HP_MODIFICATION.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> qualificationAdditionStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForSmc(ApplicationType.QUALIFICATION_ADDITION.getId(), groupId, smcProfileId);
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, qualificationAdditionStatusWiseCount);
-            }
-            else if (ApplicationType.HP_TEMPORARY_SUSPENSION.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> temporarySuspensionStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificSuspensionAndActivateStatusWiseCountForSmc(ApplicationType.HP_TEMPORARY_SUSPENSION.getId(), smcProfileId);
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, temporarySuspensionStatusWiseCount);
-            }
-            else if (ApplicationType.HP_PERMANENT_SUSPENSION.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> permanentSuspensionStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificSuspensionAndActivateStatusWiseCountForSmc(ApplicationType.HP_PERMANENT_SUSPENSION.getId(), smcProfileId);
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, permanentSuspensionStatusWiseCount);
-            }
-            else if (ApplicationType.HP_ACTIVATE_LICENSE.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> activateLicenseStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificSuspensionAndActivateStatusWiseCountForSmc(ApplicationType.HP_ACTIVATE_LICENSE.getId(), smcProfileId);
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, activateLicenseStatusWiseCount);
-            }
-            return primaryStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).toList();
-        }
 
-        /**
-         * Group - National Medical council
-         */
-        if (Group.NMC.getDescription().equals(group.getName())) {
-            List<IStatusWiseCount> primaryStatusWiseCount = iFetchCountOnCardRepository.fetchStatusWiseCount(applicationTypeId, groupId);
-
-            if (ApplicationType.HP_REGISTRATION.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> foreignHpStatusWiseCount = iFetchCountOnCardRepository.fetchStatusWiseCount(ApplicationType.FOREIGN_HP_REGISTRATION.getId(), groupId);
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, foreignHpStatusWiseCount);
-            } else if (ApplicationType.HP_MODIFICATION.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> qualificationAdditionStatusWiseCount = iFetchCountOnCardRepository.fetchStatusWiseCount(ApplicationType.QUALIFICATION_ADDITION.getId(), groupId);
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, qualificationAdditionStatusWiseCount);
-            }
-            else if (ApplicationType.HP_TEMPORARY_SUSPENSION.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> temporarySuspensionStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificSuspensionAndActivateStatusWiseCountForNmc(ApplicationType.HP_TEMPORARY_SUSPENSION.getId());
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, temporarySuspensionStatusWiseCount);
-            }
-            else if (ApplicationType.HP_PERMANENT_SUSPENSION.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> permanentSuspensionStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificSuspensionAndActivateStatusWiseCountForNmc(ApplicationType.HP_PERMANENT_SUSPENSION.getId());
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, permanentSuspensionStatusWiseCount);
-            }
-            else if (ApplicationType.HP_ACTIVATE_LICENSE.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> activateLicenseStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificSuspensionAndActivateStatusWiseCountForNmc(ApplicationType.HP_ACTIVATE_LICENSE.getId());
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, activateLicenseStatusWiseCount);
-            }
-            return primaryStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).toList();
-        }
-
-        /**
-         * Group - NBE
-         */
-        if (Group.NBE.getDescription().equals(group.getName())) {
-            List<IStatusWiseCount> primaryStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForNbe(applicationTypeId, groupId);
-
-            if (ApplicationType.HP_REGISTRATION.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> foreignHpStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForNbe(ApplicationType.FOREIGN_HP_REGISTRATION.getId(), groupId);
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, foreignHpStatusWiseCount);
-            } else if (ApplicationType.HP_MODIFICATION.getId().equals(applicationTypeId)) {
-                List<IStatusWiseCount> qualificationAdditionStatusWiseCount = iFetchCountOnCardRepository.fetchUserSpecificStatusWiseCountForNbe(ApplicationType.QUALIFICATION_ADDITION.getId(), groupId);
-                return fetchCountConsideringCompositeApplicationTypes(primaryStatusWiseCount, qualificationAdditionStatusWiseCount);
-            }
-            return primaryStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).toList();
-        }
-
-        throw new InvalidRequestException(INVALID_DASHBOARD_GROUP);
     }
 
-    private List<StatusWiseCountTO> fetchCountConsideringCompositeApplicationTypes(List<IStatusWiseCount> primaryStatusWiseCount, List<IStatusWiseCount> secondaryStatusWiseCount) {
-        List<StatusWiseCountTO> tempSecondaryStatusWiseCountTO = secondaryStatusWiseCount.stream().map(iStatusWiseCount -> iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount)).toList();
-        return primaryStatusWiseCount.stream().map(iStatusWiseCount -> {
-            StatusWiseCountTO statusWiseCountTO = iStatusWiseCountMapper.toStatusWiseCountTO(iStatusWiseCount);
-            statusWiseCountTO.setCount(statusWiseCountTO.getCount().add(
-                    tempSecondaryStatusWiseCountTO.stream()
-                            .filter(iStatusWiseCount1 -> statusWiseCountTO.getName().equals(iStatusWiseCount1.getName()))
-                            .findFirst()
-                            .orElse(StatusWiseCountTO.builder().count(BigInteger.ZERO).build())
-                            .getCount()));
-            return statusWiseCountTO;
-        }).collect(Collectors.toList());
+    private void populateHealthProfessionalRegistrationAndModificationRequestsForSmc(FetchCountOnCardResponseTO responseTO, BigInteger totalCount, List<BigInteger> dashboardStatuses, List<IStatusCount> statusCounts) {
+        final List<StatusWiseCountTO> hpRegistration = getDefaultCardsForSMC(TOTAL_HP_REGISTRATION_REQUESTS);
+        responseTO.setHpRegistrationRequest(FetchCountOnCardInnerResponseTO.builder()
+                .applicationTypeIds(StringUtils.join(applicationIds.get(HP_REGISTRATION_REQUEST), ",")).build());
+        responseTO.getHpRegistrationRequest().setStatusWiseCount(getCardResponse(
+                hpRegistration, totalCount, statusCounts, dashboardStatuses, HP_REGISTRATION_REQUEST));
+
+        final List<StatusWiseCountTO> hpModification = getDefaultCardsForSMC(TOTAL_HP_MODIFICATION_REQUESTS);
+        responseTO.setHpModificationRequest(FetchCountOnCardInnerResponseTO.builder()
+                .applicationTypeIds(StringUtils.join(applicationIds.get(HP_MODIFICATION_REQUEST), ",")).build());
+        responseTO.getHpModificationRequest().setStatusWiseCount(getCardResponse(
+                hpModification, totalCount, statusCounts, dashboardStatuses, HP_MODIFICATION_REQUEST));
     }
 
+    private void populateHealthProfessionalRegistrationAndModificationRequests(FetchCountOnCardResponseTO responseTO, BigInteger totalCount, List<BigInteger> dashboardStatuses, List<IStatusCount> statusCounts) {
+        final List<StatusWiseCountTO> hpRegistration = getDefaultCards(TOTAL_HP_REGISTRATION_REQUESTS);
+        responseTO.setHpRegistrationRequest(FetchCountOnCardInnerResponseTO.builder()
+                .applicationTypeIds(StringUtils.join(applicationIds.get(HP_REGISTRATION_REQUEST), ",")).build());
+        responseTO.getHpRegistrationRequest().setStatusWiseCount(getCardResponse(
+                hpRegistration, totalCount, statusCounts, dashboardStatuses, HP_REGISTRATION_REQUEST));
 
+        final List<StatusWiseCountTO> hpModification = getDefaultCards(TOTAL_HP_MODIFICATION_REQUESTS);
+        responseTO.setHpModificationRequest(FetchCountOnCardInnerResponseTO.builder()
+                .applicationTypeIds(StringUtils.join(applicationIds.get(HP_MODIFICATION_REQUEST), ",")).build());
+        responseTO.getHpModificationRequest().setStatusWiseCount(getCardResponse(
+                hpModification, totalCount, statusCounts, dashboardStatuses, HP_MODIFICATION_REQUEST));
+    }
+
+    private static List<StatusWiseCountTO> getCardResponse(List<StatusWiseCountTO> statusWiseCountResponseTos, BigInteger totalCount,
+                                                           List<IStatusCount> statusCounts, List<BigInteger> dashboardStatuses,
+                                                           String applicationType) {
+        for (BigInteger status : dashboardStatuses) {
+            for (IStatusCount sc : statusCounts) {
+                if (status.equals(sc.getProfileStatus()) && sc.getApplicationTypeId() != null && applicationIds.get(applicationType).contains(sc.getApplicationTypeId())) {
+                    Optional<StatusWiseCountTO> first = statusWiseCountResponseTos.stream()
+                            .filter(r -> r.getId() != null && r.getId().equals(sc.getProfileStatus())).findFirst();
+                    if (first.isPresent()) {
+                        first.get().setCount(first.get().getCount().add(sc.getCount()));
+                        totalCount = totalCount.add(sc.getCount());
+
+                    }
+                }
+            }
+        }
+        statusWiseCountResponseTos.get(0).setCount(totalCount);
+        return statusWiseCountResponseTos;
+    }
+
+    public static List<StatusWiseCountTO> getDefaultCards(String totalCardLabel) {
+        List<StatusWiseCountTO> response = new ArrayList<>();
+        response.add(StatusWiseCountTO.builder().name(totalCardLabel).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(Action.SUBMIT.getId()).name(WorkflowStatus.PENDING.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(Action.APPROVED.getId()).name(WorkflowStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(Action.QUERY_RAISE.getId()).name(WorkflowStatus.QUERY_RAISED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(Action.REJECT.getId()).name(WorkflowStatus.REJECTED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(Action.PERMANENT_SUSPEND.getId()).name(WorkflowStatus.SUSPENDED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(Action.TEMPORARY_SUSPEND.getId()).name(WorkflowStatus.BLACKLISTED.getDescription()).count(BigInteger.ZERO).build());
+        log.debug("Fetched default Card Count detail successfully");
+        return response;
+    }
+
+    public List<StatusWiseCountTO> getDefaultCardsForSMC(String totalCardLabel) {
+        List<StatusWiseCountTO> response = new ArrayList<>();
+        response.add(StatusWiseCountTO.builder().name(totalCardLabel).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(DashboardStatus.PENDING.getId()).name(DashboardStatus.PENDING.getDescription()).count(BigInteger.ZERO).build());
+        // this has to un comment when we need add college_verified.
+        //response.add(StatusWiseCountTO.builder().id(DashboardStatus.COLLEGE_VERIFIED.getId()).name(DashboardStatus.COLLEGE_VERIFIED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(DashboardStatus.APPROVED.getId()).name(DashboardStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(DashboardStatus.QUERY_RAISE.getId()).name(DashboardStatus.QUERY_RAISE.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(DashboardStatus.REJECT.getId()).name(DashboardStatus.REJECT.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(DashboardStatus.PERMANENT_SUSPEND.getId()).name(DashboardStatus.PERMANENT_SUSPEND.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(DashboardStatus.TEMPORARY_SUSPEND.getId()).name(DashboardStatus.TEMPORARY_SUSPEND.getDescription()).count(BigInteger.ZERO).build());
+        log.debug("Fetched default Card Count detail successfully");
+        return response;
+    }
 }

@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.exception.InvalidIdException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.OtpException;
 
@@ -15,19 +16,19 @@ public interface IUserService {
 
     List<NotificationToggleResponseTO> toggleNotification(NotificationToggleRequestTO notificationToggleRequestTO);
 
-    SMCProfileTO getSmcProfile(BigInteger id) throws NmrException;
+    SMCProfileTO getSmcProfile(BigInteger id) throws NmrException, InvalidIdException;
 
-    NmcProfileTO getNmcProfile(BigInteger id) throws NmrException;
+    NmcProfileTO getNmcProfile(BigInteger id) throws NmrException, InvalidIdException;
 
-    NbeProfileTO getNbeProfile(BigInteger id) throws NmrException;
+    NbeProfileTO getNbeProfile(BigInteger id) throws NmrException, InvalidIdException;
 
-    SMCProfileTO updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException;
+    SMCProfileTO updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException;
 
-    NmcProfileTO updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException;
+    NmcProfileTO updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException;
 
-    NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException;
-
-    ResponseMessageTo createHpUserAccount(CreateHpUserAccountTo createHpUserAccountTo);
+    NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException;
 
     String retrieveUser(RetrieveUserRequestTo retrieveUserRequestTo) throws OtpException;
+
+    ResponseMessageTo verifyEmail(VerifyEmailTo verifyEmailTo);
 }

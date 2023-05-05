@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static in.gov.abdm.nmr.util.NMRConstants.*;
-
 /**
  * NmrExceptionAdvice is a class that provides advice for handling exceptions in a RESTful service.
  */
@@ -35,79 +33,37 @@ public class NmrExceptionAdvice {
     private static final Logger LOGGER = LogManager.getLogger();
 
     /**
-     * Constant for Timestamp of generated response
+     * Handles TemplateException and returns a JSON response entity with HTTP status code 400.
+     *
+     * @param ex  the TemplateException object containing the error details
+     * @param req the HttpServletRequest object representing the current request
+     * @return a ResponseEntity object containing an ErrorDTO object and HTTP status code 400
      */
-    private static final String RESPONSE_TIMESTAMP = "timestamp";
-
-    /**
-     * Constant for logging
-     */
-    private static final String FAILED_TO_SEND_REQUEST_TO_SMS_GATEWAY = "Failed to send request to sms gateway";
-    /**
-     * constant for error response
-     */
-    private static final String MESSAGE = "message";
-
-    /**
-     * constant for error response
-     */
-    private static final String CODE = "code";
-
-
-    @ExceptionHandler({NmrException.class})
-    public ResponseEntity<ErrorTO> handleApiException(HttpServletRequest req, Throwable ex) {
-        NmrException nmrException = (NmrException) ex;
-        ErrorTO error = new ErrorTO(new Date(), nmrException.getStatus().value(), ex.getMessage(), req.getServletPath());
-
+    @ExceptionHandler(value = {WorkFlowException.class, InvalidRequestException.class, NmrException.class,
+            OtpException.class, TemplateException.class, NoDataFoundException.class, ResourceExistsException.class, InvalidIdException.class})
+    public ResponseEntity<ErrorDTO> handleBadRequest(ABDMBaseException ex, HttpServletRequest req) {
+        ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(error, headers, nmrException.getStatus());
+        return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({AccessDeniedException.class})
-    public ResponseEntity<ErrorTO> handleSecurityException(HttpServletRequest req, Throwable ex) {
-        ErrorTO error = new ErrorTO(new Date(), HttpStatus.FORBIDDEN.value(), ex.getMessage(), req.getServletPath());
-
+   @ExceptionHandler({AccessDeniedException.class})
+    public ResponseEntity<ErrorDTO> handleSecurityException(HttpServletRequest req, Throwable ex) {
+        ErrorDTO error = new ErrorDTO(new Date(), NMRError.ACCESS_DENIED_EXCEPTION.getCode(), NMRError.DATE_EXCEPTION.getMessage(), req.getServletPath(), HttpStatus.FORBIDDEN.toString());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, headers, HttpStatus.FORBIDDEN.value());
     }
 
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<ErrorTO> handleException(HttpServletRequest req, Throwable ex) {
+    public ResponseEntity<ErrorDTO> handleException(HttpServletRequest req, Throwable ex) {
         LOGGER.error("Unexpected error occured", ex);
-        ErrorTO error = new ErrorTO(new Date(), HttpStatus.INTERNAL_SERVER_ERROR.value(), "Unexpected error occured", req.getServletPath());
-
+        ErrorDTO error = new ErrorDTO(new Date(), NMRError.INTERNAL_SERVER_ERROR.getCode(), NMRError.INTERNAL_SERVER_ERROR.getMessage(), req.getServletPath(), HttpStatus.INTERNAL_SERVER_ERROR.toString());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, headers, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    @ExceptionHandler({InvalidRequestException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorTO> invalidRequest(HttpServletRequest req, Throwable ex) {
-        LOGGER.error(ex);
-        ErrorTO error = new ErrorTO(new Date(), HttpStatus.BAD_REQUEST.value(), ex.getMessage() != null ? ex.getMessage() : "Invalid request", req.getServletPath());
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
-    }
-
-
-    @ExceptionHandler({WorkFlowException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorTO> workflowExceptionHandler(HttpServletRequest req, Throwable ex) {
-        LOGGER.error(ex);
-        ErrorTO error = new ErrorTO(new Date(), HttpStatus.BAD_REQUEST.value(), ex.getMessage(), req.getServletPath());
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
-    }
-
 
     /**
      * Exception handler for {@link MethodArgumentNotValidException}.
@@ -119,13 +75,13 @@ public class NmrExceptionAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorInfo handleValidationExceptions(MethodArgumentNotValidException ex) {
         ErrorInfo errorInfo = new ErrorInfo();
-        errorInfo.setCode(INPUT_VALIDATION_ERROR_CODE);
+        errorInfo.setCode(NMRError.INPUT_VALIDATION_ERROR_CODE.getCode());
         errorInfo.setMessage(HttpStatus.BAD_REQUEST.toString());
         List<DetailsTO> details = new ArrayList<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
             DetailsTO detailsTO = new DetailsTO();
-            detailsTO.setCode(INPUT_VALIDATION_INTERNAL_ERROR_CODE);
-            detailsTO.setMessage(INVALID_INPUT_ERROR_MSG);
+            detailsTO.setCode(NMRError.INPUT_VALIDATION_INTERNAL_ERROR_CODE.getCode());
+            detailsTO.setMessage(NMRError.INPUT_VALIDATION_INTERNAL_ERROR_CODE.getMessage());
             AttributeTO attributeTO = new AttributeTO();
             String field = ((FieldError) error).getField();
             String defaultMessage = error.getDefaultMessage();
@@ -152,13 +108,13 @@ public class NmrExceptionAdvice {
     @ExceptionHandler(ConstraintViolationException.class)
     public ErrorInfo handleGlobalValidationException(ConstraintViolationException ex) {
         ErrorInfo errorInfo = new ErrorInfo();
-        errorInfo.setCode(INPUT_VALIDATION_ERROR_CODE);
+        errorInfo.setCode(NMRError.INPUT_VALIDATION_ERROR_CODE.getCode());
         errorInfo.setMessage(HttpStatus.BAD_REQUEST.toString());
         List<DetailsTO> details = new ArrayList<>();
         ex.getConstraintViolations().forEach(error -> {
             DetailsTO detailsTO = new DetailsTO();
-            detailsTO.setCode(INPUT_VALIDATION_INTERNAL_ERROR_CODE);
-            detailsTO.setMessage(INVALID_INPUT_ERROR_MSG);
+            detailsTO.setCode(NMRError.INPUT_VALIDATION_INTERNAL_ERROR_CODE.getCode());
+            detailsTO.setMessage(NMRError.INPUT_VALIDATION_INTERNAL_ERROR_CODE.getMessage());
             AttributeTO attributeTO = new AttributeTO();
             String field = error.getPropertyPath().toString();
             String defaultMessage = error.getMessage();
@@ -172,49 +128,9 @@ public class NmrExceptionAdvice {
         return errorInfo;
     }
 
-    /**
-     * Handles OtpException and returns a JSON response entity with HTTP status code 400.
-     *
-     * @param ex  the OtpException object containing the error details
-     * @param req the HttpServletRequest object representing the current request
-     * @return a ResponseEntity object containing an ErrorDTO object and HTTP status code 400
-     * @throws OtpException if an error occurs while handling the exception
-     */
-    @ExceptionHandler(OtpException.class)
-    public ResponseEntity<ErrorDTO> oTPExceptionHandler(OtpException ex, HttpServletRequest req) {
-        ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
-    }
-
-    /**
-     * Handles TemplateException and returns a JSON response entity with HTTP status code 400.
-     *
-     * @param ex  the TemplateException object containing the error details
-     * @param req the HttpServletRequest object representing the current request
-     * @return a ResponseEntity object containing an ErrorDTO object and HTTP status code 400
-     */
-    @ExceptionHandler(TemplateException.class)
-    public ResponseEntity<ErrorDTO> templateExceptionHandler(OtpException ex, HttpServletRequest req) {
-        ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
-    }
-
-
-    @ExceptionHandler(NoDataFoundException.class)
-    public ResponseEntity<ErrorDTO> handleNoDataFoundException(OtpException ex, HttpServletRequest req) {
-        ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(error, headers, HttpStatus.NOT_FOUND);
-    }
-
     @ExceptionHandler({DateException.class})
-    public ResponseEntity<ErrorTO> handleDateException(HttpServletRequest req, DateException ex) {
-        ErrorTO error = new ErrorTO(new Date(), HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), req.getServletPath());
+    public ResponseEntity<ErrorDTO> handleDateException(HttpServletRequest req, DateException ex) {
+        ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, headers, HttpStatus.INTERNAL_SERVER_ERROR.value());

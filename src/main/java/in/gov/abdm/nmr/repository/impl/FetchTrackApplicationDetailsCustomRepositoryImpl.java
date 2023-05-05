@@ -3,6 +3,8 @@ package in.gov.abdm.nmr.repository.impl;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestParamsTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationTo;
+import in.gov.abdm.nmr.enums.DashboardStatus;
+import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +15,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.math.BigInteger;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,8 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static in.gov.abdm.nmr.util.NMRConstants.*;
+import static in.gov.abdm.nmr.util.NMRConstants.FETCH_TRACK_DETAILS_QUERY;
+import static in.gov.abdm.nmr.util.NMRConstants.NOT_YET_RECEIVED;
 
 /**
  * A class that implements all the methods of the Custom Repository interface IFetchTrackApplicationDetailsCustomRepository
@@ -39,10 +41,6 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
     @PersistenceContext
     private EntityManager entityManager;
 
-    private static final Function<String, String> UPDATED_DATES = requestId -> "SELECT * FROM (SELECT request_id,previous_group_id,updated_at, DENSE_RANK() OVER(PARTITION BY previous_group_id ORDER BY updated_at DESC) AS previous_group_id_rank " +
-            "FROM main.work_flow_audit WHERE request_id = '" + requestId + "' ORDER BY updated_at ASC) work_flow_details WHERE work_flow_details.previous_group_id_rank = 1";
-
-
     /**
      * Represents a functional interface to generates a dynamic WHERE clause based on the HealthProfessionalApplicationRequestParamsTo
      * object passed as a parameter.
@@ -54,7 +52,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         StringBuilder sb = new StringBuilder();
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId()) && !healthProfessionalApplicationRequestParamsTo.getApplicationTypeId().isEmpty()) {
-            sb.append("AND calculate.application_type_id IN (").append(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId()).append(") ");
+            sb.append("AND d.application_type_id IN (").append(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId()).append(") ");
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getRegistrationNumber()) && !healthProfessionalApplicationRequestParamsTo.getRegistrationNumber().isEmpty()) {
@@ -119,7 +117,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
 
         sb.append(FETCH_TRACK_DETAILS_QUERY);
 
-        sb.append(" where calculate.hp_profile_id IS NOT NULL and current_status = 1 ");
+        sb.append(" where D.hp_profile_id IS NOT NULL ");
 
         if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
             StringBuilder hpIds = new StringBuilder();
@@ -146,59 +144,6 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
     };
 
     /**
-     * This method is used to retrieve the count of health professional application records based on the provided parameters.
-     *
-     * @param healthProfessionalApplicationRequestParamsTo - the parameters used to retrieve the health professional application records count
-     * @param hpProfiles
-     * @return totalRecords the count of health professional application requests
-     */
-    /*private BigInteger getCount(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, List<BigInteger> hpProfiles) {
-        BigInteger totalRecords = null;
-        try {
-            Query query = entityManager.createNativeQuery(GET_RECORD_COUNT.apply(healthProfessionalApplicationRequestParamsTo, hpProfiles));
-            Object result = query.getSingleResult();
-            totalRecords = (BigInteger) result;
-        } catch (Exception e) {
-            log.error("Repository:: getRecords " + e.getMessage());
-        }
-        return totalRecords;
-    }*/
-
-    /**
-     * Represents a functional interface to generates a dynamic WHERE clause based on the HealthProfessionalApplicationRequestParamsTo
-     * object passed as a parameter.
-     *
-     * @param healthProfessionalApplicationRequestParamsTo - an object that contains parameters for the function
-     * @return a query to get the count of the Health Professional's application requests.
-     */
-    /* private static final BiFunction<HealthProfessionalApplicationRequestParamsTo, List<BigInteger>, String> GET_RECORD_COUNT = (healthProfessionalApplicationRequestParamsTo, hpProfiles) -> {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(FETCH_TRACK_DETAILS_COUNT_QUERY);
-
-        sb.append(" where calculate.hp_profile_id IS NOT NULL and current_status = 1 ");
-
-        if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
-            StringBuilder hpIds = new StringBuilder();
-            hpProfiles.forEach(hpProfile -> {
-                if (hpProfiles.indexOf(hpProfile) == hpProfiles.size() - 1) {
-                    hpIds.append(hpProfile);
-                } else {
-                    hpIds.append(hpProfile).append(",");
-                }
-            });
-            sb.append("AND rd.hp_profile_id IN  (").append(hpIds).append(") ");
-        }
-
-        String parameters = TRACK_APPLICATION_PARAMETERS.apply(healthProfessionalApplicationRequestParamsTo);
-
-        if (Objects.nonNull(parameters) && !parameters.isEmpty()) {
-            sb.append(parameters);
-        }
-        return sb.toString();
-    };*/
-
-    /**
      * Retrieves the details of health professional applications requests based on the provided parameters.
      *
      * @param healthProfessionalApplicationRequestParamsTo - object containing the filter criteria for fetching application details
@@ -221,60 +166,27 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         List<Object[]> results = query.getResultList();
         results.forEach(result -> {
             HealthProfessionalApplicationTo healthProfessionalApplicationTo = new HealthProfessionalApplicationTo();
-            healthProfessionalApplicationTo.setDoctorStatus((String) result[0]);
-            healthProfessionalApplicationTo.setSmcStatus((String) result[1]);
-            healthProfessionalApplicationTo.setCollegeDeanStatus((String) result[2]);
-            healthProfessionalApplicationTo.setCollegeRegistrarStatus((String) result[3]);
-            healthProfessionalApplicationTo.setNmcStatus((String) result[4]);
-            healthProfessionalApplicationTo.setNbeStatus((String) result[5]);
-            healthProfessionalApplicationTo.setHpProfileId((BigInteger) result[6]);
-            String requestId = (String) result[7];
-            Query queryDate = entityManager.createNativeQuery(UPDATED_DATES.apply(requestId));
-            List<Object[]> resultsDate = queryDate.getResultList();
-            Timestamp submissionDate = (Timestamp)resultsDate.get(0)[2];
-            healthProfessionalApplicationTo.setCreatedAt(submissionDate.toString());
-            resultsDate.forEach(objects -> {
-                BigInteger previousGroupId = (BigInteger) objects[1];
-                Timestamp timestamp = (Timestamp) objects[2];
-                switch (previousGroupId.intValue()) {
-                    case 1:
-                        healthProfessionalApplicationTo.setDoctorActionDate(timestamp.toString());
-                        break;
-                    case 2:
-                        healthProfessionalApplicationTo.setSmcActionDate(timestamp.toString());
-                        break;
-                    case 3:
-                        healthProfessionalApplicationTo.setNmcActionDate(timestamp.toString());
-                        break;
-                    case 4:
-//                        healthProfessionalApplicationTo.setCollegeDeanActionDate(timestamp.toString());
-                        healthProfessionalApplicationTo.setCollegeActionDate(timestamp.toString());
-                        break;
-                    case 5:
-                        healthProfessionalApplicationTo.setCollegeRegistrarActionDate(timestamp.toString());
-                        break;
-                    case 7:
-                        healthProfessionalApplicationTo.setNbeActionDate(timestamp.toString());
-                        break;
-                }
-            });
-            healthProfessionalApplicationTo.setRequestId((String) result[7]);
-            healthProfessionalApplicationTo.setRegistrationNo((String) result[8]);
-//            healthProfessionalApplicationTo.setCreatedAt((String) result[9]);
-            healthProfessionalApplicationTo.setCouncilName((String) result[10]);
-            healthProfessionalApplicationTo.setApplicantFullName((String) result[11]);
-            healthProfessionalApplicationTo.setApplicationTypeId((BigInteger) result[12]);
-            healthProfessionalApplicationTo.setApplicationTypeName((String) result[13]);
-            healthProfessionalApplicationTo.setPendency((Double) result[14]);
-            healthProfessionalApplicationTo.setWorkFlowStatusId((BigInteger) result[15]);
-            healthProfessionalApplicationTo.setGender((String) result[16]);
-            healthProfessionalApplicationTo.setEmailId((String) result[17]);
-            healthProfessionalApplicationTo.setMobileNumber((String) result[18]);
-            healthProfessionalApplicationTo.setNmrId((String)result[19]);
-            healthProfessionalApplicationTo.setYearOfRegistration(((Date) result[20]).toString());
-            healthProfessionalApplicationTo.setCollegeStatus((String) result[21]);
-            healthProfessionalApplicationResponseTo.setTotalNoOfRecords((BigInteger) result[22]);
-
+            healthProfessionalApplicationTo.setDoctorStatus(result[0] != null ? WorkflowStatus.getWorkflowStatus((BigInteger) result[0]).getDescription() : "");
+            healthProfessionalApplicationTo.setSmcStatus(result[1] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[1]).getStatus() : NOT_YET_RECEIVED);
+            healthProfessionalApplicationTo.setNmcStatus(result[2] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[2]).getStatus() : NOT_YET_RECEIVED);
+            healthProfessionalApplicationTo.setNbeStatus(result[3] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[3]).getStatus() : NOT_YET_RECEIVED);
+            healthProfessionalApplicationTo.setHpProfileId((BigInteger) result[4]);
+            healthProfessionalApplicationTo.setRequestId((String) result[5]);
+            healthProfessionalApplicationTo.setRegistrationNo((String) result[6]);
+            healthProfessionalApplicationTo.setCreatedAt((String) result[7]);
+            healthProfessionalApplicationTo.setCouncilName((String) result[8]);
+            healthProfessionalApplicationTo.setApplicantFullName((String) result[9]);
+            healthProfessionalApplicationTo.setApplicationTypeId((BigInteger) result[10]);
+            healthProfessionalApplicationTo.setApplicationTypeName((String) result[11]);
+            healthProfessionalApplicationTo.setPendency((int) Math.floor((Double) result[12]));
+            healthProfessionalApplicationTo.setWorkFlowStatusId((BigInteger) result[13]);
+            healthProfessionalApplicationTo.setGender((String) result[14]);
+            healthProfessionalApplicationTo.setEmailId((String) result[15]);
+            healthProfessionalApplicationTo.setMobileNumber((String) result[16]);
+            healthProfessionalApplicationTo.setNmrId((String)result[17]);
+            healthProfessionalApplicationTo.setYearOfRegistration(((Timestamp) result[18]).toString());
+            healthProfessionalApplicationTo.setCollegeStatus(result[19] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[19]).getStatus() : NOT_YET_RECEIVED);
+            healthProfessionalApplicationResponseTo.setTotalNoOfRecords((BigInteger) result[20]);
             healthProfessionalApplicationToList.add(healthProfessionalApplicationTo);
         });
         healthProfessionalApplicationResponseTo.setHealthProfessionalApplications(healthProfessionalApplicationToList);

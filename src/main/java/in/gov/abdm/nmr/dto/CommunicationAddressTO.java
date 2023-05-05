@@ -2,15 +2,12 @@ package in.gov.abdm.nmr.dto;
 
 import lombok.Data;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigInteger;
 
-import static in.gov.abdm.nmr.util.NMRConstants.NOT_BLANK_ERROR_MSG;
-import static in.gov.abdm.nmr.util.NMRConstants.NOT_NULL_ERROR_MSG;
 import static in.gov.abdm.nmr.util.NMRConstants.INVALID_PINCODE;
+import static in.gov.abdm.nmr.util.NMRConstants.NOT_BLANK_ERROR_MSG;
 
 @Data
 public class CommunicationAddressTO {
@@ -29,7 +26,6 @@ public class CommunicationAddressTO {
     @NotBlank(message = NOT_BLANK_ERROR_MSG)
     private String addressLine1;
 
-    @NotBlank(message = NOT_BLANK_ERROR_MSG)
     private String house;
 
     private String street;

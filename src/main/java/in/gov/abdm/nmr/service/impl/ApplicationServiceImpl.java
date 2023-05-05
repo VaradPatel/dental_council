@@ -2,11 +2,12 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.enums.ApplicationSubType;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
+import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.repository.*;
@@ -149,7 +150,7 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
     @Override
-    public SuspendRequestResponseTo suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
+    public SuspendRequestResponseTo suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
 
         log.info("In ApplicationServiceImpl: suspendRequest method ");
 
@@ -157,7 +158,6 @@ public class ApplicationServiceImpl implements IApplicationService {
         if (Objects.equals(HpProfileStatus.APPROVED.getId(), hpProfile.getHpProfileStatus().getId())) {
             log.debug("Building a new request_id");
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
-//        HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
             initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
             SuspendRequestResponseTo suspendRequestResponseTo = new SuspendRequestResponseTo();
             suspendRequestResponseTo.setProfileId(hpProfile.getId().toString());
@@ -166,8 +166,8 @@ public class ApplicationServiceImpl implements IApplicationService {
             log.info("ApplicationServiceImpl: suspendRequest method: Execution Successful. ");
 
             return suspendRequestResponseTo;
-        }else {
-            throw new NmrException("Approved profile can only be suspended", HttpStatus.FORBIDDEN);
+        } else {
+            throw new WorkFlowException(NMRError.PROFILE_NOT_APPROVED.getCode(), NMRError.PROFILE_NOT_APPROVED.getMessage());
         }
 
     }
@@ -180,7 +180,7 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
     @Override
-    public ReactivateRequestResponseTo reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException {
+    public ReactivateRequestResponseTo reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
 
         log.info("In ApplicationServiceImpl: reactivateRequest method ");
 
@@ -191,7 +191,6 @@ public class ApplicationServiceImpl implements IApplicationService {
 
             log.debug("Building Request id.");
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
-//            HpProfile newHpProfile = createNewHpProfile(applicationRequestTo, requestId);
             WorkFlow workFlow = iWorkFlowRepository.findLastWorkFlowForHealthProfessional(hpProfile.getId());
             if (Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
                 log.debug("Proceeding to reactivate through SMC since the profile was suspended by NMC");
@@ -210,7 +209,7 @@ public class ApplicationServiceImpl implements IApplicationService {
 
             return reactivateRequestResponseTo;
         } else {
-            throw new NmrException("Suspended profile can only be reactivated", HttpStatus.FORBIDDEN);
+            throw new WorkFlowException(NMRError.PROFILE_NOT_SUSPEND.getCode(), NMRError.PROFILE_NOT_SUSPEND.getMessage());
         }
     }
 
@@ -262,10 +261,10 @@ public class ApplicationServiceImpl implements IApplicationService {
                         reactivateHealthProfessionalQueryParam.setSearch(value);
                         break;
                     default:
-                        throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE);
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE.getMessage());
                 }
             } else {
-                throw new InvalidRequestException(MISSING_SEARCH_VALUE);
+                throw new InvalidRequestException(NMRError.MISSING_SEARCH_VALUE.getCode(), NMRError.MISSING_SEARCH_VALUE.getMessage());
             }
         }
         final String sortingOrder = sortType == null ? DEFAULT_SORT_ORDER : sortType;
@@ -299,7 +298,7 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @param newHpProfile         the new health professional profile created as a result of the request
      * @throws WorkFlowException if there is any error while initiating the workflow
      */
-    private void initiateWorkFlow(ApplicationRequestTo applicationRequestTo, String requestId, HpProfile newHpProfile) throws WorkFlowException {
+    private void initiateWorkFlow(ApplicationRequestTo applicationRequestTo, String requestId, HpProfile newHpProfile) throws WorkFlowException, InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User userDetail = userDaoService.findByUsername(userName);
         WorkFlowRequestTO workFlowRequestTO = new WorkFlowRequestTO();
@@ -313,85 +312,6 @@ public class ApplicationServiceImpl implements IApplicationService {
         workFlowRequestTO.setRemarks(applicationRequestTo.getRemarks());
         workFlowRequestTO.setApplicationSubTypeId(applicationRequestTo.getApplicationSubTypeId());
         iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
-    }
-
-    private HpProfile createNewHpProfile(ApplicationRequestTo applicationRequestTo, String requestId) {
-        HpProfile existingHpProfile = iHpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
-        HpProfile targetedHpProfile = new HpProfile();
-        org.springframework.beans.BeanUtils.copyProperties(existingHpProfile, targetedHpProfile);
-        targetedHpProfile.setId(null);
-        targetedHpProfile.setRequestId(requestId);
-        iHpProfileRepository.save(targetedHpProfile);
-
-        RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(existingHpProfile.getId());
-        RegistrationDetails newRegistrationDetails = new RegistrationDetails();
-        org.springframework.beans.BeanUtils.copyProperties(registrationDetails, newRegistrationDetails);
-        newRegistrationDetails.setId(null);
-        newRegistrationDetails.setHpProfileId(targetedHpProfile);
-        iRegistrationDetailRepository.save(newRegistrationDetails);
-
-        Address address = addressRepository.getCommunicationAddressByHpProfileId(existingHpProfile.getId(), AddressType.COMMUNICATION.getId());
-        Address newAddress = new Address();
-        org.springframework.beans.BeanUtils.copyProperties(address, newAddress);
-        newAddress.setId(null);
-        newAddress.setHpProfileId(targetedHpProfile.getId());
-        addressRepository.save(newAddress);
-
-//        List<WorkProfile> workProfileList = new ArrayList<>();
-//        List<WorkProfile> workProfiles = workProfileRepository.getWorkProfileDetailsByHPId(existingHpProfile.getId());
-//        workProfiles.forEach(workProfile -> {
-//            WorkProfile newWorkProfile = new WorkProfile();
-//            org.springframework.beans.BeanUtils.copyProperties(workProfile, newWorkProfile);
-//            newWorkProfile.setId(null);
-//            newWorkProfile.setHpProfileId(targetedHpProfile.getId());
-//            workProfileList.add(newWorkProfile);
-//        });
-//        workProfileRepository.saveAll(workProfileList);
-
-/*        List<LanguagesKnown> languagesKnownList = new ArrayList<>();
-        List<LanguagesKnown> languagesKnown = languagesKnownRepository.getLanguagesKnownByHpProfileId(existingHpProfile.getId());
-        for (LanguagesKnown languageKnown : languagesKnown) {
-            LanguagesKnown newLanguagesKnown = new LanguagesKnown();
-            org.springframework.beans.BeanUtils.copyProperties(languageKnown, newLanguagesKnown);
-            newLanguagesKnown.setId(null);
-            newLanguagesKnown.setHpProfile(targetedHpProfile);
-            languagesKnownList.add(newLanguagesKnown);
-        }
-        languagesKnownRepository.saveAll(languagesKnownList);*/
-
-        List<QualificationDetails> qualificationDetails = new ArrayList<>();
-        List<QualificationDetails> qualificationDetailsList = iQualificationDetailRepository.getQualificationDetailsByHpProfileId(existingHpProfile.getId());
-        for (QualificationDetails qualificationDetail : qualificationDetailsList) {
-            QualificationDetails newQualificationDetails = new QualificationDetails();
-            org.springframework.beans.BeanUtils.copyProperties(qualificationDetail, newQualificationDetails);
-            newQualificationDetails.setId(null);
-            newQualificationDetails.setHpProfile(targetedHpProfile);
-            qualificationDetails.add(newQualificationDetails);
-        }
-        iQualificationDetailRepository.saveAll(qualificationDetails);
-
-        List<ForeignQualificationDetails> customQualificationDetailsList = new ArrayList<>();
-        List<ForeignQualificationDetails> customQualificationDetails = iForeignQualificationDetailRepository.getQualificationDetailsByHpProfileId(existingHpProfile.getId());
-        for (ForeignQualificationDetails customQualificationDetail : customQualificationDetails) {
-            ForeignQualificationDetails newCustomQualificationDetails = new ForeignQualificationDetails();
-            org.springframework.beans.BeanUtils.copyProperties(customQualificationDetail, newCustomQualificationDetails);
-            newCustomQualificationDetails.setId(null);
-            newCustomQualificationDetails.setHpProfile(targetedHpProfile);
-            customQualificationDetailsList.add(newCustomQualificationDetails);
-        }
-        iForeignQualificationDetailRepository.saveAll(customQualificationDetailsList);
-
-//        List<SuperSpeciality> superSpecialities = new ArrayList<>();
-//        List<SuperSpeciality> superSpecialityList = superSpecialityRepository.getSuperSpecialityFromHpProfileId(existingHpProfile.getId());
-//        for (SuperSpeciality superSpeciality : superSpecialityList) {
-//            SuperSpeciality newSuperSpeciality = new SuperSpeciality();
-//            org.springframework.beans.BeanUtils.copyProperties(superSpeciality, newSuperSpeciality);
-//            newSuperSpeciality.setId(null);
-//            newSuperSpeciality.setHpProfileId(targetedHpProfile.getId());
-//            superSpecialities.add(newSuperSpeciality);
-//        }
-//        superSpecialityRepository.saveAll(superSpecialities);
-        return targetedHpProfile;
     }
 
     /**
@@ -446,10 +366,10 @@ public class ApplicationServiceImpl implements IApplicationService {
                         applicationRequestParamsTo.setYearOfRegistration(value);
                         break;
                     default:
-                        throw new InvalidRequestException(INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION);
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION.getMessage());
                 }
             } else {
-                throw new InvalidRequestException(MISSING_SEARCH_VALUE);
+                throw new InvalidRequestException(NMRError.MISSING_SEARCH_VALUE.getCode(), NMRError.MISSING_SEARCH_VALUE.getMessage());
             }
         }
         if (Objects.nonNull(smcId)) {
@@ -505,7 +425,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         ApplicationDetailsTo detailsTo;
         List<WorkFlowAudit> workFlowAudit = iWorkFlowAuditRepository.fetchApplicationDetails(requestId);
         if (workFlowAudit == null || workFlowAudit.isEmpty()) {
-            log.error("unable to complete fetch application details process due {} workflow audit records for request ID: {}", workFlowAudit.size(), requestId);
+            log.error("unable to complete fetch application details process due workflow audit records for request ID: {}", requestId);
             throw new InvalidRequestException("Invalid input request ID: " + requestId + ". Please enter a valid input and try again");
         }
         log.debug("Fetched {} workflow audit records for request ID: {}", workFlowAudit.size(), requestId);
@@ -557,6 +477,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         columnToSortMap.put("councilName", " stmc.name");
         columnToSortMap.put("applicantFullName", " hp.full_name");
         columnToSortMap.put("applicationTypeId", " application_type_id");
-        return columnToSortMap.getOrDefault(columnToSort, " rd.created_at ");
+        columnToSortMap.put("pendency", " pendency");
+        return columnToSortMap.getOrDefault(columnToSort, " pendency ");
     }
 }

@@ -15,16 +15,13 @@ public class RegistrationRenewationTypeServiceImpl implements IRegistrationRenew
 
     private RegistrationRenewationTypeRepository registrationRenewationTypeRepository;
 
-    private RegistrationRenewationTypeDtoMapper registrationRenewationTypeDtoMapper;
-
-    public RegistrationRenewationTypeServiceImpl(RegistrationRenewationTypeRepository registrationRenewationTypeRepository, RegistrationRenewationTypeDtoMapper registrationRenewationTypeDtoMapper) {
+    public RegistrationRenewationTypeServiceImpl(RegistrationRenewationTypeRepository registrationRenewationTypeRepository) {
         this.registrationRenewationTypeRepository = registrationRenewationTypeRepository;
-        this.registrationRenewationTypeDtoMapper = registrationRenewationTypeDtoMapper;
     }
 
     @Override
     public List<RegistrationRenewationTypeTO> getRegistrationRenewationType() {
-        return registrationRenewationTypeDtoMapper.registrationRenewationTypeDataToDto(registrationRenewationTypeRepository.getRegistrationRenewationType());
+        return RegistrationRenewationTypeDtoMapper.REGISTRATION_RENEWATION_TYPE_DTO_MAPPER.registrationRenewationTypeDataToDto(registrationRenewationTypeRepository.getRegistrationRenewationType());
 
     }
 

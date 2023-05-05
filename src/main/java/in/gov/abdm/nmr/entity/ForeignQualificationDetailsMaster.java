@@ -15,7 +15,7 @@ import java.sql.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class ForeignQualificationDetailsMaster {
+public class ForeignQualificationDetailsMaster extends CommonAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,4 +55,8 @@ public class ForeignQualificationDetailsMaster {
     private BigInteger broadSpecialityId;
     private String superSpecialityName;
     private String fileName;
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
 }

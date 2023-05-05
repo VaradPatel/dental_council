@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.math.BigInteger;
@@ -85,4 +84,6 @@ public class HpProfile extends CommonAuditEntity {
 	private String registrationId;
 	private String isSameAddress;
 	private Integer isNew;
+	@Column(columnDefinition ="integer default 0")
+	private Integer consent;
 }

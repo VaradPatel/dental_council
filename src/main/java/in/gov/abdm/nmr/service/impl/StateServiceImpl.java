@@ -16,16 +16,13 @@ public class StateServiceImpl implements IStateService {
 
     private IStateRepository stateRepository;
 
-    private StateDtoMapper stateDtoMapper;
-
-    public StateServiceImpl(IStateRepository stateRepository, StateDtoMapper stateDtoMapper) {
+    public StateServiceImpl(IStateRepository stateRepository) {
         this.stateRepository = stateRepository;
-        this.stateDtoMapper = stateDtoMapper;
     }
 
     @Override
     public List<StateTO> getStateData(BigInteger countryId) {
-    	return stateDtoMapper.stateDataToDto(stateRepository.getState(countryId));
+    	return StateDtoMapper.STATE_DTO_MAPPER.stateDataToDto(stateRepository.getState(countryId));
     }
 
 }

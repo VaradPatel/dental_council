@@ -8,6 +8,4 @@ import java.math.BigInteger;
 
 public interface WorkProfileMasterRepository extends JpaRepository<WorkProfileMaster, BigInteger> {
 
-    @Query(value = "SELECT * FROM work_profile_master where hp_profile_id = :hpProfileId", nativeQuery = true)
-    WorkProfileMaster getWorkProfileByHpProfileId(BigInteger hpProfileId);
 }

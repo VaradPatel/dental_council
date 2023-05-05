@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigInteger;
 import java.util.List;
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @RestController
 public class MasterDataController {
@@ -23,8 +24,8 @@ public class MasterDataController {
         this.masterDataService = masterDataService;
     }
 
-    @GetMapping(path = "/state-medical-councils", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<MasterDataTO> smcs() {
+    @GetMapping(path = STATE_MEDICAL_COUNCIL_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<MasterDataTO> getStateMedicalCouncils() {
         return masterDataService.smcs();
     }
 
@@ -58,12 +59,6 @@ public class MasterDataController {
         return masterDataService.cities(subDistrictId);
     }
 
-    @Deprecated
-    @GetMapping(path = "/universities", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<MasterDataTO> universities() {
-        return masterDataService.universities();
-    }
-
     @GetMapping(path = "/languages", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MasterDataTO> languages() {
         return masterDataService.languages();
@@ -92,17 +87,5 @@ public class MasterDataController {
     @GetMapping(path = "/university", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UniversityMasterResponseTo> getUniversitiesByCollege(@RequestParam(required = false, value = "collegeId") BigInteger collegeId) {
         return masterDataService.getUniversitiesByCollege(collegeId);
-    }
-
-    @Deprecated
-    @GetMapping(path = "/colleges-deprecated", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<CollegeMasterResponseTo> getCollegesByUniversity(@RequestParam(required = false, value = "universityId") BigInteger universityId) {
-        return masterDataService.getCollegesByUniversity(universityId);
-    }
-
-    @Deprecated
-    @GetMapping(path = "/universitiesByStateId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UniversityMasterResponseTo> getUniversitiesByState(@RequestParam(required = false, value = "stateId") BigInteger stateId) {
-        return masterDataService.getUniversitiesByState(stateId);
     }
 }

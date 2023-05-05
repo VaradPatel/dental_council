@@ -3,7 +3,7 @@ package in.gov.abdm.nmr.exception;
 import org.springframework.http.HttpStatus;
 
 public class OtpException extends ABDMBaseException {
-    private static final long serialVersionUID = -5363377902805482437L;
+    private static final long serialVersionUID = 1L;
 
     public OtpException() {
         super(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage(), HttpStatus.UNAUTHORIZED.toString());
@@ -20,10 +20,5 @@ public class OtpException extends ABDMBaseException {
     public OtpException(String code, String message, String httpStatus) {
         super(code, message, httpStatus);
     }
-
-    public OtpException(Throwable throwable) {
-        super(String.valueOf(throwable));
-    }
-
 
 }

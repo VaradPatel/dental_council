@@ -1,19 +1,5 @@
 package in.gov.abdm.nmr.service.impl;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import cn.apiclub.captcha.servlet.CaptchaServletUtil;
 import cn.apiclub.captcha.text.renderer.DefaultWordRenderer;
 import in.gov.abdm.nmr.dto.GenerateCaptchaResponseTO;
@@ -22,18 +8,22 @@ import in.gov.abdm.nmr.dto.ValidateCaptchaResponseTO;
 import in.gov.abdm.nmr.redis.hash.Captcha;
 import in.gov.abdm.nmr.service.ICaptchaDaoService;
 import in.gov.abdm.nmr.service.ICaptchaService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Base64;
+import java.util.List;
+import java.util.UUID;
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @Service
 public class CaptchaServiceImpl implements ICaptchaService {
     
-    private static final String OPERATOR_MINUS = "-";
-
-    private static final String OPERATOR_PLUS = "+";
-    
-    private static final String OPERATOR_MULTIPLICATION = "*";
-
-    private static final List<String> OPERATORS = Arrays.asList(OPERATOR_PLUS, OPERATOR_MINUS, OPERATOR_MULTIPLICATION);
-
     private ICaptchaDaoService captchaDaoService;
     
     private boolean captchaEnabled;

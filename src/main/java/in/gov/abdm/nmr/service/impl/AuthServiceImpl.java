@@ -4,10 +4,12 @@ import in.gov.abdm.nmr.client.GatewayFClient;
 import in.gov.abdm.nmr.dto.LoginResponseTO;
 import in.gov.abdm.nmr.dto.SessionRequestTo;
 import in.gov.abdm.nmr.dto.SessionResponseTo;
-import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.entity.CollegeProfile;
+import in.gov.abdm.nmr.entity.HpProfile;
+import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.security.common.RoleConstants;
 import in.gov.abdm.nmr.security.jwt.JwtTypeEnum;
 import in.gov.abdm.nmr.security.jwt.JwtUtil;
@@ -94,6 +96,8 @@ public class AuthServiceImpl implements IAuthService {
 
         } else if (UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode().equals(user.getUserType().getId())) {
             loginResponseTO.setProfileId(nmcDaoService.findByUserId(user.getId()).getId());
+            BigInteger userSubTypeId = user.getUserSubType().getId();
+            loginResponseTO.setUserSubType(userSubTypeId);
         } else if (UserTypeEnum.NBE.getCode().equals(user.getUserType().getId())) {
             loginResponseTO.setProfileId(nbeDaoService.findByUserId(user.getId()).getId());
         }

@@ -1,7 +1,6 @@
 package in.gov.abdm.nmr.entity;
 
 import lombok.*;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.math.BigInteger;
@@ -80,4 +79,6 @@ public class HpProfileMaster {
 	private String isSameAddress;
 	private String transactionId;
 	private String registrationId;
+	@Column(columnDefinition ="integer default 0")
+	private Integer consent;
 }

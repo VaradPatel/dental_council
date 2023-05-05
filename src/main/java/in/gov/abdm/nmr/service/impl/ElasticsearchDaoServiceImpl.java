@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
 
 @Service
 public class ElasticsearchDaoServiceImpl implements IElasticsearchDaoService {
@@ -86,7 +85,7 @@ public class ElasticsearchDaoServiceImpl implements IElasticsearchDaoService {
         }
 
         if (hpSearchRequestTO.getProfileStatusId() != null) {
-            queryBuilder.filter(m -> m.match(mq -> mq.field("profile_status_id").query(hpSearchRequestTO.getProfileStatusId().longValueExact())));
+            queryBuilder.filter(m -> m.terms(mq -> mq.field("profile_status_id").terms(builder -> builder.value(hpSearchRequestTO.getProfileStatusId()))));
         }
 
         return elasticsearchRepository.searchHP(queryBuilder.build(), pageable.getPageNumber(), pageable.getPageSize());

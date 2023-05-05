@@ -8,24 +8,14 @@ import java.math.BigInteger;
 import java.util.List;
 
 public interface ICollegeMasterRepository extends JpaRepository<CollegeMaster, BigInteger> {
-    @Query(value = "SELECT *  FROM college_master WHERE state_id= :stateId", nativeQuery = true)
+    @Query(value = "SELECT id, INITCAP(name) name, status, visible_status, system_of_medicine_id, state_id, course_id, created_at, updated_at, college_code, website, address_line_1, address_line_2, district_id, village_id, pin_code, state_medical_council_id FROM college_master WHERE state_id= :stateId order by name asc", nativeQuery = true)
     List<CollegeMaster> getCollegesByStateId(BigInteger stateId);
 
     @Query(value = "SELECT *  FROM college_master WHERE id= :id", nativeQuery = true)
     CollegeMaster findCollegeMasterById(BigInteger id);
 
-
-    @Query(value = """
-            select cm.id, cm.college_id, cm.name, cm.status, cm.visible_status, cm.system_of_medicine_id,
-            cm.state_id, cm.course_id, cm.created_at, cm.updated_at FROM college_master cm join university_master
-            um on cm.college_id=um.college_id where um.university_id = :universityId""", nativeQuery = true)
-    List<CollegeMaster> getCollegesByUniversity(BigInteger universityId);
-
-
-    @Query(value = "select cm.id,cm.college_id,cm.name,cm.state_id FROM main.college_master cm join main.university_master um on cm.college_id=um.college_id where um.university_id =:universityId", nativeQuery = true)
-    List<CollegeMaster> getCollegesByUniversity1(BigInteger universityId);
-
-
-    @Query(value = "SELECT *  FROM college_master", nativeQuery = true)
+    @Query(value = "SELECT id, INITCAP(name) name, status, visible_status, system_of_medicine_id, state_id, course_id, created_at, updated_at, college_code, website, address_line_1, address_line_2, district_id, village_id, pin_code, state_medical_council_id FROM college_master order by name asc", nativeQuery = true)
     List<CollegeMaster> getColleges();
+    @Query(value = "SELECT *  FROM college_master WHERE name= :collegeName", nativeQuery = true)
+    CollegeMaster getCollegeByName(String collegeName);
 }

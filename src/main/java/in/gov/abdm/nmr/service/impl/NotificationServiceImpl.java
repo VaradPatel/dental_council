@@ -1,15 +1,19 @@
 package in.gov.abdm.nmr.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.client.NotificationDBFClient;
 import in.gov.abdm.nmr.client.NotificationFClient;
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.entity.Notification;
 import in.gov.abdm.nmr.enums.NotificationType;
 import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.TemplateException;
+import in.gov.abdm.nmr.repository.INotificationRepository;
 import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.TemplatedStringBuilder;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -20,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -27,6 +32,7 @@ import java.util.UUID;
 /**
  * Implementation of methods to generate and validate OTP
  */
+@Slf4j
 @Service
 public class NotificationServiceImpl implements INotificationService {
 
@@ -39,6 +45,9 @@ public class NotificationServiceImpl implements INotificationService {
     @Autowired
     MessageSource messageSource;
 
+    @Autowired
+    INotificationRepository iNotificationRepository;
+
     @Value("${notification.origin}")
     private String notificationOrigin;
 
@@ -48,8 +57,8 @@ public class NotificationServiceImpl implements INotificationService {
     /**
      * Sends notification on each status change
      *
-     * @param type type sms/email
-     * @param otp to be sent on email/sms
+     * @param type     type sms/email
+     * @param otp      to be sent on email/sms
      * @param receiver to send sms/sms
      * @return success/failure
      */
@@ -66,7 +75,7 @@ public class NotificationServiceImpl implements INotificationService {
                     .replace(NMRConstants.TEMPLATE_VAR3, NMRConstants.MESSAGE_SENDER)
                     .finish();
 
-            return sendNotification(List.of(NotificationType.EMAIL.getNotificationType()), NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.OTP_EMAIL_SUBJECT, message, receiver, receiver);
+            return sendNotification(NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.OTP_EMAIL_SUBJECT, message, null, receiver,NMRConstants.EMAIL_OTP_MESSAGE_PROPERTIES_KEY);
 
         } else if (NotificationType.SMS.getNotificationType().equals(type)) {
 
@@ -78,7 +87,7 @@ public class NotificationServiceImpl implements INotificationService {
                     .replace(NMRConstants.TEMPLATE_VAR3, NMRConstants.MESSAGE_SENDER)
                     .finish();
 
-            return sendNotification(List.of(NotificationType.SMS.getNotificationType()), NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.OTP_EMAIL_SUBJECT, message, receiver,receiver);
+            return sendNotification(NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.OTP_EMAIL_SUBJECT, message, receiver, null, NMRConstants.SMS_OTP_MESSAGE_PROPERTIES_KEY);
         }
         return new ResponseMessageTo(NMRConstants.NO_SUCH_OTP_TYPE);
     }
@@ -86,7 +95,7 @@ public class NotificationServiceImpl implements INotificationService {
     /**
      * Sends notification on each status change
      *
-     * @param type type sms/email
+     * @param type     type sms/email
      * @param receiver to send sms/sms
      * @return success/failure
      */
@@ -103,7 +112,7 @@ public class NotificationServiceImpl implements INotificationService {
                     .replace(NMRConstants.TEMPLATE_VAR2, NMRConstants.MESSAGE_SENDER)
                     .finish();
 
-            return sendNotification(List.of(NotificationType.EMAIL.getNotificationType()), NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_VERIFICATION_SUCCESSFUL_SUBJECT, message, receiver,receiver);
+            return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_VERIFICATION_SUCCESSFUL_SUBJECT, message, receiver, receiver, NMRConstants.EMAIL_VERIFIED_MESSAGE_PROPERTIES_KEY);
 
         } else if (NotificationType.SMS.getNotificationType().equals(type)) {
             Template template = getMessageTemplate(NMRConstants.SMS_VERIFIED_MESSAGE_PROPERTIES_KEY);
@@ -113,7 +122,7 @@ public class NotificationServiceImpl implements INotificationService {
                     .replace(NMRConstants.TEMPLATE_VAR2, NMRConstants.MESSAGE_SENDER)
                     .finish();
 
-            return sendNotification(List.of(NotificationType.SMS.getNotificationType()), NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SUBJECT, message, receiver, receiver);
+            return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SUBJECT, message, receiver, receiver, NMRConstants.SMS_VERIFIED_MESSAGE_PROPERTIES_KEY);
         }
         return new ResponseMessageTo(NMRConstants.NO_SUCH_OTP_TYPE);
     }
@@ -138,72 +147,60 @@ public class NotificationServiceImpl implements INotificationService {
                 .replace(NMRConstants.TEMPLATE_VAR3, NMRConstants.MESSAGE_SENDER)
                 .finish();
 
-        return sendNotification(List.of(NotificationType.SMS.getNotificationType(), NotificationType.EMAIL.getNotificationType()), NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SUBJECT, message, mobile, email);
+        return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SUBJECT, message, mobile, email, NMRConstants.STATUS_CHANGED_MESSAGE_PROPERTIES_KEY);
 
-    }
-
-    /**
-     * Sends notification on each status change
-     *
-     * @param applicationType what action performed
-     * @param action          what action performed
-     * @param mobile          mobile number to send message
-     * @param email           to send email
-     * @return success/failure
-     */
-    @Override
-    public ResponseMessageTo sendNotificationOnStatusChangeForCollege(String applicationType, String action, String mobile, String email) {
-
-        Template template = getMessageTemplate(NMRConstants.STATUS_CHANGED_MESSAGE_PROPERTIES_KEY);
-
-        String message = new TemplatedStringBuilder(template.getMessage())
-                .replace(NMRConstants.TEMPLATE_VAR1, applicationType)
-                .replace(NMRConstants.TEMPLATE_VAR2, action)
-                .replace(NMRConstants.TEMPLATE_VAR3, NMRConstants.MESSAGE_SENDER)
-                .finish();
-
-        return sendNotification(List.of(NotificationType.EMAIL.getNotificationType()), NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SUBJECT, message, mobile, email);
     }
 
     /**
      * Sends notification on each status change
      *
      * @param email email
-     * @param link link for reset password
+     * @param link  link for reset password
      * @return success/failure
      */
     @Override
     public ResponseMessageTo sendNotificationForResetPasswordLink(String email, String link) {
 
-        Template template = getMessageTemplate(NMRConstants.SMS_AND_EMAIL_RESET_PASSWORD_MESSAGE_PROPERTIES_KEY);
+        Template template = getMessageTemplate(NMRConstants.SMS_AND_EMAIL_RESET_MESSAGE_PROPERTIES_KEY);
         String message = new TemplatedStringBuilder(template.getMessage())
                 .replace(NMRConstants.TEMPLATE_VAR1, link)
                 .finish();
-        return sendNotification(List.of(NotificationType.EMAIL.getNotificationType()), NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SET_PASSWORD_SUBJECT, message, null, email);
+        return sendNotification(NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SET_PASSWORD_SUBJECT, message, null, email, NMRConstants.SMS_AND_EMAIL_RESET_MESSAGE_PROPERTIES_KEY);
 
     }
 
     @Override
-    public ResponseMessageTo sendNotificationForAccountCreation(String username,String mobile) {
+    public ResponseMessageTo sendNotificationForAccountCreation(String username, String mobile) {
 
         Template template = getMessageTemplate(NMRConstants.ACCOUNT_CREATED);
         String message = new TemplatedStringBuilder(template.getMessage())
                 .replace(NMRConstants.TEMPLATE_VAR1, username)
-                .replace(NMRConstants.TEMPLATE_VAR2,NMRConstants.NMR_ACCOUNT)
+                .replace(NMRConstants.TEMPLATE_VAR2, NMRConstants.NMR_ACCOUNT)
                 .finish();
-        return sendNotification(List.of(NotificationType.SMS.getNotificationType()), NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.ACCOUNT_CREATED_SUBJECT, message, mobile, null);
+        return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.ACCOUNT_CREATED_SUBJECT, message, mobile, null, NMRConstants.ACCOUNT_CREATED);
 
     }
 
     @Override
-    public ResponseMessageTo sendNotificationForNMRCreation(String nmrId,String mobile) {
+    public ResponseMessageTo sendNotificationForNMRCreation(String nmrId, String mobile) {
 
         Template template = getMessageTemplate(NMRConstants.NMR_ID_CREATED);
         String message = new TemplatedStringBuilder(template.getMessage())
                 .replace(NMRConstants.TEMPLATE_VAR1, nmrId)
-                .replace(NMRConstants.TEMPLATE_VAR2,NMRConstants.MESSAGE_SENDER)
+                .replace(NMRConstants.TEMPLATE_VAR2, NMRConstants.MESSAGE_SENDER)
                 .finish();
-        return sendNotification(List.of(NotificationType.SMS.getNotificationType()), NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.ACCOUNT_CREATED_SUBJECT, message, mobile, null);
+        return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.ACCOUNT_CREATED_SUBJECT, message, mobile, null, NMRConstants.NMR_ID_CREATED);
+
+    }
+
+    @Override
+    public ResponseMessageTo sendNotificationForEmailVerificationLink(String email,String link) {
+
+        Template template = getMessageTemplate(NMRConstants.EMAIL_VERIFICATION_TEMPLATE);
+        String message = new TemplatedStringBuilder(template.getMessage())
+                .replace(NMRConstants.TEMPLATE_VAR1, link)
+                .finish();
+        return sendNotification(NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.VERIFY_EMAIL_SUBJECT, message, null, email,NMRConstants.EMAIL_VERIFICATION_TEMPLATE);
 
     }
 
@@ -212,27 +209,30 @@ public class NotificationServiceImpl implements INotificationService {
         Template template;
         try {
             String templateId = messageSource.getMessage(propertiesKey.toLowerCase(), null, Locale.ENGLISH);
-            template = notificationDBFClient.getTemplateById(new BigInteger(templateId));
+            template = notificationDBFClient.getTemplateById(Timestamp.valueOf(LocalDateTime.now()), UUID.randomUUID().toString(), new BigInteger(templateId));
 
         } catch (NoSuchMessageException noSuchMessageException) {
-            throw new TemplateException(NMRError.TEMPLATE_ID_NOT_FOUND_IN_PROPERTIES.getCode(),NMRError.OTP_INVALID.getMessage(), HttpStatus.NOT_FOUND.toString());
+            throw new TemplateException(NMRError.TEMPLATE_ID_NOT_FOUND_IN_PROPERTIES.getCode(), NMRError.OTP_INVALID.getMessage());
         }
 
         if (null == template) {
-            throw new TemplateException(NMRError.TEMPLATE_NOT_FOUND.getCode(),NMRError.TEMPLATE_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND.toString());
+            throw new TemplateException(NMRError.TEMPLATE_NOT_FOUND.getCode(), NMRError.TEMPLATE_NOT_FOUND.getMessage());
         }
         return template;
     }
 
-    private ResponseMessageTo sendNotification(List<String> type, String contentType, String templateId, String subject, String content, String mobile, String email) {
+    private ResponseMessageTo sendNotification(String contentType, String templateId, String subject, String content, String mobile, String email, String templateName) {
+
+        List<String> type = new ArrayList<>();
 
         NotificationRequestTo notificationRequestTo = new NotificationRequestTo();
         notificationRequestTo.setOrigin(notificationOrigin);
         notificationRequestTo.setSender(notificationSender);
         notificationRequestTo.setContentType(contentType);
-        notificationRequestTo.setType(type);
 
-        if (type.contains(NMRConstants.SMS) && type.contains(NMRConstants.EMAIL)) {
+        if (mobile != null && email != null) {
+
+            type.addAll(List.of(NotificationType.SMS.getNotificationType(), NotificationType.EMAIL.getNotificationType()));
 
             KeyValue receiverMobile = new KeyValue();
             receiverMobile.setKey(NMRConstants.MOBILE);
@@ -243,19 +243,25 @@ public class NotificationServiceImpl implements INotificationService {
             receiverEmail.setValue(email);
             notificationRequestTo.setReceiver(List.of(receiverMobile, receiverEmail));
 
-        } else if (type.contains(NMRConstants.SMS)) {
+        } else if (mobile != null) {
+
+            type.add(NotificationType.SMS.getNotificationType());
 
             KeyValue receiverMobile = new KeyValue();
             receiverMobile.setKey(NMRConstants.MOBILE);
             receiverMobile.setValue(mobile);
             notificationRequestTo.setReceiver(List.of(receiverMobile));
-        } else if (type.contains(NMRConstants.EMAIL)) {
+        } else if (email != null) {
+
+            type.add(NotificationType.EMAIL.getNotificationType());
 
             KeyValue receiverEmail = new KeyValue();
             receiverEmail.setKey(NMRConstants.EMAIL_ID);
             receiverEmail.setValue(email);
             notificationRequestTo.setReceiver(List.of(receiverEmail));
         }
+
+        notificationRequestTo.setType(type);
 
         KeyValue templateKeyValue = new KeyValue();
         templateKeyValue.setKey(NMRConstants.TEMPLATE_ID);
@@ -274,7 +280,30 @@ public class NotificationServiceImpl implements INotificationService {
         NotificationResponseTo response;
         try {
 
-            response = notificationFClient.sendNotification(notificationRequestTo, Timestamp.valueOf(LocalDateTime.now()), UUID.randomUUID().toString());
+            String requestId = UUID.randomUUID().toString();
+            ObjectMapper objectMapper = new ObjectMapper();
+            log.info(objectMapper.writeValueAsString(notificationRequestTo));
+            response = notificationFClient.sendNotification(notificationRequestTo, Timestamp.valueOf(LocalDateTime.now()), requestId);
+            log.info(requestId + " " + response);
+
+            Notification notification = new Notification();
+
+            notification.setTemplateId(templateId);
+            notification.setRequestId(requestId);
+            notification.setTemplateName(templateName);
+            notification.setMessage(content);
+            notification.setStatus(response.status());
+
+            for (String notificationType : type) {
+                if (notificationType.equalsIgnoreCase(NotificationType.SMS.getNotificationType())) {
+                    notification.setType(NotificationType.SMS.getNotificationType());
+                    notification.setReceiver(mobile);
+                } else if (notificationType.equalsIgnoreCase(NotificationType.EMAIL.getNotificationType())) {
+                    notification.setType(NotificationType.EMAIL.getNotificationType());
+                    notification.setReceiver(email);
+                }
+                iNotificationRepository.save(notification);
+            }
 
         } catch (Exception e) {
             return new ResponseMessageTo(e.getLocalizedMessage());
