@@ -42,6 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = SearchController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @ContextConfiguration(classes = MasterDataController.class)
 @ActiveProfiles(profiles = "local")
+@SuppressWarnings("java:S1192")
 class MasterDataControllerTest {
 
     @Autowired
