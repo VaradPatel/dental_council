@@ -4,8 +4,7 @@ import in.gov.abdm.nmr.dto.DashboardResponseTO;
 import in.gov.abdm.nmr.dto.FetchCountOnCardResponseTO;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
-import in.gov.abdm.nmr.service.IFetchCountOnCardService;
-import in.gov.abdm.nmr.service.IFetchSpecificDetailsService;
+import in.gov.abdm.nmr.service.IDashboardService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,19 +24,9 @@ import static in.gov.abdm.nmr.security.common.ProtectedPaths.PATH_DASHBOARD_ROOT
 @RequestMapping(PATH_DASHBOARD_ROOT)
 public class DashboardController {
 
-    /**
-     * Injecting a FetchCountOnCardService bean instead of an explicit object creation to achieve
-     * Singleton principle
-     */
     @Autowired
-    private IFetchCountOnCardService iFetchCountOnCardService;
+    private IDashboardService iDashboardService;
 
-    /**
-     * Injecting a FetchSpecificDetailsService bean instead of an explicit object creation to achieve
-     * Singleton principle
-     */
-    @Autowired
-    private IFetchSpecificDetailsService iFetchSpecificDetailsService;
 
     /**
      * This endpoint can be accessed to retrieve the count of applications according to their status
@@ -47,7 +36,7 @@ public class DashboardController {
     @GetMapping(ProtectedPaths.PATH_DASHBOARD_CARD_COUNT)
     @SecurityRequirement(name = "bearerAuth")
     public FetchCountOnCardResponseTO fetchCountOnCard() throws AccessDeniedException {
-        return iFetchCountOnCardService.fetchCountOnCard();
+        return iDashboardService.fetchCountOnCard();
     }
 
     /**
@@ -74,7 +63,7 @@ public class DashboardController {
             @RequestParam(required = false, value = "offset", defaultValue = "10") int offset,
             @RequestParam(required = false, value = "sortBy") String sortBy,
             @RequestParam(required = false, value = "sortOrder") String sortOrder) throws InvalidRequestException {
-        return iFetchSpecificDetailsService.fetchCardDetails(workFlowStatusId, applicationTypeId,
+        return iDashboardService.fetchCardDetails(workFlowStatusId, applicationTypeId,
                 userGroupStatus, search, value, pageNo, offset, sortBy, sortOrder);
     }
 

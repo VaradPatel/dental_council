@@ -15,6 +15,4 @@ public interface ISearchService {
 
     HpSearchProfileTO getHpSearchProfileById(BigInteger profileId) throws NmrException, InvalidIdException;
 
-    List fetchAddressByPinCodeFromLGD(String pinCode, String view);
-
 }
