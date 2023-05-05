@@ -43,6 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = UserController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @ContextConfiguration(classes = UserController.class)
 @ActiveProfiles(profiles = "local")
+@SuppressWarnings("java:S1192")
 class UserControllerTest {
 
     @Autowired

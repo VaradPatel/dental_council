@@ -41,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = PasswordController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @ContextConfiguration(classes = PasswordController.class)
 @ActiveProfiles(profiles = "local")
+@SuppressWarnings("java:S1192")
 class PasswordControllerTest {
 
     @Autowired
