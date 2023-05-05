@@ -36,17 +36,4 @@ public class SearchController {
     public HpSearchProfileTO getHpSearchProfileById(@PathVariable("healthProfessionalId") BigInteger healthProfessionalId) throws NmrException, InvalidIdException {
         return searchService.getHpSearchProfileById(healthProfessionalId);
     }
-
-
-    /**
-     * This method returns LGD Codes related to a particular pinCode, stateCode or districtCode
-     * @param pinCode
-     * @param view - filter criteria for the returned value
-     * @return LGD Codes
-     */
-    @GetMapping(LGD_SEARCH_URL)
-    public List fetchAddressByPinCodeFromLGD(@RequestParam(value = PIN_CODE,required = false) String pinCode,
-                                             @RequestParam(value = VIEW,required = false) String view){
-        return searchService.fetchAddressByPinCodeFromLGD(pinCode, view);
-    }
 }

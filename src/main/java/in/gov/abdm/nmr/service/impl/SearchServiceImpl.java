@@ -4,7 +4,6 @@ import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-import in.gov.abdm.nmr.client.LGDServiceFClient;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.ForeignQualificationDetailsMaster;
 import in.gov.abdm.nmr.entity.HpProfileMaster;
@@ -46,9 +45,6 @@ public class SearchServiceImpl implements ISearchService {
     private IQualificationDetailMasterRepository qualificationDetailMasterRepository;
 
     private IForeignQualificationDetailMasterRepository foreignQualificationDetailMasterRepository;
-
-    @Autowired
-    private LGDServiceFClient lgdServiceFClient;
 
     private static final List<BigInteger> PROFILE_STATUS_CODES = Arrays.asList(BigInteger.valueOf(2l), BigInteger.valueOf(5l), BigInteger.valueOf(6l));
 
@@ -159,8 +155,4 @@ public class SearchServiceImpl implements ISearchService {
         return hpSearchProfileTO;
     }
 
-    @Override
-    public List fetchAddressByPinCodeFromLGD(String pinCode, String view) {
-        return lgdServiceFClient.fetchAddressByPinCodeFromLGD(pinCode, view);
-    }
 }

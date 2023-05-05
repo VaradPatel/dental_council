@@ -1,22 +1,25 @@
 package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.dto.DashboardResponseTO;
-import in.gov.abdm.nmr.dto.FetchSpecificDetailsResponseTO;
+import in.gov.abdm.nmr.dto.FetchCountOnCardResponseTO;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 
-import java.util.List;
+import java.nio.file.AccessDeniedException;
 
 /**
  * Service Layer to implement the actual Business Logic
  */
-public interface IFetchSpecificDetailsService {
+public interface IDashboardService {
+
     /**
-     * This method retrieves the details to be listed according to the card selected
+     * This method retrieves the Count of applications according to their status
      *
-     * @return FetchSpecificDetailsResponseTO
+     * @return ResponseTO
      */
-    List<FetchSpecificDetailsResponseTO> fetchSpecificDetails(String groupName, String applicationType, String workFlowStatus) throws InvalidRequestException;
+
+    FetchCountOnCardResponseTO fetchCountOnCard() throws AccessDeniedException;
 
     DashboardResponseTO fetchCardDetails(String workFlowStatusId, String applicationTypeId, String userGroupStatus, String search, String value, int pageNo, int offset, String sortBy,
                                          String sortOrder) throws InvalidRequestException;
 }
+
