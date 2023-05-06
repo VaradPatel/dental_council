@@ -437,54 +437,9 @@ public final class CommonTestData {
         return universityMaster;
     }
 
-
-    public static Pageable getPageable() {
-        Pageable pageable = new Pageable() {
-            @Override
-            public int getPageNumber() {
-                return 1;
-            }
-
-            @Override
-            public int getPageSize() {
-                return 1;
-            }
-
-            @Override
-            public long getOffset() {
-                return 1;
-            }
-
-            @Override
-            public Sort getSort() {
-                return null;
-            }
-
-            @Override
-            public Pageable next() {
-                return null;
-            }
-
-            @Override
-            public Pageable previousOrFirst() {
-                return null;
-            }
-
-            @Override
-            public Pageable first() {
-                return null;
-            }
-
-            @Override
-            public Pageable withPage(int pageNumber) {
-                return null;
-            }
-
-            @Override
-            public boolean hasPrevious() {
-                return false;
-            }
-        };
-        return pageable;
+    public static Password getPassword() {
+        Password password = new Password();
+        password.setId(ID);
+        return password;
     }
 }
