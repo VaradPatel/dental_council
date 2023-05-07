@@ -1,20 +1,27 @@
 package in.gov.abdm.nmr.util;
 
+import in.gov.abdm.nmr.dto.SMCProfileTO;
 import in.gov.abdm.nmr.dto.StateMedicalCouncilTO;
+import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.enums.WorkflowStatus;
+import in.gov.abdm.nmr.mapper.INextGroup;
 import in.gov.abdm.nmr.mapper.IStateMedicalCouncilMapper;
 import in.gov.abdm.nmr.nosql.entity.Council;
 import in.gov.abdm.nmr.nosql.entity.RegistrationsDetails;
 import lombok.experimental.UtilityClass;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
+
 @UtilityClass
 public final class CommonTestData {
 
@@ -215,13 +222,15 @@ public final class CommonTestData {
         hpProfile.setESignStatus(NMRConstants.SUCCESS);
         hpProfile.setIsNew(0);
         hpProfile.setRequestId(REQUEST_ID);
-        hpProfile.setNmrId(NMR_ID);
+        //hpProfile.setNmrId(NMR_ID);
         hpProfile.setCountryNationality(getCountry());
         hpProfile.setEmailId(EMAIL_ID);
         hpProfile.setProfilePhoto(PROFILE_PHOTO);
         hpProfile.setDateOfBirth(DATE_OF_BIRTH);
         hpProfile.setGender("M");
         hpProfile.setTransactionId(TRANSACTION_ID);
+        hpProfile.setRegistrationId(REGISTRATION_NUMBER);
+        hpProfile.setUser(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode()));
 
         return hpProfile;
     }
@@ -331,7 +340,7 @@ public final class CommonTestData {
     }
 
     public static Council getImrCouncilDetails() {
-        Council council =  new Council();
+        Council council = new Council();
         council.setFullName(PROFILE_DISPLAY_NAME);
         council.setGender(GENDER);
         council.setDateOfBirth(DATE_OF_BIRTH.toString());
@@ -342,7 +351,7 @@ public final class CommonTestData {
         return council;
     }
 
-    public static Address getCommunicationAddress(){
+    public static Address getCommunicationAddress() {
         Address address = new Address();
         address.setAddressLine1(ADDRESS_LINE_1);
         AddressType addressType = new AddressType();
@@ -363,5 +372,74 @@ public final class CommonTestData {
         address.setStreet(STREET);
         address.setSubDistrict(getSubDistrict());
         return address;
+    }
+
+    public INextGroup getNextGroup() {
+        return new INextGroup() {
+            @Override
+            public BigInteger getAssignTo() {
+                return Group.SMC.getId();
+            }
+
+            @Override
+            public BigInteger getWorkFlowStatusId() {
+                return WorkflowStatus.PENDING.getId();
+            }
+        };
+    }
+
+    public HpProfileStatus getHPProfileStatus() {
+        return HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.PENDING.getId()).build();
+    }
+
+    public WorkFlow getWorkFlow() {
+        WorkFlow workFlow = new WorkFlow();
+        workFlow.setId(ID);
+        workFlow.setApplicationType(new ApplicationType(ID, HP_NAME, "desc", ""));
+        return workFlow;
+    }
+
+    public WorkFlowRequestTO getWorkFlowRequestTO() {
+        WorkFlowRequestTO workFlowRequestTO = new WorkFlowRequestTO();
+        workFlowRequestTO.setRequestId(REQUEST_ID);
+        workFlowRequestTO.setHpProfileId(getHpProfile().getId());
+        workFlowRequestTO.setApplicationTypeId(in.gov.abdm.nmr.enums.ApplicationType.HP_REGISTRATION.getId());
+        workFlowRequestTO.setActorId(Group.HEALTH_PROFESSIONAL.getId());
+        workFlowRequestTO.setActionId(in.gov.abdm.nmr.enums.Action.SUBMIT.getId());
+        workFlowRequestTO.setRemarks("Doctor Registration");
+        workFlowRequestTO.setApplicationSubTypeId(BigInteger.valueOf(1));
+        return workFlowRequestTO;
+    }
+
+    public ForeignQualificationDetails getForeignQualificationDetails() {
+        ForeignQualificationDetails foreignQualificationDetails = new ForeignQualificationDetails();
+        foreignQualificationDetails.setId(ID);
+        return foreignQualificationDetails;
+    }
+
+
+    public ForeignQualificationDetailsMaster getForeignQualificationDetailsMaster() {
+        ForeignQualificationDetailsMaster foreignQualificationDetailsMaster = new ForeignQualificationDetailsMaster();
+        foreignQualificationDetailsMaster.setId(ID);
+        foreignQualificationDetailsMaster.setCourse(COURSE_NAME);
+        return foreignQualificationDetailsMaster;
+    }
+
+    public SMCProfileTO getSMCProfile() {
+        SMCProfileTO smcProfile = new SMCProfileTO();
+        smcProfile.setId(ID);
+        return smcProfile;
+    }
+
+    public static UniversityMaster getUniversityMaster() {
+        UniversityMaster universityMaster = new UniversityMaster();
+        universityMaster.setId(ID);
+        return universityMaster;
+    }
+
+    public static Password getPassword() {
+        Password password = new Password();
+        password.setId(ID);
+        return password;
     }
 }
