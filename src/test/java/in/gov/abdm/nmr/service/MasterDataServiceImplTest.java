@@ -1,6 +1,8 @@
-package in.gov.abdm.nmr.service.impl;
+package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
+import in.gov.abdm.nmr.service.impl.MasterDataServiceImpl;
+import in.gov.abdm.nmr.service.impl.StateMedicalCouncilDaoServiceImpl;
 import in.gov.abdm.nmr.util.CommonTestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

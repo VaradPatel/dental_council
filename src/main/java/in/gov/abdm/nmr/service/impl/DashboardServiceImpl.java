@@ -1,4 +1,4 @@
-package in.gov.abdm.nmr.service;
+package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.User;
@@ -9,6 +9,10 @@ import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
 import in.gov.abdm.nmr.mapper.IStatusCount;
 import in.gov.abdm.nmr.mapper.IStatusWiseCountMapper;
 import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.service.IAccessControlService;
+import in.gov.abdm.nmr.service.ICollegeProfileDaoService;
+import in.gov.abdm.nmr.service.IDashboardService;
+import in.gov.abdm.nmr.service.IUserDaoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
