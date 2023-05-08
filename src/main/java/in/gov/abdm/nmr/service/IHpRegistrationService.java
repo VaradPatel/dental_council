@@ -125,4 +125,5 @@ public interface IHpRegistrationService {
 
     String generateLink(SendLinkOnMailTo sendLinkOnMailTo);
 
+    void delinkCurrentWorkDetails(WorkDetailsDelinkRequest workDetailsDelinkRequest) throws NmrException;
 }

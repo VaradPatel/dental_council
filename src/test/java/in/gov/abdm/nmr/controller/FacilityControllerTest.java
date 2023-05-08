@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
+import static in.gov.abdm.nmr.util.CommonTestData.FACILITY_ID;
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;

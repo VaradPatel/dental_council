@@ -29,7 +29,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static in.gov.abdm.nmr.util.NMRConstants.*;
+import static in.gov.abdm.nmr.util.NMRConstants.NO;
 import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
 import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetailsAndProofs;
 
@@ -317,29 +317,25 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     private void saveKnownLanguages(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, BigInteger userId) {
         List<BigInteger> languagesKnownIds = hpWorkProfileUpdateRequestTO.getLanguagesKnownIds();
+        List<BigInteger> languagesKnownEarlierIds = new ArrayList<>();
         if (languagesKnownIds != null && !languagesKnownIds.isEmpty()) {
-            List<LanguagesKnown> languagesKnownEarlierList = languagesKnownRepository.findByUserId(userId);
-            List<BigInteger> languagesKnownEarlierIds = new ArrayList<>();
-            if (languagesKnownEarlierList != null && !languagesKnownEarlierList.isEmpty()) {
-                languagesKnownEarlierList.forEach(languagesKnownEarlier ->
-                        languagesKnownEarlierIds.add(languagesKnownEarlier.getId())
-                );
-            }
-            List<LanguagesKnown> languagesKnownLater = new ArrayList<>();
-            BigInteger tempUserId = userId;
-            languagesKnownIds.removeAll( languagesKnownEarlierIds );
-            if(!languagesKnownIds.isEmpty()) {
-                languagesKnownIds.forEach(languagesKnown -> {
-                    LanguagesKnown languagesKnownObject = new LanguagesKnown();
-                    languagesKnownObject.setLanguage(entityManager.getReference(Language.class, languagesKnown));
-                    languagesKnownObject.setUser(entityManager.getReference(User.class, tempUserId));
-                    languagesKnownLater.add(languagesKnownObject);
-                });
-            }
-            languagesKnownRepository.saveAll(languagesKnownLater);
+            List<LanguagesKnown> languagesKnownEarlier = languagesKnownRepository.findByUserId(userId);
+            if (languagesKnownEarlier != null && !languagesKnownEarlier.isEmpty())
+                languagesKnownEarlier.forEach(languagesKnown -> languagesKnownEarlierIds.add(languagesKnown.getLanguage().getId()));
         }
+        List<LanguagesKnown> languagesKnownLater = new ArrayList<>();
+        BigInteger tempUserId = userId;
+        languagesKnownEarlierIds.forEach(languagesKnownEarlierId -> languagesKnownIds.remove(languagesKnownEarlierId));
+        if (!languagesKnownIds.isEmpty()) {
+            languagesKnownIds.forEach(languagesKnown -> {
+                LanguagesKnown languagesKnownObject = new LanguagesKnown();
+                languagesKnownObject.setLanguage(entityManager.getReference(Language.class, languagesKnown));
+                languagesKnownObject.setUser(entityManager.getReference(User.class, tempUserId));
+                languagesKnownLater.add(languagesKnownObject);
+            });
+        }
+        languagesKnownRepository.saveAll(languagesKnownLater);
     }
-
 
     @Override
     public void saveQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs) throws InvalidRequestException {
@@ -607,81 +603,74 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @SneakyThrows
     private void mapWorkRequestToEntity(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> addWorkProfiles, BigInteger hpProfileId, BigInteger userId) {
         if (!addWorkProfiles.isEmpty()) {
-            updateWorkProfileRecords(hpWorkProfileUpdateRequestTO, addWorkProfiles, hpProfileId);
+            List<String> facilityIdList = new ArrayList<>();
+            hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> facilityIdList.add(currentWorkDetailsTO.getFacilityId()));
+            addWorkProfiles.forEach(workProfile -> facilityIdList.remove(workProfile.getFacilityId()));
+            updateWorkProfileRecords(hpWorkProfileUpdateRequestTO, addWorkProfiles, hpProfileId, userId, facilityIdList);
         } else {
             saveWorkProfileRecords(hpWorkProfileUpdateRequestTO, hpProfileId, userId);
         }
     }
 
-    private void updateWorkProfileRecords(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> addWorkProfiles, BigInteger hpProfileId) {
-        List<WorkProfile> workProfileDetailsList = new ArrayList<>();
-        addWorkProfiles.stream().forEach(addWorkProfile -> {
-            addWorkProfile.setRequestId(hpWorkProfileUpdateRequestTO.getRequestId());
-            addWorkProfile.setHpProfileId(hpProfileId);
-            if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature() != null) {
-                addWorkProfile.setWorkNature(workNatureRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature().getId()).get());
-            }
-            if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus() != null) {
-                addWorkProfile.setWorkStatus(workStatusRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus().getId()).get());
-            }
-            addWorkProfile.setIsUserCurrentlyWorking(hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking());
+    private WorkProfile workProfileObjectMapping(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, WorkProfile addWorkProfile, CurrentWorkDetailsTO currentWorkDetailsTO, BigInteger hpProfileId, BigInteger userId) {
+        addWorkProfile.setRequestId(hpWorkProfileUpdateRequestTO.getRequestId());
+        addWorkProfile.setHpProfileId(hpProfileId);
+        if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature() != null) {
+            addWorkProfile.setWorkNature(workNatureRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature().getId()).get());
+        }
+        if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus() != null) {
+            addWorkProfile.setWorkStatus(workStatusRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus().getId()).get());
+        }
+        addWorkProfile.setIsUserCurrentlyWorking(hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking());
+        addWorkProfile.setFacilityId(currentWorkDetailsTO.getFacilityId());
+        addWorkProfile.setFacilityTypeId(currentWorkDetailsTO.getFacilityTypeId());
+        addWorkProfile.setUrl(currentWorkDetailsTO.getUrl());
+        addWorkProfile
+                .setWorkOrganization(currentWorkDetailsTO.getWorkOrganization());
+        addWorkProfile.setOrganizationType(currentWorkDetailsTO.getOrganizationType());
+        if (currentWorkDetailsTO.getAddress() != null) {
+            addWorkProfile.setAddress(currentWorkDetailsTO.getAddress().getAddressLine1());
+            addWorkProfile.setState(currentWorkDetailsTO.getAddress().getState().getId() != null ? stateRepository.findById(currentWorkDetailsTO.getAddress().getState().getId()).get() : null);
+            addWorkProfile.setDistrict(currentWorkDetailsTO.getAddress().getDistrict().getId() != null ? districtRepository.findById(currentWorkDetailsTO.getAddress().getDistrict().getId()).get() : null);
+            addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
+        }
+        addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());
+        addWorkProfile.setRegistrationNo(hpWorkProfileUpdateRequestTO.getRegistrationNo());
+        addWorkProfile.setExperienceInYears(currentWorkDetailsTO.getExperienceInYears());
+        addWorkProfile.setUserId(userId);
+        return addWorkProfile;
+    }
 
+    private void updateWorkProfileRecords(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> addWorkProfiles,
+                                          BigInteger hpProfileId, BigInteger userId, List<String> facilityIdList) {
+        List<WorkProfile> workProfileDetailsList = new ArrayList<>();
+        addWorkProfiles.forEach(addWorkProfile -> {
             hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> {
                 if (addWorkProfile.getFacilityId().equals(currentWorkDetailsTO.getFacilityId())) {
-                    addWorkProfile.setFacilityId(currentWorkDetailsTO.getFacilityId());
-                    addWorkProfile.setFacilityTypeId(currentWorkDetailsTO.getFacilityTypeId());
-                    addWorkProfile.setUrl(currentWorkDetailsTO.getUrl());
-                    addWorkProfile
-                            .setWorkOrganization(currentWorkDetailsTO.getWorkOrganization());
-                    addWorkProfile.setOrganizationType(currentWorkDetailsTO.getOrganizationType());
-                    if (currentWorkDetailsTO.getAddress() != null) {
-                        addWorkProfile.setAddress(currentWorkDetailsTO.getAddress().getAddressLine1());
-                        addWorkProfile.setState(currentWorkDetailsTO.getAddress().getState().getId() != null ? stateRepository.findById(currentWorkDetailsTO.getAddress().getState().getId()).get() : null);
-                        addWorkProfile.setDistrict(currentWorkDetailsTO.getAddress().getDistrict().getId() != null ? districtRepository.findById(currentWorkDetailsTO.getAddress().getDistrict().getId()).get() : null);
-                        addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
-                    }
-                    addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());
-                    addWorkProfile.setRegistrationNo(hpWorkProfileUpdateRequestTO.getRegistrationNo());
-                    addWorkProfile.setExperienceInYears(currentWorkDetailsTO.getExperienceInYears());
-                    workProfileDetailsList.add(addWorkProfile);
+                    workProfileDetailsList.add(workProfileObjectMapping(hpWorkProfileUpdateRequestTO, addWorkProfile, currentWorkDetailsTO, hpProfileId, userId));
+                    workProfileRepository.saveAll(workProfileDetailsList);
                 }
             });
-            workProfileRepository.saveAll(workProfileDetailsList);
         });
+        if (!facilityIdList.isEmpty() && facilityIdList != null && addWorkProfiles != null) {
+            facilityIdList.forEach(facilityId ->
+                    hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> {
+                        if (facilityId.equals(currentWorkDetailsTO.getFacilityId())) {
+                            WorkProfile workProfile = new WorkProfile();
+                            workProfileDetailsList.add(workProfileObjectMapping(hpWorkProfileUpdateRequestTO, workProfile, currentWorkDetailsTO, hpProfileId, userId));
+                            workProfileRepository.saveAll(workProfileDetailsList);
+                        }
+                    }));
+        }
     }
 
     private void saveWorkProfileRecords(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, BigInteger hpProfileId, BigInteger userId) {
         List<WorkProfile> workProfileDetailsList = new ArrayList<>();
-        hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().stream().forEach(currentWorkDetailsTO -> {
-            WorkProfile addWorkProfile = new WorkProfile();
-            addWorkProfile.setRequestId(hpWorkProfileUpdateRequestTO.getRequestId());
-            addWorkProfile.setHpProfileId(hpProfileId);
-            if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature() != null) {
-                addWorkProfile.setWorkNature(workNatureRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature().getId()).get());
-            }
-            if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus() != null) {
-                addWorkProfile.setWorkStatus(workStatusRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus().getId()).get());
-            }
-            addWorkProfile.setIsUserCurrentlyWorking(hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking());
-            addWorkProfile.setFacilityId(currentWorkDetailsTO.getFacilityId());
-            addWorkProfile.setFacilityTypeId(currentWorkDetailsTO.getFacilityTypeId());
-            addWorkProfile.setUrl(currentWorkDetailsTO.getUrl());
-            addWorkProfile
-                    .setWorkOrganization(currentWorkDetailsTO.getWorkOrganization());
-            addWorkProfile.setOrganizationType(currentWorkDetailsTO.getOrganizationType());
-            if (currentWorkDetailsTO.getAddress() != null) {
-                addWorkProfile.setAddress(currentWorkDetailsTO.getAddress().getAddressLine1());
-                addWorkProfile.setState(currentWorkDetailsTO.getAddress().getState().getId() != null ? stateRepository.findById(currentWorkDetailsTO.getAddress().getState().getId()).get() : null);
-                addWorkProfile.setDistrict(currentWorkDetailsTO.getAddress().getDistrict().getId() != null ? districtRepository.findById(currentWorkDetailsTO.getAddress().getDistrict().getId()).get() : null);
-                addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
-            }
-            addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());
-            addWorkProfile.setRegistrationNo(hpWorkProfileUpdateRequestTO.getRegistrationNo());
-            addWorkProfile.setExperienceInYears(currentWorkDetailsTO.getExperienceInYears());
-            addWorkProfile.setUserId(userId);
-            workProfileDetailsList.add(addWorkProfile);
+        hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> {
+            WorkProfile workProfile = new WorkProfile();
+            workProfileDetailsList.add(workProfileObjectMapping(hpWorkProfileUpdateRequestTO, workProfile, currentWorkDetailsTO, hpProfileId, userId));
+            workProfileRepository.saveAll(workProfileDetailsList);
         });
-        workProfileRepository.saveAll(workProfileDetailsList);
     }
 
 
