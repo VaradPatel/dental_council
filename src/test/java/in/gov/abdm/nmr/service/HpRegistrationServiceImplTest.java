@@ -1,6 +1,7 @@
-package in.gov.abdm.nmr.service.impl;
+package in.gov.abdm.nmr.service;
 
 
+import in.gov.abdm.nmr.service.impl.HpRegistrationServiceImpl;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -1,8 +1,6 @@
 package in.gov.abdm.nmr.util;
 
-import in.gov.abdm.nmr.dto.SMCProfileTO;
-import in.gov.abdm.nmr.dto.StateMedicalCouncilTO;
-import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
@@ -12,6 +10,7 @@ import in.gov.abdm.nmr.mapper.INextGroup;
 import in.gov.abdm.nmr.mapper.IStateMedicalCouncilMapper;
 import in.gov.abdm.nmr.nosql.entity.Council;
 import in.gov.abdm.nmr.nosql.entity.RegistrationsDetails;
+import in.gov.abdm.nmr.redis.hash.Otp;
 import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -21,6 +20,8 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
+
+import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
 
 @UtilityClass
 public final class CommonTestData {
@@ -119,8 +120,14 @@ public final class CommonTestData {
     public static final BigInteger SCHEDULE_ID = BigInteger.valueOf(1);
     public static final String SCHEDULE_NAME = "schedule 1";
     public static final String CURRENT_DATE = String.valueOf(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+    public static final Timestamp CURRENT_TIMESTAMP = new Timestamp(Calendar.getInstance().getTimeInMillis());
+    public static final Timestamp FUTURE_TIMESTAMP = Timestamp.valueOf(CURRENT_TIMESTAMP.toLocalDateTime().plusDays(14));
+    public static final Timestamp PAST_TIMESTAMP = Timestamp.valueOf(CURRENT_TIMESTAMP.toLocalDateTime().minusDays(14));
+
     public static final String DEGREE = "MBBS";
     public static final String SALUTATION_DR = "Dr.";
+    public static final String CLIENT_ID = "NMR_CLIENT_ID";
+    public static final String CLIENT_SECRET = "NMR_CLIENT_SECRET";
 
     public static UserGroup getUserGroup(BigInteger userGroupId) {
         Group group = Group.getGroup(userGroupId);
@@ -186,6 +193,7 @@ public final class CommonTestData {
         user.setEmailVerified(true);
         user.setGroup(userType.getGroup());
         user.setId(ID);
+        user.setPassword(TEST_PSWD);
         return user;
     }
 
@@ -442,4 +450,54 @@ public final class CommonTestData {
         password.setId(ID);
         return password;
     }
+
+    public static ResponseMessageTo getResponseMessage() {
+        ResponseMessageTo message = new ResponseMessageTo();
+        message.setMessage(SUCCESS_RESPONSE);
+        return message;
+    }
+
+    public SendLinkOnMailTo getSendLinkOnMail() {
+        SendLinkOnMailTo linkOnMailTo = new SendLinkOnMailTo();
+        linkOnMailTo.setEmail(CommonTestData.EMAIL_ID);
+        return linkOnMailTo;
+    }
+
+    public SetNewPasswordTo getSetNewPasswordTo() {
+        SetNewPasswordTo newPassword = new SetNewPasswordTo();
+        newPassword.setToken(CommonTestData.TEMP_TOKN);
+        newPassword.setPassword(CommonTestData.PASSWORD);
+        return newPassword;
+    }
+
+    public ResetToken getResetToken() {
+        ResetToken resetToken = new ResetToken();
+        // resetToken.setToken(TEMP_TOKN);
+        resetToken.setId(CommonTestData.USER_ID);
+        resetToken.setExpiryDate(FUTURE_TIMESTAMP);
+        resetToken.setUserName(TEST_USER);
+        return resetToken;
+    }
+
+    public ResetPasswordRequestTo getResetPasswordRequest() {
+        ResetPasswordRequestTo resetPasswordRequest = new ResetPasswordRequestTo();
+        resetPasswordRequest.setUsername(TEST_USER);
+        resetPasswordRequest.setUsername(TEST_PSWD);
+        resetPasswordRequest.setTransactionId(TRANSACTION_ID);
+        return resetPasswordRequest;
+    }
+
+    public FacilitySearchResponseTO getFacilitySearchResponseTO() {
+        FacilitySearchResponseTO facilitySearchResponseTO = new FacilitySearchResponseTO();
+        facilitySearchResponseTO.setTotalFacilities(1);
+        return facilitySearchResponseTO;
+    }
+
+    public SessionResponseTo getSessionResponse() {
+        SessionResponseTo sessionResponse = new SessionResponseTo();
+        sessionResponse.setAccessToken(TEMP_TOKN);
+        return sessionResponse;
+    }
+
+
 }
