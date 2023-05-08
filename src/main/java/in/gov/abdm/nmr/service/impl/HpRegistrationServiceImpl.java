@@ -26,6 +26,7 @@ import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -196,6 +197,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Autowired
     private IPasswordDaoService passwordDaoService;
+    @Autowired
+    private IUserDaoService userDetailDaoService;
 
     /**
      * This method fetches the SMC registration details for a given request.
@@ -728,11 +731,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             return new ResponseMessageTo(e.getLocalizedMessage());
         }
     }
-
-
     @Override
     public String generateLink(SendLinkOnMailTo sendLinkOnMailTo) {
-
 
         String token = RandomString.make(30);
         ResetToken resetToken = resetTokenRepository.findByUserName(sendLinkOnMailTo.getEmail());
@@ -747,6 +747,24 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         String resetPasswordLink = emailVerifyUrl + "/" + token;
 
         return resetPasswordLink;
+    }
+
+    @Override
+    public void  delinkCurrentWorkDetails(WorkDetailsDelinkRequest workDetailsDelinkRequest) throws NmrException {
+        User user = userDetailDaoService.findByUsername( SecurityContextHolder.getContext().getAuthentication().getName());
+        if (Objects.isNull(user)) {
+            throw new NmrException(USER_NOT_FOUND);
+        } else {
+            List<WorkProfile> activeWorkProfiles = workProfileRepository.getActiveWorkProfileDetailsByUserId(user.getId());
+            List<String> activeFacilities = new ArrayList<>();
+            activeWorkProfiles.forEach(workProfile -> activeFacilities.add(workProfile.getFacilityId()));
+            workDetailsDelinkRequest.getFacilityId().retainAll(activeFacilities);
+            if (!workDetailsDelinkRequest.getFacilityId().isEmpty()) {
+                workProfileRepository.delinkWorkProfileDetailsByFacilityId(user.getId(), workDetailsDelinkRequest.getFacilityId());
+            } else {
+                throw new NmrException(DELINK_FAILED);
+            }
+        }
     }
 
     /**

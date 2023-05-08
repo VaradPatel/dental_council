@@ -2,7 +2,6 @@ package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
-import in.gov.abdm.nmr.nosql.entity.Council;
 import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
@@ -314,8 +313,12 @@ public class HpRegistrationController {
 
     @PatchMapping(path = "health-professional/{healthProfessionalId}/email", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseMessageTo getVerifyEmailLink(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId, @RequestBody VerifyEmailLinkTo verifyEmailLinkTo) {
-
         return hpService.getEmailVerificationLink(hpProfileId,verifyEmailLinkTo);
+    }
 
+    @DeleteMapping(path = "health-professional/work-profile/facility")
+    public ResponseEntity<ResponseMessageTo> delinkCurrentWorkDetails(@RequestBody WorkDetailsDelinkRequest workDetailsDelinkRequest) throws NmrException {
+         hpService.delinkCurrentWorkDetails(workDetailsDelinkRequest);
+        return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
     }
 }
