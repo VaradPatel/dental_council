@@ -209,17 +209,11 @@ public class NMRConstants {
     public static final String NOT_NULL_ERROR_MSG = "The {0} is mandatory.";
     public static final String NOT_BLANK_ERROR_MSG = "The {0} should not be blank.";
     public static final String INVALID_PINCODE = "pincode should be of max 6 digit";
-    public static final String FETCH_WORK_PROFILE_RECORDS_BY_HP_ID = """
-            SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id, 
-            state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at, 
-            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years FROM work_profile where hp_profile_id =:""" + HP_PROFILE_ID;
-
     public static final String FETCH_WORK_PROFILE_RECORDS_BY_USER_ID = """
             SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id, 
             state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at, 
-            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years FROM work_profile where user_id =:""" + USER_ID;
-
-    public static final int MAX_DATA_SIZE = 500;
+            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status FROM work_profile where delete_status=false AND  user_id =:userId""" ;
+     public static final int MAX_DATA_SIZE = 500;
     public static final String DEFAULT_SORT_ORDER = "DESC";
     public static final String SMS_AND_EMAIL_RESET_MESSAGE_PROPERTIES_KEY = "sms-email-reset";
     public static final String ACCOUNT_CREATED = "account-created";
@@ -255,4 +249,13 @@ public class NMRConstants {
     public static final List<String> OPERATORS = Arrays.asList(OPERATOR_PLUS, OPERATOR_MINUS, OPERATOR_MULTIPLICATION);
     public static final String RSA_PADDING = "RSA/ECB/PKCS1Padding";
     public static final String STATE_MEDICAL_COUNCIL_URL = "/state-medical-councils";
+    public static final String FACILITY_ID = "facilityId";
+    public static final String DELINK_FAILED ="Failed to Delink: Invalid Facility Id";
+    public static final String  DELINK_WORK_PROFILE_BY_FACILITY_ID ="UPDATE work_profile SET delete_status =true  WHERE facility_id IN (:facilityId) AND user_id =:userId";
+
+    public static final String FETCH_ACTIVE_WORK_PROFILE_RECORDS_BY_USER_ID = """            
+            SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id,
+            state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at,
+            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status FROM work_profile WHERE  delete_status=false AND user_id =:userId""";
+
 }
