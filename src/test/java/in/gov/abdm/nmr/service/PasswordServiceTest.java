@@ -113,7 +113,7 @@ class PasswordServiceTest {
     @Test
     void testSetNewPasswordShouldValidateUserLinkExpiredThenReturnLinkExpired() {
         when(resetTokenRepository.findByToken(getSetNewPasswordTo().getToken())).thenReturn(getResetTokenAsExpiryDate());
-        when(userDaoService.findByUsername(TEST_USER)).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode()));
+        when(userDaoService.findByUsername(TEST_USER)).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         ResponseMessageTo responseMessage = passwordService.setNewPassword(getSetNewPasswordTo());
         assertEquals(LINK_EXPIRED, responseMessage.getMessage());
     }
@@ -121,8 +121,8 @@ class PasswordServiceTest {
     @Test
     void testSetNewPasswordShouldReturnErrorMessage() {
         when(resetTokenRepository.findByToken(getSetNewPasswordTo().getToken())).thenReturn(getResetToken());
-        when(userDaoService.findByUsername(TEST_USER)).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode()));
-        when(userDaoService.save(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode()))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode()));
+        when(userDaoService.findByUsername(TEST_USER)).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.save(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(passwordDaoService.save(new Password())).thenReturn(new Password());
         ResponseMessageTo responseMessage = passwordService.setNewPassword(getSetNewPasswordTo());
         assertNotNull(responseMessage.getMessage());
@@ -131,7 +131,7 @@ class PasswordServiceTest {
     @Test
     void testResetPasswordShouldValidateUserAndOtpThenResetPassword() throws OtpException, GeneralSecurityException, InvalidRequestException {
         when(otpService.isOtpVerified(anyString())).thenReturn(false);
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode()));
+        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         ResponseMessageTo responseMessage = passwordService.resetPassword(new ResetPasswordRequestTo(TEST_USER, TEST_PSWD, TRANSACTION_ID));
         assertEquals(SUCCESS_RESPONSE, responseMessage.getMessage());
     }
@@ -154,8 +154,8 @@ class PasswordServiceTest {
 
     @Test
     void testChangePasswordShouldValidateUserIfOldPasswordIsNotMatchingThenReturnOldPasswordNotMatching() throws GeneralSecurityException, InvalidRequestException {
-        when(userDaoService.findById(any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode()));
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode()));
+        when(userDaoService.findById(any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         ResponseMessageTo responseMessage = passwordService.changePassword(new ChangePasswordRequestTo(CommonTestData.USER_ID, TEST_PSWD, TEST_PSWD));
         assertEquals(OLD_PASSWORD_NOT_MATCHING, responseMessage.getMessage());
