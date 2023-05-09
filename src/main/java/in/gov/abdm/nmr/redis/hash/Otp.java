@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.redis.hash;
 
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 import org.springframework.data.redis.core.index.Indexed;
@@ -18,6 +19,7 @@ import lombok.Setter;
 @RedisHash("nmr-otp")
 public class Otp {
 
+    @Id
     private String id;
     private String otp;
     private Integer attempts;

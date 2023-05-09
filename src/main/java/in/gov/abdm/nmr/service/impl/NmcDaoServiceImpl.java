@@ -22,4 +22,9 @@ public class NmcDaoServiceImpl implements INmcDaoService {
     public NmcProfile findByUserId(BigInteger userId) {
         return nmcProfileRepository.findByUserId(userId);
     }
+    
+    @Override
+    public NmcProfile save(NmcProfile nmcProfile) {
+        return nmcProfileRepository.save(nmcProfile);
+    }
 }

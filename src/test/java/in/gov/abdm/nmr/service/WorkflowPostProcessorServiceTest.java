@@ -154,7 +154,7 @@ class WorkflowPostProcessorServiceTest {
         when(customQualificationDetailRepository.getQualificationDetailsByUserId(any(BigInteger.class))).thenReturn(Arrays.asList(getForeignQualificationDetails()));
         when(customQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(any(BigInteger.class))).thenReturn(Arrays.asList(getForeignQualificationDetailsMaster()));
         when(notificationService.sendNotificationForNMRCreation(anyString(), anyString())).thenReturn(new ResponseMessageTo());
-        when(userRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode())));
+        when(userRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId())));
 
         workflowPostProcessorService.performPostWorkflowUpdates(getWorkFlowRequestTO(), getHpProfile(), getNextGroup());
         Mockito.verify(iWorkFlowRepository, Mockito.times(1)).findByRequestId(any(String.class));

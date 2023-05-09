@@ -43,28 +43,28 @@ public class CollegeController {
         this.collegeServiceV2 = collegeServiceV2;
     }
 
-    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL})
+    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN})
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping(path = COLLEGES, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<CollegeMasterDataTO> getAllColleges() throws NmrException {
         return collegeServiceV2.getAllColleges();
     }
 
-    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL, RoleConstants.COLLEGE_ADMIN})
+    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN, RoleConstants.COLLEGE_ADMIN})
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping(path = COLLEGE_ID, produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeResponseTo getCollege(@PathVariable BigInteger id) throws NmrException, InvalidIdException, NotFoundException {
         return collegeServiceV2.getCollege(id);
     }
 
-    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL})
+    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN})
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping(path = COLLEGES, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeResponseTo createCollege(@Valid @RequestBody CollegeResponseTo collegeResponseTo) throws NmrException, InvalidRequestException, ResourceExistsException, InvalidIdException, NotFoundException {
         return collegeServiceV2.createOrUpdateCollege(collegeResponseTo);
     }
 
-    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL, RoleConstants.COLLEGE_ADMIN})
+    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN, RoleConstants.COLLEGE_ADMIN})
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping(path = COLLEGE_ID, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeResponseTo updateCollege(@NotNull @PathVariable BigInteger id, @Valid @RequestBody CollegeResponseTo collegeResponseTo) throws NmrException, InvalidRequestException, ResourceExistsException, InvalidIdException, NotFoundException {

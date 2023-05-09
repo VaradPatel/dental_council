@@ -6,4 +6,6 @@ import java.math.BigInteger;
 
 public interface INbeDaoService {
     NbeProfile findByUserId(BigInteger userId);
+
+    NbeProfile save(NbeProfile nbeProfile);
 }

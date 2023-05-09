@@ -83,7 +83,7 @@ class UserServiceTest {
 
     @Test
     void testToggleSmsNotification() {
-        when(userDaoService.toggleSmsNotification(true)).thenReturn(getUser(UserTypeEnum.STATE_MEDICAL_COUNCIL.getCode()));
+        when(userDaoService.toggleSmsNotification(true)).thenReturn(getUser(UserTypeEnum.SMC.getId()));
         NotificationToggleResponseTO response = userService.toggleSmsNotification(true);
         assertEquals(ID, response.getUserId());
         assertEquals(NMRConstants.SMS, response.getMode());
@@ -91,7 +91,7 @@ class UserServiceTest {
 
     @Test
     void testToggleEmailNotification() {
-        when(userDaoService.toggleEmailNotification(true)).thenReturn(getUser(UserTypeEnum.STATE_MEDICAL_COUNCIL.getCode()));
+        when(userDaoService.toggleEmailNotification(true)).thenReturn(getUser(UserTypeEnum.SMC.getId()));
         NotificationToggleResponseTO response = userService.toggleEmailNotification(true);
         assertEquals(ID, response.getUserId());
         assertEquals(NMRConstants.EMAIL, response.getMode());
@@ -100,7 +100,7 @@ class UserServiceTest {
 
     @Test
     void testToggleNotification() {
-        when(userDaoService.toggleNotification(new NotificationToggleRequestTO())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode()));
+        when(userDaoService.toggleNotification(new NotificationToggleRequestTO())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         List<NotificationToggleResponseTO> response = userService.toggleNotification(new NotificationToggleRequestTO());
         assertEquals(2, response.size());
         assertEquals(ID, response.get(0).getUserId());

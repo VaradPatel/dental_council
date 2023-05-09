@@ -27,7 +27,7 @@ public class CollegeProfileDaoServiceImpl implements ICollegeProfileDaoService {
 
     @Override
     public CollegeProfile findAdminByCollegeId(BigInteger collegeId) {
-        return collegeProfileRepository.findAdminByCollegeId(collegeId, UserSubTypeEnum.COLLEGE.getCode());
+        return collegeProfileRepository.findAdminByCollegeId(collegeId, UserSubTypeEnum.COLLEGE_ADMIN.getId());
     }
 
     @Override

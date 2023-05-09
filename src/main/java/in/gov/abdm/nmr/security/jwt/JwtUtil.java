@@ -50,10 +50,10 @@ public class JwtUtil {
         this.userDetailService = userDetailService;
     }
 
-    public String generateToken(String username, JwtTypeEnum type, String role, BigInteger profileId) {
+    public String generateToken(String username, JwtTypeEnum type, String[] role, BigInteger profileId) {
         LOGGER.info("Generating {}", type);
 
-        if (RoleConstants.ROLE_SYSTEM.equals(role)) {
+        if (RoleConstants.ROLE_PREFIX.concat(RoleConstants.SYSTEM).equals(role)) {
             accessTokenExpirySeconds = 3600l;
         }
         

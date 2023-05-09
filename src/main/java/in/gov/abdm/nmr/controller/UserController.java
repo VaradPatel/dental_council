@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @GetMapping(path = ProtectedPaths.PATH_NBE_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @RolesAllowed({RoleConstants.NBE})
+    @RolesAllowed({RoleConstants.NATIONAL_BOARD_OF_EXAMINATIONS})
     @SecurityRequirement(name = "bearerAuth")
     public NbeProfileTO nbeProfile(@PathVariable(name = "id") BigInteger id) throws NmrException, InvalidIdException {
         return userService.getNbeProfile(id);
@@ -67,7 +67,7 @@ public class UserController {
     }
 
     @PutMapping(path = ProtectedPaths.PATH_NBE_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @RolesAllowed({RoleConstants.NBE})
+    @RolesAllowed({RoleConstants.NATIONAL_BOARD_OF_EXAMINATIONS})
     @SecurityRequirement(name = "bearerAuth")
     public NbeProfileTO updateNbeProfile(@PathVariable(name = "id") BigInteger id, @RequestBody NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException {
         return userService.updateNbeProfile(id, nbeProfileTO);
@@ -89,5 +89,11 @@ public class UserController {
 
         return userService.verifyEmail(verifyEmailTo);
 
+    }
+    
+    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN})
+    @PostMapping(path = ProtectedPaths.USER_NMC_CREATE_USER, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserProfileTO createUser(@Valid @RequestBody UserProfileTO userProfileTO) throws NmrException {
+        return userService.createUser(userProfileTO);
     }
 }

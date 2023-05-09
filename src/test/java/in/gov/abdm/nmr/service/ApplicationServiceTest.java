@@ -64,7 +64,7 @@ class ApplicationServiceTest {
 
         when(hpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(hpProfile);
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(requestCounter);
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode()));
+        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         doNothing().when(workFlowService).initiateSubmissionWorkFlow(any(WorkFlowRequestTO.class));
         applicationService.suspendRequest(getApplicationRequestTo());

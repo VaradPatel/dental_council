@@ -36,7 +36,7 @@ class SmcProfileDaoServiceTest {
 
     @BeforeEach
     void setup(){
-        user = getUser(UserTypeEnum.STATE_MEDICAL_COUNCIL.getCode());
+        user = getUser(UserTypeEnum.SMC.getId());
         stateMedicalCouncil =  getStateMedicalCouncil();
         populateSmcProfile();
     }

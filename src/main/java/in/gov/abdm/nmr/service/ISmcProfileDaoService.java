@@ -7,4 +7,6 @@ import java.math.BigInteger;
 public interface ISmcProfileDaoService {
 
     SMCProfile findByUserId(BigInteger userId);
+
+    SMCProfile save(SMCProfile smcProfile);
 }
