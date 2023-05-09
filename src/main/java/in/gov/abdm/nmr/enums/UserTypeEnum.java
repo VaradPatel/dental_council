@@ -1,37 +1,32 @@
 package in.gov.abdm.nmr.enums;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Optional;
+
+import in.gov.abdm.nmr.security.common.RoleConstants;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
 public enum UserTypeEnum {
 
-    HEALTH_PROFESSIONAL(BigInteger.valueOf(1), "Health Professional", Group.HEALTH_PROFESSIONAL),
-    COLLEGE(BigInteger.valueOf(2), "College", Group.COLLEGE),
-    STATE_MEDICAL_COUNCIL(BigInteger.valueOf(3), "State Medical Council", Group.SMC),
-    NATIONAL_MEDICAL_COUNCIL(BigInteger.valueOf(4), "National Medical Council", Group.NMC),
-    NBE(BigInteger.valueOf(5), "NBE",Group.NBE),
-    SYSTEM(BigInteger.valueOf(6), "SYSTEM", Group.SYSTEM);
+    HEALTH_PROFESSIONAL(BigInteger.valueOf(1), RoleConstants.HEALTH_PROFESSIONAL, Group.HEALTH_PROFESSIONAL), //
+    COLLEGE(BigInteger.valueOf(2), RoleConstants.COLLEGE, Group.COLLEGE), //
+    SMC(BigInteger.valueOf(3), RoleConstants.STATE_MEDICAL_COUNCIL, Group.SMC), //
+    NMC(BigInteger.valueOf(4), RoleConstants.NATIONAL_MEDICAL_COUNCIL, Group.NMC), //
+    NBE(BigInteger.valueOf(5), RoleConstants.NATIONAL_BOARD_OF_EXAMINATIONS, Group.NBE), //
+    SYSTEM(BigInteger.valueOf(6), RoleConstants.SYSTEM, Group.SYSTEM); //
 
-    private BigInteger code;
+    private BigInteger id;
 
     private String name;
 
     private Group group;
 
-
     public static UserTypeEnum getUserSubType(BigInteger userTypeId) {
-        Optional<UserTypeEnum> optionalUserTypeEnum = Arrays.stream(UserTypeEnum.values()).filter(userType -> userType.getCode().equals(userTypeId)).findFirst();
-        return optionalUserTypeEnum.isPresent() ? optionalUserTypeEnum.get() : null;
-    }
-
-    public static UserTypeEnum getUserSubType(String name) {
-        Optional<UserTypeEnum> optionalUserTypeEnum = Arrays.stream(UserTypeEnum.values()).filter(userType -> userType.getName().equals(name)).findFirst();
+        Optional<UserTypeEnum> optionalUserTypeEnum = Arrays.stream(UserTypeEnum.values()).filter(userType -> userType.getId().equals(userTypeId)).findFirst();
         return optionalUserTypeEnum.isPresent() ? optionalUserTypeEnum.get() : null;
     }
 }

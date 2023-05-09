@@ -143,24 +143,15 @@ public final class CommonTestData {
         UserSubType userSubType = new UserSubType();
         userSubType.setGroup(getUserGroup(userSubTypeEnum.getGroup().getId()));
         userSubType.setName(userSubTypeEnum.getName());
-        userSubType.setId(userSubTypeEnum.getCode());
-        userSubType.setUserType(getUserType(userSubTypeEnum.getUserType()));
+        userSubType.setId(userSubTypeEnum.getId());
+        userSubType.setUserType(getUserType(userSubTypeEnum.getUserType().getId()));
         return userSubType;
     }
 
     public static UserType getUserType(BigInteger userTypeId) {
         UserTypeEnum userTypeEnum = UserTypeEnum.getUserSubType(userTypeId);
         UserType userType = new UserType();
-        userType.setId(userTypeEnum.getCode());
-        userType.setName(userType.getName());
-        userType.setGroup(getUserGroup(userTypeEnum.getGroup().getId()));
-        return userType;
-    }
-
-    public static UserType getUserType(String userTypeName) {
-        UserTypeEnum userTypeEnum = UserTypeEnum.getUserSubType(userTypeName);
-        UserType userType = new UserType();
-        userType.setId(userTypeEnum.getCode());
+        userType.setId(userTypeEnum.getId());
         userType.setName(userType.getName());
         userType.setGroup(getUserGroup(userTypeEnum.getGroup().getId()));
         return userType;
@@ -238,7 +229,7 @@ public final class CommonTestData {
         hpProfile.setGender("M");
         hpProfile.setTransactionId(TRANSACTION_ID);
         hpProfile.setRegistrationId(REGISTRATION_NUMBER);
-        hpProfile.setUser(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode()));
+        hpProfile.setUser(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
 
         return hpProfile;
     }

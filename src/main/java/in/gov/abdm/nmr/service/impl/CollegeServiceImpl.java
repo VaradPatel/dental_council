@@ -48,7 +48,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.FORBIDDEN;
 @Transactional
 public class CollegeServiceImpl implements ICollegeService {
 
-    private static final List<BigInteger> ALLOWED_SUBTYPE_FOR_COLLEGE_UPDATES = List.of(UserSubTypeEnum.COLLEGE.getCode(), UserSubTypeEnum.NMC_ADMIN.getCode());
+    private static final List<BigInteger> ALLOWED_SUBTYPE_FOR_COLLEGE_UPDATES = List.of(UserSubTypeEnum.COLLEGE_ADMIN.getId(), UserSubTypeEnum.NMC_ADMIN.getId());
     private static final String UNSUPPORTED_OPERATION = "Unsupported operation";
 
     private ICollegeMasterDaoService collegeMasterDaoService;
@@ -134,7 +134,7 @@ public class CollegeServiceImpl implements ICollegeService {
             throw new NotFoundException();
         }
 
-        if (UserSubTypeEnum.COLLEGE.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {
+        if (UserSubTypeEnum.COLLEGE_ADMIN.getId().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {
             CollegeProfile collegeprofile = collegeProfileDaoService.findAdminByCollegeId(collegeMaster.getId());
 
             if (collegeprofile == null) {
@@ -202,7 +202,7 @@ public class CollegeServiceImpl implements ICollegeService {
         User user = collegeProfile != null ? collegeProfile.getUser() : null;
         if (user == null) {
             user = new User(null, collegeResponseTo.getEmailId(), collegeResponseTo.getMobileNumber(), null, null, null, false, false, //
-                    entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), // 
+                    entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getId()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_ADMIN.getId()), // 
                     entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false,false);
         } else {
             user.setEmail(collegeResponseTo.getEmailId());
@@ -232,7 +232,7 @@ public class CollegeServiceImpl implements ICollegeService {
             throw new NotFoundException();
         }
 
-        if (UserSubTypeEnum.COLLEGE.getCode().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {
+        if (UserSubTypeEnum.COLLEGE_ADMIN.getId().equals(loggedInUser.getUserSubType() != null ? loggedInUser.getUserSubType().getId() : null)) {
             if (collegeProfile == null) {
                 throw new NotFoundException(UNSUPPORTED_OPERATION);
             }
@@ -256,7 +256,7 @@ public class CollegeServiceImpl implements ICollegeService {
     @Override
     public List<CollegeMasterDataTO> getAllCollegeVerifiersDesignation() throws NmrException {
         return entityManager.createQuery("select ust from userSubType ust where ust.id != ?1 and ust.userType.id = ?2 order by ust.id asc", UserSubType.class) //
-                .setParameter(1, UserSubTypeEnum.COLLEGE.getCode()).setParameter(2, UserTypeEnum.COLLEGE.getCode()) //
+                .setParameter(1, UserSubTypeEnum.COLLEGE_ADMIN.getId()).setParameter(2, UserTypeEnum.COLLEGE.getId()) //
                 .getResultList().stream().map(userSubType -> new CollegeMasterDataTO(userSubType.getId(), userSubType.getName())).toList();
     }
 
@@ -264,7 +264,7 @@ public class CollegeServiceImpl implements ICollegeService {
     public CollegeProfileTo createOrUpdateCollegeVerifier(CollegeProfileTo collegeProfileTo) throws GeneralSecurityException, NmrException, InvalidRequestException, InvalidIdException, ResourceExistsException {
         CollegeProfile collegeProfile = null;
 
-        if(!getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.NMC_ADMIN.getCode())){
+        if(!getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.NMC_ADMIN.getId())){
             throw new InvalidRequestException();
         }
 
@@ -278,7 +278,7 @@ public class CollegeServiceImpl implements ICollegeService {
         User user = collegeProfile != null ? collegeProfile.getUser() : null;
         if (user == null) {
             user = new User(null, collegeProfileTo.getEmailId(), collegeProfileTo.getMobileNumber(), null, //
-                    null, null, false, false, entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getCode()), //
+                    null, null, false, false, entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getId()), //
                     entityManager.getReference(UserSubType.class, collegeProfileTo.getDesignation()), //
                     entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false,false);
         } else {
@@ -317,7 +317,7 @@ public class CollegeServiceImpl implements ICollegeService {
 
     private void duplicateEmailCheck(String emailId) throws ResourceExistsException {
         if (userDaoService.existsByEmail(emailId)) {
-            throw new ResourceExistsException(NMRError.EMAIL_NUM_ALREADY_REGISTERED.getMessage());
+            throw new ResourceExistsException(NMRError.EMAIL_ID_ALREADY_REGISTERED.getMessage());
         }
     }
 

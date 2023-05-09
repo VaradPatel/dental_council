@@ -51,7 +51,7 @@ class UserDaoServiceTest {
 
     @Test
     void testFindById() {
-        when(userDetailRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getUser(UserTypeEnum.STATE_MEDICAL_COUNCIL.getCode())));
+        when(userDetailRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getUser(UserTypeEnum.SMC.getId())));
         User user = userDaoService.findById(ID);
         assertEquals(ID, user.getId());
         assertEquals(EMAIL_ID, user.getEmail());

@@ -8,4 +8,6 @@ public interface INmcDaoService {
 
     NmcProfile findByUserId(BigInteger userId);
 
+    NmcProfile save(NmcProfile nmcProfile);
+
 }

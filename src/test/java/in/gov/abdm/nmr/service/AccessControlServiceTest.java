@@ -31,7 +31,7 @@ class AccessControlServiceTest {
 
     @BeforeEach
     void setup() {
-        loggedInUser = getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode());
+        loggedInUser = getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId());
     }
 
     @Test

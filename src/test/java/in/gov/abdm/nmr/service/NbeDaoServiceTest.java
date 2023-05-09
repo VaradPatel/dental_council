@@ -48,7 +48,7 @@ class NbeDaoServiceTest {
         nbeProfile.setFirstName(FIRST_NAME);
         nbeProfile.setLastName(LAST_NAME);
         nbeProfile.setMobileNo(MOBILE_NUMBER);
-        nbeProfile.setUser(getUser(UserTypeEnum.NBE.getCode()));
+        nbeProfile.setUser(getUser(UserTypeEnum.NBE.getId()));
         nbeProfile.setEmailId(EMAIL_ID);
         return nbeProfile;
     }

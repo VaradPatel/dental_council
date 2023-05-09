@@ -8,6 +8,10 @@ import in.gov.abdm.nmr.exception.OtpException;
 import java.math.BigInteger;
 import java.util.List;
 
+import javax.validation.Valid;
+
+import org.springframework.web.bind.annotation.RequestBody;
+
 public interface IUserService {
 
     NotificationToggleResponseTO toggleSmsNotification(boolean isSmsNotificationEnabled);
@@ -31,4 +35,6 @@ public interface IUserService {
     String retrieveUser(RetrieveUserRequestTo retrieveUserRequestTo) throws OtpException;
 
     ResponseMessageTo verifyEmail(VerifyEmailTo verifyEmailTo);
+    
+    UserProfileTO createUser(@Valid @RequestBody UserProfileTO userProfileTO) throws NmrException;
 }

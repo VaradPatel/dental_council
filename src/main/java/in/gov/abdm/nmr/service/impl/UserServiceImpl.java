@@ -1,8 +1,40 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.*;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import in.gov.abdm.nmr.dto.NbeProfileTO;
+import in.gov.abdm.nmr.dto.NmcProfileTO;
+import in.gov.abdm.nmr.dto.NotificationToggleRequestTO;
+import in.gov.abdm.nmr.dto.NotificationToggleResponseTO;
+import in.gov.abdm.nmr.dto.ResponseMessageTo;
+import in.gov.abdm.nmr.dto.RetrieveUserRequestTo;
+import in.gov.abdm.nmr.dto.SMCProfileTO;
+import in.gov.abdm.nmr.dto.SendLinkOnMailTo;
+import in.gov.abdm.nmr.dto.UserProfileTO;
+import in.gov.abdm.nmr.dto.VerifyEmailTo;
+import in.gov.abdm.nmr.entity.NbeProfile;
+import in.gov.abdm.nmr.entity.NmcProfile;
 import in.gov.abdm.nmr.entity.ResetToken;
+import in.gov.abdm.nmr.entity.SMCProfile;
+import in.gov.abdm.nmr.entity.StateMedicalCouncil;
 import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.entity.UserSubType;
+import in.gov.abdm.nmr.entity.UserType;
+import in.gov.abdm.nmr.enums.UserSubTypeEnum;
+import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.InvalidIdException;
 import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.NmrException;
@@ -14,22 +46,17 @@ import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.repository.IRegistrationDetailRepository;
 import in.gov.abdm.nmr.repository.ResetTokenRepository;
 import in.gov.abdm.nmr.security.common.RsaUtil;
+import in.gov.abdm.nmr.service.INbeDaoService;
+import in.gov.abdm.nmr.service.INmcDaoService;
 import in.gov.abdm.nmr.service.INotificationService;
-import in.gov.abdm.nmr.service.IPasswordDaoService;
+import in.gov.abdm.nmr.service.IPasswordService;
+import in.gov.abdm.nmr.service.ISmcProfileDaoService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.service.IUserService;
 import in.gov.abdm.nmr.util.NMRConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import javax.persistence.EntityManager;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
+@Transactional
 public class UserServiceImpl implements IUserService {
     @Autowired
     private ISmcMapper smcMapper;
@@ -41,16 +68,10 @@ public class UserServiceImpl implements IUserService {
     private IUserDaoService userDaoService;
 
     @Autowired
-    private EntityManager entityManager;
-
-    @Autowired
     RsaUtil rsaUtil;
 
     @Autowired
     IHpProfileRepository hpProfileRepository;
-
-    @Autowired
-    private IPasswordDaoService passwordDaoService;
 
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -66,6 +87,25 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private ResetTokenRepository resetTokenRepository;
+    
+    @PersistenceContext
+    private EntityManager entityManager;
+    
+    @Autowired
+    private INmcDaoService nmcDaoService;
+    
+    @Autowired
+    private ISmcProfileDaoService smcProfileDaoService;
+    
+    @Autowired
+    private INbeDaoService nbeDaoService;
+    
+    @Autowired
+    private IPasswordService passwordService;
+    
+    private static final Map<BigInteger, List<BigInteger>> ALLOWED_USER_TYPES = Map.of(UserTypeEnum.NMC.getId(), List.of(UserSubTypeEnum.NMC_ADMIN.getId(), UserSubTypeEnum.NMC_VERIFIER.getId()), //
+            UserTypeEnum.SMC.getId(), List.of(UserSubTypeEnum.SMC_ADMIN.getId(), UserSubTypeEnum.SMC_VERIFIER.getId()), //
+            UserTypeEnum.NBE.getId(), List.of(UserSubTypeEnum.NBE_ADMIN.getId(), UserSubTypeEnum.NBE_VERIFIER.getId()));
 
     public UserServiceImpl(IUserDaoService userDaoService) {
         this.userDaoService = userDaoService;
@@ -164,6 +204,62 @@ public class UserServiceImpl implements IUserService {
             }
         } catch (Exception e) {
             return new ResponseMessageTo(e.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    public UserProfileTO createUser(UserProfileTO userProfileTO) throws NmrException {
+        if (!ALLOWED_USER_TYPES.keySet().contains(userProfileTO.getTypeId()) || !ALLOWED_USER_TYPES.get(userProfileTO.getTypeId()).contains(userProfileTO.getSubTypeId())) {
+            NMRError invalidUserType = NMRError.INVALID_USER_TYPE;
+            throw new NmrException(invalidUserType.getCode(), invalidUserType.getMessage(), HttpStatus.BAD_REQUEST.getReasonPhrase());
+        }
+
+        validateContactDetails(userProfileTO.getEmailId(), userProfileTO.getMobileNumber());
+
+        UserType userType = entityManager.getReference(UserType.class, userProfileTO.getTypeId());
+        User user = User.builder().email(userProfileTO.getEmailId()).mobileNumber(userProfileTO.getMobileNumber()).isSmsNotificationEnabled(false).isEmailNotificationEnabled(false) //
+                .userType(userType).userSubType(entityManager.getReference(UserSubType.class, userProfileTO.getSubTypeId())).group(userType.getGroup()).accountNonLocked(true) //
+                .failedAttempt(0).isNew(false).isEmailVerified(false).build();
+        user = userDaoService.save(user);
+
+        if (UserTypeEnum.NMC.getId().equals(userProfileTO.getTypeId())) {
+            NmcProfile nmcProfile = new NmcProfile(null, user, null, null, null, null, 0, 0, userProfileTO.getName(), userProfileTO.getEmailId(), userProfileTO.getMobileNumber());
+            nmcDaoService.save(nmcProfile);
+
+        } else if (UserTypeEnum.SMC.getId().equals(userProfileTO.getTypeId())) {
+            if (userProfileTO.getSmcId() == null) {
+                NMRError stateMedicalIdNull = NMRError.STATE_MEDICAL_ID_NULL;
+                throw new NmrException(stateMedicalIdNull.getCode(), stateMedicalIdNull.getMessage(), HttpStatus.BAD_REQUEST.getReasonPhrase());
+            }
+
+            SMCProfile smcProfile = new SMCProfile(null, user, null, null, null, entityManager.getReference(StateMedicalCouncil.class, userProfileTO.getSmcId()), 0, 0, userProfileTO.getName(), userProfileTO.getEmailId(), userProfileTO.getMobileNumber());
+            smcProfileDaoService.save(smcProfile);
+
+        } else if (UserTypeEnum.NBE.getId().equals(userProfileTO.getTypeId())) {
+            NbeProfile nbeProfile = new NbeProfile(null, user, null, null, null, userProfileTO.getName(), userProfileTO.getEmailId(), userProfileTO.getMobileNumber());
+            nbeDaoService.save(nbeProfile);
+        }
+
+        passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail()));
+        return userProfileTO;
+    }
+
+    private void validateContactDetails(String emailId, String mobileNumber) throws NmrException {
+        duplicateEmailCheck(emailId);
+        duplicateMobileNumberCheck(mobileNumber);
+    }
+
+    private void duplicateMobileNumberCheck(String mobileNumber) throws NmrException {
+        if (userDaoService.existsByMobileNumber(mobileNumber)) {
+            NMRError mobileNumAlreadyRegistered = NMRError.MOBILE_NUM_ALREADY_REGISTERED;
+            throw new NmrException(mobileNumAlreadyRegistered.getCode(), mobileNumAlreadyRegistered.getMessage(), HttpStatus.BAD_REQUEST.getReasonPhrase());
+        }
+    }
+
+    private void duplicateEmailCheck(String emailId) throws NmrException {
+        if (userDaoService.existsByEmail(emailId)) {
+            NMRError emailNumAlreadyRegistered = NMRError.EMAIL_ID_ALREADY_REGISTERED;
+            throw new NmrException(emailNumAlreadyRegistered.getCode(), emailNumAlreadyRegistered.getMessage(), HttpStatus.BAD_REQUEST.getReasonPhrase());
         }
     }
 }

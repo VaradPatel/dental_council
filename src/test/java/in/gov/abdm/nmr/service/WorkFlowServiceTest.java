@@ -74,7 +74,7 @@ class WorkFlowServiceTest {
     @Test
     void testInitiateSubmissionFlow() throws WorkFlowException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode()));
+        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(iWorkFlowRepository.findByRequestId(anyString())).thenReturn(null);
         when(hpProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getHpProfile()));
         when(inmrWorkFlowConfigurationRepository.getNextGroup(any(BigInteger.class),any(BigInteger.class),any(BigInteger.class),any(BigInteger.class))).thenReturn(getNextGroup());

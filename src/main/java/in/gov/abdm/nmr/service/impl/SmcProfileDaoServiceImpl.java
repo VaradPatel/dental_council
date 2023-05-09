@@ -22,5 +22,9 @@ public class SmcProfileDaoServiceImpl implements ISmcProfileDaoService {
     public SMCProfile findByUserId(BigInteger userId) {
         return smcProfileRepository.findByUserId(userId);
     }
-
+    
+    @Override
+    public SMCProfile save(SMCProfile smcProfile) {
+        return smcProfileRepository.save(smcProfile);
+    }
 }
