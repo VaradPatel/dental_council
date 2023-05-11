@@ -1,6 +1,8 @@
 package in.gov.abdm.nmr.util;
 
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.dto.college.CollegeTO;
+import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
@@ -10,14 +12,12 @@ import in.gov.abdm.nmr.mapper.INextGroup;
 import in.gov.abdm.nmr.mapper.IStateMedicalCouncilMapper;
 import in.gov.abdm.nmr.nosql.entity.Council;
 import in.gov.abdm.nmr.nosql.entity.RegistrationsDetails;
-import in.gov.abdm.nmr.redis.hash.Otp;
 import lombok.experimental.UtilityClass;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -51,6 +51,7 @@ public final class CommonTestData {
     public static final String REGISTRATION_YEAR = "1990";
     public static final String REGISTRATION_NUMBER = "MAH-123";
     public static final String BROAD_SPECIALITY = "BS";
+    public static final String NAME = "NAME";
     public static final String COLLEGE_CODE = "123";
     public static final BigInteger COURSE_ID = BigInteger.valueOf(1);
     public static final String COURSE_NAME = "MBBS";
@@ -128,6 +129,16 @@ public final class CommonTestData {
     public static final String SALUTATION_DR = "Dr.";
     public static final String CLIENT_ID = "NMR_CLIENT_ID";
     public static final String CLIENT_SECRET = "NMR_CLIENT_SECRET";
+
+    public static final String REGISTRATION_CERTIFICATE ="registration certificate";
+    public static final String FILE_NAME ="File Name";
+    public static final String FILE_TYPE= "pdf";
+    private static final String YEAR_OF_PASSING = "2023";
+    private static final String MONTH_OF_PASSING = "MAY";
+    private static final String PASSPORT_NO = "123456789012" ;
+    private static final String ROLL_NO = "1234567890";
+    private static final String RESULT = "USER_RESULT";
+    private static final String QUALIFICATION_FROM = "India";
 
     public static UserGroup getUserGroup(BigInteger userGroupId) {
         Group group = Group.getGroup(userGroupId);
@@ -234,11 +245,210 @@ public final class CommonTestData {
         return hpProfile;
     }
 
+    public static HpProfile getHpProfileInApprovedStatus() {
+        HpProfile hpProfile = new HpProfile();
+        hpProfile.setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.APPROVED.getId()).build());
+        hpProfile.setId(ID);
+        hpProfile.setFullName(PROFILE_DISPLAY_NAME);
+        hpProfile.setMobileNumber(MOBILE_NUMBER);
+        hpProfile.setESignStatus(NMRConstants.SUCCESS);
+        hpProfile.setIsNew(0);
+        hpProfile.setRequestId(REQUEST_ID);
+        //hpProfile.setNmrId(NMR_ID);
+        hpProfile.setCountryNationality(getCountry());
+        hpProfile.setEmailId(EMAIL_ID);
+        hpProfile.setProfilePhoto(PROFILE_PHOTO);
+        hpProfile.setDateOfBirth(DATE_OF_BIRTH);
+        hpProfile.setGender("M");
+        hpProfile.setTransactionId(TRANSACTION_ID);
+        hpProfile.setRegistrationId(REGISTRATION_NUMBER);
+        hpProfile.setUser(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+
+        return hpProfile;
+    }
+
     public static BroadSpeciality getBroadSpeciality() {
         BroadSpeciality broadSpeciality = new BroadSpeciality();
         broadSpeciality.setId(ID);
         broadSpeciality.setName(BROAD_SPECIALITY);
         return broadSpeciality;
+    }
+
+    public static List<BroadSpecialityTO> getBroadSpecialityTo() {
+        List<BroadSpecialityTO> broadSpecialityTOList = new ArrayList<>();
+        BroadSpecialityTO broadSpeciality = new BroadSpecialityTO();
+        broadSpeciality.setId(ID);
+        broadSpeciality.setName(NAME);
+        broadSpecialityTOList.add(broadSpeciality);
+        return broadSpecialityTOList;
+    }
+
+    public static List<CountryTO> getCountryTo() {
+        List<CountryTO> countryTOS = new ArrayList<>();
+        CountryTO countryTO = new CountryTO();
+        countryTO.setId(ID);
+        countryTO.setName(NAME);
+        countryTOS.add(countryTO);
+        return countryTOS;
+    }
+
+    public static List<DistrictTO> getDistrictTo() {
+        List<DistrictTO> districtTOS = new ArrayList<>();
+        DistrictTO districtTo = new DistrictTO();
+        districtTo.setId(ID);
+        districtTo.setName(NAME);
+        districtTOS.add(districtTo);
+        return districtTOS;
+    }
+
+    public static List<StateTO> getStateTo() {
+        List<StateTO> stateTOList = new ArrayList<>();
+        StateTO stateTO = new StateTO();
+        stateTO.setId(ID);
+        stateTO.setName(NAME);
+        stateTOList.add(stateTO);
+        return stateTOList;
+    }
+
+    public static List<SubDistrictTO> getSubDistrictTo() {
+        List<SubDistrictTO> subDistrictTOS = new ArrayList<>();
+        SubDistrictTO subDistrictTO = new SubDistrictTO();
+        subDistrictTO.setId(ID);
+        subDistrictTO.setName(NAME);
+        subDistrictTOS.add(subDistrictTO);
+        return subDistrictTOS;
+    }
+
+    public static List<VillagesTO> getVillageTo() {
+        List<VillagesTO> villagesTOS = new ArrayList<>();
+        VillagesTO villagesTO = new VillagesTO();
+        villagesTO.setId(ID);
+        villagesTO.setName(NAME);
+        villagesTOS.add(villagesTO);
+        return villagesTOS;
+    }
+
+    public static List<LanguageTO> getLanguangesTo() {
+        List<LanguageTO> languageTOS = new ArrayList<>();
+        LanguageTO languageTO = new LanguageTO();
+        languageTO.setId(ID);
+        languageTO.setName(NAME);
+        languageTOS.add(languageTO);
+        return languageTOS;
+    }
+
+    public static List<CourseTO> getCourseTo() {
+        List<CourseTO> courseTOS = new ArrayList<>();
+        CourseTO courseTO = new CourseTO();
+        courseTO.setId(ID);
+        courseTO.setName(NAME);
+        courseTOS.add(courseTO);
+        return courseTOS;
+    }
+    public static CourseTO getCourseTO() {
+        CourseTO courseTO = new CourseTO();
+        courseTO.setId(ID);
+        courseTO.setName(NAME);
+        return courseTO;
+    }
+
+    public static CountryTO getCountryTO() {
+        CountryTO countryTO = new CountryTO();
+        countryTO.setId(ID);
+        countryTO.setName(NAME);
+        return countryTO;
+    }
+
+    public static DistrictTO getDistrictTO() {
+        DistrictTO districtTo = new DistrictTO();
+        districtTo.setId(ID);
+        districtTo.setName(NAME);
+        return districtTo;
+    }
+
+    public static StateTO getStateTO() {
+        StateTO stateTO = new StateTO();
+        stateTO.setId(ID);
+        stateTO.setName(NAME);
+        return stateTO;
+    }
+
+    public static SubDistrictTO getSubDistrictTO() {
+        SubDistrictTO subDistrictTO = new SubDistrictTO();
+        subDistrictTO.setId(ID);
+        subDistrictTO.setName(NAME);
+        return subDistrictTO;
+    }
+
+    public static VillagesTO getVillageTO() {
+        VillagesTO villagesTO = new VillagesTO();
+        villagesTO.setId(ID);
+        villagesTO.setName(NAME);
+        return villagesTO;
+    }
+
+
+    public static List<RegistrationRenewationTypeTO> getRegistrationRenewationTypeTO() {
+        List<RegistrationRenewationTypeTO> registrationRenewationTypeTOS = new ArrayList<>();
+        RegistrationRenewationTypeTO registrationRenewationTypeTO = new RegistrationRenewationTypeTO();
+        registrationRenewationTypeTO.setId(ID);
+        registrationRenewationTypeTO.setName(NAME);
+        registrationRenewationTypeTOS.add(registrationRenewationTypeTO);
+        return registrationRenewationTypeTOS;
+    }
+
+    public static List<FacilityTypeTO> getFacilityTypeTO() {
+        List<FacilityTypeTO> facilityTypeTOS = new ArrayList<>();
+        FacilityTypeTO facilityTypeTO = new FacilityTypeTO();
+        facilityTypeTO.setId(ID);
+        facilityTypeTO.setName(NAME);
+        facilityTypeTOS.add(facilityTypeTO);
+        return facilityTypeTOS;
+    }
+
+    public static List<MasterDataTO> getListOfMasterDataTO() {
+        List<MasterDataTO> masterDataTOES = new ArrayList<>();
+        MasterDataTO masterDataTO = new MasterDataTO();
+        masterDataTO.setId(ID.longValue());
+        masterDataTO.setName(NAME);
+        masterDataTOES.add(masterDataTO);
+        return masterDataTOES;
+    }
+
+    public static List<UniversityMasterResponseTo> getListOfUniversityMasterResponseTo() {
+        List<UniversityMasterResponseTo> universityMasterResponseTos = new ArrayList<>();
+        UniversityMasterResponseTo universityMasterResponseTo = new UniversityMasterResponseTo();
+        universityMasterResponseTo.setId(ID);
+        universityMasterResponseTo.setName(NAME);
+        universityMasterResponseTos.add(universityMasterResponseTo);
+        return universityMasterResponseTos;
+    }
+
+    public static List<UniversityMasterTo> getListOfUniversityMasterTo() {
+        List<UniversityMasterTo> universityMasterTos = new ArrayList<>();
+        UniversityMasterTo universityMasterTo = new UniversityMasterTo();
+        universityMasterTo.setId(ID);
+        universityMasterTo.setName(NAME);
+        universityMasterTos.add(universityMasterTo);
+        return universityMasterTos;
+    }
+
+    public static List<CollegeMasterResponseTo> getListOfCollegeMasterResponseTo() {
+        List<CollegeMasterResponseTo> collegeMasterResponseTos = new ArrayList<>();
+        CollegeMasterResponseTo collegeMasterResponseTo = new CollegeMasterResponseTo();
+        collegeMasterResponseTo.setId(ID);
+        collegeMasterResponseTo.setName(NAME);
+        collegeMasterResponseTos.add(collegeMasterResponseTo);
+        return collegeMasterResponseTos;
+    }
+
+    public static List<CollegeMasterTo> getListOfCollegeMasterTo() {
+        List<CollegeMasterTo> collegeMasterResponseTos = new ArrayList<>();
+        CollegeMasterTo collegeMasterResponseTo = new CollegeMasterTo();
+        collegeMasterResponseTo.setId(ID);
+        collegeMasterResponseTo.setName(NAME);
+        collegeMasterResponseTos.add(collegeMasterResponseTo);
+        return collegeMasterResponseTos;
     }
 
     public static Course getCourse() {
@@ -373,6 +583,31 @@ public final class CommonTestData {
         return address;
     }
 
+    public static Address getKYCAddress() {
+        Address address = new Address();
+        address.setId(ID);
+        address.setAddressLine1(ADDRESS_LINE_1);
+        AddressType addressType = new AddressType();
+        addressType.setId(in.gov.abdm.nmr.enums.AddressType.KYC.getId());
+        addressType.setType(in.gov.abdm.nmr.enums.AddressType.KYC.getDescription());
+        address.setAddressTypeId(addressType);
+        address.setMobile(MOBILE_NUMBER);
+        address.setCountry(getCountry());
+        address.setHpProfileId(ID);
+        address.setHouse(HOUSE);
+        address.setDistrict(getDistrict());
+        address.setLandmark(LANDMARK);
+        address.setEmail(EMAIL_ID);
+        address.setPincode(PIN_CODE);
+        address.setState(getState());
+        address.setLocality(LOCALITY);
+        address.setVillage(getVillage());
+        address.setStreet(STREET);
+        address.setSubDistrict(getSubDistrict());
+        return address;
+    }
+
+
     public INextGroup getNextGroup() {
         return new INextGroup() {
             @Override
@@ -436,6 +671,12 @@ public final class CommonTestData {
         return universityMaster;
     }
 
+    public static UniversityMasterTo getUniversityMasterTo() {
+        UniversityMasterTo universityMasterTo = new UniversityMasterTo();
+        universityMasterTo.setId(ID);
+        return universityMasterTo;
+    }
+
     public static Password getPassword() {
         Password password = new Password();
         password.setId(ID);
@@ -488,6 +729,124 @@ public final class CommonTestData {
         SessionResponseTo sessionResponse = new SessionResponseTo();
         sessionResponse.setAccessToken(TEMP_TOKN);
         return sessionResponse;
+    }
+
+    public PersonalDetailsTO getPersonalDetails() {
+        PersonalDetailsTO personalDetails = new PersonalDetailsTO();
+        personalDetails.setSalutation(SALUTATION_DR);
+        personalDetails.setAadhaarToken(TRANSACTION_ID);
+        personalDetails.setFirstName(FIRST_NAME);
+        personalDetails.setMiddleName(MIDDLE_NAME);
+        personalDetails.setLastName(LAST_NAME);
+        personalDetails.setFatherName(MIDDLE_NAME);
+        personalDetails.setMotherName(MIDDLE_NAME);
+        personalDetails.setSpouseName(FIRST_NAME);
+        personalDetails.setCountryNationality(NationalityTO.builder().id(COUNTRY_ID).name(COUNTRY_NAME).build());
+        personalDetails.setDateOfBirth(DATE_OF_BIRTH);
+        personalDetails.setGender(GENDER);
+        personalDetails.setSchedule(ScheduleTO.builder().id(SCHEDULE_ID).name(SCHEDULE_NAME).build());
+        personalDetails.setProfilePhoto(PROFILE_PHOTO);
+        personalDetails.setFullName(PROFILE_DISPLAY_NAME);
+        personalDetails.setIsNew(true);
+        personalDetails.setEmail(EMAIL_ID);
+        personalDetails.setMobile(MOBILE_NUMBER);
+        return personalDetails;
+    }
+
+    public CommunicationAddressTO getCommunicationAddressTo() {
+        CommunicationAddressTO communicationAddress = new CommunicationAddressTO();
+        communicationAddress.setId(ID);
+        communicationAddress.setCountry(new CountryTO(COUNTRY_ID, COUNTRY_NAME, LOCALITY));
+        communicationAddress.setState(new StateTO(STATE_ID, STATE_NAME, STATE_CODE));
+        communicationAddress.setDistrict(new DistrictTO(DISTRICT_ID, DISTRICT_NAME, DISTRICT_CODE));
+        communicationAddress.setSubDistrict(new SubDistrictTO(ID, SUB_DISTRICT_CODE, SUB_DISTRICT_NAME));
+        communicationAddress.setVillage(new VillagesTO(VILLAGE_ID, VILLAGE_NAME));
+        communicationAddress.setPincode(PIN_CODE);
+        communicationAddress.setAddressLine1(ADDRESS_LINE_1);
+        communicationAddress.setHouse(HOUSE);
+        communicationAddress.setStreet(STREET);
+        communicationAddress.setLocality(LOCALITY);
+        communicationAddress.setLandmark(LANDMARK);
+        communicationAddress.setIsSameAddress("true");
+        communicationAddress.setEmail(EMAIL_ID);
+        communicationAddress.setMobile(MOBILE_NUMBER);
+        communicationAddress.setAddressType(new AddressTypeTO());
+        communicationAddress.setCreatedAt(CURRENT_DATE);
+        communicationAddress.setUpdatedAt(CURRENT_DATE);
+        communicationAddress.setFullName(FIRST_NAME);
+        return communicationAddress;
+    }
+
+    public HpPersonalUpdateRequestTO getHpPersonalUpdateRequestTo() {
+        HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO = new HpPersonalUpdateRequestTO();
+        hpPersonalUpdateRequestTO.setRequestId(REQUEST_ID);
+        hpPersonalUpdateRequestTO.setPersonalDetails(getPersonalDetails());
+        hpPersonalUpdateRequestTO.setCommunicationAddress(getCommunicationAddressTo());
+        return hpPersonalUpdateRequestTO;
+    }
+
+    public static StateMedicalCouncilTO getStateMedicalCouncilTO() {
+        StateMedicalCouncilTO stateMedicalCouncil = new StateMedicalCouncilTO();
+        stateMedicalCouncil.setId(ID);
+        stateMedicalCouncil.setCode(ISO_CODE);
+        stateMedicalCouncil.setName(STATE_MEDICAL_COUNCIL);
+        return stateMedicalCouncil;
+    }
+
+
+    public static RegistrationDetailTO getRegistrationDetails() {
+        RegistrationDetailTO registrationDetailTO = new RegistrationDetailTO();
+        registrationDetailTO.setRegistrationNumber(REGISTRATION_NUMBER);
+        registrationDetailTO.setRegistrationCertificate(REGISTRATION_CERTIFICATE);
+        registrationDetailTO.setFileName(FILE_NAME);
+        registrationDetailTO.setFileType(FILE_TYPE);
+        registrationDetailTO.setRegistrationDate(REGISTRATION_DATE);
+        registrationDetailTO.setStateMedicalCouncil(getStateMedicalCouncilTO());
+        return registrationDetailTO;
+    }
+    public static  HpNbeDetails getHPNbeDetails(){
+        HpNbeDetails hpNbeDetails = new HpNbeDetails();
+        hpNbeDetails.setId(ID);
+        hpNbeDetails.setHpProfile(getHpProfile());
+        hpNbeDetails.setRollNo(ROLL_NO);
+        hpNbeDetails.setMarksObtained(200);
+        hpNbeDetails.setPassportNumber(PASSPORT_NO);
+        hpNbeDetails.setRequestId(REQUEST_ID);
+        hpNbeDetails.setMonthOfPassing(MONTH_OF_PASSING);
+        hpNbeDetails.setYearOfPassing(YEAR_OF_PASSING);
+        hpNbeDetails.setUserResult(RESULT);
+        return hpNbeDetails;
+    }
+    public static CollegeTO getCollegeTo(){
+        CollegeTO collegeTO = new CollegeTO();
+        collegeTO.setId(ID);
+        collegeTO.setName(NAME);
+        return  collegeTO;
+    }
+
+    public static  List<QualificationDetailRequestTO> getQualification(){
+        List<QualificationDetailRequestTO> qualificationDetailRequestTOList = new ArrayList<>();
+        QualificationDetailRequestTO qualificationDetailRequestTO = new QualificationDetailRequestTO();
+        qualificationDetailRequestTO.setRequestId(REQUEST_ID);
+        qualificationDetailRequestTO.setQualificationFrom(QUALIFICATION_FROM);
+        qualificationDetailRequestTO.setCountry(getCountryTO());
+        qualificationDetailRequestTO.setCourse(getCourseTO());
+        qualificationDetailRequestTO.setState(getStateTO());
+        qualificationDetailRequestTO.setCollege(getCollegeTo());
+        qualificationDetailRequestTO.setQualificationMonth(MONTH_OF_PASSING);
+        qualificationDetailRequestTO.setQualificationYear(YEAR_OF_PASSING);
+        qualificationDetailRequestTO.setFileName(FILE_NAME);
+        qualificationDetailRequestTOList.add(qualificationDetailRequestTO);
+        return qualificationDetailRequestTOList;
+
+    }
+
+    public HpRegistrationUpdateRequestTO getHpRegistrationUpdateRequestTo() {
+        HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO = new HpRegistrationUpdateRequestTO();
+        hpRegistrationUpdateRequestTO.setRegistrationDetail(getRegistrationDetails());
+        hpRegistrationUpdateRequestTO.setHpNbeDetails(getHPNbeDetails());
+        hpRegistrationUpdateRequestTO.setQualificationDetails(getQualification());
+        return hpRegistrationUpdateRequestTO;
     }
 
 
