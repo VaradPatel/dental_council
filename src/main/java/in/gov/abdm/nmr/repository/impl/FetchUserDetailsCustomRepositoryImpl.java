@@ -1,0 +1,170 @@
+package in.gov.abdm.nmr.repository.impl;
+
+import in.gov.abdm.nmr.dto.UserRequestParamsTO;
+import in.gov.abdm.nmr.dto.UserResponseTO;
+import in.gov.abdm.nmr.dto.UserTO;
+import in.gov.abdm.nmr.enums.UserSubTypeEnum;
+import in.gov.abdm.nmr.repository.IFetchUserDetailsCustomRepository;
+import in.gov.abdm.nmr.util.NMRConstants;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.transaction.Transactional;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+
+import static in.gov.abdm.nmr.util.NMRConstants.*;
+
+@Repository
+@Transactional
+@Slf4j
+public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCustomRepository {
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    private static final Function<UserRequestParamsTO, String> SORT_RECORDS = userRequestParamsTO -> {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" ORDER BY  ");
+        sb.append(userRequestParamsTO.getSortBy());
+        sb.append("  ");
+        sb.append(userRequestParamsTO.getSortOrder());
+        return sb.toString();
+    };
+
+    private static final Function<UserRequestParamsTO, String> USER_PARAMETERS_FOR_CLG = userRequestParamsTO -> {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (Objects.nonNull(userRequestParamsTO.getFirstName()) && !userRequestParamsTO.getFirstName().isEmpty()) {
+            stringBuilder.append(" AND name ILIKE '%").append(userRequestParamsTO.getFirstName()).append("%' ");
+        }
+
+        if (Objects.nonNull(userRequestParamsTO.getLastName()) && !userRequestParamsTO.getLastName().isEmpty()) {
+            stringBuilder.append(" AND name ILIKE '%").append(userRequestParamsTO.getLastName()).append("%' ");
+        }
+
+        if (Objects.nonNull(userRequestParamsTO.getEmailId()) && !userRequestParamsTO.getEmailId().isEmpty()) {
+            stringBuilder.append(" AND u.email ILIKE '%").append(userRequestParamsTO.getEmailId()).append("%' ");
+        }
+
+        if (Objects.nonNull(userRequestParamsTO.getMobileNumber()) && !userRequestParamsTO.getMobileNumber().isEmpty()) {
+            stringBuilder.append(" AND u.mobile_number ILIKE '%").append(userRequestParamsTO.getMobileNumber()).append("%' ");
+        }
+        if (Objects.nonNull(userRequestParamsTO.getUserTypeId()) && !userRequestParamsTO.getUserTypeId().isEmpty()) {
+            stringBuilder.append(" AND u.user_type_id = '").append(userRequestParamsTO.getUserTypeId()).append("' ");
+        }
+
+        if (Objects.nonNull(userRequestParamsTO.getUserSubTypeID()) && !userRequestParamsTO.getUserSubTypeID().isEmpty()) {
+
+            if (UserSubTypeEnum.NMC_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
+                stringBuilder.append(" AND u.user_sub_type_id IN(").append(
+                        UserSubTypeEnum.NMC_ADMIN.getId() + "," +
+                                UserSubTypeEnum.NMC_VERIFIER.getId() + "," +
+                                UserSubTypeEnum.NBE_ADMIN.getId() + "," +
+                                UserSubTypeEnum.COLLEGE_ADMIN.getId()).append(") ");
+            }
+            if (UserSubTypeEnum.SMC_ADMIN.getId().equals(userRequestParamsTO.getUserSubTypeID())) {
+                stringBuilder.append(" AND u.user_sub_type_id IN(").append(
+                        UserSubTypeEnum.SMC_ADMIN.getId() + "," +
+                                UserSubTypeEnum.SMC_ADMIN.getId() + "," +
+                                UserSubTypeEnum.SMC_VERIFIER.getId()).append(") ");
+            }
+            if (UserSubTypeEnum.NBE_ADMIN.getId().equals(userRequestParamsTO.getUserSubTypeID())) {
+                stringBuilder.append(" AND u.user_sub_type_id IN(").append(
+                        UserSubTypeEnum.SMC_ADMIN.getId() + "," +
+                                UserSubTypeEnum.NBE_ADMIN.getId() + "," +
+                                UserSubTypeEnum.NBE_VERIFIER.getId()).append(") ");
+            }
+        }
+        return stringBuilder.toString();
+    };
+
+    private static final Function<UserRequestParamsTO, String> USER_PARAMETERS = userRequestParamsTO -> {
+        StringBuilder builder = new StringBuilder();
+
+        if (Objects.nonNull(userRequestParamsTO.getFirstName()) && !userRequestParamsTO.getFirstName().isEmpty()) {
+            builder.append(" AND first_name ILIKE '%").append(userRequestParamsTO.getFirstName()).append("%' ");
+        }
+
+        if (Objects.nonNull(userRequestParamsTO.getLastName()) && !userRequestParamsTO.getLastName().isEmpty()) {
+            builder.append(" AND last_name ILIKE '%").append(userRequestParamsTO.getLastName()).append("%' ");
+        }
+
+        if (Objects.nonNull(userRequestParamsTO.getEmailId()) && !userRequestParamsTO.getEmailId().isEmpty()) {
+            builder.append(" AND u.email ILIKE '%").append(userRequestParamsTO.getEmailId()).append("%' ");
+        }
+
+        if (Objects.nonNull(userRequestParamsTO.getMobileNumber()) && !userRequestParamsTO.getMobileNumber().isEmpty()) {
+            builder.append(" AND u.mobile_number ILIKE '%").append(userRequestParamsTO.getMobileNumber()).append("%' ");
+        }
+        if (Objects.nonNull(userRequestParamsTO.getUserTypeId()) && !userRequestParamsTO.getUserTypeId().isEmpty()) {
+            builder.append(" AND u.user_type_id = '").append(userRequestParamsTO.getUserTypeId()).append("' ");
+        }
+
+        if (Objects.nonNull(userRequestParamsTO.getUserSubTypeID()) && !userRequestParamsTO.getUserSubTypeID().isEmpty()) {
+
+            if (UserSubTypeEnum.NMC_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
+                builder.append(" AND u.user_sub_type_id IN(").append(
+                        UserSubTypeEnum.NMC_ADMIN.getId() + "," +
+                                UserSubTypeEnum.NMC_VERIFIER.getId() + "," +
+                                UserSubTypeEnum.NBE_ADMIN.getId() + "," +
+                                UserSubTypeEnum.COLLEGE_ADMIN.getId()).append(") ");
+            }
+            if (UserSubTypeEnum.SMC_ADMIN.getId().equals(userRequestParamsTO.getUserSubTypeID())) {
+                builder.append(" AND u.user_sub_type_id IN(").append(
+                        UserSubTypeEnum.SMC_ADMIN.getId() + "," +
+                                UserSubTypeEnum.SMC_ADMIN.getId() + "," +
+                                UserSubTypeEnum.SMC_VERIFIER.getId()).append(") ");
+            }
+            if (UserSubTypeEnum.NBE_ADMIN.getId().equals(userRequestParamsTO.getUserSubTypeID())) {
+                builder.append(" AND u.user_sub_type_id IN(").append(
+                        UserSubTypeEnum.SMC_ADMIN.getId() + "," +
+                                UserSubTypeEnum.NBE_ADMIN.getId() + "," +
+                                UserSubTypeEnum.NBE_VERIFIER.getId()).append(") ");
+            }
+        }
+        return builder.toString();
+    };
+
+    private static final Function<UserRequestParamsTO, String> GET_ALL_USER = userRequestParamsTO -> {
+        StringBuilder sb = new StringBuilder();
+        String parameters = USER_PARAMETERS.apply(userRequestParamsTO);
+        String parametersForCollege = USER_PARAMETERS_FOR_CLG.apply(userRequestParamsTO);
+        sb.append(NMRConstants.FETCH_SMC_DETAILS + parameters + FETCH_COLLEGE_DETAILS + parametersForCollege + FETCH_NMC_DETAILS + parameters + FETCH_NBE_DETAILS + parameters);
+        if (Objects.nonNull(userRequestParamsTO.getSortBy()) && !userRequestParamsTO.getSortBy().isEmpty()) {
+            String sortRecords = SORT_RECORDS.apply(userRequestParamsTO);
+            sb.append(sortRecords);
+        }
+        return sb.toString();
+    };
+
+    public UserResponseTO fetchUserData(UserRequestParamsTO userRequestParamsTO, Pageable pagination) {
+        UserResponseTO userResponseTO = new UserResponseTO();
+        userResponseTO.setTotalNoOfRecords(BigInteger.ZERO);
+        List<UserTO> userTOList = new ArrayList<>();
+        Query query = entityManager.createNativeQuery(GET_ALL_USER.apply(userRequestParamsTO));
+        log.debug("Fetched user detail successfully.");
+        query.setFirstResult((pagination.getPageNumber() - 1) * pagination.getPageSize());
+        query.setMaxResults(pagination.getPageSize());
+        List<Object[]> results = query.getResultList();
+        results.forEach(result -> {
+            UserTO user = new UserTO();
+            user.setId((BigInteger) result[0]);
+            user.setUserTypeId((BigInteger) result[1]);
+            user.setFirstName((String) result[2]);
+            user.setLastName((String) result[3]);
+            user.setEmailId((String) result[4]);
+            user.setMobileNumber((String) result[5]);
+            userResponseTO.setTotalNoOfRecords((BigInteger) result[6]);
+            userTOList.add(user);
+        });
+        userResponseTO.setUserTOList(userTOList);
+        return userResponseTO;
+    }
+}

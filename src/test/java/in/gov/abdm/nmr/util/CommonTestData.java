@@ -185,6 +185,7 @@ public final class CommonTestData {
         user.setGroup(userType.getGroup());
         user.setId(ID);
         user.setPassword(TEST_PSWD);
+        user.setUserSubType(getUserSubType(UserSubTypeEnum.SMC_ADMIN.getId()));
         return user;
     }
 

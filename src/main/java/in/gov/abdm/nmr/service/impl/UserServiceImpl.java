@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
 import java.math.BigInteger;
+import java.nio.file.AccessDeniedException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,22 +10,20 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.exception.*;
+import in.gov.abdm.nmr.repository.*;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import in.gov.abdm.nmr.dto.NbeProfileTO;
-import in.gov.abdm.nmr.dto.NmcProfileTO;
-import in.gov.abdm.nmr.dto.NotificationToggleRequestTO;
-import in.gov.abdm.nmr.dto.NotificationToggleResponseTO;
-import in.gov.abdm.nmr.dto.ResponseMessageTo;
-import in.gov.abdm.nmr.dto.RetrieveUserRequestTo;
-import in.gov.abdm.nmr.dto.SMCProfileTO;
-import in.gov.abdm.nmr.dto.SendLinkOnMailTo;
-import in.gov.abdm.nmr.dto.UserProfileTO;
-import in.gov.abdm.nmr.dto.VerifyEmailTo;
 import in.gov.abdm.nmr.entity.NbeProfile;
 import in.gov.abdm.nmr.entity.NmcProfile;
 import in.gov.abdm.nmr.entity.ResetToken;
@@ -35,16 +34,9 @@ import in.gov.abdm.nmr.entity.UserSubType;
 import in.gov.abdm.nmr.entity.UserType;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
-import in.gov.abdm.nmr.exception.InvalidIdException;
-import in.gov.abdm.nmr.exception.NMRError;
-import in.gov.abdm.nmr.exception.NmrException;
-import in.gov.abdm.nmr.exception.OtpException;
 import in.gov.abdm.nmr.mapper.INbeMapper;
 import in.gov.abdm.nmr.mapper.INmcMapper;
 import in.gov.abdm.nmr.mapper.ISmcMapper;
-import in.gov.abdm.nmr.repository.IHpProfileRepository;
-import in.gov.abdm.nmr.repository.IRegistrationDetailRepository;
-import in.gov.abdm.nmr.repository.ResetTokenRepository;
 import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.INbeDaoService;
 import in.gov.abdm.nmr.service.INmcDaoService;
@@ -55,8 +47,11 @@ import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.service.IUserService;
 import in.gov.abdm.nmr.util.NMRConstants;
 
+import static in.gov.abdm.nmr.util.NMRConstants.*;
+
 @Service
 @Transactional
+@Slf4j
 public class UserServiceImpl implements IUserService {
     @Autowired
     private ISmcMapper smcMapper;
@@ -65,6 +60,7 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private INbeMapper nbeMapper;
 
+    @Autowired
     private IUserDaoService userDaoService;
 
     @Autowired
@@ -102,14 +98,17 @@ public class UserServiceImpl implements IUserService {
     
     @Autowired
     private IPasswordService passwordService;
+
+    @Autowired
+    private IUserRepository userRepository;
+    @Autowired
+    IFetchUserDetailsCustomRepository fetchUserDetailsCustomRepository;
+
+
     
     private static final Map<BigInteger, List<BigInteger>> ALLOWED_USER_TYPES = Map.of(UserTypeEnum.NMC.getId(), List.of(UserSubTypeEnum.NMC_ADMIN.getId(), UserSubTypeEnum.NMC_VERIFIER.getId()), //
             UserTypeEnum.SMC.getId(), List.of(UserSubTypeEnum.SMC_ADMIN.getId(), UserSubTypeEnum.SMC_VERIFIER.getId()), //
             UserTypeEnum.NBE.getId(), List.of(UserSubTypeEnum.NBE_ADMIN.getId(), UserSubTypeEnum.NBE_VERIFIER.getId()));
-
-    public UserServiceImpl(IUserDaoService userDaoService) {
-        this.userDaoService = userDaoService;
-    }
 
     @Override
     public NotificationToggleResponseTO toggleSmsNotification(boolean isSmsNotificationEnabled) {
@@ -242,6 +241,60 @@ public class UserServiceImpl implements IUserService {
 
         passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail()));
         return userProfileTO;
+    }
+
+    @Override
+    public UserResponseTO getAllUser(String search, String value, int pageNo, int offset, String sortBy, String sortOrder) throws InvalidRequestException, AccessDeniedException {
+        UserRequestParamsTO userRequestParamsTO = new UserRequestParamsTO();
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userDetail = userRepository.findByUsername(userName);
+        if (userDetail == null) {
+            log.error("User don't have permission to access get users");
+            throw new AccessDeniedException(NMRError.ACCESS_FORBIDDEN.getMessage());
+        }
+        applyFilters(search, value, userRequestParamsTO);
+        userRequestParamsTO.setUserSubTypeID(userDetail.getUserSubType().getId() != null ? userDetail.getUserSubType().getId().toString() : null);
+        final String sortingOrder = (sortOrder == null || sortOrder.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortOrder;
+        userRequestParamsTO.setSortOrder(sortingOrder);
+        final int dataLimit = Math.min(MAX_DATA_SIZE, offset);
+        Pageable pageable = PageRequest.of(pageNo, dataLimit);
+        return fetchUserDetailsCustomRepository.fetchUserData(userRequestParamsTO, pageable);
+    }
+
+    private void applyFilters(String search, String value, UserRequestParamsTO userRequestParamsTO) throws InvalidRequestException {
+        if (StringUtils.isNotBlank(search)) {
+            if (value != null && !value.isBlank()) {
+                switch (search.toLowerCase()) {
+                    case USER_TYPE_ID_IN_LOWER_CASE:
+                        userRequestParamsTO.setUserTypeId(value);
+                        break;
+                    case FIRST_NAME_IN_LOWER_CASE:
+                        userRequestParamsTO.setFirstName(value);
+                        break;
+                    case LAST_NAME_IN_LOWER_CASE:
+                        userRequestParamsTO.setLastName(value);
+                        break;
+                    case EMAIL_ID_IN_LOWER_CASE:
+                        userRequestParamsTO.setEmailId(value);
+                        break;
+                    case MOBILE_NUMBER_IN_LOWER_CASE:
+                        userRequestParamsTO.setMobileNumber(value);
+                        break;
+                    default:
+                        log.error("unable to complete fetch user details process due Invalid Search Criteria ");
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL.getMessage());
+                }
+            } else {
+                log.error("unable to complete fetch user details process due missing search value.");
+                throw new InvalidRequestException(NMRError.MISSING_SEARCH_VALUE.getCode(), NMRError.MISSING_SEARCH_VALUE.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void deactivateUser(BigInteger userID) {
+        log.info("deactivate request for user id: {}", userID);
+        userRepository.deactivateUser(userID);
     }
 
     private void validateContactDetails(String emailId, String mobileNumber) throws NmrException {
