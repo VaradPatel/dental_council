@@ -8,5 +8,5 @@ import java.util.List;
 @Data
 public class UserResponseTO {
     private BigInteger totalNoOfRecords;
-    private List<UserTO> userTOList;
+    private List<UserTO> users;
 }

@@ -40,5 +40,5 @@ public interface IUserService {
     
     UserProfileTO createUser(@Valid @RequestBody UserProfileTO userProfileTO) throws NmrException;
     UserResponseTO getAllUser(String search, String value, int pageNo, int offset, String sortBy, String sortOrder) throws InvalidRequestException, AccessDeniedException;
-    void deactivateUser(BigInteger userID);
+    void deactivateUser(BigInteger userId);
 }

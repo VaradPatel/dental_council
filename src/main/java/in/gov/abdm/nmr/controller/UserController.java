@@ -100,21 +100,21 @@ public class UserController {
         return userService.createUser(userProfileTO);
     }
 
-    @GetMapping(path = "/retrieve-user")
+    @GetMapping(path = "/user")
     public UserResponseTO retrieveUsers(
             @RequestParam(required = false, value = "search") String search,
             @RequestParam(required = false, value = "value") String value,
-            @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+            @RequestParam(required = false, value = "pageNo", defaultValue = "0") int pageNo,
             @RequestParam(required = false, value = "offset", defaultValue = "10") int offset,
             @RequestParam(required = false, value = "sortBy") String sortBy,
             @RequestParam(required = false, value = "sortOrder") String sortOrder) throws InvalidRequestException, AccessDeniedException {
         return userService.getAllUser(search, value, pageNo, offset, sortBy, sortOrder);
     }
 
-    @DeleteMapping(path = "/deactivate-user")
+    @DeleteMapping(path = "/user")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deactivateUser(@RequestParam(required = false, value = "userID") BigInteger userID) {
-        userService.deactivateUser(userID);
+    public void deactivateUser(@RequestParam(required = false, value = "userId") BigInteger userId) {
+        userService.deactivateUser(userId);
     }
 
 }

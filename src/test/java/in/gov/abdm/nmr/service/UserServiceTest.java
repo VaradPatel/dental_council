@@ -81,7 +81,7 @@ class UserServiceTest {
         user.setEmailId(CommonTestData.EMAIL_ID);
         user.setMobileNumber(MOBILE_NUMBER);
         userTOList.add(user);
-        response.setUserTOList(userTOList);
+        response.setUsers(userTOList);
         response.setTotalNoOfRecords(CommonTestData.ID);
         return response;
     }
@@ -93,12 +93,12 @@ class UserServiceTest {
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
         UserResponseTO user = userService.getAllUser(MOBILE_NUMBER_IN_LOWER_CASE, MOBILE_NUMBER, 1, 1, "", "");
         assertEquals(CommonTestData.ID, user.getTotalNoOfRecords());
-        assertEquals(CommonTestData.ID, user.getUserTOList().get(0).getId());
-        assertEquals(UserSubTypeEnum.NMC_ADMIN.getId(), user.getUserTOList().get(0).getUserTypeId());
-        assertEquals(FIRST_NAME, user.getUserTOList().get(0).getFirstName());
-        assertEquals(LAST_NAME, user.getUserTOList().get(0).getLastName());
-        assertEquals(CommonTestData.EMAIL_ID, user.getUserTOList().get(0).getEmailId());
-        assertEquals(MOBILE_NUMBER, user.getUserTOList().get(0).getMobileNumber());
+        assertEquals(CommonTestData.ID, user.getUsers().get(0).getId());
+        assertEquals(UserSubTypeEnum.NMC_ADMIN.getId(), user.getUsers().get(0).getUserTypeId());
+        assertEquals(FIRST_NAME, user.getUsers().get(0).getFirstName());
+        assertEquals(LAST_NAME, user.getUsers().get(0).getLastName());
+        assertEquals(CommonTestData.EMAIL_ID, user.getUsers().get(0).getEmailId());
+        assertEquals(MOBILE_NUMBER, user.getUsers().get(0).getMobileNumber());
     }
 
     @Test
@@ -108,12 +108,12 @@ class UserServiceTest {
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
         UserResponseTO user = userService.getAllUser(USER_TYPE_ID_IN_LOWER_CASE, UserTypeEnum.NBE.getId().toString(), 1, 1, "", "");
         assertEquals(CommonTestData.ID, user.getTotalNoOfRecords());
-        assertEquals(CommonTestData.ID, user.getUserTOList().get(0).getId());
-        assertEquals(UserSubTypeEnum.NMC_ADMIN.getId(), user.getUserTOList().get(0).getUserTypeId());
-        assertEquals(FIRST_NAME, user.getUserTOList().get(0).getFirstName());
-        assertEquals(LAST_NAME, user.getUserTOList().get(0).getLastName());
-        assertEquals(CommonTestData.EMAIL_ID, user.getUserTOList().get(0).getEmailId());
-        assertEquals(MOBILE_NUMBER, user.getUserTOList().get(0).getMobileNumber());
+        assertEquals(CommonTestData.ID, user.getUsers().get(0).getId());
+        assertEquals(UserSubTypeEnum.NMC_ADMIN.getId(), user.getUsers().get(0).getUserTypeId());
+        assertEquals(FIRST_NAME, user.getUsers().get(0).getFirstName());
+        assertEquals(LAST_NAME, user.getUsers().get(0).getLastName());
+        assertEquals(CommonTestData.EMAIL_ID, user.getUsers().get(0).getEmailId());
+        assertEquals(MOBILE_NUMBER, user.getUsers().get(0).getMobileNumber());
     }
 
     @Test
@@ -121,14 +121,14 @@ class UserServiceTest {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
-        UserResponseTO user = userService.getAllUser("firstname", FIRST_NAME, 1, 1, "", "");
+        UserResponseTO user = userService.getAllUser(FIRST_NAME_IN_LOWER_CASE, FIRST_NAME, 1, 1, "", "");
         assertEquals(CommonTestData.ID, user.getTotalNoOfRecords());
-        assertEquals(CommonTestData.ID, user.getUserTOList().get(0).getId());
-        assertEquals(UserSubTypeEnum.NMC_ADMIN.getId(), user.getUserTOList().get(0).getUserTypeId());
-        assertEquals(FIRST_NAME, user.getUserTOList().get(0).getFirstName());
-        assertEquals(LAST_NAME, user.getUserTOList().get(0).getLastName());
-        assertEquals(CommonTestData.EMAIL_ID, user.getUserTOList().get(0).getEmailId());
-        assertEquals(MOBILE_NUMBER, user.getUserTOList().get(0).getMobileNumber());
+        assertEquals(CommonTestData.ID, user.getUsers().get(0).getId());
+        assertEquals(UserSubTypeEnum.NMC_ADMIN.getId(), user.getUsers().get(0).getUserTypeId());
+        assertEquals(FIRST_NAME, user.getUsers().get(0).getFirstName());
+        assertEquals(LAST_NAME, user.getUsers().get(0).getLastName());
+        assertEquals(CommonTestData.EMAIL_ID, user.getUsers().get(0).getEmailId());
+        assertEquals(MOBILE_NUMBER, user.getUsers().get(0).getMobileNumber());
     }
 
 
@@ -137,14 +137,14 @@ class UserServiceTest {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
-        UserResponseTO user = userService.getAllUser("lastname", FIRST_NAME, 1, 1, "", "");
+        UserResponseTO user = userService.getAllUser(LAST_NAME_IN_LOWER_CASE, FIRST_NAME, 1, 1, "", "");
         assertEquals(CommonTestData.ID, user.getTotalNoOfRecords());
-        assertEquals(CommonTestData.ID, user.getUserTOList().get(0).getId());
-        assertEquals(UserSubTypeEnum.NMC_ADMIN.getId(), user.getUserTOList().get(0).getUserTypeId());
-        assertEquals(FIRST_NAME, user.getUserTOList().get(0).getFirstName());
-        assertEquals(LAST_NAME, user.getUserTOList().get(0).getLastName());
-        assertEquals(CommonTestData.EMAIL_ID, user.getUserTOList().get(0).getEmailId());
-        assertEquals(MOBILE_NUMBER, user.getUserTOList().get(0).getMobileNumber());
+        assertEquals(CommonTestData.ID, user.getUsers().get(0).getId());
+        assertEquals(UserSubTypeEnum.NMC_ADMIN.getId(), user.getUsers().get(0).getUserTypeId());
+        assertEquals(FIRST_NAME, user.getUsers().get(0).getFirstName());
+        assertEquals(LAST_NAME, user.getUsers().get(0).getLastName());
+        assertEquals(CommonTestData.EMAIL_ID, user.getUsers().get(0).getEmailId());
+        assertEquals(MOBILE_NUMBER, user.getUsers().get(0).getMobileNumber());
     }
 
     @Test
@@ -154,12 +154,12 @@ class UserServiceTest {
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
         UserResponseTO user = userService.getAllUser(EMAIL_ID_IN_LOWER_CASE, FIRST_NAME, 1, 1, "", "");
         assertEquals(CommonTestData.ID, user.getTotalNoOfRecords());
-        assertEquals(CommonTestData.ID, user.getUserTOList().get(0).getId());
-        assertEquals(UserSubTypeEnum.NMC_ADMIN.getId(), user.getUserTOList().get(0).getUserTypeId());
-        assertEquals(FIRST_NAME, user.getUserTOList().get(0).getFirstName());
-        assertEquals(LAST_NAME, user.getUserTOList().get(0).getLastName());
-        assertEquals(CommonTestData.EMAIL_ID, user.getUserTOList().get(0).getEmailId());
-        assertEquals(MOBILE_NUMBER, user.getUserTOList().get(0).getMobileNumber());
+        assertEquals(CommonTestData.ID, user.getUsers().get(0).getId());
+        assertEquals(UserSubTypeEnum.NMC_ADMIN.getId(), user.getUsers().get(0).getUserTypeId());
+        assertEquals(FIRST_NAME, user.getUsers().get(0).getFirstName());
+        assertEquals(LAST_NAME, user.getUsers().get(0).getLastName());
+        assertEquals(CommonTestData.EMAIL_ID, user.getUsers().get(0).getEmailId());
+        assertEquals(MOBILE_NUMBER, user.getUsers().get(0).getMobileNumber());
     }
 
     @Test

@@ -11,7 +11,7 @@ import java.math.BigInteger;
 @NoArgsConstructor
 public class UserTO {
 
-    private BigInteger Id;
+    private BigInteger id;
     private BigInteger userTypeId;
     private String firstName;
     private String lastName;

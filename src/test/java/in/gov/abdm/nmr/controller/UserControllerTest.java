@@ -357,27 +357,27 @@ class UserControllerTest {
         user.setEmailId(EMAIL_ID);
         user.setMobileNumber(MOBILE_NUMBER);
         userResponse.setTotalNoOfRecords(BigInteger.ONE);
-        userResponse.setUserTOList(List.of(user));
+        userResponse.setUsers(List.of(user));
         when(userService.getAllUser(nullable(String.class), nullable(String.class), nullable(Integer.class), nullable(Integer.class), nullable(String.class), nullable(String.class)))
                 .thenReturn(userResponse);
-        mockMvc.perform(get("/retrieve-user")
+        mockMvc.perform(get("/user")
                         .with(user(TEST_USER))
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.total_no_of_records").value(BigInteger.ONE))
-                .andExpect(jsonPath("$.user_tolist[0].id").value(ID))
-                .andExpect(jsonPath("$.user_tolist[0].user_type_id").value(UserSubTypeEnum.SMC_ADMIN.getId()))
-                .andExpect(jsonPath("$.user_tolist[0].first_name").value(FIRST_NAME))
-                .andExpect(jsonPath("$.user_tolist[0].last_name").value(LAST_NAME))
-                .andExpect(jsonPath("$.user_tolist[0].email_id").value(EMAIL_ID))
-                .andExpect(jsonPath("$.user_tolist[0].mobile_number").value(MOBILE_NUMBER));
+                .andExpect(jsonPath("$.users[0].id").value(ID))
+                .andExpect(jsonPath("$.users[0].user_type_id").value(UserSubTypeEnum.SMC_ADMIN.getId()))
+                .andExpect(jsonPath("$.users[0].first_name").value(FIRST_NAME))
+                .andExpect(jsonPath("$.users[0].last_name").value(LAST_NAME))
+                .andExpect(jsonPath("$.users[0].email_id").value(EMAIL_ID))
+                .andExpect(jsonPath("$.users[0].mobile_number").value(MOBILE_NUMBER));
     }
 
     @Test
     @WithMockUser
     void testDeactivateUserShouldChangeStatusAsDeactivateForUser() throws Exception {
         Mockito.doNothing().when(userService).deactivateUser(any(BigInteger.class));
-        mockMvc.perform(MockMvcRequestBuilders.delete("/deactivate-user")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/user")
                         .with(user(TEST_USER)).with(csrf())
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isNoContent());

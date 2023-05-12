@@ -136,7 +136,9 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
         StringBuilder sb = new StringBuilder();
         String parameters = USER_PARAMETERS.apply(userRequestParamsTO);
         String parametersForCollege = USER_PARAMETERS_FOR_CLG.apply(userRequestParamsTO);
-        sb.append(NMRConstants.FETCH_SMC_DETAILS + parameters + FETCH_COLLEGE_DETAILS + parametersForCollege + FETCH_NMC_DETAILS + parameters + FETCH_NBE_DETAILS + parameters);
+        sb.append(NMRConstants.FETCH_SMC_DETAILS).append(parameters).append(FETCH_COLLEGE_DETAILS)
+                .append(parametersForCollege).append(FETCH_NMC_DETAILS).append(parameters)
+                .append(FETCH_NBE_DETAILS).append(parameters);
         if (Objects.nonNull(userRequestParamsTO.getSortBy()) && !userRequestParamsTO.getSortBy().isEmpty()) {
             String sortRecords = SORT_RECORDS.apply(userRequestParamsTO);
             sb.append(sortRecords);
@@ -164,7 +166,7 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
             userResponseTO.setTotalNoOfRecords((BigInteger) result[6]);
             userTOList.add(user);
         });
-        userResponseTO.setUserTOList(userTOList);
+        userResponseTO.setUsers(userTOList);
         return userResponseTO;
     }
 }
