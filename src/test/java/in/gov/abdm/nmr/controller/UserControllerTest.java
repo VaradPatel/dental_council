@@ -2,6 +2,11 @@ package in.gov.abdm.nmr.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.entity.Dashboard;
+import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.enums.UserSubTypeEnum;
+import in.gov.abdm.nmr.enums.WorkflowStatus;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IMasterDataService;
 import in.gov.abdm.nmr.service.IUserService;
@@ -9,6 +14,7 @@ import in.gov.abdm.nmr.util.NMRConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,17 +26,20 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.math.BigInteger;
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -334,5 +343,43 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(NMRConstants.SUCCESS_RESPONSE));
+    }
+
+    @Test
+    @WithMockUser
+    void testRetrieveUserShouldGetUserDetailsBasedOnLoginUserAuthority() throws Exception {
+        UserResponseTO userResponse = new UserResponseTO();
+        UserTO user = new UserTO();
+        user.setId(ID);
+        user.setUserTypeId(UserSubTypeEnum.SMC_ADMIN.getId());
+        user.setFirstName(FIRST_NAME);
+        user.setLastName(LAST_NAME);
+        user.setEmailId(EMAIL_ID);
+        user.setMobileNumber(MOBILE_NUMBER);
+        userResponse.setTotalNoOfRecords(BigInteger.ONE);
+        userResponse.setUsers(List.of(user));
+        when(userService.getAllUser(nullable(String.class), nullable(String.class), nullable(Integer.class), nullable(Integer.class), nullable(String.class), nullable(String.class)))
+                .thenReturn(userResponse);
+        mockMvc.perform(get("/user")
+                        .with(user(TEST_USER))
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.total_no_of_records").value(BigInteger.ONE))
+                .andExpect(jsonPath("$.users[0].id").value(ID))
+                .andExpect(jsonPath("$.users[0].user_type_id").value(UserSubTypeEnum.SMC_ADMIN.getId()))
+                .andExpect(jsonPath("$.users[0].first_name").value(FIRST_NAME))
+                .andExpect(jsonPath("$.users[0].last_name").value(LAST_NAME))
+                .andExpect(jsonPath("$.users[0].email_id").value(EMAIL_ID))
+                .andExpect(jsonPath("$.users[0].mobile_number").value(MOBILE_NUMBER));
+    }
+
+    @Test
+    @WithMockUser
+    void testDeactivateUserShouldChangeStatusAsDeactivateForUser() throws Exception {
+        Mockito.doNothing().when(userService).deactivateUser(any(BigInteger.class));
+        mockMvc.perform(MockMvcRequestBuilders.delete("/user")
+                        .with(user(TEST_USER)).with(csrf())
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isNoContent());
     }
 }

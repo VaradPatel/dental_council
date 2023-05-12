@@ -205,6 +205,10 @@ public class NMRConstants {
     public static final String WORK_FLOW_STATUS_IN_LOWER_CASE = "workflowstatus";
     public static final String WORK_FLOW_STATUS_ID_IN_LOWER_CASE = "workflowstatusid";
     public static final String APPLICANT_FULL_NAME_IN_LOWER_CASE = "applicantfullname";
+
+    public static final String FIRST_NAME_IN_LOWER_CASE = "firstname";
+    public static final String LAST_NAME_IN_LOWER_CASE = "lastname";
+    public static final String USER_TYPE_ID_IN_LOWER_CASE = "usertypeid";
     public static final String FETCH_REACTIVATION_REQUESTS = "SELECT hp.id, hp.registration_id, wf.request_id, hp.full_name, wf.created_at, wf.start_date, hp.gender, hp.email_id, hp.mobile_number , hp.hp_profile_status_id, wf.remarks, COUNT(*) OVER() AS total_count FROM main.work_flow AS wf INNER JOIN main.hp_profile AS hp ON wf.hp_profile_id = hp.id WHERE application_type_id = 5";
     public static final String NOT_NULL_ERROR_MSG = "The {0} is mandatory.";
     public static final String NOT_BLANK_ERROR_MSG = "The {0} should not be blank.";
@@ -257,5 +261,14 @@ public class NMRConstants {
             SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id,
             state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at,
             updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status FROM work_profile WHERE  delete_status=false AND user_id =:userId""";
+
+
+    public static final String DEACTIVATE_USER = "update  {h-schema}user SET delete_status =true WHERE id =:userId";
+
+    public static final String FETCH_SMC_DETAILS = "select u.id, user_type_id ,sp.first_name, sp.last_name ,email,mobile_number from main.user u join main.smc_profile sp on u.id =sp.user_id where u.delete_status =false ";
+    public static final String FETCH_COLLEGE_DETAILS = "union select u.id ,user_type_id ,cp.name, '' ,email,mobile_number from main.user u join main.college_profile cp on u.id =cp.user_id where u.delete_status =false ";
+    public static final String FETCH_NMC_DETAILS = "union select u.id, user_type_id ,np.first_name, np.last_name,email ,mobile_number from main.user u join main.nmc_profile np on u.id =np.user_id where u.delete_status =false ";
+    public static final String FETCH_NBE_DETAILS = "union select u.id ,user_type_id ,nbep.first_name ,nbep.last_name,email ,mobile_number from main.user u join main.nbe_profile nbep on u.id =nbep.user_id where u.delete_status =false ";
+
 
 }
