@@ -49,6 +49,7 @@ public final class CommonTestData {
     public static final Date DATE_OF_BIRTH = Date.valueOf("1990-12-01");
     public static final Date REGISTRATION_DATE = Date.valueOf("1990-12-01");
     public static final String REGISTRATION_YEAR = "1990";
+    public static final String REGISTRATION_NUM_IN_LOWER_CASE = "registrationNumber";
     public static final String REGISTRATION_NUMBER = "MAH-123";
     public static final String BROAD_SPECIALITY = "BS";
     public static final String NAME = "NAME";
@@ -139,7 +140,6 @@ public final class CommonTestData {
     private static final String ROLL_NO = "1234567890";
     private static final String RESULT = "USER_RESULT";
     private static final String QUALIFICATION_FROM = "India";
-
     public static UserGroup getUserGroup(BigInteger userGroupId) {
         Group group = Group.getGroup(userGroupId);
         UserGroup userGroup = new UserGroup();
@@ -848,6 +848,20 @@ public final class CommonTestData {
         hpRegistrationUpdateRequestTO.setHpNbeDetails(getHPNbeDetails());
         hpRegistrationUpdateRequestTO.setQualificationDetails(getQualification());
         return hpRegistrationUpdateRequestTO;
+    }
+
+    public static RequestCounter getRequestCounter() {
+        RequestCounter requestCounter = new RequestCounter();
+        ApplicationType applicationType = new ApplicationType();
+        applicationType.setId(ID);
+        applicationType.setName("");
+        applicationType.setDescription("");
+        applicationType.setRequestPrefixId(REQUEST_ID);
+        requestCounter.setApplicationType(applicationType);
+        requestCounter.setId(ID);
+        requestCounter.setCounter(ID);
+
+        return requestCounter;
     }
 
 
