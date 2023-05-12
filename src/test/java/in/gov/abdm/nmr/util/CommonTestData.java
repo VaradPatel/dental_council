@@ -46,6 +46,7 @@ public final class CommonTestData {
     public static final String SUPER_SPECIALITY = "MS";
     public static final String REQUEST_ID = "NMR1001";
     public static final String PROFILE_PHOTO = "Base 64";
+    public static final String CAPTCHA_IMAGE = "Base 64";
     public static final Date DATE_OF_BIRTH = Date.valueOf("1990-12-01");
     public static final Date REGISTRATION_DATE = Date.valueOf("1990-12-01");
     public static final String REGISTRATION_YEAR = "1990";
@@ -140,6 +141,8 @@ public final class CommonTestData {
     private static final String ROLL_NO = "1234567890";
     private static final String RESULT = "USER_RESULT";
     private static final String QUALIFICATION_FROM = "India";
+    public static final Integer CAPTCHA_RESULT = 20;
+
     public static UserGroup getUserGroup(BigInteger userGroupId) {
         Group group = Group.getGroup(userGroupId);
         UserGroup userGroup = new UserGroup();
