@@ -163,7 +163,7 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
             user.setLastName((String) result[3]);
             user.setEmailId((String) result[4]);
             user.setMobileNumber((String) result[5]);
-            userResponseTO.setTotalNoOfRecords((BigInteger) result[6]);
+            userResponseTO.setTotalNoOfRecords(BigInteger.valueOf(results.size()));
             userTOList.add(user);
         });
         userResponseTO.setUsers(userTOList);

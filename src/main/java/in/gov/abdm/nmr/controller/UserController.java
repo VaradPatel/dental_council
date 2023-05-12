@@ -104,7 +104,7 @@ public class UserController {
     public UserResponseTO retrieveUsers(
             @RequestParam(required = false, value = "search") String search,
             @RequestParam(required = false, value = "value") String value,
-            @RequestParam(required = false, value = "pageNo", defaultValue = "0") int pageNo,
+            @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(required = false, value = "offset", defaultValue = "10") int offset,
             @RequestParam(required = false, value = "sortBy") String sortBy,
             @RequestParam(required = false, value = "sortOrder") String sortOrder) throws InvalidRequestException, AccessDeniedException {
