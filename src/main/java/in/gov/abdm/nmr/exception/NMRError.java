@@ -66,8 +66,9 @@ public enum NMRError {
     QUALIFICATION_DETAILS_LIMIT_EXCEEDED("ABDM-NMR-058", "Please provide less than or equal to 6 qualifications at a time."),
     MOBILE_NUM_ALREADY_REGISTERED("ABDM-NMR-059", "Mobile number already registered."),
     EMAIL_ID_ALREADY_REGISTERED("ABDM-NMR-060", "Email id already registered."),
-    STATE_MEDICAL_ID_NULL("ABDM-NMR-061", "State medical council id cannot be null for creating SMC user."),
-    INVALID_USER_TYPE("ABDM-NMR-062", "User type or sub type invalid."),
+    USERNAME_ALREADY_REGISTERED("ABDM-NMR-061", "Username already registered."),
+    STATE_MEDICAL_ID_NULL("ABDM-NMR-062", "State medical council id cannot be null for creating SMC user."),
+    INVALID_USER_TYPE("ABDM-NMR-063", "User type or sub type invalid."),
     ;
     private final String code;
     private final String message;
