@@ -31,7 +31,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -41,7 +40,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
-
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static in.gov.abdm.nmr.util.NMRUtil.validateQualificationDetailsAndProofs;
 import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetails;
@@ -477,18 +475,18 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Transactional
     @Override
-    public ResponseMessageTo addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException, ParseException, GeneralSecurityException {
+    public ResponseMessageTo addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException, ParseException, GeneralSecurityException, InvalidRequestException {
 
-        if (userDaoService.existsByUserName(request.getUsername())) {
-            return new ResponseMessageTo(NMRConstants.USERNAME_ALREADY_EXISTS);
+        if (request.getUsername()!=null && userDaoService.existsByUserName(request.getUsername())) {
+            throw new InvalidRequestException(NMRError.USERNAME_ALREADY_REGISTERED.getCode(),NMRError.USERNAME_ALREADY_REGISTERED.getMessage());
         }
 
-        if (userDaoService.existsByMobileNumber(request.getMobileNumber())) {
-            return new ResponseMessageTo(NMRConstants.MOBILE_NUMBER_ALREADY_EXISTS);
+        if (request.getMobileNumber()!=null && userDaoService.existsByMobileNumber(request.getMobileNumber())) {
+            throw new InvalidRequestException(NMRError.MOBILE_NUM_ALREADY_REGISTERED.getCode(),NMRError.MOBILE_NUM_ALREADY_REGISTERED.getMessage());
         }
 
         if (request.getEmail() != null && userDaoService.existsByEmail(request.getEmail())) {
-            return new ResponseMessageTo(NMRConstants.EMAIL_ALREADY_EXISTS);
+            throw new InvalidRequestException(NMRError.EMAIL_ID_ALREADY_REGISTERED.getCode(),NMRError.EMAIL_ID_ALREADY_REGISTERED.getMessage());
         }
 
         String hashedPassword = bCryptPasswordEncoder.encode(rsaUtil.decrypt(request.getPassword()));
@@ -544,6 +542,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         registrationDetails.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
         registrationDetails.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         registrationDetails.setHpProfileId(hpProfile);
+        registrationDetails.setRegistrationNo(request.getRegistrationNumber());
 
         if (imrRegistrationsDetails != null) {
             boolean isRenewable = imrRegistrationsDetails.isRenewableRegistration();
@@ -557,7 +556,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 registrationDetails.setIsRenewable("0");
                 registrationDetails.setRenewableRegistrationDate(null);
             }
-            registrationDetails.setRegistrationNo(imrRegistrationsDetails.getRegistrationNo());
             registrationDetails.setRegistrationDate(imrRegistrationsDetails.getRegistrationDate() !=null ? simpleDateFormat.parse(imrRegistrationsDetails.getRegistrationDate()): null);
         }
         iRegistrationDetailRepository.save(registrationDetails);
