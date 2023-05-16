@@ -1,18 +1,21 @@
 package in.gov.abdm.nmr.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.dto.HpSearchProfileTO;
-import in.gov.abdm.nmr.security.common.ProtectedPaths;
+import in.gov.abdm.nmr.dto.HpSearchRequestTO;
+import in.gov.abdm.nmr.dto.HpSearchResponseTO;
+import in.gov.abdm.nmr.dto.HpSearchResultTO;
 import in.gov.abdm.nmr.service.ISearchService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -20,16 +23,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.awt.print.Pageable;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static in.gov.abdm.nmr.util.NMRConstants.SALUTATION_DR;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -51,6 +56,8 @@ class SearchControllerTest {
 
     @Autowired
     private WebApplicationContext context;
+    @Mock
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     public void setup() {
@@ -88,7 +95,7 @@ class SearchControllerTest {
                 .andExpect(jsonPath("$.mobile_number").value(MOBILE_NUMBER));
     }
 
-/*    @Test
+    @Test
     void testSearchHP() throws Exception {
         HpSearchRequestTO searchRequestTO = new HpSearchRequestTO();
         searchRequestTO.setFullName(PROFILE_DISPLAY_NAME);
@@ -109,29 +116,13 @@ class SearchControllerTest {
         results.add(resultTO);
         responseTO.setResults(results);
         responseTO.setCount(1L);
-        when(searchService.searchHP(any(HpSearchRequestTO.class), any(Pageable.class))).thenReturn(responseTO);
-        mockMvc.perform(post("/health-professional/search/").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.results[0].profile_id").value(ID))
-                .andExpect(jsonPath("$.results[0].full_name").value(PROFILE_DISPLAY_NAME))
-                .andExpect(jsonPath("$.results[0].salutation").value(SALUTATION_DR))
-                .andExpect(jsonPath("$.results[0].registration_number").value(REGISTRATION_NUMBER))
-                .andExpect(jsonPath("$.results[0].registration_year").value(REGISTRATION_YEAR))
-                .andExpect(jsonPath("$.results[0].state_medical_council").value(STATE_MEDICAL_COUNCIL))
-                .andExpect(jsonPath("$.results[0].profile_photo").value(PROFILE_PHOTO))
-                .andExpect(jsonPath("$.count").value(1l));
-    }*/
-
-    /*@Test
-    @WithMockUser
-    void testFetchAddressByPinCodeFromLGD() throws Exception {
-        List list = new ArrayList<>();
-        when(searchService.fetchAddressByPinCodeFromLGD(nullable(String.class), nullable(String.class)))
-                .thenReturn(list);
-        mockMvc.perform(get(ProtectedPaths.PATH_DASHBOARD_ROOT + ProtectedPaths.PATH_DASHBOARD_FETCH_DETAILS)
+        when(searchService.searchHP(any(HpSearchRequestTO.class), (org.springframework.data.domain.Pageable) any(Pageable.class))).thenReturn(responseTO);
+        mockMvc.perform(get("/health-professional/search")
                         .with(user(TEST_USER))
-                        .accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.List[0]").value(BigInteger.ONE));
-    }*/
+                        .with(csrf())
+                        .content(objectMapper.writeValueAsBytes(new HpSearchRequestTO()))
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+    }
 }
