@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface IHpProfileDaoService {
 
-	HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId,String registrationNumber) throws NmrException, NoDataFoundException;
+	HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId,String registrationNumber) throws NoDataFoundException;
 
 	HpProfileUpdateResponseTO updateHpPersonalDetails(BigInteger hpProfileId,
 			HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException;
