@@ -565,5 +565,31 @@ class HpRegistrationControllerTest {
 
     }
 
+    @Test
+    void testGetHealthProfessionalRegistrationDetailShouldGetHealthProfessionalRegistrationDetailsBaseOnHealthProfessionalId() throws Exception {
+        HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = new HpProfileRegistrationResponseTO();
+        hpProfileRegistrationResponseTO.setRequestId(REQUEST_ID);
+        when(hpService.getHealthProfessionalRegistrationDetail(any(BigInteger.class))).thenReturn(hpProfileRegistrationResponseTO);
+        mockMvc.perform(get("/health-professional/1/registration")
+                        .with(user(TEST_USER))
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.request_id").value(CommonTestData.REQUEST_ID));
+    }
+
+    @Test
+    void testGetHealthProfessionalWorkDetailShouldGetHealthProfessionalWorkDetailsBaseOnHealthProfessionalId() throws Exception {
+        HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = new HpProfileWorkDetailsResponseTO();
+        hpProfileWorkDetailsResponseTO.setRequestId(REQUEST_ID);
+
+        when(hpService.getHealthProfessionalWorkDetail(any(BigInteger.class))).thenReturn(hpProfileWorkDetailsResponseTO);
+        mockMvc.perform(get("/health-professional/1/work-profile")
+                        .with(user(TEST_USER))
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.request_id").value(CommonTestData.REQUEST_ID));
+    }
+
+
 
 }
