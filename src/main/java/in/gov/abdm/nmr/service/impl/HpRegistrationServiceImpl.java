@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.codec.language.Metaphone;
 import org.apache.commons.codec.language.Soundex;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -475,7 +476,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Transactional
     @Override
-    public ResponseMessageTo addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException, ParseException, GeneralSecurityException, InvalidRequestException {
+    public ResponseMessageTo addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException, ParseException, GeneralSecurityException, InvalidRequestException, NmrException {
 
         if (request.getUsername()!=null && userDaoService.existsByUserName(request.getUsername())) {
             throw new InvalidRequestException(NMRError.USERNAME_ALREADY_REGISTERED.getCode(),NMRError.USERNAME_ALREADY_REGISTERED.getMessage());
@@ -524,6 +525,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
 
         hpProfile.setEmailId(request.getEmail() != null ? request.getEmail() : null);
+        Name splitName = splitName(request.getName());
+        hpProfile.setFirstName(splitName.getFirstName() != null ? splitName.getFirstName() : "");
+        hpProfile.setMiddleName(splitName.getMiddleName() != null ? splitName.getMiddleName() : "");
+        hpProfile.setLastName(splitName.getLastName() != null ? splitName.getLastName() : "");
         hpProfile.setFullName(request.getName());
         hpProfile.setGender(request.getGender());
         hpProfile.setMobileNumber(request.getMobileNumber() != null ? request.getMobileNumber() : null);
@@ -644,6 +649,35 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
         return new ResponseMessageTo(SUCCESS_RESPONSE);
     }
+
+
+    private Name splitName(String fullName) throws NmrException {
+        log.debug("processing splitting fullName: {} ", fullName);
+        Name splitName = new Name();
+        if (!StringUtils.isEmpty(fullName)) {
+            List<String> name = new ArrayList<>(Arrays.asList(fullName.split(" ")));
+            if (name.size() == 1) {
+                splitName.setFirstName(name.get(0));
+            } else if (name.size() == 2) {
+                splitName.setFirstName(name.get(0));
+                splitName.setLastName(name.get(1));
+            } else {
+                int idx = fullName.lastIndexOf(' ');
+                String firstNameTemp = fullName.substring(0, idx);
+                try {
+                    int idxF = firstNameTemp.lastIndexOf(' ');
+                    splitName.setFirstName(firstNameTemp.substring(0, idxF));
+                    splitName.setMiddleName(firstNameTemp.substring(idxF + 1));
+                } catch (IndexOutOfBoundsException e) {
+                    log.error("Error splitting fullName: {}", fullName);
+                    throw new NmrException();
+                }
+                splitName.setLastName(fullName.substring(idx + 1));
+            }
+        }
+        return splitName;
+    }
+
 
     @Override
     public void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException, InvalidRequestException {

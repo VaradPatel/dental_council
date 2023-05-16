@@ -116,7 +116,7 @@ public interface IHpRegistrationService {
 
     KycResponseMessageTo userKycFuzzyMatch(String registrationNumber,BigInteger councilId, UserKycTo userKycTo) throws ParseException;
 
-    ResponseMessageTo addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException, ParseException, GeneralSecurityException, InvalidRequestException;
+    ResponseMessageTo addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException, ParseException, GeneralSecurityException, InvalidRequestException, NmrException;
 
     void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException, InvalidRequestException;
 

@@ -292,7 +292,7 @@ public class HpRegistrationController {
     }
 
     @PostMapping(path = "health-professional", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseMessageTo addNewHealthProfessional(@Valid @RequestBody NewHealthPersonalRequestTO request) throws DateException, ParseException, GeneralSecurityException, InvalidRequestException {
+    public ResponseMessageTo addNewHealthProfessional(@Valid @RequestBody NewHealthPersonalRequestTO request) throws DateException, ParseException, GeneralSecurityException, InvalidRequestException, NmrException {
         return hpService.addNewHealthProfessional(request);
     }
 
