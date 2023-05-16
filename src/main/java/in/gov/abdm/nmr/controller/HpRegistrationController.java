@@ -55,7 +55,7 @@ public class HpRegistrationController {
     @GetMapping(path = "health-professional", produces = MediaType.APPLICATION_JSON_VALUE)
     public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(
             @RequestParam("smcId") Integer councilId,
-            @RequestParam("registrationNumber") String registrationNumber) throws NmrException, NoDataFoundException {
+            @RequestParam("registrationNumber") String registrationNumber) throws NoDataFoundException {
         return hpService.fetchSmcRegistrationDetail(councilId, registrationNumber);
     }
 
@@ -292,8 +292,8 @@ public class HpRegistrationController {
     }
 
     @PostMapping(path = "health-professional", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseMessageTo> addNewHealthProfessional(@Valid @RequestBody NewHealthPersonalRequestTO request) throws DateException, ParseException, GeneralSecurityException {
-        return ResponseEntity.ok(hpService.addNewHealthProfessional(request));
+    public ResponseMessageTo addNewHealthProfessional(@Valid @RequestBody NewHealthPersonalRequestTO request) throws DateException, ParseException, GeneralSecurityException, InvalidRequestException, NmrException {
+        return hpService.addNewHealthProfessional(request);
     }
 
     @PatchMapping(path = "health-professional/{healthProfessionalId}/personal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

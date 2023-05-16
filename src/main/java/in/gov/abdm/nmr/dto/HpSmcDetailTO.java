@@ -12,4 +12,5 @@ public class HpSmcDetailTO {
     private String councilName;
     private BigInteger hpProfileId;
     private String emailId;
+    private boolean isAlreadyRegisteredInNmr;
 }

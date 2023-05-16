@@ -264,10 +264,6 @@ public class CollegeServiceImpl implements ICollegeService {
     public CollegeProfileTo createOrUpdateCollegeVerifier(CollegeProfileTo collegeProfileTo) throws GeneralSecurityException, NmrException, InvalidRequestException, InvalidIdException, ResourceExistsException {
         CollegeProfile collegeProfile = null;
 
-        if(!getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.NMC_ADMIN.getId())){
-            throw new InvalidRequestException();
-        }
-
         if (collegeProfileTo.getId() != null) {
             collegeProfile = collegeProfileDaoService.findById(collegeProfileTo.getId());
             preVerifierUpdationChecks(collegeProfileTo, collegeProfile);
@@ -379,7 +375,8 @@ public class CollegeServiceImpl implements ICollegeService {
         return collegeProfile;
     }
 
-    private User getLoggedInUser() {
+    @Override
+    public User getLoggedInUser() {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         return userDaoService.findByUsername(userName);
     }

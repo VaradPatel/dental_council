@@ -125,7 +125,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private static final List<String> SUPPORTED_FILE_TYPES = List.of(".pdf",".jpg",".jpeg",".png");
 
 
-    public HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NmrException, NoDataFoundException {
+    public HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NoDataFoundException {
         HpSmcDetailTO hpSmcDetailTO = new HpSmcDetailTO();
 
         StateMedicalCouncil stateMedicalCouncil =
@@ -143,6 +143,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         hpSmcDetailTO.setCouncilName(council.getRegistrationsDetails().get(0).getCouncilName());
         hpSmcDetailTO.setRegistrationNumber(council.getRegistrationsDetails().get(0).getRegistrationNo());
         hpSmcDetailTO.setEmailId(council.getEmail());
+        hpSmcDetailTO.setAlreadyRegisteredInNmr(iRegistrationDetailRepository.existsByRegistrationNoAndStateMedicalCouncilId(registrationNumber,BigInteger.valueOf(councilId)));
         return hpSmcDetailTO;
 
     }
