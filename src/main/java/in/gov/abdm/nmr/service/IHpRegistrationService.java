@@ -23,7 +23,7 @@ public interface IHpRegistrationService {
      * @param registrationNumber
      * @return SmcRegistrationDetailResponseTO The SMC registration detail response transfer object which contains the SMC registration details of the user.
      */
-    SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NmrException, NoDataFoundException;
+    SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NoDataFoundException;
 
     /**
      * Uploads the profile picture for the given HP profile ID.

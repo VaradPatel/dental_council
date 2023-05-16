@@ -55,7 +55,7 @@ public class HpRegistrationController {
     @GetMapping(path = "health-professional", produces = MediaType.APPLICATION_JSON_VALUE)
     public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(
             @RequestParam("smcId") Integer councilId,
-            @RequestParam("registrationNumber") String registrationNumber) throws NmrException, NoDataFoundException {
+            @RequestParam("registrationNumber") String registrationNumber) throws NoDataFoundException {
         return hpService.fetchSmcRegistrationDetail(councilId, registrationNumber);
     }
 
