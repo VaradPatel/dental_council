@@ -142,6 +142,7 @@ public final class CommonTestData {
     private static final String RESULT = "USER_RESULT";
     private static final String QUALIFICATION_FROM = "India";
     public static final Integer CAPTCHA_RESULT = 20;
+    public static final String IP_ADDRESS = "35.166.48.97";
 
     public static UserGroup getUserGroup(BigInteger userGroupId) {
         Group group = Group.getGroup(userGroupId);
@@ -867,5 +868,21 @@ public final class CommonTestData {
         return requestCounter;
     }
 
+    public static List<QualificationDetailsMaster> getQualificationDetailsMasters() {
+        List<QualificationDetailsMaster> qualificationDetailsMasters = new ArrayList<>();
+        QualificationDetailsMaster qualificationDetailsMaster = new QualificationDetailsMaster();
+        qualificationDetailsMaster.setCreatedAt(CURRENT_TIMESTAMP);
+        qualificationDetailsMaster.setUniversity(getUniversityMaster());
+        qualificationDetailsMasters.add(qualificationDetailsMaster);
+        return qualificationDetailsMasters;
+    }
+
+    public static List<ForeignQualificationDetailsMaster> getForeignQualificationDetailsMasters() {
+        List<ForeignQualificationDetailsMaster> foreignQualificationDetailsMasters = new ArrayList<>();
+        ForeignQualificationDetailsMaster foreignQualificationDetailsMaster = new ForeignQualificationDetailsMaster();
+        foreignQualificationDetailsMaster.setCreatedAt(CURRENT_TIMESTAMP);
+        foreignQualificationDetailsMasters.add(foreignQualificationDetailsMaster);
+        return foreignQualificationDetailsMasters;
+    }
 
 }

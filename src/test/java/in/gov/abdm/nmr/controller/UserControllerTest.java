@@ -382,4 +382,30 @@ class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isNoContent());
     }
+
+    @Test
+    void testCreateUserShouldCreateNewUserAndReturnSuccessResponse() throws Exception {
+        UserProfileTO userProfileTO = new UserProfileTO();
+        userProfileTO.setTypeId(ID);
+        userProfileTO.setSubTypeId(UserSubTypeEnum.SMC_ADMIN.getId());
+        userProfileTO.setName(FIRST_NAME);
+        userProfileTO.setEmailId(EMAIL_ID);
+        userProfileTO.setMobileNumber(MOBILE_NUMBER);
+        userProfileTO.setSmcId(ID);
+        when(userService.createUser(any(UserProfileTO.class)))
+                .thenReturn(userProfileTO);
+        mockMvc.perform(post(ProtectedPaths.USER_NMC_CREATE_USER)
+                        .with(user(TEST_USER))
+                        .with(csrf())
+                        .content(objectMapper.writeValueAsBytes(userProfileTO))
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.type_id").value(ID))
+                .andExpect(jsonPath("$.sub_type_id").value(UserSubTypeEnum.SMC_ADMIN.getId()))
+                .andExpect(jsonPath("$.name").value(FIRST_NAME))
+                .andExpect(jsonPath("$.email_id").value(EMAIL_ID))
+                .andExpect(jsonPath("$.mobile_number").value(MOBILE_NUMBER))
+                .andExpect(jsonPath("$.smc_id").value(ID));
+    }
 }
