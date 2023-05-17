@@ -42,23 +42,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = HpRegistrationController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @ContextConfiguration(classes = HpRegistrationController.class)
 @ActiveProfiles(profiles = "local")
+@SuppressWarnings("java:S1192")
 class HpRegistrationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
     @MockBean
-    private IHpRegistrationService hpService;
+    IHpRegistrationService hpService;
 
     @MockBean
-    private IQueriesService queryService;
+    IQueriesService queryService;
 
     @MockBean
-    private ICouncilService councilService;
+    ICouncilService councilService;
     @Autowired
-    private WebApplicationContext context;
-
+    WebApplicationContext context;
     @Autowired
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
 
     SmcRegistrationDetailResponseTO detailResponseTO;
 

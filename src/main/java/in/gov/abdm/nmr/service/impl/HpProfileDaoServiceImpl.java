@@ -1,18 +1,13 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.client.DscFClient;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.*;
-import in.gov.abdm.nmr.mapper.IHpProfileMapper;
 import in.gov.abdm.nmr.nosql.entity.Council;
-import in.gov.abdm.nmr.nosql.repository.ICouncilRepository;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpProfileDaoService;
-import in.gov.abdm.nmr.service.IRequestCounterService;
-import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.SneakyThrows;
@@ -37,90 +32,51 @@ import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetailsAndProofs;
 @Slf4j
 public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @Autowired
-    private IHpProfileMapper ihHpProfileMapper;
-    @Autowired
     IHpProfileRepository iHpProfileRepository;
     @Autowired
-    private IAddressRepository iAddressRepository;
+    IAddressRepository iAddressRepository;
     @Autowired
-    private IRegistrationDetailRepository registrationDetailRepository;
+    IRegistrationDetailRepository registrationDetailRepository;
     @Autowired
-    private IQualificationDetailRepository qualificationDetailRepository;
+    IQualificationDetailRepository qualificationDetailRepository;
     @Autowired
-    private WorkProfileRepository workProfileRepository;
+    WorkProfileRepository workProfileRepository;
     @Autowired
-    private SuperSpecialityRepository superSpecialityRepository;
+    DistrictRepository districtRepository;
     @Autowired
-    IForeignQualificationDetailRepository iForeignQualificationDetailRepository;
+    IStateRepository stateRepository;
     @Autowired
-    IQualificationDetailRepository iQualificationDetailRepository;
-    @Autowired
-    private DistrictRepository districtRepository;
-    @Autowired
-    private IStateRepository stateRepository;
-    @Autowired
-    private IAddressTypeRepository iAddressTypeRepository;
-    @Autowired
-    private OrganizationTypeRepository organizationTypeRepository;
-    @Autowired
-    private IStateMedicalCouncilStatusRepository iStateMedicalCouncilStatusRepository;
-    @Autowired
-    private INationalityRepository iNationalityRepository;
-    @Autowired
-    private IScheduleRepository iScheduleRepository;
-    @Autowired
-    private CountryRepository countryRepository;
+    CountryRepository countryRepository;
     @Autowired
     IRegistrationDetailRepository iRegistrationDetailRepository;
     @Autowired
-    private IStateMedicalCouncilRepository iStateMedicalCouncilRepository;
+    IStateMedicalCouncilRepository iStateMedicalCouncilRepository;
     @Autowired
-    private WorkNatureRepository workNatureRepository;
+    WorkNatureRepository workNatureRepository;
     @Autowired
-    private WorkStatusRepository workStatusRepository;
+    WorkStatusRepository workStatusRepository;
     @Autowired
-    private SubDistrictRepository subDistrictRepository;
+    SubDistrictRepository subDistrictRepository;
     @Autowired
-    private VillagesRepository villagesRepository;
+    VillagesRepository villagesRepository;
     @Autowired
-    private IForeignQualificationDetailRepository iCustomQualificationDetailRepository;
+    IForeignQualificationDetailRepository iCustomQualificationDetailRepository;
     @Autowired
-    private HpNbeDetailsRepository hpNbeDetailsRepository;
-    @Autowired
-    private IRequestCounterService requestCounterService;
-    @Autowired
-    private DscFClient dscFClient;
+    HpNbeDetailsRepository hpNbeDetailsRepository;
     @PersistenceContext
-    private EntityManager entityManager;
+    EntityManager entityManager;
     @Autowired
-    private IUniversityRepository universityRepository;
+    CourseRepository courseRepository;
     @Autowired
-    private CourseRepository courseRepository;
+    ICollegeMasterRepository collegeMasterRepository;
     @Autowired
-    private BroadSpecialityRepository broadSpecialityRepository;
-
+    UniversityMasterRepository universityMasterRepository;
     @Autowired
-    private IUserRepository iUserRepository;
-
+    ICouncilService councilService;
     @Autowired
-    private ICollegeMasterRepository collegeMasterRepository;
+    IStateMedicalCouncilRepository stateMedicalCouncilRepository;
     @Autowired
-    private UniversityMasterRepository universityMasterRepository;
-
-    @Autowired
-    private ICouncilRepository councilRepository;
-
-    @Autowired
-    private ICouncilService councilService;
-
-    @Autowired
-    private IStateMedicalCouncilRepository stateMedicalCouncilRepository;
-
-    @Autowired
-    private IUserDaoService userDetailService;
-
-    @Autowired
-    private LanguagesKnownRepository languagesKnownRepository;
+    LanguagesKnownRepository languagesKnownRepository;
 
     private static final List<String> SUPPORTED_FILE_TYPES = List.of(".pdf",".jpg",".jpeg",".png");
 
@@ -327,7 +283,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         List<LanguagesKnown> languagesKnownLater = new ArrayList<>();
         BigInteger tempUserId = userId;
         languagesKnownEarlierIds.forEach(languagesKnownEarlierId -> languagesKnownIds.remove(languagesKnownEarlierId));
-        if (!languagesKnownIds.isEmpty()) {
+        if (languagesKnownIds != null && !languagesKnownIds.isEmpty()) {
             languagesKnownIds.forEach(languagesKnown -> {
                 LanguagesKnown languagesKnownObject = new LanguagesKnown();
                 languagesKnownObject.setLanguage(entityManager.getReference(Language.class, languagesKnown));
