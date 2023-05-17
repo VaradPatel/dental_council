@@ -4,7 +4,6 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
-import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.repository.IFetchUserDetailsCustomRepository;
 import in.gov.abdm.nmr.repository.IUserRepository;
 import in.gov.abdm.nmr.service.impl.UserServiceImpl;
@@ -27,10 +26,8 @@ import java.util.List;
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -70,7 +67,7 @@ class UserServiceTest {
         assertEquals(NMRConstants.SMS, response.get(0).getMode());
     }
 
-    public static UserResponseTO getUserResponse() {
+    static UserResponseTO getUserResponse() {
         UserResponseTO response = new UserResponseTO();
         List<UserTO> userTOList = new ArrayList<>();
         UserTO user = new UserTO();
@@ -87,7 +84,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByMobileNumber() throws AccessDeniedException, InvalidRequestException {
+    void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByMobileNumber() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
@@ -102,7 +99,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByUserTypeID() throws AccessDeniedException, InvalidRequestException {
+    void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByUserTypeID() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
@@ -117,7 +114,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByFirstName() throws AccessDeniedException, InvalidRequestException {
+    void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByFirstName() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
@@ -133,7 +130,7 @@ class UserServiceTest {
 
 
     @Test
-    public void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByLastName() throws AccessDeniedException, InvalidRequestException {
+    void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByLastName() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
@@ -148,7 +145,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByEmailID() throws AccessDeniedException, InvalidRequestException {
+    void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByEmailID() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
@@ -164,7 +161,8 @@ class UserServiceTest {
 
     @Test
     void testDeactivateUserShouldChangeStatusAsDeactivateForUser() {
-        userDetailRepository.deactivateUser(any(BigInteger.class));
+        doNothing().when(userDetailRepository).deactivateUser(any(BigInteger.class));
         userService.deactivateUser(CommonTestData.USER_ID);
+        verify(userDetailRepository, times(1)).deactivateUser(any(BigInteger.class));
     }
 }

@@ -57,12 +57,11 @@ public class OtpServiceImpl implements IOtpService {
         String notificationType = otpGenerateRequestTo.getType();
 
         User user=userDaoService.findByUsername(otpGenerateRequestTo.getContact());
-        System.out.println(user);
         if(user==null){
             if(notificationType.equals(NotificationType.SMS.getNotificationType())){
                 throw new InvalidRequestException(NMRError.NON_REGISTERED_MOBILE_NUMBER.getCode(),NMRError.NON_REGISTERED_MOBILE_NUMBER.getMessage());
             }else if(notificationType.equals(NotificationType.EMAIL.getNotificationType())){
-                throw new InvalidRequestException(NMRError.NON_REGISTERED_EMAIl_ID.getCode(),NMRError.NON_REGISTERED_EMAIl_ID.getMessage());
+                throw new InvalidRequestException(NMRError.NON_REGISTERED_EMAIL_ID.getCode(),NMRError.NON_REGISTERED_EMAIL_ID.getMessage());
             }else if(notificationType.equals(NotificationType.NMR_ID.getNotificationType())){
                 throw new InvalidRequestException(NMRError.NON_REGISTERED_NMR_ID.getCode(),NMRError.NON_REGISTERED_NMR_ID.getMessage());
             }
