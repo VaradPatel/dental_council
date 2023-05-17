@@ -4,6 +4,7 @@ import in.gov.abdm.nmr.dto.OTPResponseMessageTo;
 import in.gov.abdm.nmr.dto.OtpGenerateRequestTo;
 import in.gov.abdm.nmr.enums.NotificationType;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.OtpException;
 import in.gov.abdm.nmr.redis.hash.Otp;
 import in.gov.abdm.nmr.service.impl.OtpServiceImpl;
@@ -43,7 +44,7 @@ class OtpServiceTest {
     }
 
     @Test
-    void testGenerateOtp() throws OtpException {
+    void testGenerateOtp() throws OtpException, InvalidRequestException {
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
