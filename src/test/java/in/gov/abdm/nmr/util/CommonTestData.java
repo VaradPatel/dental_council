@@ -24,7 +24,8 @@ import java.util.List;
 import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
 
 @UtilityClass
-public final class CommonTestData {
+public final class
+CommonTestData {
 
     public static final String EMAIL_ID = "test@gmail.com";
     public static final String NMR_ID = "123456789012";
@@ -113,7 +114,6 @@ public final class CommonTestData {
     public static final String STATE_CODE = "1";
     public static final String OTP = "738775";
     public static final String TEST_USER = "user1";
-    public static final String PASSWORD = "Test@123";
     public static final String LAST_FOUR_DIGIT_AADHAAR = "1859";
 
     public static final BigInteger HP_ID = BigInteger.valueOf(1);
@@ -182,7 +182,7 @@ public final class CommonTestData {
         return stateMedicalCouncil;
     }
 
-    public static List<StateMedicalCouncilTO> getStateMedicalCouncilTo() {
+    public static List<StateMedicalCouncilTO> getStateMedicalCouncilTos() {
         return IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(List.of(getStateMedicalCouncil()));
     }
 
@@ -297,40 +297,20 @@ public final class CommonTestData {
         return countryTOS;
     }
 
-    public static List<DistrictTO> getDistrictTo() {
-        List<DistrictTO> districtTOS = new ArrayList<>();
-        DistrictTO districtTo = new DistrictTO();
-        districtTo.setId(ID);
-        districtTo.setName(NAME);
-        districtTOS.add(districtTo);
-        return districtTOS;
+    public static List<DistrictTO> getDistricts() {
+        return List.of(getDistrictTO());
     }
 
-    public static List<StateTO> getStateTo() {
-        List<StateTO> stateTOList = new ArrayList<>();
-        StateTO stateTO = new StateTO();
-        stateTO.setId(ID);
-        stateTO.setName(NAME);
-        stateTOList.add(stateTO);
-        return stateTOList;
+    public static List<StateTO> getStates() {
+        return List.of(getStateTO());
     }
 
-    public static List<SubDistrictTO> getSubDistrictTo() {
-        List<SubDistrictTO> subDistrictTOS = new ArrayList<>();
-        SubDistrictTO subDistrictTO = new SubDistrictTO();
-        subDistrictTO.setId(ID);
-        subDistrictTO.setName(NAME);
-        subDistrictTOS.add(subDistrictTO);
-        return subDistrictTOS;
+    public static List<SubDistrictTO> getSubDistricts() {
+        return List.of(getSubDistrictTO());
     }
 
-    public static List<VillagesTO> getVillageTo() {
-        List<VillagesTO> villagesTOS = new ArrayList<>();
-        VillagesTO villagesTO = new VillagesTO();
-        villagesTO.setId(ID);
-        villagesTO.setName(NAME);
-        villagesTOS.add(villagesTO);
-        return villagesTOS;
+    public static List<VillagesTO> getVillages() {
+       return List.of(getVillageTO());
     }
 
     public static List<LanguageTO> getLanguangesTo() {
@@ -342,7 +322,7 @@ public final class CommonTestData {
         return languageTOS;
     }
 
-    public static List<CourseTO> getCourseTo() {
+    public static List<CourseTO> getCourses() {
         List<CourseTO> courseTOS = new ArrayList<>();
         CourseTO courseTO = new CourseTO();
         courseTO.setId(ID);
@@ -350,7 +330,7 @@ public final class CommonTestData {
         courseTOS.add(courseTO);
         return courseTOS;
     }
-    public static CourseTO getCourseTO() {
+    public static CourseTO getCourseTo() {
         CourseTO courseTO = new CourseTO();
         courseTO.setId(ID);
         courseTO.setName(NAME);
@@ -703,7 +683,7 @@ public final class CommonTestData {
     public SetNewPasswordTo getSetNewPasswordTo() {
         SetNewPasswordTo newPassword = new SetNewPasswordTo();
         newPassword.setToken(CommonTestData.TEMP_TOKN);
-        newPassword.setPassword(CommonTestData.PASSWORD);
+        newPassword.setPassword(CommonTestData.TEST_PSWD);
         return newPassword;
     }
 
@@ -835,7 +815,7 @@ public final class CommonTestData {
         qualificationDetailRequestTO.setRequestId(REQUEST_ID);
         qualificationDetailRequestTO.setQualificationFrom(QUALIFICATION_FROM);
         qualificationDetailRequestTO.setCountry(getCountryTO());
-        qualificationDetailRequestTO.setCourse(getCourseTO());
+        qualificationDetailRequestTO.setCourse(getCourseTo());
         qualificationDetailRequestTO.setState(getStateTO());
         qualificationDetailRequestTO.setCollege(getCollegeTo());
         qualificationDetailRequestTO.setQualificationMonth(MONTH_OF_PASSING);
