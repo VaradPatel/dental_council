@@ -69,6 +69,9 @@ public enum NMRError {
     USERNAME_ALREADY_REGISTERED("ABDM-NMR-061", "Username already registered."),
     STATE_MEDICAL_ID_NULL("ABDM-NMR-062", "State medical council id cannot be null for creating SMC user."),
     INVALID_USER_TYPE("ABDM-NMR-063", "User type or sub type invalid."),
+    NON_REGISTERED_MOBILE_NUMBER("ABDM-NMR-064", "This mobile number is not registered in NMR."),
+    NON_REGISTERED_EMAIl_ID("ABDM-NMR-065", "This email ID is not registered in NMR."),
+    NON_REGISTERED_NMR_ID("ABDM-NMR-066", "This NMR ID is not registered in NMR."),
     ;
     private final String code;
     private final String message;
