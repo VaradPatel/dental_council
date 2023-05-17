@@ -4,14 +4,15 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
 import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.enums.Group;
-import in.gov.abdm.nmr.enums.UserSubTypeEnum;
-import in.gov.abdm.nmr.enums.UserTypeEnum;
-import in.gov.abdm.nmr.enums.WorkflowStatus;
+import in.gov.abdm.nmr.entity.AddressType;
+import in.gov.abdm.nmr.entity.ApplicationType;
+import in.gov.abdm.nmr.entity.HpProfileStatus;
+import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.mapper.INextGroup;
 import in.gov.abdm.nmr.mapper.IStateMedicalCouncilMapper;
 import in.gov.abdm.nmr.nosql.entity.Council;
 import in.gov.abdm.nmr.nosql.entity.RegistrationsDetails;
+import in.gov.abdm.nmr.redis.hash.Otp;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigInteger;
@@ -132,12 +133,12 @@ CommonTestData {
     public static final String CLIENT_ID = "NMR_CLIENT_ID";
     public static final String CLIENT_SECRET = "NMR_CLIENT_SECRET";
 
-    public static final String REGISTRATION_CERTIFICATE ="registration certificate";
-    public static final String FILE_NAME ="File Name";
-    public static final String FILE_TYPE= "pdf";
+    public static final String REGISTRATION_CERTIFICATE = "registration certificate";
+    public static final String FILE_NAME = "File Name";
+    public static final String FILE_TYPE = "pdf";
     private static final String YEAR_OF_PASSING = "2023";
     private static final String MONTH_OF_PASSING = "MAY";
-    private static final String PASSPORT_NO = "123456789012" ;
+    private static final String PASSPORT_NO = "123456789012";
     private static final String ROLL_NO = "1234567890";
     private static final String RESULT = "USER_RESULT";
     private static final String QUALIFICATION_FROM = "India";
@@ -201,6 +202,7 @@ CommonTestData {
         user.setId(ID);
         user.setPassword(TEST_PSWD);
         user.setUserSubType(getUserSubType(UserSubTypeEnum.SMC_ADMIN.getId()));
+        user.setMobileNumber(MOBILE_NUMBER);
         return user;
     }
 
@@ -310,7 +312,7 @@ CommonTestData {
     }
 
     public static List<VillagesTO> getVillages() {
-       return List.of(getVillageTO());
+        return List.of(getVillageTO());
     }
 
     public static List<LanguageTO> getLanguangesTo() {
@@ -330,6 +332,7 @@ CommonTestData {
         courseTOS.add(courseTO);
         return courseTOS;
     }
+
     public static CourseTO getCourseTo() {
         CourseTO courseTO = new CourseTO();
         courseTO.setId(ID);
@@ -789,7 +792,8 @@ CommonTestData {
         registrationDetailTO.setStateMedicalCouncil(getStateMedicalCouncilTO());
         return registrationDetailTO;
     }
-    public static  HpNbeDetails getHPNbeDetails(){
+
+    public static HpNbeDetails getHPNbeDetails() {
         HpNbeDetails hpNbeDetails = new HpNbeDetails();
         hpNbeDetails.setId(ID);
         hpNbeDetails.setHpProfile(getHpProfile());
@@ -802,14 +806,15 @@ CommonTestData {
         hpNbeDetails.setUserResult(RESULT);
         return hpNbeDetails;
     }
-    public static CollegeTO getCollegeTo(){
+
+    public static CollegeTO getCollegeTo() {
         CollegeTO collegeTO = new CollegeTO();
         collegeTO.setId(ID);
         collegeTO.setName(NAME);
-        return  collegeTO;
+        return collegeTO;
     }
 
-    public static  List<QualificationDetailRequestTO> getQualification(){
+    public static List<QualificationDetailRequestTO> getQualification() {
         List<QualificationDetailRequestTO> qualificationDetailRequestTOList = new ArrayList<>();
         QualificationDetailRequestTO qualificationDetailRequestTO = new QualificationDetailRequestTO();
         qualificationDetailRequestTO.setRequestId(REQUEST_ID);
@@ -863,6 +868,28 @@ CommonTestData {
         foreignQualificationDetailsMaster.setCreatedAt(CURRENT_TIMESTAMP);
         foreignQualificationDetailsMasters.add(foreignQualificationDetailsMaster);
         return foreignQualificationDetailsMasters;
+    }
+
+    public static Otp getOtp() {
+        Otp otp = new Otp();
+        otp.setId("1");
+        otp.setAttempts(1);
+        otp.setExpired(false);
+        otp.setOtp("123456");
+        return otp;
+    }
+
+    public static List<Otp> geOtpList() {
+        List<Otp> list = new ArrayList<>();
+        list.add(getOtp());
+        return list;
+    }
+
+    public static OtpGenerateRequestTo otpGenerateRequest() {
+        OtpGenerateRequestTo otpGenerateRequestTo = new OtpGenerateRequestTo();
+        otpGenerateRequestTo.setType(NotificationType.NMR_ID.getNotificationType());
+        otpGenerateRequestTo.setContact(MOBILE_NUMBER);
+        return otpGenerateRequestTo;
     }
 
 }
