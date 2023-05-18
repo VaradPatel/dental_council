@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,5 +18,8 @@ public class OtpGenerateRequestTo{
 
     @NotBlank(message = NMRConstants.TYPE_NOT_NULL)
     String type;
+
+    @JsonProperty("is_registration")
+    boolean isRegistration;
 
 }

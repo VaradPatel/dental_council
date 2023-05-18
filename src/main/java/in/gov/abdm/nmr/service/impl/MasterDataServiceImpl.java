@@ -1,10 +1,13 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.CollegeMasterResponseTo;
+import in.gov.abdm.nmr.dto.QuerySuggestionsTo;
 import in.gov.abdm.nmr.dto.UniversityMasterResponseTo;
 import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
 import in.gov.abdm.nmr.mapper.CourseMasterToMapper;
 import in.gov.abdm.nmr.mapper.IMasterDataMapper;
+import in.gov.abdm.nmr.mapper.QuerySuggestionsDtoMapper;
+import in.gov.abdm.nmr.repository.QuerySuggestionsRepository;
 import in.gov.abdm.nmr.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +48,8 @@ public class MasterDataServiceImpl implements IMasterDataService {
     @Autowired
     private IUniversityMasterService universityMasterService;
 
+    @Autowired
+    private QuerySuggestionsRepository querySuggestionsRepository;
 
     @Override
     public List<MasterDataTO> smcs() {
@@ -111,4 +116,14 @@ public class MasterDataServiceImpl implements IMasterDataService {
     public List<UniversityMasterResponseTo> getUniversitiesByCollege(BigInteger collegeId) {
         return masterDataMapper.universityMasterResponseDataTo(universityMasterService.getUniversitiesByCollegeId(collegeId));
     }
+
+    /**
+     * get query suggestions
+     * @return List of queries object
+     */
+    @Override
+    public List<QuerySuggestionsTo> getQuerySuggestions() {
+        return QuerySuggestionsDtoMapper.QUERY_SUGGESTIONS_DTO_MAPPER.querySuggestionToDto(querySuggestionsRepository.findAll());
+    }
+
 }
