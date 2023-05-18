@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.service;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.enums.NotificationType;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.OtpException;
 import in.gov.abdm.nmr.redis.hash.Otp;
 import in.gov.abdm.nmr.security.common.RsaUtil;
@@ -51,6 +52,7 @@ class OtpServiceTest {
 
     @Test
     void testGenerateOtpShouldGenerateOtpAndSendToMobileNumberForNMRId() throws OtpException {
+    void testGenerateOtp() throws OtpException, InvalidRequestException {
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());

@@ -70,7 +70,7 @@ CommonTestData {
     public static final String ADDRESS_TYPE_NAME = "Line1";
     public static final String ADDRESS_LINE_1 = "Line1";
     public static final String ADDRESS_LINE_2 = "Line2";
-    public static final String PIN_CODE = "123456";
+    public static final String PIN_CODE = "444001";
     public static final String HOUSE = "Tech Park";
     public static final String STREET = "Laxmi Society";
     public static final String LOCALITY = "Model Colony";

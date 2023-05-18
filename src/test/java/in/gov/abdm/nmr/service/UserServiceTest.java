@@ -38,7 +38,6 @@ import java.util.List;
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -180,8 +179,9 @@ class UserServiceTest {
 
     @Test
     void testDeactivateUserShouldChangeStatusAsDeactivateForUser() {
-        userDetailRepository.deactivateUser(any(BigInteger.class));
+        doNothing().when(userDetailRepository).deactivateUser(any(BigInteger.class));
         userService.deactivateUser(CommonTestData.USER_ID);
+        verify(userDetailRepository, times(1)).deactivateUser(any(BigInteger.class));
     }
 
     public static RetrieveUserRequestTo getRetrieveUserRequest() {

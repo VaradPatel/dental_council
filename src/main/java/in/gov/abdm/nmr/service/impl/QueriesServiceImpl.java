@@ -4,12 +4,15 @@ import in.gov.abdm.nmr.dto.QueryCreateTo;
 import in.gov.abdm.nmr.dto.QueryResponseTo;
 import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
+import in.gov.abdm.nmr.dto.QuerySuggestionsTo;
 import in.gov.abdm.nmr.entity.Queries;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.QueriesDtoMapper;
+import in.gov.abdm.nmr.mapper.QuerySuggestionsDtoMapper;
 import in.gov.abdm.nmr.repository.QueriesRepository;
+import in.gov.abdm.nmr.repository.QuerySuggestionsRepository;
 import in.gov.abdm.nmr.service.IQueriesService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -32,6 +35,9 @@ public class QueriesServiceImpl implements IQueriesService {
     QueriesRepository queriesRepository;
     @Autowired
     private IWorkFlowService workFlowService;
+
+    @Autowired
+    QuerySuggestionsRepository querySuggestionsRepository;
 
     /**
      * Creates new queries in table

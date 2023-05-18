@@ -21,4 +21,6 @@ public interface INotificationService {
 
     ResponseMessageTo sendNotificationForEmailVerificationLink(String email,String link);
 
+    ResponseMessageTo sendNotificationForHprAccountCreation(String username,String hprId, String mobile);
+
 }

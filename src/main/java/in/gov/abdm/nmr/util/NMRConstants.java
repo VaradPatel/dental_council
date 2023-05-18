@@ -222,6 +222,7 @@ public class NMRConstants {
     public static final String SMS_AND_EMAIL_RESET_MESSAGE_PROPERTIES_KEY = "sms-email-reset";
     public static final String ACCOUNT_CREATED = "account-created";
     public static final String NMR_ID_CREATED = "nmr-id-created";
+    public static final String HPR_ACCOUNT_CREATED = "hpr-account-created";
     public static final String TYPE_NOT_NULL = "Type cannot be null";
     public static final double FUZZY_MATCH_LIMIT = 75;
     public static final String FUZZY_PARAMETER_NAME = "Name";

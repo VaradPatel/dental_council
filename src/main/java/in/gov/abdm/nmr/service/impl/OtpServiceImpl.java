@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.UUID;
 
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -51,8 +53,23 @@ public class OtpServiceImpl implements IOtpService {
      * @throws OtpException with message
      */
     @Override
-    public OTPResponseMessageTo generateOtp(OtpGenerateRequestTo otpGenerateRequestTo) throws OtpException {
+    public OTPResponseMessageTo generateOtp(OtpGenerateRequestTo otpGenerateRequestTo) throws OtpException, InvalidRequestException {
         String notificationType = otpGenerateRequestTo.getType();
+
+        if(!otpGenerateRequestTo.isRegistration()) {
+
+            User user = userDaoService.findByUsername(otpGenerateRequestTo.getContact());
+            if (user == null) {
+                if (notificationType.equals(NotificationType.SMS.getNotificationType())) {
+                    throw new InvalidRequestException(NMRError.NON_REGISTERED_MOBILE_NUMBER.getCode(), NMRError.NON_REGISTERED_MOBILE_NUMBER.getMessage());
+                } else if (notificationType.equals(NotificationType.EMAIL.getNotificationType())) {
+                    throw new InvalidRequestException(NMRError.NON_REGISTERED_EMAIL_ID.getCode(), NMRError.NON_REGISTERED_EMAIL_ID.getMessage());
+                } else if (notificationType.equals(NotificationType.NMR_ID.getNotificationType())) {
+                    throw new InvalidRequestException(NMRError.NON_REGISTERED_NMR_ID.getCode(), NMRError.NON_REGISTERED_NMR_ID.getMessage());
+                }
+            }
+        }
+
         String contact = otpGenerateRequestTo.getContact();
         if (NotificationType.NMR_ID.getNotificationType().equals(otpGenerateRequestTo.getType())) {
             notificationType = NotificationType.SMS.getNotificationType();
