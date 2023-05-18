@@ -170,6 +170,9 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
                 log.debug("Initiating a notification indicating the NMR creation");
                 try {
                     notificationService.sendNotificationForNMRCreation(user.getNmrId(), user.getMobileNumber());
+                    if(hpProfile.getConsent().toString().equals("1")){
+                        notificationService.sendNotificationForHprAccountCreation(user.getUserName(),user.getHprId(),user.getMobileNumber());
+                    }
                 } catch (Exception exception) {
                     log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
                 }
@@ -321,5 +324,4 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     public String generateNmrId() {
         return String.valueOf(NMRUtil.generateRandom(12));
     }
-
 }
