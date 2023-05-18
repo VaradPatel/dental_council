@@ -38,6 +38,7 @@ import java.util.List;
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 

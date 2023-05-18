@@ -22,8 +22,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import static in.gov.abdm.nmr.util.NMRConstants.OTP_MAX_ATTEMPTS;
-import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @UtilityClass
 public final class
@@ -620,6 +619,7 @@ CommonTestData {
         workFlow.setId(ID);
         workFlow.setRequestId(REQUEST_ID);
         workFlow.setApplicationType(new ApplicationType(ID, HP_NAME, "desc", ""));
+        workFlow.setWorkFlowStatus(new WorkFlowStatus(ID, WorkflowStatus.APPROVED.getDescription()));
         return workFlow;
     }
 

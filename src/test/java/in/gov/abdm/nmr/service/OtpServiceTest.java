@@ -1,6 +1,9 @@
 package in.gov.abdm.nmr.service;
 
-import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.dto.OTPResponseMessageTo;
+import in.gov.abdm.nmr.dto.OtpGenerateRequestTo;
+import in.gov.abdm.nmr.dto.OtpValidateRequestTo;
+import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.enums.NotificationType;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
@@ -10,7 +13,6 @@ import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.impl.OtpServiceImpl;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,19 +20,15 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigInteger;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
-import static in.gov.abdm.nmr.util.CommonTestData.getResponseMessage;
 import static in.gov.abdm.nmr.util.NMRConstants.FAILURE_RESPONSE;
 import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,8 +49,7 @@ class OtpServiceTest {
     }
 
     @Test
-    void testGenerateOtpShouldGenerateOtpAndSendToMobileNumberForNMRId() throws OtpException {
-    void testGenerateOtp() throws OtpException, InvalidRequestException {
+    void testGenerateOtpShouldGenerateOtpAndSendToMobileNumberForNMRId() throws OtpException, InvalidRequestException {
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
@@ -63,29 +60,29 @@ class OtpServiceTest {
     }
 
     @Test
-    void testGenerateOtpShouldGenerateSMSAndSendToMobileNumber() throws OtpException {
+    void testGenerateOtpShouldGenerateSMSAndSendToMobileNumber() throws OtpException, InvalidRequestException {
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
         when(notificationService.sendNotificationForOTP(anyString(), anyString(), anyString())).thenReturn(getResponseMessage());
-        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(MOBILE_NUMBER, NotificationType.SMS.getNotificationType()));
+        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(MOBILE_NUMBER, NotificationType.SMS.getNotificationType(), true));
         assertEquals(SUCCESS_RESPONSE, otpResponseMessageTo.getMessage());
     }
 
     @Test
-    void testGenerateOtpShouldGenerateEmailAndSendToMobileNumber() throws OtpException {
+    void testGenerateOtpShouldGenerateEmailAndSendToMobileNumber() throws OtpException, InvalidRequestException {
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
         when(notificationService.sendNotificationForOTP(anyString(), anyString(), anyString())).thenReturn(getResponseMessage());
-        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(EMAIL_ID, NotificationType.EMAIL.getNotificationType()));
+        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(EMAIL_ID, NotificationType.EMAIL.getNotificationType(), true));
         assertEquals(SUCCESS_RESPONSE, otpResponseMessageTo.getMessage());
     }
 
     @Test
-    void testGenerateOtpShouldReturnFailureResponseWhenNotificationFail() throws OtpException {
+    void testGenerateOtpShouldReturnFailureResponseWhenNotificationFail() throws OtpException, InvalidRequestException {
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
         when(notificationService.sendNotificationForOTP(anyString(), anyString(), anyString())).thenReturn(new ResponseMessageTo(NMRConstants.NO_SUCH_OTP_TYPE));
-        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(EMAIL_ID, NotificationType.EMAIL.getNotificationType()));
+        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(EMAIL_ID, NotificationType.EMAIL.getNotificationType(), true));
         assertEquals(FAILURE_RESPONSE, otpResponseMessageTo.getMessage());
     }
 
