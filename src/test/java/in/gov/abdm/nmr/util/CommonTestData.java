@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static in.gov.abdm.nmr.util.NMRConstants.OTP_MAX_ATTEMPTS;
 import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
 
 @UtilityClass
@@ -617,6 +618,7 @@ CommonTestData {
     public WorkFlow getWorkFlow() {
         WorkFlow workFlow = new WorkFlow();
         workFlow.setId(ID);
+        workFlow.setRequestId(REQUEST_ID);
         workFlow.setApplicationType(new ApplicationType(ID, HP_NAME, "desc", ""));
         return workFlow;
     }
@@ -875,7 +877,16 @@ CommonTestData {
         otp.setId("1");
         otp.setAttempts(1);
         otp.setExpired(false);
-        otp.setOtp("123456");
+        otp.setOtp(OTP);
+        return otp;
+    }
+
+    public static Otp getOtpMaxAttempts() {
+        Otp otp = new Otp();
+        otp.setId("1");
+        otp.setAttempts(OTP_MAX_ATTEMPTS);
+        otp.setExpired(false);
+        otp.setOtp(OTP);
         return otp;
     }
 
@@ -890,6 +901,33 @@ CommonTestData {
         otpGenerateRequestTo.setType(NotificationType.NMR_ID.getNotificationType());
         otpGenerateRequestTo.setContact(MOBILE_NUMBER);
         return otpGenerateRequestTo;
+    }
+
+    public static OtpValidateRequestTo getOtpValidateRequest() {
+        OtpValidateRequestTo otpValidateRequestTo = new OtpValidateRequestTo();
+        otpValidateRequestTo.setTransactionId(TRANSACTION_ID);
+        otpValidateRequestTo.setContact(MOBILE_NUMBER);
+        otpValidateRequestTo.setOtp(OTP);
+        otpValidateRequestTo.setType(NotificationType.SMS.getNotificationType());
+        return otpValidateRequestTo;
+    }
+
+    public static UserProfileTO getUserProfile() {
+        UserProfileTO userProfileTO = new UserProfileTO();
+        userProfileTO.setSmcId(SMC_ID);
+        userProfileTO.setName(SMC_NAME);
+        userProfileTO.setTypeId(UserTypeEnum.NMC.getId());
+        userProfileTO.setSubTypeId(UserSubTypeEnum.NMC_ADMIN.getId());
+        userProfileTO.setEmailId(CommonTestData.EMAIL_ID);
+        userProfileTO.setMobileNumber(MOBILE_NUMBER);
+        return userProfileTO;
+    }
+
+    public static SMCProfile getSmcProfile(){
+        SMCProfile smcProfile=new SMCProfile();
+        smcProfile.setId(ID);
+        smcProfile.setStateMedicalCouncil(getStateMedicalCouncil());
+        return smcProfile;
     }
 
 }
