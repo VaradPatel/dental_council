@@ -13,6 +13,7 @@ import in.gov.abdm.nmr.mapper.IStateMedicalCouncilMapper;
 import in.gov.abdm.nmr.nosql.entity.Council;
 import in.gov.abdm.nmr.nosql.entity.RegistrationsDetails;
 import in.gov.abdm.nmr.redis.hash.Otp;
+import in.gov.abdm.nmr.security.common.RoleConstants;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigInteger;
@@ -42,6 +43,7 @@ CommonTestData {
     public static final String FIRST_NAME = "John";
     public static final String LAST_NAME = "Doe";
     public static final String MIDDLE_NAME = "John";
+    public static final String FULL_NAME = "John Doe John";
     public static final Integer ENROLLED_NUMBER = 1;
     public static final Integer NDHM_ENROLLMENT_NUMBER = 1;
     public static final String MOBILE_NUMBER = "9090909090";
@@ -161,6 +163,7 @@ CommonTestData {
         userSubType.setName(userSubTypeEnum.getName());
         userSubType.setId(userSubTypeEnum.getId());
         userSubType.setUserType(getUserType(userSubTypeEnum.getUserType().getId()));
+        userSubType.setRoles(RoleConstants.STATE_MEDICAL_COUNCIL_ADMIN);
         return userSubType;
     }
 
@@ -169,6 +172,7 @@ CommonTestData {
         UserType userType = new UserType();
         userType.setId(userTypeEnum.getId());
         userType.setName(userType.getName());
+        userType.setRoles(RoleConstants.STATE_MEDICAL_COUNCIL_ADMIN);
         userType.setGroup(getUserGroup(userTypeEnum.getGroup().getId()));
         return userType;
     }
@@ -203,6 +207,7 @@ CommonTestData {
         user.setPassword(TEST_PSWD);
         user.setUserSubType(getUserSubType(UserSubTypeEnum.SMC_ADMIN.getId()));
         user.setMobileNumber(MOBILE_NUMBER);
+        user.setEmailVerified(false);
         return user;
     }
 
@@ -619,7 +624,7 @@ CommonTestData {
         workFlow.setId(ID);
         workFlow.setRequestId(REQUEST_ID);
         workFlow.setApplicationType(new ApplicationType(ID, HP_NAME, "desc", ""));
-        workFlow.setWorkFlowStatus(new WorkFlowStatus(ID, WorkflowStatus.APPROVED.getDescription()));
+        workFlow.setWorkFlowStatus(new WorkFlowStatus(WorkflowStatus.APPROVED.getId(), WorkflowStatus.APPROVED.getDescription()));
         return workFlow;
     }
 
@@ -923,11 +928,95 @@ CommonTestData {
         return userProfileTO;
     }
 
-    public static SMCProfile getSmcProfile(){
-        SMCProfile smcProfile=new SMCProfile();
+    public static SMCProfile getSmcProfile() {
+        SMCProfile smcProfile = new SMCProfile();
         smcProfile.setId(ID);
         smcProfile.setStateMedicalCouncil(getStateMedicalCouncil());
         return smcProfile;
     }
 
+    public static NbeProfile getNbeProfile() {
+        NbeProfile nbeProfile = new NbeProfile();
+        nbeProfile.setDisplayName(PROFILE_DISPLAY_NAME);
+        nbeProfile.setId(ID);
+        nbeProfile.setFirstName(FIRST_NAME);
+        nbeProfile.setLastName(LAST_NAME);
+        nbeProfile.setMobileNo(MOBILE_NUMBER);
+        nbeProfile.setUser(getUser(UserTypeEnum.NBE.getId()));
+        nbeProfile.setEmailId(EMAIL_ID);
+        return nbeProfile;
+    }
+
+
+    public static HpSmcDetailTO getHpSmcDetail() {
+        HpSmcDetailTO hpSmcDetailTO = new HpSmcDetailTO();
+        hpSmcDetailTO.setHpName(HP_NAME);
+        hpSmcDetailTO.setRegistrationNumber(REGISTRATION_NUMBER);
+        hpSmcDetailTO.setCouncilName(STATE_MEDICAL_COUNCIL);
+        hpSmcDetailTO.setHpProfileId(HP_ID);
+        hpSmcDetailTO.setEmailId(EMAIL_ID);
+        hpSmcDetailTO.setAlreadyRegisteredInNmr(true);
+        return hpSmcDetailTO;
+    }
+
+    public static SmcRegistrationDetailResponseTO getSmcRegistrationDetailResponse() {
+        SmcRegistrationDetailResponseTO detailResponseTO = new SmcRegistrationDetailResponseTO();
+        detailResponseTO.setHpName(HP_NAME);
+        detailResponseTO.setRegistrationNumber(REGISTRATION_NUMBER);
+        detailResponseTO.setCouncilName(STATE_MEDICAL_COUNCIL);
+        detailResponseTO.setHpProfileId(HP_ID);
+        detailResponseTO.setEmailId(EMAIL_ID);
+        detailResponseTO.setAlreadyRegisteredInNmr(true);
+        return detailResponseTO;
+    }
+
+    public static HpProfilePictureResponseTO getHpProfilePictureResponse() {
+        HpProfilePictureResponseTO hpProfilePictureResponseTO = new HpProfilePictureResponseTO();
+        hpProfilePictureResponseTO.setStatus(1);
+        return hpProfilePictureResponseTO;
+    }
+
+    public static HpWorkProfileUpdateRequestTO getHpWorkProfileUpdateRequest() {
+        HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO = new HpWorkProfileUpdateRequestTO();
+        hpWorkProfileUpdateRequestTO.setCurrentWorkDetails(List.of(getCurrentWorkDetails()));
+        return hpWorkProfileUpdateRequestTO;
+    }
+
+    public static CurrentWorkDetailsTO getCurrentWorkDetails() {
+        CurrentWorkDetailsTO currentWorkDetails = new CurrentWorkDetailsTO();
+        currentWorkDetails.setRegistrationNo(REGISTRATION_NUMBER);
+        return currentWorkDetails;
+    }
+
+    public static HpProfile getHpProfileForNMR() {
+        HpProfile hpProfile = new HpProfile();
+        hpProfile.setNmrId(NMR_ID);
+        return hpProfile;
+    }
+
+    public static UserKycTo getUserKyc() {
+        UserKycTo userKycTo = new UserKycTo();
+        userKycTo.setName(FIRST_NAME);
+        userKycTo.setGender(GENDER);
+        userKycTo.setBirthDate(DATE_OF_BIRTH);
+        return userKycTo;
+    }
+
+
+    public static HealthProfessionalPersonalRequestTo getHealthProfessionalPersonalRequest() {
+        HealthProfessionalPersonalRequestTo healthProfessionalPersonalRequestTo = new HealthProfessionalPersonalRequestTo();
+        healthProfessionalPersonalRequestTo.setTransactionId(TRANSACTION_ID);
+        healthProfessionalPersonalRequestTo.setMobileNumber(MOBILE_NUMBER);
+        healthProfessionalPersonalRequestTo.setESignTransactionId(TRANSACTION_ID);
+        return healthProfessionalPersonalRequestTo;
+    }
+
+    public static CollegeProfile getCollegeProfile() {
+        CollegeProfile collegeProfile = new CollegeProfile();
+        collegeProfile.setId(ID);
+        collegeProfile.setUser(getUser(UserTypeEnum.COLLEGE.getId()));
+        collegeProfile.setName(TEST_USER);
+        collegeProfile.setCollege(getCollegeMaster());
+        return collegeProfile;
+    }
 }

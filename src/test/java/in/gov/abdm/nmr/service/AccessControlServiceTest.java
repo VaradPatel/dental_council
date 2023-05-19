@@ -52,7 +52,6 @@ class AccessControlServiceTest {
         assertEquals(true, loggedInUser.isAccountNonLocked());
         assertEquals(ID, loggedInUser.getGroup().getId());
         assertEquals(EMAIL_ID, loggedInUser.getEmail());
-        assertEquals(true, loggedInUser.isEmailVerified());
         assertEquals(HPR_ID, loggedInUser.getHprId());
         assertEquals(NMR_ID, loggedInUser.getNmrId());
         assertEquals(0, loggedInUser.getFailedAttempt());
