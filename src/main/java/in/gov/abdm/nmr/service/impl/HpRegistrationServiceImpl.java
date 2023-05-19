@@ -247,7 +247,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
         hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs);
 
-        return "Success";
+        return SUCCESS_RESPONSE;
     }
 
     @Override
