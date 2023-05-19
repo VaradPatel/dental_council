@@ -1,11 +1,19 @@
 package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.entity.ResetToken;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.entity.UserType;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NmrException;
+import in.gov.abdm.nmr.exception.OtpException;
+import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.repository.IFetchUserDetailsCustomRepository;
 import in.gov.abdm.nmr.repository.IUserRepository;
+import in.gov.abdm.nmr.repository.ResetTokenRepository;
+import in.gov.abdm.nmr.service.impl.OtpServiceImpl;
 import in.gov.abdm.nmr.service.impl.UserServiceImpl;
 import in.gov.abdm.nmr.util.CommonTestData;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -18,14 +26,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import javax.persistence.EntityManager;
 import java.math.BigInteger;
 import java.nio.file.AccessDeniedException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -35,11 +48,17 @@ class UserServiceTest {
     @InjectMocks
     UserServiceImpl userService;
     @Mock
-    private IUserDaoService userDaoService;
+    IUserDaoService userDaoService;
     @Mock
-    private IUserRepository userDetailRepository;
+    IUserRepository userDetailRepository;
     @Mock
     IFetchUserDetailsCustomRepository fetchUserDetailsCustomRepository;
+    @Mock
+    OtpServiceImpl otpService;
+    @Mock
+    ResetTokenRepository resetTokenRepository;
+    @Mock
+    EntityManager entityManager;
 
     @Test
     void testToggleSmsNotification() {
@@ -67,7 +86,7 @@ class UserServiceTest {
         assertEquals(NMRConstants.SMS, response.get(0).getMode());
     }
 
-    static UserResponseTO getUserResponse() {
+    public static UserResponseTO getUserResponse() {
         UserResponseTO response = new UserResponseTO();
         List<UserTO> userTOList = new ArrayList<>();
         UserTO user = new UserTO();
@@ -84,7 +103,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByMobileNumber() throws AccessDeniedException, InvalidRequestException {
+    public void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByMobileNumber() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
@@ -99,7 +118,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByUserTypeID() throws AccessDeniedException, InvalidRequestException {
+    public void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByUserTypeID() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
@@ -114,7 +133,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByFirstName() throws AccessDeniedException, InvalidRequestException {
+    public void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByFirstName() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
@@ -130,7 +149,7 @@ class UserServiceTest {
 
 
     @Test
-    void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByLastName() throws AccessDeniedException, InvalidRequestException {
+    public void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByLastName() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
@@ -145,7 +164,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByEmailID() throws AccessDeniedException, InvalidRequestException {
+    public void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByEmailID() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
@@ -164,5 +183,88 @@ class UserServiceTest {
         doNothing().when(userDetailRepository).deactivateUser(any(BigInteger.class));
         userService.deactivateUser(CommonTestData.USER_ID);
         verify(userDetailRepository, times(1)).deactivateUser(any(BigInteger.class));
+    }
+
+    public static RetrieveUserRequestTo getRetrieveUserRequest() {
+        RetrieveUserRequestTo retrieveUserRequestTo = new RetrieveUserRequestTo();
+        retrieveUserRequestTo.setTransactionId(TRANSACTION_ID);
+        retrieveUserRequestTo.setContact(MOBILE_NUMBER);
+        return retrieveUserRequestTo;
+    }
+
+    @Test
+    void testRetrieveUserShouldValidateOtpAndReturnEmailID() throws OtpException {
+        when(otpService.isOtpVerified(anyString())).thenReturn(false);
+        when(userDaoService.findFirstByMobileNumber(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        String response = userService.retrieveUser(getRetrieveUserRequest());
+        assertEquals(CommonTestData.EMAIL_ID, response);
+    }
+
+    public static User getRetrieveUserName() {
+        User user = new User();
+        user.setUserName(TEST_USER);
+        return user;
+    }
+
+    @Test
+    void testRetrieveUserShouldValidateOtpAndReturnUsername() throws OtpException {
+        when(otpService.isOtpVerified(anyString())).thenReturn(false);
+        when(userDaoService.findFirstByMobileNumber(anyString())).thenReturn(getRetrieveUserName());
+        String response = userService.retrieveUser(getRetrieveUserRequest());
+        assertEquals(TEST_USER, response);
+    }
+
+    @Test
+    void testRetrieveUserShouldThrowInvalidOtpException() {
+        when(otpService.isOtpVerified(anyString())).thenReturn(true);
+        assertThrows(OtpException.class, () -> userService.retrieveUser(getRetrieveUserRequest()));
+    }
+
+    @Test
+    void testVerifyEmailShouldValidateLinkAndReturnSuccessResponse() {
+        when(resetTokenRepository.findByToken(anyString())).thenReturn(getResetToken());
+        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        ResponseMessageTo responseMessageTo = userService.verifyEmail(new VerifyEmailTo(TEMP_TOKN));
+        assertEquals(SUCCESS_RESPONSE, responseMessageTo.getMessage());
+    }
+
+    @Test
+    void testVerifyEmailShouldTokenValueNullAndReturnLinkExpired() {
+        when(resetTokenRepository.findByToken(anyString())).thenReturn(null);
+        ResponseMessageTo responseMessageTo = userService.verifyEmail(new VerifyEmailTo(TEMP_TOKN));
+        assertEquals(LINK_EXPIRED, responseMessageTo.getMessage());
+    }
+
+    public ResetToken getExpiredResetToken() {
+        ResetToken resetToken = new ResetToken();
+        resetToken.setId(CommonTestData.USER_ID);
+        resetToken.setExpiryDate(PAST_TIMESTAMP);
+        resetToken.setUserName(TEST_USER);
+        return resetToken;
+    }
+
+    @Test
+    void testVerifyEmailShouldReturnLinkExpired() {
+        when(resetTokenRepository.findByToken(anyString())).thenReturn(getExpiredResetToken());
+        ResponseMessageTo responseMessageTo = userService.verifyEmail(new VerifyEmailTo(TEMP_TOKN));
+        assertEquals(LINK_EXPIRED, responseMessageTo.getMessage());
+    }
+
+
+    public static UserProfileTO getUserProfileForNMRException() {
+        UserProfileTO userProfileTO = new UserProfileTO();
+        userProfileTO.setSmcId(SMC_ID);
+        userProfileTO.setName(SMC_NAME);
+        userProfileTO.setTypeId(UserTypeEnum.NMC.getId());
+        userProfileTO.setSubTypeId(UserTypeEnum.HEALTH_PROFESSIONAL.getId());
+        userProfileTO.setEmailId(CommonTestData.EMAIL_ID);
+        userProfileTO.setMobileNumber(MOBILE_NUMBER);
+        return userProfileTO;
+    }
+
+    @Test
+    void testCreateUserShouldThrowNmrException() {
+        assertThrows(NmrException.class, () -> userService.createUser(getUserProfileForNMRException()));
     }
 }

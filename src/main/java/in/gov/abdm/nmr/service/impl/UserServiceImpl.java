@@ -208,7 +208,8 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserProfileTO createUser(UserProfileTO userProfileTO) throws NmrException {
-        if (!ALLOWED_USER_TYPES.keySet().contains(userProfileTO.getTypeId()) || !ALLOWED_USER_TYPES.get(userProfileTO.getTypeId()).contains(userProfileTO.getSubTypeId())) {
+        if (!ALLOWED_USER_TYPES.keySet().contains(userProfileTO.getTypeId()) ||
+                !ALLOWED_USER_TYPES.get(userProfileTO.getTypeId()).contains(userProfileTO.getSubTypeId())) {
             NMRError invalidUserType = NMRError.INVALID_USER_TYPE;
             throw new NmrException(invalidUserType.getCode(), invalidUserType.getMessage(), HttpStatus.BAD_REQUEST.getReasonPhrase());
         }

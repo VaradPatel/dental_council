@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.service;
 
+import in.gov.abdm.nmr.dto.HpWorkProfileUpdateRequestTO;
 import in.gov.abdm.nmr.entity.SMCProfile;
 import in.gov.abdm.nmr.entity.StateMedicalCouncil;
 import in.gov.abdm.nmr.entity.User;
@@ -28,21 +29,20 @@ class SmcProfileDaoServiceTest {
     @InjectMocks
     SmcProfileDaoServiceImpl smcProfileService;
 
-    SMCProfile smcProfile =  new SMCProfile();
-    User user =  null;
+    SMCProfile smcProfile = new SMCProfile();
+    User user = null;
     StateMedicalCouncil stateMedicalCouncil = null;
 
 
-
     @BeforeEach
-    void setup(){
+    void setup() {
         user = getUser(UserTypeEnum.SMC.getId());
-        stateMedicalCouncil =  getStateMedicalCouncil();
+        stateMedicalCouncil = getStateMedicalCouncil();
         populateSmcProfile();
     }
 
     @Test
-    void testFindByUserIdReturnsNmcProfile(){
+    void testFindByUserIdReturnsNmcProfile() {
         when(smcProfileRepository.findByUserId(any(BigInteger.class))).thenReturn(smcProfile);
         SMCProfile smcProfile = smcProfileService.findByUserId(ID);
         assertEquals(ID, smcProfile.getId());
@@ -68,5 +68,13 @@ class SmcProfileDaoServiceTest {
         smcProfile.setNdhmEnrollment(NDHM_ENROLLMENT_NUMBER);
         smcProfile.setMobileNo(MOBILE_NUMBER);
         smcProfile.setUser(user);
+    }
+
+    @Test
+    void testSave() {
+        when(smcProfileRepository.save(any(SMCProfile.class))).thenReturn(getSmcProfile());
+        SMCProfile profile = smcProfileService.save(getSmcProfile());
+        assertEquals(ID,profile.getId());
+        assertEquals(ID,profile.getStateMedicalCouncil().getId());
     }
 }

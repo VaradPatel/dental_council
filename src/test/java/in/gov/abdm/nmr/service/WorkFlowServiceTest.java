@@ -24,11 +24,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Optional;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -71,13 +71,23 @@ class WorkFlowServiceTest {
     @Mock
     IWorkFlowStatusRepository workFlowStatusRepository;
 
+    @Mock
+    IActionRepository iActionRepository;
+
+    @Mock
+    IWorkFlowStatusRepository iWorkFlowStatusRepository;
+
+    @Mock
+    IUserDaoService userDetailService;
+
     @Test
     void testInitiateSubmissionFlow() throws WorkFlowException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
+        when(userDetailService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(iWorkFlowRepository.findByRequestId(anyString())).thenReturn(null);
         when(hpProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getHpProfile()));
-        when(inmrWorkFlowConfigurationRepository.getNextGroup(any(BigInteger.class),any(BigInteger.class),any(BigInteger.class),any(BigInteger.class))).thenReturn(getNextGroup());
+        when(inmrWorkFlowConfigurationRepository.getNextGroup(any(BigInteger.class), any(BigInteger.class), any(BigInteger.class), any(BigInteger.class))).thenReturn(getNextGroup());
         when(actionRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getAction()));
         when(userGroupRepository.findById(Group.SMC.getId())).thenReturn(Optional.of(getUserGroup(Group.SMC.getId())));
         when(userGroupRepository.findById(Group.HEALTH_PROFESSIONAL.getId())).thenReturn(Optional.of(getUserGroup(Group.HEALTH_PROFESSIONAL.getId())));
@@ -85,23 +95,25 @@ class WorkFlowServiceTest {
         when(iWorkFlowRepository.save(any())).thenReturn(WorkFlow.builder().workFlowStatus(WorkFlowStatus.builder().id(WorkflowStatus.PENDING.getId()).build()).build());
         when(workFlowAuditRepository.save(any())).thenReturn(new WorkFlowAudit());
         when(dashboardRepository.save(any())).thenReturn(new Dashboard());
-        when(notificationService.sendNotificationOnStatusChangeForHP(anyString(),anyString(),anyString(),anyString())).thenReturn(new ResponseMessageTo());
+        when(notificationService.sendNotificationOnStatusChangeForHP(anyString(), anyString(), anyString(), anyString())).thenReturn(new ResponseMessageTo());
         when(workFlowStatusRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(WorkFlowStatus.builder().id(WorkflowStatus.PENDING.getId()).build()));
+        when(iActionRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(new in.gov.abdm.nmr.entity.Action()));
+        when(iWorkFlowStatusRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(new in.gov.abdm.nmr.entity.WorkFlowStatus()));
         workFlowService.initiateSubmissionWorkFlow(getWorkFlowRequestTO());
 
         Mockito.verify(dashboardRepository, Mockito.times(1)).save(any(Dashboard.class));
 
     }
 
-    private in.gov.abdm.nmr.entity.ApplicationType getApplicationType(){
-        in.gov.abdm.nmr.entity.ApplicationType applicationType =  new in.gov.abdm.nmr.entity.ApplicationType();
+    private in.gov.abdm.nmr.entity.ApplicationType getApplicationType() {
+        in.gov.abdm.nmr.entity.ApplicationType applicationType = new in.gov.abdm.nmr.entity.ApplicationType();
         applicationType.setId(ApplicationType.HP_REGISTRATION.getId());
         applicationType.setName(ApplicationType.HP_REGISTRATION.name());
         return applicationType;
     }
 
     private in.gov.abdm.nmr.entity.Action getAction() {
-        in.gov.abdm.nmr.entity.Action action =  new in.gov.abdm.nmr.entity.Action();
+        in.gov.abdm.nmr.entity.Action action = new in.gov.abdm.nmr.entity.Action();
         action.setId(Action.SUBMIT.getId());
         action.setName(Action.SUBMIT.name());
         return action;
@@ -121,8 +133,8 @@ class WorkFlowServiceTest {
         };
     }
 
-    public WorkFlowRequestTO getWorkFlowRequestTO(){
-        WorkFlowRequestTO workFlowRequestTO =  new WorkFlowRequestTO();
+    public WorkFlowRequestTO getWorkFlowRequestTO() {
+        WorkFlowRequestTO workFlowRequestTO = new WorkFlowRequestTO();
         workFlowRequestTO.setRequestId(REQUEST_ID);
         workFlowRequestTO.setHpProfileId(getHpProfile().getId());
         workFlowRequestTO.setApplicationTypeId(ApplicationType.HP_REGISTRATION.getId());
@@ -132,4 +144,36 @@ class WorkFlowServiceTest {
         workFlowRequestTO.setApplicationSubTypeId(BigInteger.valueOf(1));
         return workFlowRequestTO;
     }
+
+    @Test
+    void testIsAnyActiveWorkflowWithOtherApplicationType() {
+        when(iWorkFlowRepository.findAnyActiveWorkflowWithDifferentApplicationType(any(BigInteger.class), any(BigInteger.class))).thenReturn(new WorkFlow());
+        boolean anyActiveWorkflowWithOtherApplicationType = workFlowService.isAnyActiveWorkflowWithOtherApplicationType(ID, ID);
+        assertFalse(anyActiveWorkflowWithOtherApplicationType);
+    }
+
+    @Test
+    void testIsAnyActiveWorkflowForHealthProfessional() {
+        when(iWorkFlowRepository.findPendingWorkflow(any(BigInteger.class))).thenReturn(List.of(getWorkFlow()));
+        boolean anyActiveWorkflowForHealthProfessional = workFlowService.isAnyActiveWorkflowForHealthProfessional(ID);
+        assertTrue(anyActiveWorkflowForHealthProfessional);
+    }
+
+    @Test
+    void testAssignQueriesBackToQueryCreator() throws WorkFlowException {
+        SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
+        when(iWorkFlowRepository.findByRequestId(anyString())).thenReturn(getWorkFlow());
+        when(iActionRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(new in.gov.abdm.nmr.entity.Action()));
+        when(iWorkFlowStatusRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(new in.gov.abdm.nmr.entity.WorkFlowStatus()));
+        workFlowService.assignQueriesBackToQueryCreator(anyString());
+        Mockito.verify(iWorkFlowStatusRepository, Mockito.times(2)).findById(any(BigInteger.class));
+    }
+
+    @Test
+    void testIsAnyApprovedWorkflowForHealthProfessionalShouldReturnTrueWhenDataFoundForHealthProfessionalId() {
+        when(iWorkFlowRepository.findApprovedWorkflow(any(BigInteger.class))).thenReturn(getWorkFlow());
+        boolean anyApprovedWorkflowForHealthProfessional = workFlowService.isAnyApprovedWorkflowForHealthProfessional(ID);
+        assertTrue(anyApprovedWorkflowForHealthProfessional);
+    }
+
 }
