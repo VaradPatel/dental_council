@@ -270,6 +270,8 @@ public class NMRConstants {
     public static final String FETCH_COLLEGE_DETAILS = "union select u.id ,user_type_id ,cp.name, '' ,email,mobile_number from main.user u join main.college_profile cp on u.id =cp.user_id where u.delete_status =false ";
     public static final String FETCH_NMC_DETAILS = "union select u.id, user_type_id ,np.first_name, np.last_name,email ,mobile_number from main.user u join main.nmc_profile np on u.id =np.user_id where u.delete_status =false ";
     public static final String FETCH_NBE_DETAILS = "union select u.id ,user_type_id ,nbep.first_name ,nbep.last_name,email ,mobile_number from main.user u join main.nbe_profile nbep on u.id =nbep.user_id where u.delete_status =false ";
-
-
+    public static final String REDIS_HOST = "${spring.redis.host}";
+    public static final String REDIS_PASSWORD = "${spring.redis.password}";
+    public static final String REDIS_PORT = "${spring.redis.port}";
+    public static final String REDIS_DATABASE = "${spring.redis.database}";
 }
