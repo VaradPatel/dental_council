@@ -113,8 +113,16 @@ public class UserController {
 
     @DeleteMapping(path = "/user")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deactivateUser(@RequestParam(required = false, value = "userId") BigInteger userId) {
+    public ResponseMessageTo deactivateUser(@RequestParam(required = false, value = "userId") BigInteger userId) {
         userService.deactivateUser(userId);
+        return ResponseMessageTo.builder().message(NMRConstants.SUCCESS_RESPONSE).build();
+    }
+
+    @PostMapping(path = ProtectedPaths.USER_UNLOCK_URL)
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseMessageTo unlockUser(@RequestParam(required = false, value = "userId") BigInteger userId) {
+        userService.unlockUser(userId);
+        return ResponseMessageTo.builder().message(NMRConstants.SUCCESS_RESPONSE).build();
     }
 
 }

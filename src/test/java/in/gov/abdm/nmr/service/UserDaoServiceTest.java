@@ -1,37 +1,26 @@
 package in.gov.abdm.nmr.service;
 
-import in.gov.abdm.nmr.dto.NotificationToggleRequestTO;
-import in.gov.abdm.nmr.dto.NotificationToggleResponseTO;
-import in.gov.abdm.nmr.dto.UpdateRefreshTokenIdRequestTO;
 import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.entity.UserType;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
-import in.gov.abdm.nmr.mapper.INbeMapper;
-import in.gov.abdm.nmr.mapper.INmcMapper;
-import in.gov.abdm.nmr.mapper.ISmcMapper;
-import in.gov.abdm.nmr.repository.*;
-import in.gov.abdm.nmr.security.common.RsaUtil;
-import in.gov.abdm.nmr.service.impl.OtpServiceImpl;
+import in.gov.abdm.nmr.repository.INbeProfileRepository;
+import in.gov.abdm.nmr.repository.INmcProfileRepository;
+import in.gov.abdm.nmr.repository.ISmcProfileRepository;
+import in.gov.abdm.nmr.repository.IUserRepository;
 import in.gov.abdm.nmr.service.impl.UserDaoServiceImpl;
-import in.gov.abdm.nmr.service.impl.UserServiceImpl;
-import in.gov.abdm.nmr.util.NMRConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
 import java.math.BigInteger;
-import java.util.List;
 import java.util.Optional;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserDaoServiceTest {
@@ -57,6 +46,13 @@ class UserDaoServiceTest {
         assertEquals(EMAIL_ID, user.getEmail());
         assertEquals(true, user.isAccountNonLocked());
         assertEquals(0, user.getFailedAttempt());
+    }
+
+    @Test
+    void testUnlockUserShouldUnlockUser(){
+        doNothing().when(userDetailRepository).unlockUser(any(BigInteger.class));
+        userDaoService.unlockUser(BigInteger.valueOf(1));
+        verify(userDetailRepository, times(1)).unlockUser(any(BigInteger.class));
     }
 
 }

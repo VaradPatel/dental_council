@@ -33,6 +33,7 @@ import java.util.List;
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -373,7 +374,8 @@ class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/user")
                         .with(user(TEST_USER)).with(csrf())
                         .accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$.message").value(NMRConstants.SUCCESS_RESPONSE));
     }
 
     @Test
@@ -400,5 +402,19 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.email_id").value(EMAIL_ID))
                 .andExpect(jsonPath("$.mobile_number").value(MOBILE_NUMBER))
                 .andExpect(jsonPath("$.smc_id").value(ID));
+    }
+
+    @Test
+    @WithMockUser
+    void testUnlockUserShouldUnlockUserSuccessfully() throws Exception{
+        doNothing().when(userService).unlockUser(any(BigInteger.class));
+        mockMvc.perform(post("/user/1/unlock")
+                        .with(user(TEST_USER))
+                        .with(csrf())
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(NMRConstants.SUCCESS_RESPONSE));
+
     }
 }
