@@ -111,6 +111,7 @@ public class UserController {
         return userService.getAllUser(search, value, pageNo, offset, sortBy, sortOrder);
     }
 
+    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN})
     @DeleteMapping(path = "/user")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public ResponseMessageTo deactivateUser(@RequestParam(required = false, value = "userId") BigInteger userId) {
@@ -118,6 +119,7 @@ public class UserController {
         return ResponseMessageTo.builder().message(NMRConstants.SUCCESS_RESPONSE).build();
     }
 
+    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN})
     @PostMapping(path = ProtectedPaths.USER_UNLOCK_URL)
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseMessageTo unlockUser(@RequestParam(required = false, value = "userId") BigInteger userId) {
