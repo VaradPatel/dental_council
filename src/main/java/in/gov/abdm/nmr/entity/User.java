@@ -70,4 +70,7 @@ public class User extends CommonAuditEntity {
     @Column(name = "is_email_verified")
     private boolean isEmailVerified;
 
+    @Column(name = "delete_status")
+    private boolean deleteStatus;
+
 }
