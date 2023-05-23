@@ -203,7 +203,7 @@ public class CollegeServiceImpl implements ICollegeService {
         if (user == null) {
             user = new User(null, collegeResponseTo.getEmailId(), collegeResponseTo.getMobileNumber(), null, null, null, false, false, //
                     entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getId()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_ADMIN.getId()), // 
-                    entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false,false);
+                    entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false,false, false);
         } else {
             user.setEmail(collegeResponseTo.getEmailId());
             user.setMobileNumber(collegeResponseTo.getMobileNumber());
@@ -276,7 +276,7 @@ public class CollegeServiceImpl implements ICollegeService {
             user = new User(null, collegeProfileTo.getEmailId(), collegeProfileTo.getMobileNumber(), null, //
                     null, null, false, false, entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getId()), //
                     entityManager.getReference(UserSubType.class, collegeProfileTo.getDesignation()), //
-                    entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false,false);
+                    entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false,false,false);
         } else {
             user.setEmail(collegeProfileTo.getEmailId());
             user.setMobileNumber(collegeProfileTo.getMobileNumber());
