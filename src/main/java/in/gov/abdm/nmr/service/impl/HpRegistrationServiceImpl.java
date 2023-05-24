@@ -783,7 +783,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Override
     public void  delinkCurrentWorkDetails(WorkDetailsDelinkRequest workDetailsDelinkRequest) throws NmrException {
-        User user = userDetailDaoService.findByUsername( SecurityContextHolder.getContext().getAuthentication().getName());
+        User user = userDetailDaoService.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         if (Objects.isNull(user)) {
             throw new NmrException(USER_NOT_FOUND);
         } else {
