@@ -298,6 +298,11 @@ public class UserServiceImpl implements IUserService {
         userRepository.deactivateUser(userId);
     }
 
+    @Override
+    public void unlockUser(BigInteger userId) {
+        userDaoService.unlockUser(userId);
+    }
+
     private void validateContactDetails(String emailId, String mobileNumber) throws NmrException {
         duplicateEmailCheck(emailId);
         duplicateMobileNumberCheck(mobileNumber);

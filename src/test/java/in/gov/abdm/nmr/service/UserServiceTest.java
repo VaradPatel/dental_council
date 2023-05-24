@@ -262,4 +262,11 @@ class UserServiceTest {
     void testCreateUserShouldThrowNmrException() {
         assertThrows(NmrException.class, () -> userService.createUser(getUserProfileForNMRException()));
     }
+
+    @Test
+    void testUnlockUserShouldUnlockUser(){
+        doNothing().when(userDaoService).unlockUser(any(BigInteger.class));
+        userService.unlockUser(BigInteger.valueOf(1));
+        verify(userDaoService, times(1)).unlockUser(any(BigInteger.class));
+    }
 }

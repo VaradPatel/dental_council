@@ -8,8 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.math.BigInteger;
 
-import static in.gov.abdm.nmr.util.NMRConstants.DEACTIVATE_USER;
-import static in.gov.abdm.nmr.util.NMRConstants.USER_ID;
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 public interface IUserRepository extends JpaRepository<User, BigInteger> {
 
@@ -33,4 +32,9 @@ public interface IUserRepository extends JpaRepository<User, BigInteger> {
     @Modifying
     @Query(nativeQuery = true, value = DEACTIVATE_USER)
     void deactivateUser(@Param(USER_ID) BigInteger userId);
+
+    @org.springframework.transaction.annotation.Transactional
+    @Modifying
+    @Query(nativeQuery = true, value = UNLOCK_USER)
+    void unlockUser(@Param(USER_ID) BigInteger userId);
 }

@@ -219,4 +219,9 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public boolean checkEmailUsedByOtherUser(BigInteger id, String email){
         return userDetailRepository.checkEmailUsedByOtherUser(id,email);
     }
+
+    @Override
+    public void unlockUser(BigInteger userId) {
+        userDetailRepository.unlockUser(userId);
+    }
 }

@@ -1,15 +1,16 @@
 package in.gov.abdm.nmr.security.common;
 
-import org.springframework.http.HttpMethod;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
 import in.gov.abdm.nmr.controller.CollegeController;
 import in.gov.abdm.nmr.util.NMRConstants;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProtectedPaths {
+
+
 
     private ProtectedPaths() {
     }
@@ -56,6 +57,8 @@ public class ProtectedPaths {
     public static final String COLLEGES_ACTION = NMRConstants.COLLEGES_ACTION;
     
     public static final String USER_NMC_CREATE_USER = "/user";
+
+    public static final String USER_UNLOCK_URL = "/user/{id}/unlock";
 
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<AntPathRequestMatcher> protectedPaths = new ArrayList<>();
