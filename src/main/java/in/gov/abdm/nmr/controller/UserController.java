@@ -112,7 +112,7 @@ public class UserController {
     }
 
     @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN})
-    @DeleteMapping(path = "/user")
+    @DeleteMapping(path = ProtectedPaths.USER_DEACTIVATE_URL)
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public ResponseMessageTo deactivateUser(@RequestParam(required = false, value = "userId") BigInteger userId) {
         userService.deactivateUser(userId);
