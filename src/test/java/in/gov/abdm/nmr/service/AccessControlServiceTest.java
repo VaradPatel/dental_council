@@ -12,10 +12,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -40,6 +42,13 @@ class AccessControlServiceTest {
         when(userRepository.findByUsername(any(String.class))).thenReturn(loggedInUser);
         accessControlService.validateUser(ID);
         Mockito.verify(userRepository, Mockito.times(1)).findByUsername(anyString());
+    }
+
+    @Test
+    void testValidateUserShouldThrowInvalidUserException() {
+        SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
+        when(userRepository.findByUsername(any(String.class))).thenReturn(null);
+        assertThrows(AccessDeniedException.class, () -> accessControlService.validateUser(ID));
     }
 
     @Test

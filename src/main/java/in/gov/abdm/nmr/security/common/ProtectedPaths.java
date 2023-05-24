@@ -59,6 +59,7 @@ public class ProtectedPaths {
     public static final String USER_NMC_CREATE_USER = "/user";
 
     public static final String USER_UNLOCK_URL = "/user/{id}/unlock";
+    public static final String USER_DEACTIVATE_URL = "/user/{id}/deactivate";
 
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<AntPathRequestMatcher> protectedPaths = new ArrayList<>();

@@ -163,9 +163,14 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
             user.setLastName((String) result[3]);
             user.setEmailId((String) result[4]);
             user.setMobileNumber((String) result[5]);
-            userResponseTO.setTotalNoOfRecords(BigInteger.valueOf(results.size()));
+            user.setAdmin(result[6] != null &&
+                    Objects.equals(result[6], UserSubTypeEnum.COLLEGE_ADMIN.getId())
+                    || Objects.equals(result[6], UserSubTypeEnum.SMC_ADMIN.getId())
+                    || Objects.equals(result[6], UserSubTypeEnum.NBE_ADMIN.getId())
+                    || Objects.equals(result[6], UserSubTypeEnum.NMC_ADMIN.getId()));
             userTOList.add(user);
         });
+        userResponseTO.setTotalNoOfRecords(BigInteger.valueOf(results.size()));
         userResponseTO.setUsers(userTOList);
         return userResponseTO;
     }
