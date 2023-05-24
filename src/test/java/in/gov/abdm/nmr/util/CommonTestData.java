@@ -845,6 +845,7 @@ CommonTestData {
         qualificationDetailRequestTO.setQualificationMonth(MONTH_OF_PASSING);
         qualificationDetailRequestTO.setQualificationYear(YEAR_OF_PASSING);
         qualificationDetailRequestTO.setFileName(FILE_NAME);
+        qualificationDetailRequestTO.setUniversity(new UniversityTO(UNIVERSITY_ID, UNIVERSITY_NAME, INDIA));
         qualificationDetailRequestTOList.add(qualificationDetailRequestTO);
         return qualificationDetailRequestTOList;
 
@@ -990,13 +991,21 @@ CommonTestData {
 
     public static HpWorkProfileUpdateRequestTO getHpWorkProfileUpdateRequest() {
         HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO = new HpWorkProfileUpdateRequestTO();
-        hpWorkProfileUpdateRequestTO.setCurrentWorkDetails(List.of(getCurrentWorkDetails()));
+        hpWorkProfileUpdateRequestTO.setCurrentWorkDetails(List.of(getCurrentWorkDetails(), getCurrentWorkDetails()));
+        hpWorkProfileUpdateRequestTO.setWorkDetails(getWorkDetails());
         return hpWorkProfileUpdateRequestTO;
+    }
+
+    public static WorkDetailsTO getWorkDetails() {
+        WorkDetailsTO workDetailsTO = new WorkDetailsTO();
+        workDetailsTO.setWorkNature(new WorkNatureTO(ID, ""));
+        return workDetailsTO;
     }
 
     public static CurrentWorkDetailsTO getCurrentWorkDetails() {
         CurrentWorkDetailsTO currentWorkDetails = new CurrentWorkDetailsTO();
         currentWorkDetails.setRegistrationNo(REGISTRATION_NUMBER);
+        currentWorkDetails.setFacilityId(FACILITY_ID);
         return currentWorkDetails;
     }
 
@@ -1103,4 +1112,9 @@ CommonTestData {
 
     }
 
+    public static WorkProfile getWorkProfile() {
+        WorkProfile workProfile = new WorkProfile();
+        workProfile.setFacilityId(FACILITY_ID);
+        return workProfile;
+    }
 }
