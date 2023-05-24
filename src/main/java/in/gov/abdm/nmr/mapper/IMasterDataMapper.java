@@ -1,7 +1,6 @@
 package in.gov.abdm.nmr.mapper;
 
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
@@ -27,13 +26,7 @@ public interface IMasterDataMapper {
 
     List<MasterDataTO> specialitiesToMasterDataTOs(List<BroadSpecialityTO> specialities);
 
-    List<MasterDataTO> universitiesToMasterDataTOs(List<UniversityTO> universities);
-
-    List<MasterDataTO> collegesToMasterDataTOs(List<CollegeTO> colleges);
-
     List<MasterDataTO> languagesToMasterDataTOs(List<LanguageTO> languages);
-
-    List<MasterDataTO> coursesToMasterDataTOs(List<CourseTO> courses);
 
     List<MasterDataTO> registrationRenewationTypeDataTOs(List<RegistrationRenewationTypeTO> registrationRenewationType);
 

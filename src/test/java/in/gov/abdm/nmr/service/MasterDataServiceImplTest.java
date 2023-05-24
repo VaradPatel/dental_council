@@ -3,7 +3,6 @@ package in.gov.abdm.nmr.service;
 import in.gov.abdm.nmr.dto.CollegeMasterResponseTo;
 import in.gov.abdm.nmr.dto.UniversityMasterResponseTo;
 import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
-import in.gov.abdm.nmr.mapper.IMasterDataMapper;
 import in.gov.abdm.nmr.service.impl.*;
 import in.gov.abdm.nmr.util.CommonTestData;
 import org.junit.jupiter.api.Test;
@@ -31,8 +30,6 @@ class MasterDataServiceImplTest {
     BroadSpecialityServiceImpl broadSpecialityServiceImpl;
     @Mock
     CountryServiceImpl countryService;
-    @Mock
-    IMasterDataMapper masterDataMapper;
     @Mock
     StateServiceImpl stateService;
     @Mock
@@ -66,7 +63,6 @@ class MasterDataServiceImplTest {
     @Test
     void testSpecialities() {
         when(broadSpecialityServiceImpl.getSpecialityData()).thenReturn(getBroadSpecialityTo());
-        when(masterDataMapper.specialitiesToMasterDataTOs(getBroadSpecialityTo())).thenReturn(getListOfMasterDataTO());
         List<MasterDataTO> result = masterDataService.specialities();
         assertEquals(ID.longValue(), result.get(0).getId());
         assertEquals(1, result.size());
@@ -75,7 +71,6 @@ class MasterDataServiceImplTest {
     @Test
     void testCountries() {
         when(countryService.getCountryData()).thenReturn(getCountryTo());
-        when(masterDataMapper.countriesToMasterDataTOs(getCountryTo())).thenReturn(getListOfMasterDataTO());
         List<MasterDataTO> result = masterDataService.countries();
         assertEquals(ID.longValue(), result.get(0).getId());
         assertEquals(1, result.size());
@@ -84,7 +79,6 @@ class MasterDataServiceImplTest {
     @Test
     void testStates() {
         when(stateService.getStateData(ID)).thenReturn(getStates());
-        when(masterDataMapper.statesToMasterDataTOs(getStates())).thenReturn(getListOfMasterDataTO());
         List<MasterDataTO> result = masterDataService.states(ID);
         assertEquals(ID.longValue(), result.get(0).getId());
         assertEquals(1, result.size());
@@ -93,7 +87,6 @@ class MasterDataServiceImplTest {
     @Test
     void testDistricts() {
         when(districtService.getDistrictData(ID)).thenReturn(getDistricts());
-        when(masterDataMapper.districtsToMasterDataTOs(getDistricts())).thenReturn(getListOfMasterDataTO());
         List<MasterDataTO> result = masterDataService.districts(ID);
         assertEquals(ID.longValue(), result.get(0).getId());
         assertEquals(1, result.size());
@@ -102,7 +95,6 @@ class MasterDataServiceImplTest {
     @Test
     void testSubDistricts() {
         when(subDistrictService.getSubDistrictData(ID)).thenReturn(getSubDistricts());
-        when(masterDataMapper.subDistrictsToMasterDataTOs(getSubDistricts())).thenReturn(getListOfMasterDataTO());
         List<MasterDataTO> result = masterDataService.subDistricts(ID);
         assertEquals(ID.longValue(), result.get(0).getId());
         assertEquals(1, result.size());
@@ -111,7 +103,6 @@ class MasterDataServiceImplTest {
     @Test
     void testCities() {
         when(villagesServiceImpl.getCityData(ID)).thenReturn(getVillages());
-        when(masterDataMapper.citiesToMasterDataTOs(getVillages())).thenReturn(getListOfMasterDataTO());
         List<MasterDataTO> result = masterDataService.cities(ID);
         assertEquals(ID.longValue(), result.get(0).getId());
         assertEquals(1, result.size());
@@ -120,7 +111,6 @@ class MasterDataServiceImplTest {
     @Test
     void testLanguages() {
         when(languageService.getLanguageData()).thenReturn(getLanguangesTo());
-        when(masterDataMapper.languagesToMasterDataTOs(getLanguangesTo())).thenReturn(getListOfMasterDataTO());
         List<MasterDataTO> result = masterDataService.languages();
         assertEquals(ID.longValue(), result.get(0).getId());
         assertEquals(1, result.size());
@@ -137,7 +127,6 @@ class MasterDataServiceImplTest {
     @Test
     void testRegistrationRenewationType() {
         when(registrationRenewationTypeService.getRegistrationRenewationType()).thenReturn(getRegistrationRenewationTypeTO());
-        when(masterDataMapper.registrationRenewationTypeDataTOs(getRegistrationRenewationTypeTO())).thenReturn(getListOfMasterDataTO());
         List<MasterDataTO> result = masterDataService.registrationRenewationType();
         assertEquals(ID.longValue(), result.get(0).getId());
         assertEquals(1, result.size());
@@ -146,7 +135,6 @@ class MasterDataServiceImplTest {
     @Test
     void testFacility() {
         when(facilityTypeService.getFacilityType()).thenReturn(getFacilityTypeTO());
-        when(masterDataMapper.facilityTypeDataTOs(getFacilityTypeTO())).thenReturn(getListOfMasterDataTO());
         List<MasterDataTO> result = masterDataService.facilityType();
         assertEquals(ID.longValue(), result.get(0).getId());
         assertEquals(1, result.size());
@@ -155,7 +143,6 @@ class MasterDataServiceImplTest {
     @Test
     void testGetCollegesByState() {
         when(collegeMasterService.getCollegesByStateId(ID)).thenReturn(getListOfCollegeMasterTo());
-        when(masterDataMapper.collegeMasterResponseDataTo(getListOfCollegeMasterTo())).thenReturn(getListOfCollegeMasterResponseTo());
         List<CollegeMasterResponseTo> result = masterDataService.getCollegesByState(ID);
         assertEquals(ID, result.get(0).getId());
         assertEquals(1, result.size());
@@ -164,7 +151,6 @@ class MasterDataServiceImplTest {
     @Test
     void testGetUniversitiesByCollege() {
         when(universityMasterService.getUniversitiesByCollegeId(ID)).thenReturn(getListOfUniversityMasterTo());
-        when(masterDataMapper.universityMasterResponseDataTo(getListOfUniversityMasterTo())).thenReturn(getListOfUniversityMasterResponseTo());
         List<UniversityMasterResponseTo> result = masterDataService.getUniversitiesByCollege(ID);
         assertEquals(ID, result.get(0).getId());
         assertEquals(1, result.size());
