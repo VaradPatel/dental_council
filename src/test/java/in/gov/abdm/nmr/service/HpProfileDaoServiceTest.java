@@ -5,21 +5,22 @@ import in.gov.abdm.nmr.dto.HpSmcDetailTO;
 import in.gov.abdm.nmr.entity.Address;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.RegistrationDetails;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
-import in.gov.abdm.nmr.exception.NmrException;
-import in.gov.abdm.nmr.exception.NoDataFoundException;
-import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.entity.WorkNature;
+import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.impl.HpProfileDaoServiceImpl;
 import in.gov.abdm.nmr.util.CommonTestData;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,6 +57,37 @@ class HpProfileDaoServiceTest {
     private VillagesRepository villagesRepository;
     @Mock
     IRegistrationDetailRepository iRegistrationDetailRepository;
+    private MockMultipartFile certificate;
+    @Mock
+    IRegistrationDetailRepository registrationDetailRepository;
+    @Mock
+    HpNbeDetailsRepository hpNbeDetailsRepository;
+    @Mock
+    IStateMedicalCouncilRepository iStateMedicalCouncilRepository;
+    @Mock
+    CourseRepository courseRepository;
+    @Mock
+    ICollegeMasterRepository collegeMasterRepository;
+    @Mock
+    UniversityMasterRepository universityMasterRepository;
+    @Mock
+    IQualificationDetailRepository qualificationDetailRepository;
+    @Mock
+    IForeignQualificationDetailRepository iCustomQualificationDetailRepository;
+    @Mock
+    WorkProfileRepository workProfileRepository;
+    @Mock
+    WorkNatureRepository workNatureRepository;
+    @Mock
+    WorkStatusRepository workStatusRepository;
+    @Mock
+    LanguagesKnownRepository languagesKnownRepository;
+
+    @BeforeEach
+    void setup() {
+        certificate = new MockMultipartFile("certificate", "certificate",
+                "application/json", "{\"name\": \"Emp Name\"}".getBytes());
+    }
 
     /*   @Test
         void testUpdateHpRegistrationDetails() throws NmrException, InvalidRequestException {
@@ -132,5 +164,32 @@ class HpProfileDaoServiceTest {
         when(iAddressRepository.save(ArgumentMatchers.any())).thenReturn(newAddress);
         HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpPersonalDetails(ID, getHpPersonalUpdateRequestTo());
         assertEquals(ID, hpProfileUpdateResponseTO.getHpProfileId());
+    }
+
+    @Test
+    void testUpdateHpRegistrationDetails() throws NmrException, InvalidRequestException {
+        when(registrationDetailRepository.getRegistrationDetailsByHpProfileId(any(BigInteger.class))).thenReturn(getRegistrationDetail());
+        when(iHpProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getHpProfile()));
+        when(hpNbeDetailsRepository.findByUserId(any(BigInteger.class))).thenReturn(getHPNbeDetails());
+        when(iStateMedicalCouncilRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getStateMedicalCouncil()));
+        when(countryRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getCountry()));
+        when(stateRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getState()));
+        when(collegeMasterRepository.findCollegeMasterById(any(BigInteger.class))).thenReturn(getCollegeMaster());
+        when(universityMasterRepository.findUniversityMasterById(any(BigInteger.class))).thenReturn(getUniversityMaster());
+        when(courseRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getCourse()));
+        when(qualificationDetailRepository.saveAll(any(List.class))).thenReturn(new ArrayList());
+        when(iCustomQualificationDetailRepository.saveAll(any(List.class))).thenReturn(new ArrayList());
+        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(HP_ID, getHpRegistrationUpdateRequestTo(), certificate, certificate);
+        assertEquals(HP_ID, hpProfileUpdateResponseTO.getHpProfileId());
+    }
+
+    @Test
+    void testUpdateWorkProfileDetails() throws NotFoundException, InvalidRequestException, NmrException {
+        when(iHpProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getHpProfile()));
+        when(workProfileRepository.getWorkProfileDetailsByUserId(any(BigInteger.class))).thenReturn(List.of(getWorkProfile()));
+        when(workNatureRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(new WorkNature()));
+        //when(workStatusRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(new WorkStatus()));
+        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateWorkProfileDetails(HP_ID, getHpWorkProfileUpdateRequest(), List.of(certificate, certificate));
+        assertEquals(HP_ID, hpProfileUpdateResponseTO.getHpProfileId());
     }
 }
