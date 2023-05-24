@@ -276,4 +276,5 @@ public class NMRConstants {
     public static final String REDIS_PASSWORD = "${spring.redis.password}";
     public static final String REDIS_PORT = "${spring.redis.port}";
     public static final String REDIS_DATABASE = "${spring.redis.database}";
+    public static final String INVALID_FACILITY_DETAILS_MESSAGE = "Invalid facility details provided";
 }

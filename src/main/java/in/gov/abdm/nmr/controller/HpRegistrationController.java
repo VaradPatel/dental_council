@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.controller;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
 import in.gov.abdm.nmr.exception.*;
+import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IQueriesService;
@@ -316,7 +317,7 @@ public class HpRegistrationController {
         return hpService.getEmailVerificationLink(hpProfileId,verifyEmailLinkTo);
     }
 
-    @DeleteMapping(path = "health-professional/work-profile/facility")
+    @DeleteMapping(path = ProtectedPaths.DE_LINK_FACILITY)
     public ResponseEntity<ResponseMessageTo> delinkCurrentWorkDetails(@RequestBody WorkDetailsDelinkRequest workDetailsDelinkRequest) throws NmrException {
          hpService.delinkCurrentWorkDetails(workDetailsDelinkRequest);
         return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());

@@ -60,6 +60,7 @@ public class ProtectedPaths {
 
     public static final String USER_UNLOCK_URL = "/user/{id}/unlock";
     public static final String USER_DEACTIVATE_URL = "/user/{id}/deactivate";
+    public static final String DE_LINK_FACILITY = "/health-professional/work-profile/facility";
 
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<AntPathRequestMatcher> protectedPaths = new ArrayList<>();
@@ -103,6 +104,7 @@ public class ProtectedPaths {
         protectedPaths.add(new AntPathRequestMatcher(CollegeController.COLLEGES_COLLEGE_ID_VERIFIERS_VERIFIER_ID, HttpMethod.GET.name()));
         
         protectedPaths.add(new AntPathRequestMatcher(USER_NMC_CREATE_USER));
+        protectedPaths.add(new AntPathRequestMatcher(DE_LINK_FACILITY,HttpMethod.DELETE.name()));
 
         return protectedPaths.toArray(AntPathRequestMatcher[]::new);
     }
