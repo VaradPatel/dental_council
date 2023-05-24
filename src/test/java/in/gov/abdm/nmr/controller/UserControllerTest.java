@@ -371,7 +371,7 @@ class UserControllerTest {
     @WithMockUser
     void testDeactivateUserShouldChangeStatusAsDeactivateForUser() throws Exception {
         Mockito.doNothing().when(userService).deactivateUser(any(BigInteger.class));
-        mockMvc.perform(MockMvcRequestBuilders.delete("/user")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/user/1/deactivate")
                         .with(user(TEST_USER)).with(csrf())
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isNoContent())
