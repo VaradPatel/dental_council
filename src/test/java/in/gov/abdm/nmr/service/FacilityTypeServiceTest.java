@@ -58,6 +58,8 @@ class FacilityTypeServiceTest {
     void testGetFacilityType() {
         when(facilityTypeRepository.getFacilityType()).thenReturn(facilityTypes);
         List<FacilityTypeTO> facilityType = facilityTypeService.getFacilityType();
-        assertEquals(0, facilityType.size());
+        assertEquals(1, facilityType.size());
+        assertEquals(ID, facilityType.get(0).getId());
+        assertEquals(FACILITY_NAME, facilityType.get(0).getName());
     }
 }
