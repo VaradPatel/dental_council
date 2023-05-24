@@ -268,10 +268,10 @@ public class NMRConstants {
 
     public static final String UNLOCK_USER ="update {h-schema}user SET failed_attempt =0, account_non_locked = true, lock_time = null WHERE id = :userId";
 
-    public static final String FETCH_SMC_DETAILS = "select u.id, user_type_id ,sp.first_name, sp.last_name ,email,mobile_number from main.user u join main.smc_profile sp on u.id =sp.user_id where u.delete_status =false ";
-    public static final String FETCH_COLLEGE_DETAILS = "union select u.id ,user_type_id ,cp.name, '' ,email,mobile_number from main.user u join main.college_profile cp on u.id =cp.user_id where u.delete_status =false ";
-    public static final String FETCH_NMC_DETAILS = "union select u.id, user_type_id ,np.first_name, np.last_name,email ,mobile_number from main.user u join main.nmc_profile np on u.id =np.user_id where u.delete_status =false ";
-    public static final String FETCH_NBE_DETAILS = "union select u.id ,user_type_id ,nbep.first_name ,nbep.last_name,email ,mobile_number from main.user u join main.nbe_profile nbep on u.id =nbep.user_id where u.delete_status =false ";
+    public static final String FETCH_SMC_DETAILS = "select u.id, user_type_id ,sp.first_name, sp.last_name ,email,mobile_number,u.user_sub_type_id from main.user u join main.smc_profile sp on u.id =sp.user_id where u.delete_status =false ";
+    public static final String FETCH_COLLEGE_DETAILS = "union select u.id ,user_type_id ,cp.name, '' ,email,mobile_number,u.user_sub_type_id from main.user u join main.college_profile cp on u.id =cp.user_id where u.delete_status =false ";
+    public static final String FETCH_NMC_DETAILS = "union select u.id, user_type_id ,np.first_name, np.last_name,email ,mobile_number,u.user_sub_type_id from main.user u join main.nmc_profile np on u.id =np.user_id where u.delete_status =false ";
+    public static final String FETCH_NBE_DETAILS = "union select u.id ,user_type_id ,nbep.first_name ,nbep.last_name,email ,mobile_number,u.user_sub_type_id from main.user u join main.nbe_profile nbep on u.id =nbep.user_id where u.delete_status =false ";
     public static final String REDIS_HOST = "${spring.redis.host}";
     public static final String REDIS_PASSWORD = "${spring.redis.password}";
     public static final String REDIS_PORT = "${spring.redis.port}";

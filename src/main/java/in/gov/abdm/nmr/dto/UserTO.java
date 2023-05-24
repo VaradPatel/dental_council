@@ -17,5 +17,5 @@ public class UserTO {
     private String lastName;
     private String emailId;
     private String mobileNumber;
-
+    private boolean  isAdmin;
 }
