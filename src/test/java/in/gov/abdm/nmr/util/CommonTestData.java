@@ -4,6 +4,7 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
 import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.entity.Action;
 import in.gov.abdm.nmr.entity.AddressType;
 import in.gov.abdm.nmr.entity.ApplicationType;
 import in.gov.abdm.nmr.entity.HpProfileStatus;
@@ -625,6 +626,16 @@ CommonTestData {
         workFlow.setRequestId(REQUEST_ID);
         workFlow.setApplicationType(new ApplicationType(ID, HP_NAME, "desc", ""));
         workFlow.setWorkFlowStatus(new WorkFlowStatus(WorkflowStatus.APPROVED.getId(), WorkflowStatus.APPROVED.getDescription()));
+        workFlow.setPreviousGroup(getUserGroup(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        return workFlow;
+    }
+    public WorkFlow getWorkFlowWherePreviousGroupNmc() {
+        WorkFlow workFlow = new WorkFlow();
+        workFlow.setId(ID);
+        workFlow.setRequestId(REQUEST_ID);
+        workFlow.setApplicationType(new ApplicationType(ID, HP_NAME, "desc", ""));
+        workFlow.setWorkFlowStatus(new WorkFlowStatus(WorkflowStatus.APPROVED.getId(), WorkflowStatus.APPROVED.getDescription()));
+        workFlow.setPreviousGroup(getUserGroup(Group.NMC.getId()));
         return workFlow;
     }
 
@@ -663,6 +674,7 @@ CommonTestData {
     public static UniversityMaster getUniversityMaster() {
         UniversityMaster universityMaster = new UniversityMaster();
         universityMaster.setId(ID);
+        universityMaster.setCollegeId(BigInteger.TWO);
         return universityMaster;
     }
 
@@ -1019,4 +1031,76 @@ CommonTestData {
         collegeProfile.setCollege(getCollegeMaster());
         return collegeProfile;
     }
+
+    public static HpProfile getHpProfileAsSuspendedStatus() {
+        HpProfile hpProfile = new HpProfile();
+        hpProfile.setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.SUSPENDED.getId()).build());
+        hpProfile.setId(ID);
+        hpProfile.setFullName(PROFILE_DISPLAY_NAME);
+        hpProfile.setMobileNumber(MOBILE_NUMBER);
+        hpProfile.setESignStatus(NMRConstants.SUCCESS);
+        hpProfile.setIsNew(0);
+        hpProfile.setRequestId(REQUEST_ID);
+        //hpProfile.setNmrId(NMR_ID);
+        hpProfile.setCountryNationality(getCountry());
+        hpProfile.setEmailId(EMAIL_ID);
+        hpProfile.setProfilePhoto(PROFILE_PHOTO);
+        hpProfile.setDateOfBirth(DATE_OF_BIRTH);
+        hpProfile.setGender("M");
+        hpProfile.setTransactionId(TRANSACTION_ID);
+        hpProfile.setRegistrationId(REGISTRATION_NUMBER);
+        hpProfile.setUser(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+
+        return hpProfile;
+    }
+
+    public static HealthProfessionalApplicationTo getHealthProfessionalApplication() {
+        HealthProfessionalApplicationTo healthProfessionalApplicationTo = new HealthProfessionalApplicationTo();
+        healthProfessionalApplicationTo.setApplicantFullName(PROFILE_DISPLAY_NAME);
+        return healthProfessionalApplicationTo;
+    }
+
+    public static HealthProfessionalApplicationResponseTo getHealthProfessionalApplicationResponse() {
+        HealthProfessionalApplicationResponseTo healthProfessionalApplicationResponseTo = new HealthProfessionalApplicationResponseTo();
+        healthProfessionalApplicationResponseTo.setTotalNoOfRecords(BigInteger.ONE);
+        healthProfessionalApplicationResponseTo.setHealthProfessionalApplications(List.of(getHealthProfessionalApplication()));
+        return healthProfessionalApplicationResponseTo;
+    }
+
+    public static RegistrationDetails getRegistrationDetail() {
+        RegistrationDetails registrationDetails = new RegistrationDetails();
+        registrationDetails.setRegistrationNo(REGISTRATION_NUMBER);
+        registrationDetails.setId(1);
+        registrationDetails.setHpProfileId(getHpProfile());
+        return registrationDetails;
+    }
+
+
+    private ApplicationType getApplicationType() {
+        ApplicationType applicationType = new ApplicationType();
+        applicationType.setId(in.gov.abdm.nmr.enums.ApplicationType.HP_REGISTRATION.getId());
+        applicationType.setName(in.gov.abdm.nmr.enums.ApplicationType.HP_REGISTRATION.name());
+        return applicationType;
+    }
+
+
+    public static WorkFlowAudit getWorkFlowAudit() {
+        WorkFlowAudit workFlowAudit = new WorkFlowAudit();
+        workFlowAudit.setId(ID);
+        workFlowAudit.setRequestId(REQUEST_ID);
+        workFlowAudit.setApplicationType(getApplicationType());
+        workFlowAudit.setCreatedAt(CURRENT_TIMESTAMP);
+        workFlowAudit.setWorkFlowStatus(new WorkFlowStatus(WorkflowStatus.APPROVED.getId(), WorkflowStatus.APPROVED.getDescription()));
+        workFlowAudit.setAction(new Action(in.gov.abdm.nmr.enums.Action.SUBMIT.getId(), in.gov.abdm.nmr.enums.Action.SUBMIT.getDescription()));
+        workFlowAudit.setPreviousGroup(new UserGroup(UserTypeEnum.HEALTH_PROFESSIONAL.getId(), UserTypeEnum.HEALTH_PROFESSIONAL.getName(), UserTypeEnum.HEALTH_PROFESSIONAL.getName()));
+        return workFlowAudit;
+    }
+
+    public static List<WorkFlowAudit> getWorkFlowAudits() {
+        List<WorkFlowAudit> workFlowAudits = new ArrayList<>();
+        workFlowAudits.add(getWorkFlowAudit());
+        return workFlowAudits;
+
+    }
+
 }

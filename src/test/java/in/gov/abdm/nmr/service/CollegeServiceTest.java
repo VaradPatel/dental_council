@@ -1,11 +1,13 @@
 package in.gov.abdm.nmr.service;
 
+import in.gov.abdm.nmr.dto.CollegeMasterDataTO;
+import in.gov.abdm.nmr.dto.CollegeProfileTo;
 import in.gov.abdm.nmr.dto.CollegeResponseTo;
-import in.gov.abdm.nmr.entity.CollegeMaster;
+import in.gov.abdm.nmr.dto.SendLinkOnMailTo;
+import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
-import in.gov.abdm.nmr.exception.InvalidIdException;
-import in.gov.abdm.nmr.exception.NmrException;
-import in.gov.abdm.nmr.exception.NotFoundException;
+import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.service.impl.CollegeServiceImpl;
 import in.gov.abdm.nmr.util.TestAuthentication;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,9 +20,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.persistence.EntityManager;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.util.Arrays;
+import java.util.List;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
+import static in.gov.abdm.nmr.util.CommonTestData.getUniversityMaster;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -31,20 +36,19 @@ class CollegeServiceTest {
     @InjectMocks
     CollegeServiceImpl collegeService;
     @Mock
-    private ICollegeMasterDaoService collegeMasterDaoService;
+    ICollegeMasterDaoService collegeMasterDaoService;
     @Mock
-    private IUniversityMasterService universityMasterService;
+    IUniversityMasterService universityMasterService;
     @Mock
-    private IStateMedicalCouncilDaoService stateMedicalCouncilDaoService;
+    IStateMedicalCouncilDaoService stateMedicalCouncilDaoService;
     @Mock
-    private ICollegeProfileDaoService collegeProfileDaoService;
+    ICollegeProfileDaoService collegeProfileDaoService;
     @Mock
-    private IUserDaoService userDaoService;
+    IUserDaoService userDaoService;
     @Mock
-    private EntityManager entityManager;
-
+    EntityManager entityManager;
     @Mock
-    private IPasswordService passwordService;
+    IPasswordService passwordService;
 
 
     @BeforeEach
@@ -70,5 +74,67 @@ class CollegeServiceTest {
         //when(stateMedicalCouncilDaoService.findByState(anyString())).thenReturn(getStateMedicalCouncil());
         CollegeResponseTo collegeResponseTo = collegeService.getCollege(ID);
         assertEquals(EMAIL_ID, collegeResponseTo.getEmailId());
+    }
+
+
+    public static CollegeResponseTo getCollegeResponse() {
+        CollegeResponseTo collegeResponseTo = new CollegeResponseTo();
+        collegeResponseTo.setId(ID);
+        collegeResponseTo.setUniversityId(ID);
+        return collegeResponseTo;
+    }
+
+
+    public static User getNmcUser() {
+        User user = new User();
+        user.setUserSubType(getUserSubType(UserSubTypeEnum.NMC_ADMIN.getId()));
+        return user;
+    }
+
+    @Test
+    void testCreateOrUpdateCollege() throws ResourceExistsException, NotFoundException, NmrException, InvalidRequestException, InvalidIdException {
+        SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
+        when(userDaoService.findByUsername(anyString())).thenReturn(getNmcUser());
+        when(collegeMasterDaoService.findById(any(BigInteger.class))).thenReturn(getCollegeMaster());
+        when(collegeProfileDaoService.findAdminByCollegeId(any(BigInteger.class))).thenReturn(getCollegeProfile());
+        when(collegeMasterDaoService.save(any(CollegeMaster.class))).thenReturn(getCollegeMaster());
+        when(universityMasterService.findById(any(BigInteger.class))).thenReturn(getUniversityMaster());
+//        when(universityMasterService.save(any(UniversityMaster.class))).thenReturn(getUniversityMaster());
+        when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        CollegeResponseTo collegeResponse = collegeService.createOrUpdateCollege(getCollegeResponse());
+        assertEquals(ID, collegeResponse.getId());
+    }
+
+    public static CollegeProfileTo getCollegeProfileRequest() {
+        CollegeProfileTo collegeProfileTo = new CollegeProfileTo();
+        collegeProfileTo.setId(ID);
+        collegeProfileTo.setCollegeId(COLLEGE_ID);
+        collegeProfileTo.setEmailId(EMAIL_ID);
+        collegeProfileTo.setName(PROFILE_DISPLAY_NAME);
+        collegeProfileTo.setMobileNumber(MOBILE_NUMBER);
+        collegeProfileTo.setDesignation(DESIGNATION);
+        return collegeProfileTo;
+    }
+
+    @Test
+    void testCreateOrUpdateCollegeVerifier() throws NmrException, ResourceExistsException, GeneralSecurityException, InvalidRequestException, InvalidIdException {
+        SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
+        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
+        when(collegeProfileDaoService.findById(any(BigInteger.class))).thenReturn(getCollegeProfile());
+        when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(collegeProfileDaoService.save(any(CollegeProfile.class))).thenReturn(getCollegeProfile());
+        // when(passwordService.getResetPasswordLink(any(SendLinkOnMailTo.class))).thenReturn(getResponseMessage());
+        CollegeProfileTo collegeVerifier = collegeService.createOrUpdateCollegeVerifier(getCollegeProfileRequest());
+        assertEquals(ID, collegeVerifier.getId());
+    }
+
+
+    @Test
+    void testGetCollegeVerifier() throws NmrException, InvalidIdException {
+        SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
+        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
+        when(collegeProfileDaoService.findById(any(BigInteger.class))).thenReturn(getCollegeProfile());
+        CollegeProfileTo collegeVerifier = collegeService.getCollegeVerifier(COLLEGE_ID, ID);
+        assertEquals(COLLEGE_ID, collegeVerifier.getCollegeId());
     }
 }

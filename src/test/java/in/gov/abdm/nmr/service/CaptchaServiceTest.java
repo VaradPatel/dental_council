@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
@@ -34,7 +35,7 @@ class CaptchaServiceTest {
     Captcha captcha = new Captcha();
 
     @BeforeEach
-    void setup(){
+    void setup() {
         populateCaptcha();
     }
 
@@ -46,7 +47,7 @@ class CaptchaServiceTest {
     }
 
     @Test
-    void testVerifyCaptchaShouldReturnFalseResponseForNullCaptcha(){
+    void testVerifyCaptchaShouldReturnFalseResponseForNullCaptcha() {
         ValidateCaptchaRequestTO validateCaptchaRequestTO = new ValidateCaptchaRequestTO();
         validateCaptchaRequestTO.setResult(2);
         validateCaptchaRequestTO.setTransactionId("123");
@@ -57,7 +58,7 @@ class CaptchaServiceTest {
     }
 
     @Test
-    void testVerifyCaptchaShouldReturnFalseResponseForExpiredCaptcha(){
+    void testVerifyCaptchaShouldReturnFalseResponseForExpiredCaptcha() {
         ValidateCaptchaRequestTO validateCaptchaRequestTO = new ValidateCaptchaRequestTO();
         validateCaptchaRequestTO.setResult(2);
         validateCaptchaRequestTO.setTransactionId("123");
@@ -69,7 +70,7 @@ class CaptchaServiceTest {
     }
 
     @Test
-    void testVerifyCaptchaShouldReturnTrueResponseForValidCaptcha(){
+    void testVerifyCaptchaShouldReturnTrueResponseForValidCaptcha() {
         ValidateCaptchaRequestTO validateCaptchaRequestTO = new ValidateCaptchaRequestTO();
         validateCaptchaRequestTO.setResult(3);
         validateCaptchaRequestTO.setTransactionId("123");
@@ -79,7 +80,7 @@ class CaptchaServiceTest {
 
     }
 
-    void populateCaptcha(){
+    void populateCaptcha() {
         captcha.setId("123");
         captcha.setExpired(false);
         captcha.setNum1(1);
@@ -87,5 +88,24 @@ class CaptchaServiceTest {
         captcha.setOperation("Add");
         captcha.setTimeToLive(200);
         captcha.setResult(3);
+    }
+
+    @Test
+    void testIsCaptchaEnabled() {
+        assertTrue(captchaService.isCaptchaEnabled());
+    }
+
+    public static Captcha getCaptcha() {
+        Captcha captcha = new Captcha();
+        captcha.setExpired(true);
+        return captcha;
+    }
+
+    @Test
+    void testIsCaptchaVerified() {
+        when(captchaDaoService.findById(anyString())).thenReturn(getCaptcha());
+        doNothing().when(captchaDaoService).deleteById(anyString());
+        boolean captchaVerified = captchaService.isCaptchaVerified(anyString());
+        assertTrue(captchaVerified);
     }
 }
