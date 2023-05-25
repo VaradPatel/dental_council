@@ -668,6 +668,7 @@ CommonTestData {
     public SMCProfileTO getSMCProfile() {
         SMCProfileTO smcProfile = new SMCProfileTO();
         smcProfile.setId(ID);
+        smcProfile.setStateMedicalCouncil(getStateMedicalCouncilTO());
         return smcProfile;
     }
 
@@ -851,11 +852,39 @@ CommonTestData {
 
     }
 
+    public static List<QualificationDetailRequestTO> getInternationalQualification() {
+        List<QualificationDetailRequestTO> qualificationDetailRequestTOList = new ArrayList<>();
+        QualificationDetailRequestTO qualificationDetailRequestTO = new QualificationDetailRequestTO();
+        qualificationDetailRequestTO.setId(ID);
+        qualificationDetailRequestTO.setRequestId(REQUEST_ID);
+        qualificationDetailRequestTO.setQualificationFrom(NMRConstants.INTERNATIONAL);
+        qualificationDetailRequestTO.setCountry(getCountryTO());
+        qualificationDetailRequestTO.setCourse(getCourseTo());
+        qualificationDetailRequestTO.setState(getStateTO());
+        qualificationDetailRequestTO.setCollege(getCollegeTo());
+        qualificationDetailRequestTO.setQualificationMonth(MONTH_OF_PASSING);
+        qualificationDetailRequestTO.setQualificationYear(YEAR_OF_PASSING);
+        qualificationDetailRequestTO.setFileName(FILE_NAME);
+        qualificationDetailRequestTO.setUniversity(new UniversityTO(UNIVERSITY_ID, UNIVERSITY_NAME, INDIA));
+        qualificationDetailRequestTOList.add(qualificationDetailRequestTO);
+        return qualificationDetailRequestTOList;
+    }
+
+
     public HpRegistrationUpdateRequestTO getHpRegistrationUpdateRequestTo() {
         HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO = new HpRegistrationUpdateRequestTO();
         hpRegistrationUpdateRequestTO.setRegistrationDetail(getRegistrationDetails());
         hpRegistrationUpdateRequestTO.setHpNbeDetails(getHPNbeDetails());
         hpRegistrationUpdateRequestTO.setQualificationDetails(getQualification());
+        return hpRegistrationUpdateRequestTO;
+    }
+
+    public HpRegistrationUpdateRequestTO getHpRegistrationUpdateRequestForInternationalQualification() {
+        HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO = new HpRegistrationUpdateRequestTO();
+        hpRegistrationUpdateRequestTO.setRegistrationDetail(getRegistrationDetails());
+        hpRegistrationUpdateRequestTO.setHpNbeDetails(getHPNbeDetails());
+        hpRegistrationUpdateRequestTO.setQualificationDetails(getQualification());
+        hpRegistrationUpdateRequestTO.setQualificationDetails(getInternationalQualification());
         return hpRegistrationUpdateRequestTO;
     }
 
@@ -945,7 +974,29 @@ CommonTestData {
         SMCProfile smcProfile = new SMCProfile();
         smcProfile.setId(ID);
         smcProfile.setStateMedicalCouncil(getStateMedicalCouncil());
+        smcProfile.setUser(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         return smcProfile;
+    }
+
+    public static NmcProfile getNmcProfile() {
+        NmcProfile nmcProfile = new NmcProfile();
+        nmcProfile.setId(ID);
+        nmcProfile.setStateMedicalCouncil(getStateMedicalCouncil());
+        nmcProfile.setUser(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        return nmcProfile;
+    }
+
+    public static NmcProfileTO getNmcProfileTO() {
+        NmcProfileTO nmcProfile = new NmcProfileTO();
+        nmcProfile.setId(ID);
+        nmcProfile.setStateMedicalCouncil(getStateMedicalCouncilTO());
+        return nmcProfile;
+    }
+
+    public static NbeProfileTO getNbeProfileTO() {
+        NbeProfileTO nbeProfileTO = new NbeProfileTO();
+        nbeProfileTO.setId(ID);
+        return nbeProfileTO;
     }
 
     public static NbeProfile getNbeProfile() {

@@ -1,7 +1,10 @@
 package in.gov.abdm.nmr.service;
 
+import co.elastic.clients.elasticsearch._types.FieldValue;
 import in.gov.abdm.nmr.dto.HpSearchProfileTO;
+import in.gov.abdm.nmr.dto.HpSearchRequestTO;
 import in.gov.abdm.nmr.exception.InvalidIdException;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.repository.IForeignQualificationDetailMasterRepository;
 import in.gov.abdm.nmr.repository.IHpProfileMasterRepository;
@@ -13,10 +16,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
@@ -65,5 +71,15 @@ class SearchServiceTest {
         assertThrows(InvalidIdException.class, () -> searchService.getHpSearchProfileById(ID));
     }
 
+
+    @Test
+    void testSearchHPShouldThrowException() throws InvalidRequestException {
+        HpSearchRequestTO hpSearchRequestTO = new HpSearchRequestTO();
+        hpSearchRequestTO.setRegistrationYear("2022");
+        List<FieldValue> fieldValues = new ArrayList<>();
+        fieldValues.add(FieldValue.of(2));
+        hpSearchRequestTO.setProfileStatusId(fieldValues);
+        assertThrows(Exception.class, () -> searchService.searchHP(hpSearchRequestTO, Pageable.ofSize(1)));
+    }
 
 }
