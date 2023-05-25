@@ -195,7 +195,7 @@ public class PasswordServiceImpl implements IPasswordService {
                 throw new AccessDeniedException(NMRError.ACCESS_FORBIDDEN.getMessage());
             }
         } else {
-            return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
+            throw new InvalidRequestException(NMRConstants.USER_NOT_FOUND);
         }
 
     }
@@ -219,10 +219,10 @@ public class PasswordServiceImpl implements IPasswordService {
 
                 return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
             } catch (Exception e) {
-                return new ResponseMessageTo(NMRConstants.PROBLEM_OCCURRED);
+                throw new InvalidRequestException();
             }
         } else {
-            return new ResponseMessageTo(NMRConstants.OLD_PASSWORD_NOT_MATCHING);
+            throw new InvalidRequestException(NMRConstants.OLD_PASSWORD_NOT_MATCHING);
         }
     }
 
