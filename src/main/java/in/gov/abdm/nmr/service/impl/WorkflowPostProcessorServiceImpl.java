@@ -5,7 +5,6 @@ import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.enums.ApplicationType;
-import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.*;
@@ -18,14 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -36,15 +32,6 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
     @Autowired
     IHpProfileMasterRepository hpProfileMasterRepository;
-
-    @Autowired
-    IHpProfileMasterMapper hpProfileMasterMapper;
-
-    @Autowired
-    IAddressMasterMapper addressMasterMapper;
-
-    @Autowired
-    IForeignQualificationDetailsMasterMapper customQualificationDetailsMasterMapper;
 
     @Autowired
     IRegistrationDetailRepository registrationDetailRepository;
@@ -68,9 +55,6 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     HpNbeDetailsRepository hpNbeDetailsRepository;
 
     @Autowired
-    IHpNbeMasterMapper iHpNbeMasterMapper;
-
-    @Autowired
     HpNbeDetailsMasterRepository hpNbeDetailsMasterRepository;
 
     @Autowired
@@ -80,16 +64,10 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     LanguagesKnownMasterRepository languagesKnownMasterRepository;
 
     @Autowired
-    ILanguagesKnownMasterMapper languagesKnownMasterMapper;
-
-    @Autowired
     INmrHprLinkageRepository nmrHprLinkageRepository;
 
     @Autowired
     INmrHprLinkageMasterRepository nmrHprLinkageMasterRepository;
-
-    @Autowired
-    INmrHprLinkageMasterMapper nmrHprLinkageMasterMapper;
 
     @Autowired
     IQualificationDetailRepository qualificationDetailRepository;
@@ -101,25 +79,16 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     IQualificationDetailMasterRepository qualificationDetailMasterRepository;
 
     @Autowired
-    IQualificationDetailMasterMapper qualificationDetailMasterMapper;
-
-    @Autowired
     SuperSpecialityRepository superSpecialityRepository;
 
     @Autowired
     SuperSpecialityMasterRepository superSpecialityMasterRepository;
 
     @Autowired
-    ISuperSpecialityMasterMapper superSpecialityMasterMapper;
-
-    @Autowired
     WorkProfileMasterRepository workProfileAuditRepository;
 
     @Autowired
     WorkProfileRepository workProfileRepository;
-
-    @Autowired
-    IWorkProfileMasterMapper workProfileMasterMapper;
 
     @Autowired
     private IElasticsearchDaoService elasticsearchDaoService;
@@ -192,7 +161,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
         if (registrationDetailsByHpProfileId != null) {
 
-            RegistrationDetailsMaster registrationDetailsAudit = hpProfileMasterMapper.registrationDetailsToRegistrationDetailsMaster(registrationDetailsByHpProfileId);
+            RegistrationDetailsMaster registrationDetailsAudit = IHpProfileMasterMapper.HP_PROFILE_MASTER_MAPPER.registrationDetailsToRegistrationDetailsMaster(registrationDetailsByHpProfileId);
             RegistrationDetailsMaster fetchedFromMaster = registrationDetailAuditRepository.getRegistrationDetailsByHpProfileId(hpProfileMaster.getId());
 
             if (fetchedFromMaster != null) {
@@ -211,7 +180,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
 
         HpProfile transactionHpeProfileDetails = hpProfileRepository.findHpProfileById(transactionHpProfileId);
-        HpProfileMaster masterHpProfileEntity = hpProfileMasterMapper.hpProfileToHpProfileMaster(transactionHpeProfileDetails);
+        HpProfileMaster masterHpProfileEntity = IHpProfileMasterMapper.HP_PROFILE_MASTER_MAPPER.hpProfileToHpProfileMaster(transactionHpeProfileDetails);
 
         if (masterHpProfileDetails != null) {
             log.debug("Initiating updation flow since there is an existing hp_profile_master entry for the current registration id");
@@ -227,7 +196,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         Address address = addressRepository.getCommunicationAddressByHpProfileId(transactionHpProfileId, AddressType.COMMUNICATION.getId());
 
         if (address != null) {
-            AddressMaster addressMasters = addressMasterMapper.addressToAddressMaster(address);
+            AddressMaster addressMasters = IAddressMasterMapper.ADDRESS_MASTER_MAPPER.addressToAddressMaster(address);
             AddressMaster fetchedFromMasters = addressMasterRepository.getCommunicationAddressByHpProfileId(masterHpProfileId, AddressType.COMMUNICATION.getId());
 
             if (fetchedFromMasters != null) {
@@ -246,7 +215,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
                 .stream().map(ForeignQualificationDetailsMaster::getCourse).toList();
         List<ForeignQualificationDetails> filterQualifications = qualificationDetails.stream().filter(qualificationDetail -> !masterCourseIds.contains(qualificationDetail.getCourse())).toList();
         if (!filterQualifications.isEmpty()) {
-            List<ForeignQualificationDetailsMaster> qualificationDetailsMasters = customQualificationDetailsMasterMapper.qualificationToQualificationMaster(filterQualifications);
+            List<ForeignQualificationDetailsMaster> qualificationDetailsMasters = IForeignQualificationDetailsMasterMapper.FOREIGN_QUALIFICATION_DETAILS_MASTER_MAPPER.qualificationToQualificationMaster(filterQualifications);
             qualificationDetailsMasters.forEach(qualificationDetailsMaster -> {
                 qualificationDetailsMaster.setHpProfileMaster(masterHpProfile);
                 qualificationDetailsMaster.setRegistrationDetails(registrationMaster);
@@ -260,7 +229,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByHpProfileId(transactionHpProfile.getUser().getId());
 
         if (hpNbeDetails != null) {
-            HpNbeDetailsMaster hpNbeDetailsMaster = iHpNbeMasterMapper.hpNbeToHpNbeMaster(hpNbeDetails);
+            HpNbeDetailsMaster hpNbeDetailsMaster = IHpNbeMasterMapper.HP_NBE_MASTER_MAPPER.hpNbeToHpNbeMaster(hpNbeDetails);
             HpNbeDetailsMaster fetchedFromMaster = hpNbeDetailsMasterRepository.findByHpProfileId(masterHpProfile.getId());
             if (fetchedFromMaster != null) {
                 hpNbeDetailsMaster.setId(fetchedFromMaster.getId());
@@ -278,7 +247,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         NmrHprLinkage nmrHprLinkage = nmrHprLinkageRepository.findByHpProfileId(transactionHpProfileId);
 
         if (nmrHprLinkage != null) {
-            NmrHprLinkageMaster nmrHprLinkageToMaster = nmrHprLinkageMasterMapper.nmrHprLinkageToNmrHprLinkageMaster(nmrHprLinkage);
+            NmrHprLinkageMaster nmrHprLinkageToMaster = INmrHprLinkageMasterMapper.HPR_LINKAGE_MASTER_MAPPER.nmrHprLinkageToNmrHprLinkageMaster(nmrHprLinkage);
             NmrHprLinkageMaster fetchedFromMaster = nmrHprLinkageMasterRepository.findByHpProfileId(masterHpProfileId);
             if (fetchedFromMaster != null) {
                 nmrHprLinkageToMaster.setId(fetchedFromMaster.getId());
@@ -296,7 +265,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
                 .stream().map(qualificationDetailsMaster -> qualificationDetailsMaster.getCourse().getId()).toList();
         List<QualificationDetails> filterQualifications = qualificationDetails.stream().filter(qualificationDetail -> !masterCourseIds.contains(qualificationDetail.getCourse().getId())).toList();
         if (!filterQualifications.isEmpty()) {
-            List<QualificationDetailsMaster> qualificationDetailsMasters = qualificationDetailMasterMapper.qualificationDetailsToQualificationDetailsMaster(filterQualifications);
+            List<QualificationDetailsMaster> qualificationDetailsMasters = IQualificationDetailMasterMapper.QUALIFICATION_DETAIL_MASTER_MAPPER.qualificationDetailsToQualificationDetailsMaster(filterQualifications);
             qualificationDetailsMasters.forEach(qualificationDetailsMaster -> {
                 qualificationDetailsMaster.setHpProfileMaster(masterHpProfile);
                 qualificationDetailsMaster.setRegistrationDetails(registrationMaster);

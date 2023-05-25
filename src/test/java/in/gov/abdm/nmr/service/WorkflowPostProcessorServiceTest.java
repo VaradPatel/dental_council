@@ -123,9 +123,6 @@ class WorkflowPostProcessorServiceTest {
     WorkProfileRepository workProfileRepository;
 
     @Mock
-    IWorkProfileMasterMapper workProfileMasterMapper;
-
-    @Mock
     private IElasticsearchDaoService elasticsearchDaoService;
 
     @Mock
@@ -149,13 +146,11 @@ class WorkflowPostProcessorServiceTest {
         when(hpProfileStatusRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getHPProfileStatus()));
         when(hpProfileMasterRepository.findByRegistrationId(anyString())).thenReturn(getMasterHpProfile());
         when(hpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfile());
-        when(hpProfileMasterMapper.hpProfileToHpProfileMaster(any(HpProfile.class))).thenReturn(getMasterHpProfile());
         when(hpProfileMasterRepository.save(any(HpProfileMaster.class))).thenReturn(getMasterHpProfile());
         when(customQualificationDetailRepository.getQualificationDetailsByUserId(any(BigInteger.class))).thenReturn(Arrays.asList(getForeignQualificationDetails()));
         when(customQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(any(BigInteger.class))).thenReturn(Arrays.asList(getForeignQualificationDetailsMaster()));
         when(notificationService.sendNotificationForNMRCreation(anyString(), anyString())).thenReturn(new ResponseMessageTo());
         when(userRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId())));
-
         workflowPostProcessorService.performPostWorkflowUpdates(getWorkFlowRequestTO(), getHpProfile(), getNextGroup());
         Mockito.verify(iWorkFlowRepository, Mockito.times(1)).findByRequestId(any(String.class));
     }
