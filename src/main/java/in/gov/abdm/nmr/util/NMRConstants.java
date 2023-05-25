@@ -78,7 +78,7 @@ public class NMRConstants {
     public static final String INVALID_COLLEGE_ID = "Invalid college id";
     public static final String INVALID_PROFILE_ID = "Invalid profile id";
     public static final String LINK_EXPIRED = "Link expired";
-    public static final String OLD_PASSWORD_NOT_MATCHING = "Old password not matching";
+    public static final String OLD_PASSWORD_NOT_MATCHING = "Old password is not correct";
     public static final String PROBLEM_OCCURRED = "Problem Occurred";
     public static final String USERNAME_NOT_NULL = "Username cannot be null or empty";
     public static final String PASSWORD_NOT_NULL = "Password cannot be null or empty";
