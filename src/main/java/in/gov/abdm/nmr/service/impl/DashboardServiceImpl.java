@@ -5,7 +5,6 @@ import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
-import in.gov.abdm.nmr.mapper.IFetchSpecificDetailsMapper;
 import in.gov.abdm.nmr.mapper.IStatusCount;
 import in.gov.abdm.nmr.mapper.IStatusWiseCountMapper;
 import in.gov.abdm.nmr.repository.*;
@@ -59,13 +58,6 @@ public class DashboardServiceImpl implements IDashboardService {
 
     @Autowired
     ICollegeProfileDaoService iCollegeProfileDaoService;
-
-    /**
-     * Mapper Interface to transform the IFetchSpecificDetails Bean
-     * to the FetchSpecificDetailsResponseTO Bean transferring its contents
-     */
-    @Autowired
-    private IFetchSpecificDetailsMapper iFetchSpecificDetailsMapper;
 
     /**
      * Injecting IFetchSpecificDetailsCustomRepository bean instead of an explicit object creation to achieve
