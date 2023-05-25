@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static in.gov.abdm.nmr.util.NMRConstants.NO;
+import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
 import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
 import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetailsAndProofs;
 
@@ -345,7 +346,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         HpProfilePictureResponseTO hpProfilePictureResponseTO = new HpProfilePictureResponseTO();
         hpProfilePictureResponseTO.setProfilePicture(insertedData.getProfilePhoto());
         hpProfilePictureResponseTO.setPicName(insertedData.getPicName());
-        hpProfilePictureResponseTO.setMessage("Success");
+        hpProfilePictureResponseTO.setMessage(SUCCESS_RESPONSE);
         hpProfilePictureResponseTO.setStatus(200);
         return hpProfilePictureResponseTO;
     }

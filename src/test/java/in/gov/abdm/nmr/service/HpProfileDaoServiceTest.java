@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.service;
 
+import in.gov.abdm.nmr.dto.HpProfilePictureResponseTO;
 import in.gov.abdm.nmr.dto.HpProfileUpdateResponseTO;
 import in.gov.abdm.nmr.dto.HpSmcDetailTO;
 import in.gov.abdm.nmr.entity.Address;
@@ -19,12 +20,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
+import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -85,8 +88,8 @@ class HpProfileDaoServiceTest {
 
     @BeforeEach
     void setup() {
-        certificate = new MockMultipartFile("certificate", "certificate",
-                "application/json", "{\"name\": \"Emp Name\"}".getBytes());
+        certificate = new MockMultipartFile("certificate", "certificate.pdf",
+                ".pdf", "{\"Test\": \"Certificate\"}".getBytes());
     }
 
     /*   @Test
@@ -184,6 +187,19 @@ class HpProfileDaoServiceTest {
     }
 
     @Test
+    void testUpdateHpRegistrationDetailsShouldUpdateHpRegistrationDetailsForInternationalQualification() throws NmrException, InvalidRequestException {
+        when(registrationDetailRepository.getRegistrationDetailsByHpProfileId(any(BigInteger.class))).thenReturn(getRegistrationDetail());
+        when(iHpProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getHpProfile()));
+        when(hpNbeDetailsRepository.findByUserId(any(BigInteger.class))).thenReturn(getHPNbeDetails());
+        when(iStateMedicalCouncilRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getStateMedicalCouncil()));
+        when(qualificationDetailRepository.saveAll(any(List.class))).thenReturn(new ArrayList());
+        when(iCustomQualificationDetailRepository.saveAll(any(List.class))).thenReturn(new ArrayList());
+        when(iCustomQualificationDetailRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getForeignQualificationDetails()));
+        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(HP_ID, getHpRegistrationUpdateRequestForInternationalQualification(), certificate, certificate);
+        assertEquals(HP_ID, hpProfileUpdateResponseTO.getHpProfileId());
+    }
+
+    @Test
     void testUpdateWorkProfileDetails() throws NotFoundException, InvalidRequestException, NmrException {
         when(iHpProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getHpProfile()));
         when(workProfileRepository.getWorkProfileDetailsByUserId(any(BigInteger.class))).thenReturn(List.of(getWorkProfile()));
@@ -191,5 +207,13 @@ class HpProfileDaoServiceTest {
         //when(workStatusRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(new WorkStatus()));
         HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateWorkProfileDetails(HP_ID, getHpWorkProfileUpdateRequest(), List.of(certificate, certificate));
         assertEquals(HP_ID, hpProfileUpdateResponseTO.getHpProfileId());
+    }
+
+    @Test
+    void testUploadHpProfilePhoto() throws InvalidRequestException, IOException {
+        when(iHpProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getHpProfile()));
+        when(iHpProfileRepository.save(any(HpProfile.class))).thenReturn(getHpProfile());
+        HpProfilePictureResponseTO hpProfilePictureResponseTO = hpProfileDaoService.uploadHpProfilePhoto(certificate, HP_ID);
+        assertEquals(SUCCESS_RESPONSE, hpProfilePictureResponseTO.getMessage());
     }
 }

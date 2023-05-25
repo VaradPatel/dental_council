@@ -219,6 +219,15 @@ class HpRegistrationServiceImplTest {
     }
 
     @Test
+    void testAddQualificationShouldAddQualificationDetailsAndReturnSuccess2() throws WorkFlowException, NmrException, InvalidRequestException {
+        when(hpProfileDaoService.findById(any(BigInteger.class))).thenReturn(getHpProfileForNMR());
+        when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(getRequestCounter());
+        doNothing().when(iWorkFlowService).initiateSubmissionWorkFlow(any(WorkFlowRequestTO.class));
+        String s = hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate));
+        assertEquals(SUCCESS_RESPONSE, s);
+    }
+
+    @Test
     void testAddQualificationShouldThrowExceptionQualificationWorkFlowCreationFail() throws WorkFlowException, NmrException, InvalidRequestException {
         when(hpProfileDaoService.findById(any(BigInteger.class))).thenReturn(getHpProfile());
         assertThrows(WorkFlowException.class, () -> hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate)));
