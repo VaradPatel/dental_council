@@ -65,9 +65,13 @@ public enum NMRError {
     EXCESS_PROOFS_ERROR("ABDM-NMR-057", "Please remove excess proofs to sync with the qualification details provided."),
     QUALIFICATION_DETAILS_LIMIT_EXCEEDED("ABDM-NMR-058", "Please provide less than or equal to 6 qualifications at a time."),
     MOBILE_NUM_ALREADY_REGISTERED("ABDM-NMR-059", "Mobile number already registered."),
-    EMAIL_NUM_ALREADY_REGISTERED("ABDM-NMR-060", "Email id already registered."),
-
-    ;
+    EMAIL_ID_ALREADY_REGISTERED("ABDM-NMR-060", "Email id already registered."),
+    USERNAME_ALREADY_REGISTERED("ABDM-NMR-061", "Username already registered."),
+    STATE_MEDICAL_ID_NULL("ABDM-NMR-062", "State medical council id cannot be null for creating SMC user."),
+    INVALID_USER_TYPE("ABDM-NMR-063", "User type or sub type invalid."),
+    NON_REGISTERED_MOBILE_NUMBER("ABDM-NMR-064", "This mobile number is not registered in NMR."),
+    NON_REGISTERED_EMAIL_ID("ABDM-NMR-065", "This email ID is not registered in NMR."),
+    NON_REGISTERED_NMR_ID("ABDM-NMR-066", "This NMR ID is not registered in NMR.");
     private final String code;
     private final String message;
 }

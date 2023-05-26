@@ -4,7 +4,7 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
-import in.gov.abdm.nmr.service.DashboardServiceImpl;
+import in.gov.abdm.nmr.service.impl.DashboardServiceImpl;
 import in.gov.abdm.nmr.service.IDashboardService;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;

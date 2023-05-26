@@ -1,10 +1,13 @@
 package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.CollegeMasterResponseTo;
+import in.gov.abdm.nmr.dto.QuerySuggestionsTo;
 import in.gov.abdm.nmr.dto.UniversityMasterResponseTo;
 import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
 import in.gov.abdm.nmr.mapper.CourseMasterToMapper;
 import in.gov.abdm.nmr.mapper.IMasterDataMapper;
+import in.gov.abdm.nmr.mapper.QuerySuggestionsDtoMapper;
+import in.gov.abdm.nmr.repository.QuerySuggestionsRepository;
 import in.gov.abdm.nmr.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,8 +36,6 @@ public class MasterDataServiceImpl implements IMasterDataService {
     @Autowired
     private LanguageServiceImpl languageService;
     @Autowired
-    private IMasterDataMapper masterDataMapper;
-    @Autowired
     private ICourseService courseService;
     @Autowired
     private IRegistrationRenewationTypeService registrationRenewationTypeService;
@@ -45,6 +46,8 @@ public class MasterDataServiceImpl implements IMasterDataService {
     @Autowired
     private IUniversityMasterService universityMasterService;
 
+    @Autowired
+    private QuerySuggestionsRepository querySuggestionsRepository;
 
     @Override
     public List<MasterDataTO> smcs() {
@@ -53,37 +56,37 @@ public class MasterDataServiceImpl implements IMasterDataService {
 
     @Override
     public List<MasterDataTO> specialities() {
-        return masterDataMapper.specialitiesToMasterDataTOs(broadSpecialityServiceImpl.getSpecialityData());
+        return IMasterDataMapper.MASTER_DATA_MAPPER.specialitiesToMasterDataTOs(broadSpecialityServiceImpl.getSpecialityData());
     }
 
     @Override
     public List<MasterDataTO> countries() {
-        return masterDataMapper.countriesToMasterDataTOs(countryService.getCountryData());
+        return IMasterDataMapper.MASTER_DATA_MAPPER.countriesToMasterDataTOs(countryService.getCountryData());
     }
 
     @Override
     public List<MasterDataTO> states(BigInteger countryId) {
-        return masterDataMapper.statesToMasterDataTOs(stateService.getStateData(countryId));
+        return IMasterDataMapper.MASTER_DATA_MAPPER.statesToMasterDataTOs(stateService.getStateData(countryId));
     }
 
     @Override
     public List<MasterDataTO> districts(BigInteger stateId) {
-        return masterDataMapper.districtsToMasterDataTOs(districtService.getDistrictData(stateId));
+        return IMasterDataMapper.MASTER_DATA_MAPPER.districtsToMasterDataTOs(districtService.getDistrictData(stateId));
     }
 
     @Override
     public List<MasterDataTO> subDistricts(BigInteger districtId) {
-        return masterDataMapper.subDistrictsToMasterDataTOs(subDistrictService.getSubDistrictData(districtId));
+        return IMasterDataMapper.MASTER_DATA_MAPPER.subDistrictsToMasterDataTOs(subDistrictService.getSubDistrictData(districtId));
     }
 
     @Override
     public List<MasterDataTO> cities(BigInteger subDistrictId) {
-        return masterDataMapper.citiesToMasterDataTOs(villagesServiceImpl.getCityData(subDistrictId));
+        return IMasterDataMapper.MASTER_DATA_MAPPER.citiesToMasterDataTOs(villagesServiceImpl.getCityData(subDistrictId));
     }
 
     @Override
     public List<MasterDataTO> languages() {
-        return masterDataMapper.languagesToMasterDataTOs(languageService.getLanguageData());
+        return IMasterDataMapper.MASTER_DATA_MAPPER.languagesToMasterDataTOs(languageService.getLanguageData());
     }
 
     @Override
@@ -94,21 +97,31 @@ public class MasterDataServiceImpl implements IMasterDataService {
 
     @Override
     public List<MasterDataTO> registrationRenewationType() {
-        return masterDataMapper.registrationRenewationTypeDataTOs(registrationRenewationTypeService.getRegistrationRenewationType());
+        return IMasterDataMapper.MASTER_DATA_MAPPER.registrationRenewationTypeDataTOs(registrationRenewationTypeService.getRegistrationRenewationType());
     }
 
     @Override
     public List<MasterDataTO> facilityType() {
-        return masterDataMapper.facilityTypeDataTOs(facilityTypeService.getFacilityType());
+        return IMasterDataMapper.MASTER_DATA_MAPPER.facilityTypeDataTOs(facilityTypeService.getFacilityType());
     }
 
     @Override
     public List<CollegeMasterResponseTo> getCollegesByState(BigInteger stateId) {
-        return masterDataMapper.collegeMasterResponseDataTo(collegeMasterService.getCollegesByStateId(stateId));
+        return IMasterDataMapper.MASTER_DATA_MAPPER.collegeMasterResponseDataTo(collegeMasterService.getCollegesByStateId(stateId));
     }
 
     @Override
     public List<UniversityMasterResponseTo> getUniversitiesByCollege(BigInteger collegeId) {
-        return masterDataMapper.universityMasterResponseDataTo(universityMasterService.getUniversitiesByCollegeId(collegeId));
+        return IMasterDataMapper.MASTER_DATA_MAPPER.universityMasterResponseDataTo(universityMasterService.getUniversitiesByCollegeId(collegeId));
     }
+
+    /**
+     * get query suggestions
+     * @return List of queries object
+     */
+    @Override
+    public List<QuerySuggestionsTo> getQuerySuggestions() {
+        return QuerySuggestionsDtoMapper.QUERY_SUGGESTIONS_DTO_MAPPER.querySuggestionToDto(querySuggestionsRepository.findAll());
+    }
+
 }

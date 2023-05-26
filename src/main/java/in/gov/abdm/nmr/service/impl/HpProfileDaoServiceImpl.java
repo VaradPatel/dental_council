@@ -1,18 +1,13 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.client.DscFClient;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.*;
-import in.gov.abdm.nmr.mapper.IHpProfileMapper;
 import in.gov.abdm.nmr.nosql.entity.Council;
-import in.gov.abdm.nmr.nosql.repository.ICouncilRepository;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpProfileDaoService;
-import in.gov.abdm.nmr.service.IRequestCounterService;
-import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.SneakyThrows;
@@ -29,7 +24,8 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static in.gov.abdm.nmr.util.NMRConstants.*;
+import static in.gov.abdm.nmr.util.NMRConstants.NO;
+import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
 import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
 import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetailsAndProofs;
 
@@ -37,95 +33,56 @@ import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetailsAndProofs;
 @Slf4j
 public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @Autowired
-    private IHpProfileMapper ihHpProfileMapper;
-    @Autowired
     IHpProfileRepository iHpProfileRepository;
     @Autowired
-    private IAddressRepository iAddressRepository;
+    IAddressRepository iAddressRepository;
     @Autowired
-    private IRegistrationDetailRepository registrationDetailRepository;
+    IRegistrationDetailRepository registrationDetailRepository;
     @Autowired
-    private IQualificationDetailRepository qualificationDetailRepository;
+    IQualificationDetailRepository qualificationDetailRepository;
     @Autowired
-    private WorkProfileRepository workProfileRepository;
+    WorkProfileRepository workProfileRepository;
     @Autowired
-    private SuperSpecialityRepository superSpecialityRepository;
+    DistrictRepository districtRepository;
     @Autowired
-    IForeignQualificationDetailRepository iForeignQualificationDetailRepository;
+    IStateRepository stateRepository;
     @Autowired
-    IQualificationDetailRepository iQualificationDetailRepository;
-    @Autowired
-    private DistrictRepository districtRepository;
-    @Autowired
-    private IStateRepository stateRepository;
-    @Autowired
-    private IAddressTypeRepository iAddressTypeRepository;
-    @Autowired
-    private OrganizationTypeRepository organizationTypeRepository;
-    @Autowired
-    private IStateMedicalCouncilStatusRepository iStateMedicalCouncilStatusRepository;
-    @Autowired
-    private INationalityRepository iNationalityRepository;
-    @Autowired
-    private IScheduleRepository iScheduleRepository;
-    @Autowired
-    private CountryRepository countryRepository;
+    CountryRepository countryRepository;
     @Autowired
     IRegistrationDetailRepository iRegistrationDetailRepository;
     @Autowired
-    private IStateMedicalCouncilRepository iStateMedicalCouncilRepository;
+    IStateMedicalCouncilRepository iStateMedicalCouncilRepository;
     @Autowired
-    private WorkNatureRepository workNatureRepository;
+    WorkNatureRepository workNatureRepository;
     @Autowired
-    private WorkStatusRepository workStatusRepository;
+    WorkStatusRepository workStatusRepository;
     @Autowired
-    private SubDistrictRepository subDistrictRepository;
+    SubDistrictRepository subDistrictRepository;
     @Autowired
-    private VillagesRepository villagesRepository;
+    VillagesRepository villagesRepository;
     @Autowired
-    private IForeignQualificationDetailRepository iCustomQualificationDetailRepository;
+    IForeignQualificationDetailRepository iCustomQualificationDetailRepository;
     @Autowired
-    private HpNbeDetailsRepository hpNbeDetailsRepository;
-    @Autowired
-    private IRequestCounterService requestCounterService;
-    @Autowired
-    private DscFClient dscFClient;
+    HpNbeDetailsRepository hpNbeDetailsRepository;
     @PersistenceContext
-    private EntityManager entityManager;
+    EntityManager entityManager;
     @Autowired
-    private IUniversityRepository universityRepository;
+    CourseRepository courseRepository;
     @Autowired
-    private CourseRepository courseRepository;
+    ICollegeMasterRepository collegeMasterRepository;
     @Autowired
-    private BroadSpecialityRepository broadSpecialityRepository;
-
+    UniversityMasterRepository universityMasterRepository;
     @Autowired
-    private IUserRepository iUserRepository;
-
+    ICouncilService councilService;
     @Autowired
-    private ICollegeMasterRepository collegeMasterRepository;
+    IStateMedicalCouncilRepository stateMedicalCouncilRepository;
     @Autowired
-    private UniversityMasterRepository universityMasterRepository;
-
-    @Autowired
-    private ICouncilRepository councilRepository;
-
-    @Autowired
-    private ICouncilService councilService;
-
-    @Autowired
-    private IStateMedicalCouncilRepository stateMedicalCouncilRepository;
-
-    @Autowired
-    private IUserDaoService userDetailService;
-
-    @Autowired
-    private LanguagesKnownRepository languagesKnownRepository;
+    LanguagesKnownRepository languagesKnownRepository;
 
     private static final List<String> SUPPORTED_FILE_TYPES = List.of(".pdf",".jpg",".jpeg",".png");
 
 
-    public HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NmrException, NoDataFoundException {
+    public HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NoDataFoundException {
         HpSmcDetailTO hpSmcDetailTO = new HpSmcDetailTO();
 
         StateMedicalCouncil stateMedicalCouncil =
@@ -143,6 +100,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         hpSmcDetailTO.setCouncilName(council.getRegistrationsDetails().get(0).getCouncilName());
         hpSmcDetailTO.setRegistrationNumber(council.getRegistrationsDetails().get(0).getRegistrationNo());
         hpSmcDetailTO.setEmailId(council.getEmail());
+        hpSmcDetailTO.setAlreadyRegisteredInNmr(iRegistrationDetailRepository.existsByRegistrationNoAndStateMedicalCouncilId(registrationNumber,BigInteger.valueOf(councilId)));
         return hpSmcDetailTO;
 
     }
@@ -317,29 +275,25 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     private void saveKnownLanguages(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, BigInteger userId) {
         List<BigInteger> languagesKnownIds = hpWorkProfileUpdateRequestTO.getLanguagesKnownIds();
+        List<BigInteger> languagesKnownEarlierIds = new ArrayList<>();
         if (languagesKnownIds != null && !languagesKnownIds.isEmpty()) {
-            List<LanguagesKnown> languagesKnownEarlierList = languagesKnownRepository.findByUserId(userId);
-            List<BigInteger> languagesKnownEarlierIds = new ArrayList<>();
-            if (languagesKnownEarlierList != null && !languagesKnownEarlierList.isEmpty()) {
-                languagesKnownEarlierList.forEach(languagesKnownEarlier ->
-                        languagesKnownEarlierIds.add(languagesKnownEarlier.getId())
-                );
-            }
-            List<LanguagesKnown> languagesKnownLater = new ArrayList<>();
-            BigInteger tempUserId = userId;
-            languagesKnownIds.removeAll( languagesKnownEarlierIds );
-            if(!languagesKnownIds.isEmpty()) {
-                languagesKnownIds.forEach(languagesKnown -> {
-                    LanguagesKnown languagesKnownObject = new LanguagesKnown();
-                    languagesKnownObject.setLanguage(entityManager.getReference(Language.class, languagesKnown));
-                    languagesKnownObject.setUser(entityManager.getReference(User.class, tempUserId));
-                    languagesKnownLater.add(languagesKnownObject);
-                });
-            }
-            languagesKnownRepository.saveAll(languagesKnownLater);
+            List<LanguagesKnown> languagesKnownEarlier = languagesKnownRepository.findByUserId(userId);
+            if (languagesKnownEarlier != null && !languagesKnownEarlier.isEmpty())
+                languagesKnownEarlier.forEach(languagesKnown -> languagesKnownEarlierIds.add(languagesKnown.getLanguage().getId()));
         }
+        List<LanguagesKnown> languagesKnownLater = new ArrayList<>();
+        BigInteger tempUserId = userId;
+        languagesKnownEarlierIds.forEach(languagesKnownEarlierId -> languagesKnownIds.remove(languagesKnownEarlierId));
+        if (languagesKnownIds != null && !languagesKnownIds.isEmpty()) {
+            languagesKnownIds.forEach(languagesKnown -> {
+                LanguagesKnown languagesKnownObject = new LanguagesKnown();
+                languagesKnownObject.setLanguage(entityManager.getReference(Language.class, languagesKnown));
+                languagesKnownObject.setUser(entityManager.getReference(User.class, tempUserId));
+                languagesKnownLater.add(languagesKnownObject);
+            });
+        }
+        languagesKnownRepository.saveAll(languagesKnownLater);
     }
-
 
     @Override
     public void saveQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs) throws InvalidRequestException {
@@ -392,7 +346,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         HpProfilePictureResponseTO hpProfilePictureResponseTO = new HpProfilePictureResponseTO();
         hpProfilePictureResponseTO.setProfilePicture(insertedData.getProfilePhoto());
         hpProfilePictureResponseTO.setPicName(insertedData.getPicName());
-        hpProfilePictureResponseTO.setMessage("Success");
+        hpProfilePictureResponseTO.setMessage(SUCCESS_RESPONSE);
         hpProfilePictureResponseTO.setStatus(200);
         return hpProfilePictureResponseTO;
     }
@@ -607,81 +561,74 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @SneakyThrows
     private void mapWorkRequestToEntity(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> addWorkProfiles, BigInteger hpProfileId, BigInteger userId) {
         if (!addWorkProfiles.isEmpty()) {
-            updateWorkProfileRecords(hpWorkProfileUpdateRequestTO, addWorkProfiles, hpProfileId);
+            List<String> facilityIdList = new ArrayList<>();
+            hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> facilityIdList.add(currentWorkDetailsTO.getFacilityId()));
+            addWorkProfiles.forEach(workProfile -> facilityIdList.remove(workProfile.getFacilityId()));
+            updateWorkProfileRecords(hpWorkProfileUpdateRequestTO, addWorkProfiles, hpProfileId, userId, facilityIdList);
         } else {
             saveWorkProfileRecords(hpWorkProfileUpdateRequestTO, hpProfileId, userId);
         }
     }
 
-    private void updateWorkProfileRecords(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> addWorkProfiles, BigInteger hpProfileId) {
-        List<WorkProfile> workProfileDetailsList = new ArrayList<>();
-        addWorkProfiles.stream().forEach(addWorkProfile -> {
-            addWorkProfile.setRequestId(hpWorkProfileUpdateRequestTO.getRequestId());
-            addWorkProfile.setHpProfileId(hpProfileId);
-            if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature() != null) {
-                addWorkProfile.setWorkNature(workNatureRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature().getId()).get());
-            }
-            if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus() != null) {
-                addWorkProfile.setWorkStatus(workStatusRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus().getId()).get());
-            }
-            addWorkProfile.setIsUserCurrentlyWorking(hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking());
+    private WorkProfile workProfileObjectMapping(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, WorkProfile addWorkProfile, CurrentWorkDetailsTO currentWorkDetailsTO, BigInteger hpProfileId, BigInteger userId) {
+        addWorkProfile.setRequestId(hpWorkProfileUpdateRequestTO.getRequestId());
+        addWorkProfile.setHpProfileId(hpProfileId);
+        if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature() != null) {
+            addWorkProfile.setWorkNature(workNatureRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature().getId()).get());
+        }
+        if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus() != null) {
+            addWorkProfile.setWorkStatus(workStatusRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus().getId()).get());
+        }
+        addWorkProfile.setIsUserCurrentlyWorking(hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking());
+        addWorkProfile.setFacilityId(currentWorkDetailsTO.getFacilityId());
+        addWorkProfile.setFacilityTypeId(currentWorkDetailsTO.getFacilityTypeId());
+        addWorkProfile.setUrl(currentWorkDetailsTO.getUrl());
+        addWorkProfile
+                .setWorkOrganization(currentWorkDetailsTO.getWorkOrganization());
+        addWorkProfile.setOrganizationType(currentWorkDetailsTO.getOrganizationType());
+        if (currentWorkDetailsTO.getAddress() != null) {
+            addWorkProfile.setAddress(currentWorkDetailsTO.getAddress().getAddressLine1());
+            addWorkProfile.setState(currentWorkDetailsTO.getAddress().getState().getId() != null ? stateRepository.findById(currentWorkDetailsTO.getAddress().getState().getId()).get() : null);
+            addWorkProfile.setDistrict(currentWorkDetailsTO.getAddress().getDistrict().getId() != null ? districtRepository.findById(currentWorkDetailsTO.getAddress().getDistrict().getId()).get() : null);
+            addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
+        }
+        addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());
+        addWorkProfile.setRegistrationNo(hpWorkProfileUpdateRequestTO.getRegistrationNo());
+        addWorkProfile.setExperienceInYears(currentWorkDetailsTO.getExperienceInYears());
+        addWorkProfile.setUserId(userId);
+        return addWorkProfile;
+    }
 
+    private void updateWorkProfileRecords(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> addWorkProfiles,
+                                          BigInteger hpProfileId, BigInteger userId, List<String> facilityIdList) {
+        List<WorkProfile> workProfileDetailsList = new ArrayList<>();
+        addWorkProfiles.forEach(addWorkProfile -> {
             hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> {
                 if (addWorkProfile.getFacilityId().equals(currentWorkDetailsTO.getFacilityId())) {
-                    addWorkProfile.setFacilityId(currentWorkDetailsTO.getFacilityId());
-                    addWorkProfile.setFacilityTypeId(currentWorkDetailsTO.getFacilityTypeId());
-                    addWorkProfile.setUrl(currentWorkDetailsTO.getUrl());
-                    addWorkProfile
-                            .setWorkOrganization(currentWorkDetailsTO.getWorkOrganization());
-                    addWorkProfile.setOrganizationType(currentWorkDetailsTO.getOrganizationType());
-                    if (currentWorkDetailsTO.getAddress() != null) {
-                        addWorkProfile.setAddress(currentWorkDetailsTO.getAddress().getAddressLine1());
-                        addWorkProfile.setState(currentWorkDetailsTO.getAddress().getState().getId() != null ? stateRepository.findById(currentWorkDetailsTO.getAddress().getState().getId()).get() : null);
-                        addWorkProfile.setDistrict(currentWorkDetailsTO.getAddress().getDistrict().getId() != null ? districtRepository.findById(currentWorkDetailsTO.getAddress().getDistrict().getId()).get() : null);
-                        addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
-                    }
-                    addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());
-                    addWorkProfile.setRegistrationNo(hpWorkProfileUpdateRequestTO.getRegistrationNo());
-                    addWorkProfile.setExperienceInYears(currentWorkDetailsTO.getExperienceInYears());
-                    workProfileDetailsList.add(addWorkProfile);
+                    workProfileDetailsList.add(workProfileObjectMapping(hpWorkProfileUpdateRequestTO, addWorkProfile, currentWorkDetailsTO, hpProfileId, userId));
+                    workProfileRepository.saveAll(workProfileDetailsList);
                 }
             });
-            workProfileRepository.saveAll(workProfileDetailsList);
         });
+        if (!facilityIdList.isEmpty() && facilityIdList != null && addWorkProfiles != null) {
+            facilityIdList.forEach(facilityId ->
+                    hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> {
+                        if (facilityId.equals(currentWorkDetailsTO.getFacilityId())) {
+                            WorkProfile workProfile = new WorkProfile();
+                            workProfileDetailsList.add(workProfileObjectMapping(hpWorkProfileUpdateRequestTO, workProfile, currentWorkDetailsTO, hpProfileId, userId));
+                            workProfileRepository.saveAll(workProfileDetailsList);
+                        }
+                    }));
+        }
     }
 
     private void saveWorkProfileRecords(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, BigInteger hpProfileId, BigInteger userId) {
         List<WorkProfile> workProfileDetailsList = new ArrayList<>();
-        hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().stream().forEach(currentWorkDetailsTO -> {
-            WorkProfile addWorkProfile = new WorkProfile();
-            addWorkProfile.setRequestId(hpWorkProfileUpdateRequestTO.getRequestId());
-            addWorkProfile.setHpProfileId(hpProfileId);
-            if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature() != null) {
-                addWorkProfile.setWorkNature(workNatureRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature().getId()).get());
-            }
-            if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus() != null) {
-                addWorkProfile.setWorkStatus(workStatusRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus().getId()).get());
-            }
-            addWorkProfile.setIsUserCurrentlyWorking(hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking());
-            addWorkProfile.setFacilityId(currentWorkDetailsTO.getFacilityId());
-            addWorkProfile.setFacilityTypeId(currentWorkDetailsTO.getFacilityTypeId());
-            addWorkProfile.setUrl(currentWorkDetailsTO.getUrl());
-            addWorkProfile
-                    .setWorkOrganization(currentWorkDetailsTO.getWorkOrganization());
-            addWorkProfile.setOrganizationType(currentWorkDetailsTO.getOrganizationType());
-            if (currentWorkDetailsTO.getAddress() != null) {
-                addWorkProfile.setAddress(currentWorkDetailsTO.getAddress().getAddressLine1());
-                addWorkProfile.setState(currentWorkDetailsTO.getAddress().getState().getId() != null ? stateRepository.findById(currentWorkDetailsTO.getAddress().getState().getId()).get() : null);
-                addWorkProfile.setDistrict(currentWorkDetailsTO.getAddress().getDistrict().getId() != null ? districtRepository.findById(currentWorkDetailsTO.getAddress().getDistrict().getId()).get() : null);
-                addWorkProfile.setPincode(currentWorkDetailsTO.getAddress().getPincode());
-            }
-            addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());
-            addWorkProfile.setRegistrationNo(hpWorkProfileUpdateRequestTO.getRegistrationNo());
-            addWorkProfile.setExperienceInYears(currentWorkDetailsTO.getExperienceInYears());
-            addWorkProfile.setUserId(userId);
-            workProfileDetailsList.add(addWorkProfile);
+        hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> {
+            WorkProfile workProfile = new WorkProfile();
+            workProfileDetailsList.add(workProfileObjectMapping(hpWorkProfileUpdateRequestTO, workProfile, currentWorkDetailsTO, hpProfileId, userId));
+            workProfileRepository.saveAll(workProfileDetailsList);
         });
-        workProfileRepository.saveAll(workProfileDetailsList);
     }
 
 

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.dto.CollegeMasterDataTO;
 import in.gov.abdm.nmr.dto.CollegeProfileTo;
 import in.gov.abdm.nmr.dto.CollegeResponseTo;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.exception.NmrExceptionAdvice;
 import in.gov.abdm.nmr.service.ICollegeService;
 import org.junit.jupiter.api.BeforeEach;
@@ -219,6 +221,11 @@ class CollegeControllerTest {
                 .andExpect(jsonPath("$.[0]name").value(COLLEGE_NAME));
     }
 
+    public static User getUser(BigInteger userSubType) {
+        User user = new User();
+        user.setUserSubType(getUserSubType(userSubType));
+        return user;
+    }
 
     @Test
     @WithMockUser
@@ -231,6 +238,7 @@ class CollegeControllerTest {
         collegeProfileTo.setMobileNumber(MOBILE_NUMBER);
         collegeProfileTo.setEmailId(EMAIL_ID);
         when(collegeServiceV2.createOrUpdateCollegeVerifier(any(CollegeProfileTo.class))).thenReturn(collegeProfileTo);
+        when(collegeServiceV2.getLoggedInUser()).thenReturn(getUser(UserSubTypeEnum.COLLEGE_ADMIN.getId()));
         mockMvc.perform(post("/colleges/1/verifiers").with(user(TEST_USER))
                         .with(csrf())
                         .content(objectMapper.writeValueAsBytes(collegeProfileTo))
@@ -256,6 +264,7 @@ class CollegeControllerTest {
         collegeProfileTo.setMobileNumber(MOBILE_NUMBER);
         collegeProfileTo.setEmailId(EMAIL_ID);
         when(collegeServiceV2.createOrUpdateCollegeVerifier(any(CollegeProfileTo.class))).thenReturn(collegeProfileTo);
+        when(collegeServiceV2.getLoggedInUser()).thenReturn(getUser(UserSubTypeEnum.COLLEGE_DEAN.getId()));
         mockMvc.perform(put("/colleges/1/verifiers/1").with(user(TEST_USER))
                         .with(csrf())
                         .content(objectMapper.writeValueAsBytes(collegeProfileTo))

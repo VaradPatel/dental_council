@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IMasterDataService;
 import in.gov.abdm.nmr.service.IUserService;
@@ -9,6 +10,7 @@ import in.gov.abdm.nmr.util.NMRConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,9 +22,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ import java.util.List;
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -334,5 +337,84 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(NMRConstants.SUCCESS_RESPONSE));
+    }
+
+    @Test
+    @WithMockUser
+    void testRetrieveUserShouldGetUserDetailsBasedOnLoginUserAuthority() throws Exception {
+        UserResponseTO userResponse = new UserResponseTO();
+        UserTO user = new UserTO();
+        user.setId(ID);
+        user.setUserTypeId(UserSubTypeEnum.SMC_ADMIN.getId());
+        user.setFirstName(FIRST_NAME);
+        user.setLastName(LAST_NAME);
+        user.setEmailId(EMAIL_ID);
+        user.setMobileNumber(MOBILE_NUMBER);
+        userResponse.setTotalNoOfRecords(BigInteger.ONE);
+        userResponse.setUsers(List.of(user));
+        when(userService.getAllUser(nullable(String.class), nullable(String.class), nullable(Integer.class), nullable(Integer.class), nullable(String.class), nullable(String.class)))
+                .thenReturn(userResponse);
+        mockMvc.perform(get("/user")
+                        .with(user(TEST_USER))
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.total_no_of_records").value(BigInteger.ONE))
+                .andExpect(jsonPath("$.users[0].id").value(ID))
+                .andExpect(jsonPath("$.users[0].user_type_id").value(UserSubTypeEnum.SMC_ADMIN.getId()))
+                .andExpect(jsonPath("$.users[0].first_name").value(FIRST_NAME))
+                .andExpect(jsonPath("$.users[0].last_name").value(LAST_NAME))
+                .andExpect(jsonPath("$.users[0].email_id").value(EMAIL_ID))
+                .andExpect(jsonPath("$.users[0].mobile_number").value(MOBILE_NUMBER));
+    }
+
+    @Test
+    @WithMockUser
+    void testDeactivateUserShouldChangeStatusAsDeactivateForUser() throws Exception {
+        Mockito.doNothing().when(userService).deactivateUser(any(BigInteger.class));
+        mockMvc.perform(MockMvcRequestBuilders.delete("/user/1/deactivate")
+                        .with(user(TEST_USER)).with(csrf())
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$.message").value(NMRConstants.SUCCESS_RESPONSE));
+    }
+
+    @Test
+    void testCreateUserShouldCreateNewUserAndReturnSuccessResponse() throws Exception {
+        UserProfileTO userProfileTO = new UserProfileTO();
+        userProfileTO.setTypeId(ID);
+        userProfileTO.setSubTypeId(UserSubTypeEnum.SMC_ADMIN.getId());
+        userProfileTO.setName(FIRST_NAME);
+        userProfileTO.setEmailId(EMAIL_ID);
+        userProfileTO.setMobileNumber(MOBILE_NUMBER);
+        userProfileTO.setSmcId(ID);
+        when(userService.createUser(any(UserProfileTO.class)))
+                .thenReturn(userProfileTO);
+        mockMvc.perform(post(ProtectedPaths.USER_NMC_CREATE_USER)
+                        .with(user(TEST_USER))
+                        .with(csrf())
+                        .content(objectMapper.writeValueAsBytes(userProfileTO))
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.type_id").value(ID))
+                .andExpect(jsonPath("$.sub_type_id").value(UserSubTypeEnum.SMC_ADMIN.getId()))
+                .andExpect(jsonPath("$.name").value(FIRST_NAME))
+                .andExpect(jsonPath("$.email_id").value(EMAIL_ID))
+                .andExpect(jsonPath("$.mobile_number").value(MOBILE_NUMBER))
+                .andExpect(jsonPath("$.smc_id").value(ID));
+    }
+
+    @Test
+    @WithMockUser
+    void testUnlockUserShouldUnlockUserSuccessfully() throws Exception{
+        doNothing().when(userService).unlockUser(any(BigInteger.class));
+        mockMvc.perform(post("/user/1/unlock")
+                        .with(user(TEST_USER))
+                        .with(csrf())
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(NMRConstants.SUCCESS_RESPONSE));
+
     }
 }

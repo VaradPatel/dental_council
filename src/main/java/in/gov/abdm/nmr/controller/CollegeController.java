@@ -8,6 +8,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.exception.*;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,46 +38,46 @@ public class CollegeController {
 
     public static final String COLLEGE_ID = "/colleges/{id}";
 
-    private ICollegeService collegeServiceV2;
+    private ICollegeService iCollegeService;
 
     public CollegeController(ICollegeService collegeServiceV2) {
-        this.collegeServiceV2 = collegeServiceV2;
+        this.iCollegeService = collegeServiceV2;
     }
 
-    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL})
+    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN})
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping(path = COLLEGES, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<CollegeMasterDataTO> getAllColleges() throws NmrException {
-        return collegeServiceV2.getAllColleges();
+        return iCollegeService.getAllColleges();
     }
 
-    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL, RoleConstants.COLLEGE_ADMIN})
+    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN, RoleConstants.COLLEGE_ADMIN})
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping(path = COLLEGE_ID, produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeResponseTo getCollege(@PathVariable BigInteger id) throws NmrException, InvalidIdException, NotFoundException {
-        return collegeServiceV2.getCollege(id);
+        return iCollegeService.getCollege(id);
     }
 
-    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL})
+    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN})
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping(path = COLLEGES, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeResponseTo createCollege(@Valid @RequestBody CollegeResponseTo collegeResponseTo) throws NmrException, InvalidRequestException, ResourceExistsException, InvalidIdException, NotFoundException {
-        return collegeServiceV2.createOrUpdateCollege(collegeResponseTo);
+        return iCollegeService.createOrUpdateCollege(collegeResponseTo);
     }
 
-    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL, RoleConstants.COLLEGE_ADMIN})
+    @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN, RoleConstants.COLLEGE_ADMIN})
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping(path = COLLEGE_ID, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeResponseTo updateCollege(@NotNull @PathVariable BigInteger id, @Valid @RequestBody CollegeResponseTo collegeResponseTo) throws NmrException, InvalidRequestException, ResourceExistsException, InvalidIdException, NotFoundException {
         collegeResponseTo.setId(id);
-        return collegeServiceV2.createOrUpdateCollege(collegeResponseTo);
+        return iCollegeService.createOrUpdateCollege(collegeResponseTo);
     }
 
     @RolesAllowed({RoleConstants.COLLEGE_ADMIN})
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping(path = COLLEGES_VERIFIERS_DESIGNATION, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<CollegeMasterDataTO> getAllCollegeVerifiersDesignation() throws NmrException {
-        return collegeServiceV2.getAllCollegeVerifiersDesignation();
+        return iCollegeService.getAllCollegeVerifiersDesignation();
     }
 
     @RolesAllowed({RoleConstants.COLLEGE_ADMIN})
@@ -84,22 +85,35 @@ public class CollegeController {
     @PostMapping(path = COLLEGES_COLLEGE_ID_VERIFIERS, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeProfileTo createCollegeVerifier(@NotNull @PathVariable BigInteger collegeId, @Valid @RequestBody CollegeProfileTo collegeProfileTo) throws GeneralSecurityException, NmrException, InvalidRequestException, InvalidIdException, ResourceExistsException {
         collegeProfileTo.setCollegeId(collegeId);
-        return collegeServiceV2.createOrUpdateCollegeVerifier(collegeProfileTo);
+
+        if(iCollegeService.getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.COLLEGE_ADMIN.getId())){
+            return iCollegeService.createOrUpdateCollegeVerifier(collegeProfileTo);
+        }
+        else {
+            throw new InvalidRequestException();
+        }
     }
 
-    @RolesAllowed({RoleConstants.COLLEGE_DEAN, RoleConstants.COLLEGE_REGISTRAR})
+    @RolesAllowed({RoleConstants.COLLEGE_DEAN, RoleConstants.COLLEGE_REGISTRAR,RoleConstants.COLLEGE_PRINCIPAL})
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping(path = COLLEGES_COLLEGE_ID_VERIFIERS_VERIFIER_ID, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeProfileTo updateCollegeVerifier(@NotNull @PathVariable BigInteger collegeId, @NotNull @PathVariable BigInteger verifierId, @Valid @RequestBody CollegeProfileTo collegeProfileTo) throws GeneralSecurityException, NmrException, InvalidRequestException, InvalidIdException, ResourceExistsException {
         collegeProfileTo.setCollegeId(collegeId);
         collegeProfileTo.setId(verifierId);
-        return collegeServiceV2.createOrUpdateCollegeVerifier(collegeProfileTo);
-    }
+        if(iCollegeService.getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.COLLEGE_DEAN.getId())  ||
+                iCollegeService.getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.COLLEGE_REGISTRAR.getId()) ||
+                iCollegeService.getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.COLLEGE_PRINCIPAL.getId())){
+            return iCollegeService.createOrUpdateCollegeVerifier(collegeProfileTo);
+        }
+        else {
+            throw new InvalidRequestException();
+        }
+   }
 
     @RolesAllowed({RoleConstants.COLLEGE_DEAN, RoleConstants.COLLEGE_REGISTRAR})
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping(path = COLLEGES_COLLEGE_ID_VERIFIERS_VERIFIER_ID, produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeProfileTo getCollegeVerifier(@NotNull @PathVariable BigInteger collegeId, @NotNull @PathVariable BigInteger verifierId) throws NmrException, InvalidIdException {
-        return collegeServiceV2.getCollegeVerifier(collegeId, verifierId);
+        return iCollegeService.getCollegeVerifier(collegeId, verifierId);
     }
 }

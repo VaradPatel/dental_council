@@ -6,11 +6,8 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 @Aspect
 @Component
@@ -42,30 +39,8 @@ public class LogAspect {
 
         try {
             Object result = joinPoint.proceed();
-            if (result instanceof Mono) {
-                var monoResult = (Mono<?>) result;
-
-                return monoResult.doOnSuccess(o -> {
-                    var response = "";
-                    if (Objects.nonNull(o)) {
-                        response = o.toString();
-                    }
-                    log.info(EXITING_WITH_ARGUMENT,
-                            joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName(),
-                            response);
-                });
-            }if (result instanceof Flux) {
-                var fluxResult = (Flux<?>) result;
-                return fluxResult.map(fluxItem -> {
-                    log.info(EXITING_WITH_ARGUMENT, joinPoint.getSignature().getDeclaringTypeName(),
-                            joinPoint.getSignature().getName(), fluxItem);
-                    return fluxItem;
-                });
-
-            } else {
-                log.info(EXITING_WITH_ARGUMENT, joinPoint.getSignature().getDeclaringTypeName(),
-                        joinPoint.getSignature().getName(), result);
-            }
+            log.info(EXITING_WITH_ARGUMENT, joinPoint.getSignature().getDeclaringTypeName(),
+                    joinPoint.getSignature().getName(), result);
             return  result;
         } catch (IllegalArgumentException e) {
             log.error("Illegal argument: {} in {}.{}()", Arrays.toString(joinPoint.getArgs()),

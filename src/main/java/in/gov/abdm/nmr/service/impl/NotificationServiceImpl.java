@@ -204,6 +204,18 @@ public class NotificationServiceImpl implements INotificationService {
 
     }
 
+    @Override
+    public ResponseMessageTo sendNotificationForHprAccountCreation(String username,String hprId, String mobile) {
+
+        Template template = getMessageTemplate(NMRConstants.HPR_ACCOUNT_CREATED);
+        String message = new TemplatedStringBuilder(template.getMessage())
+                .replace(NMRConstants.TEMPLATE_VAR1, username)
+                .replace(NMRConstants.TEMPLATE_VAR2, hprId)
+                .finish();
+        return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.ACCOUNT_CREATED_SUBJECT, message, mobile, null,NMRConstants.HPR_ACCOUNT_CREATED);
+
+    }
+
     @SneakyThrows
     Template getMessageTemplate(String propertiesKey) {
         Template template;

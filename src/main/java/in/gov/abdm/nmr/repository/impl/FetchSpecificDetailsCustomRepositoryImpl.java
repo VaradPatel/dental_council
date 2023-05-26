@@ -215,7 +215,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setEmailId((String) result[13]);
             dashBoardTO.setMobileNumber((String) result[14]);
             dashBoardTO.setNmrId((String) result[15]);
-            dashBoardTO.setYearOfRegistration(((Date) result[16]).toString());
+            dashBoardTO.setYearOfRegistration(result[16] != null ? result[16].toString() : "");
             dashBoardTO.setCollegeStatus(result[17] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[17]).getStatus() : NOT_YET_RECEIVED);
             dashBoardTO.setApplicationTypeId((BigInteger) result[18]);
             dashBoardResponseTO.setTotalNoOfRecords((BigInteger) result[19]);

@@ -70,7 +70,7 @@ public class NMRConstants {
     public static final String USER_NOT_FOUND = "User not found";
     public static final String EMAIL_ALREADY_VERIFIED = "This email is already verified";
     public static final String EMAIL_USED_BY_OTHER_USER = "Email is already used by other user";
-    public static final String COLLEGE_CONSTANT = "College";
+    public static final String COLLEGE_CONSTANT = "COLLEGE";
     public static final String USERNAME_ALREADY_EXISTS = "User with this username already exists";
     public static final String MOBILE_NUMBER_ALREADY_EXISTS = "User with this mobile number already exists";
     public static final String EMAIL_ALREADY_EXISTS = "User with this email already exists";
@@ -78,7 +78,7 @@ public class NMRConstants {
     public static final String INVALID_COLLEGE_ID = "Invalid college id";
     public static final String INVALID_PROFILE_ID = "Invalid profile id";
     public static final String LINK_EXPIRED = "Link expired";
-    public static final String OLD_PASSWORD_NOT_MATCHING = "Old password not matching";
+    public static final String OLD_PASSWORD_NOT_MATCHING = "Old password is not correct";
     public static final String PROBLEM_OCCURRED = "Problem Occurred";
     public static final String USERNAME_NOT_NULL = "Username cannot be null or empty";
     public static final String PASSWORD_NOT_NULL = "Password cannot be null or empty";
@@ -205,25 +205,24 @@ public class NMRConstants {
     public static final String WORK_FLOW_STATUS_IN_LOWER_CASE = "workflowstatus";
     public static final String WORK_FLOW_STATUS_ID_IN_LOWER_CASE = "workflowstatusid";
     public static final String APPLICANT_FULL_NAME_IN_LOWER_CASE = "applicantfullname";
+
+    public static final String FIRST_NAME_IN_LOWER_CASE = "firstname";
+    public static final String LAST_NAME_IN_LOWER_CASE = "lastname";
+    public static final String USER_TYPE_ID_IN_LOWER_CASE = "usertypeid";
     public static final String FETCH_REACTIVATION_REQUESTS = "SELECT hp.id, hp.registration_id, wf.request_id, hp.full_name, wf.created_at, wf.start_date, hp.gender, hp.email_id, hp.mobile_number , hp.hp_profile_status_id, wf.remarks, COUNT(*) OVER() AS total_count FROM main.work_flow AS wf INNER JOIN main.hp_profile AS hp ON wf.hp_profile_id = hp.id WHERE application_type_id = 5";
     public static final String NOT_NULL_ERROR_MSG = "The {0} is mandatory.";
     public static final String NOT_BLANK_ERROR_MSG = "The {0} should not be blank.";
     public static final String INVALID_PINCODE = "pincode should be of max 6 digit";
-    public static final String FETCH_WORK_PROFILE_RECORDS_BY_HP_ID = """
-            SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id, 
-            state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at, 
-            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years FROM work_profile where hp_profile_id =:""" + HP_PROFILE_ID;
-
     public static final String FETCH_WORK_PROFILE_RECORDS_BY_USER_ID = """
             SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id, 
             state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at, 
-            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years FROM work_profile where user_id =:""" + USER_ID;
-
-    public static final int MAX_DATA_SIZE = 500;
+            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status FROM work_profile where delete_status=false AND  user_id =:userId""" ;
+     public static final int MAX_DATA_SIZE = 500;
     public static final String DEFAULT_SORT_ORDER = "DESC";
     public static final String SMS_AND_EMAIL_RESET_MESSAGE_PROPERTIES_KEY = "sms-email-reset";
     public static final String ACCOUNT_CREATED = "account-created";
     public static final String NMR_ID_CREATED = "nmr-id-created";
+    public static final String HPR_ACCOUNT_CREATED = "hpr-account-created";
     public static final String TYPE_NOT_NULL = "Type cannot be null";
     public static final double FUZZY_MATCH_LIMIT = 75;
     public static final String FUZZY_PARAMETER_NAME = "Name";
@@ -255,4 +254,27 @@ public class NMRConstants {
     public static final List<String> OPERATORS = Arrays.asList(OPERATOR_PLUS, OPERATOR_MINUS, OPERATOR_MULTIPLICATION);
     public static final String RSA_PADDING = "RSA/ECB/PKCS1Padding";
     public static final String STATE_MEDICAL_COUNCIL_URL = "/state-medical-councils";
+    public static final String FACILITY_ID = "facilityId";
+    public static final String DELINK_FAILED ="Failed to Delink: Invalid Facility Id";
+    public static final String  DELINK_WORK_PROFILE_BY_FACILITY_ID ="UPDATE work_profile SET delete_status =true  WHERE facility_id IN (:facilityId) AND user_id =:userId";
+
+    public static final String FETCH_ACTIVE_WORK_PROFILE_RECORDS_BY_USER_ID = """            
+            SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id,
+            state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at,
+            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status FROM work_profile WHERE  delete_status=false AND user_id =:userId""";
+
+
+    public static final String DEACTIVATE_USER = "update  {h-schema}user SET delete_status =true WHERE id =:userId";
+
+    public static final String UNLOCK_USER ="update {h-schema}user SET failed_attempt =0, account_non_locked = true, lock_time = null WHERE id = :userId";
+
+    public static final String FETCH_SMC_DETAILS = "select u.id, user_type_id ,sp.first_name, sp.last_name ,email,mobile_number,u.user_sub_type_id from main.user u join main.smc_profile sp on u.id =sp.user_id where u.delete_status =false ";
+    public static final String FETCH_COLLEGE_DETAILS = "union select u.id ,user_type_id ,cp.name, '' ,email,mobile_number,u.user_sub_type_id from main.user u join main.college_profile cp on u.id =cp.user_id where u.delete_status =false ";
+    public static final String FETCH_NMC_DETAILS = "union select u.id, user_type_id ,np.first_name, np.last_name,email ,mobile_number,u.user_sub_type_id from main.user u join main.nmc_profile np on u.id =np.user_id where u.delete_status =false ";
+    public static final String FETCH_NBE_DETAILS = "union select u.id ,user_type_id ,nbep.first_name ,nbep.last_name,email ,mobile_number,u.user_sub_type_id from main.user u join main.nbe_profile nbep on u.id =nbep.user_id where u.delete_status =false ";
+    public static final String REDIS_HOST = "${spring.redis.host}";
+    public static final String REDIS_PASSWORD = "${spring.redis.password}";
+    public static final String REDIS_PORT = "${spring.redis.port}";
+    public static final String REDIS_DATABASE = "${spring.redis.database}";
+    public static final String INVALID_FACILITY_DETAILS_MESSAGE = "Invalid facility details provided";
 }

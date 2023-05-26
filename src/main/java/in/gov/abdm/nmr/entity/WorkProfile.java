@@ -47,6 +47,6 @@ public class WorkProfile {
     private String requestId;
     private String pincode;
     private String registrationNo;
-
     private Integer experienceInYears;
+    private boolean deleteStatus;
 }

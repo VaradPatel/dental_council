@@ -29,4 +29,6 @@ public class UserType extends CommonAuditEntity {
     @OneToOne
     @JoinColumn(name = GROUP_ID_COLUMN,referencedColumnName = ID)
     private UserGroup group;
+    
+    private String roles;
 }

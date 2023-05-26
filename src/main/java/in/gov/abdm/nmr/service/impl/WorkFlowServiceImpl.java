@@ -101,12 +101,12 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         user = userDetailService.findByUsername(userName);
 
         if (user != null) {
-            if (UserTypeEnum.COLLEGE.getCode().equals(user.getUserType().getId())) {
-                if (UserSubTypeEnum.COLLEGE.getCode().equals(user.getUserSubType().getId())) {
+            if (UserTypeEnum.COLLEGE.getId().equals(user.getUserType().getId())) {
+                if (UserSubTypeEnum.COLLEGE_ADMIN.getId().equals(user.getUserSubType().getId())) {
                     throw new InvalidRequestException();
                 }
-            } else if (UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode().equals(user.getUserType().getId())) {
-                if (!UserSubTypeEnum.NMC_VERIFIER.getCode().equals(user.getUserSubType().getId())) {
+            } else if (UserTypeEnum.NMC.getId().equals(user.getUserType().getId())) {
+                if (!UserSubTypeEnum.NMC_VERIFIER.getId().equals(user.getUserSubType().getId())) {
                     throw new InvalidRequestException();
                 }
             }
@@ -187,15 +187,15 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     private String getVerifierNameForNotification(User user) {
         String verifier = "";
         if (user != null) {
-            if (user.getUserType().getId().equals(UserTypeEnum.COLLEGE.getCode())) {
+            if (user.getUserType().getId().equals(UserTypeEnum.COLLEGE.getId())) {
                 verifier = NMRConstants.VERIFIER_COLLEGE;
-            } else if (user.getUserType().getId().equals(UserTypeEnum.STATE_MEDICAL_COUNCIL.getCode())) {
+            } else if (user.getUserType().getId().equals(UserTypeEnum.SMC.getId())) {
                 verifier = NMRConstants.VERIFIER_SMC;
-            } else if (user.getUserType().getId().equals(UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode())) {
+            } else if (user.getUserType().getId().equals(UserTypeEnum.NMC.getId())) {
                 verifier = NMRConstants.VERIFIER_NMC;
-            } else if (user.getUserType().getId().equals(UserTypeEnum.NBE.getCode())) {
+            } else if (user.getUserType().getId().equals(UserTypeEnum.NBE.getId())) {
                 verifier = NMRConstants.VERIFIER_NBE;
-            } else if (user.getUserType().getId().equals(UserTypeEnum.SYSTEM.getCode())) {
+            } else if (user.getUserType().getId().equals(UserTypeEnum.SYSTEM.getId())) {
                 verifier = NMRConstants.VERIFIER_SYSTEM;
             }
         }
@@ -216,12 +216,11 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 //submit is equivalent to pending status.
 
                 // this has to uncomment when we need add college_verified.
-
-                //if(Group.COLLEGE.getId().equals(requestTO.getActorId()) && Action.APPROVED.getId().equals(requestTO.getActionId())){
-                //   dashboard.setSmcStatus(DashboardStatus.COLLEGE_VERIFIED.getId());
-                //}else {
-                setDashboardStatus(DashboardStatus.PENDING.getId(), iNextGroup.getAssignTo(), dashboard);
-                //}
+                if (Group.COLLEGE.getId().equals(requestTO.getActorId()) && Action.APPROVED.getId().equals(requestTO.getActionId())) {
+                    dashboard.setSmcStatus(DashboardStatus.COLLEGE_VERIFIED.getId());
+                } else {
+                    setDashboardStatus(DashboardStatus.PENDING.getId(), iNextGroup.getAssignTo(), dashboard);
+                }
             }
         }
         dashboard.setCreatedAt(Timestamp.from(Instant.now()));

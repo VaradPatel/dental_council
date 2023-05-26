@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.CollegeMasterResponseTo;
+import in.gov.abdm.nmr.dto.QuerySuggestionsTo;
 import in.gov.abdm.nmr.dto.UniversityMasterResponseTo;
 import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
 import in.gov.abdm.nmr.service.IMasterDataService;
@@ -87,5 +88,14 @@ public class MasterDataController {
     @GetMapping(path = "/university", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UniversityMasterResponseTo> getUniversitiesByCollege(@RequestParam(required = false, value = "collegeId") BigInteger collegeId) {
         return masterDataService.getUniversitiesByCollege(collegeId);
+    }
+
+    /**
+     * Get suggestions for queries
+     * @return returns list of queries
+     */
+    @GetMapping(path = "/query-suggestions", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<QuerySuggestionsTo> getQuerySuggestions() {
+        return masterDataService.getQuerySuggestions();
     }
 }
