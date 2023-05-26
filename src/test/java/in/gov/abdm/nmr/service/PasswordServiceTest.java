@@ -6,7 +6,6 @@ import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.entity.Password;
 import in.gov.abdm.nmr.entity.ResetToken;
 import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.entity.WorkFlowAudit;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.OtpException;
@@ -148,8 +147,7 @@ class PasswordServiceTest {
     @Test
     void testChangePasswordShouldValidateUserIfUserNotFoundThenReturnUserNotFound() throws GeneralSecurityException, InvalidRequestException {
         when(userDaoService.findById(any(BigInteger.class))).thenReturn(null);
-        ResponseMessageTo responseMessage = passwordService.changePassword(new ChangePasswordRequestTo(CommonTestData.USER_ID, TEST_PSWD, TEST_PSWD));
-        assertEquals(USER_NOT_FOUND, responseMessage.getMessage());
+        assertThrows(InvalidRequestException.class, () -> passwordService.changePassword(new ChangePasswordRequestTo(CommonTestData.USER_ID, TEST_PSWD, TEST_PSWD)));
     }
 
     @Test
@@ -157,8 +155,7 @@ class PasswordServiceTest {
         when(userDaoService.findById(any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        ResponseMessageTo responseMessage = passwordService.changePassword(new ChangePasswordRequestTo(CommonTestData.USER_ID, TEST_PSWD, TEST_PSWD));
-        assertEquals(OLD_PASSWORD_NOT_MATCHING, responseMessage.getMessage());
+        assertThrows(InvalidRequestException.class, () -> passwordService.changePassword(new ChangePasswordRequestTo(CommonTestData.USER_ID, TEST_PSWD, TEST_PSWD)));
     }
 
     @Test

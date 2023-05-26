@@ -64,7 +64,7 @@ public class CollegeServiceImpl implements ICollegeService {
     private EntityManager entityManager;
 
     @Autowired
-    private IPasswordService passwordService;
+    IPasswordService passwordService;
 
     public CollegeServiceImpl(ICollegeMasterDaoService collegeMasterDaoService, IUniversityMasterService universityMasterService, //
                                 IStateMedicalCouncilDaoService stateMedicalCouncilDaoService, ICollegeProfileDaoService collegeProfileDaoService, //
