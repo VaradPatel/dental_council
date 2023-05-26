@@ -1,15 +1,16 @@
 package in.gov.abdm.nmr.security.common;
 
-import org.springframework.http.HttpMethod;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
 import in.gov.abdm.nmr.controller.CollegeController;
 import in.gov.abdm.nmr.util.NMRConstants;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProtectedPaths {
+
+
 
     private ProtectedPaths() {
     }
@@ -54,6 +55,12 @@ public class ProtectedPaths {
     
     public static final String HEALTH_PROFESSIONAL_ACTION = NMRConstants.HEALTH_PROFESSIONAL_ACTION;
     public static final String COLLEGES_ACTION = NMRConstants.COLLEGES_ACTION;
+    
+    public static final String USER_NMC_CREATE_USER = "/user";
+
+    public static final String USER_UNLOCK_URL = "/user/{id}/unlock";
+    public static final String USER_DEACTIVATE_URL = "/user/{id}/deactivate";
+    public static final String DE_LINK_FACILITY = "/health-professional/work-profile/facility";
 
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<AntPathRequestMatcher> protectedPaths = new ArrayList<>();
@@ -95,6 +102,9 @@ public class ProtectedPaths {
         
         protectedPaths.add(new AntPathRequestMatcher(CollegeController.COLLEGES_COLLEGE_ID_VERIFIERS_VERIFIER_ID, HttpMethod.PUT.name()));
         protectedPaths.add(new AntPathRequestMatcher(CollegeController.COLLEGES_COLLEGE_ID_VERIFIERS_VERIFIER_ID, HttpMethod.GET.name()));
+        
+        protectedPaths.add(new AntPathRequestMatcher(USER_NMC_CREATE_USER));
+        protectedPaths.add(new AntPathRequestMatcher(DE_LINK_FACILITY,HttpMethod.DELETE.name()));
 
         return protectedPaths.toArray(AntPathRequestMatcher[]::new);
     }

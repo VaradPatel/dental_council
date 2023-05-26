@@ -1,29 +1,37 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.client.GatewayFClient;
-import in.gov.abdm.nmr.dto.LoginResponseTO;
-import in.gov.abdm.nmr.dto.SessionRequestTo;
-import in.gov.abdm.nmr.dto.SessionResponseTo;
-import in.gov.abdm.nmr.enums.HpProfileStatus;
-import in.gov.abdm.nmr.enums.UserSubTypeEnum;
-import in.gov.abdm.nmr.enums.UserTypeEnum;
-import in.gov.abdm.nmr.entity.CollegeProfile;
-import in.gov.abdm.nmr.entity.HpProfile;
-import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.security.common.RoleConstants;
-import in.gov.abdm.nmr.security.jwt.JwtTypeEnum;
-import in.gov.abdm.nmr.security.jwt.JwtUtil;
-import in.gov.abdm.nmr.service.*;
+import static in.gov.abdm.nmr.common.CustomHeaders.ACCESS_TOKEN;
+import static in.gov.abdm.nmr.common.CustomHeaders.REFRESH_TOKEN;
+
+import java.math.BigInteger;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletResponse;
-import java.math.BigInteger;
-
-import static in.gov.abdm.nmr.common.CustomHeaders.ACCESS_TOKEN;
-import static in.gov.abdm.nmr.common.CustomHeaders.REFRESH_TOKEN;
+import in.gov.abdm.nmr.client.GatewayFClient;
+import in.gov.abdm.nmr.dto.LoginResponseTO;
+import in.gov.abdm.nmr.dto.SessionRequestTo;
+import in.gov.abdm.nmr.dto.SessionResponseTo;
+import in.gov.abdm.nmr.entity.CollegeProfile;
+import in.gov.abdm.nmr.entity.HpProfile;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.enums.HpProfileStatus;
+import in.gov.abdm.nmr.enums.UserSubTypeEnum;
+import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.security.jwt.JwtTypeEnum;
+import in.gov.abdm.nmr.security.jwt.JwtUtil;
+import in.gov.abdm.nmr.service.IAuthService;
+import in.gov.abdm.nmr.service.ICollegeProfileDaoService;
+import in.gov.abdm.nmr.service.IHpProfileDaoService;
+import in.gov.abdm.nmr.service.INbeDaoService;
+import in.gov.abdm.nmr.service.INmcDaoService;
+import in.gov.abdm.nmr.service.ISmcProfileDaoService;
+import in.gov.abdm.nmr.service.IUserDaoService;
 
 @Service
 public class AuthServiceImpl implements IAuthService {
@@ -71,7 +79,7 @@ public class AuthServiceImpl implements IAuthService {
         loginResponseTO.setUserType(user.getUserType().getId());
         loginResponseTO.setUserGroupId(user.getGroup().getId());
         loginResponseTO.setUserId(user.getId());
-        if (UserTypeEnum.HEALTH_PROFESSIONAL.getCode().equals(user.getUserType().getId())) {
+        if (UserTypeEnum.HEALTH_PROFESSIONAL.getId().equals(user.getUserType().getId())) {
             HpProfile hp = hpProfileService.findLatestEntryByUserid(user.getId());
             if (hp != null) {
                 loginResponseTO.setProfileId(hp.getId());
@@ -79,60 +87,42 @@ public class AuthServiceImpl implements IAuthService {
                 loginResponseTO.setBlacklisted(HpProfileStatus.BLACKLISTED.getId() == hp.getHpProfileStatus().getId() || HpProfileStatus.SUSPENDED.getId() == hp.getHpProfileStatus().getId());
                 loginResponseTO.setEsignStatus(hp.getESignStatus());
             }
-        } else if (UserTypeEnum.COLLEGE.getCode().equals(user.getUserType().getId())) {
+        } else if (UserTypeEnum.COLLEGE.getId().equals(user.getUserType().getId())) {
             BigInteger userSubTypeId = user.getUserSubType().getId();
             loginResponseTO.setUserSubType(userSubTypeId);
 
             CollegeProfile collegeProfile = collegeProfileDaoService.findByUserId(user.getId());
-            if (UserSubTypeEnum.COLLEGE.getCode().equals(userSubTypeId)) {
+            if (UserSubTypeEnum.COLLEGE_ADMIN.getId().equals(userSubTypeId)) {
                 loginResponseTO.setProfileId(collegeProfile.getCollege().getId());
             } else {
                 loginResponseTO.setProfileId(collegeProfile.getId());
                 loginResponseTO.setParentProfileId(collegeProfile.getCollege().getId());
             }
 
-        } else if (UserTypeEnum.STATE_MEDICAL_COUNCIL.getCode().equals(user.getUserType().getId())) {
+        } else if (UserTypeEnum.SMC.getId().equals(user.getUserType().getId())) {
             loginResponseTO.setProfileId(smcProfileDaoService.findByUserId(user.getId()).getId());
 
-        } else if (UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode().equals(user.getUserType().getId())) {
+        } else if (UserTypeEnum.NMC.getId().equals(user.getUserType().getId())) {
             loginResponseTO.setProfileId(nmcDaoService.findByUserId(user.getId()).getId());
             BigInteger userSubTypeId = user.getUserSubType().getId();
             loginResponseTO.setUserSubType(userSubTypeId);
-        } else if (UserTypeEnum.NBE.getCode().equals(user.getUserType().getId())) {
+        } else if (UserTypeEnum.NBE.getId().equals(user.getUserType().getId())) {
             loginResponseTO.setProfileId(nbeDaoService.findByUserId(user.getId()).getId());
         }
         return loginResponseTO;
     }
 
     private void generateAccessAndRefreshToken(HttpServletResponse response, String username, User user, BigInteger profileId) {
-        String role = null;
-        if (UserTypeEnum.HEALTH_PROFESSIONAL.getCode().equals(user.getUserType().getId())) {
-            role = RoleConstants.ROLE_HEALTH_PROFESSIONAL;
-
-        } else if (UserTypeEnum.COLLEGE.getCode().equals(user.getUserType().getId())) {
-
-            if (UserSubTypeEnum.COLLEGE.getCode().equals(user.getUserSubType().getId())) {
-                role = RoleConstants.ROLE_COLLEGE_ADMIN;
-            } else if (UserSubTypeEnum.COLLEGE_DEAN.getCode().equals(user.getUserSubType().getId())) {
-                role = RoleConstants.ROLE_COLLEGE_DEAN;
-            } else if (UserSubTypeEnum.COLLEGE_REGISTRAR.getCode().equals(user.getUserSubType().getId())) {
-                role = RoleConstants.ROLE_COLLEGE_REGISTRAR;
-            }
-
-        } else if (UserTypeEnum.STATE_MEDICAL_COUNCIL.getCode().equals(user.getUserType().getId())) {
-            role = RoleConstants.ROLE_STATE_MEDICAL_COUNCIL;
-
-        } else if (UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode().equals(user.getUserType().getId())) {
-            role = RoleConstants.ROLE_NATIONAL_MEDICAL_COUNCIL;
-        } else if (UserTypeEnum.NBE.getCode().equals(user.getUserType().getId())) {
-            role = RoleConstants.ROLE_NBE;
-        } else if (UserTypeEnum.SYSTEM.getCode().equals(user.getUserType().getId())) {
-            role = RoleConstants.ROLE_SYSTEM;
+        String[] roles = null;
+        if (user.getUserSubType() == null) {
+            roles = user.getUserType().getRoles().split(",");
+        } else {
+            roles = ArrayUtils.addAll(user.getUserType().getRoles().split(","), user.getUserSubType().getRoles().split(","));
         }
 
-        response.setHeader(ACCESS_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.ACCESS_TOKEN, role, profileId));
-        if (!UserTypeEnum.SYSTEM.getCode().equals(user.getUserType().getId())) {
-            response.setHeader(REFRESH_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.REFRESH_TOKEN, role, profileId));
+        response.setHeader(ACCESS_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.ACCESS_TOKEN, roles, profileId));
+        if (!UserTypeEnum.SYSTEM.getId().equals(user.getUserType().getId())) {
+            response.setHeader(REFRESH_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.REFRESH_TOKEN, roles, profileId));
         }
     }
 }

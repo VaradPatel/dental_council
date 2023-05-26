@@ -23,14 +23,15 @@ import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.codec.language.Metaphone;
 import org.apache.commons.codec.language.Soundex;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -40,7 +41,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
-
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static in.gov.abdm.nmr.util.NMRUtil.validateQualificationDetailsAndProofs;
 import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetails;
@@ -196,6 +196,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Autowired
     private IPasswordDaoService passwordDaoService;
+    @Autowired
+    private IUserDaoService userDetailDaoService;
 
     /**
      * This method fetches the SMC registration details for a given request.
@@ -205,7 +207,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
      * @return SmcRegistrationDetailResponseTO A TO (Transfer Object) containing the SMC registration information that was fetched.
      */
     @Override
-    public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NmrException, NoDataFoundException {
+    public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NoDataFoundException {
         return iHpProfileMapper
                 .smcRegistrationToDto(hpProfileDaoService.fetchSmcRegistrationDetail(councilId, registrationNumber));
     }
@@ -245,7 +247,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
         hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs);
 
-        return "Success";
+        return SUCCESS_RESPONSE;
     }
 
     @Override
@@ -474,24 +476,24 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Transactional
     @Override
-    public ResponseMessageTo addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException, ParseException, GeneralSecurityException {
+    public ResponseMessageTo addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException, ParseException, GeneralSecurityException, InvalidRequestException, NmrException {
 
-        if (userDaoService.existsByUserName(request.getUsername())) {
-            return new ResponseMessageTo(NMRConstants.USERNAME_ALREADY_EXISTS);
+        if (request.getUsername()!=null && userDaoService.existsByUserName(request.getUsername())) {
+            throw new InvalidRequestException(NMRError.USERNAME_ALREADY_REGISTERED.getCode(),NMRError.USERNAME_ALREADY_REGISTERED.getMessage());
         }
 
-        if (userDaoService.existsByMobileNumber(request.getMobileNumber())) {
-            return new ResponseMessageTo(NMRConstants.MOBILE_NUMBER_ALREADY_EXISTS);
+        if (request.getMobileNumber()!=null && userDaoService.existsByMobileNumber(request.getMobileNumber())) {
+            throw new InvalidRequestException(NMRError.MOBILE_NUM_ALREADY_REGISTERED.getCode(),NMRError.MOBILE_NUM_ALREADY_REGISTERED.getMessage());
         }
 
         if (request.getEmail() != null && userDaoService.existsByEmail(request.getEmail())) {
-            return new ResponseMessageTo(NMRConstants.EMAIL_ALREADY_EXISTS);
+            throw new InvalidRequestException(NMRError.EMAIL_ID_ALREADY_REGISTERED.getCode(),NMRError.EMAIL_ID_ALREADY_REGISTERED.getMessage());
         }
 
         String hashedPassword = bCryptPasswordEncoder.encode(rsaUtil.decrypt(request.getPassword()));
         User userDetail = new User(null, request.getEmail(), request.getMobileNumber(), null, hashedPassword, null, true, false, //
 
-                entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getCode()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE.getCode()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null, request.getUsername(), request.getHprId(), request.getHprIdNumber(), request.isNew(), false);
+                entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getId()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_ADMIN.getId()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null, request.getUsername(), request.getHprId(), request.getHprIdNumber(), request.isNew(), false, false);
         userDaoService.save(userDetail);
         Password password = new Password(null, hashedPassword, userDetail);
         passwordDaoService.save(password);
@@ -523,6 +525,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
 
         hpProfile.setEmailId(request.getEmail() != null ? request.getEmail() : null);
+        Name splitName = splitName(request.getName());
+        hpProfile.setFirstName(splitName.getFirstName() != null ? splitName.getFirstName() : "");
+        hpProfile.setMiddleName(splitName.getMiddleName() != null ? splitName.getMiddleName() : "");
+        hpProfile.setLastName(splitName.getLastName() != null ? splitName.getLastName() : "");
         hpProfile.setFullName(request.getName());
         hpProfile.setGender(request.getGender());
         hpProfile.setMobileNumber(request.getMobileNumber() != null ? request.getMobileNumber() : null);
@@ -541,6 +547,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         registrationDetails.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
         registrationDetails.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         registrationDetails.setHpProfileId(hpProfile);
+        registrationDetails.setRegistrationNo(request.getRegistrationNumber());
 
         if (imrRegistrationsDetails != null) {
             boolean isRenewable = imrRegistrationsDetails.isRenewableRegistration();
@@ -554,7 +561,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 registrationDetails.setIsRenewable("0");
                 registrationDetails.setRenewableRegistrationDate(null);
             }
-            registrationDetails.setRegistrationNo(imrRegistrationsDetails.getRegistrationNo());
             registrationDetails.setRegistrationDate(imrRegistrationsDetails.getRegistrationDate() !=null ? simpleDateFormat.parse(imrRegistrationsDetails.getRegistrationDate()): null);
         }
         iRegistrationDetailRepository.save(registrationDetails);
@@ -644,6 +650,35 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         return new ResponseMessageTo(SUCCESS_RESPONSE);
     }
 
+
+    private Name splitName(String fullName) throws NmrException {
+        log.debug("processing splitting fullName: {} ", fullName);
+        Name splitName = new Name();
+        if (!StringUtils.isEmpty(fullName)) {
+            List<String> name = new ArrayList<>(Arrays.asList(fullName.split(" ")));
+            if (name.size() == 1) {
+                splitName.setFirstName(name.get(0));
+            } else if (name.size() == 2) {
+                splitName.setFirstName(name.get(0));
+                splitName.setLastName(name.get(1));
+            } else {
+                int idx = fullName.lastIndexOf(' ');
+                String firstNameTemp = fullName.substring(0, idx);
+                try {
+                    int idxF = firstNameTemp.lastIndexOf(' ');
+                    splitName.setFirstName(firstNameTemp.substring(0, idxF));
+                    splitName.setMiddleName(firstNameTemp.substring(idxF + 1));
+                } catch (IndexOutOfBoundsException e) {
+                    log.error("Error splitting fullName: {}", fullName);
+                    throw new NmrException();
+                }
+                splitName.setLastName(fullName.substring(idx + 1));
+            }
+        }
+        return splitName;
+    }
+
+
     @Override
     public void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException, InvalidRequestException {
 
@@ -728,11 +763,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             return new ResponseMessageTo(e.getLocalizedMessage());
         }
     }
-
-
     @Override
     public String generateLink(SendLinkOnMailTo sendLinkOnMailTo) {
-
 
         String token = RandomString.make(30);
         ResetToken resetToken = resetTokenRepository.findByUserName(sendLinkOnMailTo.getEmail());
@@ -747,6 +779,24 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         String resetPasswordLink = emailVerifyUrl + "/" + token;
 
         return resetPasswordLink;
+    }
+
+    @Override
+    public void  delinkCurrentWorkDetails(WorkDetailsDelinkRequest workDetailsDelinkRequest) throws NmrException {
+        User user = userDetailDaoService.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (Objects.isNull(user)) {
+            throw new NmrException(USER_NOT_FOUND);
+        } else {
+            List<WorkProfile> activeWorkProfiles = workProfileRepository.getActiveWorkProfileDetailsByUserId(user.getId());
+            List<String> activeFacilities = new ArrayList<>();
+            activeWorkProfiles.forEach(workProfile -> activeFacilities.add(workProfile.getFacilityId()));
+            workDetailsDelinkRequest.getFacilityId().retainAll(activeFacilities);
+            if (!workDetailsDelinkRequest.getFacilityId().isEmpty()) {
+                workProfileRepository.delinkWorkProfileDetailsByFacilityId(user.getId(), workDetailsDelinkRequest.getFacilityId());
+            } else {
+                throw new NmrException(DELINK_FAILED);
+            }
+        }
     }
 
     /**

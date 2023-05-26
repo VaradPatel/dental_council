@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.dto.CollegeMasterResponseTo;
+import in.gov.abdm.nmr.dto.QuerySuggestionsTo;
 import in.gov.abdm.nmr.dto.UniversityMasterResponseTo;
 import in.gov.abdm.nmr.dto.masterdata.MasterDataTO;
 
@@ -34,4 +35,6 @@ public interface IMasterDataService {
     List<CollegeMasterResponseTo> getCollegesByState(BigInteger stateId);
 
     List<UniversityMasterResponseTo> getUniversitiesByCollege(BigInteger collegeId);
+
+    List<QuerySuggestionsTo> getQuerySuggestions();
 }

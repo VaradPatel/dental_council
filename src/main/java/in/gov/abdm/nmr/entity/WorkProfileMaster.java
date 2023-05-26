@@ -20,7 +20,7 @@ public class WorkProfileMaster {
     private BigInteger id;
     private String address;
 
-    private BigInteger facilityId;
+    private String facilityId;
     private BigInteger facilityTypeId;
     private Integer isUserCurrentlyWorking;
     @Type(type = "org.hibernate.type.BinaryType")
@@ -33,7 +33,7 @@ public class WorkProfileMaster {
     private String workOrganization;
     private String organizationType;
     private String requestId;
-
     private Integer experienceInYears;
+    private boolean deleteStatus;
 
 }

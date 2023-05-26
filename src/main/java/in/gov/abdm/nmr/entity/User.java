@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity(name = "user")
 public class User extends CommonAuditEntity {
 
@@ -67,5 +69,8 @@ public class User extends CommonAuditEntity {
 
     @Column(name = "is_email_verified")
     private boolean isEmailVerified;
+
+    @Column(name = "delete_status")
+    private boolean deleteStatus;
 
 }

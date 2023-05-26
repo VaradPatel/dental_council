@@ -19,4 +19,9 @@ public class NbeDaoServiceImpl implements INbeDaoService {
     public NbeProfile findByUserId(BigInteger userId) {
         return nbeProfileRepository.findByUserId(userId);
     }
+    
+    @Override
+    public NbeProfile save(NbeProfile nbeProfile) {
+        return nbeProfileRepository.save(nbeProfile);
+    }
 }

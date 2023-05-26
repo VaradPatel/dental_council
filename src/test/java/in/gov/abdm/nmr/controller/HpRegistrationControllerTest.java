@@ -28,6 +28,7 @@ import java.math.BigInteger;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -41,42 +42,44 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = HpRegistrationController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @ContextConfiguration(classes = HpRegistrationController.class)
 @ActiveProfiles(profiles = "local")
+@SuppressWarnings("java:S1192")
 class HpRegistrationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
     @MockBean
-    private IHpRegistrationService hpService;
+    IHpRegistrationService hpService;
 
     @MockBean
-    private IQueriesService queryService;
+    IQueriesService queryService;
 
     @MockBean
-    private ICouncilService councilService;
+    ICouncilService councilService;
     @Autowired
-    private WebApplicationContext context;
+    WebApplicationContext context;
+    @Autowired
+    ObjectMapper objectMapper;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    SmcRegistrationDetailResponseTO detailResponseTO;
 
     @BeforeEach
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+        detailResponseTO = new SmcRegistrationDetailResponseTO();
+        detailResponseTO.setHpName(HP_NAME);
+        detailResponseTO.setRegistrationNumber(REGISTRATION_NUMBER);
+        detailResponseTO.setCouncilName(STATE_MEDICAL_COUNCIL);
+        detailResponseTO.setHpProfileId(HP_ID);
+        detailResponseTO.setEmailId(EMAIL_ID);
     }
 
 
     @Test
     @WithMockUser
     void testFetchSmcRegistrationDetail() throws Exception {
-        SmcRegistrationDetailResponseTO detailResponseTO = new SmcRegistrationDetailResponseTO();
-        detailResponseTO.setHpName(HP_NAME);
-        detailResponseTO.setRegistrationNumber(REGISTRATION_NUMBER);
-        detailResponseTO.setCouncilName(STATE_MEDICAL_COUNCIL);
-        detailResponseTO.setHpProfileId(HP_ID);
-        detailResponseTO.setEmailId(EMAIL_ID);
         when(hpService.fetchSmcRegistrationDetail(any(Integer.class), any(String.class)))
                 .thenReturn(detailResponseTO);
-        mockMvc.perform(get("/health-professional").queryParam("smcId", "13").queryParam("registrationNumber", "123")
+        mockMvc.perform(get("/health-professional").queryParam("smcId", SMC_ID.toString()).queryParam(REGISTRATION_NUM_IN_LOWER_CASE, REGISTRATION_NUMBER)
                         .with(user(TEST_USER))
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -85,11 +88,9 @@ class HpRegistrationControllerTest {
                 .andExpect(jsonPath("$.council_name").value(STATE_MEDICAL_COUNCIL))
                 .andExpect(jsonPath("$.hp_profile_id").value(HP_ID))
                 .andExpect(jsonPath("$.email_id").value(EMAIL_ID));
-
     }
 
 
-/*
     @Test
     @WithMockUser
     void testAddHealthProfessionalPersonalDetail() throws Exception {
@@ -136,7 +137,7 @@ class HpRegistrationControllerTest {
         requestTO.setCommunicationAddress(communicationAddress);
         requestTO.setRequestId(REQUEST_ID);
 
-        HpProfilePersonalResponseTO responseTO = new HpProfilePersonalResponseTO();
+        HpProfilePersonalResponseTO hpProfilePersonalResponseTO = new HpProfilePersonalResponseTO();
 
         AddressTO address = new AddressTO();
         address.setId(ID);
@@ -159,17 +160,17 @@ class HpRegistrationControllerTest {
         address.setUpdatedAt(CURRENT_DATE);
         address.setFullName(PROFILE_DISPLAY_NAME);
 
-        responseTO.setPersonalDetails(personalDetails);
-        responseTO.setCommunicationAddress(address);
-        responseTO.setKycAddress(address);
-        responseTO.setHpProfileId(HP_ID);
-        responseTO.setRequestId(REQUEST_ID);
-        responseTO.setApplicationTypeId(ID);
-        responseTO.setNmrId(NMR_ID);
-        responseTO.setHpProfileStatusId(ID);
-        responseTO.setWorkFlowStatusId(ID);
-        responseTO.setEmailVerified(true);
-        when(hpService.addOrUpdateHpPersonalDetail(any(BigInteger.class), any(HpPersonalUpdateRequestTO.class))).thenReturn(responseTO);
+        hpProfilePersonalResponseTO.setPersonalDetails(personalDetails);
+        hpProfilePersonalResponseTO.setCommunicationAddress(address);
+        hpProfilePersonalResponseTO.setKycAddress(address);
+        hpProfilePersonalResponseTO.setHpProfileId(HP_ID);
+        hpProfilePersonalResponseTO.setRequestId(REQUEST_ID);
+        hpProfilePersonalResponseTO.setApplicationTypeId(ID);
+        hpProfilePersonalResponseTO.setNmrId(NMR_ID);
+        hpProfilePersonalResponseTO.setHpProfileStatusId(ID);
+        hpProfilePersonalResponseTO.setWorkFlowStatusId(ID);
+        hpProfilePersonalResponseTO.setEmailVerified(true);
+        when(hpService.addOrUpdateHpPersonalDetail(nullable(BigInteger.class), any(HpPersonalUpdateRequestTO.class))).thenReturn(hpProfilePersonalResponseTO);
         mockMvc.perform(post("/health-professional/personal")
                         .with(csrf())
                         .content(objectMapper.writeValueAsBytes(requestTO))
@@ -193,7 +194,6 @@ class HpRegistrationControllerTest {
                 .andExpect(jsonPath("$.personal_details.full_name").value(PROFILE_DISPLAY_NAME))
                 .andExpect(jsonPath("$.personal_details.email").value(CommonTestData.EMAIL_ID))
                 .andExpect(jsonPath("$.personal_details.mobile").value(MOBILE_NUMBER))
-
                 .andExpect(jsonPath("$.communication_address.id").value(CommonTestData.ID))
                 .andExpect(jsonPath("$.communication_address.country.id").value(COUNTRY_ID))
                 .andExpect(jsonPath("$.communication_address.country.name").value(COUNTRY_NAME))
@@ -217,7 +217,6 @@ class HpRegistrationControllerTest {
                 .andExpect(jsonPath("$.communication_address.landmark").value(LANDMARK))
                 .andExpect(jsonPath("$.communication_address.locality").value(LOCALITY))
                 .andExpect(jsonPath("$.communication_address.is_same_address").value("true"))
-
                 .andExpect(jsonPath("$.kyc_address.id").value(CommonTestData.ID))
                 .andExpect(jsonPath("$.kyc_address.country.id").value(COUNTRY_ID))
                 .andExpect(jsonPath("$.kyc_address.country.name").value(COUNTRY_NAME))
@@ -241,7 +240,6 @@ class HpRegistrationControllerTest {
                 .andExpect(jsonPath("$.kyc_address.landmark").value(LANDMARK))
                 .andExpect(jsonPath("$.kyc_address.locality").value(LOCALITY))
                 .andExpect(jsonPath("$.kyc_address.is_same_address").value("true"))
-
                 .andExpect(jsonPath("$.hp_profile_id").value(HP_ID))
                 .andExpect(jsonPath("$.request_id").value(CommonTestData.REQUEST_ID))
                 .andExpect(jsonPath("$.application_type_id").value(CommonTestData.ID))
@@ -250,7 +248,7 @@ class HpRegistrationControllerTest {
                 .andExpect(jsonPath("$.email_verified").value(true));
 
     }
-*/
+
 
     @Test
     @WithMockUser
@@ -410,11 +408,9 @@ class HpRegistrationControllerTest {
                 .andExpect(jsonPath("$.hp_profile_status_id").value(CommonTestData.ID))
                 .andExpect(jsonPath("$.work_flow_status_id").value(CommonTestData.ID))
                 .andExpect(jsonPath("$.email_verified").value(true));
-
     }
 
 
-/*
     @Test
     @WithMockUser
     void testGetHealthProfessionalRegistrationDetail() throws Exception {
@@ -489,9 +485,7 @@ class HpRegistrationControllerTest {
         responseTO.setHpProfileStatusId(ID);
         responseTO.setWorkFlowStatusId(ID);
         responseTO.setEmailVerified(true);
-
-
-        when(hpService.addOrUpdateHpPersonalDetail(any(BigInteger.class), any(HpPersonalUpdateRequestTO.class))).thenReturn(responseTO);
+        when(hpService.getHealthProfessionalPersonalDetail(any(BigInteger.class))).thenReturn(responseTO);
         mockMvc.perform(get("/health-professional/1/personal")
                         .with(user(TEST_USER))
                         .accept(MediaType.APPLICATION_JSON_VALUE))
@@ -570,7 +564,32 @@ class HpRegistrationControllerTest {
                 .andExpect(jsonPath("$.email_verified").value(true));
 
     }
-*/
+
+    @Test
+    void testGetHealthProfessionalRegistrationDetailShouldGetHealthProfessionalRegistrationDetailsBaseOnHealthProfessionalId() throws Exception {
+        HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = new HpProfileRegistrationResponseTO();
+        hpProfileRegistrationResponseTO.setRequestId(REQUEST_ID);
+        when(hpService.getHealthProfessionalRegistrationDetail(any(BigInteger.class))).thenReturn(hpProfileRegistrationResponseTO);
+        mockMvc.perform(get("/health-professional/1/registration")
+                        .with(user(TEST_USER))
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.request_id").value(CommonTestData.REQUEST_ID));
+    }
+
+    @Test
+    void testGetHealthProfessionalWorkDetailShouldGetHealthProfessionalWorkDetailsBaseOnHealthProfessionalId() throws Exception {
+        HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = new HpProfileWorkDetailsResponseTO();
+        hpProfileWorkDetailsResponseTO.setRequestId(REQUEST_ID);
+
+        when(hpService.getHealthProfessionalWorkDetail(any(BigInteger.class))).thenReturn(hpProfileWorkDetailsResponseTO);
+        mockMvc.perform(get("/health-professional/1/work-profile")
+                        .with(user(TEST_USER))
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.request_id").value(CommonTestData.REQUEST_ID));
+    }
+
 
 
 }

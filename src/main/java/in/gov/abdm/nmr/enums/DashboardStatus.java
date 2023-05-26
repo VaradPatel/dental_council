@@ -16,7 +16,7 @@ public enum DashboardStatus {
     REJECT(BigInteger.valueOf(5), "Rejected", "Rejected"),
     TEMPORARY_SUSPEND(BigInteger.valueOf(6), "Blacklisted", "Blacklisted"),
     PERMANENT_SUSPEND(BigInteger.valueOf(7), "Suspended", "Suspended"),
-    COLLEGE_VERIFIED(BigInteger.valueOf(8), "college_verified", "college_verified");
+    COLLEGE_VERIFIED(BigInteger.valueOf(8), "College Verified", "College Verified");
 
     private final BigInteger id;
     private final String description;

@@ -35,7 +35,7 @@ class NmcDaoServiceTest {
 
     @BeforeEach
     void setup(){
-        user = getUser(UserTypeEnum.NATIONAL_MEDICAL_COUNCIL.getCode());
+        user = getUser(UserTypeEnum.NMC.getId());
         stateMedicalCouncil =  getStateMedicalCouncil();
         populateNmcProfile();
     }

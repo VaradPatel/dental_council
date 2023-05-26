@@ -7,6 +7,7 @@ import java.util.List;
 import in.gov.abdm.nmr.dto.CollegeMasterDataTO;
 import in.gov.abdm.nmr.dto.CollegeResponseTo;
 import in.gov.abdm.nmr.dto.CollegeProfileTo;
+import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.exception.*;
 
 public interface ICollegeService {
@@ -22,4 +23,6 @@ public interface ICollegeService {
     List<CollegeMasterDataTO> getAllCollegeVerifiersDesignation() throws NmrException;
 
     CollegeProfileTo getCollegeVerifier(BigInteger collegeId, BigInteger verifierId) throws NmrException, InvalidIdException;
+
+    User getLoggedInUser();
 }

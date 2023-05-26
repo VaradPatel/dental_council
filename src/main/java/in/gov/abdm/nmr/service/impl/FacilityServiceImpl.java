@@ -6,7 +6,9 @@ import in.gov.abdm.nmr.dto.FacilitySearchRequestTO;
 import in.gov.abdm.nmr.dto.FacilitySearchResponseTO;
 import in.gov.abdm.nmr.dto.SessionRequestTo;
 import in.gov.abdm.nmr.dto.SessionResponseTo;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.service.IFacilityService;
+import in.gov.abdm.nmr.util.NMRConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,10 +24,14 @@ public class FacilityServiceImpl implements IFacilityService {
     @Autowired
     GatewayFClient gatewayFClient;
     @Override
-    public FacilitySearchResponseTO findFacility(FacilitySearchRequestTO facilitySearchRequestTO) {
+    public FacilitySearchResponseTO findFacility(FacilitySearchRequestTO facilitySearchRequestTO) throws InvalidRequestException {
         SessionResponseTo sessionResponseTo = getSessionToken();
         String authorization = "Bearer " + sessionResponseTo.getAccessToken();
-        return facilityFClient.findFacility(authorization, facilitySearchRequestTO);
+        try {
+            return facilityFClient.findFacility(authorization, facilitySearchRequestTO);
+        }catch (Exception e){
+            throw new InvalidRequestException(NMRConstants.INVALID_FACILITY_DETAILS_MESSAGE);
+        }
     }
     private SessionResponseTo getSessionToken() {
         SessionRequestTo sessionRequestTo = SessionRequestTo.builder()

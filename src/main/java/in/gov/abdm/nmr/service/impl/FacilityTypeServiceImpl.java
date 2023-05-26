@@ -4,6 +4,7 @@ import in.gov.abdm.nmr.dto.FacilityTypeTO;
 import in.gov.abdm.nmr.mapper.FacilityTypeDtoMapper;
 import in.gov.abdm.nmr.repository.FacilityTypeRepository;
 import in.gov.abdm.nmr.service.IFacilityTypeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -13,13 +14,13 @@ import java.util.List;
 @Transactional
 public class FacilityTypeServiceImpl implements IFacilityTypeService {
 
-    private FacilityTypeRepository facilityTypeRepository;
+    @Autowired
+    FacilityTypeRepository facilityTypeRepository;
 
-    private FacilityTypeDtoMapper facilityTypeDtoMapper;
 
     @Override
     public List<FacilityTypeTO> getFacilityType() {
-        return facilityTypeDtoMapper.facilityTypeDataToDto(facilityTypeRepository.getFacilityType());
+        return FacilityTypeDtoMapper.FACILITY_TYPE_DTO_MAPPER.facilityTypeDataToDto(facilityTypeRepository.getFacilityType());
     }
 
 }

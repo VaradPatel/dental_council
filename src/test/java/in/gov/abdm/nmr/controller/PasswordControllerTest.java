@@ -6,7 +6,6 @@ import in.gov.abdm.nmr.dto.ResetPasswordRequestTo;
 import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.dto.SetNewPasswordTo;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
-import in.gov.abdm.nmr.service.IMasterDataService;
 import in.gov.abdm.nmr.service.IPasswordService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +24,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static org.mockito.Mockito.when;
@@ -46,18 +44,12 @@ class PasswordControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @MockBean
-    private IMasterDataService masterDataService;
-
     @MockBean
     IPasswordService passwordService;
-
     @Autowired
-    private WebApplicationContext context;
-
+    WebApplicationContext context;
     @Autowired
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
 
     @BeforeEach
     public void setup() {
@@ -88,7 +80,7 @@ class PasswordControllerTest {
     void testResetPassword() throws Exception {
         ResetPasswordRequestTo requestTo = new ResetPasswordRequestTo();
         requestTo.setUsername(TEST_USER);
-        requestTo.setPassword(PASSWORD);
+        requestTo.setPassword(TEST_PSWD);
         requestTo.setTransactionId(TRANSACTION_ID);
         ResponseMessageTo responseMessageTo = new ResponseMessageTo();
         responseMessageTo.setMessage(NMRConstants.SUCCESS_RESPONSE);
@@ -107,8 +99,8 @@ class PasswordControllerTest {
     void testChangePassword() throws Exception {
         ChangePasswordRequestTo requestTo = new ChangePasswordRequestTo();
         requestTo.setUserId(ID);
-        requestTo.setOldPassword(PASSWORD);
-        requestTo.setNewPassword(PASSWORD);
+        requestTo.setOldPassword(TEST_PSWD);
+        requestTo.setNewPassword(TEST_PSWD);
         ResponseMessageTo responseMessageTo = new ResponseMessageTo();
         responseMessageTo.setMessage(NMRConstants.SUCCESS_RESPONSE);
         when(passwordService.changePassword(requestTo)).thenReturn(responseMessageTo);
