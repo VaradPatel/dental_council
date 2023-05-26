@@ -326,7 +326,7 @@ class UserControllerTest {
     @WithMockUser
     void testVerifyEmail() throws Exception {
         VerifyEmailTo verifyEmailTo = new VerifyEmailTo();
-        verifyEmailTo.setToken(TEMP_TOKN);
+        verifyEmailTo.setToken(TEMP_TOKEN);
         ResponseMessageTo responseMessageTo = new ResponseMessageTo();
         responseMessageTo.setMessage(NMRConstants.SUCCESS_RESPONSE);
         when(userService.verifyEmail(any(VerifyEmailTo.class))).thenReturn(responseMessageTo);

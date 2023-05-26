@@ -8,7 +8,7 @@ import java.math.BigInteger;
 
 public interface IAddressMasterRepository extends JpaRepository<AddressMaster, BigInteger> {
 
-	@Query(value = "select * from address where hp_profile_id = :hpProfileId and address_type_id = :addressType ORDER BY ID DESC LIMIT 1", nativeQuery = true)
+	@Query(value = "select * from address_master where hp_profile_id = :hpProfileId and address_type_id = :addressType ORDER BY ID DESC LIMIT 1", nativeQuery = true)
 	AddressMaster getCommunicationAddressByHpProfileId(BigInteger hpProfileId, Integer addressType);
 
 }
