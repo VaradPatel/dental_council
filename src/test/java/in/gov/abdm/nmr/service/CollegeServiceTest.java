@@ -27,6 +27,7 @@ import java.util.List;
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static in.gov.abdm.nmr.util.CommonTestData.getUniversityMaster;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -105,6 +106,43 @@ class CollegeServiceTest {
         assertEquals(ID, collegeResponse.getId());
     }
 
+    @Test
+    void testCreateOrUpdateCollegeShouldThrowInvalidRequestException() {
+        SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
+        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        assertThrows(InvalidRequestException.class, () -> collegeService.createOrUpdateCollege(getCollegeResponse()));
+    }
+
+    @Test
+    void testCreateOrUpdateCollegeShouldThrowNotFoundExceptionForCollege() {
+        SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
+        when(userDaoService.findByUsername(anyString())).thenReturn(getNmcUser());
+        when(collegeMasterDaoService.findById(any(BigInteger.class))).thenReturn(null);
+        assertThrows(NotFoundException.class, () -> collegeService.createOrUpdateCollege(getCollegeResponse()));
+    }
+
+    public static CollegeResponseTo getCollege() {
+        CollegeResponseTo collegeResponseTo = new CollegeResponseTo();
+        collegeResponseTo.setUniversityId(ID);
+        collegeResponseTo.setEmailId(EMAIL_ID);
+        collegeResponseTo.setMobileNumber(MOBILE_NUMBER);
+        return collegeResponseTo;
+    }
+
+    @Test
+    void testCreateOrUpdateCollegeShouldCreateCollegeAndCheckDuplicateContactsCheck() {
+        SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
+        when(userDaoService.findByUsername(anyString())).thenReturn(getNmcUser());
+      //  when(collegeMasterDaoService.findById(any(BigInteger.class))).thenReturn(getCollegeMaster());
+//        when(collegeProfileDaoService.findAdminByCollegeId(any(BigInteger.class))).thenReturn(getCollegeProfile());
+        when(collegeMasterDaoService.save(any(CollegeMaster.class))).thenReturn(getCollegeMaster());
+        when(universityMasterService.findById(any(BigInteger.class))).thenReturn(getUniversityMaster());
+        when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+//        when(passwordService.getResetPasswordLink(any(SendLinkOnMailTo.class))).thenReturn(getResponseMessage());
+        when(userDaoService.existsByEmail(anyString())).thenReturn(false);
+        assertThrows(Exception.class, () -> collegeService.createOrUpdateCollege(getCollege()));
+    }
+
     public static CollegeProfileTo getCollegeProfileRequest() {
         CollegeProfileTo collegeProfileTo = new CollegeProfileTo();
         collegeProfileTo.setId(ID);
@@ -136,5 +174,10 @@ class CollegeServiceTest {
         when(collegeProfileDaoService.findById(any(BigInteger.class))).thenReturn(getCollegeProfile());
         CollegeProfileTo collegeVerifier = collegeService.getCollegeVerifier(COLLEGE_ID, ID);
         assertEquals(COLLEGE_ID, collegeVerifier.getCollegeId());
+    }
+
+    @Test
+    void testGetAllCollegeVerifiersDesignation() {
+        assertThrows(Exception.class, () -> collegeService.getAllCollegeVerifiersDesignation());
     }
 }

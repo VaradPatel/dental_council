@@ -1,14 +1,18 @@
 package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.entity.ResetToken;
-import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.exception.InvalidIdException;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.OtpException;
+import in.gov.abdm.nmr.mapper.INbeMapper;
+import in.gov.abdm.nmr.mapper.INmcMapper;
+import in.gov.abdm.nmr.mapper.ISmcMapper;
 import in.gov.abdm.nmr.repository.IFetchUserDetailsCustomRepository;
+import in.gov.abdm.nmr.repository.ISmcProfileRepository;
 import in.gov.abdm.nmr.repository.IUserRepository;
 import in.gov.abdm.nmr.repository.ResetTokenRepository;
 import in.gov.abdm.nmr.service.impl.OtpServiceImpl;
@@ -52,6 +56,16 @@ class UserServiceTest {
     OtpServiceImpl otpService;
     @Mock
     ResetTokenRepository resetTokenRepository;
+    @Mock
+    ISmcMapper smcMapper;
+    @Mock
+    INmcMapper nmcMapper;
+    @Mock
+    INbeMapper nbeMapper;
+    @Mock
+    ISmcProfileRepository smcProfileRepository;
+    @Mock
+    INmcDaoService nmcDaoService;
     @Mock
     EntityManager entityManager;
 
@@ -258,15 +272,80 @@ class UserServiceTest {
         return userProfileTO;
     }
 
+    public static UserProfileTO getUserProfileTO() {
+        UserProfileTO userProfileTO = new UserProfileTO();
+        userProfileTO.setSmcId(SMC_ID);
+        userProfileTO.setName(SMC_NAME);
+        userProfileTO.setTypeId(UserTypeEnum.NMC.getId());
+        userProfileTO.setSubTypeId(UserSubTypeEnum.NMC_ADMIN.getId());
+        userProfileTO.setEmailId(CommonTestData.EMAIL_ID);
+        userProfileTO.setMobileNumber(MOBILE_NUMBER);
+        return userProfileTO;
+    }
+
+/*    @Test
+    void testCreateUser() throws NmrException {
+        when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(nmcDaoService.save(any(NmcProfile.class))).thenReturn(getNmcProfile());
+        UserProfileTO userProfileTO = userService.createUser(getUserProfileTO());
+        assertEquals(CommonTestData.ID, userProfileTO.getSmcId());
+    }*/
+
     @Test
     void testCreateUserShouldThrowNmrException() {
         assertThrows(NmrException.class, () -> userService.createUser(getUserProfileForNMRException()));
     }
 
     @Test
-    void testUnlockUserShouldUnlockUser(){
+    void testUnlockUserShouldUnlockUser() {
         doNothing().when(userDaoService).unlockUser(any(BigInteger.class));
         userService.unlockUser(BigInteger.valueOf(1));
         verify(userDaoService, times(1)).unlockUser(any(BigInteger.class));
+    }
+
+    @Test
+    void testGetSmcProfile() throws NmrException, InvalidIdException {
+        when(userDaoService.findSmcProfile(any(BigInteger.class))).thenReturn(getSmcProfile());
+        when(smcMapper.smcProfileToDto(any(SMCProfile.class))).thenReturn(getSMCProfile());
+        SMCProfileTO smcProfile = userService.getSmcProfile(CommonTestData.ID);
+        assertEquals(CommonTestData.ID, smcProfile.getId());
+    }
+
+    @Test
+    void testGetNmcProfile() throws NmrException, InvalidIdException {
+        when(userDaoService.findNmcProfile(any(BigInteger.class))).thenReturn(getNmcProfile());
+        when(nmcMapper.nmcProfileToDto(any(NmcProfile.class))).thenReturn(getNmcProfileTO());
+        NmcProfileTO nmcProfile = userService.getNmcProfile(CommonTestData.ID);
+        assertEquals(CommonTestData.ID, nmcProfile.getId());
+    }
+
+    @Test
+    void testGetNbeProfile() throws NmrException, InvalidIdException {
+        when(userDaoService.findNbeProfile(any(BigInteger.class))).thenReturn(getNbeProfile());
+        when(nbeMapper.nbeProfileToDto(any(NbeProfile.class))).thenReturn(getNbeProfileTO());
+        NbeProfileTO nbeProfile = userService.getNbeProfile(CommonTestData.ID);
+        assertEquals(CommonTestData.ID, nbeProfile.getId());
+    }
+
+    @Test
+    void testUpdateSmcProfile() throws NmrException, InvalidIdException {
+        when(userDaoService.updateSmcProfile(any(BigInteger.class), any(SMCProfileTO.class))).thenReturn(getSmcProfile());
+//        when(smcProfileRepository.save(any(SMCProfile.class))).thenReturn(getSmcProfile());
+        when(smcMapper.smcProfileToDto(any(SMCProfile.class))).thenReturn(getSMCProfile());
+        userService.updateSmcProfile(CommonTestData.ID, getSMCProfile());
+    }
+
+    @Test
+    void testUpdateNmcProfile() throws NmrException, InvalidIdException {
+        when(userDaoService.updateNmcProfile(any(BigInteger.class), any(NmcProfileTO.class))).thenReturn(getNmcProfile());
+        when(nmcMapper.nmcProfileToDto(any(NmcProfile.class))).thenReturn(getNmcProfileTO());
+        userService.updateNmcProfile(CommonTestData.ID, getNmcProfileTO());
+    }
+
+    @Test
+    void testUpdateNbeProfile() throws NmrException, InvalidIdException {
+        when(userDaoService.updateNbeProfile(any(BigInteger.class), any(NbeProfileTO.class))).thenReturn(getNbeProfile());
+        when(nbeMapper.nbeProfileToDto(any(NbeProfile.class))).thenReturn(getNbeProfileTO());
+        userService.updateNbeProfile(CommonTestData.ID, getNbeProfileTO());
     }
 }

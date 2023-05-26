@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.client.GatewayFClient;
 import in.gov.abdm.nmr.dto.LoginResponseTO;
+import in.gov.abdm.nmr.dto.SessionRequestTo;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.security.jwt.JwtUtil;
 import in.gov.abdm.nmr.service.impl.AuthServiceImpl;
@@ -19,6 +20,7 @@ import java.math.BigInteger;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -40,10 +42,6 @@ class AuthServiceTest {
     ICollegeProfileDaoService collegeProfileDaoService;
     @Mock
     ISmcProfileDaoService smcProfileDaoService;
-    @Mock
-    INmcDaoService nmcDaoService;
-    @Mock
-    INbeDaoService nbeDaoService;
     @Mock
     GatewayFClient gatewayFClient;
 
@@ -79,5 +77,10 @@ class AuthServiceTest {
         when(smcProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getSmcProfile());
         LoginResponseTO loginResponseTO = authService.successfulAuth(response);
         assertEquals(ID, loginResponseTO.getUserId());
+    }
+
+    @Test
+    void testSessionsShouldThrowException() {
+        assertThrows(Exception.class, () -> authService.sessions(SessionRequestTo.builder().clientId(CLIENT_ID).clientSecret(CLIENT_SECRET).build()));
     }
 }
