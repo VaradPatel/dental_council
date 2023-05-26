@@ -277,4 +277,21 @@ public class NMRConstants {
     public static final String REDIS_PORT = "${spring.redis.port}";
     public static final String REDIS_DATABASE = "${spring.redis.database}";
     public static final String INVALID_FACILITY_DETAILS_MESSAGE = "Invalid facility details provided";
+
+
+
+    public static final String BEARER= "Bearer ";
+    public static final String HPR_REGISTER_SUCCESS="Registration of health professional in HPR is successful ";
+    public static final String HPR_REGISTER_FAILED="Failed- Registration of health professional in HPR ";
+    public static final String HPR_REGISTER_MISSING_VALUES ="HPR registration failed due to some missing values in the request payload of HPR ";
+
+    public static final String HPR_ID_SERVICE = "HPRID";
+    public static final String HPR_SERVICE = "HPR";
+    public static final String HPR_ID_SERVICE_ENDPOINT = "${hprId.fetchToken.endpoint}";
+    public static final String HPR_SERVICE_ENDPOINT = "${hpr.registerProfessional.endpoint}";
+
+    public static final String HPR_ID="hpr_id";
+    public static final String DOMAIN_NAME="@hpr.abdm";
+    public static final String  HPR_SERVICE_REGISTER_HEALTH_PROFESSIONAL="/apis/v1/doctors/register-professional";
+    public static final String  HPR_ID_SERVICE_TOKEN_BY_HPRID="/api/v2/search/internal/hfr/getTokensByHprId";
 }
