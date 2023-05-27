@@ -17,6 +17,7 @@ import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,13 +63,6 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
     @Autowired
     HpNbeDetailsMasterRepository hpNbeDetailsMasterRepository;
-
-    @Autowired
-    LanguagesKnownRepository languagesKnownRepository;
-
-    @Autowired
-    LanguagesKnownMasterRepository languagesKnownMasterRepository;
-
     @Autowired
     INmrHprLinkageRepository nmrHprLinkageRepository;
 
@@ -83,21 +77,8 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
     @Autowired
     IQualificationDetailMasterRepository qualificationDetailMasterRepository;
-
     @Autowired
-    SuperSpecialityRepository superSpecialityRepository;
-
-    @Autowired
-    SuperSpecialityMasterRepository superSpecialityMasterRepository;
-
-    @Autowired
-    WorkProfileMasterRepository workProfileAuditRepository;
-
-    @Autowired
-    WorkProfileRepository workProfileRepository;
-
-    @Autowired
-    private IElasticsearchDaoService elasticsearchDaoService;
+    IElasticsearchDaoService elasticsearchDaoService;
 
     @Autowired
     IHpProfileStatusRepository hpProfileStatusRepository;
@@ -114,7 +95,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     IHPRRegisterProfessionalService ihprRegisterProfessionalService;
 
     @Autowired
-    private IWorkFlowRepository iWorkFlowRepository;
+    IWorkFlowRepository iWorkFlowRepository;
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -153,16 +134,14 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     private void updateTransactionHealthProfessionalDetails(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile) throws WorkFlowException {
 
         if (!ApplicationType.QUALIFICATION_ADDITION.getId().equals(requestTO.getApplicationTypeId())) {
-            log.debug("The given Application type is Qualification Addition. ");
-            log.debug("Setting the hp_profile_status as the work_flow_status retrieved from nmr_work_flow_configuration. ");
             hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).orElseThrow(WorkFlowException::new));
-            if (hpProfile.getNmrId() == null) {
-                log.debug("Generating NMR id as the hp_profile doesn't have an NMR id associated.");
-                log.debug("Updating NMR id in hp_profile and user table");
+            if (StringUtils.isEmpty(hpProfile.getNmrId())) {
+                log.info("Generating NMR id as the hp_profile doesn't have an NMR id associated.");
+                log.info("Updating NMR id in hp_profile and user table");
                 hpProfile.setNmrId(generateNmrId());
                 User user = userRepository.findById(hpProfile.getUser().getId()).orElseThrow(WorkFlowException::new);
                 user.setNmrId(hpProfile.getNmrId());
-                log.debug("Initiating a notification indicating the NMR creation");
+                log.info("Initiating a notification indicating the NMR creation");
                 try {
                     notificationService.sendNotificationForNMRCreation(user.getNmrId(), user.getMobileNumber());
                     if (hpProfile.getConsent().toString().equals("1")) {
