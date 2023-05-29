@@ -1,6 +1,8 @@
 package in.gov.abdm.nmr.service.impl;
 
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
+import feign.FeignException;
+import in.gov.abdm.nmr.client.HPRFClient;
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.AddressType;
@@ -10,10 +12,12 @@ import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.*;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.IElasticsearchDaoService;
+import in.gov.abdm.nmr.service.IHPRRegisterProfessionalService;
 import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.service.IWorkflowPostProcessorService;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +25,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
+
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @Service
 @Slf4j
@@ -56,13 +63,6 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
     @Autowired
     HpNbeDetailsMasterRepository hpNbeDetailsMasterRepository;
-
-    @Autowired
-    LanguagesKnownRepository languagesKnownRepository;
-
-    @Autowired
-    LanguagesKnownMasterRepository languagesKnownMasterRepository;
-
     @Autowired
     INmrHprLinkageRepository nmrHprLinkageRepository;
 
@@ -77,21 +77,8 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
     @Autowired
     IQualificationDetailMasterRepository qualificationDetailMasterRepository;
-
     @Autowired
-    SuperSpecialityRepository superSpecialityRepository;
-
-    @Autowired
-    SuperSpecialityMasterRepository superSpecialityMasterRepository;
-
-    @Autowired
-    WorkProfileMasterRepository workProfileAuditRepository;
-
-    @Autowired
-    WorkProfileRepository workProfileRepository;
-
-    @Autowired
-    private IElasticsearchDaoService elasticsearchDaoService;
+    IElasticsearchDaoService elasticsearchDaoService;
 
     @Autowired
     IHpProfileStatusRepository hpProfileStatusRepository;
@@ -100,10 +87,15 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     IUserRepository userRepository;
 
     @Autowired
-    INotificationService notificationService;
+    HPRFClient hprClient;
 
     @Autowired
-    private IWorkFlowRepository iWorkFlowRepository;
+    INotificationService notificationService;
+    @Autowired
+    IHPRRegisterProfessionalService ihprRegisterProfessionalService;
+
+    @Autowired
+    IWorkFlowRepository iWorkFlowRepository;
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -115,32 +107,45 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         HpProfileMaster masterHpProfileDetails = updateHpProfileToMaster(transactionHpProfile.getId(), transactionHpProfile.getRegistrationId());
 
         RegistrationDetailsMaster registrationMaster = updateRegistrationDetailsToMaster(transactionHpProfile.getId(), masterHpProfileDetails);
-        updateAddressToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
-        updateForeignQualificationToMaster(transactionHpProfile, masterHpProfileDetails, registrationMaster);
-        updateHpNbeDetailsToMaster(transactionHpProfile, masterHpProfileDetails);
+        AddressMaster addressMaster = updateAddressToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
+        List<ForeignQualificationDetailsMaster> foreignQualificationDetailsMasterList = updateForeignQualificationToMaster(transactionHpProfile, masterHpProfileDetails, registrationMaster);
         updateNmrHprLinkageToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
-        updateQualificationDetailsToMaster(transactionHpProfile, masterHpProfileDetails, registrationMaster);
+        List<QualificationDetailsMaster> qualificationDetailsMasterList = updateQualificationDetailsToMaster(transactionHpProfile, masterHpProfileDetails, registrationMaster);
         updateElasticDB(workFlow, masterHpProfileDetails);
 
+        WorkFlow workFlowDetailsByHpProfile = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
+        // Note-> Modification and qualification addition application types are not added as there is No update API from HPR
+        if ((in.gov.abdm.nmr.enums.HpProfileStatus.APPROVED.getId().equals(workFlowDetailsByHpProfile.getWorkFlowStatus().getId())) &&
+                ((ApplicationType.HP_REGISTRATION.getId().equals((workFlowDetailsByHpProfile.getApplicationType().getId()))) ||
+                        (ApplicationType.FOREIGN_HP_REGISTRATION.getId().equals(workFlowDetailsByHpProfile.getApplicationType().getId())))
+                && (masterHpProfileDetails.getConsent() == 1)) {
+            HPRRequestTo hprRequestTo = ihprRegisterProfessionalService.createRequestPayloadForHPRProfileCreation(transactionHpProfile, masterHpProfileDetails, registrationMaster, addressMaster, qualificationDetailsMasterList, foreignQualificationDetailsMasterList);
+            try {
+                hprClient.registerHealthProfessional(hprRequestTo.getAuthorization(), hprRequestTo.getPractitionerRequestTO());
+                log.info(HPR_REGISTER_SUCCESS);
+            } catch (FeignException.UnprocessableEntity e) {
+                log.error(HPR_REGISTER_MISSING_VALUES + e.getMessage());
+            } catch (Exception e) {
+                log.error(HPR_REGISTER_FAILED + e.getMessage());
+            }
+        }
     }
 
     private void updateTransactionHealthProfessionalDetails(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile) throws WorkFlowException {
 
         if (!ApplicationType.QUALIFICATION_ADDITION.getId().equals(requestTO.getApplicationTypeId())) {
-            log.debug("The given Application type is Qualification Addition. ");
-            log.debug("Setting the hp_profile_status as the work_flow_status retrieved from nmr_work_flow_configuration. ");
             hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).orElseThrow(WorkFlowException::new));
-            if (hpProfile.getNmrId() == null) {
-                log.debug("Generating NMR id as the hp_profile doesn't have an NMR id associated.");
-                log.debug("Updating NMR id in hp_profile and user table");
+            if (StringUtils.isEmpty(hpProfile.getNmrId())) {
+                log.info("Generating NMR id as the hp_profile doesn't have an NMR id associated.");
+                log.info("Updating NMR id in hp_profile and user table");
                 hpProfile.setNmrId(generateNmrId());
                 User user = userRepository.findById(hpProfile.getUser().getId()).orElseThrow(WorkFlowException::new);
                 user.setNmrId(hpProfile.getNmrId());
-                log.debug("Initiating a notification indicating the NMR creation");
+                log.info("Initiating a notification indicating the NMR creation");
                 try {
                     notificationService.sendNotificationForNMRCreation(user.getNmrId(), user.getMobileNumber());
-                    if(hpProfile.getConsent().toString().equals("1")){
-                        notificationService.sendNotificationForHprAccountCreation(user.getUserName(),user.getHprId(),user.getMobileNumber());
+                    if (hpProfile.getConsent().toString().equals("1")) {
+                        notificationService.sendNotificationForHprAccountCreation(user.getUserName(), user.getHprId(), user.getMobileNumber());
                     }
                 } catch (Exception exception) {
                     log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
@@ -157,20 +162,20 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
     private RegistrationDetailsMaster updateRegistrationDetailsToMaster(BigInteger transactionHpProfileId, HpProfileMaster hpProfileMaster) {
         log.debug("Mapping the current registration_details to registration_details_master table");
+        RegistrationDetailsMaster registrationDetailsAudit = new RegistrationDetailsMaster();
         RegistrationDetails registrationDetailsByHpProfileId = registrationDetailRepository.getRegistrationDetailsByHpProfileId(transactionHpProfileId);
 
         if (registrationDetailsByHpProfileId != null) {
-
-            RegistrationDetailsMaster registrationDetailsAudit = IHpProfileMasterMapper.HP_PROFILE_MASTER_MAPPER.registrationDetailsToRegistrationDetailsMaster(registrationDetailsByHpProfileId);
+            registrationDetailsAudit = IHpProfileMasterMapper.HP_PROFILE_MASTER_MAPPER.registrationDetailsToRegistrationDetailsMaster(registrationDetailsByHpProfileId);
             RegistrationDetailsMaster fetchedFromMaster = registrationDetailAuditRepository.getRegistrationDetailsByHpProfileId(hpProfileMaster.getId());
 
             if (fetchedFromMaster != null) {
                 registrationDetailsAudit.setId(fetchedFromMaster.getId());
             }
             registrationDetailsAudit.setHpProfileMaster(hpProfileMaster);
-            return registrationDetailAuditRepository.save(registrationDetailsAudit);
+            registrationDetailsAudit = registrationDetailAuditRepository.save(registrationDetailsAudit);
         }
-        return null;
+        return registrationDetailsAudit;
     }
 
     private HpProfileMaster updateHpProfileToMaster(BigInteger transactionHpProfileId, String hpRegistrationId) {
@@ -189,39 +194,42 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         return hpProfileMasterRepository.save(masterHpProfileEntity);
     }
 
-    private void updateAddressToMaster(BigInteger transactionHpProfileId, BigInteger masterHpProfileId) {
+    private AddressMaster updateAddressToMaster(BigInteger transactionHpProfileId, BigInteger masterHpProfileId) {
+        AddressMaster addressMasters = new AddressMaster();
 
         log.debug("Mapping the current Address to Address Master table");
 
         Address address = addressRepository.getCommunicationAddressByHpProfileId(transactionHpProfileId, AddressType.COMMUNICATION.getId());
 
         if (address != null) {
-            AddressMaster addressMasters = IAddressMasterMapper.ADDRESS_MASTER_MAPPER.addressToAddressMaster(address);
+            addressMasters = IAddressMasterMapper.ADDRESS_MASTER_MAPPER.addressToAddressMaster(address);
             AddressMaster fetchedFromMasters = addressMasterRepository.getCommunicationAddressByHpProfileId(masterHpProfileId, AddressType.COMMUNICATION.getId());
 
             if (fetchedFromMasters != null) {
                 addressMasters.setId(fetchedFromMasters.getId());
             }
             addressMasters.setHpProfileId(masterHpProfileId);
-            addressMasterRepository.save(addressMasters);
+            addressMasters = addressMasterRepository.save(addressMasters);
         }
+        return addressMasters;
     }
 
-    private void updateForeignQualificationToMaster(HpProfile transactionHpProfile, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
+    private List<ForeignQualificationDetailsMaster> updateForeignQualificationToMaster(HpProfile transactionHpProfile, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
         log.debug("Mapping the Foreign Qualification Details to Foreign Qualification Details Master table");
-
+        List<ForeignQualificationDetailsMaster> qualificationDetailsMasters = new ArrayList<>();
         List<ForeignQualificationDetails> qualificationDetails = customQualificationDetailRepository.getQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
         List<String> masterCourseIds = customQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId())
                 .stream().map(ForeignQualificationDetailsMaster::getCourse).toList();
         List<ForeignQualificationDetails> filterQualifications = qualificationDetails.stream().filter(qualificationDetail -> !masterCourseIds.contains(qualificationDetail.getCourse())).toList();
         if (!filterQualifications.isEmpty()) {
-            List<ForeignQualificationDetailsMaster> qualificationDetailsMasters = IForeignQualificationDetailsMasterMapper.FOREIGN_QUALIFICATION_DETAILS_MASTER_MAPPER.qualificationToQualificationMaster(filterQualifications);
+            qualificationDetailsMasters = IForeignQualificationDetailsMasterMapper.FOREIGN_QUALIFICATION_DETAILS_MASTER_MAPPER.qualificationToQualificationMaster(filterQualifications);
             qualificationDetailsMasters.forEach(qualificationDetailsMaster -> {
                 qualificationDetailsMaster.setHpProfileMaster(masterHpProfile);
                 qualificationDetailsMaster.setRegistrationDetails(registrationMaster);
             });
-            customQualificationDetailMasterRepository.saveAll(qualificationDetailsMasters);
+            qualificationDetailsMasters = customQualificationDetailMasterRepository.saveAll(qualificationDetailsMasters);
         }
+        return qualificationDetailsMasters;
     }
 
     private void updateHpNbeDetailsToMaster(HpProfile transactionHpProfile, HpProfileMaster masterHpProfile) {
@@ -257,21 +265,23 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         }
     }
 
-    private void updateQualificationDetailsToMaster(HpProfile transactionHpProfile, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
-        log.debug("Mapping the current Qualification Details to Qualification Details Master table");
 
+    private List<QualificationDetailsMaster> updateQualificationDetailsToMaster(HpProfile transactionHpProfile, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
+        log.debug("Mapping the current Qualification Details to Qualification Details Master table");
+        List<QualificationDetailsMaster> qualificationDetailsMasters = new ArrayList<>();
         List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
         List<BigInteger> masterCourseIds = qualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId())
                 .stream().map(qualificationDetailsMaster -> qualificationDetailsMaster.getCourse().getId()).toList();
         List<QualificationDetails> filterQualifications = qualificationDetails.stream().filter(qualificationDetail -> !masterCourseIds.contains(qualificationDetail.getCourse().getId())).toList();
         if (!filterQualifications.isEmpty()) {
-            List<QualificationDetailsMaster> qualificationDetailsMasters = IQualificationDetailMasterMapper.QUALIFICATION_DETAIL_MASTER_MAPPER.qualificationDetailsToQualificationDetailsMaster(filterQualifications);
+            qualificationDetailsMasters = IQualificationDetailMasterMapper.QUALIFICATION_DETAIL_MASTER_MAPPER.qualificationDetailsToQualificationDetailsMaster(filterQualifications);
             qualificationDetailsMasters.forEach(qualificationDetailsMaster -> {
                 qualificationDetailsMaster.setHpProfileMaster(masterHpProfile);
                 qualificationDetailsMaster.setRegistrationDetails(registrationMaster);
             });
-            qualificationDetailMasterRepository.saveAll(qualificationDetailsMasters);
+            qualificationDetailsMasters = qualificationDetailMasterRepository.saveAll(qualificationDetailsMasters);
         }
+        return qualificationDetailsMasters;
     }
 
 

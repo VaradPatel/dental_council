@@ -86,7 +86,7 @@ class PasswordServiceTest {
 
     public ResetToken getResetTokenAsExpiryDate() {
         ResetToken resetToken = new ResetToken();
-        resetToken.setToken(TEMP_TOKN);
+        resetToken.setToken(TEMP_TOKEN);
         resetToken.setId(CommonTestData.USER_ID);
         resetToken.setExpiryDate(PAST_TIMESTAMP);
         resetToken.setUserName(TEST_USER);
