@@ -14,7 +14,7 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 @EnableJpaRepositories(basePackages = {"in.gov.abdm.nmr.repository"})
 @EnableRedisRepositories(basePackages = {"in.gov.abdm.nmr.redis"})
 @EnableMongoRepositories(basePackages = {"in.gov.abdm.nmr.nosql"})
-public class NmrApplication {
+public class  NmrApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(NmrApplication.class, args);

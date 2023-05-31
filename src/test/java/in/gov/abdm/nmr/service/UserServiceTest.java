@@ -234,14 +234,14 @@ class UserServiceTest {
         when(resetTokenRepository.findByToken(anyString())).thenReturn(getResetToken());
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
-        ResponseMessageTo responseMessageTo = userService.verifyEmail(new VerifyEmailTo(TEMP_TOKN));
+        ResponseMessageTo responseMessageTo = userService.verifyEmail(new VerifyEmailTo(TEMP_TOKEN));
         assertEquals(SUCCESS_RESPONSE, responseMessageTo.getMessage());
     }
 
     @Test
     void testVerifyEmailShouldTokenValueNullAndReturnLinkExpired() {
         when(resetTokenRepository.findByToken(anyString())).thenReturn(null);
-        ResponseMessageTo responseMessageTo = userService.verifyEmail(new VerifyEmailTo(TEMP_TOKN));
+        ResponseMessageTo responseMessageTo = userService.verifyEmail(new VerifyEmailTo(TEMP_TOKEN));
         assertEquals(LINK_EXPIRED, responseMessageTo.getMessage());
     }
 
@@ -256,7 +256,7 @@ class UserServiceTest {
     @Test
     void testVerifyEmailShouldReturnLinkExpired() {
         when(resetTokenRepository.findByToken(anyString())).thenReturn(getExpiredResetToken());
-        ResponseMessageTo responseMessageTo = userService.verifyEmail(new VerifyEmailTo(TEMP_TOKN));
+        ResponseMessageTo responseMessageTo = userService.verifyEmail(new VerifyEmailTo(TEMP_TOKEN));
         assertEquals(LINK_EXPIRED, responseMessageTo.getMessage());
     }
 
