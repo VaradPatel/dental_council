@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.dto.ResponseMessageTo;
-import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
+import in.gov.abdm.nmr.entity.AddressMaster;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.HpProfileMaster;
 import in.gov.abdm.nmr.entity.RegistrationDetailsMaster;
@@ -17,15 +17,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.OngoingStubbing;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
-import static in.gov.abdm.nmr.util.CommonTestData.getHpProfile;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -135,6 +134,10 @@ class WorkflowPostProcessorServiceTest {
     INotificationService notificationService;
     @Mock
     private IWorkFlowRepository iWorkFlowRepository;
+    @Mock
+    private IHPRRegisterProfessionalService ihprRegisterProfessionalService;
+
+
 
     @BeforeEach
     void setup() {
@@ -151,8 +154,12 @@ class WorkflowPostProcessorServiceTest {
         when(customQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(any(BigInteger.class))).thenReturn(Arrays.asList(getForeignQualificationDetailsMaster()));
         when(notificationService.sendNotificationForNMRCreation(anyString(), anyString())).thenReturn(new ResponseMessageTo());
         when(userRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId())));
+       when(ihprRegisterProfessionalService.createRequestPayloadForHPRProfileCreation(
+                any(HpProfile.class), any(HpProfileMaster.class), any(RegistrationDetailsMaster.class), any(AddressMaster.class),
+                any(List.class), any(List.class))).thenReturn(getHprRequestTo());
+
         workflowPostProcessorService.performPostWorkflowUpdates(getWorkFlowRequestTO(), getHpProfile(), getNextGroup());
-        Mockito.verify(iWorkFlowRepository, Mockito.times(1)).findByRequestId(any(String.class));
+        Mockito.verify(iWorkFlowRepository, Mockito.times(2)).findByRequestId(any(String.class));
     }
 
     @Test

@@ -106,7 +106,7 @@ CommonTestData {
     public static final String UNIVERSITY_NAME = "Maharashtra University";
     public static final String SMC_CODE = "MAH";
     public static final String SMC_NAME = "MAH";
-    public static final String TEMP_TOKN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.";
+    public static final String TEMP_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.";
     public static final String TEST_PSWD = "Test@123";
     public static final String FACILITY_ID = "1";
     public static final String FACILITY_NAME = "1";
@@ -234,6 +234,22 @@ CommonTestData {
         state.setIsoCode(ISO_CODE);
         state.setName(STATE_NAME);
         return state;
+    }
+
+    public static PractitionerRequestTO getPractitionerRequest() {
+        PractitionerRequestTO practitionerRequestTO = new PractitionerRequestTO();
+        practitionerRequestTO.setPractitioner(new PractitionerTO());
+        practitionerRequestTO.setHprToken(TEMP_TOKEN);
+        return practitionerRequestTO;
+    }
+
+    public static HPRIdTokenResponseTO getHprTokenResponse() {
+        HPRIdTokenResponseTO hprIdTokenResponseTO = new HPRIdTokenResponseTO();
+        hprIdTokenResponseTO.setToken(TEMP_TOKEN);
+        hprIdTokenResponseTO.setHprId(HPR_ID);
+        hprIdTokenResponseTO.setRefreshToken(TEMP_TOKEN);
+        hprIdTokenResponseTO.setHprIdNumber(HPR_NUMBER);
+        return hprIdTokenResponseTO;
     }
 
     public static HpProfile getHpProfile() {
@@ -506,6 +522,13 @@ CommonTestData {
         return language;
     }
 
+    public static HPRRequestTo getHprRequestTo() {
+        HPRRequestTo hprRequestTo = new HPRRequestTo();
+        hprRequestTo.setAuthorization("Bearer Token");
+        hprRequestTo.setPractitionerRequestTO(new PractitionerRequestTO());
+        return hprRequestTo;
+    }
+
     public static HpProfileMaster getMasterHpProfile() {
         HpProfileMaster hpProfileMaster = new HpProfileMaster();
         hpProfileMaster.setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.PENDING.getId()).build());
@@ -521,6 +544,7 @@ CommonTestData {
         hpProfileMaster.setProfilePhoto(PROFILE_PHOTO);
         hpProfileMaster.setDateOfBirth(DATE_OF_BIRTH);
         hpProfileMaster.setGender("M");
+        hpProfileMaster.setConsent(1);
         return hpProfileMaster;
     }
 
@@ -705,7 +729,7 @@ CommonTestData {
 
     public SetNewPasswordTo getSetNewPasswordTo() {
         SetNewPasswordTo newPassword = new SetNewPasswordTo();
-        newPassword.setToken(CommonTestData.TEMP_TOKN);
+        newPassword.setToken(CommonTestData.TEMP_TOKEN);
         newPassword.setPassword(CommonTestData.TEST_PSWD);
         return newPassword;
     }
@@ -735,8 +759,16 @@ CommonTestData {
 
     public SessionResponseTo getSessionResponse() {
         SessionResponseTo sessionResponse = new SessionResponseTo();
-        sessionResponse.setAccessToken(TEMP_TOKN);
+        sessionResponse.setAccessToken(TEMP_TOKEN);
         return sessionResponse;
+    }
+    public HPRIdTokenResponseTO getHprIdTokenResponse(){
+        HPRIdTokenResponseTO hprIdTokenResponseTO = new HPRIdTokenResponseTO();
+        hprIdTokenResponseTO.setHprIdNumber(HPR_NUMBER);
+        hprIdTokenResponseTO.setToken(TEMP_TOKEN);
+        hprIdTokenResponseTO.setHprId(HPR_ID);
+        hprIdTokenResponseTO.setRefreshToken(TEMP_TOKEN);
+        return hprIdTokenResponseTO;
     }
 
     public PersonalDetailsTO getPersonalDetails() {
@@ -900,6 +932,26 @@ CommonTestData {
         requestCounter.setCounter(ID);
 
         return requestCounter;
+    }
+
+    public static AddressMaster getAddressMaster() {
+        AddressMaster address = new AddressMaster();
+        address.setId(ID);
+        address.setAddressLine1(ADDRESS_LINE_1);
+        AddressType addressType = new AddressType();
+        addressType.setId(in.gov.abdm.nmr.enums.AddressType.KYC.getId());
+        addressType.setType(in.gov.abdm.nmr.enums.AddressType.KYC.getDescription());
+        address.setAddressTypeId(addressType);
+        address.setMobile(MOBILE_NUMBER);
+        address.setCountry(getCountry());
+        address.setHpProfileId(ID);
+        address.setDistrict(getDistrict());
+        address.setEmail(EMAIL_ID);
+        address.setPincode(PIN_CODE);
+        address.setState(getState());
+        address.setVillage(getVillage());
+        address.setSubDistrict(getSubDistrict());
+        return address;
     }
 
     public static List<QualificationDetailsMaster> getQualificationDetailsMasters() {

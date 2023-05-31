@@ -21,7 +21,7 @@ public class CollegeMasterDaoServiceImpl implements ICollegeMasterDaoService {
 
     @Override
     public List<CollegeMaster> getAllColleges() {
-        return collegeMasterRepository.findAll();
+        return collegeMasterRepository.getColleges();
     }
 
     @Override
