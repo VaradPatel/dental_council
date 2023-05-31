@@ -118,7 +118,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         if ((in.gov.abdm.nmr.enums.HpProfileStatus.APPROVED.getId().equals(workFlowDetailsByHpProfile.getWorkFlowStatus().getId())) &&
                 ((ApplicationType.HP_REGISTRATION.getId().equals((workFlowDetailsByHpProfile.getApplicationType().getId()))) ||
                         (ApplicationType.FOREIGN_HP_REGISTRATION.getId().equals(workFlowDetailsByHpProfile.getApplicationType().getId())))
-                && (masterHpProfileDetails.getConsent() == 1)) {
+                && (masterHpProfileDetails.getConsent() != null && masterHpProfileDetails.getConsent() == 1)) {
             HPRRequestTo hprRequestTo = ihprRegisterProfessionalService.createRequestPayloadForHPRProfileCreation(transactionHpProfile, masterHpProfileDetails, registrationMaster, addressMaster, qualificationDetailsMasterList, foreignQualificationDetailsMasterList);
             try {
                 hprClient.registerHealthProfessional(hprRequestTo.getAuthorization(), hprRequestTo.getPractitionerRequestTO());
