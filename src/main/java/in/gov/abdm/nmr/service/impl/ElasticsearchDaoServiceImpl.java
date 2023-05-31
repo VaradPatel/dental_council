@@ -61,16 +61,7 @@ public class ElasticsearchDaoServiceImpl implements IElasticsearchDaoService {
 
     @Override
     public SearchResponse<HpSearchResultTO> searchHP(HpSearchRequestTO hpSearchRequestTO, Pageable pageable) throws ElasticsearchException, IOException {
-        BoolQuery.Builder queryBuilder = QueryBuilders.bool();
-
-        if (hpSearchRequestTO.getFullName() != null && !hpSearchRequestTO.getFullName().isBlank()) {
-            BoolQuery.Builder fullNameQueryBuilder = QueryBuilders.bool().minimumShouldMatch("1");
-            fullNameQueryBuilder.should(mm -> mm.multiMatch(mmq -> mmq.fields("full_name", "full_name.phonetic_analyzed", "full_name.keyword").query(hpSearchRequestTO.getFullName()) //
-                    .fuzziness("AUTO")));
-            fullNameQueryBuilder.should(mm -> mm.multiMatch(mmq -> mmq.fields("full_name", "full_name.phonetic_analyzed").query(hpSearchRequestTO.getFullName()) //
-                    .analyzer("keyword").type(TextQueryType.BoolPrefix)));
-            queryBuilder.must(b -> b.bool(fullNameQueryBuilder.build()));
-        }
+        BoolQuery.Builder queryBuilder = QueryBuilders.bool().queryName("sort");
 
         if (StringUtils.isNotBlank(hpSearchRequestTO.getRegistrationNumber())) {
             queryBuilder.filter(m -> m.match(mq -> mq.field("registration_number").query(hpSearchRequestTO.getRegistrationNumber())));
@@ -86,6 +77,17 @@ public class ElasticsearchDaoServiceImpl implements IElasticsearchDaoService {
 
         if (hpSearchRequestTO.getProfileStatusId() != null) {
             queryBuilder.filter(m -> m.terms(mq -> mq.field("profile_status_id").terms(builder -> builder.value(hpSearchRequestTO.getProfileStatusId()))));
+        }
+        
+        if (hpSearchRequestTO.getFullName() != null && !hpSearchRequestTO.getFullName().isBlank()) {
+            BoolQuery.Builder fullNameQueryBuilder = QueryBuilders.bool().minimumShouldMatch("1");
+            fullNameQueryBuilder.should(mm -> mm.multiMatch(mmq -> mmq.fields("full_name", "full_name.phonetic_analyzed", "full_name.keyword").query(hpSearchRequestTO.getFullName()) //
+                    .fuzziness("AUTO")));
+            fullNameQueryBuilder.should(mm -> mm.multiMatch(mmq -> mmq.fields("full_name", "full_name.phonetic_analyzed").query(hpSearchRequestTO.getFullName()) //
+                    .analyzer("keyword").type(TextQueryType.BoolPrefix)));
+            queryBuilder.must(b -> b.bool(fullNameQueryBuilder.build()));
+            
+            queryBuilder.queryName("non_sort");
         }
 
         return elasticsearchRepository.searchHP(queryBuilder.build(), pageable.getPageNumber(), pageable.getPageSize());
