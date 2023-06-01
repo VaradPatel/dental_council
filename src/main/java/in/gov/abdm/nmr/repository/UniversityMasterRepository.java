@@ -14,7 +14,7 @@ public interface UniversityMasterRepository extends JpaRepository<UniversityMast
     @Query(value = "SELECT * FROM university_master WHERE id=:id", nativeQuery = true)
     UniversityMaster findUniversityMasterById(BigInteger id);
 
-    @Query(value = "SELECT *  FROM university_master", nativeQuery = true)
+    @Query(value = "SELECT distinct on (name) name ,id,status ,visible_status ,college_id ,created_at ,updated_at FROM university_master", nativeQuery = true)
     List<UniversityMaster> getUniversities();
 
     @Query(value = "SELECT id, name, status, visible_status, college_id, created_at, updated_at FROM university_master WHERE name= :universityName",

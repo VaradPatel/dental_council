@@ -40,12 +40,14 @@ public class KafkaListenerNotificationService {
      * * @param eventMessage the message to be consumed from Kafka topic
      * * @throws JsonProcessingException if an error occurs while processing the JSON message
      */
-    @KafkaListener(topics = NMRConstants.KAFKA_TOPIC, groupId = NMRConstants.KAFKA_GROUP_ID)
-    public void consume(String eventMessage) throws JsonProcessingException {
+
+
+    @KafkaListener(topics = "${spring.profiles.active}" + NMRConstants.KAFKA_TOPIC, groupId = NMRConstants.KAFKA_GROUP_ID)
+    public void consume(String eventMessage) {
         try {
             FileESignedEventTO eSignedEvent = objectMapper.readValue(eventMessage, FileESignedEventTO.class);
             String transactionId = eSignedEvent.getTransactionId().substring(0, eSignedEvent.getTransactionId().lastIndexOf("."));
-            log.debug("council Kafka topic name :{} and group Id :{} Request received for transaction ID: {} ", NMRConstants.KAFKA_TOPIC, NMRConstants.KAFKA_GROUP_ID, transactionId);
+            log.info("council Kafka topic name :{} and group Id :{} Request received for transaction ID: {} ", NMRConstants.KAFKA_TOPIC, NMRConstants.KAFKA_GROUP_ID, transactionId);
             HpProfile hpProfile = iHpProfileRepository.findByTransactionId(transactionId);
             if (hpProfile != null) {
                 log.debug("Fetched hp profile detail successfully for hp profile ID: {}", hpProfile.getId());
