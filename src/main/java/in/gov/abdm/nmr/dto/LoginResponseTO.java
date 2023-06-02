@@ -8,7 +8,7 @@ import java.math.BigInteger;
 public class LoginResponseTO {
 
     private BigInteger profileId;
-    private BigInteger parentProfileId;
+    private BigInteger collegeId;
     private BigInteger userId;
     private BigInteger userType;
     private BigInteger userSubType;
