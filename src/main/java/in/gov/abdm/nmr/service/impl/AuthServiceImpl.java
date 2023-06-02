@@ -92,12 +92,8 @@ public class AuthServiceImpl implements IAuthService {
             loginResponseTO.setUserSubType(userSubTypeId);
 
             CollegeProfile collegeProfile = collegeProfileDaoService.findByUserId(user.getId());
-            if (UserSubTypeEnum.COLLEGE_ADMIN.getId().equals(userSubTypeId)) {
-                loginResponseTO.setProfileId(collegeProfile.getCollege().getId());
-            } else {
                 loginResponseTO.setProfileId(collegeProfile.getId());
-                loginResponseTO.setParentProfileId(collegeProfile.getCollege().getId());
-            }
+                loginResponseTO.setCollegeId(collegeProfile.getCollege().getId());
 
         } else if (UserTypeEnum.SMC.getId().equals(user.getUserType().getId())) {
             loginResponseTO.setProfileId(smcProfileDaoService.findByUserId(user.getId()).getId());
