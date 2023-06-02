@@ -110,7 +110,7 @@ public class CollegeController {
         }
    }
 
-    @RolesAllowed({RoleConstants.COLLEGE_DEAN, RoleConstants.COLLEGE_REGISTRAR})
+    @RolesAllowed({RoleConstants.COLLEGE_ADMIN, RoleConstants.COLLEGE_DEAN, RoleConstants.COLLEGE_REGISTRAR, RoleConstants.COLLEGE_PRINCIPAL, RoleConstants.COLLEGE_OTHERS})
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping(path = COLLEGES_COLLEGE_ID_VERIFIERS_VERIFIER_ID, produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeProfileTo getCollegeVerifier(@NotNull @PathVariable BigInteger collegeId, @NotNull @PathVariable BigInteger verifierId) throws NmrException, InvalidIdException {

@@ -50,7 +50,7 @@ public class NmrExceptionAdvice {
 
    @ExceptionHandler({AccessDeniedException.class})
     public ResponseEntity<ErrorDTO> handleSecurityException(HttpServletRequest req, Throwable ex) {
-        ErrorDTO error = new ErrorDTO(new Date(), NMRError.ACCESS_DENIED_EXCEPTION.getCode(), NMRError.DATE_EXCEPTION.getMessage(), req.getServletPath(), HttpStatus.FORBIDDEN.toString());
+        ErrorDTO error = new ErrorDTO(new Date(), NMRError.ACCESS_DENIED_EXCEPTION.getCode(), NMRError.ACCESS_DENIED_EXCEPTION.getMessage(), req.getServletPath(), HttpStatus.FORBIDDEN.toString());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, headers, HttpStatus.FORBIDDEN.value());

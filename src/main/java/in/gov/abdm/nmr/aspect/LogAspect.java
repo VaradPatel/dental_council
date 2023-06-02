@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class LogAspect {
 
 
-    public static final String EXITING_WITH_ARGUMENT = "Exiting: {}.{}() with argument[s] = {}";
+    public static final String EXITING_WITH_ARGUMENT = "Exiting: {}.{}()";
 
     /**
      * Pointcut that matches all Spring beans in the application's main packages.
@@ -40,7 +40,7 @@ public class LogAspect {
         try {
             Object result = joinPoint.proceed();
             log.info(EXITING_WITH_ARGUMENT, joinPoint.getSignature().getDeclaringTypeName(),
-                    joinPoint.getSignature().getName(), result);
+                    joinPoint.getSignature().getName());
             return  result;
         } catch (IllegalArgumentException e) {
             log.error("Illegal argument: {} in {}.{}()", Arrays.toString(joinPoint.getArgs()),
