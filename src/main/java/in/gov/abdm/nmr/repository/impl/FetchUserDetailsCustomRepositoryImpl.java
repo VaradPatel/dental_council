@@ -169,7 +169,7 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
                     || Objects.equals(result[6], UserSubTypeEnum.SMC_ADMIN.getId())
                     || Objects.equals(result[6], UserSubTypeEnum.NBE_ADMIN.getId())
                     || Objects.equals(result[6], UserSubTypeEnum.NMC_ADMIN.getId()));
-            user.setLastLogin((Timestamp) result[7]);
+            user.setLastLogin(result[7] != null ? (Timestamp) result[7] : null);
             userTOList.add(user);
         });
         userResponseTO.setTotalNoOfRecords(BigInteger.valueOf(results.size()));
