@@ -65,6 +65,7 @@ public class AuthServiceImpl implements IAuthService {
         User user = userDetailDaoService.findByUsername(username);
 
         LoginResponseTO loginResponse = createLoginResponse(user);
+        userDetailDaoService.updateLastLogin(user.getId());
         generateAccessAndRefreshToken(response, username, user, loginResponse.getProfileId());
         return loginResponse;
     }
@@ -79,6 +80,7 @@ public class AuthServiceImpl implements IAuthService {
         loginResponseTO.setUserType(user.getUserType().getId());
         loginResponseTO.setUserGroupId(user.getGroup().getId());
         loginResponseTO.setUserId(user.getId());
+        loginResponseTO.setLastLogin(user.getLastLogin());
         if (UserTypeEnum.HEALTH_PROFESSIONAL.getId().equals(user.getUserType().getId())) {
             HpProfile hp = hpProfileService.findLatestEntryByUserid(user.getId());
             if (hp != null) {

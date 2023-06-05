@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
@@ -18,4 +19,5 @@ public class UserTO {
     private String emailId;
     private String mobileNumber;
     private boolean  isAdmin;
+    private Timestamp lastLogin;
 }

@@ -224,4 +224,9 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public void unlockUser(BigInteger userId) {
         userDetailRepository.unlockUser(userId);
     }
+
+    @Override
+    public void updateLastLogin(BigInteger userId) {
+        userDetailRepository.updateLastLogin(userId);
+    }
 }
