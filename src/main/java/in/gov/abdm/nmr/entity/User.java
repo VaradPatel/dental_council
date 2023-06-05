@@ -73,4 +73,6 @@ public class User extends CommonAuditEntity {
     @Column(name = "delete_status")
     private boolean deleteStatus;
 
+    @Column(name = "last_login")
+    private Timestamp lastLogin;
 }

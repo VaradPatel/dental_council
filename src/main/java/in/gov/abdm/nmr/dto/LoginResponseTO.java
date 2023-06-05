@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.dto;
 import lombok.Data;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
 
 @Data
 public class LoginResponseTO {
@@ -16,4 +17,5 @@ public class LoginResponseTO {
     private Boolean hpRegistered;
     private Boolean blacklisted;
     private String esignStatus;
+    private Timestamp lastLogin;
 }

@@ -48,4 +48,6 @@ public interface IUserDaoService {
     boolean checkEmailUsedByOtherUser(BigInteger id, String email);
 
     void unlockUser(BigInteger userId);
+
+    void updateLastLogin(BigInteger userId);
 }

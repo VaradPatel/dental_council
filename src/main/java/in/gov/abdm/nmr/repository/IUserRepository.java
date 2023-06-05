@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.math.BigInteger;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
+import static in.gov.abdm.nmr.util.NMRConstants.UPDATE_LAST_LOGIN;
 
 public interface IUserRepository extends JpaRepository<User, BigInteger> {
 
@@ -37,4 +38,9 @@ public interface IUserRepository extends JpaRepository<User, BigInteger> {
     @Modifying
     @Query(nativeQuery = true, value = UNLOCK_USER)
     void unlockUser(@Param(USER_ID) BigInteger userId);
+
+    @org.springframework.transaction.annotation.Transactional
+    @Modifying
+    @Query(nativeQuery = true, value = UPDATE_LAST_LOGIN)
+    void updateLastLogin(BigInteger userId);
 }
