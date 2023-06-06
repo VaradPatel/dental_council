@@ -79,6 +79,8 @@ class WorkFlowServiceTest {
 
     @Mock
     IUserDaoService userDetailService;
+    @Mock
+    IDashboardRepository iDashboardRepository;
 
     @Test
     void testInitiateSubmissionFlow() throws WorkFlowException, InvalidRequestException {
@@ -101,7 +103,7 @@ class WorkFlowServiceTest {
         when(iWorkFlowStatusRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(new in.gov.abdm.nmr.entity.WorkFlowStatus()));
         workFlowService.initiateSubmissionWorkFlow(getWorkFlowRequestTO());
 
-        Mockito.verify(dashboardRepository, Mockito.times(1)).save(any(Dashboard.class));
+        Mockito.verify(workFlowAuditRepository, Mockito.times(1)).save(any(WorkFlowAudit.class));
 
     }
 
@@ -165,6 +167,8 @@ class WorkFlowServiceTest {
         when(iWorkFlowRepository.findByRequestId(anyString())).thenReturn(getWorkFlow());
         when(iActionRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(new in.gov.abdm.nmr.entity.Action()));
         when(iWorkFlowStatusRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(new in.gov.abdm.nmr.entity.WorkFlowStatus()));
+        when(iDashboardRepository.findByRequestId(anyString())).thenReturn(new Dashboard());
+        when(iDashboardRepository.save(any(Dashboard.class))).thenReturn(new Dashboard());
         workFlowService.assignQueriesBackToQueryCreator(anyString());
         Mockito.verify(iWorkFlowStatusRepository, Mockito.times(2)).findById(any(BigInteger.class));
     }
