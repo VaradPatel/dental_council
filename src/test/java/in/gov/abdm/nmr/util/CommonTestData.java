@@ -258,7 +258,7 @@ CommonTestData {
         hpProfile.setId(ID);
         hpProfile.setFullName(PROFILE_DISPLAY_NAME);
         hpProfile.setMobileNumber(MOBILE_NUMBER);
-        hpProfile.setESignStatus(NMRConstants.SUCCESS);
+        hpProfile.setESignStatus(ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
         hpProfile.setIsNew(0);
         hpProfile.setRequestId(REQUEST_ID);
         //hpProfile.setNmrId(NMR_ID);
@@ -280,7 +280,7 @@ CommonTestData {
         hpProfile.setId(ID);
         hpProfile.setFullName(PROFILE_DISPLAY_NAME);
         hpProfile.setMobileNumber(MOBILE_NUMBER);
-        hpProfile.setESignStatus(NMRConstants.SUCCESS);
+        hpProfile.setESignStatus(ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
         hpProfile.setIsNew(0);
         hpProfile.setRequestId(REQUEST_ID);
         //hpProfile.setNmrId(NMR_ID);
@@ -651,8 +651,10 @@ CommonTestData {
         workFlow.setApplicationType(new ApplicationType(ID, HP_NAME, "desc", ""));
         workFlow.setWorkFlowStatus(new WorkFlowStatus(WorkflowStatus.APPROVED.getId(), WorkflowStatus.APPROVED.getDescription()));
         workFlow.setPreviousGroup(getUserGroup(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        workFlow.setCurrentGroup(getUserGroup(UserTypeEnum.SMC.getId()));
         return workFlow;
     }
+
     public WorkFlow getWorkFlowWherePreviousGroupNmc() {
         WorkFlow workFlow = new WorkFlow();
         workFlow.setId(ID);
@@ -1150,7 +1152,7 @@ CommonTestData {
         hpProfile.setId(ID);
         hpProfile.setFullName(PROFILE_DISPLAY_NAME);
         hpProfile.setMobileNumber(MOBILE_NUMBER);
-        hpProfile.setESignStatus(NMRConstants.SUCCESS);
+        hpProfile.setESignStatus(ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
         hpProfile.setIsNew(0);
         hpProfile.setRequestId(REQUEST_ID);
         //hpProfile.setNmrId(NMR_ID);

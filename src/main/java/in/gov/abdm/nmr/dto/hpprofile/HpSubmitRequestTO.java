@@ -17,7 +17,7 @@ public class HpSubmitRequestTO {
     private BigInteger applicationTypeId;
     private String requestId;
     private String transactionId;
-    private String eSignStatus;
+    private Integer eSignStatus;
     private Integer hprShareAcknowledgement;
 }
 
