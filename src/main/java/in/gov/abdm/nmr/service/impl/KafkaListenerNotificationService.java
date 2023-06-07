@@ -41,7 +41,7 @@ public class KafkaListenerNotificationService {
      */
 
 
-    @KafkaListener(topics = "${spring.profiles.active}" + NMRConstants.KAFKA_TOPIC, groupId = NMRConstants.KAFKA_GROUP_ID)
+    @KafkaListener(topics = "${spring.profiles.active}" + NMRConstants.UNDERSCORE + NMRConstants.KAFKA_TOPIC, groupId = "${spring.profiles.active}" + NMRConstants.UNDERSCORE + NMRConstants.KAFKA_GROUP_ID)
     public void consume(String eventMessage) {
         try {
             FileESignedEventTO eSignedEvent = objectMapper.readValue(eventMessage, FileESignedEventTO.class);
