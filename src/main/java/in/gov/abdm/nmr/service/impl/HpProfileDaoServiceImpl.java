@@ -201,22 +201,21 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             log.debug("Saving Qualification Details");
             saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), degreeCertificate != null ? List.of(degreeCertificate) : Collections.emptyList());
         }
-
-        HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByUserId(hpProfile.getUser().getId());
-        if (hpNbeDetails == null) {
-            log.debug("Initiating NBE details Insertion flow since there were no matching NBE details found for the given hp_profile_id. ");
-            hpNbeDetails = new HpNbeDetails();
-            mapNbeRequestDetailsToEntity(hpRegistrationUpdateRequestTO, hpNbeDetails, hpProfile);
-            hpNbeDetails.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
-        } else {
-            log.debug("Initiating NBE details Updation flow since there was an existing NBE detail for the given hp_profile_id. ");
-            mapNbeRequestDetailsToEntity(hpRegistrationUpdateRequestTO, hpNbeDetails, hpProfile);
+        if (NMRConstants.INTERNATIONAL.equals(hpRegistrationUpdateRequestTO.getQualificationDetails().get(0).getQualificationFrom())) {
+            HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByUserId(hpProfile.getUser().getId());
+            if (hpNbeDetails == null) {
+                log.debug("Initiating NBE details Insertion flow since there were no matching NBE details found for the given hp_profile_id. ");
+                hpNbeDetails = new HpNbeDetails();
+                mapNbeRequestDetailsToEntity(hpRegistrationUpdateRequestTO, hpNbeDetails, hpProfile);
+                hpNbeDetails.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
+            } else {
+                log.debug("Initiating NBE details Updation flow since there was an existing NBE detail for the given hp_profile_id. ");
+                mapNbeRequestDetailsToEntity(hpRegistrationUpdateRequestTO, hpNbeDetails, hpProfile);
+            }
+            hpNbeDetailsRepository.save(hpNbeDetails);
         }
-        hpNbeDetailsRepository.save(hpNbeDetails);
-        hpProfile.setRegistrationId(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationNumber());
-        iHpProfileRepository.save(hpProfile);
-
-
+            hpProfile.setRegistrationId(hpRegistrationUpdateRequestTO.getRegistrationDetail().getRegistrationNumber());
+            iHpProfileRepository.save(hpProfile);
         log.info("HpProfileDaoServiceImpl : updateHpRegistrationDetails method : Execution Successful. ");
 
         return new HpProfileUpdateResponseTO(204,
