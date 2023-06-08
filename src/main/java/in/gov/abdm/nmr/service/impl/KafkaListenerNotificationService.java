@@ -1,18 +1,18 @@
 package in.gov.abdm.nmr.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.dto.FileESignedEventTO;
 import in.gov.abdm.nmr.entity.Address;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.enums.AddressType;
+import in.gov.abdm.nmr.enums.ESignStatus;
 import in.gov.abdm.nmr.exception.DateException;
-import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.repository.IAddressRepository;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -28,9 +28,6 @@ import java.time.format.DateTimeParseException;
 public class KafkaListenerNotificationService {
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     IHpProfileRepository iHpProfileRepository;
     @Autowired
     IAddressRepository iAddressRepository;
@@ -40,14 +37,13 @@ public class KafkaListenerNotificationService {
      * * @param eventMessage the message to be consumed from Kafka topic
      * * @throws JsonProcessingException if an error occurs while processing the JSON message
      */
-
-
-    @KafkaListener(topics = "${spring.profiles.active}" + NMRConstants.KAFKA_TOPIC, groupId = NMRConstants.KAFKA_GROUP_ID)
+    @KafkaListener(topics = "${spring.profiles.active}"  + NMRConstants.UNDERSCORE + NMRConstants.KAFKA_TOPIC, groupId = "${spring.profiles.active}" + NMRConstants.UNDERSCORE + NMRConstants.KAFKA_GROUP_ID)
     public void consume(String eventMessage) {
         try {
+            log.info("council Kafka topic name :{} and group Id :{} Request received : {} ", NMRConstants.KAFKA_TOPIC, NMRConstants.KAFKA_GROUP_ID, eventMessage);
+            ObjectMapper objectMapper = new ObjectMapper();
             FileESignedEventTO eSignedEvent = objectMapper.readValue(eventMessage, FileESignedEventTO.class);
             String transactionId = eSignedEvent.getTransactionId().substring(0, eSignedEvent.getTransactionId().lastIndexOf("."));
-            log.info("council Kafka topic name :{} and group Id :{} Request received for transaction ID: {} ", NMRConstants.KAFKA_TOPIC, NMRConstants.KAFKA_GROUP_ID, transactionId);
             HpProfile hpProfile = iHpProfileRepository.findByTransactionId(transactionId);
             if (hpProfile != null) {
                 log.debug("Fetched hp profile detail successfully for hp profile ID: {}", hpProfile.getId());
@@ -57,11 +53,11 @@ public class KafkaListenerNotificationService {
                     if (hpProfile.getFullName().equalsIgnoreCase(eSignedEvent.getName()) &&
                             getBirthYear(hpProfile.getDateOfBirth().toString()) == Integer.parseInt(eSignedEvent.getYob()) &&
                             address.getPincode().equalsIgnoreCase(eSignedEvent.getPincode())) {
-                        iHpProfileRepository.updateEsignStatus(hpProfile.getId(), NMRConstants.E_SIGN_SUCCESS_STATUS);
-                        log.debug("updated e sign status:{} for Transaction ID: {}", NMRConstants.E_SIGN_SUCCESS_STATUS, transactionId);
+                        iHpProfileRepository.updateEsignStatus(hpProfile.getId(), ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
+                        log.info("updated e sign status:{} for Transaction ID: {}", ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getStatus(), transactionId);
                     } else {
-                        iHpProfileRepository.updateEsignStatus(hpProfile.getId(), NMRConstants.E_SIGN_FAILURE_STATUS);
-                        log.debug("updated e sign status:{} for Transaction ID: {}", NMRConstants.E_SIGN_FAILURE_STATUS, transactionId);
+                        iHpProfileRepository.updateEsignStatus(hpProfile.getId(), ESignStatus.PROFILE_ESIGNED_WITH_DIFFERENT_AADHAR.getId());
+                        log.info("updated e sign status:{} for Transaction ID: {}", ESignStatus.PROFILE_ESIGNED_WITH_DIFFERENT_AADHAR.getStatus(), transactionId);
                     }
                 } else {
                     log.error("transaction id: {}, could not be found.", transactionId);

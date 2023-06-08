@@ -7,6 +7,7 @@ import java.math.BigInteger;
 
 import javax.servlet.http.HttpServletResponse;
 
+import in.gov.abdm.nmr.enums.ESignStatus;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,7 @@ public class AuthServiceImpl implements IAuthService {
         User user = userDetailDaoService.findByUsername(username);
 
         LoginResponseTO loginResponse = createLoginResponse(user);
+        userDetailDaoService.updateLastLogin(user.getId());
         generateAccessAndRefreshToken(response, username, user, loginResponse.getProfileId());
         return loginResponse;
     }
@@ -79,13 +81,14 @@ public class AuthServiceImpl implements IAuthService {
         loginResponseTO.setUserType(user.getUserType().getId());
         loginResponseTO.setUserGroupId(user.getGroup().getId());
         loginResponseTO.setUserId(user.getId());
+        loginResponseTO.setLastLogin(user.getLastLogin());
         if (UserTypeEnum.HEALTH_PROFESSIONAL.getId().equals(user.getUserType().getId())) {
             HpProfile hp = hpProfileService.findLatestEntryByUserid(user.getId());
             if (hp != null) {
                 loginResponseTO.setProfileId(hp.getId());
                 loginResponseTO.setHpRegistered(StringUtils.isBlank(hp.getNmrId()));
                 loginResponseTO.setBlacklisted(HpProfileStatus.BLACKLISTED.getId() == hp.getHpProfileStatus().getId() || HpProfileStatus.SUSPENDED.getId() == hp.getHpProfileStatus().getId());
-                loginResponseTO.setEsignStatus(hp.getESignStatus());
+                loginResponseTO.setEsignStatus(hp.getESignStatus() != null ? hp.getESignStatus() : ESignStatus.PROFILE_NOT_ESIGNED.getId());
             }
         } else if (UserTypeEnum.COLLEGE.getId().equals(user.getUserType().getId())) {
             BigInteger userSubTypeId = user.getUserSubType().getId();

@@ -5,6 +5,7 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.enums.ESignStatus;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.exception.*;
@@ -248,7 +249,7 @@ class HpRegistrationServiceImplTest {
         hpSubmitRequestTO.setRequestId(CommonTestData.REQUEST_ID);
         hpSubmitRequestTO.setTransactionId(TRANSACTION_ID);
         hpSubmitRequestTO.setApplicationTypeId(ApplicationType.FOREIGN_HP_REGISTRATION.getId());
-        hpSubmitRequestTO.setESignStatus(E_SIGN_SUCCESS_STATUS);
+        hpSubmitRequestTO.setESignStatus(ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
         hpSubmitRequestTO.setHpProfileId(HP_ID);
         hpSubmitRequestTO.setHprShareAcknowledgement(1);
         return hpSubmitRequestTO;

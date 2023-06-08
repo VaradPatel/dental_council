@@ -166,7 +166,7 @@ public class NMRConstants {
             "AND a.name = :" + APPLICATION_TYPE_NAME + " " +
             "AND ws.name = :" + WORK_FLOW_STATUS + " ";
 
-    public static final String FETCH_CARD_DETAILS_QUERY = "select d.work_flow_status_id doctor_status, smc_status, nmc_status, nbe_status, d.hp_profile_id, d.request_id, rd.registration_no, rd.created_at, stmc.name, hp.full_name,  work_flow_status_id,(SELECT CASE WHEN ( wf.work_flow_status_id in(2, 4, 5, 6) ) THEN DATE_PART( 'day', (wf.updated_at - wf.created_at) ) WHEN ( wf.work_flow_status_id in(1, 3) ) THEN DATE_PART( 'day', (now() - wf.created_at) ) END FROM main.work_flow wf where wf.request_id = d.request_id ) as pendency, hp.gender, hp.email_id, hp.mobile_number, hp.nmr_id, rd.registration_date, college_status,d.application_type_id, count(*) OVER() AS total_count from main.dashboard d INNER JOIN main.registration_details as rd on rd.hp_profile_id = d.hp_profile_id INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id ";
+    public static final String FETCH_CARD_DETAILS_QUERY = "select d.work_flow_status_id doctor_status, smc_status, nmc_status, nbe_status, d.hp_profile_id, d.request_id, rd.registration_no, rd.created_at, stmc.name, hp.full_name,  work_flow_status_id,(SELECT CASE WHEN ( wf.work_flow_status_id in(2, 4, 5, 6) ) THEN DATE_PART( 'day', (wf.updated_at - wf.created_at) ) WHEN ( wf.work_flow_status_id in(1, 3) ) THEN DATE_PART( 'day', (now() - wf.created_at) ) END FROM main.work_flow wf where wf.request_id = d.request_id ) as pendency, hp.gender, hp.email_id, hp.mobile_number, hp.nmr_id, rd.registration_date, college_status,d.application_type_id, count(*) OVER() AS total_count from main.dashboard d INNER JOIN main.registration_details as rd on rd.hp_profile_id = d.hp_profile_id INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id and hp.e_sign_status='1' ";
 
     public static final String FETCH_TRACK_DETAILS_QUERY = "select d.work_flow_status_id doctor_status, smc_status, nmc_status, nbe_status, d.hp_profile_id, d.request_id, rd.registration_no, rd.created_at, stmc.name, hp.full_name, application_type_id, ( SELECT a.name FROM main.application_type a WHERE a.id = application_type_id ) as application_type_name, ( SELECT CASE WHEN ( wf.work_flow_status_id in(2, 4, 5, 6) ) THEN DATE_PART( 'day', (wf.updated_at - wf.created_at) ) WHEN ( wf.work_flow_status_id in(1, 3) ) THEN DATE_PART( 'day', (now() - wf.created_at) ) END FROM main.work_flow wf where wf.request_id = d.request_id ) as pendency, work_flow_status_id, hp.gender, hp.email_id, hp.mobile_number, hp.nmr_id, rd.registration_date, college_status, count(*) OVER() AS total_count from main.dashboard d INNER JOIN main.registration_details as rd on rd.hp_profile_id = d.hp_profile_id INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id ";
     public static final String STATE_MEDICAL_COUNCIL_ID = "state_medical_council_id";
@@ -230,8 +230,9 @@ public class NMRConstants {
     public static final String FUZZY_PARAMETER_DOB = "DOB";
     public static final Integer YES = 1;
     public static final Integer NO = 0;
-    public static final String KAFKA_TOPIC = "_esign_topic";
+    public static final String KAFKA_TOPIC = "esign_topic";
     public static final String KAFKA_GROUP_ID = "NMR_esign_group";
+    public static final String UNDERSCORE = "_";
     public static final String GATEWAY_SERVICE = "gateway";
     public static final String GATEWAY_SERVICE_ENDPOINT = "${gateway.endpoint}";
     public static final String SESSION_URL = "/gateway/v0.5/sessions";
@@ -243,7 +244,7 @@ public class NMRConstants {
     public static final String DOCTOR_QUALIFICATION = "MBBS";
     public static final String DOCTOR_QUALIFICATION_PATTERN = "[^A-Za-z]+";
     public static final String EMAIL_VERIFICATION_TEMPLATE = "email-verification-link";
-    public static final String FETCH_COUNT_QUERY_FOR_SMC = "SELECT application_type_id as applicationTypeId, smc_status as profileStatus, count(*) as count FROM main.dashboard d join main.registration_details rd on rd.hp_profile_id = d.hp_profile_id where application_type_id in (1,2,3,4,7,8) and rd.state_medical_council_id =:" + SMC_PROFILE_ID + " group by application_type_id, smc_status";
+    public static final String FETCH_COUNT_QUERY_FOR_SMC = "SELECT application_type_id as applicationTypeId, smc_status as profileStatus, count(*) as count FROM main.dashboard d join main.registration_details rd on rd.hp_profile_id = d.hp_profile_id JOIN main.hp_profile hp on rd.hp_profile_id = hp.id and hp.e_sign_status='1' where application_type_id in (1,2,3,4,7,8) and rd.state_medical_council_id =:" + SMC_PROFILE_ID + " group by application_type_id, smc_status";
     public static final String FETCH_COUNT_QUERY_FOR_COLLEGE = "SELECT application_type_id as applicationTypeId, college_status as profileStatus, count(*) as count FROM main.dashboard d join main.qualification_details qd on qd.hp_profile_id = d.hp_profile_id and qd.request_id = d.request_id where application_type_id in (1,8) and qd.college_id =:" + COLLEGE_ID + " group by application_type_id, college_status";
     public static final String FETCH_COUNT_QUERY_FOR_NMC = "SELECT application_type_id as applicationTypeId, nmc_status as profileStatus, count(*) as count FROM main.dashboard d where application_type_id in (1,2,3,4,7,8) group by application_type_id , nmc_status ";
     public static final String FETCH_COUNT_QUERY_FOR_NBE = "SELECT application_type_id as applicationTypeId, nbe_status as profileStatus, count(*) as count FROM main.dashboard d where application_type_id in (7) group by application_type_id , nbe_status ";
@@ -267,11 +268,11 @@ public class NMRConstants {
     public static final String DEACTIVATE_USER = "update  {h-schema}user SET delete_status =true WHERE id =:userId";
 
     public static final String UNLOCK_USER ="update {h-schema}user SET failed_attempt =0, account_non_locked = true, lock_time = null WHERE id = :userId";
-
-    public static final String FETCH_SMC_DETAILS = "select u.id, user_type_id ,sp.first_name, sp.last_name ,email,mobile_number,u.user_sub_type_id from main.user u join main.smc_profile sp on u.id =sp.user_id where u.delete_status =false ";
-    public static final String FETCH_COLLEGE_DETAILS = "union select u.id ,user_type_id ,cp.name, '' ,email,mobile_number,u.user_sub_type_id from main.user u join main.college_profile cp on u.id =cp.user_id where u.delete_status =false ";
-    public static final String FETCH_NMC_DETAILS = "union select u.id, user_type_id ,np.first_name, np.last_name,email ,mobile_number,u.user_sub_type_id from main.user u join main.nmc_profile np on u.id =np.user_id where u.delete_status =false ";
-    public static final String FETCH_NBE_DETAILS = "union select u.id ,user_type_id ,nbep.first_name ,nbep.last_name,email ,mobile_number,u.user_sub_type_id from main.user u join main.nbe_profile nbep on u.id =nbep.user_id where u.delete_status =false ";
+    public static final String UPDATE_LAST_LOGIN ="update {h-schema}user SET last_login=current_timestamp WHERE id = :userId";
+    public static final String FETCH_SMC_DETAILS = "select u.id, user_type_id ,sp.first_name, sp.last_name ,email,mobile_number,u.user_sub_type_id,u.last_login from main.user u join main.smc_profile sp on u.id =sp.user_id where u.delete_status =false ";
+    public static final String FETCH_COLLEGE_DETAILS = "union select u.id ,user_type_id ,cp.name, '' ,email,mobile_number,u.user_sub_type_id,u.last_login from main.user u join main.college_profile cp on u.id =cp.user_id where u.delete_status =false ";
+    public static final String FETCH_NMC_DETAILS = "union select u.id, user_type_id ,np.first_name, np.last_name,email ,mobile_number,u.user_sub_type_id,u.last_login from main.user u join main.nmc_profile np on u.id =np.user_id where u.delete_status =false ";
+    public static final String FETCH_NBE_DETAILS = "union select u.id ,user_type_id ,nbep.first_name ,nbep.last_name,email ,mobile_number,u.user_sub_type_id,u.last_login from main.user u join main.nbe_profile nbep on u.id =nbep.user_id where u.delete_status =false ";
     public static final String REDIS_HOST = "${spring.redis.host}";
     public static final String REDIS_PASSWORD = "${spring.redis.password}";
     public static final String REDIS_PORT = "${spring.redis.port}";

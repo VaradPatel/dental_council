@@ -42,9 +42,9 @@ class KafkaListenerNotificationServiceTest {
         lenient().when(objectMapper.readValue(MESSAGE, FileESignedEventTO.class)).thenReturn(fileESignedEventTO);
         when(iHpProfileRepository.findByTransactionId(anyString())).thenReturn(CommonTestData.getHpProfile());
         when(iAddressRepository.getCommunicationAddressByHpProfileId(any(BigInteger.class),anyInt())).thenReturn(CommonTestData.getCommunicationAddress());
-        doNothing().when(iHpProfileRepository).updateEsignStatus(any(BigInteger.class), anyString());
+        doNothing().when(iHpProfileRepository).updateEsignStatus(any(BigInteger.class), any(Integer.class));
         kafkaListenerNotificationService.consume(MESSAGE);
-        verify(iHpProfileRepository, times(1)).updateEsignStatus(any(BigInteger.class), anyString());
+        verify(iHpProfileRepository, times(1)).updateEsignStatus(any(BigInteger.class), any(Integer.class));
 
     }
 
@@ -54,9 +54,9 @@ class KafkaListenerNotificationServiceTest {
         lenient().when(objectMapper.readValue(MESSAGE, FileESignedEventTO.class)).thenReturn(fileESignedEventTO);
         when(iHpProfileRepository.findByTransactionId(anyString())).thenReturn(CommonTestData.getHpProfile());
         when(iAddressRepository.getCommunicationAddressByHpProfileId(any(BigInteger.class),anyInt())).thenReturn(CommonTestData.getCommunicationAddress());
-        doNothing().when(iHpProfileRepository).updateEsignStatus(any(BigInteger.class), anyString());
+        doNothing().when(iHpProfileRepository).updateEsignStatus(any(BigInteger.class), any(Integer.class));
         kafkaListenerNotificationService.consume(MESSAGE);
-        verify(iHpProfileRepository, times(1)).updateEsignStatus(any(BigInteger.class), anyString());
+        verify(iHpProfileRepository, times(1)).updateEsignStatus(any(BigInteger.class), any(Integer.class));
     }
 
     @Test
@@ -65,7 +65,7 @@ class KafkaListenerNotificationServiceTest {
         lenient().when(objectMapper.readValue(MESSAGE, FileESignedEventTO.class)).thenReturn(fileESignedEventTO);
         when(iHpProfileRepository.findByTransactionId(anyString())).thenReturn(null);
         kafkaListenerNotificationService.consume(MESSAGE);
-        verify(iHpProfileRepository, times(0)).updateEsignStatus(any(BigInteger.class), anyString());
+        verify(iHpProfileRepository, times(0)).updateEsignStatus(any(BigInteger.class), any(Integer.class));
     }
 
     @Test
@@ -75,14 +75,14 @@ class KafkaListenerNotificationServiceTest {
         when(iHpProfileRepository.findByTransactionId(anyString())).thenReturn(getHpProfile());
         when(iAddressRepository.getCommunicationAddressByHpProfileId(any(BigInteger.class),anyInt())).thenReturn(null);
         kafkaListenerNotificationService.consume(MESSAGE);
-        verify(iHpProfileRepository, times(0)).updateEsignStatus(any(BigInteger.class), anyString());
+        verify(iHpProfileRepository, times(0)).updateEsignStatus(any(BigInteger.class), any(Integer.class));
     }
 
     @Test
     void testEsignedEventForInvalidPayload() throws JsonProcessingException {
         lenient().when(objectMapper.readValue(MESSAGE, FileESignedEventTO.class)).thenThrow(new RuntimeException());
         kafkaListenerNotificationService.consume(MESSAGE);
-        verify(iHpProfileRepository, times(0)).updateEsignStatus(any(BigInteger.class), anyString());
+        verify(iHpProfileRepository, times(0)).updateEsignStatus(any(BigInteger.class), any(Integer.class));
     }
 
     private FileESignedEventTO getFileESignedEventTO(String profileDisplayName, String pinCode) {

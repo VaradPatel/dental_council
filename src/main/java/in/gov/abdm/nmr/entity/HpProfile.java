@@ -80,7 +80,7 @@ public class HpProfile extends CommonAuditEntity {
 
 	//eSignChange
 	private String transactionId;
-	private String eSignStatus;
+	private Integer eSignStatus;
 	private String registrationId;
 	private String isSameAddress;
 	private Integer isNew;
