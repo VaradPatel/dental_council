@@ -12,4 +12,5 @@ public class UserRequestParamsTO {
     private String sortBy;
     private String sortOrder;
     private String userSubTypeID;
+    private String name;
 }

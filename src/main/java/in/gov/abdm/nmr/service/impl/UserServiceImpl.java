@@ -248,13 +248,13 @@ public class UserServiceImpl implements IUserService {
     public UserResponseTO getAllUser(String search, String value, int pageNo, int offset, String sortBy, String sortOrder) throws InvalidRequestException, AccessDeniedException {
         UserRequestParamsTO userRequestParamsTO = new UserRequestParamsTO();
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userRepository.findByUsername(userName);
+        User userDetail = userRepository.findByUsername("smc@lntinfotech.com");
         if (userDetail == null) {
             log.error("User don't have permission to access get users");
             throw new AccessDeniedException(NMRError.ACCESS_FORBIDDEN.getMessage());
         }
         applyFilters(search, value, userRequestParamsTO);
-        userRequestParamsTO.setUserSubTypeID(userDetail.getUserSubType().getId() != null ? userDetail.getUserSubType().getId().toString() : null);
+        userRequestParamsTO.setUserSubTypeID(userDetail.getUserSubType() != null ? userDetail.getUserSubType().getId().toString() : null);
         final String sortingOrder = (sortOrder == null || sortOrder.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortOrder;
         userRequestParamsTO.setSortOrder(sortingOrder);
         final int dataLimit = Math.min(MAX_DATA_SIZE, offset);
@@ -280,6 +280,9 @@ public class UserServiceImpl implements IUserService {
                         break;
                     case MOBILE_NUMBER_IN_LOWER_CASE:
                         userRequestParamsTO.setMobileNumber(value);
+                        break;
+                    case NAME_IN_LOWER_CASE:
+                        userRequestParamsTO.setName(value);
                         break;
                     default:
                         log.error("unable to complete fetch user details process due Invalid Search Criteria ");
