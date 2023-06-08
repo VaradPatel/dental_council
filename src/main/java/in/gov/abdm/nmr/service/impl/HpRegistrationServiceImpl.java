@@ -540,6 +540,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.PENDING.getId()).get());
         hpProfile.setIsNew(imrProfileDetails == null ? YES : NO);
         hpProfile.setUser(userDetail);
+        hpProfile.setESignStatus(ESignStatus.PROFILE_NOT_ESIGNED.getId());
         hpProfile = iHpProfileRepository.save(hpProfile);
 
         RegistrationDetails registrationDetails = new RegistrationDetails();
