@@ -60,7 +60,7 @@ class CollegeMasterDaoServiceTest {
 
     @Test
     void testGetAllCollegesShouldReturnListOfColleges(){
-        when(collegeMasterRepository.findAll()).thenReturn(List.of(collegeMaster));
+        when(collegeMasterRepository.getColleges()).thenReturn(List.of(collegeMaster));
         List<CollegeMaster> colleges = collegeMasterDaoService.getAllColleges();
         assertEquals(1, colleges.size());
     }

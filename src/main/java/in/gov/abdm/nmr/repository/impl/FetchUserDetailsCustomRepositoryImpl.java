@@ -15,6 +15,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -168,6 +169,7 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
                     || Objects.equals(result[6], UserSubTypeEnum.SMC_ADMIN.getId())
                     || Objects.equals(result[6], UserSubTypeEnum.NBE_ADMIN.getId())
                     || Objects.equals(result[6], UserSubTypeEnum.NMC_ADMIN.getId()));
+            user.setLastLogin(result[7] != null ? (Timestamp) result[7] : null);
             userTOList.add(user);
         });
         userResponseTO.setTotalNoOfRecords(BigInteger.valueOf(results.size()));

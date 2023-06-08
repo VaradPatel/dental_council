@@ -285,6 +285,18 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 .userId(user)
                 .build();
         iWorkFlowAuditRepository.save(workFlowAudit);
+
+        Dashboard dashboard = iDashboardRepository.findByRequestId(requestId);
+        if (currentGroup.getId().equals(Group.SMC.getId())) {
+            dashboard.setSmcStatus(DashboardStatus.PENDING.getId());
+        } else if (currentGroup.getId().equals(Group.NMC.getId())) {
+            dashboard.setNmcStatus(DashboardStatus.PENDING.getId());
+        } else if (currentGroup.getId().equals(Group.COLLEGE.getId())) {
+            dashboard.setCollegeStatus(DashboardStatus.PENDING.getId());
+        } else if (currentGroup.getId().equals(Group.NBE.getId())) {
+            dashboard.setNbeStatus(DashboardStatus.PENDING.getId());
+        }
+        iDashboardRepository.save(dashboard);
     }
 
     private WorkFlow buildNewWorkFlow(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile, User user) throws WorkFlowException {
