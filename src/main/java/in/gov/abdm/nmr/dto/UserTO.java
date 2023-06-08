@@ -18,6 +18,10 @@ public class UserTO {
     private String lastName;
     private String emailId;
     private String mobileNumber;
-    private boolean  isAdmin;
+    private boolean isAdmin;
     private Timestamp lastLogin;
+    private String councilName;
+    private String collegeName;
+    private Timestamp createdAt;
+
 }

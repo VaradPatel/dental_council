@@ -200,6 +200,7 @@ public class NMRConstants {
     public static final String GENDER_IN_LOWER_CASE = "gender";
     public static final String EMAIL_ID_IN_LOWER_CASE = "emailid";
     public static final String MOBILE_NUMBER_IN_LOWER_CASE = "mobilenumber";
+    public static final String NAME_IN_LOWER_CASE = "name";
     public static final String YEAR_OF_REGISTRATION_IN_LOWER_CASE = "yearofregistration";
     public static final String SMC_ID_IN_LOWER_CASE = "smcid";
     public static final String WORK_FLOW_STATUS_IN_LOWER_CASE = "workflowstatus";
@@ -269,10 +270,10 @@ public class NMRConstants {
 
     public static final String UNLOCK_USER ="update {h-schema}user SET failed_attempt =0, account_non_locked = true, lock_time = null WHERE id = :userId";
     public static final String UPDATE_LAST_LOGIN ="update {h-schema}user SET last_login=current_timestamp WHERE id = :userId";
-    public static final String FETCH_SMC_DETAILS = "select u.id, user_type_id ,sp.first_name, sp.last_name ,email,mobile_number,u.user_sub_type_id,u.last_login from main.user u join main.smc_profile sp on u.id =sp.user_id where u.delete_status =false ";
-    public static final String FETCH_COLLEGE_DETAILS = "union select u.id ,user_type_id ,cp.name, '' ,email,mobile_number,u.user_sub_type_id,u.last_login from main.user u join main.college_profile cp on u.id =cp.user_id where u.delete_status =false ";
-    public static final String FETCH_NMC_DETAILS = "union select u.id, user_type_id ,np.first_name, np.last_name,email ,mobile_number,u.user_sub_type_id,u.last_login from main.user u join main.nmc_profile np on u.id =np.user_id where u.delete_status =false ";
-    public static final String FETCH_NBE_DETAILS = "union select u.id ,user_type_id ,nbep.first_name ,nbep.last_name,email ,mobile_number,u.user_sub_type_id,u.last_login from main.user u join main.nbe_profile nbep on u.id =nbep.user_id where u.delete_status =false ";
+    public static final String FETCH_SMC_DETAILS = "select u.id, user_type_id ,sp.first_name, sp.last_name ,email,mobile_number,u.user_sub_type_id,u.last_login ,a.name as CouncilName ,'' as collegeName,sp.created_at from main.user u join main.smc_profile sp on u.id =sp.user_id JOIN main.state_medical_council a on sp.state_medical_council_id = a.id where u.delete_status =false  ";
+    public static final String FETCH_COLLEGE_DETAILS = "union select u.id ,user_type_id ,cp.name, ''as last_name ,email,mobile_number,u.user_sub_type_id,u.last_login ,''as CouncilName ,a.name as collegeName ,cp.created_at from main.user u join main.college_profile cp on u.id =cp.user_id JOIN main.college_master a on cp.college_id = a.id where u.delete_status =false  ";
+    public static final String FETCH_NMC_DETAILS = "union select u.id, user_type_id ,a.first_name, a.last_name,email ,mobile_number,u.user_sub_type_id,u.last_login ,'','',a.created_at from main.user u join main.nmc_profile a on u.id =a.user_id where u.delete_status =false ";
+    public static final String FETCH_NBE_DETAILS = "union select u.id ,user_type_id ,a.first_name ,a.last_name,email ,mobile_number,u.user_sub_type_id,u.last_login,'','',a.created_at from main.user u join main.nbe_profile a on u.id =a.user_id where u.delete_status =false";
     public static final String REDIS_HOST = "${spring.redis.host}";
     public static final String REDIS_PASSWORD = "${spring.redis.password}";
     public static final String REDIS_PORT = "${spring.redis.port}";
