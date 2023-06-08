@@ -248,7 +248,7 @@ public class UserServiceImpl implements IUserService {
     public UserResponseTO getAllUser(String search, String value, int pageNo, int offset, String sortBy, String sortOrder) throws InvalidRequestException, AccessDeniedException {
         UserRequestParamsTO userRequestParamsTO = new UserRequestParamsTO();
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userRepository.findByUsername("smc@lntinfotech.com");
+        User userDetail = userRepository.findByUsername(userName);
         if (userDetail == null) {
             log.error("User don't have permission to access get users");
             throw new AccessDeniedException(NMRError.ACCESS_FORBIDDEN.getMessage());
