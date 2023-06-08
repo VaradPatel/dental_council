@@ -12,6 +12,7 @@ import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -27,9 +28,6 @@ import java.time.format.DateTimeParseException;
 public class KafkaListenerNotificationService {
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     IHpProfileRepository iHpProfileRepository;
     @Autowired
     IAddressRepository iAddressRepository;
@@ -39,14 +37,13 @@ public class KafkaListenerNotificationService {
      * * @param eventMessage the message to be consumed from Kafka topic
      * * @throws JsonProcessingException if an error occurs while processing the JSON message
      */
-
-
-    @KafkaListener(topics = "${spring.profiles.active}" + NMRConstants.UNDERSCORE + NMRConstants.KAFKA_TOPIC, groupId = "${spring.profiles.active}" + NMRConstants.UNDERSCORE + NMRConstants.KAFKA_GROUP_ID)
+    @KafkaListener(topics = "${spring.profiles.active}"  + NMRConstants.UNDERSCORE + NMRConstants.KAFKA_TOPIC, groupId = "${spring.profiles.active}" + NMRConstants.UNDERSCORE + NMRConstants.KAFKA_GROUP_ID)
     public void consume(String eventMessage) {
         try {
+            log.info("council Kafka topic name :{} and group Id :{} Request received : {} ", NMRConstants.KAFKA_TOPIC, NMRConstants.KAFKA_GROUP_ID, eventMessage);
+            ObjectMapper objectMapper = new ObjectMapper();
             FileESignedEventTO eSignedEvent = objectMapper.readValue(eventMessage, FileESignedEventTO.class);
             String transactionId = eSignedEvent.getTransactionId().substring(0, eSignedEvent.getTransactionId().lastIndexOf("."));
-            log.info("council Kafka topic name :{} and group Id :{} Request received for transaction ID: {} ", NMRConstants.KAFKA_TOPIC, NMRConstants.KAFKA_GROUP_ID, transactionId);
             HpProfile hpProfile = iHpProfileRepository.findByTransactionId(transactionId);
             if (hpProfile != null) {
                 log.debug("Fetched hp profile detail successfully for hp profile ID: {}", hpProfile.getId());
@@ -57,10 +54,10 @@ public class KafkaListenerNotificationService {
                             getBirthYear(hpProfile.getDateOfBirth().toString()) == Integer.parseInt(eSignedEvent.getYob()) &&
                             address.getPincode().equalsIgnoreCase(eSignedEvent.getPincode())) {
                         iHpProfileRepository.updateEsignStatus(hpProfile.getId(), ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
-                        log.debug("updated e sign status:{} for Transaction ID: {}", ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getStatus(), transactionId);
+                        log.info("updated e sign status:{} for Transaction ID: {}", ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getStatus(), transactionId);
                     } else {
                         iHpProfileRepository.updateEsignStatus(hpProfile.getId(), ESignStatus.PROFILE_ESIGNED_WITH_DIFFERENT_AADHAR.getId());
-                        log.debug("updated e sign status:{} for Transaction ID: {}", ESignStatus.PROFILE_ESIGNED_WITH_DIFFERENT_AADHAR.getStatus(), transactionId);
+                        log.info("updated e sign status:{} for Transaction ID: {}", ESignStatus.PROFILE_ESIGNED_WITH_DIFFERENT_AADHAR.getStatus(), transactionId);
                     }
                 } else {
                     log.error("transaction id: {}, could not be found.", transactionId);
