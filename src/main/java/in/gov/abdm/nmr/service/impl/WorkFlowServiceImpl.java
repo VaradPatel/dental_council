@@ -287,15 +287,16 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         iWorkFlowAuditRepository.save(workFlowAudit);
 
         Dashboard dashboard = iDashboardRepository.findByRequestId(requestId);
-        if (currentGroup.getId().equals(Group.SMC.getId())) {
+        if (previousGroup.getId().equals(Group.SMC.getId())) {
             dashboard.setSmcStatus(DashboardStatus.PENDING.getId());
-        } else if (currentGroup.getId().equals(Group.NMC.getId())) {
+        } else if (previousGroup.getId().equals(Group.NMC.getId())) {
             dashboard.setNmcStatus(DashboardStatus.PENDING.getId());
-        } else if (currentGroup.getId().equals(Group.COLLEGE.getId())) {
+        } else if (previousGroup.getId().equals(Group.COLLEGE.getId())) {
             dashboard.setCollegeStatus(DashboardStatus.PENDING.getId());
-        } else if (currentGroup.getId().equals(Group.NBE.getId())) {
+        } else if (previousGroup.getId().equals(Group.NBE.getId())) {
             dashboard.setNbeStatus(DashboardStatus.PENDING.getId());
         }
+        dashboard.setWorkFlowStatusId(DashboardStatus.PENDING.getId());
         iDashboardRepository.save(dashboard);
     }
 

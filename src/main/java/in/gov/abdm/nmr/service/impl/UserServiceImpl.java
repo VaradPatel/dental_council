@@ -254,7 +254,7 @@ public class UserServiceImpl implements IUserService {
             throw new AccessDeniedException(NMRError.ACCESS_FORBIDDEN.getMessage());
         }
         applyFilters(search, value, userRequestParamsTO);
-        userRequestParamsTO.setUserSubTypeID(userDetail.getUserSubType().getId() != null ? userDetail.getUserSubType().getId().toString() : null);
+        userRequestParamsTO.setUserSubTypeID(userDetail.getUserSubType() != null ? userDetail.getUserSubType().getId().toString() : null);
         final String sortingOrder = (sortOrder == null || sortOrder.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortOrder;
         userRequestParamsTO.setSortOrder(sortingOrder);
         final int dataLimit = Math.min(MAX_DATA_SIZE, offset);
@@ -280,6 +280,9 @@ public class UserServiceImpl implements IUserService {
                         break;
                     case MOBILE_NUMBER_IN_LOWER_CASE:
                         userRequestParamsTO.setMobileNumber(value);
+                        break;
+                    case NAME_IN_LOWER_CASE:
+                        userRequestParamsTO.setName(value);
                         break;
                     default:
                         log.error("unable to complete fetch user details process due Invalid Search Criteria ");
