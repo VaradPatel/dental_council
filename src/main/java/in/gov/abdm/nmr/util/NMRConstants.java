@@ -296,4 +296,5 @@ public class NMRConstants {
     public static final String DOMAIN_NAME="@hpr.abdm";
     public static final String  HPR_SERVICE_REGISTER_HEALTH_PROFESSIONAL="/apis/v1/doctors/register-professional";
     public static final String  HPR_ID_SERVICE_TOKEN_BY_HPRID="/api/v2/search/internal/hfr/getTokensByHprId";
+    public static final int DEFAULT_UNVERIFIED_QUALIFICATION = 0;
 }
