@@ -329,7 +329,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             log.debug("Updating the request_id, e-sign status and transaction id in hp_profile table");
             HpProfile hpProfileById = iHpProfileRepository.findHpProfileById(hpSubmitRequestTO.getHpProfileId());
             hpProfileById.setTransactionId(hpSubmitRequestTO.getTransactionId());
-            hpProfileById.setESignStatus(hpSubmitRequestTO.getESignStatus());
+            hpProfileById.setESignStatus(hpSubmitRequestTO.getESignStatus() != null ? hpSubmitRequestTO.getESignStatus() : ESignStatus.PROFILE_NOT_ESIGNED.getId());
             hpProfileById.setRequestId(requestId);
             hpProfileById.setConsent(hpSubmitRequestTO.getHprShareAcknowledgement());
 
@@ -540,6 +540,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.PENDING.getId()).get());
         hpProfile.setIsNew(imrProfileDetails == null ? YES : NO);
         hpProfile.setUser(userDetail);
+        hpProfile.setESignStatus(ESignStatus.PROFILE_NOT_ESIGNED.getId());
         hpProfile = iHpProfileRepository.save(hpProfile);
 
         RegistrationDetails registrationDetails = new RegistrationDetails();

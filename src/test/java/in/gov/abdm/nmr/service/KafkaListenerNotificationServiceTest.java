@@ -87,7 +87,7 @@ class KafkaListenerNotificationServiceTest {
 
     private FileESignedEventTO getFileESignedEventTO(String profileDisplayName, String pinCode) {
         FileESignedEventTO fileESignedEventTO = new FileESignedEventTO();
-        fileESignedEventTO.setIsSigned(true);
+        fileESignedEventTO.setSigned(true);
         fileESignedEventTO.setFileName("FileName");
         fileESignedEventTO.setName(profileDisplayName);
         fileESignedEventTO.setPincode(pinCode);
