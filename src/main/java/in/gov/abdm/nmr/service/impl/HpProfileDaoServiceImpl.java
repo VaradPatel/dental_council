@@ -381,7 +381,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         qualification.setCollege(collegeMasterRepository.findCollegeMasterById(indianQualification.getCollege().getId()));
         qualification.setUniversity(universityMasterRepository.findUniversityMasterById(indianQualification.getUniversity().getId()));
         qualification.setCourse(courseRepository.findById(indianQualification.getCourse().getId()).orElseThrow(InvalidRequestException::new));
-        qualification.setIsVerified(indianQualification.getIsVerified());
+        qualification.setIsVerified(NMRConstants.DEFAULT_UNVERIFIED_QUALIFICATION);
         qualification.setQualificationYear(indianQualification.getQualificationYear());
         qualification.setQualificationMonth(indianQualification.getQualificationMonth());
         qualification.setIsNameChange(indianQualification.getIsNameChange());
@@ -427,7 +427,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         //GK - 08-04-2023 - FE payload for additional qualification is coming as name, it needs to be corrected. Either courseName or name can rename in dto
         String courseName = newCustomQualification.getCourse().getCourseName();
         customQualification.setCourse(courseName != null ? courseName : newCustomQualification.getCourse().getName());
-        customQualification.setIsVerified(newCustomQualification.getIsVerified());
+        customQualification.setIsVerified(NMRConstants.DEFAULT_UNVERIFIED_QUALIFICATION);
         customQualification.setQualificationYear(newCustomQualification.getQualificationYear());
         customQualification.setQualificationMonth(newCustomQualification.getQualificationMonth());
         customQualification.setIsNameChange(newCustomQualification.getIsNameChange());
