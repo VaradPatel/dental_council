@@ -113,7 +113,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                 }
             } else {
                 if (groupId.equals(Group.SMC.getId())) {
-                    sb.append(" AND smc_status IN (1,3,4,5,6,7) ");
+                    sb.append(" AND smc_status IN (1,3,4,5,6,7,8) ");
                 } else if (groupId.equals(Group.COLLEGE.getId()) && !dashboardRequestParamsTO.getApplicationTypeId().equals("1,8")) {
                     sb.append(" AND college_status IN (1,3,4,5) ");
                 }else if (groupId.equals(Group.NMC.getId())) {
