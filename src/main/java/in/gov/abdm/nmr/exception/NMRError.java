@@ -15,6 +15,7 @@ public enum NMRError {
     TEMPLATE_NOT_FOUND("ABDM-NMR-007", "Template not found"),
     WORK_FLOW_EXCEPTION("ABDM-NMR-008", "Failed to process work flow"),
     ACCESS_DENIED_EXCEPTION("ABDM-NMR-009", "Unauthorized Access"),
+    NO_SUCH_ELEMENT("ABDM-NMR-010", "There is no matching value for the given request parameter"),
     INVALID_ID_EXCEPTION("ABDM-NMR-011", "Invalid ID"),
     DATE_EXCEPTION("ABDM-NMR-012", "Invalid date format"),
     RESOURCE_EXISTS_EXCEPTION("ABDM-NMR-013", "Resource already exists"),
@@ -41,8 +42,7 @@ public enum NMRError {
     INVALID_USER_TYPE("ABDM-NMR-034", "User type or sub type invalid."),
     NON_REGISTERED_MOBILE_NUMBER("ABDM-NMR-035", "This mobile number is not registered in NMR."),
     NON_REGISTERED_EMAIL_ID("ABDM-NMR-036", "This email ID is not registered in NMR."),
-    NON_REGISTERED_NMR_ID("ABDM-NMR-037", "This NMR ID is not registered in NMR."),
-    NO_SUCH_ELEMENT("ABDM-NMR-038", "There is no matching value for the given request parameter");
+    NON_REGISTERED_NMR_ID("ABDM-NMR-037", "This NMR ID is not registered in NMR.");
     private final String code;
     private final String message;
 }
