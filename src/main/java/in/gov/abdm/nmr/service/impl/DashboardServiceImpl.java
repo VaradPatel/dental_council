@@ -2,7 +2,10 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.enums.*;
+import in.gov.abdm.nmr.enums.Action;
+import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.enums.DashboardStatus;
+import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.mapper.IStatusCount;
@@ -149,28 +152,34 @@ public class DashboardServiceImpl implements IDashboardService {
         responseTO.getPermanentSuspensionRequest().setStatusWiseCount(getCardResponse(
                 permanentSuspension, totalCount, statusCounts, dashboardStauses, PERMANENT_SUSPENSION_REQUEST));
 
+        BigInteger consolidatedTotalSuspensionRequest = BigInteger.ZERO;
+        BigInteger temporarySuspensionRequestApproved = BigInteger.ZERO;
+        BigInteger permamentSuspensionRequestApproved = BigInteger.ZERO;
+
         List<StatusWiseCountTO> consolidatedSuspensions = new ArrayList<>();
         consolidatedSuspensions.add(StatusWiseCountTO.builder().name(TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS).count(BigInteger.ZERO).build());
-        temporarySuspension.forEach(ts -> {
-            if (PENDING.equals(ts.getName())) {
+        for(StatusWiseCountTO ts : temporarySuspension){
+            if (DashboardStatus.PENDING.getStatus().equals(ts.getName())) {
                 consolidatedSuspensions.add(StatusWiseCountTO.builder().name(CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS).count(ts.getCount()).build());
-            } else if (APPROVED.equals(ts.getName())) {
-                consolidatedSuspensions.add(StatusWiseCountTO.builder().name(CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS).count(ts.getCount()).build());
+            } else if (DashboardStatus.APPROVED.getStatus().equals(ts.getName()) || DashboardStatus.TEMPORARY_SUSPEND.getStatus().equals(ts.getName())) {
+                temporarySuspensionRequestApproved = temporarySuspensionRequestApproved.add(ts.getCount());
             } else if (TOTAL_TEMPORARY_SUSPENSION_REQUESTS.equals(ts.getName())) {
-                consolidatedSuspensions.get(0).getCount().add(ts.getCount());
+                consolidatedTotalSuspensionRequest = consolidatedTotalSuspensionRequest.add(ts.getCount());
             }
-        });
+        }
+        consolidatedSuspensions.add(StatusWiseCountTO.builder().name(CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS).count(temporarySuspensionRequestApproved).build());
 
-        permanentSuspension.forEach(ps -> {
-            if (PENDING.equals(ps.getName())) {
+        for(StatusWiseCountTO ps : permanentSuspension){
+            if (DashboardStatus.PENDING.getStatus().equals(ps.getName())) {
                 consolidatedSuspensions.add(StatusWiseCountTO.builder().name(CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS).count(ps.getCount()).build());
-            } else if (APPROVED.equals(ps.getName())) {
-                consolidatedSuspensions.add(StatusWiseCountTO.builder().name(CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS).count(ps.getCount()).build());
-            } else if (TOTAL_TEMPORARY_SUSPENSION_REQUESTS.equals(ps.getName())) {
-                consolidatedSuspensions.get(0).getCount().add(ps.getCount());
+            } else if (DashboardStatus.APPROVED.getStatus().equals(ps.getName()) || DashboardStatus.PERMANENT_SUSPEND.getStatus().equals(ps.getName())) {
+                permamentSuspensionRequestApproved =  permamentSuspensionRequestApproved.add(ps.getCount());
+            } else if (TOTAL_PERMANENT_SUSPENSION_REQUESTS.equals(ps.getName())) {
+                consolidatedTotalSuspensionRequest = consolidatedTotalSuspensionRequest.add(ps.getCount());
             }
-        });
-
+        }
+        consolidatedSuspensions.add(StatusWiseCountTO.builder().name(CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS).count(permamentSuspensionRequestApproved).build());
+        consolidatedSuspensions.get(0).setCount(consolidatedTotalSuspensionRequest);
         responseTO.setConsolidatedSuspensionRequest(FetchCountOnCardInnerResponseTO.builder().
                 applicationTypeIds(StringUtils.join(applicationIds.get(CONSOLIDATED_SUSPENSION_REQUEST), ",")).statusWiseCount(consolidatedSuspensions).build());
 
@@ -228,13 +237,13 @@ public class DashboardServiceImpl implements IDashboardService {
     public static List<StatusWiseCountTO> getDefaultCards(String totalCardLabel) {
         List<StatusWiseCountTO> response = new ArrayList<>();
         response.add(StatusWiseCountTO.builder().name(totalCardLabel).count(BigInteger.ZERO).build());
-        response.add(StatusWiseCountTO.builder().id(Action.SUBMIT.getId()).name(WorkflowStatus.PENDING.getDescription()).count(BigInteger.ZERO).build());
-        response.add(StatusWiseCountTO.builder().id(Action.APPROVED.getId()).name(WorkflowStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build());
-        response.add(StatusWiseCountTO.builder().id(Action.QUERY_RAISE.getId()).name(WorkflowStatus.QUERY_RAISED.getDescription()).count(BigInteger.ZERO).build());
-        response.add(StatusWiseCountTO.builder().id(Action.REJECT.getId()).name(WorkflowStatus.REJECTED.getDescription()).count(BigInteger.ZERO).build());
-        response.add(StatusWiseCountTO.builder().id(Action.PERMANENT_SUSPEND.getId()).name(WorkflowStatus.SUSPENDED.getDescription()).count(BigInteger.ZERO).build());
-        response.add(StatusWiseCountTO.builder().id(Action.TEMPORARY_SUSPEND.getId()).name(WorkflowStatus.BLACKLISTED.getDescription()).count(BigInteger.ZERO).build());
-        log.debug("Fetched default Card Count detail successfully");
+        response.add(StatusWiseCountTO.builder().id(Action.SUBMIT.getId()).name(DashboardStatus.PENDING.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(Action.APPROVED.getId()).name(DashboardStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(Action.QUERY_RAISE.getId()).name(DashboardStatus.QUERY_RAISE.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(Action.REJECT.getId()).name(DashboardStatus.REJECT.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(Action.PERMANENT_SUSPEND.getId()).name(DashboardStatus.PERMANENT_SUSPEND.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(Action.TEMPORARY_SUSPEND.getId()).name(DashboardStatus.TEMPORARY_SUSPEND.getDescription()).count(BigInteger.ZERO).build());
+        log.info("Fetched default Card Count detail successfully");
         return response;
     }
 
@@ -242,14 +251,13 @@ public class DashboardServiceImpl implements IDashboardService {
         List<StatusWiseCountTO> response = new ArrayList<>();
         response.add(StatusWiseCountTO.builder().name(totalCardLabel).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.PENDING.getId()).name(DashboardStatus.PENDING.getDescription()).count(BigInteger.ZERO).build());
-        // this has to un comment when we need add college_verified.
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.COLLEGE_VERIFIED.getId()).name(DashboardStatus.COLLEGE_VERIFIED.getDescription()).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.APPROVED.getId()).name(DashboardStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.QUERY_RAISE.getId()).name(DashboardStatus.QUERY_RAISE.getDescription()).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.REJECT.getId()).name(DashboardStatus.REJECT.getDescription()).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.PERMANENT_SUSPEND.getId()).name(DashboardStatus.PERMANENT_SUSPEND.getDescription()).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.TEMPORARY_SUSPEND.getId()).name(DashboardStatus.TEMPORARY_SUSPEND.getDescription()).count(BigInteger.ZERO).build());
-        log.debug("Fetched default Card Count detail successfully");
+        log.info("Fetched default Card Count detail successfully");
         return response;
     }
 
@@ -279,27 +287,29 @@ public class DashboardServiceImpl implements IDashboardService {
     }
 
     private void setApplicationTypeIdAndUserGroupStatus(String applicationTypeId, String userGroupStatus,
-                                                        DashboardRequestParamsTO dashboardRequestParamsTO) {
+                                                        DashboardRequestParamsTO dashboardRequestParamsTO) throws InvalidRequestException {
         if (TEMPORARY_AND_PERMANENT_SUSPENSION_APPLICATION_TYPE_ID.equals(applicationTypeId)) {
             if (CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setApplicationTypeId(TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID);
                 dashboardRequestParamsTO.setUserGroupStatus(Action.SUBMIT.getId().toString());
             } else if (CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setApplicationTypeId(TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID);
-                dashboardRequestParamsTO.setUserGroupStatus(Action.APPROVED.getId().toString());
+                dashboardRequestParamsTO.setUserGroupStatus(Action.APPROVED.getId().toString() + ","+ Action.TEMPORARY_SUSPEND.getId().toString());
             } else if (CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setApplicationTypeId(PERMANENT_SUSPENSION_APPLICATION_TYPE_ID);
                 dashboardRequestParamsTO.setUserGroupStatus(Action.SUBMIT.getId().toString());
             } else if (CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setApplicationTypeId(PERMANENT_SUSPENSION_APPLICATION_TYPE_ID);
-                dashboardRequestParamsTO.setUserGroupStatus(Action.APPROVED.getId().toString());
+                dashboardRequestParamsTO.setUserGroupStatus(Action.APPROVED.getId().toString() + ","+ Action.PERMANENT_SUSPEND.getId().toString());
             } else if (TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS.equals(userGroupStatus)) {
                 dashboardRequestParamsTO.setUserGroupStatus(TOTAL);
                 dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
+            }else{
+                throw new InvalidRequestException("Invalid user group status.");
             }
         } else {
             dashboardRequestParamsTO.setApplicationTypeId(applicationTypeId);
-            dashboardRequestParamsTO.setUserGroupStatus(!userGroupStatus.contains(TOTAL) ? DashboardStatus.getDashboardStatus(userGroupStatus).getId().toString() : TOTAL);
+            dashboardRequestParamsTO.setUserGroupStatus(userGroupStatus != null && !userGroupStatus.contains(TOTAL) ? DashboardStatus.getDashboardStatus(userGroupStatus).getId().toString() : TOTAL);
         }
     }
 

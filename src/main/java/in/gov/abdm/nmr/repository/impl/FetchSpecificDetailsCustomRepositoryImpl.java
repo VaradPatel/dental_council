@@ -103,11 +103,11 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             String userGroupStatus = dashboardRequestParamsTO.getUserGroupStatus().toUpperCase();
             if (!dashboardRequestParamsTO.getUserGroupStatus().contains("Total")) {
                 if (groupId.equals(Group.SMC.getId())) {
-                    sb.append("AND smc_status = '").append(userGroupStatus).append("' ");
+                    sb.append("AND smc_status in (").append(userGroupStatus).append(") ");
                 } else if (groupId.equals(Group.COLLEGE.getId())) {
                     sb.append("AND college_status = '").append(userGroupStatus).append("' ");
                 } else if (groupId.equals(Group.NMC.getId())) {
-                    sb.append("AND nmc_status = '").append(userGroupStatus).append("' ");
+                    sb.append("AND nmc_status in (").append(userGroupStatus).append(") ");
                 } else if (groupId.equals(Group.NBE.getId())) {
                     sb.append("AND nbe_status = '").append(userGroupStatus).append("' ");
                 }

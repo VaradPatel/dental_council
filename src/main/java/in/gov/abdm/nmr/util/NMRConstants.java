@@ -102,10 +102,6 @@ public class NMRConstants {
     public static final String TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID = "3";
     public static final String PERMANENT_SUSPENSION_APPLICATION_TYPE_ID = "4";
     public static final String TEMPORARY_AND_PERMANENT_SUSPENSION_APPLICATION_TYPE_ID = "3,4";
-
-    public static final String PENDING = "Pending";
-
-    public static final String APPROVED = "Approved";
     public static final String TOTAL_HP_REGISTRATION_REQUESTS = "Total Registration Requests";
     public static final String TOTAL_HP_MODIFICATION_REQUESTS = "Total Modification Requests";
     public static final String TOTAL_TEMPORARY_SUSPENSION_REQUESTS = "Total Temporary Suspension Requests";

@@ -202,7 +202,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         return verifier;
     }
 
-    private void updateDashboardDetail(WorkFlowRequestTO requestTO, WorkFlow workFlow, INextGroup iNextGroup, Dashboard dashboard) {
+    private void updateDashboardDetail(WorkFlowRequestTO requestTO, WorkFlow workFlow, INextGroup iNextGroup, Dashboard dashboard) throws InvalidRequestException {
         dashboard.setApplicationTypeId(requestTO.getApplicationTypeId());
         dashboard.setRequestId(requestTO.getRequestId());
         dashboard.setHpProfileId(requestTO.getHpProfileId());
@@ -229,7 +229,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
     }
 
-    private static void setDashboardStatus(BigInteger actionPerformedId, BigInteger userGroup, Dashboard dashboard) {
+    private static void setDashboardStatus(BigInteger actionPerformedId, BigInteger userGroup, Dashboard dashboard) throws InvalidRequestException {
         BigInteger dashboardStatusId = DashboardStatus.getDashboardStatus(Action.getAction(actionPerformedId).getStatus()).getId();
         if (userGroup.equals(Group.SMC.getId())) {
             dashboard.setSmcStatus(dashboardStatusId);
