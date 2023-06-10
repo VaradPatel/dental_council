@@ -183,19 +183,19 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
      * Retrieves the details of Dashboard records list based on the provided parameters.
      *
      * @param dashboardRequestParamsTO - object containing the filter criteria for fetching request details
-     * @param pagination               - object for pagination
+     * @param pageable               - object for pagination
      * @return the DashboardResponseTO object representing the response object
      * which contains all the Dashboard records list
      */
     @Override
-    public DashboardResponseTO fetchDashboardData(DashboardRequestParamsTO dashboardRequestParamsTO, Pageable pagination) {
+    public DashboardResponseTO fetchDashboardData(DashboardRequestParamsTO dashboardRequestParamsTO, Pageable pageable) {
         DashboardResponseTO dashBoardResponseTO = new DashboardResponseTO();
         dashBoardResponseTO.setTotalNoOfRecords(BigInteger.ZERO);
         List<DashboardTO> dashboardTOList = new ArrayList<>();
         Query query = entityManager.createNativeQuery(DASHBOARD.apply(dashboardRequestParamsTO));
         log.debug("Fetched dashboard detail successfully.");
-        query.setFirstResult((pagination.getPageNumber() - 1) * pagination.getPageSize());
-        query.setMaxResults(pagination.getPageSize());
+        query.setFirstResult(pageable.getPageNumber() != 0 ?(pageable.getPageNumber() - 1) * pageable.getPageSize() : 0);
+        query.setMaxResults(pageable.getPageSize());
         List<Object[]> results = query.getResultList();
         results.forEach(result -> {
             DashboardTO dashBoardTO = new DashboardTO();
