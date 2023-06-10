@@ -68,7 +68,7 @@ public class NmrExceptionAdvice {
     @ExceptionHandler({Exception.class})
     public ResponseEntity<ErrorDTO> handleException(HttpServletRequest req, Throwable ex) {
         LOGGER.error("Unexpected error occurred", ex);
-        ErrorDTO error = new ErrorDTO(new Date(), NMRError.INTERNAL_SERVER_ERROR.getCode(), NMRError.INTERNAL_SERVER_ERROR.getMessage(), req.getServletPath(), HttpStatus.INTERNAL_SERVER_ERROR.toString());
+        ErrorDTO error = new ErrorDTO(new Date(), NMRError.NMR_EXCEPTION.getCode(), NMRError.NMR_EXCEPTION.getMessage(), req.getServletPath(), HttpStatus.INTERNAL_SERVER_ERROR.toString());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, headers, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -84,13 +84,13 @@ public class NmrExceptionAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorInfo handleValidationExceptions(MethodArgumentNotValidException ex) {
         ErrorInfo errorInfo = new ErrorInfo();
-        errorInfo.setCode(NMRError.INPUT_VALIDATION_ERROR_CODE.getCode());
+        errorInfo.setCode(NMRError.INVALID_REQUEST.getCode());
         errorInfo.setMessage(HttpStatus.BAD_REQUEST.toString());
         List<DetailsTO> details = new ArrayList<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
             DetailsTO detailsTO = new DetailsTO();
-            detailsTO.setCode(NMRError.INPUT_VALIDATION_INTERNAL_ERROR_CODE.getCode());
-            detailsTO.setMessage(NMRError.INPUT_VALIDATION_INTERNAL_ERROR_CODE.getMessage());
+            detailsTO.setCode(NMRError.INVALID_REQUEST.getCode());
+            detailsTO.setMessage(NMRError.INVALID_REQUEST.getMessage());
             AttributeTO attributeTO = new AttributeTO();
             String field = ((FieldError) error).getField();
             String defaultMessage = error.getDefaultMessage();
@@ -117,13 +117,13 @@ public class NmrExceptionAdvice {
     @ExceptionHandler(ConstraintViolationException.class)
     public ErrorInfo handleGlobalValidationException(ConstraintViolationException ex) {
         ErrorInfo errorInfo = new ErrorInfo();
-        errorInfo.setCode(NMRError.INPUT_VALIDATION_ERROR_CODE.getCode());
+        errorInfo.setCode(NMRError.INVALID_REQUEST.getCode());
         errorInfo.setMessage(HttpStatus.BAD_REQUEST.toString());
         List<DetailsTO> details = new ArrayList<>();
         ex.getConstraintViolations().forEach(error -> {
             DetailsTO detailsTO = new DetailsTO();
-            detailsTO.setCode(NMRError.INPUT_VALIDATION_INTERNAL_ERROR_CODE.getCode());
-            detailsTO.setMessage(NMRError.INPUT_VALIDATION_INTERNAL_ERROR_CODE.getMessage());
+            detailsTO.setCode(NMRError.INVALID_REQUEST.getCode());
+            detailsTO.setMessage(NMRError.INVALID_REQUEST.getMessage());
             AttributeTO attributeTO = new AttributeTO();
             String field = error.getPropertyPath().toString();
             String defaultMessage = error.getMessage();

@@ -157,7 +157,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 workFlow.setUserId(user);
                 log.debug("Work Flow Updation Successful");
             } else {
-                throw new WorkFlowException(NMRError.NEXT_GROUP_NOT_FOUND.getCode(), NMRError.NEXT_GROUP_NOT_FOUND.getMessage());
+                throw new WorkFlowException(NMRError.WORK_FLOW_EXCEPTION.getCode(), NMRError.WORK_FLOW_EXCEPTION.getMessage());
             }
         }
         if (isLastStepOfWorkFlow(iNextGroup) &&

@@ -231,7 +231,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws NmrException, InvalidRequestException, WorkFlowException {
         HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
         if (hpProfile.getNmrId() == null) {
-            throw new WorkFlowException(NMRError.QUALIFICATION_WORKFLOW_CREATION_FAIL.getCode(), NMRError.QUALIFICATION_WORKFLOW_CREATION_FAIL.getMessage());
+            throw new WorkFlowException(NMRError.WORK_FLOW_EXCEPTION.getCode(), NMRError.WORK_FLOW_EXCEPTION.getMessage());
         }
         validateQualificationDetailsAndProofs(qualificationDetailRequestTOs, proofs);
         for (QualificationDetailRequestTO qualificationDetailRequestTO : qualificationDetailRequestTOs) {
@@ -400,7 +400,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 workProfileList = workProfileRepository.getWorkProfileDetailsByUserId(userId);
                 languagesKnown = languagesKnownRepository.findByUserId(userId);
             } else {
-                throw new InvalidRequestException(NMRError.NO_MATCHING_USER_DETAILS_FOUND.getCode(), NMRError.NO_MATCHING_USER_DETAILS_FOUND.getMessage());
+                throw new InvalidRequestException(NMRError.NO_SUCH_ELEMENT.getCode(), NMRError.NO_SUCH_ELEMENT.getMessage());
             }
         }
 
@@ -415,7 +415,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(workProfileList);
             hpProfileWorkDetailsResponseTO.setLanguagesKnownIds(languagesKnownIds);
         } else {
-            throw new InvalidRequestException(NMRError.NO_MATCHING_WORK_PROFILE_DETAILS_FOUND.getCode(), NMRError.NO_MATCHING_WORK_PROFILE_DETAILS_FOUND.getMessage());
+            throw new InvalidRequestException(NMRError.NO_SUCH_ELEMENT.getCode(), NMRError.NO_SUCH_ELEMENT.getMessage());
         }
         return hpProfileWorkDetailsResponseTO;
     }
@@ -686,7 +686,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         String transactionId = request.getTransactionId();
         if (request.getMobileNumber() != null) {
             if (transactionId == null) {
-                throw new InvalidRequestException(NMRError.MISSING_TRANSACTION_ID_ERROR.getCode(), NMRError.MISSING_TRANSACTION_ID_ERROR.getMessage());
+                throw new InvalidRequestException(NMRError.MISSING_MANDATORY_FIELD.getCode(), NMRError.MISSING_MANDATORY_FIELD.getMessage());
             } else {
                 if (otpService.isOtpVerified(transactionId)) {
                     throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());

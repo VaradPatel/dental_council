@@ -137,7 +137,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public SMCProfile findSmcProfile(BigInteger id) throws InvalidIdException {
         SMCProfile smcProfileEntity = smcProfileRepository.findById(id).orElse(null);
         if (smcProfileEntity == null) {
-            throw new InvalidIdException(NMRError.INVALID_COLLEGE_ID.getCode(), NMRError.INVALID_COLLEGE_ID.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(), NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
         accessControlService.validateUser(smcProfileEntity.getUser().getId());
         return smcProfileEntity;
@@ -147,7 +147,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NmcProfile findNmcProfile(BigInteger id) throws InvalidIdException {
         NmcProfile nmcProfileEntity = nmcProfileRepository.findById(id).orElse(null);
         if (nmcProfileEntity == null) {
-            throw new InvalidIdException(NMRError.INVALID_COLLEGE_ID.getCode(), NMRError.INVALID_COLLEGE_ID.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(), NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
         accessControlService.validateUser(nmcProfileEntity.getUser().getId());
         return nmcProfileEntity;
@@ -157,7 +157,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NbeProfile findNbeProfile(BigInteger id) throws InvalidIdException {
         NbeProfile nbeProfileEntity = nbeProfileRepository.findById(id).orElse(null);
         if (nbeProfileEntity == null) {
-            throw new InvalidIdException(NMRError.INVALID_COLLEGE_ID.getCode(),NMRError.INVALID_COLLEGE_ID.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(),NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
         accessControlService.validateUser(nbeProfileEntity.getUser().getId());
         return nbeProfileEntity;
@@ -167,7 +167,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws InvalidIdException {
         SMCProfile smcProfile = smcProfileRepository.findById(id).orElse(null);
         if (smcProfile == null) {
-            throw new InvalidIdException(NMRError.INVALID_PROFILE_ID.getCode(), NMRError.INVALID_PROFILE_ID.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(), NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
         smcProfile.setId(id);
         smcProfile.setFirstName(smcProfileTO.getFirstName());
@@ -189,7 +189,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws InvalidIdException {
         NmcProfile nmcProfile = nmcProfileRepository.findById(id).orElse(null);
         if (nmcProfile == null) {
-            throw new InvalidIdException(NMRError.INVALID_PROFILE_ID.getCode(),NMRError.INVALID_PROFILE_ID.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(),NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
         nmcProfile.setId(id);
         nmcProfile.setFirstName(nmcProfileTO.getFirstName());
@@ -207,7 +207,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws InvalidIdException {
         NbeProfile nbeProfile = nbeProfileRepository.findById(id).orElse(null);
         if (nbeProfile == null) {
-            throw new InvalidIdException(NMRError.INVALID_PROFILE_ID.getCode(),NMRError.INVALID_PROFILE_ID.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(),NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
         nbeProfile.setId(id);
         nbeProfile.setDisplayName(nbeProfileTO.getDisplayName());

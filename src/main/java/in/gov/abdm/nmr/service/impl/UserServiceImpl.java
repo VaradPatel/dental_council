@@ -286,7 +286,7 @@ public class UserServiceImpl implements IUserService {
                         break;
                     default:
                         log.error("unable to complete fetch user details process due Invalid Search Criteria ");
-                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL.getMessage());
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA.getCode(), NMRError.INVALID_SEARCH_CRITERIA.getMessage());
                 }
             } else {
                 log.error("unable to complete fetch user details process due missing search value.");
