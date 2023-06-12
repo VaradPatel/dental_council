@@ -1,7 +1,5 @@
 package in.gov.abdm.nmr.enums;
 
-import in.gov.abdm.nmr.exception.InvalidRequestException;
-
 import java.math.BigInteger;
 import java.util.Arrays;
 
