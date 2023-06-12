@@ -19,5 +19,8 @@ public class CurrentWorkDetailsTO {
     private String registrationNo;
     private byte[] proof;
     private Integer experienceInYears;
+    private String systemOfMedicine;
+    private String department;
+    private String designation;
 
 }
