@@ -55,6 +55,9 @@ public final class HpProfileWorkProfileMapper {
             currentWorkDetailsTO.setAddress(address);
             currentWorkDetailsTO.setRegistrationNo(workProfileObj.getRegistrationNo());
             currentWorkDetailsTO.setExperienceInYears(workProfileObj.getExperienceInYears());
+            currentWorkDetailsTO.setSystemOfMedicine(workProfileObj.getSystemOfMedicine());
+            currentWorkDetailsTO.setDesignation(workProfileObj.getDesignation());
+            currentWorkDetailsTO.setDepartment(workProfileObj.getDepartment());
             currentWorkDetailsTOList.add(currentWorkDetailsTO);
         });
         hpProfileWorkDetailsResponseTO.setWorkDetails(workDetailsTO);

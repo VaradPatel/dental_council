@@ -595,6 +595,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         addWorkProfile.setRegistrationNo(hpWorkProfileUpdateRequestTO.getRegistrationNo());
         addWorkProfile.setExperienceInYears(currentWorkDetailsTO.getExperienceInYears());
         addWorkProfile.setUserId(userId);
+        addWorkProfile.setSystemOfMedicine(currentWorkDetailsTO.getSystemOfMedicine());
+        addWorkProfile.setDesignation(currentWorkDetailsTO.getDesignation());
+        addWorkProfile.setDepartment(currentWorkDetailsTO.getDepartment());
         return addWorkProfile;
     }
 
