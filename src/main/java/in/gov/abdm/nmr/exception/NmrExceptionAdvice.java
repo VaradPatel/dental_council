@@ -19,6 +19,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * NmrExceptionAdvice is a class that provides advice for handling exceptions in a RESTful service.
@@ -56,9 +57,17 @@ public class NmrExceptionAdvice {
         return new ResponseEntity<>(error, headers, HttpStatus.FORBIDDEN.value());
     }
 
+    @ExceptionHandler({NoSuchElementException.class})
+    public ResponseEntity<ErrorDTO> handleNoSuchElementException(HttpServletRequest req, Throwable ex) {
+        ErrorDTO error = new ErrorDTO(new Date(), NMRError.NO_SUCH_ELEMENT.getCode(), NMRError.NO_SUCH_ELEMENT.getMessage(), req.getServletPath(), HttpStatus.BAD_REQUEST.toString());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST.value());
+    }
+
     @ExceptionHandler({Exception.class})
     public ResponseEntity<ErrorDTO> handleException(HttpServletRequest req, Throwable ex) {
-        LOGGER.error("Unexpected error occured", ex);
+        LOGGER.error("Unexpected error occurred", ex);
         ErrorDTO error = new ErrorDTO(new Date(), NMRError.INTERNAL_SERVER_ERROR.getCode(), NMRError.INTERNAL_SERVER_ERROR.getMessage(), req.getServletPath(), HttpStatus.INTERNAL_SERVER_ERROR.toString());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

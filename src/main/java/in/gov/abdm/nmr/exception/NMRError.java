@@ -71,7 +71,8 @@ public enum NMRError {
     INVALID_USER_TYPE("ABDM-NMR-063", "User type or sub type invalid."),
     NON_REGISTERED_MOBILE_NUMBER("ABDM-NMR-064", "This mobile number is not registered in NMR."),
     NON_REGISTERED_EMAIL_ID("ABDM-NMR-065", "This email ID is not registered in NMR."),
-    NON_REGISTERED_NMR_ID("ABDM-NMR-066", "This NMR ID is not registered in NMR.");
+    NON_REGISTERED_NMR_ID("ABDM-NMR-066", "This NMR ID is not registered in NMR."),
+    NO_SUCH_ELEMENT("ABDM-NMR-067", "There is no matching value for the given request parameter");
     private final String code;
     private final String message;
 }

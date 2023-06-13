@@ -102,10 +102,6 @@ public class NMRConstants {
     public static final String TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID = "3";
     public static final String PERMANENT_SUSPENSION_APPLICATION_TYPE_ID = "4";
     public static final String TEMPORARY_AND_PERMANENT_SUSPENSION_APPLICATION_TYPE_ID = "3,4";
-
-    public static final String PENDING = "Pending";
-
-    public static final String APPROVED = "Approved";
     public static final String TOTAL_HP_REGISTRATION_REQUESTS = "Total Registration Requests";
     public static final String TOTAL_HP_MODIFICATION_REQUESTS = "Total Modification Requests";
     public static final String TOTAL_TEMPORARY_SUSPENSION_REQUESTS = "Total Temporary Suspension Requests";
@@ -168,7 +164,7 @@ public class NMRConstants {
 
     public static final String FETCH_CARD_DETAILS_QUERY = "select d.work_flow_status_id doctor_status, smc_status, nmc_status, nbe_status, d.hp_profile_id, d.request_id, rd.registration_no, rd.created_at, stmc.name, hp.full_name,  work_flow_status_id,(SELECT CASE WHEN ( wf.work_flow_status_id in(2, 4, 5, 6) ) THEN DATE_PART( 'day', (wf.updated_at - wf.created_at) ) WHEN ( wf.work_flow_status_id in(1, 3) ) THEN DATE_PART( 'day', (now() - wf.created_at) ) END FROM main.work_flow wf where wf.request_id = d.request_id ) as pendency, hp.gender, hp.email_id, hp.mobile_number, hp.nmr_id, rd.registration_date, college_status,d.application_type_id, count(*) OVER() AS total_count from main.dashboard d INNER JOIN main.registration_details as rd on rd.hp_profile_id = d.hp_profile_id INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id and hp.e_sign_status IN (1,2,3) ";
 
-    public static final String FETCH_TRACK_DETAILS_QUERY = "select d.work_flow_status_id doctor_status, smc_status, nmc_status, nbe_status, d.hp_profile_id, d.request_id, rd.registration_no, rd.created_at, stmc.name, hp.full_name, application_type_id, ( SELECT a.name FROM main.application_type a WHERE a.id = application_type_id ) as application_type_name, ( SELECT CASE WHEN ( wf.work_flow_status_id in(2, 4, 5, 6) ) THEN DATE_PART( 'day', (wf.updated_at - wf.created_at) ) WHEN ( wf.work_flow_status_id in(1, 3) ) THEN DATE_PART( 'day', (now() - wf.created_at) ) END FROM main.work_flow wf where wf.request_id = d.request_id ) as pendency, work_flow_status_id, hp.gender, hp.email_id, hp.mobile_number, hp.nmr_id, rd.registration_date, college_status, count(*) OVER() AS total_count from main.dashboard d INNER JOIN main.registration_details as rd on rd.hp_profile_id = d.hp_profile_id INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id ";
+    public static final String FETCH_TRACK_DETAILS_QUERY = "select d.work_flow_status_id doctor_status, smc_status, nmc_status, nbe_status, d.hp_profile_id, d.request_id, rd.registration_no, d.created_at, stmc.name, hp.full_name, application_type_id, ( SELECT a.name FROM main.application_type a WHERE a.id = application_type_id ) as application_type_name, ( SELECT CASE WHEN ( wf.work_flow_status_id in(2, 4, 5, 6) ) THEN DATE_PART( 'day', (wf.updated_at - wf.created_at) ) WHEN ( wf.work_flow_status_id in(1, 3) ) THEN DATE_PART( 'day', (now() - wf.created_at) ) END FROM main.work_flow wf where wf.request_id = d.request_id ) as pendency, work_flow_status_id, hp.gender, hp.email_id, hp.mobile_number, hp.nmr_id, rd.registration_date, college_status, count(*) OVER() AS total_count from main.dashboard d INNER JOIN main.registration_details as rd on rd.hp_profile_id = d.hp_profile_id INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id ";
     public static final String STATE_MEDICAL_COUNCIL_ID = "state_medical_council_id";
     public static final String REGISTRATION_DETAILS_ID = "registration_details_id";
     public static final String SUCCESS = "Success";
@@ -217,7 +213,7 @@ public class NMRConstants {
     public static final String FETCH_WORK_PROFILE_RECORDS_BY_USER_ID = """
             SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id, 
             state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at, 
-            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status FROM work_profile where delete_status=false AND  user_id =:userId""" ;
+            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status, system_of_medicine, department, designation FROM work_profile where delete_status=false AND  user_id =:userId""" ;
      public static final int MAX_DATA_SIZE = 500;
     public static final String DEFAULT_SORT_ORDER = "DESC";
     public static final String SMS_AND_EMAIL_RESET_MESSAGE_PROPERTIES_KEY = "sms-email-reset";
@@ -263,7 +259,7 @@ public class NMRConstants {
     public static final String FETCH_ACTIVE_WORK_PROFILE_RECORDS_BY_USER_ID = """            
             SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id,
             state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at,
-            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status FROM work_profile WHERE  delete_status=false AND user_id =:userId""";
+            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status, system_of_medicine, department, designation FROM work_profile WHERE  delete_status=false AND user_id =:userId""";
 
 
     public static final String DEACTIVATE_USER = "update  {h-schema}user SET delete_status =true WHERE id =:userId";

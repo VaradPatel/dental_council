@@ -2,7 +2,6 @@ package in.gov.abdm.nmr.enums;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Optional;
 
 /**
  * Enums for all possible actions in NMR
@@ -41,12 +40,11 @@ public enum DashboardStatus {
     }
 
     public static DashboardStatus getDashboardStatus(BigInteger id) {
-        Optional<DashboardStatus> optionalAction = Arrays.stream(DashboardStatus.values()).filter(action -> action.getId().equals(id)).findFirst();
-        return optionalAction.isPresent() ? optionalAction.get() : null;
+        return Arrays.stream(DashboardStatus.values()).filter(action -> action.getId().equals(id)).findFirst().orElseThrow();
+
     }
 
-    public static DashboardStatus getDashboardStatus(String status) {
-        Optional<DashboardStatus> optionalAction = Arrays.stream(DashboardStatus.values()).filter(action -> action.getStatus().equals(status)).findFirst();
-        return optionalAction.isPresent() ? optionalAction.get() : null;
+    public static DashboardStatus getDashboardStatus(String status){
+        return Arrays.stream(DashboardStatus.values()).filter(action -> action.getStatus().equals(status)).findFirst().orElseThrow();
     }
 }
