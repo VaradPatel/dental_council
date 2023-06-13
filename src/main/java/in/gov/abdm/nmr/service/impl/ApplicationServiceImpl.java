@@ -473,7 +473,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         columnToSortMap.put("hpProfileId", " calculate.hp_profile_id");
         columnToSortMap.put("requestId", " calculate.request_id");
         columnToSortMap.put("registrationNo", " rd.registration_no");
-        columnToSortMap.put("createdAt", " rd.created_at");
+        columnToSortMap.put("createdAt", " d.created_at");
         columnToSortMap.put("councilName", " stmc.name");
         columnToSortMap.put("applicantFullName", " hp.full_name");
         columnToSortMap.put("applicationTypeId", " application_type_id");

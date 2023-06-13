@@ -206,14 +206,14 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
         return sb.toString();
     };
 
-    public UserResponseTO fetchUserData(UserRequestParamsTO userRequestParamsTO, Pageable pagination) {
+    public UserResponseTO fetchUserData(UserRequestParamsTO userRequestParamsTO, Pageable pageable) {
         UserResponseTO userResponseTO = new UserResponseTO();
         userResponseTO.setTotalNoOfRecords(BigInteger.ZERO);
         List<UserTO> userTOList = new ArrayList<>();
         Query query = entityManager.createNativeQuery(GET_ALL_USER.apply(userRequestParamsTO));
         log.debug("Fetched user detail successfully.");
-        query.setFirstResult((pagination.getPageNumber() - 1) * pagination.getPageSize());
-        query.setMaxResults(pagination.getPageSize());
+        query.setFirstResult(pageable.getPageNumber() != 0 ?(pageable.getPageNumber() - 1) * pageable.getPageSize() : 0);
+        query.setMaxResults(pageable.getPageSize());
         List<Object[]> results = query.getResultList();
         results.forEach(result -> {
             UserTO user = new UserTO();

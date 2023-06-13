@@ -105,7 +105,7 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
         List<ReactivateHealthProfessionalTO> reactivateHealthProfessionalTOList = new ArrayList<>();
         Query query = entityManager.createNativeQuery(REACTIVATE_HEALTH_PROFESSIONAL.apply(reactivateHealthProfessionalQueryParam));
 
-       query.setFirstResult((pageable.getPageNumber() - 1) * pageable.getPageSize());
+       query.setFirstResult(pageable.getPageNumber() != 0 ?(pageable.getPageNumber() - 1) * pageable.getPageSize() : 0);
        query.setMaxResults(pageable.getPageSize());
 
         List<Object[]> results = query.getResultList();
