@@ -233,6 +233,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         if (hpProfile.getNmrId() == null) {
             throw new WorkFlowException(NMRError.WORK_FLOW_EXCEPTION.getCode(), NMRError.WORK_FLOW_EXCEPTION.getMessage());
         }
+
+        if(!iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(hpProfileId,ApplicationType.QUALIFICATION_ADDITION.getId())){
+            throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
+        }
         validateQualificationDetailsAndProofs(qualificationDetailRequestTOs, proofs);
         for (QualificationDetailRequestTO qualificationDetailRequestTO : qualificationDetailRequestTOs) {
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.QUALIFICATION_ADDITION.getId()));
