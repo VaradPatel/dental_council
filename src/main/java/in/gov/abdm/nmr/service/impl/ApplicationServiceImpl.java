@@ -261,7 +261,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                         reactivateHealthProfessionalQueryParam.setSearch(value);
                         break;
                     default:
-                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE.getMessage());
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA.getCode(), NMRError.INVALID_SEARCH_CRITERIA.getMessage());
                 }
             } else {
                 throw new InvalidRequestException(NMRError.MISSING_SEARCH_VALUE.getCode(), NMRError.MISSING_SEARCH_VALUE.getMessage());
@@ -366,7 +366,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                         applicationRequestParamsTo.setYearOfRegistration(value);
                         break;
                     default:
-                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION.getMessage());
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA.getCode(), NMRError.INVALID_SEARCH_CRITERIA.getMessage());
                 }
             } else {
                 throw new InvalidRequestException(NMRError.MISSING_SEARCH_VALUE.getCode(), NMRError.MISSING_SEARCH_VALUE.getMessage());

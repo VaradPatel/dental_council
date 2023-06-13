@@ -224,7 +224,7 @@ public class NotificationServiceImpl implements INotificationService {
             template = notificationDBFClient.getTemplateById(Timestamp.valueOf(LocalDateTime.now()), UUID.randomUUID().toString(), new BigInteger(templateId));
 
         } catch (NoSuchMessageException noSuchMessageException) {
-            throw new TemplateException(NMRError.TEMPLATE_ID_NOT_FOUND_IN_PROPERTIES.getCode(), NMRError.OTP_INVALID.getMessage());
+            throw new TemplateException(NMRError.NOT_FOUND_EXCEPTION.getCode(), NMRError.NOT_FOUND_EXCEPTION.getMessage());
         }
 
         if (null == template) {

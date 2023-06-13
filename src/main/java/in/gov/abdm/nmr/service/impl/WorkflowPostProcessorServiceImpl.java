@@ -294,7 +294,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
             }
         } catch (ElasticsearchException | IOException e) {
             LOGGER.error("Exception while indexing HP", e);
-            throw new WorkFlowException(NMRError.FAIL_ELASTIC_UPDATE.getCode(), NMRError.FAIL_ELASTIC_UPDATE.getMessage());
+            throw new WorkFlowException(NMRError.NMR_EXCEPTION.getCode(), NMRError.NMR_EXCEPTION.getMessage());
         }
     }
 

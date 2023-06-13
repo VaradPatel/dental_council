@@ -24,6 +24,6 @@ public class RequestCounterServiceImpl implements IRequestCounterService {
             requestCounter.get().setCounter(counter);
             return requestCounter.get();
         }
-        throw new WorkFlowException(NMRError.APPLICATION_TYPE_ID_NOT_EXIST.toString(), NMRError.APPLICATION_TYPE_ID_NOT_EXIST.getMessage());
+        throw new WorkFlowException(NMRError.ID_NOT_EXIST.toString(), NMRError.ID_NOT_EXIST.getMessage());
     }
 }

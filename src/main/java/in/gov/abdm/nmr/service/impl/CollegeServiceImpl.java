@@ -320,7 +320,7 @@ public class CollegeServiceImpl implements ICollegeService {
     private void preVerifierUpdationChecks(CollegeProfileTo collegeProfileTo, CollegeProfile collegeProfile) throws  InvalidIdException, ResourceExistsException {
         User loggedInUser = getLoggedInUser();
         if (collegeProfile == null) {
-            throw new InvalidIdException(NMRError.COLLEGE_VERIFIER_FOUND.getCode(), NMRError.COLLEGE_VERIFIER_FOUND.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(), NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
 
         User user = collegeProfile.getUser();
@@ -362,7 +362,7 @@ public class CollegeServiceImpl implements ICollegeService {
         CollegeProfile collegeProfile = collegeProfileDaoService.findById(verifierId);
 
         if (collegeProfile == null) {
-            throw new InvalidIdException(NMRError.COLLEGE_VERIFIER_FOUND.getCode(), NMRError.COLLEGE_VERIFIER_FOUND.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(), NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
 
         if (!loggedInUser.getId().equals(collegeProfile.getUser().getId())) {
