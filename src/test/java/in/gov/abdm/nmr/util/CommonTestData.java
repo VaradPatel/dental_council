@@ -1117,6 +1117,7 @@ CommonTestData {
     public static HpProfile getHpProfileForNMR() {
         HpProfile hpProfile = new HpProfile();
         hpProfile.setNmrId(NMR_ID);
+        hpProfile.setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.APPROVED.getId()).build());
         return hpProfile;
     }
 
