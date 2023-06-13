@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
+import static in.gov.abdm.nmr.util.CommonTestData.getHpProfileForNMR;
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -214,6 +215,7 @@ class HpRegistrationServiceImplTest {
     void testAddQualificationShouldAddQualificationDetailsAndReturnSuccess() throws WorkFlowException, NmrException, InvalidRequestException {
         when(hpProfileDaoService.findById(any(BigInteger.class))).thenReturn(getHpProfileForNMR());
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(getRequestCounter());
+        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class),any(BigInteger.class))).thenReturn(true);
         doNothing().when(iWorkFlowService).initiateSubmissionWorkFlow(any(WorkFlowRequestTO.class));
         String s = hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate));
         assertEquals(SUCCESS_RESPONSE, s);
@@ -223,9 +225,18 @@ class HpRegistrationServiceImplTest {
     void testAddQualificationShouldAddQualificationDetailsAndReturnSuccess2() throws WorkFlowException, NmrException, InvalidRequestException {
         when(hpProfileDaoService.findById(any(BigInteger.class))).thenReturn(getHpProfileForNMR());
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(getRequestCounter());
+        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class),any(BigInteger.class))).thenReturn(true);
         doNothing().when(iWorkFlowService).initiateSubmissionWorkFlow(any(WorkFlowRequestTO.class));
         String s = hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate));
         assertEquals(SUCCESS_RESPONSE, s);
+    }
+
+    @Test
+    void testAddQualificationShouldThrowErrorForSuspendedProfile() throws WorkFlowException, NmrException, InvalidRequestException {
+        HpProfile hpProfile=getHpProfileForNMR();
+        hpProfile.setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.SUSPENDED.getId()).build());
+        when(hpProfileDaoService.findById(any(BigInteger.class))).thenReturn(hpProfile);
+        assertThrows(WorkFlowException.class, () -> hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate)));
     }
 
     @Test
