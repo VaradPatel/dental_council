@@ -104,7 +104,7 @@ public interface IHpRegistrationService {
      * @param hpProfileId The unique identifier for the health professional's profile.
      * @return An instance of {@link HpProfileWorkDetailsResponseTO} containing the work details of the health professional.
      */
-    HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) throws NmrException, InvalidRequestException;
+    HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId);
 
     /**
      * This method is used to retrieve the registration details of a health professional based on their profile ID.

@@ -283,8 +283,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         log.info("In HpRegistrationServiceImpl : addOrUpdateWorkProfileDetail method");
 
-        validateWorkProfileDetails(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails());
-
         log.debug("WorkProfileDetails Validation Successful. Calling the updateWorkProfileDetails method to update the work profile details. ");
         HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateWorkProfileDetails(hpProfileId, hpWorkProfileUpdateRequestTO, proofs);
 
@@ -387,7 +385,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     @Override
-    public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) throws NmrException, InvalidRequestException {
+    public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId){
         HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = null;
         List<WorkProfile> workProfileList = new ArrayList<>();
         List<LanguagesKnown> languagesKnown = new ArrayList<>();
@@ -399,8 +397,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 BigInteger userId = user.getId();
                 workProfileList = workProfileRepository.getWorkProfileDetailsByUserId(userId);
                 languagesKnown = languagesKnownRepository.findByUserId(userId);
-            } else {
-                throw new InvalidRequestException(NMRError.NO_SUCH_ELEMENT.getCode(), NMRError.NO_SUCH_ELEMENT.getMessage());
             }
         }
 
@@ -414,8 +410,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         if (!workProfileList.isEmpty()) {
             hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(workProfileList);
             hpProfileWorkDetailsResponseTO.setLanguagesKnownIds(languagesKnownIds);
-        } else {
-            throw new InvalidRequestException(NMRError.NO_SUCH_ELEMENT.getCode(), NMRError.NO_SUCH_ELEMENT.getMessage());
         }
         return hpProfileWorkDetailsResponseTO;
     }

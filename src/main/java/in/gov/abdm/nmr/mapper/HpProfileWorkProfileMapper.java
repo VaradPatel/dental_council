@@ -58,6 +58,8 @@ public final class HpProfileWorkProfileMapper {
             currentWorkDetailsTO.setSystemOfMedicine(workProfileObj.getSystemOfMedicine());
             currentWorkDetailsTO.setDesignation(workProfileObj.getDesignation());
             currentWorkDetailsTO.setDepartment(workProfileObj.getDepartment());
+            currentWorkDetailsTO.setReason(workProfileObj.getReason());
+            currentWorkDetailsTO.setRemark(workProfileObj.getRemark());
             currentWorkDetailsTOList.add(currentWorkDetailsTO);
         });
         hpProfileWorkDetailsResponseTO.setWorkDetails(workDetailsTO);

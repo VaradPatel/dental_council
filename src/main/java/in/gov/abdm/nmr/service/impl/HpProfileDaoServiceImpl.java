@@ -557,7 +557,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private void mapWorkRequestToEntity(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> addWorkProfiles, BigInteger hpProfileId, BigInteger userId) {
         if (!addWorkProfiles.isEmpty()) {
             List<String> facilityIdList = new ArrayList<>();
-            hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> facilityIdList.add(currentWorkDetailsTO.getFacilityId()));
+            if(hpWorkProfileUpdateRequestTO!=null && hpWorkProfileUpdateRequestTO.getCurrentWorkDetails()!=null) {
+                hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> facilityIdList.add(currentWorkDetailsTO.getFacilityId()));
+            }
             addWorkProfiles.forEach(workProfile -> facilityIdList.remove(workProfile.getFacilityId()));
             updateWorkProfileRecords(hpWorkProfileUpdateRequestTO, addWorkProfiles, hpProfileId, userId, facilityIdList);
         } else {
@@ -594,24 +596,28 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         addWorkProfile.setSystemOfMedicine(currentWorkDetailsTO.getSystemOfMedicine());
         addWorkProfile.setDesignation(currentWorkDetailsTO.getDesignation());
         addWorkProfile.setDepartment(currentWorkDetailsTO.getDepartment());
+        addWorkProfile.setReason(currentWorkDetailsTO.getReason());
+        addWorkProfile.setRemark(currentWorkDetailsTO.getRemark());
         return addWorkProfile;
     }
 
     private void updateWorkProfileRecords(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> addWorkProfiles,
                                           BigInteger hpProfileId, BigInteger userId, List<String> facilityIdList) {
         List<WorkProfile> workProfileDetailsList = new ArrayList<>();
-        addWorkProfiles.forEach(addWorkProfile -> {
-            hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> {
-                if (addWorkProfile.getFacilityId().equals(currentWorkDetailsTO.getFacilityId())) {
-                    workProfileDetailsList.add(workProfileObjectMapping(hpWorkProfileUpdateRequestTO, addWorkProfile, currentWorkDetailsTO, hpProfileId, userId));
-                    workProfileRepository.saveAll(workProfileDetailsList);
-                }
+        if(hpWorkProfileUpdateRequestTO!=null && hpWorkProfileUpdateRequestTO.getCurrentWorkDetails()!=null) {
+            addWorkProfiles.forEach(addWorkProfile -> {
+                hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> {
+                    if (addWorkProfile.getFacilityId()!=null && addWorkProfile.getFacilityId().equals(currentWorkDetailsTO.getFacilityId())) {
+                        workProfileDetailsList.add(workProfileObjectMapping(hpWorkProfileUpdateRequestTO, addWorkProfile, currentWorkDetailsTO, hpProfileId, userId));
+                        workProfileRepository.saveAll(workProfileDetailsList);
+                    }
+                });
             });
-        });
+        }
         if (!facilityIdList.isEmpty() && facilityIdList != null && addWorkProfiles != null) {
             facilityIdList.forEach(facilityId ->
                     hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> {
-                        if (facilityId.equals(currentWorkDetailsTO.getFacilityId())) {
+                        if (facilityId !=null && facilityId.equals(currentWorkDetailsTO.getFacilityId())) {
                             WorkProfile workProfile = new WorkProfile();
                             workProfileDetailsList.add(workProfileObjectMapping(hpWorkProfileUpdateRequestTO, workProfile, currentWorkDetailsTO, hpProfileId, userId));
                             workProfileRepository.saveAll(workProfileDetailsList);
