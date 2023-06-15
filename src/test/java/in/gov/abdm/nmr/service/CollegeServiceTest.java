@@ -81,7 +81,7 @@ class CollegeServiceTest {
     public static CollegeResponseTo getCollegeResponse() {
         CollegeResponseTo collegeResponseTo = new CollegeResponseTo();
         collegeResponseTo.setId(ID);
-        collegeResponseTo.setUniversityId(ID);
+        collegeResponseTo.setUniversityTO(getUniversityTo());
         return collegeResponseTo;
     }
 
@@ -123,7 +123,7 @@ class CollegeServiceTest {
 
     public static CollegeResponseTo getCollege() {
         CollegeResponseTo collegeResponseTo = new CollegeResponseTo();
-        collegeResponseTo.setUniversityId(ID);
+        collegeResponseTo.setUniversityTO(getUniversityTo());
         collegeResponseTo.setEmailId(EMAIL_ID);
         collegeResponseTo.setMobileNumber(MOBILE_NUMBER);
         return collegeResponseTo;

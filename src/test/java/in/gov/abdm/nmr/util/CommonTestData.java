@@ -705,6 +705,13 @@ CommonTestData {
         return universityMaster;
     }
 
+    public static UniversityTO getUniversityTo() {
+        UniversityTO universityTO = new UniversityTO();
+        universityTO.setId(ID);
+        universityTO.setName(NAME);
+        return universityTO;
+    }
+
     public static UniversityMasterTo getUniversityMasterTo() {
         UniversityMasterTo universityMasterTo = new UniversityMasterTo();
         universityMasterTo.setId(ID);
