@@ -1,23 +1,26 @@
 package in.gov.abdm.nmr.security.jwt;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTCreator.Builder;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.interfaces.Verification;
-import in.gov.abdm.nmr.dto.UpdateRefreshTokenIdRequestTO;
-import in.gov.abdm.nmr.security.common.KeyUtil;
-import in.gov.abdm.nmr.security.common.RoleConstants;
-import in.gov.abdm.nmr.service.IUserDaoService;
+import java.math.BigInteger;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.UUID;
+import java.util.stream.Stream;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.math.BigInteger;
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.UUID;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator.Builder;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.Verification;
+
+import in.gov.abdm.nmr.dto.UpdateRefreshTokenIdRequestTO;
+import in.gov.abdm.nmr.security.common.KeyUtil;
+import in.gov.abdm.nmr.security.common.RoleConstants;
+import in.gov.abdm.nmr.service.IUserDaoService;
 
 @Component
 public class JwtUtil {
@@ -53,7 +56,7 @@ public class JwtUtil {
     public String generateToken(String username, JwtTypeEnum type, String[] role, BigInteger profileId) {
         LOGGER.info("Generating {}", type);
 
-        if (RoleConstants.ROLE_PREFIX.concat(RoleConstants.SYSTEM).equals(role)) {
+        if (Stream.of(role).anyMatch((RoleConstants.ROLE_PREFIX + RoleConstants.SYSTEM)::equals)) {
             accessTokenExpirySeconds = 3600l;
         }
         
