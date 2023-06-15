@@ -26,7 +26,9 @@ import org.springframework.stereotype.Component;
 import brave.Tracer;
 import in.gov.abdm.nmr.entity.SecurityAuditTrail;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
+import in.gov.abdm.nmr.security.common.RoleConstants;
 import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
+import in.gov.abdm.nmr.util.NMRConstants;
 
 @Component
 public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
@@ -135,6 +137,11 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) //
             throws IOException, ServletException {
+        if(authResult.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals(RoleConstants.ROLE_PREFIX + RoleConstants.SYSTEM)) && // 
+                !NMRConstants.HEALTH_PROFESSIONAL_ACTION.equals(request.getServletPath())) {
+            throw new AuthenticationServiceException("Not allowed");
+        }
+        
         super.successfulAuthentication(request, response, chain, authResult);
         chain.doFilter(request, response);
     }
