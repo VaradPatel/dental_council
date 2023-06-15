@@ -7,7 +7,6 @@ import java.math.BigInteger;
 
 import javax.servlet.http.HttpServletResponse;
 
-import in.gov.abdm.nmr.enums.ESignStatus;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,8 @@ import in.gov.abdm.nmr.dto.SessionResponseTo;
 import in.gov.abdm.nmr.entity.CollegeProfile;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.enums.ESignStatus;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
-import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.security.jwt.JwtTypeEnum;
 import in.gov.abdm.nmr.security.jwt.JwtUtil;
