@@ -153,11 +153,14 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
             }
         }
         log.debug("Marking all the qualification details associated with the current request_id as verified.");
-        List<QualificationDetails> qualificationDetails = qualificationDetailRepository.findByRequestId(requestTO.getRequestId());
-        qualificationDetails.forEach(qualificationDetail -> qualificationDetail.setIsVerified(1));
-
-        List<ForeignQualificationDetails> foreignQualificationDetails = foreignQualificationDetailRepository.findByRequestId(requestTO.getRequestId());
-        foreignQualificationDetails.forEach(foreignQualificationDetail -> foreignQualificationDetail.setIsVerified(1));
+        QualificationDetails qualificationDetails = qualificationDetailRepository.findByRequestId(requestTO.getRequestId());
+        if(qualificationDetails!=null) {
+            qualificationDetails.setIsVerified(QUALIFICATION_STATUS_APPROVED);
+        }
+        ForeignQualificationDetails foreignQualificationDetails = foreignQualificationDetailRepository.findByRequestId(requestTO.getRequestId());
+        if(foreignQualificationDetails!=null) {
+            foreignQualificationDetails.setIsVerified(QUALIFICATION_STATUS_APPROVED);
+        }
     }
 
     private RegistrationDetailsMaster updateRegistrationDetailsToMaster(BigInteger transactionHpProfileId, HpProfileMaster hpProfileMaster) {
@@ -294,7 +297,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
             }
         } catch (ElasticsearchException | IOException e) {
             LOGGER.error("Exception while indexing HP", e);
-            throw new WorkFlowException(NMRError.FAIL_ELASTIC_UPDATE.getCode(), NMRError.FAIL_ELASTIC_UPDATE.getMessage());
+            throw new WorkFlowException(NMRError.NMR_EXCEPTION.getCode(), NMRError.NMR_EXCEPTION.getMessage());
         }
     }
 

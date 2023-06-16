@@ -179,7 +179,7 @@ public class UserServiceImpl implements IUserService {
      * @return ResponseMessageTo with message
      */
     @Override
-    public ResponseMessageTo verifyEmail(VerifyEmailTo verifyEmailTo) {
+    public ResponseMessageTo verifyEmail(VerifyEmailTo verifyEmailTo) throws InvalidRequestException {
         try {
 
             resetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
@@ -190,19 +190,20 @@ public class UserServiceImpl implements IUserService {
 
                 if (resetToken.getExpiryDate().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0) {
 
-                    return new ResponseMessageTo(NMRConstants.LINK_EXPIRED);
+                    throw new InvalidRequestException(NMRConstants.LINK_EXPIRED);
                 }
 
                 User user = userDaoService.findByUsername(resetToken.getUserName());
                 user.setEmailVerified(true);
+                user.setEmailNotificationEnabled(true);
                 userDaoService.save(user);
                 return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
 
             } else {
-                return new ResponseMessageTo(NMRConstants.LINK_EXPIRED);
+                throw new InvalidRequestException(NMRConstants.LINK_EXPIRED);
             }
         } catch (Exception e) {
-            return new ResponseMessageTo(e.getLocalizedMessage());
+            throw new InvalidRequestException(e.getLocalizedMessage());
         }
     }
 
@@ -286,7 +287,7 @@ public class UserServiceImpl implements IUserService {
                         break;
                     default:
                         log.error("unable to complete fetch user details process due Invalid Search Criteria ");
-                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL.getMessage());
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA.getCode(), NMRError.INVALID_SEARCH_CRITERIA.getMessage());
                 }
             } else {
                 log.error("unable to complete fetch user details process due missing search value.");

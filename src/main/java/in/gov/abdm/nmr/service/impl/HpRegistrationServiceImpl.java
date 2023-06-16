@@ -230,8 +230,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Transactional
     public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws NmrException, InvalidRequestException, WorkFlowException {
         HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
-        if (hpProfile.getNmrId() == null) {
-            throw new WorkFlowException(NMRError.QUALIFICATION_WORKFLOW_CREATION_FAIL.getCode(), NMRError.QUALIFICATION_WORKFLOW_CREATION_FAIL.getMessage());
+        if (hpProfile.getNmrId() == null || !HpProfileStatus.APPROVED.getId().equals(hpProfile.getHpProfileStatus().getId())) {
+            throw new WorkFlowException(NMRError.WORK_FLOW_EXCEPTION.getCode(), NMRError.WORK_FLOW_EXCEPTION.getMessage());
+        }
+
+        if(!iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(hpProfileId,ApplicationType.QUALIFICATION_ADDITION.getId())){
+            throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
         }
         validateQualificationDetailsAndProofs(qualificationDetailRequestTOs, proofs);
         for (QualificationDetailRequestTO qualificationDetailRequestTO : qualificationDetailRequestTOs) {
@@ -282,8 +286,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                                                                        HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws NmrException, InvalidRequestException, NotFoundException {
 
         log.info("In HpRegistrationServiceImpl : addOrUpdateWorkProfileDetail method");
-
-        validateWorkProfileDetails(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails());
 
         log.debug("WorkProfileDetails Validation Successful. Calling the updateWorkProfileDetails method to update the work profile details. ");
         HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateWorkProfileDetails(hpProfileId, hpWorkProfileUpdateRequestTO, proofs);
@@ -387,7 +389,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     @Override
-    public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) throws NmrException, InvalidRequestException {
+    public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId){
         HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = null;
         List<WorkProfile> workProfileList = new ArrayList<>();
         List<LanguagesKnown> languagesKnown = new ArrayList<>();
@@ -399,8 +401,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 BigInteger userId = user.getId();
                 workProfileList = workProfileRepository.getWorkProfileDetailsByUserId(userId);
                 languagesKnown = languagesKnownRepository.findByUserId(userId);
-            } else {
-                throw new InvalidRequestException(NMRError.NO_MATCHING_USER_DETAILS_FOUND.getCode(), NMRError.NO_MATCHING_USER_DETAILS_FOUND.getMessage());
             }
         }
 
@@ -414,8 +414,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         if (!workProfileList.isEmpty()) {
             hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(workProfileList);
             hpProfileWorkDetailsResponseTO.setLanguagesKnownIds(languagesKnownIds);
-        } else {
-            throw new InvalidRequestException(NMRError.NO_MATCHING_WORK_PROFILE_DETAILS_FOUND.getCode(), NMRError.NO_MATCHING_WORK_PROFILE_DETAILS_FOUND.getMessage());
         }
         return hpProfileWorkDetailsResponseTO;
     }
@@ -686,7 +684,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         String transactionId = request.getTransactionId();
         if (request.getMobileNumber() != null) {
             if (transactionId == null) {
-                throw new InvalidRequestException(NMRError.MISSING_TRANSACTION_ID_ERROR.getCode(), NMRError.MISSING_TRANSACTION_ID_ERROR.getMessage());
+                throw new InvalidRequestException(NMRError.MISSING_MANDATORY_FIELD.getCode(), NMRError.MISSING_MANDATORY_FIELD.getMessage());
             } else {
                 if (otpService.isOtpVerified(transactionId)) {
                     throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());

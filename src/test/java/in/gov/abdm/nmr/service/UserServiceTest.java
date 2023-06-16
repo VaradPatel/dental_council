@@ -230,7 +230,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testVerifyEmailShouldValidateLinkAndReturnSuccessResponse() {
+    void testVerifyEmailShouldValidateLinkAndReturnSuccessResponse() throws InvalidRequestException{
         when(resetTokenRepository.findByToken(anyString())).thenReturn(getResetToken());
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
@@ -239,7 +239,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testVerifyEmailShouldTokenValueNullAndReturnLinkExpired() {
+    void testVerifyEmailShouldTokenValueNullAndReturnLinkExpired() throws InvalidRequestException{
         when(resetTokenRepository.findByToken(anyString())).thenReturn(null);
         ResponseMessageTo responseMessageTo = userService.verifyEmail(new VerifyEmailTo(TEMP_TOKEN));
         assertEquals(LINK_EXPIRED, responseMessageTo.getMessage());
@@ -254,7 +254,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testVerifyEmailShouldReturnLinkExpired() {
+    void testVerifyEmailShouldReturnLinkExpired() throws InvalidRequestException{
         when(resetTokenRepository.findByToken(anyString())).thenReturn(getExpiredResetToken());
         ResponseMessageTo responseMessageTo = userService.verifyEmail(new VerifyEmailTo(TEMP_TOKEN));
         assertEquals(LINK_EXPIRED, responseMessageTo.getMessage());

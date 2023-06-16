@@ -5,6 +5,7 @@ import in.gov.abdm.nmr.dto.LoginResponseTO;
 import in.gov.abdm.nmr.dto.SessionRequestTo;
 import in.gov.abdm.nmr.dto.SessionResponseTo;
 import in.gov.abdm.nmr.service.IAuthService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import static in.gov.abdm.nmr.security.common.ProtectedPaths.PATH_LOGIN;
 import static in.gov.abdm.nmr.security.common.ProtectedPaths.PATH_REFRESH_TOKEN;
+import static in.gov.abdm.nmr.security.common.ProtectedPaths.PATH_LOGIN_INTERNAL;
 
 @RestController
 public class AuthController {
@@ -27,6 +29,12 @@ public class AuthController {
 
     @PostMapping(path = PATH_LOGIN, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public LoginResponseTO login(@RequestBody(required = false) LoginRequestTO loginRequestTO, HttpServletResponse response) {
+        return authService.successfulAuth(response);
+    }
+    
+    @Hidden
+    @PostMapping(path = PATH_LOGIN_INTERNAL, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public LoginResponseTO loginInternal(@RequestBody(required = false) LoginRequestTO loginRequestTO, HttpServletResponse response) {
         return authService.successfulAuth(response);
     }
 

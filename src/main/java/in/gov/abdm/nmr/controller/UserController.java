@@ -88,7 +88,7 @@ public class UserController {
      * @return Success/Fail message
      */
     @PostMapping(NMRConstants.VERIFY_EMAIL)
-    public ResponseMessageTo verifyEmail(@RequestBody VerifyEmailTo verifyEmailTo) {
+    public ResponseMessageTo verifyEmail(@RequestBody VerifyEmailTo verifyEmailTo) throws InvalidRequestException{
 
         return userService.verifyEmail(verifyEmailTo);
 

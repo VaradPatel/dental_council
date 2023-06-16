@@ -19,8 +19,8 @@ public class CollegeResponseTo {
     @NotBlank
     private String name;
     
-    private BigInteger stateId;
-    private BigInteger courseId;
+    private StateTO stateTO;
+    private CourseTO courseTO;
     
     @NotNull
     private String collegeCode;
@@ -30,15 +30,15 @@ public class CollegeResponseTo {
     private String addressLine1;
     private String addressLine2;
     
-   private BigInteger districtId;
-    private BigInteger villageId;
+   private DistrictTO districtTO;
+    private VillagesTO villagesTO;
     
     @NotBlank
     private String pinCode;
     
-    private BigInteger stateMedicalCouncilId;
+    private StateMedicalCouncilTO stateMedicalCouncilTO;
     
-    private BigInteger universityId;
+    private UniversityTO universityTO;
     
     @NotBlank
     private String emailId;

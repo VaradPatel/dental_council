@@ -60,14 +60,14 @@ public class SearchServiceImpl implements ISearchService {
         try {
             if (hpSearchRequestTO != null && hpSearchRequestTO.getProfileStatusId() != null &&
                     !hasCommonElement(hpSearchRequestTO.getProfileStatusId(), PROFILE_STATUS_CODES)) {
-                throw new InvalidRequestException(NMRError.INVALID_PROFILE_STATUS_CODE.getCode(), NMRError.INVALID_PROFILE_STATUS_CODE.getMessage());
+                throw new InvalidRequestException(NMRError.INVALID_REQUEST.getCode(), NMRError.INVALID_REQUEST.getMessage());
             }
             SearchResponse<HpSearchResultTO> results = elasticsearchDaoService.searchHP(hpSearchRequestTO, pageable);
             return new HpSearchResponseTO(results.hits().hits().stream().map(Hit::source).toList(), results.hits().total().value());
 
         } catch (ElasticsearchException | IOException | InvalidRequestException e) {
             LOGGER.error("Exception while searching for HP", e);
-            throw new InvalidRequestException(NMRError.FAIL_TO_SEARCH_HP.getCode(), NMRError.FAIL_TO_SEARCH_HP.getMessage());
+            throw new InvalidRequestException(NMRError.NMR_EXCEPTION.getCode(), NMRError.NMR_EXCEPTION.getMessage());
         }
     }
 
@@ -93,7 +93,7 @@ public class SearchServiceImpl implements ISearchService {
                 throw ne;
             }
             LOGGER.error("Exception while retrieving HP profile", e);
-            throw new NmrException(NMRError.FAIL_TO_RETRIEVE_HP.getCode(), NMRError.FAIL_TO_RETRIEVE_HP.getMessage());
+            throw new NmrException(NMRError.NMR_EXCEPTION.getCode(), NMRError.NMR_EXCEPTION.getMessage());
         }
 
         HpProfileMaster hpProfileMaster = iHpProfileMasterRepository.findById(profileId).orElseThrow(InvalidIdException::new);
