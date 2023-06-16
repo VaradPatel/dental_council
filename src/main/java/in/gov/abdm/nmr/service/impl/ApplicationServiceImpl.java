@@ -140,6 +140,9 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Autowired
     private IWorkFlowAuditRepository iWorkFlowAuditRepository;
 
+    @Autowired
+    private IWorkFlowService workFlowService;
+
     private static final Map<String, String> REACTIVATION_SORT_MAPPINGS = Map.of("id", " hp.id", "name", " hp.full_name", "createdAt", " wf.created_at", "reactivationDate", " wf.start_date", "suspensionType", " hp.hp_profile_status_id", "remarks", " wf.remarks");
 
     /**
@@ -186,30 +189,35 @@ public class ApplicationServiceImpl implements IApplicationService {
 
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
         ReactivateRequestResponseTo reactivateRequestResponseTo = new ReactivateRequestResponseTo();
-        if (Objects.equals(HpProfileStatus.SUSPENDED.getId(), hpProfile.getHpProfileStatus().getId()) || Objects.equals(HpProfileStatus.BLACKLISTED.getId(), hpProfile.getHpProfileStatus().getId())) {
+        if (!workFlowService.isAnyActiveWorkflowForHealthProfessional(hpProfile.getId())) {
             log.debug("Proceeding to Reactivate the profile since the profile is currently in Suspended / Black Listed state");
 
-            log.debug("Building Request id.");
-            String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
-            WorkFlow workFlow = iWorkFlowRepository.findLastWorkFlowForHealthProfessional(hpProfile.getId());
-            if (Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
-                log.debug("Proceeding to reactivate through SMC since the profile was suspended by NMC");
-                applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.REACTIVATION_THROUGH_SMC.getId());
-                reactivateRequestResponseTo.setSelfReactivation(false);
-            }else {
-                log.debug("Proceeding to initiate self reactivation since the profile wasn't suspended by NMC");
-                applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.SELF_REACTIVATION.getId());
-                reactivateRequestResponseTo.setSelfReactivation(true);
+            if (Objects.equals(HpProfileStatus.SUSPENDED.getId(), hpProfile.getHpProfileStatus().getId()) || Objects.equals(HpProfileStatus.BLACKLISTED.getId(), hpProfile.getHpProfileStatus().getId())) {
+
+                log.debug("Building Request id.");
+                String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
+                WorkFlow workFlow = iWorkFlowRepository.findLastWorkFlowForHealthProfessional(hpProfile.getId());
+                if (Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
+                    log.debug("Proceeding to reactivate through SMC since the profile was suspended by NMC");
+                    applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.REACTIVATION_THROUGH_SMC.getId());
+                    reactivateRequestResponseTo.setSelfReactivation(false);
+                } else {
+                    log.debug("Proceeding to initiate self reactivation since the profile wasn't suspended by NMC");
+                    applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.SELF_REACTIVATION.getId());
+                    reactivateRequestResponseTo.setSelfReactivation(true);
+                }
+                initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
+                reactivateRequestResponseTo.setProfileId(hpProfile.getId().toString());
+                reactivateRequestResponseTo.setMessage(SUCCESS_RESPONSE);
+
+                log.info("ApplicationServiceImpl: reactivateRequest method: Execution Successful. ");
+
+                return reactivateRequestResponseTo;
+            } else {
+                throw new WorkFlowException(NMRError.PROFILE_NOT_SUSPEND.getCode(), NMRError.PROFILE_NOT_SUSPEND.getMessage());
             }
-            initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
-            reactivateRequestResponseTo.setProfileId(hpProfile.getId().toString());
-            reactivateRequestResponseTo.setMessage(SUCCESS_RESPONSE);
-
-            log.info("ApplicationServiceImpl: reactivateRequest method: Execution Successful. ");
-
-            return reactivateRequestResponseTo;
         } else {
-            throw new WorkFlowException(NMRError.PROFILE_NOT_SUSPEND.getCode(), NMRError.PROFILE_NOT_SUSPEND.getMessage());
+            throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
         }
     }
 
@@ -261,7 +269,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                         reactivateHealthProfessionalQueryParam.setSearch(value);
                         break;
                     default:
-                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE.getMessage());
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA.getCode(), NMRError.INVALID_SEARCH_CRITERIA.getMessage());
                 }
             } else {
                 throw new InvalidRequestException(NMRError.MISSING_SEARCH_VALUE.getCode(), NMRError.MISSING_SEARCH_VALUE.getMessage());
@@ -366,7 +374,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                         applicationRequestParamsTo.setYearOfRegistration(value);
                         break;
                     default:
-                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION.getMessage());
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA.getCode(), NMRError.INVALID_SEARCH_CRITERIA.getMessage());
                 }
             } else {
                 throw new InvalidRequestException(NMRError.MISSING_SEARCH_VALUE.getCode(), NMRError.MISSING_SEARCH_VALUE.getMessage());

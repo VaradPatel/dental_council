@@ -200,8 +200,7 @@ public class HpRegistrationController {
      * @throws WorkFlowException       If an error occurs during the processing of the request.
      */
     @GetMapping(path = "health-professional/{healthProfessionalId}/work-profile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId)
-            throws InvalidRequestException, WorkFlowException, NmrException {
+    public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) {
         return hpService.getHealthProfessionalWorkDetail(hpProfileId);
     }
 

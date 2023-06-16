@@ -252,6 +252,7 @@ public class DashboardServiceImpl implements IDashboardService {
         response.add(StatusWiseCountTO.builder().name(totalCardLabel).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.PENDING.getId()).name(DashboardStatus.PENDING.getDescription()).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.COLLEGE_VERIFIED.getId()).name(DashboardStatus.COLLEGE_VERIFIED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(DashboardStatus.FORWARD.getId()).name(DashboardStatus.FORWARD.getDescription()).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.APPROVED.getId()).name(DashboardStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.QUERY_RAISE.getId()).name(DashboardStatus.QUERY_RAISE.getDescription()).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.REJECT.getId()).name(DashboardStatus.REJECT.getDescription()).count(BigInteger.ZERO).build());
@@ -349,7 +350,7 @@ public class DashboardServiceImpl implements IDashboardService {
                         dashboardRequestParamsTO.setSearch(value);
                         break;
                     default:
-                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL.getMessage());
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA.getCode(), NMRError.INVALID_SEARCH_CRITERIA.getMessage());
                 }
             } else {
                 throw new InvalidRequestException(NMRError.MISSING_SEARCH_VALUE.getCode(), NMRError.MISSING_SEARCH_VALUE.getMessage());

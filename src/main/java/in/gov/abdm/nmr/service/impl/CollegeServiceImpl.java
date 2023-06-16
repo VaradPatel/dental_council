@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -14,11 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import in.gov.abdm.nmr.dto.CollegeMasterDataTO;
-import in.gov.abdm.nmr.dto.CollegeResponseTo;
-import in.gov.abdm.nmr.dto.CollegeProfileTo;
-import in.gov.abdm.nmr.dto.SendLinkOnMailTo;
-import in.gov.abdm.nmr.dto.UniversityMasterTo;
 import in.gov.abdm.nmr.entity.CollegeMaster;
 import in.gov.abdm.nmr.entity.CollegeProfile;
 import in.gov.abdm.nmr.entity.Course;
@@ -101,10 +97,10 @@ public class CollegeServiceImpl implements ICollegeService {
         collegeMasterTO.setAddressLine1(collegeMaster.getAddressLine1());
         collegeMasterTO.setAddressLine2(collegeMaster.getAddressLine2());
         collegeMasterTO.setPinCode(collegeMaster.getPinCode());
-        collegeMasterTO.setCourseId(collegeMaster.getCourse() != null ? collegeMaster.getCourse().getId() : null);
-        collegeMasterTO.setStateId(collegeMaster.getState() != null ? collegeMaster.getState().getId() : null);
-        collegeMasterTO.setDistrictId(collegeMaster.getDistrict() != null ? collegeMaster.getDistrict().getId() : null);
-        collegeMasterTO.setVillageId(collegeMaster.getVillage() != null ? collegeMaster.getVillage().getId() : null);
+        collegeMasterTO.setCourseTO(collegeMaster.getCourse() != null ? CourseTO.builder().id(collegeMaster.getCourse().getId()).name(collegeMaster.getCourse().getCourseName()).build() : null);
+        collegeMasterTO.setStateTO(collegeMaster.getState() != null ? StateTO.builder().id(collegeMaster.getState().getId()).name(collegeMaster.getState().getName()).build() : null);
+        collegeMasterTO.setDistrictTO(collegeMaster.getDistrict() != null ? DistrictTO.builder().id(collegeMaster.getDistrict().getId()).name(collegeMaster.getDistrict().getName()).build() : null);
+        collegeMasterTO.setVillagesTO(collegeMaster.getVillage() != null ? VillagesTO.builder().id(collegeMaster.getVillage().getId()).name(collegeMaster.getVillage().getName()).build() : null);
 
         CollegeProfile collegeprofile = collegeProfileDaoService.findAdminByCollegeId(id);
         if (collegeprofile != null) {
@@ -115,13 +111,13 @@ public class CollegeServiceImpl implements ICollegeService {
         }
 
         List<UniversityMasterTo> university = universityMasterService.getUniversitiesByCollegeId(id);
-        collegeMasterTO.setUniversityId(university != null && !university.isEmpty() ? university.get(0).getId() : null);
+        collegeMasterTO.setUniversityTO(university != null && !university.isEmpty() ? UniversityTO.builder().id(university.get(0).getId()).name(university.get(0).getName()).build() : null);
 
         if (collegeMaster.getStateMedicalCouncil() == null && collegeMaster.getState() != null) {
             StateMedicalCouncil stateMedicalCouncil = stateMedicalCouncilDaoService.findByState(String.valueOf(collegeMaster.getState().getId()));
-            collegeMasterTO.setStateMedicalCouncilId(stateMedicalCouncil != null ? stateMedicalCouncil.getId() : null);
+            collegeMasterTO.setStateMedicalCouncilTO(stateMedicalCouncil != null ? StateMedicalCouncilTO.builder().id(stateMedicalCouncil.getId()).code(stateMedicalCouncil.getCode()).name(stateMedicalCouncil.getName()).build()  : null);
         } else {
-            collegeMasterTO.setStateMedicalCouncilId(collegeMaster.getStateMedicalCouncil().getId());
+            collegeMasterTO.setStateMedicalCouncilTO(StateMedicalCouncilTO.builder().id(collegeMaster.getStateMedicalCouncil().getId()).code(collegeMaster.getStateMedicalCouncil().getCode()).name(collegeMaster.getStateMedicalCouncil().getName()).build());
         }
 
         return collegeMasterTO;
@@ -181,15 +177,15 @@ public class CollegeServiceImpl implements ICollegeService {
         collegeMaster.setStatus(BigInteger.valueOf(1));
         collegeMaster.setVisibleStatus(BigInteger.valueOf(1));
         collegeMaster.setSystemOfMedicineId(BigInteger.valueOf(1));
-        collegeMaster.setCourse(collegeResponseTo.getCourseId() != null ? entityManager.getReference(Course.class, collegeResponseTo.getCourseId()) : null);
-        collegeMaster.setState(entityManager.getReference(State.class, collegeResponseTo.getStateId()));
-        collegeMaster.setDistrict(entityManager.getReference(District.class, collegeResponseTo.getDistrictId()));
-        collegeMaster.setVillage(collegeResponseTo.getVillageId() != null ? entityManager.getReference(Villages.class, collegeResponseTo.getVillageId()) : null);
-        collegeMaster.setStateMedicalCouncil(entityManager.getReference(StateMedicalCouncil.class, collegeResponseTo.getStateMedicalCouncilId()));
+        collegeMaster.setCourse(collegeResponseTo.getCourseTO() != null ? new Course(collegeResponseTo.getCourseTO().getId(),collegeResponseTo.getCourseTO().getCourseName()): null);
+        collegeMaster.setState(State.builder().id(collegeResponseTo.getStateTO().getId()).build());
+        collegeMaster.setDistrict(District.builder().id(collegeResponseTo.getDistrictTO().getId()).build());
+        collegeMaster.setVillage(collegeResponseTo.getVillagesTO() != null ? Villages.builder().id(collegeResponseTo.getVillagesTO().getId()).build() : null);
+        collegeMaster.setStateMedicalCouncil(StateMedicalCouncil.builder().id(collegeResponseTo.getStateMedicalCouncilTO().getId()).build());
         collegeMaster = collegeMasterDaoService.save(collegeMaster);
         collegeResponseTo.setId(collegeMaster.getId());
 
-        UniversityMaster university = universityMasterService.findById(collegeResponseTo.getUniversityId());
+        UniversityMaster university = universityMasterService.findById(collegeResponseTo.getUniversityTO().getId());
         if (university != null && !university.getCollegeId().equals(collegeMaster.getId())) {
             UniversityMaster universityMaster = new UniversityMaster();
             universityMaster.setCollegeId(collegeMaster.getId());
@@ -320,7 +316,7 @@ public class CollegeServiceImpl implements ICollegeService {
     private void preVerifierUpdationChecks(CollegeProfileTo collegeProfileTo, CollegeProfile collegeProfile) throws  InvalidIdException, ResourceExistsException {
         User loggedInUser = getLoggedInUser();
         if (collegeProfile == null) {
-            throw new InvalidIdException(NMRError.COLLEGE_VERIFIER_FOUND.getCode(), NMRError.COLLEGE_VERIFIER_FOUND.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(), NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
 
         User user = collegeProfile.getUser();
@@ -362,7 +358,7 @@ public class CollegeServiceImpl implements ICollegeService {
         CollegeProfile collegeProfile = collegeProfileDaoService.findById(verifierId);
 
         if (collegeProfile == null) {
-            throw new InvalidIdException(NMRError.COLLEGE_VERIFIER_FOUND.getCode(), NMRError.COLLEGE_VERIFIER_FOUND.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(), NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
 
         if (!loggedInUser.getId().equals(collegeProfile.getUser().getId())) {

@@ -27,6 +27,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.fasterxml.jackson.core.JsonParser.Feature;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import brave.Tracer;
@@ -41,7 +42,7 @@ import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 @Component
 public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private static final String REQUEST_BODY = "request-body";
+    protected static final String REQUEST_BODY = "request-body";
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -82,7 +83,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
         try {
             ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).setAttribute(REQUEST_BODY, readRequestBody(request), RequestAttributes.SCOPE_REQUEST);
 
-            LoginRequestTO requestBodyTO = objectMapper.readValue(getRequestBody(), LoginRequestTO.class);
+            LoginRequestTO requestBodyTO = convertRequestToDTO();
             if((LoginTypeEnum.MOBILE_OTP.getCode().equals(requestBodyTO.getLoginType()) || LoginTypeEnum.NMR_ID_OTP.getCode().equals(requestBodyTO.getLoginType())) //
                     && (requestBodyTO.getOtpTransId() == null || requestBodyTO.getOtpTransId().isBlank())) {
                 throw new AuthenticationServiceException("Invalid otp transaction id");
@@ -103,13 +104,17 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
         return this.getAuthenticationManager().authenticate(authRequest);
     }
 
-    private String readRequestBody(HttpServletRequest request) throws IOException {
+    protected LoginRequestTO convertRequestToDTO() throws JsonProcessingException {
+        return objectMapper.readValue(getRequestBody(), LoginRequestTO.class);
+    }
+
+    protected String readRequestBody(HttpServletRequest request) throws IOException {
         ServletInputStream requestInputStream = request.getInputStream();
         objectMapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
         return new String(requestInputStream.available() > 0 ? requestInputStream.readAllBytes() : new byte[0]);
     }
 
-    private SecurityAuditTrail createSecurityAuditTrail(HttpServletRequest request) {
+    protected SecurityAuditTrail createSecurityAuditTrail(HttpServletRequest request) {
         SecurityAuditTrail securityAuditTrail = new SecurityAuditTrail();
         String ipAddress = request.getHeader("X-Real-IP");
         securityAuditTrail.setIpAddress(StringUtils.isNotBlank(ipAddress) ? ipAddress : request.getRemoteAddr());

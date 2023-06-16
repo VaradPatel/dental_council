@@ -16,6 +16,7 @@ public class ProtectedPaths {
     }
 
     public static final String PATH_LOGIN = "/user/login";
+    public static final String PATH_LOGIN_INTERNAL = "/user/login-internal";
     public static final String PATH_REFRESH_TOKEN = "/user/refreshToken";
 
     public static final String PATH_UPDATE_COLLEGE = "/college/{collegeId}";
@@ -113,5 +114,9 @@ public class ProtectedPaths {
 
     public static AntPathRequestMatcher getLoginPathMatcher() {
         return new AntPathRequestMatcher(PATH_LOGIN, HttpMethod.POST.name());
+    }
+    
+    public static AntPathRequestMatcher getInternalLoginPathMatcher() {
+        return new AntPathRequestMatcher(PATH_LOGIN_INTERNAL, HttpMethod.POST.name());
     }
 }
