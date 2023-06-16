@@ -87,7 +87,7 @@ public class DashboardServiceImpl implements IDashboardService {
 
     private static final Map<String, List<BigInteger>> applicationIds =
             Map.of(HP_REGISTRATION_REQUEST, List.of(ApplicationType.HP_REGISTRATION.getId(), ApplicationType.FOREIGN_HP_REGISTRATION.getId()),
-                    HP_MODIFICATION_REQUEST, List.of(ApplicationType.HP_MODIFICATION.getId(), ApplicationType.QUALIFICATION_ADDITION.getId()),
+                    HP_MODIFICATION_REQUEST, List.of(ApplicationType.QUALIFICATION_ADDITION.getId()),
                     TEMPORARY_SUSPENSION_REQUEST, List.of(ApplicationType.HP_TEMPORARY_SUSPENSION.getId()),
                     PERMANENT_SUSPENSION_REQUEST, List.of(ApplicationType.HP_PERMANENT_SUSPENSION.getId()),
                     CONSOLIDATED_SUSPENSION_REQUEST, List.of(ApplicationType.HP_TEMPORARY_SUSPENSION.getId(), ApplicationType.HP_PERMANENT_SUSPENSION.getId()));
