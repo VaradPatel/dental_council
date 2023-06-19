@@ -127,4 +127,10 @@ public class UserController {
         return ResponseMessageTo.builder().message(NMRConstants.SUCCESS_RESPONSE).build();
     }
 
+    @GetMapping(path = "/users")
+    public UserRespTO getUserNames(
+            @RequestParam(value = "mobileNumber") String mobileNumber,
+            @RequestParam(value = "userType") BigInteger userType) {
+        return userService.getUserNames(mobileNumber, userType);
+    }
 }
