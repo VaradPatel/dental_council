@@ -43,4 +43,6 @@ public interface IUserService {
     void deactivateUser(BigInteger userId);
 
     void unlockUser(BigInteger userId);
+
+    UserRespTO getUserNames(String mobileNumber, BigInteger userType);
 }

@@ -9,6 +9,7 @@ import in.gov.abdm.nmr.exception.InvalidIdException;
 import in.gov.abdm.nmr.exception.NmrException;
 
 import java.math.BigInteger;
+import java.util.List;
 
 public interface IUserDaoService {
 
@@ -50,4 +51,6 @@ public interface IUserDaoService {
     void unlockUser(BigInteger userId);
 
     void updateLastLogin(BigInteger userId);
+
+    List<User> getUserNames(String mobileNumber, BigInteger userType);
 }
