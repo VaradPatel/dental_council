@@ -128,7 +128,7 @@ public class UserController {
     }
 
     @GetMapping(path = "/users")
-    public UserRespTO getUserNames(
+    public List<String> getUserNames(
             @RequestParam(value = "mobileNumber") String mobileNumber,
             @RequestParam(value = "userType") BigInteger userType) {
         return userService.getUserNames(mobileNumber, userType);

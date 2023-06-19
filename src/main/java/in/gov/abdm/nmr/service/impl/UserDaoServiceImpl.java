@@ -231,7 +231,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     }
 
     @Override
-    public List<User> getUserNames(String mobileNumber, BigInteger userType) {
+    public List<String> getUserNames(String mobileNumber, BigInteger userType) {
         return userDetailRepository.getUserNamesByMobileNumAnduserType(mobileNumber, userType);
     }
 }

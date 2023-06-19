@@ -310,11 +310,8 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public UserRespTO getUserNames(String mobileNumber, BigInteger userType) {
-        UserRespTO userRespTO = new UserRespTO();
-        List<User> users = userDaoService.getUserNames(mobileNumber, userType);
-        userRespTO.setUserName(users.stream().map(User::getUserName).toList());
-        return userRespTO;
+    public List<String> getUserNames(String mobileNumber, BigInteger userType) {
+        return userDaoService.getUserNames(mobileNumber, userType);
     }
 
     private void validateContactDetails(String emailId, String mobileNumber) throws NmrException {
