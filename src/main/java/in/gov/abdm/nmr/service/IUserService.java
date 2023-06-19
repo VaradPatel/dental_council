@@ -44,5 +44,5 @@ public interface IUserService {
 
     void unlockUser(BigInteger userId);
 
-    UserRespTO getUserNames(String mobileNumber, BigInteger userType);
+    List<String> getUserNames(String mobileNumber, BigInteger userType);
 }

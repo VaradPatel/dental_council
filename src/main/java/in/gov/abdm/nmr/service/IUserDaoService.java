@@ -52,5 +52,5 @@ public interface IUserDaoService {
 
     void updateLastLogin(BigInteger userId);
 
-    List<User> getUserNames(String mobileNumber, BigInteger userType);
+    List<String> getUserNames(String mobileNumber, BigInteger userType);
 }

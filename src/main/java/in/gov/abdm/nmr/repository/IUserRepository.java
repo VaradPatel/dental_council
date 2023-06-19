@@ -46,6 +46,6 @@ public interface IUserRepository extends JpaRepository<User, BigInteger> {
     void updateLastLogin(BigInteger userId);
 
     @Query(value = """
-            select  * from {h-schema}user where mobile_number =:mobileNumber and user_type_id =:userType """, nativeQuery = true)
-    List<User> getUserNamesByMobileNumAnduserType(String mobileNumber, BigInteger userType);
+            select user_name from {h-schema}user where mobile_number =:mobileNumber and user_type_id =:userType """, nativeQuery = true)
+    List<String> getUserNamesByMobileNumAnduserType(String mobileNumber, BigInteger userType);
 }
