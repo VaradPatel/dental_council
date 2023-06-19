@@ -127,7 +127,7 @@ public class UserController {
         return ResponseMessageTo.builder().message(NMRConstants.SUCCESS_RESPONSE).build();
     }
 
-    @GetMapping(path = "/users")
+    @GetMapping(path = "/user-accounts")
     public List<String> getUserNames(
             @RequestParam(value = "mobileNumber") String mobileNumber,
             @RequestParam(value = "userType") BigInteger userType) {
