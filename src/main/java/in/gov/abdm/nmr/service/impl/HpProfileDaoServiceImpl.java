@@ -80,7 +80,16 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     private static final List<String> SUPPORTED_FILE_TYPES = List.of(".pdf",".jpg",".jpeg",".png");
 
-
+    /**
+     * Info: this method will fetch health professional registration details from the IMR data source. if details
+     * are found then they are validated against the NMR database for verifying user existence.
+     * if details are not found in the IMR data source then they are checked in the NMR database.
+     *
+     * @param councilId
+     * @param registrationNumber
+     * @return
+     * @throws NoDataFoundException
+     */
     public HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NoDataFoundException {
         HpSmcDetailTO hpSmcDetailTO = new HpSmcDetailTO();
 
@@ -89,17 +98,24 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         String councilName = stateMedicalCouncil.getName();
         List<Council> councils = councilService.getCouncilByRegistrationNumberAndCouncilName(registrationNumber, councilName);
+        RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByRegistrationNoAndStateMedicalCouncilId(registrationNumber, BigInteger.valueOf(councilId));
 
-        if(councils.isEmpty()){
+        if (!councils.isEmpty()) {
+            Council council = councils.get(0);
+            hpSmcDetailTO.setHpName(council.getFullName());
+            hpSmcDetailTO.setCouncilName(council.getRegistrationsDetails().get(0).getCouncilName());
+            hpSmcDetailTO.setRegistrationNumber(council.getRegistrationsDetails().get(0).getRegistrationNo());
+            hpSmcDetailTO.setEmailId(council.getEmail());
+            hpSmcDetailTO.setAlreadyRegisteredInNmr(registrationDetails != null);
+        } else if (registrationDetails != null) {
+            hpSmcDetailTO.setHpName(registrationDetails.getHpProfileId().getFullName());
+            hpSmcDetailTO.setCouncilName(registrationDetails.getStateMedicalCouncil().getName());
+            hpSmcDetailTO.setRegistrationNumber(registrationDetails.getRegistrationNo());
+            hpSmcDetailTO.setEmailId(registrationDetails.getHpProfileId().getEmailId());
+            hpSmcDetailTO.setAlreadyRegisteredInNmr(true);
+        } else {
             throw new NoDataFoundException();
         }
-        Council council = councils.get(0);
-
-        hpSmcDetailTO.setHpName(council.getFullName());
-        hpSmcDetailTO.setCouncilName(council.getRegistrationsDetails().get(0).getCouncilName());
-        hpSmcDetailTO.setRegistrationNumber(council.getRegistrationsDetails().get(0).getRegistrationNo());
-        hpSmcDetailTO.setEmailId(council.getEmail());
-        hpSmcDetailTO.setAlreadyRegisteredInNmr(iRegistrationDetailRepository.existsByRegistrationNoAndStateMedicalCouncilId(registrationNumber,BigInteger.valueOf(councilId)));
         return hpSmcDetailTO;
 
     }
