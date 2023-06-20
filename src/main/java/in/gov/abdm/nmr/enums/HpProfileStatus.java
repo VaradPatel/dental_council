@@ -11,7 +11,8 @@ public enum HpProfileStatus {
     REJECTED(BigInteger.valueOf(4), "Rejected"),
     SUSPENDED(BigInteger.valueOf(5), "Suspended"),
     BLACKLISTED(BigInteger.valueOf(6), "Blacklisted"),
-    DRAFT(BigInteger.valueOf(7), "Auto Approved");
+    AUTO_APPROVED(BigInteger.valueOf(7), "Auto Approved"),
+    DRAFT(BigInteger.valueOf(8), "draft");
 
     private BigInteger id;
     private final String description;
