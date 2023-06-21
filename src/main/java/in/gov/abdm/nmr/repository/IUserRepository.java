@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static in.gov.abdm.nmr.util.NMRConstants.UPDATE_LAST_LOGIN;
@@ -43,4 +44,8 @@ public interface IUserRepository extends JpaRepository<User, BigInteger> {
     @Modifying
     @Query(nativeQuery = true, value = UPDATE_LAST_LOGIN)
     void updateLastLogin(BigInteger userId);
+
+    @Query(value = """
+            select user_name from {h-schema}user where mobile_number =:mobileNumber and user_type_id =:userType """, nativeQuery = true)
+    List<String> getUserNamesByMobileNumAnduserType(String mobileNumber, BigInteger userType);
 }

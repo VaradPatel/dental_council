@@ -535,7 +535,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setRegistrationId(request.getRegistrationNumber());
         hpProfile.setIsSameAddress(String.valueOf(false));
         hpProfile.setCountryNationality(countryRepository.findByName(NMRConstants.DEFAULT_COUNTRY_AADHAR));
-        hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.PENDING.getId()).get());
+        hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.DRAFT.getId()).get());
         hpProfile.setIsNew(imrProfileDetails == null ? YES : NO);
         hpProfile.setUser(userDetail);
         hpProfile.setESignStatus(ESignStatus.PROFILE_NOT_ESIGNED.getId());
