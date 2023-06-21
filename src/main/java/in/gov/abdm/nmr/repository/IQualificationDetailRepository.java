@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface IQualificationDetailRepository extends JpaRepository<QualificationDetails, BigInteger> {
 
-    @Query(value = "SELECT * FROM qualification_details where user_id = :userId and is_verified IN(" + NMRConstants.QUALIFICATION_STATUS_PENDING + "," + NMRConstants.QUALIFICATION_STATUS_APPROVED + ")", nativeQuery = true)
+    @Query(value = "SELECT * FROM qualification_details where user_id = :userId and is_verified !=" + NMRConstants.QUALIFICATION_STATUS_REJECTED + "", nativeQuery = true)
     List<QualificationDetails> getQualificationDetailsByUserId(BigInteger userId);
 
     

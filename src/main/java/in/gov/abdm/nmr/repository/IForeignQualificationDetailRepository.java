@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface IForeignQualificationDetailRepository extends JpaRepository<ForeignQualificationDetails, BigInteger> {
 
-    @Query(value = "SELECT * FROM foreign_qualification_details where user_id = :userId and is_verified IN(" + NMRConstants.QUALIFICATION_STATUS_PENDING + "," + NMRConstants.QUALIFICATION_STATUS_APPROVED + ")", nativeQuery = true)
+    @Query(value = "SELECT * FROM foreign_qualification_details where user_id = :userId and is_verified !=" + NMRConstants.QUALIFICATION_STATUS_REJECTED + "", nativeQuery = true)
     List<ForeignQualificationDetails> getQualificationDetailsByUserId(BigInteger userId);
 
     ForeignQualificationDetails findByRequestId(String requestId);
