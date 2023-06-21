@@ -590,6 +590,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private WorkProfile workProfileObjectMapping(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, WorkProfile addWorkProfile, CurrentWorkDetailsTO currentWorkDetailsTO, BigInteger hpProfileId, BigInteger userId) {
         addWorkProfile.setRequestId(hpWorkProfileUpdateRequestTO.getRequestId());
         addWorkProfile.setHpProfileId(hpProfileId);
+        addWorkProfile.setReason(hpWorkProfileUpdateRequestTO.getWorkDetails().getReason());
+        addWorkProfile.setRemark(hpWorkProfileUpdateRequestTO.getWorkDetails().getRemark());
         if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature() != null) {
             addWorkProfile.setWorkNature(workNatureRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature().getId()).get());
         }
@@ -616,8 +618,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         addWorkProfile.setSystemOfMedicine(currentWorkDetailsTO.getSystemOfMedicine());
         addWorkProfile.setDesignation(currentWorkDetailsTO.getDesignation());
         addWorkProfile.setDepartment(currentWorkDetailsTO.getDepartment());
-        addWorkProfile.setReason(currentWorkDetailsTO.getReason());
-        addWorkProfile.setRemark(currentWorkDetailsTO.getRemark());
         return addWorkProfile;
     }
 
