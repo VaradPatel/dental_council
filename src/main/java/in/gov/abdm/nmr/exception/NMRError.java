@@ -20,7 +20,7 @@ public enum NMRError {
     DATE_EXCEPTION("ABDM-NMR-012", "Invalid date format"),
     RESOURCE_EXISTS_EXCEPTION("ABDM-NMR-013", "Resource already exists"),
     NOT_FOUND_EXCEPTION("ABDM-NMR-014", "Resource not found"),
-    WORK_FLOW_CREATION_FAIL("ABDM-NMR-015", "Can't create new request until an existing request is closed"),
+    WORK_FLOW_CREATION_FAIL("ABDM-NMR-015", "We are sorry, but we can only process one request at a time. Please wait until your current request has been completed before submitting another. You can track current application status via track Application"),
     INVALID_USER("ABDM-NMR-016", "In-valid user"),
     PROFILE_NOT_APPROVED("ABDM-NMR-017", "Only Approved profile can be suspended"),
     PROFILE_NOT_SUSPEND("ABDM-NMR-018", "Only Suspended profile can be reactivated"),
