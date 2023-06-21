@@ -8,6 +8,7 @@ import in.gov.abdm.nmr.entity.SMCProfile;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.InvalidIdException;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.repository.INbeProfileRepository;
 import in.gov.abdm.nmr.repository.INmcProfileRepository;
 import in.gov.abdm.nmr.repository.ISmcProfileRepository;
@@ -208,7 +209,7 @@ class UserDaoServiceTest {
     }
 
     @Test
-    void testUpdateSmcProfile() throws InvalidIdException {
+    void testUpdateSmcProfile() throws InvalidIdException, InvalidRequestException {
         when(smcProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getSmcProfile()));
         when(smcProfileRepository.save(any(SMCProfile.class))).thenReturn(getSmcProfile());
         SMCProfile smcProfile = userDaoService.updateSmcProfile(ID, getSMCProfile());
@@ -222,7 +223,7 @@ class UserDaoServiceTest {
 
 
     @Test
-    void testUpdateNmcProfile() throws InvalidIdException {
+    void testUpdateNmcProfile() throws InvalidIdException, InvalidRequestException {
         when(nmcProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getNmcProfile()));
         when(nmcProfileRepository.saveAndFlush(any(NmcProfile.class))).thenReturn(getNmcProfile());
         NmcProfile nmcProfile = userDaoService.updateNmcProfile(ID, getNmcProfileTO());
@@ -235,7 +236,7 @@ class UserDaoServiceTest {
     }
 
     @Test
-    void testUpdateNbeProfile() throws InvalidIdException {
+    void testUpdateNbeProfile() throws InvalidIdException, InvalidRequestException {
         when(nbeProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getNbeProfile()));
         when(nbeProfileRepository.saveAndFlush(any(NbeProfile.class))).thenReturn(getNbeProfile());
         NbeProfile nmcProfile = userDaoService.updateNbeProfile(ID, getNbeProfileTO());
