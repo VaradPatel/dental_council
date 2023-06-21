@@ -6,6 +6,7 @@ import in.gov.abdm.nmr.entity.NmcProfile;
 import in.gov.abdm.nmr.entity.SMCProfile;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.exception.InvalidIdException;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 
 import java.math.BigInteger;
@@ -40,11 +41,11 @@ public interface IUserDaoService {
 
     NbeProfile findNbeProfile(BigInteger id) throws NmrException, InvalidIdException;
 
-    SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException;
+    SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException;
 
-    NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException;
+    NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException;
 
-    NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException;
+    NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException, InvalidRequestException;
 
     boolean checkEmailUsedByOtherUser(BigInteger id, String email);
 
