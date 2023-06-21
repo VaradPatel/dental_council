@@ -328,7 +328,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testUpdateSmcProfile() throws NmrException, InvalidIdException {
+    void testUpdateSmcProfile() throws NmrException, InvalidIdException, InvalidRequestException {
         when(userDaoService.updateSmcProfile(any(BigInteger.class), any(SMCProfileTO.class))).thenReturn(getSmcProfile());
 //        when(smcProfileRepository.save(any(SMCProfile.class))).thenReturn(getSmcProfile());
         when(smcMapper.smcProfileToDto(any(SMCProfile.class))).thenReturn(getSMCProfile());
@@ -336,14 +336,14 @@ class UserServiceTest {
     }
 
     @Test
-    void testUpdateNmcProfile() throws NmrException, InvalidIdException {
+    void testUpdateNmcProfile() throws NmrException, InvalidIdException, InvalidRequestException {
         when(userDaoService.updateNmcProfile(any(BigInteger.class), any(NmcProfileTO.class))).thenReturn(getNmcProfile());
         when(nmcMapper.nmcProfileToDto(any(NmcProfile.class))).thenReturn(getNmcProfileTO());
         userService.updateNmcProfile(CommonTestData.ID, getNmcProfileTO());
     }
 
     @Test
-    void testUpdateNbeProfile() throws NmrException, InvalidIdException {
+    void testUpdateNbeProfile() throws NmrException, InvalidIdException, InvalidRequestException {
         when(userDaoService.updateNbeProfile(any(BigInteger.class), any(NbeProfileTO.class))).thenReturn(getNbeProfile());
         when(nbeMapper.nbeProfileToDto(any(NbeProfile.class))).thenReturn(getNbeProfileTO());
         userService.updateNbeProfile(CommonTestData.ID, getNbeProfileTO());

@@ -30,6 +30,9 @@ public interface IUserRepository extends JpaRepository<User, BigInteger> {
     @Query(value = "select count(*)>0 from {h-schema}user where id!=:id and email=:email", nativeQuery = true)
     boolean checkEmailUsedByOtherUser(BigInteger id,String email);
 
+    @Query(value = "select count(*)>0 from {h-schema}user where id!=:id and mobile_number=:mobileNumber", nativeQuery = true)
+    boolean checkMobileUsedByOtherUser(BigInteger id,String mobileNumber);
+
     @org.springframework.transaction.annotation.Transactional
     @Modifying
     @Query(nativeQuery = true, value = DEACTIVATE_USER)
