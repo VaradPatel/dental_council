@@ -27,6 +27,11 @@ public final class HpProfileWorkProfileMapper {
         } else {
             workDetailsTO.setWorkStatus(null);
         }
+
+        if(workProfile.get(0)!=null){
+            workDetailsTO.setReason(workProfile.get(0).getReason());
+            workDetailsTO.setRemark(workProfile.get(0).getRemark());
+        }
         workProfile.stream().forEach(workProfileObj -> {
             CurrentWorkDetailsTO currentWorkDetailsTO = new CurrentWorkDetailsTO();
             currentWorkDetailsTO.setWorkOrganization(workProfileObj.getWorkOrganization());
@@ -58,14 +63,13 @@ public final class HpProfileWorkProfileMapper {
             currentWorkDetailsTO.setSystemOfMedicine(workProfileObj.getSystemOfMedicine());
             currentWorkDetailsTO.setDesignation(workProfileObj.getDesignation());
             currentWorkDetailsTO.setDepartment(workProfileObj.getDepartment());
-            currentWorkDetailsTO.setReason(workProfileObj.getReason());
-            currentWorkDetailsTO.setRemark(workProfileObj.getRemark());
             currentWorkDetailsTOList.add(currentWorkDetailsTO);
         });
         hpProfileWorkDetailsResponseTO.setWorkDetails(workDetailsTO);
         hpProfileWorkDetailsResponseTO.setCurrentWorkDetails(currentWorkDetailsTOList);
         hpProfileWorkDetailsResponseTO.setRequestId(workProfile.get(0).getRequestId());
         hpProfileWorkDetailsResponseTO.setHpProfileId(workProfile.get(0).getHpProfileId());
+
 
 
 
