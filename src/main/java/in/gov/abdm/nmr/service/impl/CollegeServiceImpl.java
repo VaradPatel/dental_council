@@ -177,22 +177,24 @@ public class CollegeServiceImpl implements ICollegeService {
         collegeMaster.setStatus(BigInteger.valueOf(1));
         collegeMaster.setVisibleStatus(BigInteger.valueOf(1));
         collegeMaster.setSystemOfMedicineId(BigInteger.valueOf(1));
-        collegeMaster.setCourse(collegeResponseTo.getCourseTO() != null ? new Course(collegeResponseTo.getCourseTO().getId(),collegeResponseTo.getCourseTO().getCourseName()): null);
-        collegeMaster.setState(State.builder().id(collegeResponseTo.getStateTO().getId()).build());
-        collegeMaster.setDistrict(District.builder().id(collegeResponseTo.getDistrictTO().getId()).build());
-        collegeMaster.setVillage(collegeResponseTo.getVillagesTO() != null ? Villages.builder().id(collegeResponseTo.getVillagesTO().getId()).build() : null);
-        collegeMaster.setStateMedicalCouncil(StateMedicalCouncil.builder().id(collegeResponseTo.getStateMedicalCouncilTO().getId()).build());
+        collegeMaster.setCourse(collegeResponseTo.getCourseTO() != null ? new Course(collegeResponseTo.getCourseTO().getId(), collegeResponseTo.getCourseTO().getCourseName()) : collegeMaster.getCourse());
+        collegeMaster.setState(State.builder().id(collegeResponseTo.getStateTO() != null ? collegeResponseTo.getStateTO().getId() : collegeMaster.getState().getId()).build());
+        collegeMaster.setDistrict(District.builder().id(collegeResponseTo.getDistrictTO() != null ? collegeResponseTo.getDistrictTO().getId() : collegeMaster.getDistrict().getId()).build());
+        collegeMaster.setVillage(collegeResponseTo.getVillagesTO() != null ? Villages.builder().id(collegeResponseTo.getVillagesTO().getId()).build() : collegeMaster.getVillage());
+        collegeMaster.setStateMedicalCouncil(StateMedicalCouncil.builder().id(collegeResponseTo.getStateMedicalCouncilTO() != null ? collegeResponseTo.getStateMedicalCouncilTO().getId() : collegeMaster.getStateMedicalCouncil().getId()).build());
         collegeMaster = collegeMasterDaoService.save(collegeMaster);
         collegeResponseTo.setId(collegeMaster.getId());
 
-        UniversityMaster university = universityMasterService.findById(collegeResponseTo.getUniversityTO().getId());
-        if (university != null && !university.getCollegeId().equals(collegeMaster.getId())) {
-            UniversityMaster universityMaster = new UniversityMaster();
-            universityMaster.setCollegeId(collegeMaster.getId());
-            universityMaster.setName(university.getName());
-            universityMaster.setStatus(university.getStatus());
-            universityMaster.setVisibleStatus(university.getVisibleStatus());
-            universityMasterService.save(universityMaster);
+        if (collegeResponseTo.getUniversityTO() != null && collegeResponseTo.getUniversityTO().getId() != null) {
+            UniversityMaster university = universityMasterService.findById(collegeResponseTo.getUniversityTO().getId());
+            if (university != null && !university.getCollegeId().equals(collegeMaster.getId())) {
+                UniversityMaster universityMaster = new UniversityMaster();
+                universityMaster.setCollegeId(collegeMaster.getId());
+                universityMaster.setName(university.getName());
+                universityMaster.setStatus(university.getStatus());
+                universityMaster.setVisibleStatus(university.getVisibleStatus());
+                universityMasterService.save(universityMaster);
+            }
         }
 
         User user = collegeProfile != null ? collegeProfile.getUser() : null;

@@ -229,4 +229,9 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public void updateLastLogin(BigInteger userId) {
         userDetailRepository.updateLastLogin(userId);
     }
+
+    @Override
+    public List<String> getUserNames(String mobileNumber, BigInteger userType) {
+        return userDetailRepository.getUserNamesByMobileNumAnduserType(mobileNumber, userType);
+    }
 }

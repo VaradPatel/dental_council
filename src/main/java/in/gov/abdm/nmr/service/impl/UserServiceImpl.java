@@ -4,6 +4,8 @@ import java.math.BigInteger;
 import java.nio.file.AccessDeniedException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -305,6 +307,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void unlockUser(BigInteger userId) {
         userDaoService.unlockUser(userId);
+    }
+
+    @Override
+    public List<String> getUserNames(String mobileNumber, BigInteger userType) {
+        return userDaoService.getUserNames(mobileNumber, userType);
     }
 
     private void validateContactDetails(String emailId, String mobileNumber) throws NmrException {
