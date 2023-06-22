@@ -13,7 +13,7 @@ public interface ICaptchaService {
 
     ValidateCaptchaResponseTO verifyCaptcha(ValidateCaptchaRequestTO validateCaptchaRequestTO);
 
-    Boolean isCaptchaEnabled();
+    boolean isCaptchaEnabled();
 
     boolean isCaptchaVerified(String id);
 }

@@ -180,7 +180,7 @@ public class OtpServiceImpl implements IOtpService {
     }
     
     @Override
-    public Boolean isOtpEnabled() {
+    public boolean isOtpEnabled() {
         return otpEnabled;
     }
 }

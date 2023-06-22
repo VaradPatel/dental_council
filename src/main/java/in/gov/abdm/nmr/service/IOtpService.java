@@ -17,5 +17,5 @@ public interface IOtpService {
 
     boolean isOtpVerified(String id);
 
-    Boolean isOtpEnabled();
+    boolean isOtpEnabled();
 }
