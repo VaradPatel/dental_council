@@ -33,7 +33,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import brave.Tracer;
 import in.gov.abdm.nmr.dto.LoginRequestTO;
 import in.gov.abdm.nmr.entity.SecurityAuditTrail;
-import in.gov.abdm.nmr.enums.LoginTypeEnum;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.ICaptchaService;
@@ -84,10 +83,6 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
             ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).setAttribute(REQUEST_BODY, readRequestBody(request), RequestAttributes.SCOPE_REQUEST);
 
             LoginRequestTO requestBodyTO = convertRequestToDTO();
-            if((LoginTypeEnum.MOBILE_OTP.getCode().equals(requestBodyTO.getLoginType()) || LoginTypeEnum.NMR_ID_OTP.getCode().equals(requestBodyTO.getLoginType())) //
-                    && (requestBodyTO.getOtpTransId() == null || requestBodyTO.getOtpTransId().isBlank())) {
-                throw new AuthenticationServiceException("Invalid otp transaction id");
-            }
             authRequest = UserPasswordAuthenticationToken.unauthenticated(requestBodyTO.getUsername(), //
                     rsaUtil.decrypt(requestBodyTO.getPassword()), requestBodyTO.getUserType(), requestBodyTO.getLoginType(), requestBodyTO.getOtpTransId());
             authRequest.setDetails(createSecurityAuditTrail(request));
