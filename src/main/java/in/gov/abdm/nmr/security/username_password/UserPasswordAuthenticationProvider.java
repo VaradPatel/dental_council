@@ -6,6 +6,7 @@ import java.util.Collections;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -59,7 +60,7 @@ public class UserPasswordAuthenticationProvider extends DaoAuthenticationProvide
                 otpService.validateOtp(otpValidateRequestTo, true);
                 return UsernamePasswordAuthenticationToken.authenticated(userPassAuthToken.getPrincipal(), userPassAuthToken.getCredentials(), Collections.emptyList());
             } catch (OtpException e) {
-                throw new AuthenticationServiceException(e.getMessage());
+                throw new InternalAuthenticationServiceException(e.getMessage());
             } catch (GeneralSecurityException e) {
                 // will not be thrown here
             }

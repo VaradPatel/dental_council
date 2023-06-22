@@ -87,6 +87,10 @@ public class CaptchaServiceImpl implements ICaptchaService {
      */
     @Override
     public ValidateCaptchaResponseTO verifyCaptcha(ValidateCaptchaRequestTO validateCaptchaRequestTO) {
+        if(!captchaEnabled) {
+            return new ValidateCaptchaResponseTO(true);
+        }
+        
         String transactionId = validateCaptchaRequestTO.getTransactionId();
         Captcha captcha = captchaDaoService.findById(transactionId);
         
