@@ -32,7 +32,7 @@ public final class HpProfileWorkProfileMapper {
             workDetailsTO.setReason(workProfile.get(0).getReason());
             workDetailsTO.setRemark(workProfile.get(0).getRemark());
         }
-        workProfile.stream().forEach(workProfileObj -> {
+        workProfile.stream().filter(workProfile1 -> workProfile1.getIsUserCurrentlyWorking() != 1).forEach(workProfileObj -> {
             CurrentWorkDetailsTO currentWorkDetailsTO = new CurrentWorkDetailsTO();
             currentWorkDetailsTO.setWorkOrganization(workProfileObj.getWorkOrganization());
             currentWorkDetailsTO.setFacilityId(workProfileObj.getFacilityId());
