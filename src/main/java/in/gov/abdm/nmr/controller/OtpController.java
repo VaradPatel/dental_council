@@ -1,11 +1,13 @@
 package in.gov.abdm.nmr.controller;
 
-import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
-import in.gov.abdm.nmr.exception.OtpException;
-import in.gov.abdm.nmr.service.IOtpService;
-import in.gov.abdm.nmr.util.NMRConstants;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.security.GeneralSecurityException;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
+import javax.validation.Validator;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,8 +15,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.security.GeneralSecurityException;
+import in.gov.abdm.nmr.dto.OTPResponseMessageTo;
+import in.gov.abdm.nmr.dto.OtpGenerateRequestTo;
+import in.gov.abdm.nmr.dto.OtpValidateRequestTo;
+import in.gov.abdm.nmr.dto.OtpValidateResponseTo;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.OtpException;
+import in.gov.abdm.nmr.service.IOtpService;
+import in.gov.abdm.nmr.util.NMRConstants;
 
 /**
  * Controller for sending and verifying one time password notifications.
@@ -23,10 +31,16 @@ import java.security.GeneralSecurityException;
 @RequestMapping(NMRConstants.NOTIFICATION_REQUEST_MAPPING)
 public class OtpController {
 
-    @Autowired
-	IOtpService otpService;
+	private IOtpService otpService;
+    
+    private Validator validator;
 
-	/**
+	public OtpController(IOtpService otpService, Validator validator) {
+        this.otpService = otpService;
+        this.validator = validator;
+    }
+
+    /**
 	 * API Endpoint to generate  OTP
 	 * @param otpGenerateRequestTo coming from user
 	 * @return Success/Failure
@@ -45,13 +59,19 @@ public class OtpController {
 	 * @throws OtpException with message
 	 */
 	@PostMapping(path = NMRConstants.VERIFY_OTP, produces = MediaType.APPLICATION_JSON_VALUE)
-	public OtpValidateResponseTo validateOtp(@Valid @RequestBody OtpValidateRequestTo otpValidateRequestTo)
+	public OtpValidateResponseTo validateOtp(@RequestBody OtpValidateRequestTo otpValidateRequestTo)
 			throws OtpException, GeneralSecurityException {
+        if (otpService.isOtpEnabled()) {
+            Set<ConstraintViolation<OtpValidateRequestTo>> constraintViolations = validator.validate(otpValidateRequestTo);
+            if (!constraintViolations.isEmpty()) {
+                throw new ConstraintViolationException(constraintViolations);
+            }
+        }
 		return otpService.validateOtp(otpValidateRequestTo, false);
 	}
 	
     @GetMapping("/otp-enabled")
-    public Boolean isOtpEnabled() {
+    public boolean isOtpEnabled() {
         return otpService.isOtpEnabled();
     }
 }
