@@ -176,7 +176,7 @@ public class NMRConstants {
     public static final String DSC_SERVICE_ENDPOINT = "${dsc.endpoint.url}";
     public static final String GEN_ESP_REQUEST_URL = "/digiSign/genEspRequest";
     public static final String VERIFY_ESP_REQUEST_URL = "/digiSign/pdf/{tansactionId}";
-    public static final int MAX_FAILED_ATTEMPTS = 3;
+    public static final int MAX_FAILED_ATTEMPTS = 5;
     public static final long LOCK_TIME_DURATION = 3; // hours
     public static final String ACCOUNT_LOCKED_MESSAGE = "Your account has been locked for " + LOCK_TIME_DURATION + " hours due to " + MAX_FAILED_ATTEMPTS + " failed attempts";
     public static final String ACCOUNT_UNLOCKED_MESSAGE = "Your account has been unlocked. Please try to login again";

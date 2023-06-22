@@ -113,7 +113,7 @@ public class CaptchaServiceImpl implements ICaptchaService {
      * @return Boolean
      */
     @Override
-    public Boolean isCaptchaEnabled() {
+    public boolean isCaptchaEnabled() {
         return captchaEnabled;
     }
 
