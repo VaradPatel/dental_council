@@ -479,10 +479,12 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 .findById(hpPersonalUpdateRequestTO.getCommunicationAddress().getState().getId()).orElse(null);
         addressData.setState(communicationState);
 
-        District communicationDistrict = districtRepository
-                .findById(hpPersonalUpdateRequestTO.getCommunicationAddress().getDistrict().getId())
-                .orElse(null);
-        addressData.setDistrict(communicationDistrict);
+        if (hpPersonalUpdateRequestTO.getCommunicationAddress().getDistrict() != null) {
+            District communicationDistrict = districtRepository
+                    .findById(hpPersonalUpdateRequestTO.getCommunicationAddress().getDistrict().getId())
+                    .orElse(null);
+            addressData.setDistrict(communicationDistrict);
+        }
 
         if (hpPersonalUpdateRequestTO.getCommunicationAddress().getSubDistrict() != null) {
             SubDistrict communicationSubDistrict = subDistrictRepository
