@@ -334,7 +334,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             hpProfileById.setESignStatus(hpSubmitRequestTO.getESignStatus() != null ? hpSubmitRequestTO.getESignStatus() : ESignStatus.PROFILE_NOT_ESIGNED.getId());
             hpProfileById.setRequestId(requestId);
             hpProfileById.setConsent(hpSubmitRequestTO.getHprShareAcknowledgement() != null ? hpSubmitRequestTO.getHprShareAcknowledgement() : NO);
-
+            hpProfileById.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
             log.debug("Updating the request_id in registration_details table");
             RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
             registrationDetails.setRequestId(requestId);
