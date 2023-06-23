@@ -18,4 +18,6 @@ public class LoginResponseTO {
     private Boolean blacklisted;
     private Integer esignStatus;
     private Timestamp lastLogin;
+    private BigInteger hpProfileStatusId;
+    private BigInteger workFlowStatusId;
 }
