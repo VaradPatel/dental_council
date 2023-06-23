@@ -378,14 +378,25 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         BigInteger applicationTypeId = null;
         BigInteger workFlowStatusId = null;
         String requestId = null;
+        BigInteger hpProfileStatusId = null;
+        HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
+        if (latestHpProfile != null) {
+            WorkFlow workFlow = workFlowRepository.findLastWorkFlowForHealthProfessional(hpProfileId);
+            hpProfileStatusId = latestHpProfile.getHpProfileStatus().getId();
+            if (workFlow != null) {
+                applicationTypeId = workFlow.getApplicationType().getId();
+                workFlowStatusId = workFlow.getWorkFlowStatus().getId();
+                requestId = workFlow.getRequestId();
+            }
+        } else {
+            hpProfileStatusId = hpProfile.getHpProfileStatus().getId();
         WorkFlow workFlow = workFlowRepository.findLastWorkFlowForHealthProfessional(hpProfileId);
         if (workFlow != null) {
             applicationTypeId = workFlow.getApplicationType().getId();
             workFlowStatusId = workFlow.getWorkFlowStatus().getId();
             requestId = workFlow.getRequestId();
-
-        }
-        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId, workFlowStatusId, requestId);
+        }}
+        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId, workFlowStatusId, requestId, hpProfileStatusId);
     }
 
     @Override
