@@ -158,7 +158,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         log.info("In ApplicationServiceImpl: suspendRequest method ");
 
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
-        HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileByRegistrationId(hpProfile.getRegistrationId());
+        HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
         if (Objects.equals(HpProfileStatus.APPROVED.getId(), latestHpProfile.getHpProfileStatus().getId())) {
             log.debug("Building a new request_id");
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
@@ -189,7 +189,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         log.info("In ApplicationServiceImpl: reactivateRequest method ");
 
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
-        HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileByRegistrationId(hpProfile.getRegistrationId());
+        HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
         ReactivateRequestResponseTo reactivateRequestResponseTo = new ReactivateRequestResponseTo();
         if (!workFlowService.isAnyActiveWorkflowForHealthProfessional(latestHpProfile.getId())) {
             log.debug("Proceeding to Reactivate the profile since the profile is currently in Suspended / Black Listed state");

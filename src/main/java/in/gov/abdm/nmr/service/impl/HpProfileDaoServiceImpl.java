@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.enums.ESignStatus;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.nosql.entity.Council;
@@ -145,6 +146,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 org.springframework.beans.BeanUtils.copyProperties(existingHpProfile, targetedHpProfile);
                 targetedHpProfile.setId(null);
                 targetedHpProfile.setIsNew(NO);
+                targetedHpProfile.setESignStatus(ESignStatus.PROFILE_NOT_ESIGNED.getId());
             }
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, targetedHpProfile);
             HpProfile savedHpProfile = iHpProfileRepository.save(targetedHpProfile);
