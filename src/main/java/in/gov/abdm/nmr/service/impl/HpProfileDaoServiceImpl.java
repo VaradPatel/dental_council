@@ -527,7 +527,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         if (hpPersonalUpdateRequestTO.getRequestId() != null) {
             hpProfile.setRequestId(hpPersonalUpdateRequestTO.getRequestId());
         }
-        hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
         hpProfile.setIsSameAddress(hpPersonalUpdateRequestTO.getCommunicationAddress().getIsSameAddress());
         Country countryNationality = countryRepository
                 .findById(hpPersonalUpdateRequestTO.getPersonalDetails().getCountryNationality().getId())
