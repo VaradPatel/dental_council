@@ -159,7 +159,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).orElseThrow(WorkFlowException::new));
                 workFlow.setRemarks(requestTO.getRemarks());
                 workFlow.setUserId(user);
-                log.debug("Work Flow Updation Successful");
+                log.debug("Work Flow Updating Successful");
             } else {
                 throw new WorkFlowException(NMRError.WORK_FLOW_EXCEPTION.getCode(), NMRError.WORK_FLOW_EXCEPTION.getMessage());
             }
@@ -189,13 +189,13 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
         updateDashboardDetail(requestTO, workFlow, iNextGroup, dashboard);
         try {
-            if (workFlow.getUserId().isSmsNotificationEnabled() && workFlow.getUserId().isEmailNotificationEnabled()) {
-                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
-            } else if (workFlow.getUserId().isSmsNotificationEnabled()) {
-                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), workFlow.getHpProfile().getMobileNumber(), null);
+            if (hpProfile.getUser().isSmsNotificationEnabled() && hpProfile.getUser().isEmailNotificationEnabled()) {
+                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), hpProfile.getUser().getEmail());
+            } else if (workFlow.getHpProfile().getUser().isSmsNotificationEnabled()) {
+                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), null);
 
-            } else if (workFlow.getUserId().isEmailNotificationEnabled()) {
-                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), null, workFlow.getHpProfile().getEmailId());
+            } else if (workFlow.getHpProfile().getUser().isEmailNotificationEnabled()) {
+                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), null, hpProfile.getUser().getEmail());
             }
         } catch (Exception exception) {
             log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
