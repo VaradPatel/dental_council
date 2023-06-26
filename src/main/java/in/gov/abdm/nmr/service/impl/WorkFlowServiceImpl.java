@@ -164,24 +164,6 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 throw new WorkFlowException(NMRError.WORK_FLOW_EXCEPTION.getCode(), NMRError.WORK_FLOW_EXCEPTION.getMessage());
             }
         }
-        if (isLastStepOfWorkFlow(iNextGroup)) {
-            if (APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES.contains(workFlow.getWorkFlowStatus().getId())) {
-                log.debug("Performing Post Workflow updates since either the Last step of Workflow is reached or work_flow_status is Approved/Suspended/Blacklisted ");
-                workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
-            } else if (ApplicationType.QUALIFICATION_ADDITION.getId().equals(workFlow.getApplicationType().getId())
-                    && WorkflowStatus.REJECTED.getId().equals(workFlow.getWorkFlowStatus().getId())) {
-
-                QualificationDetails qualificationDetails = qualificationDetailRepository.findByRequestId(workFlow.getRequestId());
-                if(qualificationDetails!=null) {
-                    qualificationDetails.setIsVerified(NMRConstants.QUALIFICATION_STATUS_REJECTED);
-                }
-
-                ForeignQualificationDetails foreignQualificationDetails = foreignQualificationDetailRepository.findByRequestId(requestTO.getRequestId());
-                if(foreignQualificationDetails!=null) {
-                    foreignQualificationDetails.setIsVerified(QUALIFICATION_STATUS_REJECTED);
-                }
-            }
-        }
 
         log.debug("Saving an entry in the work_flow_audit table");
         iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
@@ -199,6 +181,25 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             }
         } catch (Exception exception) {
             log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
+        }
+
+        if (isLastStepOfWorkFlow(iNextGroup)) {
+            if (APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES.contains(workFlow.getWorkFlowStatus().getId())) {
+                log.debug("Performing Post Workflow updates since either the Last step of Workflow is reached or work_flow_status is Approved/Suspended/Blacklisted ");
+                workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
+            } else if (ApplicationType.QUALIFICATION_ADDITION.getId().equals(workFlow.getApplicationType().getId())
+                    && WorkflowStatus.REJECTED.getId().equals(workFlow.getWorkFlowStatus().getId())) {
+
+                QualificationDetails qualificationDetails = qualificationDetailRepository.findByRequestId(workFlow.getRequestId());
+                if(qualificationDetails!=null) {
+                    qualificationDetails.setIsVerified(NMRConstants.QUALIFICATION_STATUS_REJECTED);
+                }
+
+                ForeignQualificationDetails foreignQualificationDetails = foreignQualificationDetailRepository.findByRequestId(requestTO.getRequestId());
+                if(foreignQualificationDetails!=null) {
+                    foreignQualificationDetails.setIsVerified(QUALIFICATION_STATUS_REJECTED);
+                }
+            }
         }
     }
 
