@@ -173,10 +173,10 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         try {
             if (hpProfile.getUser().isSmsNotificationEnabled() && hpProfile.getUser().isEmailNotificationEnabled()) {
                 notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), hpProfile.getUser().getEmail());
-            } else if (workFlow.getHpProfile().getUser().isSmsNotificationEnabled()) {
+            } else if (hpProfile.getUser().isSmsNotificationEnabled()) {
                 notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), null);
 
-            } else if (workFlow.getHpProfile().getUser().isEmailNotificationEnabled()) {
+            } else if (hpProfile.getUser().isEmailNotificationEnabled()) {
                 notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), null, hpProfile.getUser().getEmail());
             }
         } catch (Exception exception) {
