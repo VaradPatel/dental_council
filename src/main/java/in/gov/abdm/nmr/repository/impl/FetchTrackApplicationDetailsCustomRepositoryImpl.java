@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.repository.impl;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestParamsTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationTo;
+import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.DashboardStatus;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;
@@ -117,7 +118,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
 
         sb.append(FETCH_TRACK_DETAILS_QUERY);
 
-        sb.append(" where D.hp_profile_id IS NOT NULL ");
+        sb.append(" where D.hp_profile_id IS NOT NULL and d.application_type_id !="+ ApplicationType.HP_MODIFICATION.getId());
 
         if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
             StringBuilder hpIds = new StringBuilder();
