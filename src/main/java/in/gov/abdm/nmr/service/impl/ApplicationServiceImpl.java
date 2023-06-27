@@ -158,12 +158,13 @@ public class ApplicationServiceImpl implements IApplicationService {
         log.info("In ApplicationServiceImpl: suspendRequest method ");
 
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
-        if (Objects.equals(HpProfileStatus.APPROVED.getId(), hpProfile.getHpProfileStatus().getId())) {
+        HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
+        if (Objects.equals(HpProfileStatus.APPROVED.getId(), latestHpProfile.getHpProfileStatus().getId())) {
             log.debug("Building a new request_id");
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
-            initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
+            initiateWorkFlow(applicationRequestTo, requestId, latestHpProfile);
             SuspendRequestResponseTo suspendRequestResponseTo = new SuspendRequestResponseTo();
-            suspendRequestResponseTo.setProfileId(hpProfile.getId().toString());
+            suspendRequestResponseTo.setProfileId(latestHpProfile.getId().toString());
             suspendRequestResponseTo.setMessage(SUCCESS_RESPONSE);
 
             log.info("ApplicationServiceImpl: suspendRequest method: Execution Successful. ");
@@ -188,15 +189,17 @@ public class ApplicationServiceImpl implements IApplicationService {
         log.info("In ApplicationServiceImpl: reactivateRequest method ");
 
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
+        HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
         ReactivateRequestResponseTo reactivateRequestResponseTo = new ReactivateRequestResponseTo();
-        if (!workFlowService.isAnyActiveWorkflowForHealthProfessional(hpProfile.getId())) {
+        if (!workFlowService.isAnyActiveWorkflowForHealthProfessional(latestHpProfile.getId())) {
             log.debug("Proceeding to Reactivate the profile since the profile is currently in Suspended / Black Listed state");
 
-            if (Objects.equals(HpProfileStatus.SUSPENDED.getId(), hpProfile.getHpProfileStatus().getId()) || Objects.equals(HpProfileStatus.BLACKLISTED.getId(), hpProfile.getHpProfileStatus().getId())) {
+            if (Objects.equals(HpProfileStatus.SUSPENDED.getId(), latestHpProfile.getHpProfileStatus().getId())
+                    || Objects.equals(HpProfileStatus.BLACKLISTED.getId(), latestHpProfile.getHpProfileStatus().getId())) {
 
                 log.debug("Building Request id.");
                 String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
-                WorkFlow workFlow = iWorkFlowRepository.findLastWorkFlowForHealthProfessional(hpProfile.getId());
+                WorkFlow workFlow = iWorkFlowRepository.findLastWorkFlowForHealthProfessional(latestHpProfile.getId());
                 if (Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
                     log.debug("Proceeding to reactivate through SMC since the profile was suspended by NMC");
                     applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.REACTIVATION_THROUGH_SMC.getId());
@@ -206,8 +209,8 @@ public class ApplicationServiceImpl implements IApplicationService {
                     applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.SELF_REACTIVATION.getId());
                     reactivateRequestResponseTo.setSelfReactivation(true);
                 }
-                initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
-                reactivateRequestResponseTo.setProfileId(hpProfile.getId().toString());
+                initiateWorkFlow(applicationRequestTo, requestId, latestHpProfile);
+                reactivateRequestResponseTo.setProfileId(latestHpProfile.getId().toString());
                 reactivateRequestResponseTo.setMessage(SUCCESS_RESPONSE);
 
                 log.info("ApplicationServiceImpl: reactivateRequest method: Execution Successful. ");

@@ -18,6 +18,9 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
     @Query(value = "SELECT * FROM hp_profile where registration_id =:registrationId ORDER BY id DESC LIMIT 1", nativeQuery = true)
     HpProfile findLatestHpProfileByRegistrationId(String registrationId);
 
+    @Query(value = "select * from hp_profile hp join dashboard d on d.hp_profile_id = hp.id where registration_id =:registrationId order by hp.id desc limit 1", nativeQuery = true)
+    HpProfile findLatestHpProfileFromWorkFlow(String registrationId);
+
     @Modifying
     @Transactional
     @Query(value = "UPDATE hp_profile SET mobile_Number =:mobileNumber  WHERE id =:hpProfileId", nativeQuery = true)

@@ -22,7 +22,4 @@ public class CurrentWorkDetailsTO {
     private String systemOfMedicine;
     private String department;
     private String designation;
-    private String reason;
-    private String remark;
-
 }

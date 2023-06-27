@@ -20,7 +20,7 @@ public enum NMRError {
     DATE_EXCEPTION("ABDM-NMR-012", "Invalid date format"),
     RESOURCE_EXISTS_EXCEPTION("ABDM-NMR-013", "Resource already exists"),
     NOT_FOUND_EXCEPTION("ABDM-NMR-014", "Resource not found"),
-    WORK_FLOW_CREATION_FAIL("ABDM-NMR-015", "Can't create new request until an existing request is closed"),
+    WORK_FLOW_CREATION_FAIL("ABDM-NMR-015", "We are sorry, but we can only process one request at a time. Please wait until your current request has been completed before submitting another. You can track current application status via track Application"),
     INVALID_USER("ABDM-NMR-016", "In-valid user"),
     PROFILE_NOT_APPROVED("ABDM-NMR-017", "Only Approved profile can be suspended"),
     PROFILE_NOT_SUSPEND("ABDM-NMR-018", "Only Suspended profile can be reactivated"),
@@ -42,7 +42,8 @@ public enum NMRError {
     INVALID_USER_TYPE("ABDM-NMR-034", "User type or sub type invalid."),
     NON_REGISTERED_MOBILE_NUMBER("ABDM-NMR-035", "This mobile number is not registered in NMR."),
     NON_REGISTERED_EMAIL_ID("ABDM-NMR-036", "This email ID is not registered in NMR."),
-    NON_REGISTERED_NMR_ID("ABDM-NMR-037", "This NMR ID is not registered in NMR.");
+    NON_REGISTERED_NMR_ID("ABDM-NMR-037", "This NMR ID is not registered in NMR."),
+    INVALID_OTP_TRANSACTION_ID("ABDM-NMR-038", "Invalid OTP Transaction ID");
     private final String code;
     private final String message;
 }

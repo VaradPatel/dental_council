@@ -58,21 +58,21 @@ public class UserController {
     @PutMapping(path = ProtectedPaths.PATH_SMC_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
     @RolesAllowed({RoleConstants.STATE_MEDICAL_COUNCIL})
     @SecurityRequirement(name = "bearerAuth")
-    public SMCProfileTO updateSMCProfile(@PathVariable(name = "id") BigInteger id, @RequestBody SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException {
+    public SMCProfileTO updateSMCProfile(@PathVariable(name = "id") BigInteger id, @RequestBody SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException {
         return userService.updateSmcProfile(id, smcProfileTO);
     }
 
     @PutMapping(path = ProtectedPaths.PATH_NMC_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
     @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL})
     @SecurityRequirement(name = "bearerAuth")
-    public NmcProfileTO updateNmcProfile(@PathVariable(name = "id") BigInteger id, @RequestBody NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException {
+    public NmcProfileTO updateNmcProfile(@PathVariable(name = "id") BigInteger id, @RequestBody NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException {
         return userService.updateNmcProfile(id, nmcProfileTO);
     }
 
     @PutMapping(path = ProtectedPaths.PATH_NBE_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
     @RolesAllowed({RoleConstants.NATIONAL_BOARD_OF_EXAMINATIONS})
     @SecurityRequirement(name = "bearerAuth")
-    public NbeProfileTO updateNbeProfile(@PathVariable(name = "id") BigInteger id, @RequestBody NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException {
+    public NbeProfileTO updateNbeProfile(@PathVariable(name = "id") BigInteger id, @RequestBody NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException, InvalidRequestException {
         return userService.updateNbeProfile(id, nbeProfileTO);
     }
 
@@ -127,4 +127,10 @@ public class UserController {
         return ResponseMessageTo.builder().message(NMRConstants.SUCCESS_RESPONSE).build();
     }
 
+    @GetMapping(path = "/user-accounts")
+    public List<String> getUserNames(
+            @RequestParam(value = "mobileNumber") String mobileNumber,
+            @RequestParam(value = "userType") BigInteger userType) {
+        return userService.getUserNames(mobileNumber, userType);
+    }
 }

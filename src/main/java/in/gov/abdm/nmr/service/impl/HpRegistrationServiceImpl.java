@@ -333,8 +333,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             hpProfileById.setTransactionId(hpSubmitRequestTO.getTransactionId());
             hpProfileById.setESignStatus(hpSubmitRequestTO.getESignStatus() != null ? hpSubmitRequestTO.getESignStatus() : ESignStatus.PROFILE_NOT_ESIGNED.getId());
             hpProfileById.setRequestId(requestId);
-            hpProfileById.setConsent(hpSubmitRequestTO.getHprShareAcknowledgement());
-
+            hpProfileById.setConsent(hpSubmitRequestTO.getHprShareAcknowledgement() != null ? hpSubmitRequestTO.getHprShareAcknowledgement() : NO);
+            hpProfileById.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
             log.debug("Updating the request_id in registration_details table");
             RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
             registrationDetails.setRequestId(requestId);
@@ -378,14 +378,25 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         BigInteger applicationTypeId = null;
         BigInteger workFlowStatusId = null;
         String requestId = null;
+        BigInteger hpProfileStatusId = null;
+        HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
+        if (latestHpProfile != null) {
+            WorkFlow workFlow = workFlowRepository.findLastWorkFlowForHealthProfessional(hpProfileId);
+            hpProfileStatusId = latestHpProfile.getHpProfileStatus().getId();
+            if (workFlow != null) {
+                applicationTypeId = workFlow.getApplicationType().getId();
+                workFlowStatusId = workFlow.getWorkFlowStatus().getId();
+                requestId = workFlow.getRequestId();
+            }
+        } else {
+            hpProfileStatusId = hpProfile.getHpProfileStatus().getId();
         WorkFlow workFlow = workFlowRepository.findLastWorkFlowForHealthProfessional(hpProfileId);
         if (workFlow != null) {
             applicationTypeId = workFlow.getApplicationType().getId();
             workFlowStatusId = workFlow.getWorkFlowStatus().getId();
             requestId = workFlow.getRequestId();
-
-        }
-        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId, workFlowStatusId, requestId);
+        }}
+        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId, workFlowStatusId, requestId, hpProfileStatusId);
     }
 
     @Override
@@ -535,7 +546,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setRegistrationId(request.getRegistrationNumber());
         hpProfile.setIsSameAddress(String.valueOf(false));
         hpProfile.setCountryNationality(countryRepository.findByName(NMRConstants.DEFAULT_COUNTRY_AADHAR));
-        hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.PENDING.getId()).get());
+        hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.DRAFT.getId()).get());
         hpProfile.setIsNew(imrProfileDetails == null ? YES : NO);
         hpProfile.setUser(userDetail);
         hpProfile.setESignStatus(ESignStatus.PROFILE_NOT_ESIGNED.getId());

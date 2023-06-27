@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.enums.ESignStatus;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.nosql.entity.Council;
@@ -80,7 +81,16 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     private static final List<String> SUPPORTED_FILE_TYPES = List.of(".pdf",".jpg",".jpeg",".png");
 
-
+    /**
+     * Info: this method will fetch health professional registration details from the IMR data source. if details
+     * are found then they are validated against the NMR database for verifying user existence.
+     * if details are not found in the IMR data source then they are checked in the NMR database.
+     *
+     * @param councilId
+     * @param registrationNumber
+     * @return
+     * @throws NoDataFoundException
+     */
     public HpSmcDetailTO fetchSmcRegistrationDetail(Integer councilId, String registrationNumber) throws NoDataFoundException {
         HpSmcDetailTO hpSmcDetailTO = new HpSmcDetailTO();
 
@@ -89,17 +99,24 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         String councilName = stateMedicalCouncil.getName();
         List<Council> councils = councilService.getCouncilByRegistrationNumberAndCouncilName(registrationNumber, councilName);
+        RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByRegistrationNoAndStateMedicalCouncilId(registrationNumber, BigInteger.valueOf(councilId));
 
-        if(councils.isEmpty()){
+        if (!councils.isEmpty()) {
+            Council council = councils.get(0);
+            hpSmcDetailTO.setHpName(council.getFullName());
+            hpSmcDetailTO.setCouncilName(council.getRegistrationsDetails().get(0).getCouncilName());
+            hpSmcDetailTO.setRegistrationNumber(council.getRegistrationsDetails().get(0).getRegistrationNo());
+            hpSmcDetailTO.setEmailId(council.getEmail());
+            hpSmcDetailTO.setAlreadyRegisteredInNmr(registrationDetails != null);
+        } else if (registrationDetails != null) {
+            hpSmcDetailTO.setHpName(registrationDetails.getHpProfileId().getFullName());
+            hpSmcDetailTO.setCouncilName(registrationDetails.getStateMedicalCouncil().getName());
+            hpSmcDetailTO.setRegistrationNumber(registrationDetails.getRegistrationNo());
+            hpSmcDetailTO.setEmailId(registrationDetails.getHpProfileId().getEmailId());
+            hpSmcDetailTO.setAlreadyRegisteredInNmr(true);
+        } else {
             throw new NoDataFoundException();
         }
-        Council council = councils.get(0);
-
-        hpSmcDetailTO.setHpName(council.getFullName());
-        hpSmcDetailTO.setCouncilName(council.getRegistrationsDetails().get(0).getCouncilName());
-        hpSmcDetailTO.setRegistrationNumber(council.getRegistrationsDetails().get(0).getRegistrationNo());
-        hpSmcDetailTO.setEmailId(council.getEmail());
-        hpSmcDetailTO.setAlreadyRegisteredInNmr(iRegistrationDetailRepository.existsByRegistrationNoAndStateMedicalCouncilId(registrationNumber,BigInteger.valueOf(councilId)));
         return hpSmcDetailTO;
 
     }
@@ -129,6 +146,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 org.springframework.beans.BeanUtils.copyProperties(existingHpProfile, targetedHpProfile);
                 targetedHpProfile.setId(null);
                 targetedHpProfile.setIsNew(NO);
+                targetedHpProfile.setESignStatus(ESignStatus.PROFILE_NOT_ESIGNED.getId());
             }
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, targetedHpProfile);
             HpProfile savedHpProfile = iHpProfileRepository.save(targetedHpProfile);
@@ -463,10 +481,12 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 .findById(hpPersonalUpdateRequestTO.getCommunicationAddress().getState().getId()).orElse(null);
         addressData.setState(communicationState);
 
-        District communicationDistrict = districtRepository
-                .findById(hpPersonalUpdateRequestTO.getCommunicationAddress().getDistrict().getId())
-                .orElse(null);
-        addressData.setDistrict(communicationDistrict);
+        if (hpPersonalUpdateRequestTO.getCommunicationAddress().getDistrict() != null) {
+            District communicationDistrict = districtRepository
+                    .findById(hpPersonalUpdateRequestTO.getCommunicationAddress().getDistrict().getId())
+                    .orElse(null);
+            addressData.setDistrict(communicationDistrict);
+        }
 
         if (hpPersonalUpdateRequestTO.getCommunicationAddress().getSubDistrict() != null) {
             SubDistrict communicationSubDistrict = subDistrictRepository
@@ -507,7 +527,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         if (hpPersonalUpdateRequestTO.getRequestId() != null) {
             hpProfile.setRequestId(hpPersonalUpdateRequestTO.getRequestId());
         }
-        hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
         hpProfile.setIsSameAddress(hpPersonalUpdateRequestTO.getCommunicationAddress().getIsSameAddress());
         Country countryNationality = countryRepository
                 .findById(hpPersonalUpdateRequestTO.getPersonalDetails().getCountryNationality().getId())
@@ -574,6 +593,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private WorkProfile workProfileObjectMapping(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, WorkProfile addWorkProfile, CurrentWorkDetailsTO currentWorkDetailsTO, BigInteger hpProfileId, BigInteger userId) {
         addWorkProfile.setRequestId(hpWorkProfileUpdateRequestTO.getRequestId());
         addWorkProfile.setHpProfileId(hpProfileId);
+        addWorkProfile.setReason(hpWorkProfileUpdateRequestTO.getWorkDetails().getReason());
+        addWorkProfile.setRemark(hpWorkProfileUpdateRequestTO.getWorkDetails().getRemark());
         if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature() != null) {
             addWorkProfile.setWorkNature(workNatureRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature().getId()).get());
         }
@@ -600,8 +621,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         addWorkProfile.setSystemOfMedicine(currentWorkDetailsTO.getSystemOfMedicine());
         addWorkProfile.setDesignation(currentWorkDetailsTO.getDesignation());
         addWorkProfile.setDepartment(currentWorkDetailsTO.getDepartment());
-        addWorkProfile.setReason(currentWorkDetailsTO.getReason());
-        addWorkProfile.setRemark(currentWorkDetailsTO.getRemark());
         return addWorkProfile;
     }
 
