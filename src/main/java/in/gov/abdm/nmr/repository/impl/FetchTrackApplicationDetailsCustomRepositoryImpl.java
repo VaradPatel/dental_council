@@ -168,7 +168,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         results.forEach(result -> {
             HealthProfessionalApplicationTo healthProfessionalApplicationTo = new HealthProfessionalApplicationTo();
             healthProfessionalApplicationTo.setDoctorStatus(result[0] != null ? WorkflowStatus.getWorkflowStatus((BigInteger) result[0]).getDescription() : "");
-            healthProfessionalApplicationTo.setSmcStatus(result[1] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[1]).getStatus() : NOT_YET_RECEIVED);
+            healthProfessionalApplicationTo.setSmcStatus(result[1] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[1]).getSmcStatus() : NOT_YET_RECEIVED);
             healthProfessionalApplicationTo.setNmcStatus(result[2] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[2]).getStatus() : NOT_YET_RECEIVED);
             healthProfessionalApplicationTo.setNbeStatus(result[3] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[3]).getStatus() : NOT_YET_RECEIVED);
             healthProfessionalApplicationTo.setHpProfileId((BigInteger) result[4]);
