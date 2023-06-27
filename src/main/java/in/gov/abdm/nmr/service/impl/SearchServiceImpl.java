@@ -137,6 +137,8 @@ public class SearchServiceImpl implements ISearchService {
             if (Objects.nonNull(indianQualification.getUniversity())) {
                 hpSearchProfileQualificationTO.setUniversityName(indianQualification.getUniversity().getName());
             }
+            hpSearchProfileQualificationTO.setBroadSpeciality(indianQualification.getBroadSpeciality() != null ? indianQualification.getBroadSpeciality().getName() : null);
+            hpSearchProfileQualificationTO.setSuperSpeciality(indianQualification.getSuperSpecialityName());
             return hpSearchProfileQualificationTO;
         }).toList());
         List<ForeignQualificationDetailsMaster> internationalQualifications = foreignQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(profileId);
@@ -146,6 +148,8 @@ public class SearchServiceImpl implements ISearchService {
             hpSearchProfileQualificationTO.setQualificationYear(internationalQualification.getQualificationYear());
             hpSearchProfileQualificationTO.setUniversityName(internationalQualification.getUniversity());
             hpSearchProfileQualificationTO.setCreatedAt(internationalQualification.getCreatedAt());
+            hpSearchProfileQualificationTO.setBroadSpeciality(internationalQualification.getBroadSpeciality() != null ? internationalQualification.getBroadSpeciality().getName() : null);
+            hpSearchProfileQualificationTO.setSuperSpeciality(internationalQualification.getSuperSpecialityName());
 
             return hpSearchProfileQualificationTO;
         }).toList());
