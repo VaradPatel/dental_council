@@ -296,4 +296,7 @@ public class NMRConstants {
     public static final int QUALIFICATION_STATUS_PENDING = 0;
     public static final int QUALIFICATION_STATUS_APPROVED = 1;
     public static final int QUALIFICATION_STATUS_REJECTED = 2;
+
+    public static final String MASTER_CACHE_NAME ="nmr-master-data";
+    public static final long MASTER_CACHE_CRON_TIME = 6 * 60 * 60 * 1000;
 }
