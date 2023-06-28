@@ -220,7 +220,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     private List<ForeignQualificationDetailsMaster> updateForeignQualificationToMaster(HpProfile transactionHpProfile, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
         log.debug("Mapping the Foreign Qualification Details to Foreign Qualification Details Master table");
         List<ForeignQualificationDetailsMaster> qualificationDetailsMasters = new ArrayList<>();
-        List<ForeignQualificationDetails> qualificationDetails = customQualificationDetailRepository.getQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
+        List<ForeignQualificationDetails> qualificationDetails = customQualificationDetailRepository.getApprovedQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
         List<String> masterCourseIds = customQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId())
                 .stream().map(ForeignQualificationDetailsMaster::getCourse).toList();
         List<ForeignQualificationDetails> filterQualifications = qualificationDetails.stream().filter(qualificationDetail -> !masterCourseIds.contains(qualificationDetail.getCourse())).toList();
@@ -272,7 +272,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     private List<QualificationDetailsMaster> updateQualificationDetailsToMaster(HpProfile transactionHpProfile, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
         log.debug("Mapping the current Qualification Details to Qualification Details Master table");
         List<QualificationDetailsMaster> qualificationDetailsMasters = new ArrayList<>();
-        List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
+        List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getApprovedQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
         List<BigInteger> masterCourseIds = qualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId())
                 .stream().map(qualificationDetailsMaster -> qualificationDetailsMaster.getCourse().getId()).toList();
         List<QualificationDetails> filterQualifications = qualificationDetails.stream().filter(qualificationDetail -> !masterCourseIds.contains(qualificationDetail.getCourse().getId())).toList();

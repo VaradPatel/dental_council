@@ -70,7 +70,9 @@ public class QualificationDetailsMaster extends CommonAuditEntity {
     @JoinColumn(name = "hpProfileId", referencedColumnName = "id")
     private HpProfileMaster hpProfileMaster;
 
-    private BigInteger broadSpecialityId;
+    @OneToOne
+    @JoinColumn(name = "broad_speciality_id", referencedColumnName = "id")
+    private BroadSpeciality broadSpeciality;
 
     private String superSpecialityName;
     private String fileName;

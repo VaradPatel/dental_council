@@ -159,11 +159,18 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).orElseThrow(WorkFlowException::new));
                 workFlow.setRemarks(requestTO.getRemarks());
                 workFlow.setUserId(user);
-                log.debug("Work Flow Updation Successful");
+                log.debug("Work Flow Updating Successful");
             } else {
                 throw new WorkFlowException(NMRError.WORK_FLOW_EXCEPTION.getCode(), NMRError.WORK_FLOW_EXCEPTION.getMessage());
             }
         }
+
+        log.debug("Saving an entry in the work_flow_audit table");
+        iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
+        log.debug("Initiating a notification to indicate the change of status.");
+
+        updateDashboardDetail(requestTO, workFlow, iNextGroup, dashboard);
+
         if (isLastStepOfWorkFlow(iNextGroup)) {
             if (APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES.contains(workFlow.getWorkFlowStatus().getId())) {
                 log.debug("Performing Post Workflow updates since either the Last step of Workflow is reached or work_flow_status is Approved/Suspended/Blacklisted ");
@@ -182,20 +189,16 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 }
             }
         }
-
-        log.debug("Saving an entry in the work_flow_audit table");
-        iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
-        log.debug("Initiating a notification to indicate the change of status.");
-
-        updateDashboardDetail(requestTO, workFlow, iNextGroup, dashboard);
         try {
-            if (workFlow.getUserId().isSmsNotificationEnabled() && workFlow.getUserId().isEmailNotificationEnabled()) {
-                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
-            } else if (workFlow.getUserId().isSmsNotificationEnabled()) {
-                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), workFlow.getHpProfile().getMobileNumber(), null);
+            if(!ApplicationType.HP_MODIFICATION.getId().equals(workFlow.getApplicationType().getId())) {
+                if (hpProfile.getUser().isSmsNotificationEnabled() && hpProfile.getUser().isEmailNotificationEnabled()) {
+                    notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), hpProfile.getUser().getEmail());
+                } else if (hpProfile.getUser().isSmsNotificationEnabled()) {
+                    notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), null);
 
-            } else if (workFlow.getUserId().isEmailNotificationEnabled()) {
-                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), null, workFlow.getHpProfile().getEmailId());
+                } else if (hpProfile.getUser().isEmailNotificationEnabled()) {
+                    notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), null, hpProfile.getUser().getEmail());
+                }
             }
         } catch (Exception exception) {
             log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
