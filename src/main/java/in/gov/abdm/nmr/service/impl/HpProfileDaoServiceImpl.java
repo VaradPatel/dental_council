@@ -147,6 +147,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 targetedHpProfile.setId(null);
                 targetedHpProfile.setIsNew(NO);
                 targetedHpProfile.setESignStatus(ESignStatus.PROFILE_NOT_ESIGNED.getId());
+                targetedHpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.DRAFT.getId()).build());
             }
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, targetedHpProfile);
             HpProfile savedHpProfile = iHpProfileRepository.save(targetedHpProfile);
@@ -533,7 +534,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 .orElse(null);
         hpProfile.setCountryNationality(countryNationality);
         hpProfile.setFullName(hpPersonalUpdateRequestTO.getPersonalDetails().getFullName());
-        hpProfile.setEmailId(hpPersonalUpdateRequestTO.getCommunicationAddress().getEmail());
+        hpProfile.setEmailId(hpPersonalUpdateRequestTO.getPersonalDetails().getEmail());
     }
 
     private void mapNbeRequestDetailsToEntity(HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, HpNbeDetails hpNbeDetails, HpProfile hpProfile) {

@@ -13,4 +13,6 @@ public class HpSearchProfileQualificationTO {
     private String universityName;
     @JsonIgnore
     private Timestamp createdAt;
+    private String broadSpeciality;
+    private String superSpeciality;
 }
