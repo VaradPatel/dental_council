@@ -1,7 +1,9 @@
 package in.gov.abdm.nmr.enums;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Enum for different workflow in NMR.
@@ -39,5 +41,10 @@ public enum ApplicationType {
 
     public static List<BigInteger> getAllCollegeApplicationTypeIds() {
         return List.of(COLLEGE_REGISTRATION.getId());
+    }
+
+    public static ApplicationType getApplicationType(BigInteger id) {
+        Optional<ApplicationType> optionalApplicationType = Arrays.stream(ApplicationType.values()).filter(action -> action.getId().equals(id)).findFirst();
+        return optionalApplicationType.isPresent() ? optionalApplicationType.get() : null;
     }
 }
