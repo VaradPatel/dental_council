@@ -170,20 +170,6 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         log.debug("Initiating a notification to indicate the change of status.");
 
         updateDashboardDetail(requestTO, workFlow, iNextGroup, dashboard);
-        try {
-            if(!ApplicationType.HP_MODIFICATION.getId().equals(workFlow.getApplicationType().getId())) {
-                if (hpProfile.getUser().isSmsNotificationEnabled() && hpProfile.getUser().isEmailNotificationEnabled()) {
-                    notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), hpProfile.getUser().getEmail());
-                } else if (hpProfile.getUser().isSmsNotificationEnabled()) {
-                    notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), null);
-
-                } else if (hpProfile.getUser().isEmailNotificationEnabled()) {
-                    notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), null, hpProfile.getUser().getEmail());
-                }
-            }
-        } catch (Exception exception) {
-            log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
-        }
 
         if (isLastStepOfWorkFlow(iNextGroup)) {
             if (APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES.contains(workFlow.getWorkFlowStatus().getId())) {
@@ -202,6 +188,20 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                     foreignQualificationDetails.setIsVerified(QUALIFICATION_STATUS_REJECTED);
                 }
             }
+        }
+        try {
+            if(!ApplicationType.HP_MODIFICATION.getId().equals(workFlow.getApplicationType().getId())) {
+                if (hpProfile.getUser().isSmsNotificationEnabled() && hpProfile.getUser().isEmailNotificationEnabled()) {
+                    notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), hpProfile.getUser().getEmail());
+                } else if (hpProfile.getUser().isSmsNotificationEnabled()) {
+                    notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), null);
+
+                } else if (hpProfile.getUser().isEmailNotificationEnabled()) {
+                    notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), null, hpProfile.getUser().getEmail());
+                }
+            }
+        } catch (Exception exception) {
+            log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
         }
     }
 
