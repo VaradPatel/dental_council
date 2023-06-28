@@ -1,6 +1,8 @@
 package in.gov.abdm.nmr.dto;
 
-import in.gov.abdm.nmr.annotation.Name;
+import in.gov.abdm.nmr.annotation.OptionalName;
+import in.gov.abdm.validator.AddressLine;
+import in.gov.abdm.validator.District;
 import in.gov.abdm.validator.MobileNumber;
 import lombok.Data;
 
@@ -10,7 +12,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigInteger;
 
-import static in.gov.abdm.nmr.util.NMRConstants.*;
+import static in.gov.abdm.nmr.util.NMRConstants.INVALID_PINCODE;
+import static in.gov.abdm.nmr.util.NMRConstants.NOT_NULL_ERROR_MSG;
 
 @Data
 public class CommunicationAddressTO {
@@ -23,15 +26,19 @@ public class CommunicationAddressTO {
     @NotNull(message = NOT_NULL_ERROR_MSG)
     private StateTO state;
 
+    @Valid
     private DistrictTO district;
 
+    @Valid
     private VillagesTO village;
 
+    @Valid
     private SubDistrictTO subDistrict;
 
     @Size(min = 6, max = 6, message = INVALID_PINCODE)
     private String pincode;
 
+    @AddressLine
     private String addressLine1;
 
     private String house;

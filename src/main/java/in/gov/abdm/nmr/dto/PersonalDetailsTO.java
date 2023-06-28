@@ -9,11 +9,9 @@ import lombok.Data;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
 
-import static in.gov.abdm.nmr.util.NMRConstants.NOT_BLANK_ERROR_MSG;
 import static in.gov.abdm.nmr.util.NMRConstants.NOT_NULL_ERROR_MSG;
 
 @Data

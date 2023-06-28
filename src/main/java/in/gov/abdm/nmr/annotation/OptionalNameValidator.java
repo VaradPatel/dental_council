@@ -3,6 +3,8 @@ package in.gov.abdm.nmr.annotation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import static in.gov.abdm.nmr.util.NMRConstants.REGEX_FOR_NAME;
+
 public class OptionalNameValidator implements ConstraintValidator<OptionalName, String> {
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
@@ -10,6 +12,6 @@ public class OptionalNameValidator implements ConstraintValidator<OptionalName, 
             return true;
         if (s.isBlank())
             return false;
-        return s.matches("^[a-zA-Z]+(?:[\s.]+[a-zA-Z]+)*$");
+        return s.matches(REGEX_FOR_NAME);
     }
 }
