@@ -283,8 +283,8 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
 
         if (Objects.nonNull(dashboardRequestParamsTO.getUserGroupId())) {
             BigInteger groupId = dashboardRequestParamsTO.getUserGroupId();
-            List<Integer> userGroupStatus = Stream.of(dashboardRequestParamsTO.getUserGroupStatus().split(",")).map(Integer::parseInt).toList();
             if (!dashboardRequestParamsTO.getUserGroupStatus().contains("Total") && !groupId.equals(Group.HEALTH_PROFESSIONAL.getId())) {
+                List<Integer> userGroupStatus = Stream.of(dashboardRequestParamsTO.getUserGroupStatus().split(",")).map(Integer::parseInt).toList();
                 query.setParameter("userGroupStatus", userGroupStatus);
             }
         }
