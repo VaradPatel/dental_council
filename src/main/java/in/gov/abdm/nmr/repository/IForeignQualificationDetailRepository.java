@@ -13,5 +13,8 @@ public interface IForeignQualificationDetailRepository extends JpaRepository<For
     @Query(value = "SELECT * FROM foreign_qualification_details where user_id = :userId and is_verified !=" + NMRConstants.QUALIFICATION_STATUS_REJECTED + "", nativeQuery = true)
     List<ForeignQualificationDetails> getQualificationDetailsByUserId(BigInteger userId);
 
+    @Query(value = "SELECT * FROM foreign_qualification_details where user_id = :userId and is_verified =" + NMRConstants.QUALIFICATION_STATUS_APPROVED + "", nativeQuery = true)
+    List<ForeignQualificationDetails> getApprovedQualificationDetailsByUserId(BigInteger userId);
+
     ForeignQualificationDetails findByRequestId(String requestId);
 }

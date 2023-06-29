@@ -242,9 +242,9 @@ public class NMRConstants {
     public static final String DOCTOR_QUALIFICATION = "MBBS";
     public static final String DOCTOR_QUALIFICATION_PATTERN = "[^A-Za-z]+";
     public static final String EMAIL_VERIFICATION_TEMPLATE = "email-verification-link";
-    public static final String FETCH_COUNT_QUERY_FOR_SMC = "SELECT application_type_id as applicationTypeId, smc_status as profileStatus, count(*) as count FROM main.dashboard d join main.registration_details rd on rd.hp_profile_id = d.hp_profile_id JOIN main.hp_profile hp on rd.hp_profile_id = hp.id and hp.e_sign_status IN (1) where application_type_id in (1,2,3,4,7,8) and rd.state_medical_council_id =:" + SMC_PROFILE_ID + " group by application_type_id, smc_status";
+    public static final String FETCH_COUNT_QUERY_FOR_SMC = "SELECT application_type_id as applicationTypeId, smc_status as profileStatus, count(*) as count FROM main.dashboard d join main.registration_details rd on rd.hp_profile_id = d.hp_profile_id JOIN main.hp_profile hp on rd.hp_profile_id = hp.id and hp.e_sign_status IN (1) where application_type_id in (1,3,4,7,8) and rd.state_medical_council_id =:" + SMC_PROFILE_ID + " group by application_type_id, smc_status";
     public static final String FETCH_COUNT_QUERY_FOR_COLLEGE = "SELECT application_type_id as applicationTypeId, college_status as profileStatus, count(*) as count FROM main.dashboard d join main.qualification_details qd on qd.hp_profile_id = d.hp_profile_id and qd.request_id = d.request_id where application_type_id in (1,8) and qd.college_id =:" + COLLEGE_ID + " group by application_type_id, college_status";
-    public static final String FETCH_COUNT_QUERY_FOR_NMC = "SELECT application_type_id as applicationTypeId, nmc_status as profileStatus, count(*) as count FROM main.dashboard d where application_type_id in (1,2,3,4,7,8) group by application_type_id , nmc_status ";
+    public static final String FETCH_COUNT_QUERY_FOR_NMC = "SELECT application_type_id as applicationTypeId, nmc_status as profileStatus, count(*) as count FROM main.dashboard d where application_type_id in (1,3,4,7,8) group by application_type_id , nmc_status ";
     public static final String FETCH_COUNT_QUERY_FOR_NBE = "SELECT application_type_id as applicationTypeId, nbe_status as profileStatus, count(*) as count FROM main.dashboard d where application_type_id in (7) group by application_type_id , nbe_status ";
     public static final String NOT_YET_RECEIVED = "Not Yet Received";
     public static final String OPERATOR_MINUS = "-";
@@ -296,4 +296,12 @@ public class NMRConstants {
     public static final int QUALIFICATION_STATUS_PENDING = 0;
     public static final int QUALIFICATION_STATUS_APPROVED = 1;
     public static final int QUALIFICATION_STATUS_REJECTED = 2;
+
+    public static final String MASTER_CACHE_NAME ="nmr-master-data";
+    public static final long MASTER_CACHE_CRON_TIME = 6 * 60 * 60 * 1000;
+
+    public static final String REGEX_FOR_BIRTH_DATE = "^(((0[13-9]|1[012])[-/]?(0[1-9]|[12][0-9]|30)|(0[13578]|1[02])[-/]?31|02[-/]?(0[1-9]|1[0-9]|2[0-8]))[-/]?[0-9]{4}|02[-/]?29[-/]?([0-9]{2}(([2468][048]|[02468][48])|[13579][26])|([13579][26]|[02468][048]|0[0-9]|1[0-6])00))$";
+    public static final String REGEX_FOR_NAME = "\\b([a-zA-ZÀ-ÿ][-,a-zA-Z0-9. ']+[ ]*)+";
+    public static final String REGEX_FOR_REGISTRATION_NUMBER = "^[a-zA-Z0-9 !-@#:_)(]{1,100}$";
+
 }

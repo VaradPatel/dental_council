@@ -194,7 +194,8 @@ public class ApplicationServiceImpl implements IApplicationService {
         if (!workFlowService.isAnyActiveWorkflowForHealthProfessional(latestHpProfile.getId())) {
             log.debug("Proceeding to Reactivate the profile since the profile is currently in Suspended / Black Listed state");
 
-            if (Objects.equals(HpProfileStatus.SUSPENDED.getId(), latestHpProfile.getHpProfileStatus().getId()) || Objects.equals(HpProfileStatus.BLACKLISTED.getId(), hpProfile.getHpProfileStatus().getId())) {
+            if (Objects.equals(HpProfileStatus.SUSPENDED.getId(), latestHpProfile.getHpProfileStatus().getId())
+                    || Objects.equals(HpProfileStatus.BLACKLISTED.getId(), latestHpProfile.getHpProfileStatus().getId())) {
 
                 log.debug("Building Request id.");
                 String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
