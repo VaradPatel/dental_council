@@ -1,8 +1,11 @@
 package in.gov.abdm.nmr.dto;
 
+import in.gov.abdm.validator.AddressLine;
+import in.gov.abdm.validator.MobileNumber;
 import lombok.Data;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigInteger;
@@ -33,22 +36,26 @@ public class CommunicationAddressTO {
     @Size(min = 6, max = 6, message = INVALID_PINCODE)
     private String pincode;
 
-    //@AddressLine
+    @AddressLine
     private String addressLine1;
 
+    @AddressLine
     private String house;
 
+    @AddressLine
     private String street;
 
+    @AddressLine
     private String locality;
 
+    @AddressLine
     private String landmark;
 
     private String isSameAddress;
 
-    //@Email
+    @Email
     private String email;
-    //@MobileNumber
+    @MobileNumber
     private String mobile;
     private AddressTypeTO addressType;
     private String createdAt;

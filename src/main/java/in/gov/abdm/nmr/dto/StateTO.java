@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.dto;
 
+import in.gov.abdm.validator.State;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +18,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.NOT_NULL_ERROR_MSG;
 public class StateTO {
     @NotNull(message = NOT_NULL_ERROR_MSG)
     private BigInteger id;
-    //@State
+    @State
     private String name;
     private String isoCode;
 }
