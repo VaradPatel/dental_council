@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.dto;
 import in.gov.abdm.nmr.annotation.OptionalName;
 import in.gov.abdm.nmr.annotation.RegistrationNumber;
 import in.gov.abdm.nmr.util.NMRConstants;
+import in.gov.abdm.validator.*;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
@@ -11,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class NewHealthPersonalRequestTO {
 
-    //@MobileNumber
+    @MobileNumber
     private String mobileNumber;
 
     @NotBlank(message = NMRConstants.USERNAME_NOT_NULL)
@@ -39,7 +40,7 @@ public class NewHealthPersonalRequestTO {
 
     private String photo;
 
-    //@Gender
+    @Gender
     private String gender;
 
     @OptionalName
@@ -59,15 +60,15 @@ public class NewHealthPersonalRequestTO {
 
     private String villageTownCity;
 
-    //@District
+    @District
     private String subDist;
-    //@District
+    @District
     private String district;
 
-    //@State
+    @State
     private String state;
 
     private String postOffice;
-    //@AddressLine
+    @AddressLine
     private String address;
 }
