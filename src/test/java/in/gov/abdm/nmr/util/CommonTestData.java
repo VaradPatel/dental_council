@@ -793,7 +793,7 @@ CommonTestData {
         personalDetails.setCountryNationality(NationalityTO.builder().id(COUNTRY_ID).name(COUNTRY_NAME).build());
         personalDetails.setDateOfBirth(DATE_OF_BIRTH);
         personalDetails.setGender(GENDER);
-        personalDetails.setSchedule(ScheduleTO.builder().id(SCHEDULE_ID).name(SCHEDULE_NAME).build());
+        //personalDetails.setSchedule(ScheduleTO.builder().id(SCHEDULE_ID).name(SCHEDULE_NAME).build());
         personalDetails.setProfilePhoto(PROFILE_PHOTO);
         personalDetails.setFullName(PROFILE_DISPLAY_NAME);
         personalDetails.setIsNew(true);

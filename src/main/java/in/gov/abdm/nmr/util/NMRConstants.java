@@ -299,4 +299,9 @@ public class NMRConstants {
 
     public static final String MASTER_CACHE_NAME ="nmr-master-data";
     public static final long MASTER_CACHE_CRON_TIME = 6 * 60 * 60 * 1000;
+
+    public static final String REGEX_FOR_BIRTH_DATE = "^(((0[13-9]|1[012])[-/]?(0[1-9]|[12][0-9]|30)|(0[13578]|1[02])[-/]?31|02[-/]?(0[1-9]|1[0-9]|2[0-8]))[-/]?[0-9]{4}|02[-/]?29[-/]?([0-9]{2}(([2468][048]|[02468][48])|[13579][26])|([13579][26]|[02468][048]|0[0-9]|1[0-6])00))$";
+    public static final String REGEX_FOR_NAME = "\\b([a-zA-ZÀ-ÿ][-,a-zA-Z0-9. ']+[ ]*)+";
+    public static final String REGEX_FOR_REGISTRATION_NUMBER = "^[a-zA-Z0-9 !-@#:_)(]{1,100}$";
+
 }
