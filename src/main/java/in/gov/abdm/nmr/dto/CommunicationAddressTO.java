@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.dto;
 
+import in.gov.abdm.nmr.annotation.OptionalAddress;
 import in.gov.abdm.validator.AddressLine;
 import in.gov.abdm.validator.MobileNumber;
 import lombok.Data;
@@ -39,16 +40,16 @@ public class CommunicationAddressTO {
     @AddressLine
     private String addressLine1;
 
-    @AddressLine
+    @OptionalAddress
     private String house;
 
-    @AddressLine
+    @OptionalAddress
     private String street;
 
-    @AddressLine
+    @OptionalAddress
     private String locality;
 
-    @AddressLine
+    @OptionalAddress
     private String landmark;
 
     private String isSameAddress;
@@ -57,6 +58,8 @@ public class CommunicationAddressTO {
     private String email;
     @MobileNumber
     private String mobile;
+    @Valid
+    @NotNull(message = NOT_NULL_ERROR_MSG)
     private AddressTypeTO addressType;
     private String createdAt;
     private String updatedAt;
