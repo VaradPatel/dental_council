@@ -1,7 +1,6 @@
 package in.gov.abdm.nmr.dto;
 
 import in.gov.abdm.nmr.annotation.OptionalName;
-import in.gov.abdm.validator.Country;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +18,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.NOT_NULL_ERROR_MSG;
 public class CountryTO {
     @NotNull(message = NOT_NULL_ERROR_MSG)
     private BigInteger id;
-    @Country
+    //@Country
     private String name;
     @OptionalName
     private String nationality;

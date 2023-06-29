@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.dto;
 
-import in.gov.abdm.validator.District;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +15,6 @@ public class DistrictTO {
 
     private BigInteger id;
     private String isoCode;
-    @District
+    //@District
     private String name;
 }
