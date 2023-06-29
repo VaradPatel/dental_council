@@ -3,12 +3,9 @@ package in.gov.abdm.nmr.dto;
 import in.gov.abdm.nmr.annotation.Name;
 import in.gov.abdm.nmr.annotation.OptionalName;
 import in.gov.abdm.nmr.annotation.Salutation;
-import in.gov.abdm.validator.Gender;
-import in.gov.abdm.validator.MobileNumber;
 import lombok.Data;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
 
@@ -37,16 +34,16 @@ public class PersonalDetailsTO {
     @NotNull(message = NOT_NULL_ERROR_MSG)
     private NationalityTO countryNationality;
     private Date dateOfBirth;
-    @Gender
+    //@Gender
     private String gender;
     //private ScheduleTO schedule;
     private String profilePhoto;
     @Name
     private String fullName;
     private Boolean isNew;
-    @Email
+    //@Email
     private String email;
-    @MobileNumber
+    //@MobileNumber
     private String mobile;
 
 }
