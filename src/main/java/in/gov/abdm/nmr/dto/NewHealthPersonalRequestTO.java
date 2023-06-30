@@ -1,7 +1,7 @@
 package in.gov.abdm.nmr.dto;
 
-import in.gov.abdm.nmr.annotation.OptionalName;
-import in.gov.abdm.nmr.annotation.RegistrationNumber;
+import in.gov.abdm.nmr.annotation.*;
+import in.gov.abdm.nmr.annotation.PinCode;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.validator.*;
 import lombok.Data;
@@ -45,22 +45,22 @@ public class NewHealthPersonalRequestTO {
 
     @OptionalName
     private String name;
-
+    @PinCode
     private String pincode;
 
     private String birthdate;
+    @OptionalAddress
     private String house;
-
+    @OptionalAddress
     private String street;
-
+    @OptionalAddress
     private String landmark;
-
-
+    @OptionalAddress
     private String locality;
-
+    @OptionalAddress
     private String villageTownCity;
 
-    @District
+    @SubDistrict
     private String subDist;
     @District
     private String district;
@@ -69,6 +69,6 @@ public class NewHealthPersonalRequestTO {
     private String state;
 
     private String postOffice;
-    @AddressLine
+    @OptionalAddress
     private String address;
 }
