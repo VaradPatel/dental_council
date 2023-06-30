@@ -11,4 +11,6 @@ public class WorkDetailsTO {
     private Integer isUserCurrentlyWorking;
     private WorkStatusTO workStatus;
     private WorkNatureTO workNature;
+    private String reason;
+    private String remark;
 }

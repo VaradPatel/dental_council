@@ -30,6 +30,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 
+import static in.gov.abdm.nmr.util.NMRConstants.QUALIFICATION_STATUS_REJECTED;
 import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
 
 @Service
@@ -77,6 +78,9 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
     @Autowired
     private IQualificationDetailRepository qualificationDetailRepository;
+
+    @Autowired
+    private IForeignQualificationDetailRepository foreignQualificationDetailRepository;
 
     @Autowired
     INotificationService notificationService;
@@ -155,29 +159,46 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).orElseThrow(WorkFlowException::new));
                 workFlow.setRemarks(requestTO.getRemarks());
                 workFlow.setUserId(user);
-                log.debug("Work Flow Updation Successful");
+                log.debug("Work Flow Updating Successful");
             } else {
-                throw new WorkFlowException(NMRError.NEXT_GROUP_NOT_FOUND.getCode(), NMRError.NEXT_GROUP_NOT_FOUND.getMessage());
+                throw new WorkFlowException(NMRError.WORK_FLOW_EXCEPTION.getCode(), NMRError.WORK_FLOW_EXCEPTION.getMessage());
             }
         }
-        if (isLastStepOfWorkFlow(iNextGroup) &&
-                APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES.contains(workFlow.getWorkFlowStatus().getId())) {
-            log.debug("Performing Post Workflow updates since either the Last step of Workflow is reached or work_flow_status is Approved/Suspended/Blacklisted ");
-            workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
-        }
+
         log.debug("Saving an entry in the work_flow_audit table");
         iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
         log.debug("Initiating a notification to indicate the change of status.");
 
         updateDashboardDetail(requestTO, workFlow, iNextGroup, dashboard);
-        try {
-            if (workFlow.getUserId().isSmsNotificationEnabled() && workFlow.getUserId().isEmailNotificationEnabled()) {
-                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), workFlow.getHpProfile().getMobileNumber(), workFlow.getHpProfile().getEmailId());
-            } else if (workFlow.getUserId().isSmsNotificationEnabled()) {
-                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), workFlow.getHpProfile().getMobileNumber(), null);
 
-            } else if (workFlow.getUserId().isEmailNotificationEnabled()) {
-                notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), null, workFlow.getHpProfile().getEmailId());
+        if (isLastStepOfWorkFlow(iNextGroup)) {
+            if (APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES.contains(workFlow.getWorkFlowStatus().getId())) {
+                log.debug("Performing Post Workflow updates since either the Last step of Workflow is reached or work_flow_status is Approved/Suspended/Blacklisted ");
+                workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
+            } else if (ApplicationType.QUALIFICATION_ADDITION.getId().equals(workFlow.getApplicationType().getId())
+                    && WorkflowStatus.REJECTED.getId().equals(workFlow.getWorkFlowStatus().getId())) {
+
+                QualificationDetails qualificationDetails = qualificationDetailRepository.findByRequestId(workFlow.getRequestId());
+                if(qualificationDetails!=null) {
+                    qualificationDetails.setIsVerified(NMRConstants.QUALIFICATION_STATUS_REJECTED);
+                }
+
+                ForeignQualificationDetails foreignQualificationDetails = foreignQualificationDetailRepository.findByRequestId(requestTO.getRequestId());
+                if(foreignQualificationDetails!=null) {
+                    foreignQualificationDetails.setIsVerified(QUALIFICATION_STATUS_REJECTED);
+                }
+            }
+        }
+        try {
+            if(!ApplicationType.HP_MODIFICATION.getId().equals(workFlow.getApplicationType().getId())) {
+                if (hpProfile.getUser().isSmsNotificationEnabled() && hpProfile.getUser().isEmailNotificationEnabled()) {
+                    notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), hpProfile.getUser().getEmail());
+                } else if (hpProfile.getUser().isSmsNotificationEnabled()) {
+                    notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), null);
+
+                } else if (hpProfile.getUser().isEmailNotificationEnabled()) {
+                    notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), null, hpProfile.getUser().getEmail());
+                }
             }
         } catch (Exception exception) {
             log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
@@ -202,7 +223,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         return verifier;
     }
 
-    private void updateDashboardDetail(WorkFlowRequestTO requestTO, WorkFlow workFlow, INextGroup iNextGroup, Dashboard dashboard) {
+    private void updateDashboardDetail(WorkFlowRequestTO requestTO, WorkFlow workFlow, INextGroup iNextGroup, Dashboard dashboard) throws InvalidRequestException {
         dashboard.setApplicationTypeId(requestTO.getApplicationTypeId());
         dashboard.setRequestId(requestTO.getRequestId());
         dashboard.setHpProfileId(requestTO.getHpProfileId());
@@ -229,7 +250,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
     }
 
-    private static void setDashboardStatus(BigInteger actionPerformedId, BigInteger userGroup, Dashboard dashboard) {
+    private static void setDashboardStatus(BigInteger actionPerformedId, BigInteger userGroup, Dashboard dashboard) throws InvalidRequestException {
         BigInteger dashboardStatusId = DashboardStatus.getDashboardStatus(Action.getAction(actionPerformedId).getStatus()).getId();
         if (userGroup.equals(Group.SMC.getId())) {
             dashboard.setSmcStatus(dashboardStatusId);

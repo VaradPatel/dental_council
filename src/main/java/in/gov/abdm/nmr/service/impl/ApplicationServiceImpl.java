@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.service.impl;
 
+import in.gov.abdm.minio.connector.service.S3ServiceImpl;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.enums.ApplicationSubType;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.enums.*;
@@ -19,12 +19,15 @@ import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -140,6 +143,18 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Autowired
     private IWorkFlowAuditRepository iWorkFlowAuditRepository;
 
+    @Autowired
+    private IWorkFlowService workFlowService;
+
+    @Value("${feature.toggle.minio.enable}")
+    private boolean minioEnable;
+
+    @Autowired
+    private UserAttachmentsRepository userAttachmentsRepository;
+
+    @Autowired
+    S3ServiceImpl s3Service;
+
     private static final Map<String, String> REACTIVATION_SORT_MAPPINGS = Map.of("id", " hp.id", "name", " hp.full_name", "createdAt", " wf.created_at", "reactivationDate", " wf.start_date", "suspensionType", " hp.hp_profile_status_id", "remarks", " wf.remarks");
 
     /**
@@ -155,12 +170,13 @@ public class ApplicationServiceImpl implements IApplicationService {
         log.info("In ApplicationServiceImpl: suspendRequest method ");
 
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
-        if (Objects.equals(HpProfileStatus.APPROVED.getId(), hpProfile.getHpProfileStatus().getId())) {
+        HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
+        if (Objects.equals(HpProfileStatus.APPROVED.getId(), latestHpProfile.getHpProfileStatus().getId())) {
             log.debug("Building a new request_id");
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
-            initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
+            initiateWorkFlow(applicationRequestTo, requestId, latestHpProfile);
             SuspendRequestResponseTo suspendRequestResponseTo = new SuspendRequestResponseTo();
-            suspendRequestResponseTo.setProfileId(hpProfile.getId().toString());
+            suspendRequestResponseTo.setProfileId(latestHpProfile.getId().toString());
             suspendRequestResponseTo.setMessage(SUCCESS_RESPONSE);
 
             log.info("ApplicationServiceImpl: suspendRequest method: Execution Successful. ");
@@ -179,37 +195,62 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @return a string indicating the result of the reactivate request.
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
+    @Transactional
     @Override
-    public ReactivateRequestResponseTo reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
+    public ReactivateRequestResponseTo reactivateRequest(MultipartFile reactivationFile, ApplicationRequestTo applicationRequestTo) throws WorkFlowException, InvalidRequestException, IOException {
 
         log.info("In ApplicationServiceImpl: reactivateRequest method ");
 
         HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
+        HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
         ReactivateRequestResponseTo reactivateRequestResponseTo = new ReactivateRequestResponseTo();
-        if (Objects.equals(HpProfileStatus.SUSPENDED.getId(), hpProfile.getHpProfileStatus().getId()) || Objects.equals(HpProfileStatus.BLACKLISTED.getId(), hpProfile.getHpProfileStatus().getId())) {
+        if (!workFlowService.isAnyActiveWorkflowForHealthProfessional(latestHpProfile.getId())) {
             log.debug("Proceeding to Reactivate the profile since the profile is currently in Suspended / Black Listed state");
 
-            log.debug("Building Request id.");
-            String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
-            WorkFlow workFlow = iWorkFlowRepository.findLastWorkFlowForHealthProfessional(hpProfile.getId());
-            if (Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
-                log.debug("Proceeding to reactivate through SMC since the profile was suspended by NMC");
-                applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.REACTIVATION_THROUGH_SMC.getId());
-                reactivateRequestResponseTo.setSelfReactivation(false);
-            }else {
-                log.debug("Proceeding to initiate self reactivation since the profile wasn't suspended by NMC");
-                applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.SELF_REACTIVATION.getId());
-                reactivateRequestResponseTo.setSelfReactivation(true);
+            if (Objects.equals(HpProfileStatus.SUSPENDED.getId(), latestHpProfile.getHpProfileStatus().getId())
+                    || Objects.equals(HpProfileStatus.BLACKLISTED.getId(), latestHpProfile.getHpProfileStatus().getId())) {
+
+                log.debug("Building Request id.");
+                String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
+                WorkFlow workFlow = iWorkFlowRepository.findLastWorkFlowForHealthProfessional(latestHpProfile.getId());
+                if (Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
+                    log.debug("Proceeding to reactivate through SMC since the profile was suspended by NMC");
+                    applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.REACTIVATION_THROUGH_SMC.getId());
+                    reactivateRequestResponseTo.setSelfReactivation(false);
+                } else {
+                    log.debug("Proceeding to initiate self reactivation since the profile wasn't suspended by NMC");
+                    applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.SELF_REACTIVATION.getId());
+                    reactivateRequestResponseTo.setSelfReactivation(true);
+                }
+                initiateWorkFlow(applicationRequestTo, requestId, latestHpProfile);
+                reactivateRequestResponseTo.setProfileId(latestHpProfile.getId().toString());
+                reactivateRequestResponseTo.setMessage(SUCCESS_RESPONSE);
+
+                UserAttachments userAttachment=new UserAttachments();
+                userAttachment.setUserId(hpProfile.getUser().getId());
+                userAttachment.setRequestId(requestId);
+                userAttachment.setAttachmentTypeId(AttachmentType.REACTIVATION.getId());
+                userAttachment.setName(reactivationFile != null ? reactivationFile.getOriginalFilename() : null);
+                if (reactivationFile != null) {
+                    if (minioEnable) {
+                        String fileName = hpProfile.getId() + "_" + reactivationFile.getOriginalFilename();
+                        String path = "NMR/HP/" + hpProfile.getUser().getId() + "/Reactivation/" + fileName;
+                        s3Service.uploadFile(path, reactivationFile);
+                        userAttachment.setFilePath(path);
+
+                    } else {
+                        userAttachment.setFileBytes(reactivationFile != null ? reactivationFile.getBytes() : null);
+                    }
+                }
+                userAttachmentsRepository.save(userAttachment);
+                log.info("ApplicationServiceImpl: reactivateRequest method: Execution Successful. ");
+
+                return reactivateRequestResponseTo;
+            } else {
+                throw new WorkFlowException(NMRError.PROFILE_NOT_SUSPEND.getCode(), NMRError.PROFILE_NOT_SUSPEND.getMessage());
             }
-            initiateWorkFlow(applicationRequestTo, requestId, hpProfile);
-            reactivateRequestResponseTo.setProfileId(hpProfile.getId().toString());
-            reactivateRequestResponseTo.setMessage(SUCCESS_RESPONSE);
-
-            log.info("ApplicationServiceImpl: reactivateRequest method: Execution Successful. ");
-
-            return reactivateRequestResponseTo;
         } else {
-            throw new WorkFlowException(NMRError.PROFILE_NOT_SUSPEND.getCode(), NMRError.PROFILE_NOT_SUSPEND.getMessage());
+            throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
         }
     }
 
@@ -261,7 +302,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                         reactivateHealthProfessionalQueryParam.setSearch(value);
                         break;
                     default:
-                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_REACTIVATE_LICENSE.getMessage());
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA.getCode(), NMRError.INVALID_SEARCH_CRITERIA.getMessage());
                 }
             } else {
                 throw new InvalidRequestException(NMRError.MISSING_SEARCH_VALUE.getCode(), NMRError.MISSING_SEARCH_VALUE.getMessage());
@@ -366,7 +407,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                         applicationRequestParamsTo.setYearOfRegistration(value);
                         break;
                     default:
-                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_TRACK_STATUS_AND_APPLICATION.getMessage());
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA.getCode(), NMRError.INVALID_SEARCH_CRITERIA.getMessage());
                 }
             } else {
                 throw new InvalidRequestException(NMRError.MISSING_SEARCH_VALUE.getCode(), NMRError.MISSING_SEARCH_VALUE.getMessage());
@@ -473,7 +514,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         columnToSortMap.put("hpProfileId", " calculate.hp_profile_id");
         columnToSortMap.put("requestId", " calculate.request_id");
         columnToSortMap.put("registrationNo", " rd.registration_no");
-        columnToSortMap.put("createdAt", " rd.created_at");
+        columnToSortMap.put("createdAt", " d.created_at");
         columnToSortMap.put("councilName", " stmc.name");
         columnToSortMap.put("applicantFullName", " hp.full_name");
         columnToSortMap.put("applicationTypeId", " application_type_id");

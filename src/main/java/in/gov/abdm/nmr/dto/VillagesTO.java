@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.dto;
 
+import in.gov.abdm.nmr.annotation.Village;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,5 +15,6 @@ import java.math.BigInteger;
 public class VillagesTO {
 
     private BigInteger id;
+    @Village
     private String name;
 }

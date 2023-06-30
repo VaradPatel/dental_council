@@ -10,6 +10,9 @@ import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -37,12 +40,16 @@ public class OtpServiceImpl implements IOtpService {
     private INotificationService notificationService;
 
     private RsaUtil rsaUtil;
+    
+    private boolean otpEnabled;
 
-    public OtpServiceImpl(IOtpDaoService otpDaoService, IUserDaoService userDaoService, INotificationService notificationService, RsaUtil rsaUtil) {
+    public OtpServiceImpl(IOtpDaoService otpDaoService, IUserDaoService userDaoService, INotificationService notificationService, RsaUtil rsaUtil, //
+                          @Value("${nmr.otp.enabled}") boolean otpEnabled) {
         this.otpDaoService = otpDaoService;
         this.userDaoService = userDaoService;
         this.notificationService = notificationService;
         this.rsaUtil = rsaUtil;
+        this.otpEnabled = otpEnabled;
     }
 
     /**
@@ -123,7 +130,14 @@ public class OtpServiceImpl implements IOtpService {
      */
     @Override
     public OtpValidateResponseTo validateOtp(OtpValidateRequestTo otpValidateRequestTo, boolean callInternal) throws OtpException, GeneralSecurityException {
+        if (!otpEnabled) {
+            return new OtpValidateResponseTo(new OtpValidateMessageTo(NMRConstants.SUCCESS_RESPONSE, null, null));
+        }
+        
         String transactionId = otpValidateRequestTo.getTransactionId();
+        if(StringUtils.isBlank(transactionId)) {
+            throw new OtpException(NMRError.INVALID_OTP_TRANSACTION_ID.getCode(), NMRError.INVALID_OTP_TRANSACTION_ID.getMessage());
+        }
         Otp otpDetails = otpDaoService.findById(transactionId);
 
         if (otpDetails == null || otpDetails.isExpired()) {
@@ -153,11 +167,20 @@ public class OtpServiceImpl implements IOtpService {
 
     @Override
     public boolean isOtpVerified(String id) {
+        if (!otpEnabled) {
+            return true;
+        }
+        
         Otp otp = otpDaoService.findById(id);
         if (otp == null) {
             return false;
         }
         otpDaoService.deleteById(id);
         return otp.isExpired();
+    }
+    
+    @Override
+    public boolean isOtpEnabled() {
+        return otpEnabled;
     }
 }

@@ -14,5 +14,6 @@ public interface IRegistrationDetailRepository extends JpaRepository<Registratio
     @Query(value = "SELECT hp_profile_id FROM registration_details where registration_no =:registrationNo", nativeQuery = true)
     List<BigInteger> fetchHpProfileIdByRegistrationNumber(String registrationNo);
 
-    boolean existsByRegistrationNoAndStateMedicalCouncilId(String registrationNo,BigInteger stateMedicalCouncilId);
+    @Query(value = "select * from registration_details rd where rd.registration_no =:registrationNo and rd.state_medical_council_id =:stateMedicalCouncilId order by updated_at desc limit 1  ",nativeQuery = true)
+    RegistrationDetails getRegistrationDetailsByRegistrationNoAndStateMedicalCouncilId(String registrationNo,BigInteger stateMedicalCouncilId);
 }

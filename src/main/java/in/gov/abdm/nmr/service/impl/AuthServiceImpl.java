@@ -4,10 +4,13 @@ import static in.gov.abdm.nmr.common.CustomHeaders.ACCESS_TOKEN;
 import static in.gov.abdm.nmr.common.CustomHeaders.REFRESH_TOKEN;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletResponse;
 
-import in.gov.abdm.nmr.enums.ESignStatus;
+import in.gov.abdm.nmr.entity.WorkFlow;
+import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.IWorkFlowRepository;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +24,8 @@ import in.gov.abdm.nmr.dto.SessionResponseTo;
 import in.gov.abdm.nmr.entity.CollegeProfile;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.enums.ESignStatus;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
-import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.security.jwt.JwtTypeEnum;
 import in.gov.abdm.nmr.security.jwt.JwtUtil;
@@ -49,6 +52,10 @@ public class AuthServiceImpl implements IAuthService {
 
     @Autowired
     GatewayFClient gatewayFClient;
+    @Autowired
+    private IWorkFlowRepository workFlowRepository;
+    @Autowired
+    private IHpProfileRepository iHpProfileRepository;
 
     public AuthServiceImpl(JwtUtil jwtUtil, IUserDaoService userDetailDaoService, IHpProfileDaoService hpProfileService, ICollegeProfileDaoService collegeProfileDaoService, ISmcProfileDaoService smcProfileDaoService, INmcDaoService nmcDaoService, INbeDaoService nbeDaoService) {
         this.jwtUtil = jwtUtil;
@@ -87,8 +94,23 @@ public class AuthServiceImpl implements IAuthService {
             if (hp != null) {
                 loginResponseTO.setProfileId(hp.getId());
                 loginResponseTO.setHpRegistered(StringUtils.isBlank(hp.getNmrId()));
-                loginResponseTO.setBlacklisted(HpProfileStatus.BLACKLISTED.getId() == hp.getHpProfileStatus().getId() || HpProfileStatus.SUSPENDED.getId() == hp.getHpProfileStatus().getId());
                 loginResponseTO.setEsignStatus(hp.getESignStatus() != null ? hp.getESignStatus() : ESignStatus.PROFILE_NOT_ESIGNED.getId());
+                HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hp.getRegistrationId());
+                if (latestHpProfile != null) {
+                    loginResponseTO.setBlacklisted(Objects.equals(HpProfileStatus.BLACKLISTED.getId(), latestHpProfile.getHpProfileStatus().getId()) || Objects.equals(HpProfileStatus.SUSPENDED.getId(), latestHpProfile.getHpProfileStatus().getId()));
+                    loginResponseTO.setHpProfileStatusId(latestHpProfile.getHpProfileStatus() != null ? latestHpProfile.getHpProfileStatus().getId() : null);
+                    WorkFlow workFlow = workFlowRepository.findLastWorkFlowForHealthProfessional(latestHpProfile.getId());
+                    if (workFlow != null) {
+                        loginResponseTO.setWorkFlowStatusId(workFlow.getWorkFlowStatus().getId());
+                    }
+                } else {
+                    loginResponseTO.setBlacklisted(Objects.equals(HpProfileStatus.BLACKLISTED.getId(), hp.getHpProfileStatus().getId()) || Objects.equals(HpProfileStatus.SUSPENDED.getId(), hp.getHpProfileStatus().getId()));
+                    loginResponseTO.setHpProfileStatusId(hp.getHpProfileStatus() != null ? hp.getHpProfileStatus().getId() : null);
+                    WorkFlow workFlow = workFlowRepository.findLastWorkFlowForHealthProfessional(hp.getId());
+                    if (workFlow != null) {
+                        loginResponseTO.setWorkFlowStatusId(workFlow.getWorkFlowStatus().getId());
+                    }
+                }
             }
         } else if (UserTypeEnum.COLLEGE.getId().equals(user.getUserType().getId())) {
             BigInteger userSubTypeId = user.getUserSubType().getId();

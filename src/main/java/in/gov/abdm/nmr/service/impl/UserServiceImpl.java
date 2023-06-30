@@ -4,6 +4,8 @@ import java.math.BigInteger;
 import java.nio.file.AccessDeniedException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -145,17 +147,17 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public SMCProfileTO updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException {
+    public SMCProfileTO updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException {
         return smcMapper.smcProfileToDto(userDaoService.updateSmcProfile(id, smcProfileTO));
     }
 
     @Override
-    public NmcProfileTO updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException {
+    public NmcProfileTO updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException {
         return nmcMapper.nmcProfileToDto(userDaoService.updateNmcProfile(id, nmcProfileTO));
     }
 
     @Override
-    public NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException {
+    public NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException, InvalidRequestException {
         return nbeMapper.nbeProfileToDto(userDaoService.updateNbeProfile(id, nbeProfileTO));
     }
 
@@ -179,7 +181,7 @@ public class UserServiceImpl implements IUserService {
      * @return ResponseMessageTo with message
      */
     @Override
-    public ResponseMessageTo verifyEmail(VerifyEmailTo verifyEmailTo) {
+    public ResponseMessageTo verifyEmail(VerifyEmailTo verifyEmailTo) throws InvalidRequestException {
         try {
 
             resetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
@@ -190,19 +192,20 @@ public class UserServiceImpl implements IUserService {
 
                 if (resetToken.getExpiryDate().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0) {
 
-                    return new ResponseMessageTo(NMRConstants.LINK_EXPIRED);
+                    throw new InvalidRequestException(NMRConstants.LINK_EXPIRED);
                 }
 
                 User user = userDaoService.findByUsername(resetToken.getUserName());
                 user.setEmailVerified(true);
+                user.setEmailNotificationEnabled(true);
                 userDaoService.save(user);
                 return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
 
             } else {
-                return new ResponseMessageTo(NMRConstants.LINK_EXPIRED);
+                throw new InvalidRequestException(NMRConstants.LINK_EXPIRED);
             }
         } catch (Exception e) {
-            return new ResponseMessageTo(e.getLocalizedMessage());
+            throw new InvalidRequestException(e.getLocalizedMessage());
         }
     }
 
@@ -286,7 +289,7 @@ public class UserServiceImpl implements IUserService {
                         break;
                     default:
                         log.error("unable to complete fetch user details process due Invalid Search Criteria ");
-                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL.getCode(), NMRError.INVALID_SEARCH_CRITERIA_FOR_GET_CARD_DETAIL.getMessage());
+                        throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA.getCode(), NMRError.INVALID_SEARCH_CRITERIA.getMessage());
                 }
             } else {
                 log.error("unable to complete fetch user details process due missing search value.");
@@ -304,6 +307,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void unlockUser(BigInteger userId) {
         userDaoService.unlockUser(userId);
+    }
+
+    @Override
+    public List<String> getUserNames(String mobileNumber, BigInteger userType) {
+        return userDaoService.getUserNames(mobileNumber, userType);
     }
 
     private void validateContactDetails(String emailId, String mobileNumber) throws NmrException {

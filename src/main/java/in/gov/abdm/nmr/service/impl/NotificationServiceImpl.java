@@ -104,7 +104,6 @@ public class NotificationServiceImpl implements INotificationService {
 
         if (NotificationType.EMAIL.getNotificationType().equals(type)) {
 
-
             Template template = getMessageTemplate(NMRConstants.EMAIL_VERIFIED_MESSAGE_PROPERTIES_KEY);
 
             String message = new TemplatedStringBuilder(template.getMessage())
@@ -112,7 +111,7 @@ public class NotificationServiceImpl implements INotificationService {
                     .replace(NMRConstants.TEMPLATE_VAR2, NMRConstants.MESSAGE_SENDER)
                     .finish();
 
-            return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_VERIFICATION_SUCCESSFUL_SUBJECT, message, receiver, receiver, NMRConstants.EMAIL_VERIFIED_MESSAGE_PROPERTIES_KEY);
+            return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_VERIFICATION_SUCCESSFUL_SUBJECT, message, null, receiver, NMRConstants.EMAIL_VERIFIED_MESSAGE_PROPERTIES_KEY);
 
         } else if (NotificationType.SMS.getNotificationType().equals(type)) {
             Template template = getMessageTemplate(NMRConstants.SMS_VERIFIED_MESSAGE_PROPERTIES_KEY);
@@ -122,7 +121,7 @@ public class NotificationServiceImpl implements INotificationService {
                     .replace(NMRConstants.TEMPLATE_VAR2, NMRConstants.MESSAGE_SENDER)
                     .finish();
 
-            return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SUBJECT, message, receiver, receiver, NMRConstants.SMS_VERIFIED_MESSAGE_PROPERTIES_KEY);
+            return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SUBJECT, message, receiver, null, NMRConstants.SMS_VERIFIED_MESSAGE_PROPERTIES_KEY);
         }
         return new ResponseMessageTo(NMRConstants.NO_SUCH_OTP_TYPE);
     }
@@ -224,7 +223,7 @@ public class NotificationServiceImpl implements INotificationService {
             template = notificationDBFClient.getTemplateById(Timestamp.valueOf(LocalDateTime.now()), UUID.randomUUID().toString(), new BigInteger(templateId));
 
         } catch (NoSuchMessageException noSuchMessageException) {
-            throw new TemplateException(NMRError.TEMPLATE_ID_NOT_FOUND_IN_PROPERTIES.getCode(), NMRError.OTP_INVALID.getMessage());
+            throw new TemplateException(NMRError.NOT_FOUND_EXCEPTION.getCode(), NMRError.NOT_FOUND_EXCEPTION.getMessage());
         }
 
         if (null == template) {

@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.repository.impl;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestParamsTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationTo;
+import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.DashboardStatus;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;
@@ -117,7 +118,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
 
         sb.append(FETCH_TRACK_DETAILS_QUERY);
 
-        sb.append(" where D.hp_profile_id IS NOT NULL ");
+        sb.append(" where D.hp_profile_id IS NOT NULL and d.application_type_id !="+ ApplicationType.HP_MODIFICATION.getId());
 
         if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
             StringBuilder hpIds = new StringBuilder();
@@ -147,33 +148,33 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      * Retrieves the details of health professional applications requests based on the provided parameters.
      *
      * @param healthProfessionalApplicationRequestParamsTo - object containing the filter criteria for fetching application details
-     * @param pagination                                   - object for pagination
+     * @param pageable                                   - object for pagination
      * @return the HealthProfessionalApplicationResponseTo object representing the response object
      * which contains all the details used to track the health professionals who have
      * raised a request
      */
     @Override
-    public HealthProfessionalApplicationResponseTo fetchTrackApplicationDetails(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, Pageable pagination, List<BigInteger> hpProfiles) {
+    public HealthProfessionalApplicationResponseTo fetchTrackApplicationDetails(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, Pageable pageable, List<BigInteger> hpProfiles) {
         HealthProfessionalApplicationResponseTo healthProfessionalApplicationResponseTo = new HealthProfessionalApplicationResponseTo();
         healthProfessionalApplicationResponseTo.setTotalNoOfRecords(BigInteger.ZERO);
         List<HealthProfessionalApplicationTo> healthProfessionalApplicationToList = new ArrayList<>();
 
         Query query = entityManager.createNativeQuery(TRACK_APPLICATION.apply(healthProfessionalApplicationRequestParamsTo, hpProfiles));
 
-        query.setFirstResult((pagination.getPageNumber() - 1) * pagination.getPageSize());
-        query.setMaxResults(pagination.getPageSize());
+        query.setFirstResult(pageable.getPageNumber() != 0 ?(pageable.getPageNumber() - 1) * pageable.getPageSize() : 0);
+        query.setMaxResults(pageable.getPageSize());
 
         List<Object[]> results = query.getResultList();
         results.forEach(result -> {
             HealthProfessionalApplicationTo healthProfessionalApplicationTo = new HealthProfessionalApplicationTo();
             healthProfessionalApplicationTo.setDoctorStatus(result[0] != null ? WorkflowStatus.getWorkflowStatus((BigInteger) result[0]).getDescription() : "");
-            healthProfessionalApplicationTo.setSmcStatus(result[1] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[1]).getStatus() : NOT_YET_RECEIVED);
+            healthProfessionalApplicationTo.setSmcStatus(result[1] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[1]).getSmcStatus() : NOT_YET_RECEIVED);
             healthProfessionalApplicationTo.setNmcStatus(result[2] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[2]).getStatus() : NOT_YET_RECEIVED);
             healthProfessionalApplicationTo.setNbeStatus(result[3] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[3]).getStatus() : NOT_YET_RECEIVED);
             healthProfessionalApplicationTo.setHpProfileId((BigInteger) result[4]);
             healthProfessionalApplicationTo.setRequestId((String) result[5]);
             healthProfessionalApplicationTo.setRegistrationNo((String) result[6]);
-            healthProfessionalApplicationTo.setCreatedAt((String) result[7]);
+            healthProfessionalApplicationTo.setCreatedAt(((Timestamp) result[7]).toString());
             healthProfessionalApplicationTo.setCouncilName((String) result[8]);
             healthProfessionalApplicationTo.setApplicantFullName((String) result[9]);
             healthProfessionalApplicationTo.setApplicationTypeId((BigInteger) result[10]);
@@ -184,7 +185,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setEmailId((String) result[15]);
             healthProfessionalApplicationTo.setMobileNumber((String) result[16]);
             healthProfessionalApplicationTo.setNmrId((String)result[17]);
-            healthProfessionalApplicationTo.setYearOfRegistration(((Timestamp) result[18]).toString());
+            healthProfessionalApplicationTo.setYearOfRegistration(result[18] != null ? ((Timestamp) result[18]).toString() : null);
             healthProfessionalApplicationTo.setCollegeStatus(result[19] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[19]).getStatus() : NOT_YET_RECEIVED);
             healthProfessionalApplicationResponseTo.setTotalNoOfRecords((BigInteger) result[20]);
             healthProfessionalApplicationToList.add(healthProfessionalApplicationTo);

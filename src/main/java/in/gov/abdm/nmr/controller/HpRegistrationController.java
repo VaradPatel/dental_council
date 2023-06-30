@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
@@ -56,7 +58,7 @@ public class HpRegistrationController {
     @GetMapping(path = "health-professional", produces = MediaType.APPLICATION_JSON_VALUE)
     public SmcRegistrationDetailResponseTO fetchSmcRegistrationDetail(
             @RequestParam("smcId") Integer councilId,
-            @RequestParam("registrationNumber") String registrationNumber) throws NoDataFoundException {
+            @RequestParam("registrationNumber") @NotBlank @Size(max = 100) String registrationNumber) throws NoDataFoundException {
         return hpService.fetchSmcRegistrationDetail(councilId, registrationNumber);
     }
 
@@ -200,8 +202,7 @@ public class HpRegistrationController {
      * @throws WorkFlowException       If an error occurs during the processing of the request.
      */
     @GetMapping(path = "health-professional/{healthProfessionalId}/work-profile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId)
-            throws InvalidRequestException, WorkFlowException, NmrException {
+    public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) {
         return hpService.getHealthProfessionalWorkDetail(hpProfileId);
     }
 

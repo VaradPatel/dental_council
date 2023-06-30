@@ -70,6 +70,7 @@ public class NMRConstants {
     public static final String USER_NOT_FOUND = "User not found";
     public static final String EMAIL_ALREADY_VERIFIED = "This email is already verified";
     public static final String EMAIL_USED_BY_OTHER_USER = "Email is already used by other user";
+    public static final String MOBILE_USED_BY_OTHER_USER = "Mobile number is already used by other user";
     public static final String COLLEGE_CONSTANT = "COLLEGE";
     public static final String USERNAME_ALREADY_EXISTS = "User with this username already exists";
     public static final String MOBILE_NUMBER_ALREADY_EXISTS = "User with this mobile number already exists";
@@ -102,10 +103,6 @@ public class NMRConstants {
     public static final String TEMPORARY_SUSPENSION_APPLICATION_TYPE_ID = "3";
     public static final String PERMANENT_SUSPENSION_APPLICATION_TYPE_ID = "4";
     public static final String TEMPORARY_AND_PERMANENT_SUSPENSION_APPLICATION_TYPE_ID = "3,4";
-
-    public static final String PENDING = "Pending";
-
-    public static final String APPROVED = "Approved";
     public static final String TOTAL_HP_REGISTRATION_REQUESTS = "Total Registration Requests";
     public static final String TOTAL_HP_MODIFICATION_REQUESTS = "Total Modification Requests";
     public static final String TOTAL_TEMPORARY_SUSPENSION_REQUESTS = "Total Temporary Suspension Requests";
@@ -166,9 +163,9 @@ public class NMRConstants {
             "AND a.name = :" + APPLICATION_TYPE_NAME + " " +
             "AND ws.name = :" + WORK_FLOW_STATUS + " ";
 
-    public static final String FETCH_CARD_DETAILS_QUERY = "select d.work_flow_status_id doctor_status, smc_status, nmc_status, nbe_status, d.hp_profile_id, d.request_id, rd.registration_no, rd.created_at, stmc.name, hp.full_name,  work_flow_status_id,(SELECT CASE WHEN ( wf.work_flow_status_id in(2, 4, 5, 6) ) THEN DATE_PART( 'day', (wf.updated_at - wf.created_at) ) WHEN ( wf.work_flow_status_id in(1, 3) ) THEN DATE_PART( 'day', (now() - wf.created_at) ) END FROM main.work_flow wf where wf.request_id = d.request_id ) as pendency, hp.gender, hp.email_id, hp.mobile_number, hp.nmr_id, rd.registration_date, college_status,d.application_type_id, count(*) OVER() AS total_count from main.dashboard d INNER JOIN main.registration_details as rd on rd.hp_profile_id = d.hp_profile_id INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id and hp.e_sign_status IN(1,2,3) ";
+    public static final String FETCH_CARD_DETAILS_QUERY = "select d.work_flow_status_id doctor_status, smc_status, nmc_status, nbe_status, d.hp_profile_id, d.request_id, rd.registration_no, rd.created_at, stmc.name, hp.full_name,  work_flow_status_id,(SELECT CASE WHEN ( wf.work_flow_status_id in(2, 4, 5, 6) ) THEN DATE_PART( 'day', (wf.updated_at - wf.created_at) ) WHEN ( wf.work_flow_status_id in(1, 3) ) THEN DATE_PART( 'day', (now() - wf.created_at) ) END FROM main.work_flow wf where wf.request_id = d.request_id ) as pendency, hp.gender, hp.email_id, hp.mobile_number, hp.nmr_id, rd.registration_date, college_status,d.application_type_id, count(*) OVER() AS total_count from main.dashboard d INNER JOIN main.registration_details as rd on rd.hp_profile_id = d.hp_profile_id INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id and hp.e_sign_status IN (1) ";
 
-    public static final String FETCH_TRACK_DETAILS_QUERY = "select d.work_flow_status_id doctor_status, smc_status, nmc_status, nbe_status, d.hp_profile_id, d.request_id, rd.registration_no, rd.created_at, stmc.name, hp.full_name, application_type_id, ( SELECT a.name FROM main.application_type a WHERE a.id = application_type_id ) as application_type_name, ( SELECT CASE WHEN ( wf.work_flow_status_id in(2, 4, 5, 6) ) THEN DATE_PART( 'day', (wf.updated_at - wf.created_at) ) WHEN ( wf.work_flow_status_id in(1, 3) ) THEN DATE_PART( 'day', (now() - wf.created_at) ) END FROM main.work_flow wf where wf.request_id = d.request_id ) as pendency, work_flow_status_id, hp.gender, hp.email_id, hp.mobile_number, hp.nmr_id, rd.registration_date, college_status, count(*) OVER() AS total_count from main.dashboard d INNER JOIN main.registration_details as rd on rd.hp_profile_id = d.hp_profile_id INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id ";
+    public static final String FETCH_TRACK_DETAILS_QUERY = "select d.work_flow_status_id doctor_status, smc_status, nmc_status, nbe_status, d.hp_profile_id, d.request_id, rd.registration_no, d.created_at, stmc.name, hp.full_name, application_type_id, ( SELECT a.name FROM main.application_type a WHERE a.id = application_type_id ) as application_type_name, ( SELECT CASE WHEN ( wf.work_flow_status_id in(2, 4, 5, 6) ) THEN DATE_PART( 'day', (wf.updated_at - wf.created_at) ) WHEN ( wf.work_flow_status_id in(1, 3) ) THEN DATE_PART( 'day', (now() - wf.created_at) ) END FROM main.work_flow wf where wf.request_id = d.request_id ) as pendency, work_flow_status_id, hp.gender, hp.email_id, hp.mobile_number, hp.nmr_id, rd.registration_date, college_status, count(*) OVER() AS total_count from main.dashboard d INNER JOIN main.registration_details as rd on rd.hp_profile_id = d.hp_profile_id INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id ";
     public static final String STATE_MEDICAL_COUNCIL_ID = "state_medical_council_id";
     public static final String REGISTRATION_DETAILS_ID = "registration_details_id";
     public static final String SUCCESS = "Success";
@@ -179,7 +176,7 @@ public class NMRConstants {
     public static final String DSC_SERVICE_ENDPOINT = "${dsc.endpoint.url}";
     public static final String GEN_ESP_REQUEST_URL = "/digiSign/genEspRequest";
     public static final String VERIFY_ESP_REQUEST_URL = "/digiSign/pdf/{tansactionId}";
-    public static final int MAX_FAILED_ATTEMPTS = 3;
+    public static final int MAX_FAILED_ATTEMPTS = 5;
     public static final long LOCK_TIME_DURATION = 3; // hours
     public static final String ACCOUNT_LOCKED_MESSAGE = "Your account has been locked for " + LOCK_TIME_DURATION + " hours due to " + MAX_FAILED_ATTEMPTS + " failed attempts";
     public static final String ACCOUNT_UNLOCKED_MESSAGE = "Your account has been unlocked. Please try to login again";
@@ -210,14 +207,39 @@ public class NMRConstants {
     public static final String FIRST_NAME_IN_LOWER_CASE = "firstname";
     public static final String LAST_NAME_IN_LOWER_CASE = "lastname";
     public static final String USER_TYPE_ID_IN_LOWER_CASE = "usertypeid";
-    public static final String FETCH_REACTIVATION_REQUESTS = "SELECT hp.id, hp.registration_id, wf.request_id, hp.full_name, wf.created_at, wf.start_date, hp.gender, hp.email_id, hp.mobile_number , hp.hp_profile_status_id, wf.remarks, COUNT(*) OVER() AS total_count FROM main.work_flow AS wf INNER JOIN main.hp_profile AS hp ON wf.hp_profile_id = hp.id WHERE application_type_id = 5";
+    public static final String FETCH_REACTIVATION_REQUESTS = """
+            select
+            	hp.id,
+            	hp.registration_id,
+            	wf.request_id,
+            	hp.full_name,
+            	wf.created_at,
+            	wf.start_date,
+            	hp.gender,
+            	hp.email_id,
+            	hp.mobile_number ,
+            	hp.hp_profile_status_id,
+            	wf.remarks,
+            	COUNT(*) over() as total_count,
+            	ua.file_path,
+            	ua.file_bytes,
+            	ua.name
+            from
+            	main.work_flow as wf
+            inner join main.hp_profile as hp on
+            	wf.hp_profile_id = hp.id
+            inner join main.user_attachments ua on
+            	hp .user_id = ua.user_id and ua.request_id=wf.request_id
+            where
+            	application_type_id = 5
+            """;
     public static final String NOT_NULL_ERROR_MSG = "The {0} is mandatory.";
     public static final String NOT_BLANK_ERROR_MSG = "The {0} should not be blank.";
     public static final String INVALID_PINCODE = "pincode should be of max 6 digit";
     public static final String FETCH_WORK_PROFILE_RECORDS_BY_USER_ID = """
             SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id, 
             state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at, 
-            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status FROM work_profile where delete_status=false AND  user_id =:userId""" ;
+            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status, system_of_medicine, department, designation, reason, remark FROM work_profile where delete_status=false AND  user_id =:userId""" ;
      public static final int MAX_DATA_SIZE = 500;
     public static final String DEFAULT_SORT_ORDER = "DESC";
     public static final String SMS_AND_EMAIL_RESET_MESSAGE_PROPERTIES_KEY = "sms-email-reset";
@@ -245,9 +267,9 @@ public class NMRConstants {
     public static final String DOCTOR_QUALIFICATION = "MBBS";
     public static final String DOCTOR_QUALIFICATION_PATTERN = "[^A-Za-z]+";
     public static final String EMAIL_VERIFICATION_TEMPLATE = "email-verification-link";
-    public static final String FETCH_COUNT_QUERY_FOR_SMC = "SELECT application_type_id as applicationTypeId, smc_status as profileStatus, count(*) as count FROM main.dashboard d join main.registration_details rd on rd.hp_profile_id = d.hp_profile_id JOIN main.hp_profile hp on rd.hp_profile_id = hp.id and hp.e_sign_status='1' where application_type_id in (1,2,3,4,7,8) and rd.state_medical_council_id =:" + SMC_PROFILE_ID + " group by application_type_id, smc_status";
+    public static final String FETCH_COUNT_QUERY_FOR_SMC = "SELECT application_type_id as applicationTypeId, smc_status as profileStatus, count(*) as count FROM main.dashboard d join main.registration_details rd on rd.hp_profile_id = d.hp_profile_id JOIN main.hp_profile hp on rd.hp_profile_id = hp.id and hp.e_sign_status IN (1) where application_type_id in (1,3,4,7,8) and rd.state_medical_council_id =:" + SMC_PROFILE_ID + " group by application_type_id, smc_status";
     public static final String FETCH_COUNT_QUERY_FOR_COLLEGE = "SELECT application_type_id as applicationTypeId, college_status as profileStatus, count(*) as count FROM main.dashboard d join main.qualification_details qd on qd.hp_profile_id = d.hp_profile_id and qd.request_id = d.request_id where application_type_id in (1,8) and qd.college_id =:" + COLLEGE_ID + " group by application_type_id, college_status";
-    public static final String FETCH_COUNT_QUERY_FOR_NMC = "SELECT application_type_id as applicationTypeId, nmc_status as profileStatus, count(*) as count FROM main.dashboard d where application_type_id in (1,2,3,4,7,8) group by application_type_id , nmc_status ";
+    public static final String FETCH_COUNT_QUERY_FOR_NMC = "SELECT application_type_id as applicationTypeId, nmc_status as profileStatus, count(*) as count FROM main.dashboard d where application_type_id in (1,3,4,7,8) group by application_type_id , nmc_status ";
     public static final String FETCH_COUNT_QUERY_FOR_NBE = "SELECT application_type_id as applicationTypeId, nbe_status as profileStatus, count(*) as count FROM main.dashboard d where application_type_id in (7) group by application_type_id , nbe_status ";
     public static final String NOT_YET_RECEIVED = "Not Yet Received";
     public static final String OPERATOR_MINUS = "-";
@@ -263,7 +285,7 @@ public class NMRConstants {
     public static final String FETCH_ACTIVE_WORK_PROFILE_RECORDS_BY_USER_ID = """            
             SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id,
             state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at,
-            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status FROM work_profile WHERE  delete_status=false AND user_id =:userId""";
+            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status, system_of_medicine, department, designation, reason, remark FROM work_profile WHERE  delete_status=false AND user_id =:userId""";
 
 
     public static final String DEACTIVATE_USER = "update  {h-schema}user SET delete_status =true WHERE id =:userId";
@@ -296,5 +318,19 @@ public class NMRConstants {
     public static final String DOMAIN_NAME="@hpr.abdm";
     public static final String  HPR_SERVICE_REGISTER_HEALTH_PROFESSIONAL="/apis/v1/doctors/register-professional";
     public static final String  HPR_ID_SERVICE_TOKEN_BY_HPRID="/api/v2/search/internal/hfr/getTokensByHprId";
-    public static final int DEFAULT_UNVERIFIED_QUALIFICATION = 0;
+    public static final int QUALIFICATION_STATUS_PENDING = 0;
+    public static final int QUALIFICATION_STATUS_APPROVED = 1;
+    public static final int QUALIFICATION_STATUS_REJECTED = 2;
+
+    public static final String MASTER_CACHE_NAME ="nmr-master-data";
+    public static final long MASTER_CACHE_CRON_TIME = 6 * 60 * 60 * 1000;
+
+    public static final String REGEX_FOR_BIRTH_DATE = "^(((0[13-9]|1[012])[-/]?(0[1-9]|[12][0-9]|30)|(0[13578]|1[02])[-/]?31|02[-/]?(0[1-9]|1[0-9]|2[0-8]))[-/]?[0-9]{4}|02[-/]?29[-/]?([0-9]{2}(([2468][048]|[02468][48])|[13579][26])|([13579][26]|[02468][048]|0[0-9]|1[0-6])00))$";
+    public static final String REGEX_FOR_NAME = "\\b([a-zA-ZÀ-ÿ][-,a-zA-Z0-9. ']+[ ]*)+";
+    public static final String REGEX_FOR_REGISTRATION_NUMBER = "^[a-zA-Z0-9 !-@#:_)(]{1,100}$";
+    public static final String REGEX_FOR_ADDRESS = "^[#.0-9a-zA-Z\s,-/:()]+$";
+    public static final String REGEX_FOR_SUB_DISTRICT = "^[A-Z a-z]+[A-Z a-z //' ']*$";
+    public static final String REGEX_FOR_VILLAGE = "^[A-Z a-z]+[A-Z a-z //' ']*$";
+    public static final Integer MAX_QUALIFICATION_SIZE = 8;
+
 }

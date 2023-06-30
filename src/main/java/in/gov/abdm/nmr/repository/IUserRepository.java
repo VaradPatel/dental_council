@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static in.gov.abdm.nmr.util.NMRConstants.UPDATE_LAST_LOGIN;
@@ -29,6 +30,9 @@ public interface IUserRepository extends JpaRepository<User, BigInteger> {
     @Query(value = "select count(*)>0 from {h-schema}user where id!=:id and email=:email", nativeQuery = true)
     boolean checkEmailUsedByOtherUser(BigInteger id,String email);
 
+    @Query(value = "select count(*)>0 from {h-schema}user where id!=:id and mobile_number=:mobileNumber", nativeQuery = true)
+    boolean checkMobileUsedByOtherUser(BigInteger id,String mobileNumber);
+
     @org.springframework.transaction.annotation.Transactional
     @Modifying
     @Query(nativeQuery = true, value = DEACTIVATE_USER)
@@ -43,4 +47,8 @@ public interface IUserRepository extends JpaRepository<User, BigInteger> {
     @Modifying
     @Query(nativeQuery = true, value = UPDATE_LAST_LOGIN)
     void updateLastLogin(BigInteger userId);
+
+    @Query(value = """
+            select user_name from {h-schema}user where mobile_number =:mobileNumber and user_type_id =:userType """, nativeQuery = true)
+    List<String> getUserNamesByMobileNumAnduserType(String mobileNumber, BigInteger userType);
 }

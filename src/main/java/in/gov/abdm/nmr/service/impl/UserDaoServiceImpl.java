@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.service.impl;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.exception.InvalidIdException;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.repository.INbeProfileRepository;
 import in.gov.abdm.nmr.repository.INmcProfileRepository;
@@ -137,7 +138,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public SMCProfile findSmcProfile(BigInteger id) throws InvalidIdException {
         SMCProfile smcProfileEntity = smcProfileRepository.findById(id).orElse(null);
         if (smcProfileEntity == null) {
-            throw new InvalidIdException(NMRError.INVALID_COLLEGE_ID.getCode(), NMRError.INVALID_COLLEGE_ID.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(), NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
         accessControlService.validateUser(smcProfileEntity.getUser().getId());
         return smcProfileEntity;
@@ -147,7 +148,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NmcProfile findNmcProfile(BigInteger id) throws InvalidIdException {
         NmcProfile nmcProfileEntity = nmcProfileRepository.findById(id).orElse(null);
         if (nmcProfileEntity == null) {
-            throw new InvalidIdException(NMRError.INVALID_COLLEGE_ID.getCode(), NMRError.INVALID_COLLEGE_ID.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(), NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
         accessControlService.validateUser(nmcProfileEntity.getUser().getId());
         return nmcProfileEntity;
@@ -157,17 +158,17 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public NbeProfile findNbeProfile(BigInteger id) throws InvalidIdException {
         NbeProfile nbeProfileEntity = nbeProfileRepository.findById(id).orElse(null);
         if (nbeProfileEntity == null) {
-            throw new InvalidIdException(NMRError.INVALID_COLLEGE_ID.getCode(),NMRError.INVALID_COLLEGE_ID.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(),NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
         accessControlService.validateUser(nbeProfileEntity.getUser().getId());
         return nbeProfileEntity;
     }
 
     @Override
-    public SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws InvalidIdException {
+    public SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws InvalidIdException, InvalidRequestException {
         SMCProfile smcProfile = smcProfileRepository.findById(id).orElse(null);
         if (smcProfile == null) {
-            throw new InvalidIdException(NMRError.INVALID_PROFILE_ID.getCode(), NMRError.INVALID_PROFILE_ID.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(), NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
         smcProfile.setId(id);
         smcProfile.setFirstName(smcProfileTO.getFirstName());
@@ -182,14 +183,30 @@ public class UserDaoServiceImpl implements IUserDaoService {
         stateMedicalCouncil.setId(smcProfileTO.getStateMedicalCouncil().getId());
         stateMedicalCouncil.setName(smcProfileTO.getStateMedicalCouncil().getName());
         smcProfile.setStateMedicalCouncil(stateMedicalCouncil);
+        User user = smcProfile.getUser();
+
+        if (user != null) {
+            if (userDetailRepository.checkEmailUsedByOtherUser(user.getId(), smcProfile.getEmailId())) {
+                throw new InvalidRequestException(NMRConstants.EMAIL_USED_BY_OTHER_USER);
+            }
+
+            if (userDetailRepository.checkMobileUsedByOtherUser(user.getId(), smcProfileTO.getMobileNo())) {
+                throw new InvalidRequestException(NMRConstants.MOBILE_USED_BY_OTHER_USER);
+            }
+        } else {
+            throw new InvalidRequestException(NMRConstants.USER_NOT_FOUND);
+        }
+        user.setEmail(smcProfile.getEmailId());
+        user.setMobileNumber(smcProfile.getMobileNo());
+        userDetailRepository.save(user);
         return smcProfileRepository.save(smcProfile);
     }
 
     @Override
-    public NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws InvalidIdException {
+    public NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws InvalidIdException, InvalidRequestException {
         NmcProfile nmcProfile = nmcProfileRepository.findById(id).orElse(null);
         if (nmcProfile == null) {
-            throw new InvalidIdException(NMRError.INVALID_PROFILE_ID.getCode(),NMRError.INVALID_PROFILE_ID.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(),NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
         nmcProfile.setId(id);
         nmcProfile.setFirstName(nmcProfileTO.getFirstName());
@@ -200,19 +217,52 @@ public class UserDaoServiceImpl implements IUserDaoService {
         nmcProfile.setNdhmEnrollment(nmcProfileTO.getNdhmEnrollment());
         nmcProfile.setEmailId(nmcProfileTO.getEmailId());
         nmcProfile.setMobileNo(nmcProfileTO.getMobileNo());
+        User user = nmcProfile.getUser();
+
+        if (user != null) {
+            if (userDetailRepository.checkEmailUsedByOtherUser(user.getId(), nmcProfile.getEmailId())) {
+                throw new InvalidRequestException(NMRConstants.EMAIL_USED_BY_OTHER_USER);
+            }
+
+            if (userDetailRepository.checkMobileUsedByOtherUser(user.getId(), nmcProfile.getMobileNo())) {
+                throw new InvalidRequestException(NMRConstants.MOBILE_USED_BY_OTHER_USER);
+            }
+        } else {
+            throw new InvalidRequestException(NMRConstants.USER_NOT_FOUND);
+        }
+        user.setEmail(nmcProfile.getEmailId());
+        user.setMobileNumber(nmcProfile.getMobileNo());
+        userDetailRepository.save(user);
         return nmcProfileRepository.saveAndFlush(nmcProfile);
     }
 
     @Override
-    public NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws InvalidIdException {
+    public NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws InvalidIdException, InvalidRequestException {
         NbeProfile nbeProfile = nbeProfileRepository.findById(id).orElse(null);
         if (nbeProfile == null) {
-            throw new InvalidIdException(NMRError.INVALID_PROFILE_ID.getCode(),NMRError.INVALID_PROFILE_ID.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(),NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
         nbeProfile.setId(id);
         nbeProfile.setDisplayName(nbeProfileTO.getDisplayName());
         nbeProfile.setEmailId(nbeProfileTO.getEmailId());
         nbeProfile.setMobileNo(nbeProfileTO.getMobileNo());
+        User user = nbeProfile.getUser();
+
+        if (user != null) {
+            if (userDetailRepository.checkEmailUsedByOtherUser(user.getId(), nbeProfile.getEmailId())) {
+                throw new InvalidRequestException(NMRConstants.EMAIL_USED_BY_OTHER_USER);
+            }
+
+            if (userDetailRepository.checkMobileUsedByOtherUser(user.getId(), nbeProfile.getMobileNo())) {
+                throw new InvalidRequestException(NMRConstants.MOBILE_USED_BY_OTHER_USER);
+            }
+        } else {
+            throw new InvalidRequestException(NMRConstants.USER_NOT_FOUND);
+        }
+        user.setEmail(nbeProfile.getEmailId());
+        user.setMobileNumber(nbeProfile.getMobileNo());
+        userDetailRepository.save(user);
+
         return nbeProfileRepository.saveAndFlush(nbeProfile);
     }
 
@@ -228,5 +278,10 @@ public class UserDaoServiceImpl implements IUserDaoService {
     @Override
     public void updateLastLogin(BigInteger userId) {
         userDetailRepository.updateLastLogin(userId);
+    }
+
+    @Override
+    public List<String> getUserNames(String mobileNumber, BigInteger userType) {
+        return userDetailRepository.getUserNamesByMobileNumAnduserType(mobileNumber, userType);
     }
 }

@@ -153,11 +153,14 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
             }
         }
         log.debug("Marking all the qualification details associated with the current request_id as verified.");
-        List<QualificationDetails> qualificationDetails = qualificationDetailRepository.findByRequestId(requestTO.getRequestId());
-        qualificationDetails.forEach(qualificationDetail -> qualificationDetail.setIsVerified(1));
-
-        List<ForeignQualificationDetails> foreignQualificationDetails = foreignQualificationDetailRepository.findByRequestId(requestTO.getRequestId());
-        foreignQualificationDetails.forEach(foreignQualificationDetail -> foreignQualificationDetail.setIsVerified(1));
+        QualificationDetails qualificationDetails = qualificationDetailRepository.findByRequestId(requestTO.getRequestId());
+        if(qualificationDetails!=null) {
+            qualificationDetails.setIsVerified(QUALIFICATION_STATUS_APPROVED);
+        }
+        ForeignQualificationDetails foreignQualificationDetails = foreignQualificationDetailRepository.findByRequestId(requestTO.getRequestId());
+        if(foreignQualificationDetails!=null) {
+            foreignQualificationDetails.setIsVerified(QUALIFICATION_STATUS_APPROVED);
+        }
     }
 
     private RegistrationDetailsMaster updateRegistrationDetailsToMaster(BigInteger transactionHpProfileId, HpProfileMaster hpProfileMaster) {
@@ -217,7 +220,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     private List<ForeignQualificationDetailsMaster> updateForeignQualificationToMaster(HpProfile transactionHpProfile, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
         log.debug("Mapping the Foreign Qualification Details to Foreign Qualification Details Master table");
         List<ForeignQualificationDetailsMaster> qualificationDetailsMasters = new ArrayList<>();
-        List<ForeignQualificationDetails> qualificationDetails = customQualificationDetailRepository.getQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
+        List<ForeignQualificationDetails> qualificationDetails = customQualificationDetailRepository.getApprovedQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
         List<String> masterCourseIds = customQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId())
                 .stream().map(ForeignQualificationDetailsMaster::getCourse).toList();
         List<ForeignQualificationDetails> filterQualifications = qualificationDetails.stream().filter(qualificationDetail -> !masterCourseIds.contains(qualificationDetail.getCourse())).toList();
@@ -269,7 +272,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     private List<QualificationDetailsMaster> updateQualificationDetailsToMaster(HpProfile transactionHpProfile, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
         log.debug("Mapping the current Qualification Details to Qualification Details Master table");
         List<QualificationDetailsMaster> qualificationDetailsMasters = new ArrayList<>();
-        List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
+        List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getApprovedQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
         List<BigInteger> masterCourseIds = qualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId())
                 .stream().map(qualificationDetailsMaster -> qualificationDetailsMaster.getCourse().getId()).toList();
         List<QualificationDetails> filterQualifications = qualificationDetails.stream().filter(qualificationDetail -> !masterCourseIds.contains(qualificationDetail.getCourse().getId())).toList();
@@ -294,7 +297,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
             }
         } catch (ElasticsearchException | IOException e) {
             LOGGER.error("Exception while indexing HP", e);
-            throw new WorkFlowException(NMRError.FAIL_ELASTIC_UPDATE.getCode(), NMRError.FAIL_ELASTIC_UPDATE.getMessage());
+            throw new WorkFlowException(NMRError.NMR_EXCEPTION.getCode(), NMRError.NMR_EXCEPTION.getMessage());
         }
     }
 

@@ -27,12 +27,12 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.fasterxml.jackson.core.JsonParser.Feature;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import brave.Tracer;
 import in.gov.abdm.nmr.dto.LoginRequestTO;
 import in.gov.abdm.nmr.entity.SecurityAuditTrail;
-import in.gov.abdm.nmr.enums.LoginTypeEnum;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.ICaptchaService;
@@ -41,7 +41,7 @@ import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 @Component
 public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private static final String REQUEST_BODY = "request-body";
+    protected static final String REQUEST_BODY = "request-body";
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -82,11 +82,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
         try {
             ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).setAttribute(REQUEST_BODY, readRequestBody(request), RequestAttributes.SCOPE_REQUEST);
 
-            LoginRequestTO requestBodyTO = objectMapper.readValue(getRequestBody(), LoginRequestTO.class);
-            if((LoginTypeEnum.MOBILE_OTP.getCode().equals(requestBodyTO.getLoginType()) || LoginTypeEnum.NMR_ID_OTP.getCode().equals(requestBodyTO.getLoginType())) //
-                    && (requestBodyTO.getOtpTransId() == null || requestBodyTO.getOtpTransId().isBlank())) {
-                throw new AuthenticationServiceException("Invalid otp transaction id");
-            }
+            LoginRequestTO requestBodyTO = convertRequestToDTO();
             authRequest = UserPasswordAuthenticationToken.unauthenticated(requestBodyTO.getUsername(), //
                     rsaUtil.decrypt(requestBodyTO.getPassword()), requestBodyTO.getUserType(), requestBodyTO.getLoginType(), requestBodyTO.getOtpTransId());
             authRequest.setDetails(createSecurityAuditTrail(request));
@@ -103,13 +99,17 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
         return this.getAuthenticationManager().authenticate(authRequest);
     }
 
-    private String readRequestBody(HttpServletRequest request) throws IOException {
+    protected LoginRequestTO convertRequestToDTO() throws JsonProcessingException {
+        return objectMapper.readValue(getRequestBody(), LoginRequestTO.class);
+    }
+
+    protected String readRequestBody(HttpServletRequest request) throws IOException {
         ServletInputStream requestInputStream = request.getInputStream();
         objectMapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
         return new String(requestInputStream.available() > 0 ? requestInputStream.readAllBytes() : new byte[0]);
     }
 
-    private SecurityAuditTrail createSecurityAuditTrail(HttpServletRequest request) {
+    protected SecurityAuditTrail createSecurityAuditTrail(HttpServletRequest request) {
         SecurityAuditTrail securityAuditTrail = new SecurityAuditTrail();
         String ipAddress = request.getHeader("X-Real-IP");
         securityAuditTrail.setIpAddress(StringUtils.isNotBlank(ipAddress) ? ipAddress : request.getRemoteAddr());
@@ -158,7 +158,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         if(failed instanceof BadCredentialsException) {
-            failed = new AuthenticationServiceException("Invalid Username or Password! Please Enter Valid Username and Password");
+            failed = new AuthenticationServiceException("Invalid Username or Password! Please enter valid username and password");
         }
         
         super.unsuccessfulAuthentication(request, response, failed);

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface IQualificationDetailMasterRepository extends JpaRepository<QualificationDetailsMaster, BigInteger> {
 
-    @Query(value = "SELECT * FROM qualification_details_master where hp_profile_id = :hpProfileId", nativeQuery = true)
+    @Query(value = "SELECT * FROM qualification_details_master where hp_profile_id = :hpProfileId and is_verified=1", nativeQuery = true)
     List<QualificationDetailsMaster> getQualificationDetailsByHpProfileId(BigInteger hpProfileId);
 
 }

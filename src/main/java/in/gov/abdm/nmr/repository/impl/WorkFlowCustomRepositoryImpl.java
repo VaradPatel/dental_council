@@ -1,23 +1,23 @@
 package in.gov.abdm.nmr.repository.impl;
 
+import in.gov.abdm.minio.connector.service.S3ServiceImpl;
 import in.gov.abdm.nmr.dto.ReactivateHealthProfessionalRequestParam;
 import in.gov.abdm.nmr.dto.ReactivateHealthProfessionalResponseTO;
 import in.gov.abdm.nmr.dto.ReactivateHealthProfessionalTO;
 import in.gov.abdm.nmr.repository.IWorkFlowCustomRepository;
 import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -30,6 +30,12 @@ import java.util.function.Function;
 public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
     @PersistenceContext
     EntityManager entityManager;
+
+    @Value("${feature.toggle.minio.enable}")
+    private boolean minioEnable;
+
+    @Autowired
+    S3ServiceImpl s3Service;
     private static final Function<ReactivateHealthProfessionalRequestParam, String> REACTIVATION_SEARCH_PARAMETERS = reactivateHealthProfessionalQueryParam -> {
         StringBuilder sb = new StringBuilder();
 
@@ -105,7 +111,7 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
         List<ReactivateHealthProfessionalTO> reactivateHealthProfessionalTOList = new ArrayList<>();
         Query query = entityManager.createNativeQuery(REACTIVATE_HEALTH_PROFESSIONAL.apply(reactivateHealthProfessionalQueryParam));
 
-       query.setFirstResult((pageable.getPageNumber() - 1) * pageable.getPageSize());
+       query.setFirstResult(pageable.getPageNumber() != 0 ?(pageable.getPageNumber() - 1) * pageable.getPageSize() : 0);
        query.setMaxResults(pageable.getPageSize());
 
         List<Object[]> results = query.getResultList();
@@ -123,6 +129,25 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
             reactivateHealthProfessionalTO.setTypeOfSuspension((BigInteger) result[9]);
             reactivateHealthProfessionalTO.setRemarks((String) result[10]);
             reactivateHealthProfessionalResponseTO.setTotalNoOfRecords((BigInteger) result[11]);
+
+            if(minioEnable){
+                try {
+                    byte[] file=s3Service.downloadFile((String) result[12]);
+                    reactivateHealthProfessionalTO.setReactivationFile(Base64.getEncoder().encodeToString(file));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            else {
+                if (result[13] != null) {
+                    reactivateHealthProfessionalTO.setReactivationFile(Base64.getEncoder().encodeToString((byte[]) result[13]));
+                }
+            }
+            if(result[14]!=null) {
+                String fileName = (String) result[14];
+                reactivateHealthProfessionalTO.setFileName(fileName);
+                reactivateHealthProfessionalTO.setFileType(fileName.substring(fileName.lastIndexOf(".") + 1));
+            }
             reactivateHealthProfessionalTOList.add(reactivateHealthProfessionalTO);
         });
         reactivateHealthProfessionalResponseTO.setHealthProfessionalDetails(reactivateHealthProfessionalTOList);

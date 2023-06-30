@@ -28,19 +28,21 @@ public interface IUserService {
 
     NbeProfileTO getNbeProfile(BigInteger id) throws NmrException, InvalidIdException;
 
-    SMCProfileTO updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException;
+    SMCProfileTO updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException;
 
-    NmcProfileTO updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException;
+    NmcProfileTO updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException;
 
-    NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException;
+    NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException, InvalidRequestException;
 
     String retrieveUser(RetrieveUserRequestTo retrieveUserRequestTo) throws OtpException;
 
-    ResponseMessageTo verifyEmail(VerifyEmailTo verifyEmailTo);
+    ResponseMessageTo verifyEmail(VerifyEmailTo verifyEmailTo) throws InvalidRequestException;
     
     UserProfileTO createUser(@Valid @RequestBody UserProfileTO userProfileTO) throws NmrException;
     UserResponseTO getAllUser(String search, String value, int pageNo, int offset, String sortBy, String sortOrder) throws InvalidRequestException, AccessDeniedException;
     void deactivateUser(BigInteger userId);
 
     void unlockUser(BigInteger userId);
+
+    List<String> getUserNames(String mobileNumber, BigInteger userType);
 }

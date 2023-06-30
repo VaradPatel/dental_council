@@ -230,10 +230,16 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Transactional
     public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws NmrException, InvalidRequestException, WorkFlowException {
         HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
-        if (hpProfile.getNmrId() == null) {
-            throw new WorkFlowException(NMRError.QUALIFICATION_WORKFLOW_CREATION_FAIL.getCode(), NMRError.QUALIFICATION_WORKFLOW_CREATION_FAIL.getMessage());
+        if (hpProfile.getNmrId() == null || !HpProfileStatus.APPROVED.getId().equals(hpProfile.getHpProfileStatus().getId())) {
+            throw new WorkFlowException(NMRError.WORK_FLOW_EXCEPTION.getCode(), NMRError.WORK_FLOW_EXCEPTION.getMessage());
         }
-        validateQualificationDetailsAndProofs(qualificationDetailRequestTOs, proofs);
+
+        if(!iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(hpProfileId,ApplicationType.QUALIFICATION_ADDITION.getId())){
+            throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
+        }
+        Integer existingQualificationCount = iQualificationDetailRepository.getCountOfQualificationDetailsByUserID(hpProfile.getUser().getId());
+        validateQualificationDetailsAndProofs(qualificationDetailRequestTOs, proofs, existingQualificationCount);
+
         for (QualificationDetailRequestTO qualificationDetailRequestTO : qualificationDetailRequestTOs) {
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.QUALIFICATION_ADDITION.getId()));
             WorkFlowRequestTO workFlowRequestTO = new WorkFlowRequestTO();
@@ -283,8 +289,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         log.info("In HpRegistrationServiceImpl : addOrUpdateWorkProfileDetail method");
 
-        validateWorkProfileDetails(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails());
-
         log.debug("WorkProfileDetails Validation Successful. Calling the updateWorkProfileDetails method to update the work profile details. ");
         HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateWorkProfileDetails(hpProfileId, hpWorkProfileUpdateRequestTO, proofs);
 
@@ -331,8 +335,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             hpProfileById.setTransactionId(hpSubmitRequestTO.getTransactionId());
             hpProfileById.setESignStatus(hpSubmitRequestTO.getESignStatus() != null ? hpSubmitRequestTO.getESignStatus() : ESignStatus.PROFILE_NOT_ESIGNED.getId());
             hpProfileById.setRequestId(requestId);
-            hpProfileById.setConsent(hpSubmitRequestTO.getHprShareAcknowledgement());
-
+            hpProfileById.setConsent(hpSubmitRequestTO.getHprShareAcknowledgement() != null ? hpSubmitRequestTO.getHprShareAcknowledgement() : NO);
+            if(ApplicationType.HP_REGISTRATION.getId().equals(hpSubmitRequestTO.getApplicationTypeId())) {
+                hpProfileById.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
+            }
             log.debug("Updating the request_id in registration_details table");
             RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
             registrationDetails.setRequestId(requestId);
@@ -376,18 +382,29 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         BigInteger applicationTypeId = null;
         BigInteger workFlowStatusId = null;
         String requestId = null;
+        BigInteger hpProfileStatusId = null;
+        HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
+        if (latestHpProfile != null) {
+            WorkFlow workFlow = workFlowRepository.findLastWorkFlowForHealthProfessional(hpProfileId);
+            hpProfileStatusId = latestHpProfile.getHpProfileStatus().getId();
+            if (workFlow != null) {
+                applicationTypeId = workFlow.getApplicationType().getId();
+                workFlowStatusId = workFlow.getWorkFlowStatus().getId();
+                requestId = workFlow.getRequestId();
+            }
+        } else {
+            hpProfileStatusId = hpProfile.getHpProfileStatus().getId();
         WorkFlow workFlow = workFlowRepository.findLastWorkFlowForHealthProfessional(hpProfileId);
         if (workFlow != null) {
             applicationTypeId = workFlow.getApplicationType().getId();
             workFlowStatusId = workFlow.getWorkFlowStatus().getId();
             requestId = workFlow.getRequestId();
-
-        }
-        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId, workFlowStatusId, requestId);
+        }}
+        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId, workFlowStatusId, requestId, hpProfileStatusId);
     }
 
     @Override
-    public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId) throws NmrException, InvalidRequestException {
+    public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId){
         HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = null;
         List<WorkProfile> workProfileList = new ArrayList<>();
         List<LanguagesKnown> languagesKnown = new ArrayList<>();
@@ -399,8 +416,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 BigInteger userId = user.getId();
                 workProfileList = workProfileRepository.getWorkProfileDetailsByUserId(userId);
                 languagesKnown = languagesKnownRepository.findByUserId(userId);
-            } else {
-                throw new InvalidRequestException(NMRError.NO_MATCHING_USER_DETAILS_FOUND.getCode(), NMRError.NO_MATCHING_USER_DETAILS_FOUND.getMessage());
             }
         }
 
@@ -414,8 +429,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         if (!workProfileList.isEmpty()) {
             hpProfileWorkDetailsResponseTO = HpProfileWorkProfileMapper.convertEntitiesToWorkDetailResponseTo(workProfileList);
             hpProfileWorkDetailsResponseTO.setLanguagesKnownIds(languagesKnownIds);
-        } else {
-            throw new InvalidRequestException(NMRError.NO_MATCHING_WORK_PROFILE_DETAILS_FOUND.getCode(), NMRError.NO_MATCHING_WORK_PROFILE_DETAILS_FOUND.getMessage());
         }
         return hpProfileWorkDetailsResponseTO;
     }
@@ -537,7 +550,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setRegistrationId(request.getRegistrationNumber());
         hpProfile.setIsSameAddress(String.valueOf(false));
         hpProfile.setCountryNationality(countryRepository.findByName(NMRConstants.DEFAULT_COUNTRY_AADHAR));
-        hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.PENDING.getId()).get());
+        hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.DRAFT.getId()).get());
         hpProfile.setIsNew(imrProfileDetails == null ? YES : NO);
         hpProfile.setUser(userDetail);
         hpProfile.setESignStatus(ESignStatus.PROFILE_NOT_ESIGNED.getId());
@@ -686,7 +699,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         String transactionId = request.getTransactionId();
         if (request.getMobileNumber() != null) {
             if (transactionId == null) {
-                throw new InvalidRequestException(NMRError.MISSING_TRANSACTION_ID_ERROR.getCode(), NMRError.MISSING_TRANSACTION_ID_ERROR.getMessage());
+                throw new InvalidRequestException(NMRError.MISSING_MANDATORY_FIELD.getCode(), NMRError.MISSING_MANDATORY_FIELD.getMessage());
             } else {
                 if (otpService.isOtpVerified(transactionId)) {
                     throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());

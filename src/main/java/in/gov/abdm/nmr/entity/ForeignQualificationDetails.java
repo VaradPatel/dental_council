@@ -1,9 +1,6 @@
 package in.gov.abdm.nmr.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -15,6 +12,7 @@ import java.sql.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class ForeignQualificationDetails extends CommonAuditEntity {
 
     @Id
@@ -51,8 +49,9 @@ public class ForeignQualificationDetails extends CommonAuditEntity {
     @ManyToOne
     @JoinColumn(name = "hpProfileId", referencedColumnName = "id")
     private HpProfile hpProfile;
-
-    private BigInteger broadSpecialityId;
+    @OneToOne
+    @JoinColumn(name = "broad_speciality_id", referencedColumnName = "id")
+    private BroadSpeciality broadSpeciality;
     private String superSpecialityName;
     private String fileName;
 

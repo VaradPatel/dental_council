@@ -705,6 +705,13 @@ CommonTestData {
         return universityMaster;
     }
 
+    public static UniversityTO getUniversityTo() {
+        UniversityTO universityTO = new UniversityTO();
+        universityTO.setId(ID);
+        universityTO.setName(NAME);
+        return universityTO;
+    }
+
     public static UniversityMasterTo getUniversityMasterTo() {
         UniversityMasterTo universityMasterTo = new UniversityMasterTo();
         universityMasterTo.setId(ID);
@@ -786,7 +793,7 @@ CommonTestData {
         personalDetails.setCountryNationality(NationalityTO.builder().id(COUNTRY_ID).name(COUNTRY_NAME).build());
         personalDetails.setDateOfBirth(DATE_OF_BIRTH);
         personalDetails.setGender(GENDER);
-        personalDetails.setSchedule(ScheduleTO.builder().id(SCHEDULE_ID).name(SCHEDULE_NAME).build());
+        //personalDetails.setSchedule(ScheduleTO.builder().id(SCHEDULE_ID).name(SCHEDULE_NAME).build());
         personalDetails.setProfilePhoto(PROFILE_PHOTO);
         personalDetails.setFullName(PROFILE_DISPLAY_NAME);
         personalDetails.setIsNew(true);
@@ -1117,6 +1124,7 @@ CommonTestData {
     public static HpProfile getHpProfileForNMR() {
         HpProfile hpProfile = new HpProfile();
         hpProfile.setNmrId(NMR_ID);
+        hpProfile.setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.APPROVED.getId()).build());
         return hpProfile;
     }
 
