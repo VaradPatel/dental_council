@@ -1,8 +1,8 @@
 package in.gov.abdm.nmr.service.impl;
 
+import in.gov.abdm.minio.connector.service.S3ServiceImpl;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.enums.ApplicationSubType;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.enums.*;
@@ -19,12 +19,15 @@ import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -143,6 +146,15 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Autowired
     private IWorkFlowService workFlowService;
 
+    @Value("${feature.toggle.minio.enable}")
+    private boolean minioEnable;
+
+    @Autowired
+    private UserAttachmentsRepository userAttachmentsRepository;
+
+    @Autowired
+    S3ServiceImpl s3Service;
+
     private static final Map<String, String> REACTIVATION_SORT_MAPPINGS = Map.of("id", " hp.id", "name", " hp.full_name", "createdAt", " wf.created_at", "reactivationDate", " wf.start_date", "suspensionType", " hp.hp_profile_status_id", "remarks", " wf.remarks");
 
     /**
@@ -183,8 +195,9 @@ public class ApplicationServiceImpl implements IApplicationService {
      * @return a string indicating the result of the reactivate request.
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
+    @Transactional
     @Override
-    public ReactivateRequestResponseTo reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
+    public ReactivateRequestResponseTo reactivateRequest(MultipartFile reactivationFile, ApplicationRequestTo applicationRequestTo) throws WorkFlowException, InvalidRequestException, IOException {
 
         log.info("In ApplicationServiceImpl: reactivateRequest method ");
 
@@ -213,6 +226,23 @@ public class ApplicationServiceImpl implements IApplicationService {
                 reactivateRequestResponseTo.setProfileId(latestHpProfile.getId().toString());
                 reactivateRequestResponseTo.setMessage(SUCCESS_RESPONSE);
 
+                UserAttachments userAttachment=new UserAttachments();
+                userAttachment.setUserId(hpProfile.getUser().getId());
+                userAttachment.setRequestId(requestId);
+                userAttachment.setAttachmentTypeId(AttachmentType.REACTIVATION.getId());
+                userAttachment.setName(reactivationFile != null ? reactivationFile.getOriginalFilename() : null);
+                if (reactivationFile != null) {
+                    if (minioEnable) {
+                        String fileName = hpProfile.getId() + "_" + reactivationFile.getOriginalFilename();
+                        String path = "NMR/HP/" + hpProfile.getUser().getId() + "/Reactivation/" + fileName;
+                        s3Service.uploadFile(path, reactivationFile);
+                        userAttachment.setFilePath(path);
+
+                    } else {
+                        userAttachment.setFileBytes(reactivationFile != null ? reactivationFile.getBytes() : null);
+                    }
+                }
+                userAttachmentsRepository.save(userAttachment);
                 log.info("ApplicationServiceImpl: reactivateRequest method: Execution Successful. ");
 
                 return reactivateRequestResponseTo;
