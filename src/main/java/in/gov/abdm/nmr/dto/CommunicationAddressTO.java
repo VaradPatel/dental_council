@@ -2,11 +2,9 @@ package in.gov.abdm.nmr.dto;
 
 import in.gov.abdm.nmr.annotation.OptionalAddress;
 import in.gov.abdm.validator.AddressLine;
-import in.gov.abdm.validator.MobileNumber;
 import lombok.Data;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigInteger;

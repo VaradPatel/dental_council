@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.util;
 
-import co.elastic.clients.elasticsearch._types.FieldValue;
 import in.gov.abdm.nmr.dto.CurrentWorkDetailsTO;
 import in.gov.abdm.nmr.dto.QualificationDetailRequestTO;
 import in.gov.abdm.nmr.entity.RequestCounter;
@@ -13,10 +12,8 @@ import lombok.experimental.UtilityClass;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**

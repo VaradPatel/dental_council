@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 @Component
@@ -107,6 +106,15 @@ public class NMRToHPRMapper {
         practitionerRegistrationTO.setCategoryId(CATEGORY_ID_HEALTH_PROFESSIONAL);
         List<PractitionerQualififcationTO> practitionerQualififcationTOList = new ArrayList<>();
         PractitionerQualififcationTO practitionerQualififcationTO = new PractitionerQualififcationTO();
+        addQualificationDetails(qualificationDetailsMasterList, foreignQualificationDetailsMasterList, practitionerQualififcationTO);
+        practitionerQualififcationTOList.add(practitionerQualififcationTO);
+        practitionerRegistrationTO.setQualifications(practitionerQualififcationTOList);
+        practitionerRegistrationTOList.add(practitionerRegistrationTO);
+        registrationDetailsTO.setRegistrationData(practitionerRegistrationTOList);
+        return registrationDetailsTO;
+    }
+
+    private static void addQualificationDetails(List<QualificationDetailsMaster> qualificationDetailsMasterList, List<ForeignQualificationDetailsMaster> foreignQualificationDetailsMasterList, PractitionerQualififcationTO practitionerQualififcationTO) {
         if (qualificationDetailsMasterList != null && !qualificationDetailsMasterList.isEmpty()) {
             qualificationDetailsMasterList.forEach(qualificationDetailsMaster -> {
                 practitionerQualififcationTO.setNameOfDegreeOrDiplomaObtained(qualificationDetailsMaster.getCourse() != null ? qualificationDetailsMaster.getCourse().getId() : null);
@@ -131,11 +139,6 @@ public class NMRToHPRMapper {
                 practitionerQualififcationTO.setIsNameDifferentInCertificate(BigInteger.ZERO);
             });
         }
-        practitionerQualififcationTOList.add(practitionerQualififcationTO);
-        practitionerRegistrationTO.setQualifications(practitionerQualififcationTOList);
-        practitionerRegistrationTOList.add(practitionerRegistrationTO);
-        registrationDetailsTO.setRegistrationData(practitionerRegistrationTOList);
-        return registrationDetailsTO;
     }
 
     /**
