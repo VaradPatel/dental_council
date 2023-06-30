@@ -6,6 +6,7 @@ import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.HpProfileMaster;
 import in.gov.abdm.nmr.entity.RegistrationDetailsMaster;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.exception.TemplateException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.*;
 import in.gov.abdm.nmr.repository.*;
@@ -144,7 +145,7 @@ class WorkflowPostProcessorServiceTest {
     }
 
     @Test
-    void testPerformPostWorkflowUpdates() throws WorkFlowException {
+    void testPerformPostWorkflowUpdates() throws WorkFlowException, TemplateException {
         when(iWorkFlowRepository.findByRequestId(anyString())).thenReturn(getWorkFlow());
         when(hpProfileStatusRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getHPProfileStatus()));
         when(hpProfileMasterRepository.findByRegistrationId(anyString())).thenReturn(getMasterHpProfile());
