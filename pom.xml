@@ -177,8 +177,8 @@
 		</dependency>
 		<dependency>
 			<groupId>in.gov.abdm</groupId>
-			<artifactId>abdm-minio-connector</artifactId>
-			<version>1.0.5</version>
+			<artifactId>abdm-validator</artifactId>
+			<version>1.1.25</version>
 		</dependency>
 	</dependencies>
 
