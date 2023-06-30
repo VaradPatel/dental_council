@@ -69,6 +69,6 @@ public class NewHealthPersonalRequestTO {
     private String state;
 
     private String postOffice;
-    @Address
+    @OptionalAddress
     private String address;
 }
