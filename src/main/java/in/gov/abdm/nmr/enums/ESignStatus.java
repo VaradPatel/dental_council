@@ -29,13 +29,4 @@ public enum ESignStatus {
         return status;
     }
 
-    public static ESignStatus getESignStatus(BigInteger id) {
-        Optional<ESignStatus> optionalAction = Arrays.stream(ESignStatus.values()).filter(action -> action.getId().equals(id)).findFirst();
-        return optionalAction.isPresent() ? optionalAction.get() : null;
-    }
-
-    public static ESignStatus getESignStatus(String status) {
-        Optional<ESignStatus> optionalAction = Arrays.stream(ESignStatus.values()).filter(action -> action.getStatus().equals(status)).findFirst();
-        return optionalAction.isPresent() ? optionalAction.get() : null;
-    }
 }
