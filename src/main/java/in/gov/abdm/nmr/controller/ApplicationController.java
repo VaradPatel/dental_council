@@ -12,10 +12,12 @@ import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigInteger;
 
 import static in.gov.abdm.nmr.security.common.ProtectedPaths.PATH_HEALTH_PROFESSIONAL_APPLICATIONS;
@@ -74,14 +76,15 @@ public class ApplicationController {
      *                           POST endpoint for reactivate request of a health professional. This method invokes the IActionService#reactiveRequest(ActionRequestTo)
      *                           to perform the reactivate request and return the result of the process.
      */
-    @PostMapping(ProtectedPaths.REACTIVATE_REQUEST_URL)
-    public ReactivateRequestResponseTo reactivateHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
+    @PostMapping(path=ProtectedPaths.REACTIVATE_REQUEST_URL,consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ReactivateRequestResponseTo reactivateHealthProfessional(@RequestParam(value = "reactivationFile", required = false) MultipartFile reactivationFile,
+                                                                    @RequestPart("data") ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException, IOException {
 
         log.info("In Application Controller: reactivateHealthProfessional method ");
         log.debug("Request Payload: ApplicationRequestTo: ");
         log.debug(applicationRequestTo.toString());
 
-        ReactivateRequestResponseTo reactivateRequestResponseTo = applicationService.reactivateRequest(applicationRequestTo);
+        ReactivateRequestResponseTo reactivateRequestResponseTo = applicationService.reactivateRequest(reactivationFile, applicationRequestTo);
 
         log.info("Application Controller: reactivateHealthProfessional method: Execution Successful. ");
         log.debug("Response Payload: ReactivateRequestResponseTo: ");
