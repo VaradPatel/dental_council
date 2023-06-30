@@ -34,7 +34,7 @@ public enum NMRError {
     PROOFS_EMPTY_ERROR("ABDM-NMR-026", "Please provide at-least one proof document"),
     MISSING_PROOFS_ERROR("ABDM-NMR-027", "Please provide proofs for all the qualification details provided"),
     EXCESS_PROOFS_ERROR("ABDM-NMR-028", "Please remove excess proofs to sync with the qualification details provided"),
-    QUALIFICATION_DETAILS_LIMIT_EXCEEDED("ABDM-NMR-029", "Please provide less than or equal to 6 qualifications at a time"),
+    QUALIFICATION_DETAILS_LIMIT_EXCEEDED("ABDM-NMR-029", "Kindly limit your submission to a maximum of seven additional qualification."),
     MOBILE_NUM_ALREADY_REGISTERED("ABDM-NMR-030", "Mobile number already registered"),
     EMAIL_ID_ALREADY_REGISTERED("ABDM-NMR-031", "Email id already registered"),
     USERNAME_ALREADY_REGISTERED("ABDM-NMR-032", "Username already registered"),

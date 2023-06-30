@@ -331,5 +331,6 @@ public class NMRConstants {
     public static final String REGEX_FOR_ADDRESS = "^[#.0-9a-zA-Z\s,-/:]+$";
     public static final String REGEX_FOR_SUB_DISTRICT = "^[A-Z a-z]+[A-Z a-z //' ']*$";
     public static final String REGEX_FOR_VILLAGE = "^[A-Z a-z]+[A-Z a-z //' ']*$";
+    public static final Integer MAX_QUALIFICATION_SIZE = 8;
 
 }
