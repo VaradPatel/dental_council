@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.math.BigInteger;
 
@@ -48,7 +49,7 @@ public class ApplicationController {
      *                           to perform the suspension request and return the result of the process.
      */
     @PostMapping(ProtectedPaths.SUSPENSION_REQUEST_URL)
-    public SuspendRequestResponseTo suspendHealthProfessional(@RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
+    public SuspendRequestResponseTo suspendHealthProfessional(@Valid @RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
         if(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(applicationRequestTo.getHpProfileId())){
             throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
         }
@@ -167,7 +168,7 @@ public class ApplicationController {
      * @return
      */
     @PatchMapping(HEALTH_PROFESSIONAL_ACTION)
-    public ResponseEntity<ResponseMessageTo> executeActionOnHealthProfessional(@RequestBody WorkFlowRequestTO requestTO) throws WorkFlowException, InvalidRequestException {
+    public ResponseEntity<ResponseMessageTo> executeActionOnHealthProfessional(@Valid @RequestBody WorkFlowRequestTO requestTO) throws WorkFlowException, InvalidRequestException {
         if (iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(requestTO.getHpProfileId(), requestTO.getApplicationTypeId())) {
             if (requestTO.getRequestId() == null || !iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(requestTO.getHpProfileId())) {
                 requestTO.setRequestId(NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(requestTO.getApplicationTypeId())));

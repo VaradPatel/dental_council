@@ -5,11 +5,10 @@ import javax.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = OptionalAddressValidator.class)
+@Constraint(validatedBy = AddressValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OptionalAddress {
-
+public @interface Address {
     String message() default "Invalid Address, it must be Alpha numeric with allowed special characters " +
             "(.,-:/())";
 

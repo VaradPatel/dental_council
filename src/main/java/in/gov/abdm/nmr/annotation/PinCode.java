@@ -5,13 +5,11 @@ import javax.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = OptionalAddressValidator.class)
-@Target({ElementType.METHOD, ElementType.FIELD})
+@Constraint(validatedBy = PinCodeValidator.class)
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OptionalAddress {
-
-    String message() default "Invalid Address, it must be Alpha numeric with allowed special characters " +
-            "(.,-:/())";
+public @interface PinCode {
+    String message() default "Invalid PinCode, it must be only numbers and maximum length of 6";
 
     Class<?>[] groups() default {};
 
