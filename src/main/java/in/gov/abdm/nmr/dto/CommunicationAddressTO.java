@@ -53,10 +53,7 @@ public class CommunicationAddressTO {
     private String landmark;
 
     private String isSameAddress;
-
-    @Email
     private String email;
-    @MobileNumber
     private String mobile;
     @Valid
     @NotNull(message = NOT_NULL_ERROR_MSG)
