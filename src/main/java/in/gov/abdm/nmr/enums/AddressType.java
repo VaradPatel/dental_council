@@ -1,5 +1,8 @@
 package in.gov.abdm.nmr.enums;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 /**
  * Enums defining different address types used in nmr.
  */
@@ -26,5 +29,12 @@ public enum AddressType {
 
     public String getDescription() {
         return description;
+    }
+
+    public static AddressType getAddressType(String s) {
+        Optional<AddressType> addressType = Arrays.stream(
+                AddressType.values()).filter(
+                action -> action.getDescription().equalsIgnoreCase(s)).findFirst();
+        return addressType.orElse(null);
     }
 }
