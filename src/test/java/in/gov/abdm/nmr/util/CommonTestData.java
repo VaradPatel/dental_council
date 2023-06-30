@@ -261,7 +261,6 @@ CommonTestData {
         hpProfile.setESignStatus(ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
         hpProfile.setIsNew(0);
         hpProfile.setRequestId(REQUEST_ID);
-        //hpProfile.setNmrId(NMR_ID);
         hpProfile.setCountryNationality(getCountry());
         hpProfile.setEmailId(EMAIL_ID);
         hpProfile.setProfilePhoto(PROFILE_PHOTO);
@@ -283,7 +282,6 @@ CommonTestData {
         hpProfile.setESignStatus(ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
         hpProfile.setIsNew(0);
         hpProfile.setRequestId(REQUEST_ID);
-        //hpProfile.setNmrId(NMR_ID);
         hpProfile.setCountryNationality(getCountry());
         hpProfile.setEmailId(EMAIL_ID);
         hpProfile.setProfilePhoto(PROFILE_PHOTO);
@@ -745,7 +743,6 @@ CommonTestData {
 
     public ResetToken getResetToken() {
         ResetToken resetToken = new ResetToken();
-        // resetToken.setToken(TEMP_TOKN);
         resetToken.setId(CommonTestData.USER_ID);
         resetToken.setExpiryDate(FUTURE_TIMESTAMP);
         resetToken.setUserName(TEST_USER);
@@ -793,7 +790,6 @@ CommonTestData {
         personalDetails.setCountryNationality(NationalityTO.builder().id(COUNTRY_ID).name(COUNTRY_NAME).build());
         personalDetails.setDateOfBirth(DATE_OF_BIRTH);
         personalDetails.setGender(GENDER);
-        //personalDetails.setSchedule(ScheduleTO.builder().id(SCHEDULE_ID).name(SCHEDULE_NAME).build());
         personalDetails.setProfilePhoto(PROFILE_PHOTO);
         personalDetails.setFullName(PROFILE_DISPLAY_NAME);
         personalDetails.setIsNew(true);
@@ -1163,7 +1159,6 @@ CommonTestData {
         hpProfile.setESignStatus(ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
         hpProfile.setIsNew(0);
         hpProfile.setRequestId(REQUEST_ID);
-        //hpProfile.setNmrId(NMR_ID);
         hpProfile.setCountryNationality(getCountry());
         hpProfile.setEmailId(EMAIL_ID);
         hpProfile.setProfilePhoto(PROFILE_PHOTO);

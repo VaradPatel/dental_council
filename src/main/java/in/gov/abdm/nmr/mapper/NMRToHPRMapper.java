@@ -104,7 +104,6 @@ public class NMRToHPRMapper {
         practitionerRegistrationTO.setRegisteredWithCouncil(registrationMaster.getStateMedicalCouncil() != null ? registrationMaster.getStateMedicalCouncil().getId().toString() : null);
         practitionerRegistrationTO.setRegistrationNumber(registrationMaster.getRegistrationNo());
         practitionerRegistrationTO.setIsNameDifferentInCertificate(BigInteger.ZERO);
-        // practitionerRegistrationTO.setRegistrationCertificate(registrationMaster.getCertificate() != null ? new String(Base64.getEncoder().encodeToString(registrationMaster.getCertificate())) : "");
         practitionerRegistrationTO.setCategoryId(CATEGORY_ID_HEALTH_PROFESSIONAL);
         List<PractitionerQualififcationTO> practitionerQualififcationTOList = new ArrayList<>();
         PractitionerQualififcationTO practitionerQualififcationTO = new PractitionerQualififcationTO();
@@ -118,7 +117,6 @@ public class NMRToHPRMapper {
                 practitionerQualififcationTO.setMonthOfAwardingDegreeDiploma(qualificationDetailsMaster.getQualificationMonth());
                 practitionerQualififcationTO.setYearOfAwardingDegreeDiploma(qualificationDetailsMaster.getQualificationYear());
                 practitionerQualififcationTO.setIsNameDifferentInCertificate(BigInteger.ZERO);
-                //practitionerQualififcationTO.setDegreeCertificate(qualificationDetailsMaster.getCertificate() != null ? new String(Base64.getEncoder().encodeToString(qualificationDetailsMaster.getCertificate())) : "");
             });
         }
         if (foreignQualificationDetailsMasterList != null && !foreignQualificationDetailsMasterList.isEmpty()) {
@@ -131,7 +129,6 @@ public class NMRToHPRMapper {
                 practitionerQualififcationTO.setMonthOfAwardingDegreeDiploma(foreignQualificationDetailsMaster.getQualificationMonth());
                 practitionerQualififcationTO.setYearOfAwardingDegreeDiploma(foreignQualificationDetailsMaster.getQualificationYear());
                 practitionerQualififcationTO.setIsNameDifferentInCertificate(BigInteger.ZERO);
-                // practitionerQualififcationTO.setDegreeCertificate(foreignQualificationDetailsMaster.getCertificate() != null ? new String(Base64.getEncoder().encodeToString(foreignQualificationDetailsMaster.getCertificate())) : "");
             });
         }
         practitionerQualififcationTOList.add(practitionerQualififcationTO);

@@ -135,14 +135,6 @@ class PasswordServiceTest {
         assertEquals(SUCCESS_RESPONSE, responseMessage.getMessage());
     }
 
-/*    @Test
-    void testChangePasswordReturnSuccess() throws GeneralSecurityException, InvalidRequestException {
-        when(userDaoService.findById(any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode()));
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode()));
-        SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        ResponseMessageTo responseMessage = passwordService.changePassword(new ChangePasswordRequestTo(CommonTestData.USER_ID, TEST_PSWD, TEST_PSWD));
-        assertEquals(SUCCESS_RESPONSE, responseMessage.getMessage());
-    }*/
 
     @Test
     void testChangePasswordShouldValidateUserIfUserNotFoundThenReturnUserNotFound() throws GeneralSecurityException, InvalidRequestException {

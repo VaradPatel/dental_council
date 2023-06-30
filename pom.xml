@@ -183,7 +183,7 @@
 		<dependency>
 			<groupId>in.gov.abdm</groupId>
 			<artifactId>abdm-minio-connector</artifactId>
-			<version>1.0.5</version>
+			<version>1.0.1</version>
 		</dependency>
 	</dependencies>
 

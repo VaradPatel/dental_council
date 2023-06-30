@@ -336,24 +336,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             throw new InvalidRequestException(file.getOriginalFilename() + " is not a allowed file type !!");
         }
         String encodedPhoto = Base64.getEncoder().encodeToString(file.getBytes());
-
-      /*  Map<String, String> form = new HashMap<>();
-
-        form.put("grant_type", "client_credentials");
-
-        byte[] encodedBytes = Base64Utils.encode((imageApiUsername + ":" + imageApiPassword).getBytes());
-
-        String authHeader = "Basic " + new String(encodedBytes);
-
-        ImageTokenTo imageTokenTo=imageFClient.getToken(authHeader,form);
-
-        ProfileImageCompareTo imageCompareTo=new ProfileImageCompareTo(hpProfile.getProfilePhoto(),encodedPhoto);
-
-        imageFClient.compareImages(imageCompareTo,"Bearer "+imageTokenTo.getAccessToken()));
-
-        if condition here
-        */
-
         hpProfile.setProfilePhoto(encodedPhoto);
         hpProfile.setPicName(file.getOriginalFilename());
         HpProfile insertedData = iHpProfileRepository.save(hpProfile);
