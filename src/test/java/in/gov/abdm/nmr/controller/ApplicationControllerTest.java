@@ -29,6 +29,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -130,7 +131,7 @@ class ApplicationControllerTest {
         reactivateRequestResponseTo.setProfileId("1");
         reactivateRequestResponseTo.setSelfReactivation(true);
         reactivateRequestResponseTo.setMessage(SUCCESS_RESPONSE);
-        when(applicationService.reactivateRequest(any(ApplicationRequestTo.class))).thenReturn(reactivateRequestResponseTo);
+        when(applicationService.reactivateRequest(any(MultipartFile.class),any(ApplicationRequestTo.class))).thenReturn(reactivateRequestResponseTo);
         mockMvc.perform(post(ProtectedPaths.REACTIVATE_REQUEST_URL).with(user(TEST_USER)).with(csrf())
                         .content(objectMapper.writeValueAsBytes(new ApplicationRequestTo())).accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))

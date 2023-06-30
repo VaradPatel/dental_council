@@ -207,7 +207,32 @@ public class NMRConstants {
     public static final String FIRST_NAME_IN_LOWER_CASE = "firstname";
     public static final String LAST_NAME_IN_LOWER_CASE = "lastname";
     public static final String USER_TYPE_ID_IN_LOWER_CASE = "usertypeid";
-    public static final String FETCH_REACTIVATION_REQUESTS = "SELECT hp.id, hp.registration_id, wf.request_id, hp.full_name, wf.created_at, wf.start_date, hp.gender, hp.email_id, hp.mobile_number , hp.hp_profile_status_id, wf.remarks, COUNT(*) OVER() AS total_count FROM main.work_flow AS wf INNER JOIN main.hp_profile AS hp ON wf.hp_profile_id = hp.id WHERE application_type_id = 5";
+    public static final String FETCH_REACTIVATION_REQUESTS = """
+            select
+            	hp.id,
+            	hp.registration_id,
+            	wf.request_id,
+            	hp.full_name,
+            	wf.created_at,
+            	wf.start_date,
+            	hp.gender,
+            	hp.email_id,
+            	hp.mobile_number ,
+            	hp.hp_profile_status_id,
+            	wf.remarks,
+            	COUNT(*) over() as total_count,
+            	ua.file_path,
+            	ua.file_bytes,
+            	ua.name
+            from
+            	main.work_flow as wf
+            inner join main.hp_profile as hp on
+            	wf.hp_profile_id = hp.id
+            inner join main.user_attachments ua on
+            	hp .user_id = ua.user_id and ua.request_id=wf.request_id
+            where
+            	application_type_id = 5
+            """;
     public static final String NOT_NULL_ERROR_MSG = "The {0} is mandatory.";
     public static final String NOT_BLANK_ERROR_MSG = "The {0} should not be blank.";
     public static final String INVALID_PINCODE = "pincode should be of max 6 digit";
