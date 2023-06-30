@@ -287,7 +287,7 @@ class UserServiceTest {
     @Test
     void testGetSmcProfile() throws NmrException, InvalidIdException {
         when(userDaoService.findSmcProfile(any(BigInteger.class))).thenReturn(getSmcProfile());
-        when(smcMapper.smcProfileToDto(any(SMCProfile.class))).thenReturn(getSMCProfile());
+        when(smcMapper.smcProfileToDto(any(SMCProfile.class))).thenReturn(getSMCProfileTo());
         SMCProfileTO smcProfile = userService.getSmcProfile(CommonTestData.ID);
         assertEquals(CommonTestData.ID, smcProfile.getId());
     }
@@ -311,8 +311,8 @@ class UserServiceTest {
     @Test
     void testUpdateSmcProfile() throws NmrException, InvalidIdException, InvalidRequestException {
         when(userDaoService.updateSmcProfile(any(BigInteger.class), any(SMCProfileTO.class))).thenReturn(getSmcProfile());
-        when(smcMapper.smcProfileToDto(any(SMCProfile.class))).thenReturn(getSMCProfile());
-        SMCProfileTO smcProfileTO = userService.updateSmcProfile(CommonTestData.ID, getSMCProfile());
+        when(smcMapper.smcProfileToDto(any(SMCProfile.class))).thenReturn(getSMCProfileTo());
+        SMCProfileTO smcProfileTO = userService.updateSmcProfile(CommonTestData.ID, getSMCProfileTo());
         assertEquals(CommonTestData.ID, smcProfileTO.getId());
 
     }

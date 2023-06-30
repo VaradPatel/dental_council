@@ -310,7 +310,7 @@ CommonTestData {
         return broadSpecialityTOList;
     }
 
-    public static List<CountryTO> getCountryTo() {
+    public static List<CountryTO> getCountryToList() {
         List<CountryTO> countryTOS = new ArrayList<>();
         CountryTO countryTO = new CountryTO();
         countryTO.setId(ID);
@@ -689,7 +689,7 @@ CommonTestData {
         return foreignQualificationDetailsMaster;
     }
 
-    public SMCProfileTO getSMCProfile() {
+    public SMCProfileTO getSMCProfileTo() {
         SMCProfileTO smcProfile = new SMCProfileTO();
         smcProfile.setId(ID);
         smcProfile.setStateMedicalCouncil(getStateMedicalCouncilTO());
