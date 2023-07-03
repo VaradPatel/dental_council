@@ -49,15 +49,15 @@ public interface IApplicationService {
     /**
      * Retrieves information about the status of a health professional's requests for NMC, NBE, SMC, Dean, Registrar and Admin.
      *
-     * @param pageNo            - Gives the current page number
-     * @param offset            - Gives the number of records to be displayed
-     * @param sortBy            -  According to which column the sort has to happen
-     * @param sortType          -  Sorting order ASC or DESC
-     * @return the HealthProfessionalApplicationResponseTo object representing the response object
-     * which contains all the details used to track the health professionals who have
-     * raised a request
+     * @param nmrPagination the nmr pagination details object.
+     * @param search the search label.
+     * @param value the search value against a label.
+     * @param smcId the smc id
+     * @param registrationNo the registration number.
+     * @return
+     * @throws InvalidRequestException
      */
-    HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String search, String value, String smcId, String registrationNo) throws InvalidRequestException;
+    HealthProfessionalApplicationResponseTo fetchApplicationDetails(NMRPagination nmrPagination, String search, String value, String smcId, String registrationNo) throws InvalidRequestException;
 
     /**
      * Retrieves information about a health professional's application requests to track by health professional.

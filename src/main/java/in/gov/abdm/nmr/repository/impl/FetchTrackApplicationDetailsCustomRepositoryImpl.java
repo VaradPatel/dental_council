@@ -7,6 +7,7 @@ import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.DashboardStatus;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;
+import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -73,7 +74,14 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getGender()) && !healthProfessionalApplicationRequestParamsTo.getGender().isEmpty()) {
-            sb.append("AND hp.gender ILIKE '%").append(healthProfessionalApplicationRequestParamsTo.getGender()).append("%' ");
+            String gender = "";
+            if(healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase(NMRConstants.GENDER_MALE)|| healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase("m")){
+                gender="m";
+            }
+            else if(healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase(NMRConstants.GENDER_FEMALE)|| healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase("f")){
+                gender="f";
+            }
+            sb.append("AND hp.gender ILIKE '%").append(gender).append("%' ");
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getEmailId()) && !healthProfessionalApplicationRequestParamsTo.getEmailId().isEmpty()) {
@@ -179,7 +187,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setApplicantFullName((String) result[9]);
             healthProfessionalApplicationTo.setApplicationTypeId((BigInteger) result[10]);
             healthProfessionalApplicationTo.setApplicationTypeName((String) result[11]);
-            healthProfessionalApplicationTo.setPendency((int) Math.floor((Double) result[12]));
+            healthProfessionalApplicationTo.setPendency(result[12] != null ? (int) Math.floor((Double) result[12]) :Integer.valueOf("0"));
             healthProfessionalApplicationTo.setWorkFlowStatusId((BigInteger) result[13]);
             healthProfessionalApplicationTo.setGender((String) result[14]);
             healthProfessionalApplicationTo.setEmailId((String) result[15]);

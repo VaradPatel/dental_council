@@ -101,7 +101,7 @@ class DashboardControllerTest {
         dashboardTO.setNmcStatus(WorkflowStatus.APPROVED.name());
         dashboardResponseTO.setTotalNoOfRecords(BigInteger.ONE);
         dashboardResponseTO.setDashboardTOList(List.of(dashboardTO));
-        when(iDashboardService.fetchCardDetails(nullable(String.class), nullable(String.class), nullable(String.class), nullable(String.class), nullable(String.class), nullable(Integer.class), nullable(Integer.class), nullable(String.class), nullable(String.class)))
+        when(iDashboardService.fetchCardDetails(nullable(String.class), nullable(String.class), nullable(String.class), nullable(String.class), nullable(String.class), nullable(NMRPagination.class)))
                 .thenReturn(dashboardResponseTO);
 
 

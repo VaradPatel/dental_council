@@ -34,8 +34,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OtpServiceTest {
-    @InjectMocks
-    OtpServiceImpl otpService;
     @Mock
     IOtpDaoService otpDaoService;
     @Mock
@@ -44,6 +42,9 @@ class OtpServiceTest {
     INotificationService notificationService;
     @Mock
     RsaUtil rsaUtil;
+
+    @InjectMocks
+    OtpServiceImpl otpService = new OtpServiceImpl(otpDaoService, userDaoService, notificationService, rsaUtil, true);
 
     @BeforeEach
     void setup() {
