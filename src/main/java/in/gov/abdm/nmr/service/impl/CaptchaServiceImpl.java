@@ -48,9 +48,9 @@ public class CaptchaServiceImpl implements ICaptchaService {
     @Override
     public GenerateCaptchaResponseTO generateCaptcha() throws NoSuchAlgorithmException, IOException {
         Captcha captchaEntity = createCaptchaEntity();
-        cn.apiclub.captcha.Captcha captcha = new cn.apiclub.captcha.Captcha.Builder(1300, 575) //
-                .addText(() -> captchaEntity.getNum1() + " " + captchaEntity.getOperation() + " " + captchaEntity.getNum2() + " = ?", //
-                        new DefaultWordRenderer(List.of(Color.BLACK), List.of(new Font(Font.DIALOG, Font.BOLD, 350)))) //
+        cn.apiclub.captcha.Captcha captcha = new cn.apiclub.captcha.Captcha.Builder(1300, 575)
+                .addText(() -> captchaEntity.getNum1() + " " + captchaEntity.getOperation() + " " + captchaEntity.getNum2() + " = ?",
+                        new DefaultWordRenderer(List.of(Color.BLACK), List.of(new Font(Font.DIALOG, Font.BOLD, 350))))
                 .build();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

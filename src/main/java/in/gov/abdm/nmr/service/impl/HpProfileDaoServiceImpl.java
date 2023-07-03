@@ -423,7 +423,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         customQualification.setState(newCustomQualification.getState() != null ? newCustomQualification.getState().getName() : null);
         customQualification.setCollege(newCustomQualification.getCollege().getName());
         customQualification.setUniversity(newCustomQualification.getUniversity() != null ? newCustomQualification.getUniversity().getName() : null);
-        //GK - 08-04-2023 - FE payload for additional qualification is coming as name, it needs to be corrected. Either courseName or name can rename in dto
         String courseName = newCustomQualification.getCourse().getCourseName();
         customQualification.setCourse(courseName != null ? courseName : newCustomQualification.getCourse().getName());
         if(customQualification.getIsVerified()==null) {

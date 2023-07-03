@@ -35,7 +35,7 @@ public enum ApplicationType {
     }
     
     public static List<BigInteger> getAllHpApplicationTypeIds() {
-        return List.of(HP_REGISTRATION.getId(), HP_MODIFICATION.getId(), HP_TEMPORARY_SUSPENSION.getId(), HP_PERMANENT_SUSPENSION.getId(), HP_ACTIVATE_LICENSE.getId(), //
+        return List.of(HP_REGISTRATION.getId(), HP_MODIFICATION.getId(), HP_TEMPORARY_SUSPENSION.getId(), HP_PERMANENT_SUSPENSION.getId(), HP_ACTIVATE_LICENSE.getId(),
                 FOREIGN_HP_REGISTRATION.getId(), QUALIFICATION_ADDITION.getId());
     }
 

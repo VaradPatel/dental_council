@@ -55,14 +55,13 @@ public class UserPasswordAuthenticationProvider extends DaoAuthenticationProvide
                     contact = userDetail.getMobileNumber();
                 }
 
-                OtpValidateRequestTo otpValidateRequestTo = new OtpValidateRequestTo(userPassAuthToken.getOtpTransactionId(), contact, //
+                OtpValidateRequestTo otpValidateRequestTo = new OtpValidateRequestTo(userPassAuthToken.getOtpTransactionId(), contact,
                         NotificationType.SMS.getNotificationType(), (String) userPassAuthToken.getCredentials());
                 otpService.validateOtp(otpValidateRequestTo, true);
                 return UsernamePasswordAuthenticationToken.authenticated(userPassAuthToken.getPrincipal(), userPassAuthToken.getCredentials(), Collections.emptyList());
             } catch (OtpException e) {
                 throw new InternalAuthenticationServiceException(e.getMessage());
             } catch (GeneralSecurityException e) {
-                // will not be thrown here
             }
         }
 

@@ -177,7 +177,7 @@ public class NMRConstants {
     public static final String GEN_ESP_REQUEST_URL = "/digiSign/genEspRequest";
     public static final String VERIFY_ESP_REQUEST_URL = "/digiSign/pdf/{tansactionId}";
     public static final int MAX_FAILED_ATTEMPTS = 5;
-    public static final long LOCK_TIME_DURATION = 3; // hours
+    public static final long LOCK_TIME_DURATION = 3;
     public static final String ACCOUNT_LOCKED_MESSAGE = "Your account has been locked for " + LOCK_TIME_DURATION + " hours due to " + MAX_FAILED_ATTEMPTS + " failed attempts";
     public static final String ACCOUNT_UNLOCKED_MESSAGE = "Your account has been unlocked. Please try to login again";
     public static final String TEMPLATE_VAR1 = "var1";
@@ -334,5 +334,27 @@ public class NMRConstants {
     public static final Integer MAX_QUALIFICATION_SIZE = 8;
     public static final String GENDER_MALE = "Male";
     public static final String GENDER_FEMALE = "Female";
+
+    public static final String PENDING = "Pending";
+    public static final String FORWARDED = "Forwarded";
+    public static final String QUERY_RAISED = "Query Raised";
+
+    public static final String APPROVED = "Approved";
+    public static final String REJECTED = "Rejected";
+    public static final String BLACKLISTED = "Blacklisted";
+    public static final String SUSPENDED = "Suspended";
+    public static final String COLLEGE_VERIFIED = "College Verified";
+    public static final String SUBMITTED = "Submitted";
+    public static final String VERIFIED =  "Verified";
+
+
+
+
+
+
+
+
+
+
 
 }

@@ -108,8 +108,8 @@ public class UserServiceImpl implements IUserService {
 
 
     
-    private static final Map<BigInteger, List<BigInteger>> ALLOWED_USER_TYPES = Map.of(UserTypeEnum.NMC.getId(), List.of(UserSubTypeEnum.NMC_ADMIN.getId(), UserSubTypeEnum.NMC_VERIFIER.getId()), //
-            UserTypeEnum.SMC.getId(), List.of(UserSubTypeEnum.SMC_ADMIN.getId(), UserSubTypeEnum.SMC_VERIFIER.getId()), //
+    private static final Map<BigInteger, List<BigInteger>> ALLOWED_USER_TYPES = Map.of(UserTypeEnum.NMC.getId(), List.of(UserSubTypeEnum.NMC_ADMIN.getId(), UserSubTypeEnum.NMC_VERIFIER.getId()),
+            UserTypeEnum.SMC.getId(), List.of(UserSubTypeEnum.SMC_ADMIN.getId(), UserSubTypeEnum.SMC_VERIFIER.getId()),
             UserTypeEnum.NBE.getId(), List.of(UserSubTypeEnum.NBE_ADMIN.getId(), UserSubTypeEnum.NBE_VERIFIER.getId()));
 
     @Override
@@ -220,8 +220,8 @@ public class UserServiceImpl implements IUserService {
         validateContactDetails(userProfileTO.getEmailId(), userProfileTO.getMobileNumber());
 
         UserType userType = entityManager.getReference(UserType.class, userProfileTO.getTypeId());
-        User user = User.builder().email(userProfileTO.getEmailId()).mobileNumber(userProfileTO.getMobileNumber()).isSmsNotificationEnabled(false).isEmailNotificationEnabled(false) //
-                .userType(userType).userSubType(entityManager.getReference(UserSubType.class, userProfileTO.getSubTypeId())).group(userType.getGroup()).accountNonLocked(true) //
+        User user = User.builder().email(userProfileTO.getEmailId()).mobileNumber(userProfileTO.getMobileNumber()).isSmsNotificationEnabled(false).isEmailNotificationEnabled(false)
+                .userType(userType).userSubType(entityManager.getReference(UserSubType.class, userProfileTO.getSubTypeId())).group(userType.getGroup()).accountNonLocked(true)
                 .failedAttempt(0).isNew(false).isEmailVerified(false).build();
         user = userDaoService.save(user);
 

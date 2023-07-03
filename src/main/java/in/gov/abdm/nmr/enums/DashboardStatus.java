@@ -1,5 +1,7 @@
 package in.gov.abdm.nmr.enums;
 
+import in.gov.abdm.nmr.util.NMRConstants;
+
 import java.math.BigInteger;
 import java.util.Arrays;
 
@@ -8,14 +10,14 @@ import java.util.Arrays;
  */
 public enum DashboardStatus {
 
-    PENDING(BigInteger.valueOf(1), "Pending", "Pending", "Pending"),
-    FORWARD(BigInteger.valueOf(2), "Forwarded", "Forwarded", "Forwarded"),
-    QUERY_RAISE(BigInteger.valueOf(3), "Query Raised", "Query Raised", "Query Raised"),
-    APPROVED(BigInteger.valueOf(4), "Approved", "Approved", "Approved"),
-    REJECT(BigInteger.valueOf(5), "Rejected", "Rejected", "Rejected"),
-    TEMPORARY_SUSPEND(BigInteger.valueOf(6), "Blacklisted", "Blacklisted", "Submitted"),
-    PERMANENT_SUSPEND(BigInteger.valueOf(7), "Suspended", "Suspended", "Submitted"),
-    COLLEGE_VERIFIED(BigInteger.valueOf(8), "College Verified", "College Verified", "College Verified");
+    PENDING(BigInteger.valueOf(1), NMRConstants.PENDING, NMRConstants.PENDING, NMRConstants.PENDING),
+    FORWARD(BigInteger.valueOf(2), NMRConstants.FORWARDED, NMRConstants.FORWARDED, NMRConstants.FORWARDED),
+    QUERY_RAISE(BigInteger.valueOf(3), NMRConstants.QUERY_RAISED, NMRConstants.QUERY_RAISED, NMRConstants.QUERY_RAISED),
+    APPROVED(BigInteger.valueOf(4), NMRConstants.APPROVED, NMRConstants.APPROVED, NMRConstants.APPROVED),
+    REJECT(BigInteger.valueOf(5), NMRConstants.REJECTED, NMRConstants.REJECTED, NMRConstants.REJECTED),
+    TEMPORARY_SUSPEND(BigInteger.valueOf(6), NMRConstants.BLACKLISTED, NMRConstants.BLACKLISTED, NMRConstants.SUBMITTED),
+    PERMANENT_SUSPEND(BigInteger.valueOf(7), NMRConstants.SUSPENDED, NMRConstants.SUSPENDED, NMRConstants.SUBMITTED),
+    COLLEGE_VERIFIED(BigInteger.valueOf(8), NMRConstants.COLLEGE_VERIFIED, NMRConstants.COLLEGE_VERIFIED, NMRConstants.COLLEGE_VERIFIED);
 
     private final BigInteger id;
     private final String description;

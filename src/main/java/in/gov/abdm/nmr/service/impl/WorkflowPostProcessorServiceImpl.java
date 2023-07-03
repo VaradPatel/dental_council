@@ -114,7 +114,6 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         updateElasticDB(workFlow, masterHpProfileDetails);
 
         WorkFlow workFlowDetailsByHpProfile = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
-        // Note-> Modification and qualification addition application types are not added as there is No update API from HPR
         if ((in.gov.abdm.nmr.enums.HpProfileStatus.APPROVED.getId().equals(workFlowDetailsByHpProfile.getWorkFlowStatus().getId())) &&
                 ((ApplicationType.HP_REGISTRATION.getId().equals((workFlowDetailsByHpProfile.getApplicationType().getId()))) ||
                         (ApplicationType.FOREIGN_HP_REGISTRATION.getId().equals(workFlowDetailsByHpProfile.getApplicationType().getId())))

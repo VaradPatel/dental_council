@@ -509,7 +509,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
 
         String hashedPassword = bCryptPasswordEncoder.encode(rsaUtil.decrypt(request.getPassword()));
-        User userDetail = new User(null, request.getEmail(), request.getMobileNumber(), null, hashedPassword, null, true, false, //
+        User userDetail = new User(null, request.getEmail(), request.getMobileNumber(), null, hashedPassword, null, true, false,
 
                 entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getId()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_ADMIN.getId()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null, request.getUsername(), request.getHprId(), request.getHprIdNumber(), request.isNew(), false, false, null);
         userDaoService.save(userDetail);
@@ -728,7 +728,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         BigInteger masterHpProfileId = iHpProfileRepository.findMasterHpProfileByHpProfileId(hpProfileId);
         if (masterHpProfileId != null) {
-            if (request.getMobileNumber() != null) {// update mobile_number hp_profile_master by hp_profile_master.id
+            if (request.getMobileNumber() != null) {
                 iHpProfileMasterRepository.updateMasterHpProfileMobile(masterHpProfileId, request.getMobileNumber());
             }
             if (eSignTransactionId != null && !eSignTransactionId.isBlank()) {

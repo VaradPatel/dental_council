@@ -44,7 +44,7 @@ public class OtpServiceImpl implements IOtpService {
     
     private boolean otpEnabled;
 
-    public OtpServiceImpl(IOtpDaoService otpDaoService, IUserDaoService userDaoService, INotificationService notificationService, RsaUtil rsaUtil, //
+    public OtpServiceImpl(IOtpDaoService otpDaoService, IUserDaoService userDaoService, INotificationService notificationService, RsaUtil rsaUtil,
                           @Value("${nmr.otp.enabled}") boolean otpEnabled) {
         this.otpDaoService = otpDaoService;
         this.userDaoService = userDaoService;
