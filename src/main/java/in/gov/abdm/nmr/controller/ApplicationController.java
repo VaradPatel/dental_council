@@ -159,7 +159,7 @@ public class ApplicationController {
                                                                       @RequestParam(required = false, value = "value") String value,
                                                                       @RequestParam(required = false, value = "smcId") String smcId,
                                                                       @RequestParam(required = false, value = "registrationNo") String registrationNumber) throws InvalidRequestException {
-        return applicationService.fetchApplicationDetails(pageNo, offset, sortBy, sortType, search, value, smcId, registrationNumber);
+        return applicationService.fetchApplicationDetails(NMRPagination.builder().pageNo(Integer.valueOf(pageNo)).offset(Integer.valueOf(offset)).sortBy(sortBy).sortType(sortType).build(), search, value, smcId, registrationNumber);
     }
 
     /**

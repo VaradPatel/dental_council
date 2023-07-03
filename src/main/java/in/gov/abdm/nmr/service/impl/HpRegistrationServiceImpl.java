@@ -229,7 +229,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Override
     @Transactional
     public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws NmrException, InvalidRequestException, WorkFlowException {
-        HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
+
+        HpProfile hpProfile=hpProfileDaoService.findById(hpProfileId);
+        HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
+        if(latestHpProfile!=null){
+            hpProfile=latestHpProfile;
+        }
         if (hpProfile.getNmrId() == null || !HpProfileStatus.APPROVED.getId().equals(hpProfile.getHpProfileStatus().getId())) {
             throw new WorkFlowException(NMRError.WORK_FLOW_EXCEPTION.getCode(), NMRError.WORK_FLOW_EXCEPTION.getMessage());
         }
@@ -847,7 +852,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     private int similar(String first, String second) {
-        int p, q, l, sum;
+        int p;
+        int q;
+        int l;
+        int sum;
         int pos1 = 0;
         int pos2 = 0;
         int max = 0;

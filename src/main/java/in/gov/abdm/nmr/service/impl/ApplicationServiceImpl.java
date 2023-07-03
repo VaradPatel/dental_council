@@ -127,13 +127,6 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Autowired
     private IUserDaoService userDaoService;
 
-    /**
-     * Injecting a IHpProfileRepository bean instead of an explicit object creation to achieve
-     * Singleton principle
-     */
-    @Autowired
-    private IHpProfileRepository hpProfileRepository;
-
     @Autowired
     private IAddressRepository addressRepository;
 
@@ -169,7 +162,7 @@ public class ApplicationServiceImpl implements IApplicationService {
 
         log.info("In ApplicationServiceImpl: suspendRequest method ");
 
-        HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
+        HpProfile hpProfile = iHpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
         HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
         if (Objects.equals(HpProfileStatus.APPROVED.getId(), latestHpProfile.getHpProfileStatus().getId())) {
             log.debug("Building a new request_id");
@@ -201,7 +194,7 @@ public class ApplicationServiceImpl implements IApplicationService {
 
         log.info("In ApplicationServiceImpl: reactivateRequest method ");
 
-        HpProfile hpProfile = hpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
+        HpProfile hpProfile = iHpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
         HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
         ReactivateRequestResponseTo reactivateRequestResponseTo = new ReactivateRequestResponseTo();
         if (!workFlowService.isAnyActiveWorkflowForHealthProfessional(latestHpProfile.getId())) {
@@ -358,22 +351,22 @@ public class ApplicationServiceImpl implements IApplicationService {
     /**
      * Retrieves information about the status of a health professional's requests for NMC, NBE, SMC, Dean, Registrar and Admin.
      *
-     * @param pageNo   - Gives the current page number
-     * @param offset   - Gives the number of records to be displayed
-     * @param sortBy   -  According to which column the sort has to happen
-     * @param sortType -  Sorting order ASC or DESC
-     * @return the HealthProfessionalApplicationResponseTo object representing the response object
-     * which contains all the details used to track the health professionals who have
-     * raised a request
+     * @param nmrPagination the nmr pagination details object.
+     * @param search the search label.
+     * @param value the search value against a label.
+     * @param smcId the smc id
+     * @param registrationNo the registration number.
+     * @return
+     * @throws InvalidRequestException
      */
     @Override
-    public HealthProfessionalApplicationResponseTo fetchApplicationDetails(String pageNo, String offset, String sortBy, String sortType, String search, String value, String smcId, String registrationNo) throws InvalidRequestException {
-        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, search, value, smcId, registrationNo, null);
+    public HealthProfessionalApplicationResponseTo fetchApplicationDetails(NMRPagination nmrPagination, String search, String value, String smcId, String registrationNo) throws InvalidRequestException {
+        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(nmrPagination, search, value, smcId, registrationNo, null);
         Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getOffset());
         return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable, Collections.emptyList());
     }
 
-    private HealthProfessionalApplicationRequestParamsTo setHPRequestParamInToObject(String pageNo, String offset, String sortBy, String sortType, String search, String value, String smcId, String registrationNo, BigInteger hpProfileId) throws InvalidRequestException {
+    private HealthProfessionalApplicationRequestParamsTo setHPRequestParamInToObject(NMRPagination nmrPagination, String search, String value, String smcId, String registrationNo, BigInteger hpProfileId) throws InvalidRequestException {
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = new HealthProfessionalApplicationRequestParamsTo();
 
         if (StringUtils.isNotBlank(search)) {
@@ -419,11 +412,11 @@ public class ApplicationServiceImpl implements IApplicationService {
         if (Objects.nonNull(registrationNo)) {
             applicationRequestParamsTo.setRegistrationNumber(registrationNo);
         }
-        final int dataLimit = Math.min(MAX_DATA_SIZE, Integer.parseInt(offset));
+        final int dataLimit = Math.min(MAX_DATA_SIZE, nmrPagination.getOffset());
         applicationRequestParamsTo.setOffset(dataLimit);
-        applicationRequestParamsTo.setPageNo(Integer.parseInt(pageNo));
-        final String sortingOrder = (sortType == null || sortType.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortType;
-        String column = mapColumnToTable(sortBy);
+        applicationRequestParamsTo.setPageNo(nmrPagination.getPageNo());
+        final String sortingOrder = (nmrPagination.getSortType() == null || nmrPagination.getSortType().trim().isEmpty()) ? DEFAULT_SORT_ORDER : nmrPagination.getSortType();
+        String column = mapColumnToTable(nmrPagination.getSortBy());
         applicationRequestParamsTo.setSortBy(column);
         applicationRequestParamsTo.setSortOrder(sortingOrder);
         applicationRequestParamsTo.setHpProfileId(hpProfileId);
@@ -446,7 +439,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String search, String value) throws InvalidRequestException {
         RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(healthProfessionalId);
         List<BigInteger> hpProfileIds = iRegistrationDetailRepository.fetchHpProfileIdByRegistrationNumber(registrationDetails.getRegistrationNo());
-        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(pageNo, offset, sortBy, sortType, search, value, null, null, healthProfessionalId);
+        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(NMRPagination.builder().pageNo(Integer.valueOf(pageNo)).offset(Integer.valueOf(offset)).sortBy(sortBy).sortType(sortType).build(), search, value, null, null, healthProfessionalId);
         Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getOffset());
         return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable, hpProfileIds);
     }
