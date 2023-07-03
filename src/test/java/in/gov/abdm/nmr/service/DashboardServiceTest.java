@@ -66,7 +66,6 @@ class DashboardServiceTest {
     void testFetchCountOnCardShouldFetchCountOnCardForStateMedicalCollege() throws AccessDeniedException {
         when(accessControlService.getLoggedInUser()).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(iCollegeProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getCollegeProfile());
-//        when(iFetchCountOnCardRepository.fetchCountForSmc(any(BigInteger.class))).thenReturn(List.of());
         FetchCountOnCardResponseTO fetchCountOnCardResponseTO = dashboardService.fetchCountOnCard();
         assertEquals("1,7", fetchCountOnCardResponseTO.getHpRegistrationRequest().getApplicationTypeIds());
     }
@@ -74,7 +73,6 @@ class DashboardServiceTest {
     @Test
     void testFetchCountOnCardShouldFetchCountOnCardForNationalMedicalCouncil() throws AccessDeniedException {
         when(accessControlService.getLoggedInUser()).thenReturn(getUser(UserTypeEnum.NMC.getId()));
-//        when(iFetchCountOnCardRepository.fetchCountForSmc(any(BigInteger.class))).thenReturn(List.of());
         FetchCountOnCardResponseTO fetchCountOnCardResponseTO = dashboardService.fetchCountOnCard();
         assertEquals("1,7", fetchCountOnCardResponseTO.getHpRegistrationRequest().getApplicationTypeIds());
     }
@@ -82,7 +80,6 @@ class DashboardServiceTest {
     @Test
     void testFetchCountOnCardShouldFetchCountOnCardForNBE() throws AccessDeniedException {
         when(accessControlService.getLoggedInUser()).thenReturn(getUser(UserTypeEnum.NBE.getId()));
-//        when(iFetchCountOnCardRepository.fetchCountForSmc(any(BigInteger.class))).thenReturn(List.of());
         FetchCountOnCardResponseTO fetchCountOnCardResponseTO = dashboardService.fetchCountOnCard();
         assertEquals("1,7", fetchCountOnCardResponseTO.getHpRegistrationRequest().getApplicationTypeIds());
     }

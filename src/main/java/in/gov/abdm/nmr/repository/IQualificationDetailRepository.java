@@ -22,4 +22,7 @@ public interface IQualificationDetailRepository extends JpaRepository<Qualificat
     List<Tuple> findSearchQualificationDetailsByHpProfileId(BigInteger hpprofileId);
 
     QualificationDetails findByRequestId(String requestId);
+
+    @Query(value = "SELECT  COUNT(*) FROM (SELECT name FROM qualification_details qd where qd.user_id =:userID  UNION ALL  SELECT name FROM foreign_qualification_details fqd where fqd.user_id =:userID)", nativeQuery = true)
+    Integer getCountOfQualificationDetailsByUserID(BigInteger userID);
 }

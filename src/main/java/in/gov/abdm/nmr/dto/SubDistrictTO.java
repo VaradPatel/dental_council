@@ -1,6 +1,6 @@
 package in.gov.abdm.nmr.dto;
 
-import in.gov.abdm.validator.District;
+import in.gov.abdm.nmr.annotation.SubDistrict;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +15,7 @@ import java.math.BigInteger;
 public class SubDistrictTO {
 
     private BigInteger id;
-    @District
+    @SubDistrict
     private String name;
     private String isoCode;
 }

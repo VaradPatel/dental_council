@@ -1,5 +1,8 @@
 package in.gov.abdm.nmr.util;
 
+import in.gov.abdm.nmr.exception.NMRError;
+import in.gov.abdm.nmr.exception.TemplateException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +24,7 @@ public class TemplatedStringBuilder {
         return this;
     }
 
-    public String finish(){
+    public String finish() throws TemplateException {
 
         StringBuilder result = new StringBuilder();
 
@@ -45,7 +48,9 @@ public class TemplatedStringBuilder {
 
             String key = template.substring(openIndex + TEMPLATE_START_TOKEN.length(), closeIndex);
 
-            if (!parameters.containsKey(key)) throw new RuntimeException("missing value for key: " + key);
+            if (!parameters.containsKey(key)) {
+                throw new TemplateException(NMRError.TEMPLATE_KEYS_MISSING.getCode(), NMRError.TEMPLATE_KEYS_MISSING.getMessage());
+            }
 
             result.append(template.substring(startIndex, openIndex));
             result.append(parameters.get(key));

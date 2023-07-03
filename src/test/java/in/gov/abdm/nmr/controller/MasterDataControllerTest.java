@@ -192,35 +192,4 @@ class MasterDataControllerTest {
                 .andExpect(jsonPath("$[0].id").value(ID))
                 .andExpect(jsonPath("$[0].name").value(STATE_MEDICAL_COUNCIL));
     }
-
-    /*@Test
-    void testCollege() throws Exception {
-        List<CollegeMasterResponseTo> responseList = new ArrayList<>();
-        CollegeMasterResponseTo response = new CollegeMasterResponseTo();
-        response.setId(ID);
-        response.setCollegeId(COLLEGE_ID);
-        response.setName(COLLEGE_NAME);
-        response.setStateId(STATE_ID);
-        responseList.add(response);
-        when(masterDataService.getCollegesByState(any(BigInteger.class)))
-                .thenReturn(responseList);
-        mockMvc.perform(get("/college").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(ID))
-                .andExpect(jsonPath("$[0].college_id").value(COLLEGE_ID))
-                .andExpect(jsonPath("$[0].name").value(COLLEGE_NAME))
-                .andExpect(jsonPath("$[0].state_id").value(STATE_ID));
-    }*/
-
-    /*@Test
-    void testGetUniversitiesByCollege() throws Exception {
-        List<UniversityMasterResponseTo> responseToList = new ArrayList<>();
-        when(masterDataService.getUniversitiesByCollege(any(BigInteger.class))).thenReturn(responseToList);
-        mockMvc.perform(get("/university").with(user(TEST_USER)).accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(ID))
-                .andExpect(jsonPath("$[0].university_id").value(COLLEGE_ID))
-                .andExpect(jsonPath("$[0].name").value(COLLEGE_NAME))
-                .andExpect(jsonPath("$[0].college_id").value(STATE_ID));
-    }*/
 }

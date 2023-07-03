@@ -336,24 +336,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             throw new InvalidRequestException(file.getOriginalFilename() + " is not a allowed file type !!");
         }
         String encodedPhoto = Base64.getEncoder().encodeToString(file.getBytes());
-
-      /*  Map<String, String> form = new HashMap<>();
-
-        form.put("grant_type", "client_credentials");
-
-        byte[] encodedBytes = Base64Utils.encode((imageApiUsername + ":" + imageApiPassword).getBytes());
-
-        String authHeader = "Basic " + new String(encodedBytes);
-
-        ImageTokenTo imageTokenTo=imageFClient.getToken(authHeader,form);
-
-        ProfileImageCompareTo imageCompareTo=new ProfileImageCompareTo(hpProfile.getProfilePhoto(),encodedPhoto);
-
-        imageFClient.compareImages(imageCompareTo,"Bearer "+imageTokenTo.getAccessToken()));
-
-        if condition here
-        */
-
         hpProfile.setProfilePhoto(encodedPhoto);
         hpProfile.setPicName(file.getOriginalFilename());
         HpProfile insertedData = iHpProfileRepository.save(hpProfile);
@@ -406,7 +388,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         qualification.setHpProfile(hpProfile);
         qualification.setRequestId(
                 coalesce(indianQualification.getRequestId(), hpProfile.getRequestId()));
-        qualification.setBroadSpecialityId(indianQualification.getBroadSpecialityId());
+        qualification.setBroadSpeciality(indianQualification.getBroadSpecialityId() != null ? BroadSpeciality.builder().id(indianQualification.getBroadSpecialityId()).build() : null);
         qualification.setSuperSpecialityName(indianQualification.getSuperSpecialityName());
         qualification.setUser(hpProfile.getUser());
         if (proof != null && !proof.isEmpty()) {
@@ -454,7 +436,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         customQualification.setRequestId(
                 coalesce(newCustomQualification.getRequestId(), hpProfile.getRequestId()));
         customQualification.setHpProfile(hpProfile);
-        customQualification.setBroadSpecialityId(newCustomQualification.getBroadSpecialityId());
+        customQualification.setBroadSpeciality(newCustomQualification.getBroadSpecialityId() != null ? BroadSpeciality.builder().id(newCustomQualification.getBroadSpecialityId()).build() : null);
         customQualification.setSuperSpecialityName(newCustomQualification.getSuperSpecialityName());
         customQualification.setUser(hpProfile.getUser());
         if (proof != null && !proof.isEmpty()) {

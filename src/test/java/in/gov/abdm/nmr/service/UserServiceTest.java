@@ -95,7 +95,7 @@ class UserServiceTest {
         assertEquals(NMRConstants.SMS, response.get(0).getMode());
     }
 
-    public static UserResponseTO getUserResponse() {
+    static UserResponseTO getUserResponse() {
         UserResponseTO response = new UserResponseTO();
         List<UserTO> userTOList = new ArrayList<>();
         UserTO user = new UserTO();
@@ -112,7 +112,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByMobileNumber() throws AccessDeniedException, InvalidRequestException {
+    void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByMobileNumber() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
@@ -127,7 +127,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByUserTypeID() throws AccessDeniedException, InvalidRequestException {
+    void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByUserTypeID() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
@@ -142,7 +142,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByFirstName() throws AccessDeniedException, InvalidRequestException {
+    void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByFirstName() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
@@ -158,7 +158,7 @@ class UserServiceTest {
 
 
     @Test
-    public void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByLastName() throws AccessDeniedException, InvalidRequestException {
+    void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByLastName() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
@@ -173,7 +173,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByEmailID() throws AccessDeniedException, InvalidRequestException {
+    void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByEmailID() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
@@ -194,7 +194,7 @@ class UserServiceTest {
         verify(userDetailRepository, times(1)).deactivateUser(any(BigInteger.class));
     }
 
-    public static RetrieveUserRequestTo getRetrieveUserRequest() {
+    static RetrieveUserRequestTo getRetrieveUserRequest() {
         RetrieveUserRequestTo retrieveUserRequestTo = new RetrieveUserRequestTo();
         retrieveUserRequestTo.setTransactionId(TRANSACTION_ID);
         retrieveUserRequestTo.setContact(MOBILE_NUMBER);
@@ -209,7 +209,7 @@ class UserServiceTest {
         assertEquals(CommonTestData.EMAIL_ID, response);
     }
 
-    public static User getRetrieveUserName() {
+    static User getRetrieveUserName() {
         User user = new User();
         user.setUserName(TEST_USER);
         return user;
@@ -272,25 +272,6 @@ class UserServiceTest {
         return userProfileTO;
     }
 
-    public static UserProfileTO getUserProfileTO() {
-        UserProfileTO userProfileTO = new UserProfileTO();
-        userProfileTO.setSmcId(SMC_ID);
-        userProfileTO.setName(SMC_NAME);
-        userProfileTO.setTypeId(UserTypeEnum.NMC.getId());
-        userProfileTO.setSubTypeId(UserSubTypeEnum.NMC_ADMIN.getId());
-        userProfileTO.setEmailId(CommonTestData.EMAIL_ID);
-        userProfileTO.setMobileNumber(MOBILE_NUMBER);
-        return userProfileTO;
-    }
-
-/*    @Test
-    void testCreateUser() throws NmrException {
-        when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
-        when(nmcDaoService.save(any(NmcProfile.class))).thenReturn(getNmcProfile());
-        UserProfileTO userProfileTO = userService.createUser(getUserProfileTO());
-        assertEquals(CommonTestData.ID, userProfileTO.getSmcId());
-    }*/
-
     @Test
     void testCreateUserShouldThrowNmrException() {
         assertThrows(NmrException.class, () -> userService.createUser(getUserProfileForNMRException()));
@@ -306,7 +287,7 @@ class UserServiceTest {
     @Test
     void testGetSmcProfile() throws NmrException, InvalidIdException {
         when(userDaoService.findSmcProfile(any(BigInteger.class))).thenReturn(getSmcProfile());
-        when(smcMapper.smcProfileToDto(any(SMCProfile.class))).thenReturn(getSMCProfile());
+        when(smcMapper.smcProfileToDto(any(SMCProfile.class))).thenReturn(getSMCProfileTo());
         SMCProfileTO smcProfile = userService.getSmcProfile(CommonTestData.ID);
         assertEquals(CommonTestData.ID, smcProfile.getId());
     }
@@ -330,22 +311,26 @@ class UserServiceTest {
     @Test
     void testUpdateSmcProfile() throws NmrException, InvalidIdException, InvalidRequestException {
         when(userDaoService.updateSmcProfile(any(BigInteger.class), any(SMCProfileTO.class))).thenReturn(getSmcProfile());
-//        when(smcProfileRepository.save(any(SMCProfile.class))).thenReturn(getSmcProfile());
-        when(smcMapper.smcProfileToDto(any(SMCProfile.class))).thenReturn(getSMCProfile());
-        userService.updateSmcProfile(CommonTestData.ID, getSMCProfile());
+        when(smcMapper.smcProfileToDto(any(SMCProfile.class))).thenReturn(getSMCProfileTo());
+        SMCProfileTO smcProfileTO = userService.updateSmcProfile(CommonTestData.ID, getSMCProfileTo());
+        assertEquals(CommonTestData.ID, smcProfileTO.getId());
+
     }
 
     @Test
     void testUpdateNmcProfile() throws NmrException, InvalidIdException, InvalidRequestException {
         when(userDaoService.updateNmcProfile(any(BigInteger.class), any(NmcProfileTO.class))).thenReturn(getNmcProfile());
         when(nmcMapper.nmcProfileToDto(any(NmcProfile.class))).thenReturn(getNmcProfileTO());
-        userService.updateNmcProfile(CommonTestData.ID, getNmcProfileTO());
+        NmcProfileTO nmcProfileTO = userService.updateNmcProfile(CommonTestData.ID, getNmcProfileTO());
+        assertEquals(CommonTestData.ID, nmcProfileTO.getId());
     }
 
     @Test
     void testUpdateNbeProfile() throws NmrException, InvalidIdException, InvalidRequestException {
         when(userDaoService.updateNbeProfile(any(BigInteger.class), any(NbeProfileTO.class))).thenReturn(getNbeProfile());
         when(nbeMapper.nbeProfileToDto(any(NbeProfile.class))).thenReturn(getNbeProfileTO());
-        userService.updateNbeProfile(CommonTestData.ID, getNbeProfileTO());
+        NbeProfileTO nbeProfileTO = userService.updateNbeProfile(CommonTestData.ID, getNbeProfileTO());
+        assertEquals(CommonTestData.ID, nbeProfileTO.getId());
+
     }
 }
