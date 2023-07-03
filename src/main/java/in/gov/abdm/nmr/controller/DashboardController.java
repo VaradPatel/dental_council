@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.DashboardResponseTO;
 import in.gov.abdm.nmr.dto.FetchCountOnCardResponseTO;
+import in.gov.abdm.nmr.dto.NMRPagination;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IDashboardService;
@@ -64,7 +65,7 @@ public class DashboardController {
             @RequestParam(required = false, value = "sortBy") String sortBy,
             @RequestParam(required = false, value = "sortOrder") String sortOrder) throws InvalidRequestException {
         return iDashboardService.fetchCardDetails(workFlowStatusId, applicationTypeId,
-                userGroupStatus, search, value, pageNo, offset, sortBy, sortOrder);
+                userGroupStatus, search, value, NMRPagination.builder().pageNo(pageNo).offset(offset).sortType(sortOrder).sortBy(sortBy).build());
     }
 
 }
