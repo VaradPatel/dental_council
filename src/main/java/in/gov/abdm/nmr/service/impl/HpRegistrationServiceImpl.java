@@ -847,7 +847,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     private int similar(String first, String second) {
-        int p, q, l, sum;
+        int p;
+        int q;
+        int l;
+        int sum;
         int pos1 = 0;
         int pos2 = 0;
         int max = 0;
