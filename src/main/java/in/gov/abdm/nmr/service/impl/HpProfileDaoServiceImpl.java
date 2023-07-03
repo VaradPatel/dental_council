@@ -620,15 +620,18 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 });
             });
         }
-        if (!facilityIdList.isEmpty() && facilityIdList != null && addWorkProfiles != null) {
-            facilityIdList.forEach(facilityId ->
+        if (facilityIdList != null && !facilityIdList.isEmpty() && addWorkProfiles != null) {
+            facilityIdList.forEach(facilityId -> {
+                if (hpWorkProfileUpdateRequestTO != null) {
                     hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> {
-                        if (facilityId !=null && facilityId.equals(currentWorkDetailsTO.getFacilityId())) {
+                        if (facilityId != null && facilityId.equals(currentWorkDetailsTO.getFacilityId())) {
                             WorkProfile workProfile = new WorkProfile();
                             workProfileDetailsList.add(workProfileObjectMapping(hpWorkProfileUpdateRequestTO, workProfile, currentWorkDetailsTO, hpProfileId, userId));
                             workProfileRepository.saveAll(workProfileDetailsList);
                         }
-                    }));
+                    });
+                }
+            });
         }
     }
 
