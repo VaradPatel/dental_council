@@ -38,7 +38,6 @@ public class PersonalDetailsTO {
     private Date dateOfBirth;
     @Gender
     private String gender;
-    //private ScheduleTO schedule;
     private String profilePhoto;
     @Name
     private String fullName;

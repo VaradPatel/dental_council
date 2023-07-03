@@ -8,6 +8,7 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.Validator;
 
+import in.gov.abdm.nmr.exception.TemplateException;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,7 +49,7 @@ public class OtpController {
 	 */
 	@PostMapping(path = NMRConstants.SEND_OTP, produces = MediaType.APPLICATION_JSON_VALUE)
 	public OTPResponseMessageTo generateOtp(@Valid @RequestBody OtpGenerateRequestTo otpGenerateRequestTo)
-			throws OtpException, InvalidRequestException {
+			throws OtpException, InvalidRequestException, TemplateException {
 		return otpService.generateOtp(otpGenerateRequestTo);
 	}
 

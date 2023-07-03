@@ -4,7 +4,9 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigInteger;
 
 /**
@@ -28,7 +30,7 @@ public interface IApplicationService {
      * @return a string indicating the result of the reactivate request.
      * @throws WorkFlowException if there is any error while processing the suspension request.
      */
-    ReactivateRequestResponseTo reactivateRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException;
+    ReactivateRequestResponseTo reactivateRequest(MultipartFile reactivationFile, ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException, IOException;
 
     /**
      * Service for fetching the reactivation records of the health professionals

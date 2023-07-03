@@ -385,21 +385,6 @@ class HpRegistrationServiceImplTest {
         hpRegistrationService.getEmailVerificationLink(CommonTestData.ID, new VerifyEmailLinkTo(CommonTestData.EMAIL_ID));
     }
 
-    private List<WorkProfile> getWorkProfile() {
-        WorkProfile workProfile = new WorkProfile();
-        workProfile.setHpProfileId(HP_ID);
-        workProfile.setFacilityId(CommonTestData.FACILITY_ID);
-        return List.of(workProfile);
-    }
-
-/*    @Test
-    void testDeLinkCurrentWorkDetails() throws NmrException {
-        SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDetailDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
-        when(workProfileRepository.getActiveWorkProfileDetailsByUserId(any(BigInteger.class))).thenReturn(getWorkProfile());
-        hpRegistrationService.delinkCurrentWorkDetails(new WorkDetailsDelinkRequest(List.of(FACILITY_ID)));
-    }*/
-
     @Test
     void testDeLinkCurrentWorkDetailsShouldThrowUserNotFoundException() {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());

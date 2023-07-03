@@ -9,6 +9,7 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
+import in.gov.abdm.nmr.exception.TemplateException;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
@@ -60,7 +61,7 @@ public class OtpServiceImpl implements IOtpService {
      * @throws OtpException with message
      */
     @Override
-    public OTPResponseMessageTo generateOtp(OtpGenerateRequestTo otpGenerateRequestTo) throws OtpException, InvalidRequestException {
+    public OTPResponseMessageTo generateOtp(OtpGenerateRequestTo otpGenerateRequestTo) throws OtpException, InvalidRequestException, TemplateException {
         String notificationType = otpGenerateRequestTo.getType();
 
         if(!otpGenerateRequestTo.isRegistration()) {

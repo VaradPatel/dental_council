@@ -22,8 +22,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.List;
@@ -97,8 +100,13 @@ class ApplicationServiceTest {
         return applicationRequestTo;
     }
 
+    private MultipartFile getMultipartFile(){
+        return new MockMultipartFile("functionTestingFile", "filename.txt", "text/plain",
+                "some xml".getBytes());
+    }
+
     @Test
-    void testReactivateRequest() throws WorkFlowException, NmrException, InvalidRequestException {
+    void testReactivateRequest() throws WorkFlowException, InvalidRequestException, IOException {
         RequestCounter requestCounter = RequestCounter.builder().counter(BigInteger.valueOf(1))
                 .applicationType(in.gov.abdm.nmr.entity.ApplicationType.builder().id(ApplicationType.HP_TEMPORARY_SUSPENSION.getId()).requestPrefixId("NMR300").build()).build();
         when(hpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfileAsSuspendedStatus());
@@ -106,13 +114,13 @@ class ApplicationServiceTest {
         when(iWorkFlowRepository.findLastWorkFlowForHealthProfessional(any(BigInteger.class))).thenReturn(getWorkFlow());
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
-        ReactivateRequestResponseTo reactivateRequestResponseTo = applicationService.reactivateRequest(getApplicationRequestTo());
+        ReactivateRequestResponseTo reactivateRequestResponseTo = applicationService.reactivateRequest(getMultipartFile(),getApplicationRequestTo());
         assertEquals("1", reactivateRequestResponseTo.getProfileId());
         assertEquals(NMRConstants.SUCCESS_RESPONSE, reactivateRequestResponseTo.getMessage());
     }
 
     @Test
-    void testReactivateRequestShouldPreviousGroupIsNmc() throws WorkFlowException, NmrException, InvalidRequestException {
+    void testReactivateRequestShouldPreviousGroupIsNmc() throws WorkFlowException, InvalidRequestException, IOException {
         RequestCounter requestCounter = RequestCounter.builder().counter(BigInteger.valueOf(1))
                 .applicationType(in.gov.abdm.nmr.entity.ApplicationType.builder().id(ApplicationType.HP_TEMPORARY_SUSPENSION.getId()).requestPrefixId("NMR300").build()).build();
         when(hpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfileAsSuspendedStatus());
@@ -120,7 +128,7 @@ class ApplicationServiceTest {
         when(iWorkFlowRepository.findLastWorkFlowForHealthProfessional(any(BigInteger.class))).thenReturn(getWorkFlowWherePreviousGroupNmc());
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
-        ReactivateRequestResponseTo reactivateRequestResponseTo = applicationService.reactivateRequest(getApplicationRequestTo());
+        ReactivateRequestResponseTo reactivateRequestResponseTo = applicationService.reactivateRequest(getMultipartFile(),getApplicationRequestTo());
         assertEquals("1", reactivateRequestResponseTo.getProfileId());
         assertEquals(NMRConstants.SUCCESS_RESPONSE, reactivateRequestResponseTo.getMessage());
     }

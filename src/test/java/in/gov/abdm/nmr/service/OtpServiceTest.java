@@ -8,6 +8,7 @@ import in.gov.abdm.nmr.enums.NotificationType;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.OtpException;
+import in.gov.abdm.nmr.exception.TemplateException;
 import in.gov.abdm.nmr.redis.hash.Otp;
 import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.impl.OtpServiceImpl;
@@ -49,7 +50,7 @@ class OtpServiceTest {
     }
 
     @Test
-    void testGenerateOtpShouldGenerateOtpAndSendToMobileNumberForNMRId() throws OtpException, InvalidRequestException {
+    void testGenerateOtpShouldGenerateOtpAndSendToMobileNumberForNMRId() throws OtpException, InvalidRequestException, TemplateException {
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
@@ -60,7 +61,7 @@ class OtpServiceTest {
     }
 
     @Test
-    void testGenerateOtpShouldGenerateSMSAndSendToMobileNumber() throws OtpException, InvalidRequestException {
+    void testGenerateOtpShouldGenerateSMSAndSendToMobileNumber() throws OtpException, InvalidRequestException, TemplateException {
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
         when(notificationService.sendNotificationForOTP(anyString(), anyString(), anyString())).thenReturn(getResponseMessage());
@@ -69,7 +70,7 @@ class OtpServiceTest {
     }
 
     @Test
-    void testGenerateOtpShouldGenerateEmailAndSendToMobileNumber() throws OtpException, InvalidRequestException {
+    void testGenerateOtpShouldGenerateEmailAndSendToMobileNumber() throws OtpException, InvalidRequestException, TemplateException {
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
         when(notificationService.sendNotificationForOTP(anyString(), anyString(), anyString())).thenReturn(getResponseMessage());
@@ -78,7 +79,7 @@ class OtpServiceTest {
     }
 
     @Test
-    void testGenerateOtpShouldReturnFailureResponseWhenNotificationFail() throws OtpException, InvalidRequestException {
+    void testGenerateOtpShouldReturnFailureResponseWhenNotificationFail() throws OtpException, InvalidRequestException, TemplateException {
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
         when(notificationService.sendNotificationForOTP(anyString(), anyString(), anyString())).thenReturn(new ResponseMessageTo(NMRConstants.NO_SUCH_OTP_TYPE));
@@ -101,7 +102,7 @@ class OtpServiceTest {
     }
 
     @Test
-    void testValidateOtp() throws OtpException, GeneralSecurityException {
+    void testValidateOtp() throws OtpException, GeneralSecurityException, TemplateException {
         when(otpDaoService.findById(anyString())).thenReturn(getOtp());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
         when(notificationService.sendNotificationForVerifiedOTP(anyString(), anyString())).thenReturn(getResponseMessage());

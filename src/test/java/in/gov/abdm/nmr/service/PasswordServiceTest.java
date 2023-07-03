@@ -9,6 +9,7 @@ import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.OtpException;
+import in.gov.abdm.nmr.exception.TemplateException;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.repository.IUserRepository;
 import in.gov.abdm.nmr.repository.ResetTokenRepository;
@@ -70,7 +71,7 @@ class PasswordServiceTest {
     }
 
     @Test
-    void testGetResetPasswordLinkShouldValidateUserAndSendNotificationForResetPassword() {
+    void testGetResetPasswordLinkShouldValidateUserAndSendNotificationForResetPassword() throws TemplateException {
         when(userDaoService.existsByEmail(anyString())).thenReturn(true);
         when(notificationService.sendNotificationForResetPasswordLink(anyString(), anyString())).thenReturn(CommonTestData.getResponseMessage());
         ResponseMessageTo resetPasswordLink = passwordService.getResetPasswordLink(getSendLinkOnMail());
@@ -135,14 +136,6 @@ class PasswordServiceTest {
         assertEquals(SUCCESS_RESPONSE, responseMessage.getMessage());
     }
 
-/*    @Test
-    void testChangePasswordReturnSuccess() throws GeneralSecurityException, InvalidRequestException {
-        when(userDaoService.findById(any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode()));
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getCode()));
-        SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        ResponseMessageTo responseMessage = passwordService.changePassword(new ChangePasswordRequestTo(CommonTestData.USER_ID, TEST_PSWD, TEST_PSWD));
-        assertEquals(SUCCESS_RESPONSE, responseMessage.getMessage());
-    }*/
 
     @Test
     void testChangePasswordShouldValidateUserIfUserNotFoundThenReturnUserNotFound() throws GeneralSecurityException, InvalidRequestException {

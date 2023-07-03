@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.util;
 
-import co.elastic.clients.elasticsearch._types.FieldValue;
 import in.gov.abdm.nmr.dto.CurrentWorkDetailsTO;
 import in.gov.abdm.nmr.dto.QualificationDetailRequestTO;
 import in.gov.abdm.nmr.entity.RequestCounter;
@@ -13,10 +12,8 @@ import lombok.experimental.UtilityClass;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -42,7 +39,7 @@ public final class NMRUtil {
      * @param qualificationDetailRequestTOs
      * @param proofs
      */
-    public static void validateQualificationDetailsAndProofs(List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException {
+    public static void validateQualificationDetailsAndProofs(List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs, Integer existingQualificationCount) throws InvalidRequestException {
         if (CollectionUtils.isEmpty(qualificationDetailRequestTOs)) {
             throw new InvalidRequestException(NMRError.MISSING_MANDATORY_FIELD.getCode(), NMRError.MISSING_MANDATORY_FIELD.getMessage());
         }
@@ -55,7 +52,7 @@ public final class NMRUtil {
         if (qualificationDetailRequestTOs.size() < proofs.size()) {
             throw new InvalidRequestException(NMRError.EXCESS_PROOFS_ERROR.getCode(), NMRError.EXCESS_PROOFS_ERROR.getMessage());
         }
-        if (qualificationDetailRequestTOs.size() > 6) {
+        if (NMRConstants.MAX_QUALIFICATION_SIZE <= qualificationDetailRequestTOs.size() + existingQualificationCount) {
             throw new InvalidRequestException(NMRError.QUALIFICATION_DETAILS_LIMIT_EXCEEDED.getCode(), NMRError.QUALIFICATION_DETAILS_LIMIT_EXCEEDED.getMessage());
         }
 
