@@ -241,8 +241,8 @@ class UserServiceTest {
     @Test
     void testVerifyEmailShouldTokenValueNullAndReturnLinkExpired() throws InvalidRequestException{
         when(resetTokenRepository.findByToken(anyString())).thenReturn(null);
-        ResponseMessageTo responseMessageTo = userService.verifyEmail(new VerifyEmailTo(TEMP_TOKEN));
-        assertEquals(LINK_EXPIRED, responseMessageTo.getMessage());
+        assertThrows(InvalidRequestException.class, () -> userService.verifyEmail(new VerifyEmailTo(TEMP_TOKEN)));
+
     }
 
     public ResetToken getExpiredResetToken() {
@@ -256,8 +256,7 @@ class UserServiceTest {
     @Test
     void testVerifyEmailShouldReturnLinkExpired() throws InvalidRequestException{
         when(resetTokenRepository.findByToken(anyString())).thenReturn(getExpiredResetToken());
-        ResponseMessageTo responseMessageTo = userService.verifyEmail(new VerifyEmailTo(TEMP_TOKEN));
-        assertEquals(LINK_EXPIRED, responseMessageTo.getMessage());
+        assertThrows(InvalidRequestException.class, () -> userService.verifyEmail(new VerifyEmailTo(TEMP_TOKEN)));
     }
 
 

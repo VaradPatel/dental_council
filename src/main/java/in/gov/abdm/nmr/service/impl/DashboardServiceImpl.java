@@ -364,17 +364,13 @@ public class DashboardServiceImpl implements IDashboardService {
      * @param workFlowStatusId  the workflow status ID
      * @param applicationTypeId the application type ID
      * @param userGroupStatus   the user group status
-     * @param pageNo            the page number
-     * @param offset            the size of the page
-     * @param sortBy            the sort parameter
-     * @param sortOrder         the sort order
+     * @param nmrPagination the pagination object.
      * @return the DashboardResponseTO containing the card details
      * @throws InvalidRequestException if the request is invalid
      */
     @Override
     public DashboardResponseTO fetchCardDetails(String workFlowStatusId, String applicationTypeId, String userGroupStatus,
-                                                String search, String value, int pageNo, int offset,
-                                                String sortBy, String sortOrder) throws InvalidRequestException {
+                                                String search, String value, NMRPagination nmrPagination) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         log.info("Processing card-detail service for : {} ", userName);
         User userDetail = userDaoService.findByUsername(userName);
@@ -384,7 +380,7 @@ public class DashboardServiceImpl implements IDashboardService {
         setApplicationTypeIdAndUserGroupStatus(applicationTypeId, userGroupStatus, dashboardRequestParamsTO);
         dashboardRequestParamsTO.setWorkFlowStatusId(workFlowStatusId);
         applyFiltersForCardDetails(search, value, groupId, dashboardRequestParamsTO);
-        String column = mapColumnToTable(sortBy);
+        String column = mapColumnToTable(nmrPagination.getSortBy());
         dashboardRequestParamsTO.setSortBy(column);
         dashboardRequestParamsTO.setUserGroupId(groupId);
         if (groupId.equals(Group.SMC.getId())) {
@@ -392,10 +388,10 @@ public class DashboardServiceImpl implements IDashboardService {
         } else if (groupId.equals(Group.COLLEGE.getId())) {
             dashboardRequestParamsTO.setCollegeId(collegeProfileDaoService.findByUserId(userId).getCollege().getId().toString());
         }
-        final String sortingOrder = (sortOrder == null || sortOrder.trim().isEmpty()) ? DEFAULT_SORT_ORDER : sortOrder;
+        final String sortingOrder = (nmrPagination.getSortType() == null || nmrPagination.getSortType().trim().isEmpty()) ? DEFAULT_SORT_ORDER : nmrPagination.getSortType();
         dashboardRequestParamsTO.setSortOrder(sortingOrder);
-        final int dataLimit = Math.min(MAX_DATA_SIZE, offset);
-        Pageable pageable = PageRequest.of(pageNo, dataLimit);
+        final int dataLimit = Math.min(MAX_DATA_SIZE, nmrPagination.getOffset());
+        Pageable pageable = PageRequest.of(nmrPagination.getPageNo(), dataLimit);
         return iFetchSpecificDetailsCustomRepository.fetchDashboardData(dashboardRequestParamsTO, pageable);
     }
 }

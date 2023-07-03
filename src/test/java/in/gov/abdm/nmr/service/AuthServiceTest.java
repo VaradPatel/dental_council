@@ -4,6 +4,8 @@ import in.gov.abdm.nmr.client.GatewayFClient;
 import in.gov.abdm.nmr.dto.LoginResponseTO;
 import in.gov.abdm.nmr.dto.SessionRequestTo;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.IWorkFlowRepository;
 import in.gov.abdm.nmr.security.jwt.JwtUtil;
 import in.gov.abdm.nmr.service.impl.AuthServiceImpl;
 import in.gov.abdm.nmr.util.TestAuthentication;
@@ -21,8 +23,7 @@ import java.math.BigInteger;
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -42,10 +43,16 @@ class AuthServiceTest {
     ICollegeProfileDaoService collegeProfileDaoService;
     @Mock
     ISmcProfileDaoService smcProfileDaoService;
+
+    @Mock
+    IWorkFlowRepository workFlowRepository;
+    @Mock
+    IHpProfileRepository ihpProfileRepository;
     @Mock
     GatewayFClient gatewayFClient;
 
     HttpServletResponse response;
+
 
     @BeforeEach
     void setup() {
@@ -57,6 +64,8 @@ class AuthServiceTest {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(hpProfileService.findLatestEntryByUserid(any(BigInteger.class))).thenReturn(getHpProfile());
+        when(ihpProfileRepository.findLatestHpProfileFromWorkFlow(nullable(String.class))).thenReturn(getHpProfile());
+        when(workFlowRepository.findLastWorkFlowForHealthProfessional(any(BigInteger.class))).thenReturn(null);
         LoginResponseTO loginResponseTO = authService.successfulAuth(response);
         assertEquals(ID, loginResponseTO.getUserId());
     }

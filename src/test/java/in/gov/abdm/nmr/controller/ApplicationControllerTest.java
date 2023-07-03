@@ -22,6 +22,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -131,8 +132,18 @@ class ApplicationControllerTest {
         reactivateRequestResponseTo.setProfileId("1");
         reactivateRequestResponseTo.setSelfReactivation(true);
         reactivateRequestResponseTo.setMessage(SUCCESS_RESPONSE);
+        String data = """
+                {
+                 "hpProfileId": 333,
+                 "applicationTypeId": 30031,
+                 "actionId": "Yes"
+                }
+                """;
+        MockMultipartFile multipartFile = new MockMultipartFile("functionTestingFile", "filename.txt", "text/plain",
+                "some xml".getBytes());
+
         when(applicationService.reactivateRequest(any(MultipartFile.class),any(ApplicationRequestTo.class))).thenReturn(reactivateRequestResponseTo);
-        mockMvc.perform(post(ProtectedPaths.REACTIVATE_REQUEST_URL).with(user(TEST_USER)).with(csrf())
+        mockMvc.perform(multipart(ProtectedPaths.REACTIVATE_REQUEST_URL).file(multipartFile).with(user(TEST_USER)).with(csrf())
                         .content(objectMapper.writeValueAsBytes(new ApplicationRequestTo())).accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -164,7 +175,7 @@ class ApplicationControllerTest {
     @Test
     @WithMockUser
     void testTrackStatusDetailsShouldFetchApplicationDetails() throws Exception {
-        when(applicationService.fetchApplicationDetails(nullable(String.class), nullable(String.class), nullable(String.class), nullable(String.class), nullable(String.class), nullable(String.class), nullable(String.class), nullable(String.class)))
+        when(applicationService.fetchApplicationDetails(nullable(NMRPagination.class), nullable(String.class), nullable(String.class), nullable(String.class), nullable(String.class)))
                 .thenReturn(new HealthProfessionalApplicationResponseTo());
         mockMvc.perform(get(APPLICATION_REQUEST_URL)
                         .with(user(TEST_USER))
