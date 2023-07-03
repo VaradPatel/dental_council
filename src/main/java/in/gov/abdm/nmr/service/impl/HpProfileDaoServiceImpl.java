@@ -331,13 +331,13 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         if (hpProfile == null) {
             throw new InvalidRequestException(NMRError.INVALID_REQUEST.getCode(), NMRError.INVALID_REQUEST.getMessage());
         }
-
-        if(file != null && file.getOriginalFilename() != null && !SUPPORTED_FILE_TYPES.contains(file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".")).toLowerCase())){
+        String originalFileName = file.getOriginalFilename();
+        if( originalFileName != null && !SUPPORTED_FILE_TYPES.contains(originalFileName.substring(originalFileName.lastIndexOf(".")).toLowerCase())){
             throw new InvalidRequestException(file.getOriginalFilename() + " is not a allowed file type !!");
         }
         String encodedPhoto = Base64.getEncoder().encodeToString(file.getBytes());
         hpProfile.setProfilePhoto(encodedPhoto);
-        hpProfile.setPicName(file.getOriginalFilename());
+        hpProfile.setPicName(originalFileName);
         HpProfile insertedData = iHpProfileRepository.save(hpProfile);
         HpProfilePictureResponseTO hpProfilePictureResponseTO = new HpProfilePictureResponseTO();
         hpProfilePictureResponseTO.setProfilePicture(insertedData.getProfilePhoto());
