@@ -247,7 +247,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
     }
 
-    private static void setDashboardStatus(BigInteger actionPerformedId, BigInteger userGroup, Dashboard dashboard) throws InvalidRequestException {
+    private static void setDashboardStatus(BigInteger actionPerformedId, BigInteger userGroup, Dashboard dashboard){
         BigInteger dashboardStatusId = DashboardStatus.getDashboardStatus(Action.getAction(actionPerformedId).getStatus()).getId();
         if (userGroup.equals(Group.SMC.getId())) {
             dashboard.setSmcStatus(dashboardStatusId);

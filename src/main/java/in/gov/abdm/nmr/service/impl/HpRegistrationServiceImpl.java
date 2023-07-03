@@ -795,9 +795,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
         resetTokenRepository.save(resetToken);
 
-        String resetPasswordLink = emailVerifyUrl + "/" + token;
+        return emailVerifyUrl + "/" + token;
 
-        return resetPasswordLink;
+
     }
 
     @Override
@@ -877,7 +877,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
         sum = max;
         if (sum > 0) {
-            if (pos1 > 0 && pos2 > 0) {
+            if (pos1 > 0) {
                 sum += this.similar(first.substring(0, pos1 > firstLength ? firstLength : pos1), second.substring(0, pos2 > secondLength ? secondLength : pos2));
             }
 

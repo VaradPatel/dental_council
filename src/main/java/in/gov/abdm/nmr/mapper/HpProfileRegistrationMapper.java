@@ -152,7 +152,7 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
             }
             registrationDetailsTo.setIsRenewable(registrationDetails.getIsRenewable());
             if(registrationDetails.getCertificate() != null) {
-                registrationDetailsTo.setRegistrationCertificate( new String(Base64.getEncoder().encodeToString(registrationDetails.getCertificate())));
+                registrationDetailsTo.setRegistrationCertificate(Base64.getEncoder().encodeToString(registrationDetails.getCertificate()));
             }
             if (registrationDetails.getFileName() != null && !registrationDetails.getFileName().isEmpty()) {
                 registrationDetailsTo.setFileName(registrationDetails.getFileName().substring(0, registrationDetails.getFileName().lastIndexOf(".")));

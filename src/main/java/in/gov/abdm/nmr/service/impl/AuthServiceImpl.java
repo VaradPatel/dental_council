@@ -90,28 +90,8 @@ public class AuthServiceImpl implements IAuthService {
         loginResponseTO.setUserId(user.getId());
         loginResponseTO.setLastLogin(user.getLastLogin());
         if (UserTypeEnum.HEALTH_PROFESSIONAL.getId().equals(user.getUserType().getId())) {
-            HpProfile hp = hpProfileService.findLatestEntryByUserid(user.getId());
-            if (hp != null) {
-                loginResponseTO.setProfileId(hp.getId());
-                loginResponseTO.setHpRegistered(StringUtils.isBlank(hp.getNmrId()));
-                loginResponseTO.setEsignStatus(hp.getESignStatus() != null ? hp.getESignStatus() : ESignStatus.PROFILE_NOT_ESIGNED.getId());
-                HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hp.getRegistrationId());
-                if (latestHpProfile != null) {
-                    loginResponseTO.setBlacklisted(Objects.equals(HpProfileStatus.BLACKLISTED.getId(), latestHpProfile.getHpProfileStatus().getId()) || Objects.equals(HpProfileStatus.SUSPENDED.getId(), latestHpProfile.getHpProfileStatus().getId()));
-                    loginResponseTO.setHpProfileStatusId(latestHpProfile.getHpProfileStatus() != null ? latestHpProfile.getHpProfileStatus().getId() : null);
-                    WorkFlow workFlow = workFlowRepository.findLastWorkFlowForHealthProfessional(latestHpProfile.getId());
-                    if (workFlow != null) {
-                        loginResponseTO.setWorkFlowStatusId(workFlow.getWorkFlowStatus().getId());
-                    }
-                } else {
-                    loginResponseTO.setBlacklisted(Objects.equals(HpProfileStatus.BLACKLISTED.getId(), hp.getHpProfileStatus().getId()) || Objects.equals(HpProfileStatus.SUSPENDED.getId(), hp.getHpProfileStatus().getId()));
-                    loginResponseTO.setHpProfileStatusId(hp.getHpProfileStatus() != null ? hp.getHpProfileStatus().getId() : null);
-                    WorkFlow workFlow = workFlowRepository.findLastWorkFlowForHealthProfessional(hp.getId());
-                    if (workFlow != null) {
-                        loginResponseTO.setWorkFlowStatusId(workFlow.getWorkFlowStatus().getId());
-                    }
-                }
-            }
+            createHealthProfessionalLoginResponse(user, loginResponseTO);
+
         } else if (UserTypeEnum.COLLEGE.getId().equals(user.getUserType().getId())) {
             BigInteger userSubTypeId = user.getUserSubType().getId();
             loginResponseTO.setUserSubType(userSubTypeId);
@@ -131,6 +111,31 @@ public class AuthServiceImpl implements IAuthService {
             loginResponseTO.setProfileId(nbeDaoService.findByUserId(user.getId()).getId());
         }
         return loginResponseTO;
+    }
+
+    private void createHealthProfessionalLoginResponse(User user, LoginResponseTO loginResponseTO) {
+        HpProfile hp = hpProfileService.findLatestEntryByUserid(user.getId());
+        if (hp != null) {
+            loginResponseTO.setProfileId(hp.getId());
+            loginResponseTO.setHpRegistered(StringUtils.isBlank(hp.getNmrId()));
+            loginResponseTO.setEsignStatus(hp.getESignStatus() != null ? hp.getESignStatus() : ESignStatus.PROFILE_NOT_ESIGNED.getId());
+            HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hp.getRegistrationId());
+            if (latestHpProfile != null) {
+                loginResponseTO.setBlacklisted(Objects.equals(HpProfileStatus.BLACKLISTED.getId(), latestHpProfile.getHpProfileStatus().getId()) || Objects.equals(HpProfileStatus.SUSPENDED.getId(), latestHpProfile.getHpProfileStatus().getId()));
+                loginResponseTO.setHpProfileStatusId(latestHpProfile.getHpProfileStatus() != null ? latestHpProfile.getHpProfileStatus().getId() : null);
+                WorkFlow workFlow = workFlowRepository.findLastWorkFlowForHealthProfessional(latestHpProfile.getId());
+                if (workFlow != null) {
+                    loginResponseTO.setWorkFlowStatusId(workFlow.getWorkFlowStatus().getId());
+                }
+            } else {
+                loginResponseTO.setBlacklisted(Objects.equals(HpProfileStatus.BLACKLISTED.getId(), hp.getHpProfileStatus().getId()) || Objects.equals(HpProfileStatus.SUSPENDED.getId(), hp.getHpProfileStatus().getId()));
+                loginResponseTO.setHpProfileStatusId(hp.getHpProfileStatus() != null ? hp.getHpProfileStatus().getId() : null);
+                WorkFlow workFlow = workFlowRepository.findLastWorkFlowForHealthProfessional(hp.getId());
+                if (workFlow != null) {
+                    loginResponseTO.setWorkFlowStatusId(workFlow.getWorkFlowStatus().getId());
+                }
+            }
+        }
     }
 
     private void generateAccessAndRefreshToken(HttpServletResponse response, String username, User user, BigInteger profileId) {
