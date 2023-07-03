@@ -179,7 +179,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setApplicantFullName((String) result[9]);
             healthProfessionalApplicationTo.setApplicationTypeId((BigInteger) result[10]);
             healthProfessionalApplicationTo.setApplicationTypeName((String) result[11]);
-            healthProfessionalApplicationTo.setPendency(result[12] != null ? (int)result[12] : Integer.valueOf("0"));
+            healthProfessionalApplicationTo.setPendency(result[12] != null ? (int) Math.floor((Double) result[12]) :Integer.valueOf("0"));
             healthProfessionalApplicationTo.setWorkFlowStatusId((BigInteger) result[13]);
             healthProfessionalApplicationTo.setGender((String) result[14]);
             healthProfessionalApplicationTo.setEmailId((String) result[15]);
