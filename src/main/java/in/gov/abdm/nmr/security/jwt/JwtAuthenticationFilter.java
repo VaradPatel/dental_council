@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
     private Tracer tracer;
 
-    protected JwtAuthenticationFilter(AuthenticationManager authenticationManager, AuthenticationEventPublisher authEventPublisher, JwtUtil jwtUtil, //
+    protected JwtAuthenticationFilter(AuthenticationManager authenticationManager, AuthenticationEventPublisher authEventPublisher, JwtUtil jwtUtil,
                                       ISecurityAuditTrailDaoService securityAuditTrailDaoService, Tracer tracer) {
         super(new OrRequestMatcher(ProtectedPaths.getProtectedPathsMatchers()), authenticationManager);
         this.setAuthenticationSuccessHandler((request, response, authentication) -> {
@@ -135,9 +135,9 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) //
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult)
             throws IOException, ServletException {
-        if(authResult.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals(RoleConstants.ROLE_PREFIX + RoleConstants.SYSTEM)) && // 
+        if(authResult.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals(RoleConstants.ROLE_PREFIX + RoleConstants.SYSTEM)) &&
                 !NMRConstants.HEALTH_PROFESSIONAL_ACTION.equals(request.getServletPath())) {
             throw new AuthenticationServiceException("Not allowed");
         }

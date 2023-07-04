@@ -8,13 +8,12 @@ import in.gov.abdm.nmr.entity.WorkFlowAudit;
 import in.gov.abdm.nmr.entity.WorkFlowStatus;
 import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.TemplateException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.INextGroup;
 import in.gov.abdm.nmr.repository.*;
-import in.gov.abdm.nmr.service.impl.UserDaoServiceImpl;
 import in.gov.abdm.nmr.service.impl.WorkFlowServiceImpl;
 import in.gov.abdm.nmr.util.TestAuthentication;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,9 +27,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class WorkFlowServiceTest {
@@ -83,7 +84,7 @@ class WorkFlowServiceTest {
     IDashboardRepository iDashboardRepository;
 
     @Test
-    void testInitiateSubmissionFlow() throws WorkFlowException, InvalidRequestException {
+    void testInitiateSubmissionFlow() throws WorkFlowException, InvalidRequestException, TemplateException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));

@@ -229,7 +229,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Override
     @Transactional
     public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws NmrException, InvalidRequestException, WorkFlowException {
-        HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
+
+        HpProfile hpProfile=hpProfileDaoService.findById(hpProfileId);
+        HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
+        if(latestHpProfile!=null){
+            hpProfile=latestHpProfile;
+        }
         if (hpProfile.getNmrId() == null || !HpProfileStatus.APPROVED.getId().equals(hpProfile.getHpProfileStatus().getId())) {
             throw new WorkFlowException(NMRError.WORK_FLOW_EXCEPTION.getCode(), NMRError.WORK_FLOW_EXCEPTION.getMessage());
         }
@@ -504,7 +509,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
 
         String hashedPassword = bCryptPasswordEncoder.encode(rsaUtil.decrypt(request.getPassword()));
-        User userDetail = new User(null, request.getEmail(), request.getMobileNumber(), null, hashedPassword, null, true, false, //
+        User userDetail = new User(null, request.getEmail(), request.getMobileNumber(), null, hashedPassword, null, true, false,
 
                 entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getId()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_ADMIN.getId()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null, request.getUsername(), request.getHprId(), request.getHprIdNumber(), request.isNew(), false, false, null);
         userDaoService.save(userDetail);
@@ -723,7 +728,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         BigInteger masterHpProfileId = iHpProfileRepository.findMasterHpProfileByHpProfileId(hpProfileId);
         if (masterHpProfileId != null) {
-            if (request.getMobileNumber() != null) {// update mobile_number hp_profile_master by hp_profile_master.id
+            if (request.getMobileNumber() != null) {
                 iHpProfileMasterRepository.updateMasterHpProfileMobile(masterHpProfileId, request.getMobileNumber());
             }
             if (eSignTransactionId != null && !eSignTransactionId.isBlank()) {
@@ -790,9 +795,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
         resetTokenRepository.save(resetToken);
 
-        String resetPasswordLink = emailVerifyUrl + "/" + token;
+        return emailVerifyUrl + "/" + token;
 
-        return resetPasswordLink;
+
     }
 
     @Override
@@ -847,7 +852,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     private int similar(String first, String second) {
-        int p, q, l, sum;
+        int p;
+        int q;
+        int l;
+        int sum;
         int pos1 = 0;
         int pos2 = 0;
         int max = 0;
@@ -869,7 +877,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
         sum = max;
         if (sum > 0) {
-            if (pos1 > 0 && pos2 > 0) {
+            if (pos1 > 0) {
                 sum += this.similar(first.substring(0, pos1 > firstLength ? firstLength : pos1), second.substring(0, pos2 > secondLength ? secondLength : pos2));
             }
 

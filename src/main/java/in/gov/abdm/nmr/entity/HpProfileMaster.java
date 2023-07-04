@@ -46,9 +46,7 @@ public class HpProfileMaster {
 	private String picName;
 	private String primaryContactNo;
 	private String professionalType;
-	
-	//@Lob
-	//@Type(type="org.hibernate.type.BinaryType")
+
 	private String profilePhoto;
 		
 	private String salutation;

@@ -17,7 +17,6 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class DscRequestTo {
 
-    //@NotBlank
     @JsonProperty("templateId")
     private String templateId;
 

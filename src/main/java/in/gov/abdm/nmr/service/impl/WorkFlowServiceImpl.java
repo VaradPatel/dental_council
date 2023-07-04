@@ -234,9 +234,6 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         } else {
             setDashboardStatus(requestTO.getActionId(), requestTO.getActorId(), dashboard);
             if (!isLastStepOfWorkFlow(iNextGroup)) {
-                //submit is equivalent to pending status.
-
-                // this has to uncomment when we need add college_verified.
                 if (Group.COLLEGE.getId().equals(requestTO.getActorId()) && Action.APPROVED.getId().equals(requestTO.getActionId())) {
                     dashboard.setSmcStatus(DashboardStatus.COLLEGE_VERIFIED.getId());
                 } else {
@@ -250,7 +247,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
     }
 
-    private static void setDashboardStatus(BigInteger actionPerformedId, BigInteger userGroup, Dashboard dashboard) throws InvalidRequestException {
+    private static void setDashboardStatus(BigInteger actionPerformedId, BigInteger userGroup, Dashboard dashboard){
         BigInteger dashboardStatusId = DashboardStatus.getDashboardStatus(Action.getAction(actionPerformedId).getStatus()).getId();
         if (userGroup.equals(Group.SMC.getId())) {
             dashboard.setSmcStatus(dashboardStatusId);

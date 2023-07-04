@@ -12,5 +12,5 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
 @FeignClient(name = HPR_SERVICE, url = HPR_SERVICE_ENDPOINT)
 public interface HPRFClient {
     @PostMapping(value = HPR_SERVICE_REGISTER_HEALTH_PROFESSIONAL)
-    RegisteredPractitionerResponseTO registerHealthProfessional(@RequestHeader(value = "Authorization") String authorization, @RequestBody PractitionerRequestTO practitionerRequestTO) throws Exception;
+    RegisteredPractitionerResponseTO registerHealthProfessional(@RequestHeader(value = "Authorization") String authorization, @RequestBody PractitionerRequestTO practitionerRequestTO);
 }

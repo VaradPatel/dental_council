@@ -1,7 +1,5 @@
 package in.gov.abdm.nmr.annotation;
 
-import in.gov.abdm.validator.DistrictValidator;
-
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;

@@ -81,9 +81,9 @@ public class ElasticsearchDaoServiceImpl implements IElasticsearchDaoService {
         
         if (hpSearchRequestTO.getFullName() != null && !hpSearchRequestTO.getFullName().isBlank()) {
             BoolQuery.Builder fullNameQueryBuilder = QueryBuilders.bool().minimumShouldMatch("1");
-            fullNameQueryBuilder.should(mm -> mm.multiMatch(mmq -> mmq.fields("full_name", "full_name.phonetic_analyzed", "full_name.keyword").query(hpSearchRequestTO.getFullName()) //
+            fullNameQueryBuilder.should(mm -> mm.multiMatch(mmq -> mmq.fields("full_name", "full_name.phonetic_analyzed", "full_name.keyword").query(hpSearchRequestTO.getFullName())
                     .fuzziness("AUTO")));
-            fullNameQueryBuilder.should(mm -> mm.multiMatch(mmq -> mmq.fields("full_name", "full_name.phonetic_analyzed").query(hpSearchRequestTO.getFullName()) //
+            fullNameQueryBuilder.should(mm -> mm.multiMatch(mmq -> mmq.fields("full_name", "full_name.phonetic_analyzed").query(hpSearchRequestTO.getFullName())
                     .analyzer("keyword").type(TextQueryType.BoolPrefix)));
             queryBuilder.must(b -> b.bool(fullNameQueryBuilder.build()));
             

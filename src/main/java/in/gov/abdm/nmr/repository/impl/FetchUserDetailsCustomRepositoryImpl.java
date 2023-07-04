@@ -72,13 +72,13 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
                                 UserSubTypeEnum.NBE_ADMIN.getId() + "," +
                                 UserSubTypeEnum.COLLEGE_ADMIN.getId()).append(") ");
             }
-            if (UserSubTypeEnum.SMC_ADMIN.getId().equals(userRequestParamsTO.getUserSubTypeID())) {
+            if (UserSubTypeEnum.SMC_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
                 stringBuilder.append(" AND u.user_sub_type_id IN(").append(
                         UserSubTypeEnum.SMC_ADMIN.getId() + "," +
                                 UserSubTypeEnum.SMC_ADMIN.getId() + "," +
                                 UserSubTypeEnum.SMC_VERIFIER.getId()).append(") ");
             }
-            if (UserSubTypeEnum.NBE_ADMIN.getId().equals(userRequestParamsTO.getUserSubTypeID())) {
+            if (UserSubTypeEnum.NBE_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
                 stringBuilder.append(" AND u.user_sub_type_id IN(").append(
                         UserSubTypeEnum.SMC_ADMIN.getId() + "," +
                                 UserSubTypeEnum.NBE_ADMIN.getId() + "," +
@@ -124,13 +124,13 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
                                 UserSubTypeEnum.NBE_ADMIN.getId() + "," +
                                 UserSubTypeEnum.COLLEGE_ADMIN.getId()).append(") ");
             }
-            if (UserSubTypeEnum.SMC_ADMIN.getId().equals(userRequestParamsTO.getUserSubTypeID())) {
+            if (UserSubTypeEnum.SMC_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
                 builder.append(" AND u.user_sub_type_id IN(").append(
                         UserSubTypeEnum.SMC_ADMIN.getId() + "," +
                                 UserSubTypeEnum.SMC_ADMIN.getId() + "," +
                                 UserSubTypeEnum.SMC_VERIFIER.getId()).append(") ");
             }
-            if (UserSubTypeEnum.NBE_ADMIN.getId().equals(userRequestParamsTO.getUserSubTypeID())) {
+            if (UserSubTypeEnum.NBE_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
                 builder.append(" AND u.user_sub_type_id IN(").append(
                         UserSubTypeEnum.SMC_ADMIN.getId() + "," +
                                 UserSubTypeEnum.NBE_ADMIN.getId() + "," +
@@ -176,13 +176,13 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
                                 UserSubTypeEnum.NBE_ADMIN.getId() + "," +
                                 UserSubTypeEnum.COLLEGE_ADMIN.getId()).append(") ");
             }
-            if (UserSubTypeEnum.SMC_ADMIN.getId().equals(userRequestParamsTO.getUserSubTypeID())) {
+            if (UserSubTypeEnum.SMC_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
                 builder.append(" AND u.user_sub_type_id IN(").append(
                         UserSubTypeEnum.SMC_ADMIN.getId() + "," +
                                 UserSubTypeEnum.SMC_ADMIN.getId() + "," +
                                 UserSubTypeEnum.SMC_VERIFIER.getId()).append(") ");
             }
-            if (UserSubTypeEnum.NBE_ADMIN.getId().equals(userRequestParamsTO.getUserSubTypeID())) {
+            if (UserSubTypeEnum.NBE_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
                 builder.append(" AND u.user_sub_type_id IN(").append(
                         UserSubTypeEnum.SMC_ADMIN.getId() + "," +
                                 UserSubTypeEnum.NBE_ADMIN.getId() + "," +

@@ -62,8 +62,8 @@ public class CollegeServiceImpl implements ICollegeService {
     @Autowired
     IPasswordService passwordService;
 
-    public CollegeServiceImpl(ICollegeMasterDaoService collegeMasterDaoService, IUniversityMasterService universityMasterService, //
-                                IStateMedicalCouncilDaoService stateMedicalCouncilDaoService, ICollegeProfileDaoService collegeProfileDaoService, //
+    public CollegeServiceImpl(ICollegeMasterDaoService collegeMasterDaoService, IUniversityMasterService universityMasterService,
+                                IStateMedicalCouncilDaoService stateMedicalCouncilDaoService, ICollegeProfileDaoService collegeProfileDaoService,
                                 IUserDaoService userDaoService, EntityManager entityManager) {
         this.collegeMasterDaoService = collegeMasterDaoService;
         this.universityMasterService = universityMasterService;
@@ -199,8 +199,8 @@ public class CollegeServiceImpl implements ICollegeService {
 
         User user = collegeProfile != null ? collegeProfile.getUser() : null;
         if (user == null) {
-            user = new User(null, collegeResponseTo.getEmailId(), collegeResponseTo.getMobileNumber(), null, null, null, false, false, //
-                    entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getId()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_ADMIN.getId()), // 
+            user = new User(null, collegeResponseTo.getEmailId(), collegeResponseTo.getMobileNumber(), null, null, null, false, false,
+                    entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getId()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_ADMIN.getId()),
                     entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false,false, false,null);
         } else {
             user.setEmail(collegeResponseTo.getEmailId());
@@ -253,8 +253,8 @@ public class CollegeServiceImpl implements ICollegeService {
 
     @Override
     public List<CollegeMasterDataTO> getAllCollegeVerifiersDesignation() throws NmrException {
-        return entityManager.createQuery("select ust from userSubType ust where ust.id != ?1 and ust.userType.id = ?2 order by ust.id asc", UserSubType.class) //
-                .setParameter(1, UserSubTypeEnum.COLLEGE_ADMIN.getId()).setParameter(2, UserTypeEnum.COLLEGE.getId()) //
+        return entityManager.createQuery("select ust from userSubType ust where ust.id != ?1 and ust.userType.id = ?2 order by ust.id asc", UserSubType.class)
+                .setParameter(1, UserSubTypeEnum.COLLEGE_ADMIN.getId()).setParameter(2, UserTypeEnum.COLLEGE.getId())
                 .getResultList().stream().map(userSubType -> new CollegeMasterDataTO(userSubType.getId(), userSubType.getName())).toList();
     }
 
@@ -271,9 +271,9 @@ public class CollegeServiceImpl implements ICollegeService {
 
         User user = collegeProfile != null ? collegeProfile.getUser() : null;
         if (user == null) {
-            user = new User(null, collegeProfileTo.getEmailId(), collegeProfileTo.getMobileNumber(), null, //
-                    null, null, false, false, entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getId()), //
-                    entityManager.getReference(UserSubType.class, collegeProfileTo.getDesignation()), //
+            user = new User(null, collegeProfileTo.getEmailId(), collegeProfileTo.getMobileNumber(), null,
+                    null, null, false, false, entityManager.getReference(UserType.class, UserTypeEnum.COLLEGE.getId()),
+                    entityManager.getReference(UserSubType.class, collegeProfileTo.getDesignation()),
                     entityManager.getReference(UserGroup.class, Group.COLLEGE.getId()), true, 0, null, null, null, null, false,false,false, null);
         } else {
             user.setEmail(collegeProfileTo.getEmailId());

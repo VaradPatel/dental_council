@@ -107,7 +107,6 @@ class HpRegistrationControllerTest {
         personalDetails.setCountryNationality(NationalityTO.builder().id(COUNTRY_ID).name(COUNTRY_NAME).build());
         personalDetails.setDateOfBirth(DATE_OF_BIRTH);
         personalDetails.setGender(GENDER);
-        //personalDetails.setSchedule(ScheduleTO.builder().id(SCHEDULE_ID).name(SCHEDULE_NAME).build());
         personalDetails.setProfilePhoto(PROFILE_PHOTO);
         personalDetails.setFullName(PROFILE_DISPLAY_NAME);
         personalDetails.setIsNew(true);
@@ -188,8 +187,6 @@ class HpRegistrationControllerTest {
                 .andExpect(jsonPath("$.personal_details.country_nationality.id").value(COUNTRY_ID))
                 .andExpect(jsonPath("$.personal_details.country_nationality.name").value(COUNTRY_NAME))
                 .andExpect(jsonPath("$.personal_details.gender").value(GENDER))
-                .andExpect(jsonPath("$.personal_details.schedule.id").value(CommonTestData.SCHEDULE_ID))
-                .andExpect(jsonPath("$.personal_details.schedule.name").value(SCHEDULE_NAME))
                 .andExpect(jsonPath("$.personal_details.profile_photo").value(PROFILE_PHOTO))
                 .andExpect(jsonPath("$.personal_details.full_name").value(PROFILE_DISPLAY_NAME))
                 .andExpect(jsonPath("$.personal_details.email").value(CommonTestData.EMAIL_ID))
@@ -266,7 +263,7 @@ class HpRegistrationControllerTest {
         personalDetails.setCountryNationality(NationalityTO.builder().id(COUNTRY_ID).name(COUNTRY_NAME).build());
         personalDetails.setDateOfBirth(DATE_OF_BIRTH);
         personalDetails.setGender(GENDER);
-        //personalDetails.setSchedule(ScheduleTO.builder().id(SCHEDULE_ID).name(SCHEDULE_NAME).build());
+
         personalDetails.setProfilePhoto(PROFILE_PHOTO);
         personalDetails.setFullName(PROFILE_DISPLAY_NAME);
         personalDetails.setIsNew(true);
@@ -347,8 +344,6 @@ class HpRegistrationControllerTest {
                 .andExpect(jsonPath("$.personal_details.country_nationality.id").value(COUNTRY_ID))
                 .andExpect(jsonPath("$.personal_details.country_nationality.name").value(COUNTRY_NAME))
                 .andExpect(jsonPath("$.personal_details.gender").value(GENDER))
-                .andExpect(jsonPath("$.personal_details.schedule.id").value(CommonTestData.SCHEDULE_ID))
-                .andExpect(jsonPath("$.personal_details.schedule.name").value(SCHEDULE_NAME))
                 .andExpect(jsonPath("$.personal_details.profile_photo").value(PROFILE_PHOTO))
                 .andExpect(jsonPath("$.personal_details.full_name").value(PROFILE_DISPLAY_NAME))
                 .andExpect(jsonPath("$.personal_details.email").value(CommonTestData.EMAIL_ID))
@@ -427,7 +422,6 @@ class HpRegistrationControllerTest {
         personalDetails.setCountryNationality(NationalityTO.builder().id(COUNTRY_ID).name(COUNTRY_NAME).build());
         personalDetails.setDateOfBirth(DATE_OF_BIRTH);
         personalDetails.setGender(GENDER);
-        //personalDetails.setSchedule(ScheduleTO.builder().id(SCHEDULE_ID).name(SCHEDULE_NAME).build());
         personalDetails.setProfilePhoto(PROFILE_PHOTO);
         personalDetails.setFullName(PROFILE_DISPLAY_NAME);
         personalDetails.setIsNew(true);
@@ -501,8 +495,6 @@ class HpRegistrationControllerTest {
                 .andExpect(jsonPath("$.personal_details.country_nationality.id").value(COUNTRY_ID))
                 .andExpect(jsonPath("$.personal_details.country_nationality.name").value(COUNTRY_NAME))
                 .andExpect(jsonPath("$.personal_details.gender").value(GENDER))
-                .andExpect(jsonPath("$.personal_details.schedule.id").value(CommonTestData.SCHEDULE_ID))
-                .andExpect(jsonPath("$.personal_details.schedule.name").value(SCHEDULE_NAME))
                 .andExpect(jsonPath("$.personal_details.profile_photo").value(PROFILE_PHOTO))
                 .andExpect(jsonPath("$.personal_details.full_name").value(PROFILE_DISPLAY_NAME))
                 .andExpect(jsonPath("$.personal_details.email").value(CommonTestData.EMAIL_ID))

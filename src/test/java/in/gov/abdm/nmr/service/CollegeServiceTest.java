@@ -1,10 +1,10 @@
 package in.gov.abdm.nmr.service;
 
-import in.gov.abdm.nmr.dto.CollegeMasterDataTO;
 import in.gov.abdm.nmr.dto.CollegeProfileTo;
 import in.gov.abdm.nmr.dto.CollegeResponseTo;
-import in.gov.abdm.nmr.dto.SendLinkOnMailTo;
-import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.entity.CollegeMaster;
+import in.gov.abdm.nmr.entity.CollegeProfile;
+import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.*;
@@ -22,10 +22,8 @@ import javax.persistence.EntityManager;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
-import java.util.List;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
-import static in.gov.abdm.nmr.util.CommonTestData.getUniversityMaster;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -72,7 +70,6 @@ class CollegeServiceTest {
         when(collegeProfileDaoService.findAdminByCollegeId(any(BigInteger.class))).thenReturn(getCollegeProfile());
         when(userDaoService.findById(any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(universityMasterService.getUniversitiesByCollegeId(ID)).thenReturn(getListOfUniversityMasterTo());
-        //when(stateMedicalCouncilDaoService.findByState(anyString())).thenReturn(getStateMedicalCouncil());
         CollegeResponseTo collegeResponseTo = collegeService.getCollege(ID);
         assertEquals(EMAIL_ID, collegeResponseTo.getEmailId());
     }
@@ -100,7 +97,6 @@ class CollegeServiceTest {
         when(collegeProfileDaoService.findAdminByCollegeId(any(BigInteger.class))).thenReturn(getCollegeProfile());
         when(collegeMasterDaoService.save(any(CollegeMaster.class))).thenReturn(getCollegeMaster());
         when(universityMasterService.findById(any(BigInteger.class))).thenReturn(getUniversityMaster());
-//        when(universityMasterService.save(any(UniversityMaster.class))).thenReturn(getUniversityMaster());
         when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         CollegeResponseTo collegeResponse = collegeService.createOrUpdateCollege(getCollegeResponse());
         assertEquals(ID, collegeResponse.getId());
@@ -133,12 +129,9 @@ class CollegeServiceTest {
     void testCreateOrUpdateCollegeShouldCreateCollegeAndCheckDuplicateContactsCheck() {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDaoService.findByUsername(anyString())).thenReturn(getNmcUser());
-      //  when(collegeMasterDaoService.findById(any(BigInteger.class))).thenReturn(getCollegeMaster());
-//        when(collegeProfileDaoService.findAdminByCollegeId(any(BigInteger.class))).thenReturn(getCollegeProfile());
         when(collegeMasterDaoService.save(any(CollegeMaster.class))).thenReturn(getCollegeMaster());
         when(universityMasterService.findById(any(BigInteger.class))).thenReturn(getUniversityMaster());
         when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
-//        when(passwordService.getResetPasswordLink(any(SendLinkOnMailTo.class))).thenReturn(getResponseMessage());
         when(userDaoService.existsByEmail(anyString())).thenReturn(false);
         assertThrows(Exception.class, () -> collegeService.createOrUpdateCollege(getCollege()));
     }
@@ -161,7 +154,6 @@ class CollegeServiceTest {
         when(collegeProfileDaoService.findById(any(BigInteger.class))).thenReturn(getCollegeProfile());
         when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(collegeProfileDaoService.save(any(CollegeProfile.class))).thenReturn(getCollegeProfile());
-        // when(passwordService.getResetPasswordLink(any(SendLinkOnMailTo.class))).thenReturn(getResponseMessage());
         CollegeProfileTo collegeVerifier = collegeService.createOrUpdateCollegeVerifier(getCollegeProfileRequest());
         assertEquals(ID, collegeVerifier.getId());
     }
