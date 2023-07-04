@@ -151,7 +151,7 @@ class WorkflowPostProcessorServiceTest {
         when(hpProfileMasterRepository.findByRegistrationId(anyString())).thenReturn(getMasterHpProfile());
         when(hpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfile());
         when(hpProfileMasterRepository.save(any(HpProfileMaster.class))).thenReturn(getMasterHpProfile());
-        when(customQualificationDetailRepository.getQualificationDetailsByUserId(any(BigInteger.class))).thenReturn(Arrays.asList(getForeignQualificationDetails()));
+        when(customQualificationDetailRepository.getApprovedQualificationDetailsByUserId(any(BigInteger.class))).thenReturn(Arrays.asList(getForeignQualificationDetails()));
         when(customQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(any(BigInteger.class))).thenReturn(Arrays.asList(getForeignQualificationDetailsMaster()));
         when(notificationService.sendNotificationForNMRCreation(anyString(), anyString())).thenReturn(new ResponseMessageTo());
         when(userRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId())));
