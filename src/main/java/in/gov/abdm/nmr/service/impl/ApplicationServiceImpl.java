@@ -219,25 +219,8 @@ public class ApplicationServiceImpl implements IApplicationService {
                 reactivateRequestResponseTo.setProfileId(latestHpProfile.getId().toString());
                 reactivateRequestResponseTo.setMessage(SUCCESS_RESPONSE);
 
-                UserAttachments userAttachment=new UserAttachments();
-                userAttachment.setUserId(hpProfile.getUser().getId());
-                userAttachment.setRequestId(requestId);
-                userAttachment.setAttachmentTypeId(AttachmentType.REACTIVATION.getId());
-                userAttachment.setName(reactivationFile != null ? reactivationFile.getOriginalFilename() : null);
-                if (reactivationFile != null) {
-                    if (minioEnable) {
-                        String fileName = hpProfile.getId() + "_" + reactivationFile.getOriginalFilename();
-                        String path = "NMR/HP/" + hpProfile.getUser().getId() + "/Reactivation/" + fileName;
-                        s3Service.uploadFile(path, reactivationFile);
-                        userAttachment.setFilePath(path);
-
-                    } else {
-                        userAttachment.setFileBytes(reactivationFile != null ? reactivationFile.getBytes() : null);
-                    }
-                }
-                userAttachmentsRepository.save(userAttachment);
+                saveReactivationAttachments(reactivationFile, hpProfile, requestId);
                 log.info("ApplicationServiceImpl: reactivateRequest method: Execution Successful. ");
-
                 return reactivateRequestResponseTo;
             } else {
                 throw new WorkFlowException(NMRError.PROFILE_NOT_SUSPEND.getCode(), NMRError.PROFILE_NOT_SUSPEND.getMessage());
@@ -245,6 +228,26 @@ public class ApplicationServiceImpl implements IApplicationService {
         } else {
             throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
         }
+    }
+
+    private void saveReactivationAttachments(MultipartFile reactivationFile, HpProfile hpProfile, String requestId) throws IOException {
+        UserAttachments userAttachment=new UserAttachments();
+        userAttachment.setUserId(hpProfile.getUser().getId());
+        userAttachment.setRequestId(requestId);
+        userAttachment.setAttachmentTypeId(AttachmentType.REACTIVATION.getId());
+        if (reactivationFile != null) {
+            userAttachment.setName( reactivationFile.getOriginalFilename());
+            if (minioEnable) {
+                String fileName = hpProfile.getId() + "_" + reactivationFile.getOriginalFilename();
+                String path = "NMR/HP/" + hpProfile.getUser().getId() + "/Reactivation/" + fileName;
+                s3Service.uploadFile(path, reactivationFile);
+                userAttachment.setFilePath(path);
+
+            } else {
+                userAttachment.setFileBytes(reactivationFile.getBytes());
+            }
+        }
+        userAttachmentsRepository.save(userAttachment);
     }
 
     /**

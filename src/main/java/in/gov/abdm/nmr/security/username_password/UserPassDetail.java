@@ -15,7 +15,7 @@ public class UserPassDetail extends User {
     
     private final String mobileNumber;
 
-    public UserPassDetail(String username, String mobileNumber, String password, //
+    public UserPassDetail(String username, String mobileNumber, String password,
                           Collection<? extends GrantedAuthority> authorities, BigInteger userType, boolean accountNonLocked) {
         super(username, password, true, true, true, accountNonLocked, authorities);
         this.userType = userType;

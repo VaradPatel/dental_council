@@ -38,7 +38,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     private EntityManager entityManager;
 
     private IAccessControlService accessControlService;
-    public UserDaoServiceImpl(IUserRepository userDetailRepository, EntityManager entityManager, ISmcProfileRepository smcProfileRepository, //
+    public UserDaoServiceImpl(IUserRepository userDetailRepository, EntityManager entityManager, ISmcProfileRepository smcProfileRepository,
                               INmcProfileRepository nmcProfileRepository, INbeProfileRepository nbeProfileRepository, IAccessControlService accessControlService) {
         super();
         this.userDetailRepository = userDetailRepository;
@@ -58,8 +58,8 @@ public class UserDaoServiceImpl implements IUserDaoService {
         List<Predicate> predicates = new ArrayList<>();
 
         if (StringUtils.isNotBlank(refreshTokenRequestTO.getUsername())) {
-            predicates.add(builder.or(builder.equal(root.get(User_.EMAIL), refreshTokenRequestTO.getUsername()), builder.equal(root.get(User_.MOBILE_NUMBER), //
-                    refreshTokenRequestTO.getUsername()), builder.equal(root.get(User_.HPR_ID), refreshTokenRequestTO.getUsername()), //
+            predicates.add(builder.or(builder.equal(root.get(User_.EMAIL), refreshTokenRequestTO.getUsername()), builder.equal(root.get(User_.MOBILE_NUMBER),
+                    refreshTokenRequestTO.getUsername()), builder.equal(root.get(User_.HPR_ID), refreshTokenRequestTO.getUsername()),
                     builder.equal(root.get(User_.NMR_ID), refreshTokenRequestTO.getUsername())));
         }
 

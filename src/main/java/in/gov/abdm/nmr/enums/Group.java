@@ -12,8 +12,6 @@ public enum Group {
     SMC(BigInteger.valueOf(2), "State Medical Council"),
     NMC(BigInteger.valueOf(3), "National Medical Council"),
     COLLEGE(BigInteger.valueOf(4), "College"),
-//    COLLEGE_REGISTRAR(BigInteger.valueOf(5), "College Registrar"),
-//    COLLEGE_ADMIN(BigInteger.valueOf(6), "College Admin"),
     NBE(BigInteger.valueOf(7), "NBE"),
     SYSTEM(BigInteger.valueOf(8), "SYSTEM");
 

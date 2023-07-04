@@ -8,6 +8,6 @@ public class PinCodeValidator implements ConstraintValidator<PinCode, String> {
     public boolean isValid(String pinCode, ConstraintValidatorContext constraintValidatorContext) {
         if (pinCode == null)
             return true;
-        return pinCode.toString().matches("^[1-9]\\d{5}$");
+        return pinCode.matches("^[1-9]\\d{5}$");
     }
 }

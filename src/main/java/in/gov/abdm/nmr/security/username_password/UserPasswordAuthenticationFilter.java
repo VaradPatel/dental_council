@@ -60,7 +60,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
     @Autowired
     AuthenticationLockingService authenticationHandler;
 
-    public UserPasswordAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper, RsaUtil rsaUtil, ICaptchaService captchaService, //
+    public UserPasswordAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper, RsaUtil rsaUtil, ICaptchaService captchaService,
                                             AuthenticationEventPublisher authEventPublisher, ISecurityAuditTrailDaoService securityAuditTrailDaoService, Tracer tracer) {
         super();
         this.setRequiresAuthenticationRequestMatcher(ProtectedPaths.getLoginPathMatcher());
@@ -83,7 +83,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
             ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).setAttribute(REQUEST_BODY, readRequestBody(request), RequestAttributes.SCOPE_REQUEST);
 
             LoginRequestTO requestBodyTO = convertRequestToDTO();
-            authRequest = UserPasswordAuthenticationToken.unauthenticated(requestBodyTO.getUsername(), //
+            authRequest = UserPasswordAuthenticationToken.unauthenticated(requestBodyTO.getUsername(),
                     rsaUtil.decrypt(requestBodyTO.getPassword()), requestBodyTO.getUserType(), requestBodyTO.getLoginType(), requestBodyTO.getOtpTransId());
             authRequest.setDetails(createSecurityAuditTrail(request));
 
@@ -149,7 +149,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) //
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult)
             throws IOException, ServletException {
         super.successfulAuthentication(request, response, chain, authResult);
         chain.doFilter(request, response);

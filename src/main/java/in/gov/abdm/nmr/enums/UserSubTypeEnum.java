@@ -12,17 +12,17 @@ import lombok.Getter;
 @Getter
 public enum UserSubTypeEnum {
 
-    COLLEGE_ADMIN(BigInteger.valueOf(1), RoleConstants.COLLEGE_ADMIN, UserTypeEnum.COLLEGE, Group.COLLEGE), //
-    COLLEGE_REGISTRAR(BigInteger.valueOf(2), RoleConstants.COLLEGE_REGISTRAR, UserTypeEnum.COLLEGE, Group.COLLEGE), //
-    COLLEGE_DEAN(BigInteger.valueOf(3), RoleConstants.COLLEGE_DEAN, UserTypeEnum.COLLEGE, Group.COLLEGE), //
-    COLLEGE_PRINCIPAL(BigInteger.valueOf(4), RoleConstants.COLLEGE_PRINCIPAL, UserTypeEnum.COLLEGE, Group.COLLEGE), //
-    OTHERS(BigInteger.valueOf(5), RoleConstants.COLLEGE_OTHERS, UserTypeEnum.COLLEGE, Group.COLLEGE), //
-    NMC_ADMIN(BigInteger.valueOf(6), RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN, UserTypeEnum.NMC, Group.NMC), //
-    NMC_VERIFIER(BigInteger.valueOf(7), RoleConstants.NATIONAL_MEDICAL_COUNCIL_VERIFIER, UserTypeEnum.NMC, Group.NMC), //
-    NBE_ADMIN(BigInteger.valueOf(8), RoleConstants.NATIONAL_BOARD_OF_EXAMINATIONS_ADMIN, UserTypeEnum.NBE, Group.NBE), //
-    NBE_VERIFIER(BigInteger.valueOf(9), RoleConstants.NATIONAL_BOARD_OF_EXAMINATIONS_VERIFIER, UserTypeEnum.NBE, Group.NBE), //
-    SMC_ADMIN(BigInteger.valueOf(10), RoleConstants.STATE_MEDICAL_COUNCIL_ADMIN, UserTypeEnum.SMC, Group.SMC), //
-    SMC_VERIFIER(BigInteger.valueOf(11), RoleConstants.STATE_MEDICAL_COUNCIL_VERIFIER, UserTypeEnum.SMC, Group.SMC); //
+    COLLEGE_ADMIN(BigInteger.valueOf(1), RoleConstants.COLLEGE_ADMIN, UserTypeEnum.COLLEGE, Group.COLLEGE),
+    COLLEGE_REGISTRAR(BigInteger.valueOf(2), RoleConstants.COLLEGE_REGISTRAR, UserTypeEnum.COLLEGE, Group.COLLEGE),
+    COLLEGE_DEAN(BigInteger.valueOf(3), RoleConstants.COLLEGE_DEAN, UserTypeEnum.COLLEGE, Group.COLLEGE),
+    COLLEGE_PRINCIPAL(BigInteger.valueOf(4), RoleConstants.COLLEGE_PRINCIPAL, UserTypeEnum.COLLEGE, Group.COLLEGE),
+    OTHERS(BigInteger.valueOf(5), RoleConstants.COLLEGE_OTHERS, UserTypeEnum.COLLEGE, Group.COLLEGE),
+    NMC_ADMIN(BigInteger.valueOf(6), RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN, UserTypeEnum.NMC, Group.NMC),
+    NMC_VERIFIER(BigInteger.valueOf(7), RoleConstants.NATIONAL_MEDICAL_COUNCIL_VERIFIER, UserTypeEnum.NMC, Group.NMC),
+    NBE_ADMIN(BigInteger.valueOf(8), RoleConstants.NATIONAL_BOARD_OF_EXAMINATIONS_ADMIN, UserTypeEnum.NBE, Group.NBE),
+    NBE_VERIFIER(BigInteger.valueOf(9), RoleConstants.NATIONAL_BOARD_OF_EXAMINATIONS_VERIFIER, UserTypeEnum.NBE, Group.NBE),
+    SMC_ADMIN(BigInteger.valueOf(10), RoleConstants.STATE_MEDICAL_COUNCIL_ADMIN, UserTypeEnum.SMC, Group.SMC),
+    SMC_VERIFIER(BigInteger.valueOf(11), RoleConstants.STATE_MEDICAL_COUNCIL_VERIFIER, UserTypeEnum.SMC, Group.SMC);
 
     private BigInteger id;
     private String name;
