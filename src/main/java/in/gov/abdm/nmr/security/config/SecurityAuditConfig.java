@@ -20,8 +20,8 @@ public class SecurityAuditConfig {
     public void auditEventHappened(AuditApplicationEvent auditApplicationEvent) {
         AuditEvent auditEvent = auditApplicationEvent.getAuditEvent();
         SecurityAuditTrail details = (SecurityAuditTrail) auditEvent.getData().get("details");
-        LOGGER.debug(" Process Id: {} || IP Address: {} || User Agent: {} || User: {} || Method: {} || Endpoint: {} || Status: {}", //
-                details.getProcessId(), details.getIpAddress(), details.getUserAgent(), auditEvent.getPrincipal(), details.getHttpMethod(), //
+        LOGGER.debug(" Process Id: {} || IP Address: {} || User Agent: {} || User: {} || Method: {} || Endpoint: {} || Status: {}",
+                details.getProcessId(), details.getIpAddress(), details.getUserAgent(), auditEvent.getPrincipal(), details.getHttpMethod(),
                 details.getEndpoint(), auditEvent.getType());
     }
 

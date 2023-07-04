@@ -45,7 +45,7 @@ public class JwtUtil {
 
     private IUserDaoService userDetailService;
 
-    public JwtUtil(KeyUtil keyUtil, @Value("${nmr.access.token.expiry}") Long accessTokenExpirySeconds, //
+    public JwtUtil(KeyUtil keyUtil, @Value("${nmr.access.token.expiry}") Long accessTokenExpirySeconds,
                    @Value("${nmr.refresh.token.expiry}") Long refreshTokenExpirySeconds, IUserDaoService userDetailService) {
         this.keyUtil = keyUtil;
         this.accessTokenExpirySeconds = accessTokenExpirySeconds;
@@ -71,7 +71,7 @@ public class JwtUtil {
             userDetailService.updateRefreshTokenId(updateRefreshTokenIdRequestTO);
         }
 
-        Builder tokenBuilder = JWT.create().withJWTId(jwtId).withIssuer(ISSUER_VALUE).withSubject(username).withAudience(AUDIENCE_VALUE).withIssuedAt(Instant.now()) //
+        Builder tokenBuilder = JWT.create().withJWTId(jwtId).withIssuer(ISSUER_VALUE).withSubject(username).withAudience(AUDIENCE_VALUE).withIssuedAt(Instant.now())
                 .withExpiresAt(Instant.now().plusSeconds(expiry)).withClaim(TOKEN_TYPE_LABEL, type.getCode()).withClaim(AUTHORITIES_LABEL, Arrays.asList(role));
         if (profileId != null) {
             tokenBuilder.withClaim(USER_PROFILE_ID_LABEL, profileId.longValueExact());

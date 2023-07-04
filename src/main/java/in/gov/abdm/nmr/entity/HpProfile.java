@@ -47,9 +47,6 @@ public class HpProfile extends CommonAuditEntity {
 	private String picName;
 	private String primaryContactNo;
 	private String professionalType;
-	
-	//@Lob
-	//@Type(type="org.hibernate.type.BinaryType")
 	private String profilePhoto;
 		
 	private String salutation;
@@ -75,10 +72,7 @@ public class HpProfile extends CommonAuditEntity {
 	@OneToOne
     @JoinColumn(name = "user_id")
     private User user;
-	
 	private String requestId;
-
-	//eSignChange
 	private String transactionId;
 	private Integer eSignStatus;
 	private String registrationId;

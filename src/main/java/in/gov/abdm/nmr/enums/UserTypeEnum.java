@@ -12,12 +12,12 @@ import lombok.Getter;
 @Getter
 public enum UserTypeEnum {
 
-    HEALTH_PROFESSIONAL(BigInteger.valueOf(1), RoleConstants.HEALTH_PROFESSIONAL, Group.HEALTH_PROFESSIONAL), //
-    COLLEGE(BigInteger.valueOf(2), RoleConstants.COLLEGE, Group.COLLEGE), //
-    SMC(BigInteger.valueOf(3), RoleConstants.STATE_MEDICAL_COUNCIL, Group.SMC), //
-    NMC(BigInteger.valueOf(4), RoleConstants.NATIONAL_MEDICAL_COUNCIL, Group.NMC), //
-    NBE(BigInteger.valueOf(5), RoleConstants.NATIONAL_BOARD_OF_EXAMINATIONS, Group.NBE), //
-    SYSTEM(BigInteger.valueOf(6), RoleConstants.SYSTEM, Group.SYSTEM); //
+    HEALTH_PROFESSIONAL(BigInteger.valueOf(1), RoleConstants.HEALTH_PROFESSIONAL, Group.HEALTH_PROFESSIONAL),
+    COLLEGE(BigInteger.valueOf(2), RoleConstants.COLLEGE, Group.COLLEGE),
+    SMC(BigInteger.valueOf(3), RoleConstants.STATE_MEDICAL_COUNCIL, Group.SMC),
+    NMC(BigInteger.valueOf(4), RoleConstants.NATIONAL_MEDICAL_COUNCIL, Group.NMC),
+    NBE(BigInteger.valueOf(5), RoleConstants.NATIONAL_BOARD_OF_EXAMINATIONS, Group.NBE),
+    SYSTEM(BigInteger.valueOf(6), RoleConstants.SYSTEM, Group.SYSTEM);
 
     private BigInteger id;
 

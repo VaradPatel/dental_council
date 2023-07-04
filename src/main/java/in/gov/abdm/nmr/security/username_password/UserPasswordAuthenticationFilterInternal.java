@@ -37,7 +37,7 @@ public class UserPasswordAuthenticationFilterInternal extends UserPasswordAuthen
     
     private static final List<BigInteger> ALLOWED_USER_TYPES = Arrays.asList(UserTypeEnum.SYSTEM.getId());
 
-    public UserPasswordAuthenticationFilterInternal(AuthenticationManager authenticationManager, ObjectMapper objectMapper, AuthenticationEventPublisher authEventPublisher, //
+    public UserPasswordAuthenticationFilterInternal(AuthenticationManager authenticationManager, ObjectMapper objectMapper, AuthenticationEventPublisher authEventPublisher,
                                                     ISecurityAuditTrailDaoService securityAuditTrailDaoService, Tracer tracer) {
         super(authenticationManager, objectMapper, null, null, authEventPublisher, securityAuditTrailDaoService, tracer);
         this.setRequiresAuthenticationRequestMatcher(ProtectedPaths.getInternalLoginPathMatcher());
@@ -58,7 +58,7 @@ public class UserPasswordAuthenticationFilterInternal extends UserPasswordAuthen
                 throw new AuthenticationServiceException("Not allowed");
             }
             
-            authRequest = UserPasswordAuthenticationToken.unauthenticated(requestBodyTO.getUsername(), requestBodyTO.getPassword(), requestBodyTO.getUserType(), //
+            authRequest = UserPasswordAuthenticationToken.unauthenticated(requestBodyTO.getUsername(), requestBodyTO.getPassword(), requestBodyTO.getUserType(),
                     requestBodyTO.getLoginType(), null);
             authRequest.setDetails(createSecurityAuditTrail(request));
         } catch (AuthenticationException e) {

@@ -331,13 +331,13 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         if (hpProfile == null) {
             throw new InvalidRequestException(NMRError.INVALID_REQUEST.getCode(), NMRError.INVALID_REQUEST.getMessage());
         }
-
-        if(file.getOriginalFilename() != null && !SUPPORTED_FILE_TYPES.contains(file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".")).toLowerCase())){
+        String originalFileName = file.getOriginalFilename();
+        if( originalFileName != null && !SUPPORTED_FILE_TYPES.contains(originalFileName.substring(originalFileName.lastIndexOf(".")).toLowerCase())){
             throw new InvalidRequestException(file.getOriginalFilename() + " is not a allowed file type !!");
         }
         String encodedPhoto = Base64.getEncoder().encodeToString(file.getBytes());
         hpProfile.setProfilePhoto(encodedPhoto);
-        hpProfile.setPicName(file.getOriginalFilename());
+        hpProfile.setPicName(originalFileName);
         HpProfile insertedData = iHpProfileRepository.save(hpProfile);
         HpProfilePictureResponseTO hpProfilePictureResponseTO = new HpProfilePictureResponseTO();
         hpProfilePictureResponseTO.setProfilePicture(insertedData.getProfilePhoto());
@@ -423,7 +423,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         customQualification.setState(newCustomQualification.getState() != null ? newCustomQualification.getState().getName() : null);
         customQualification.setCollege(newCustomQualification.getCollege().getName());
         customQualification.setUniversity(newCustomQualification.getUniversity() != null ? newCustomQualification.getUniversity().getName() : null);
-        //GK - 08-04-2023 - FE payload for additional qualification is coming as name, it needs to be corrected. Either courseName or name can rename in dto
         String courseName = newCustomQualification.getCourse().getCourseName();
         customQualification.setCourse(courseName != null ? courseName : newCustomQualification.getCourse().getName());
         if(customQualification.getIsVerified()==null) {
