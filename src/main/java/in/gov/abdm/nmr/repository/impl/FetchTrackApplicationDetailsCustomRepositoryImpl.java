@@ -54,46 +54,45 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         StringBuilder sb = new StringBuilder();
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId()) && !healthProfessionalApplicationRequestParamsTo.getApplicationTypeId().isEmpty()) {
-            sb.append("AND d.application_type_id IN (").append(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId()).append(") ");
+            sb.append("AND d.application_type_id IN (:applicationTypeId) ");
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getRegistrationNumber()) && !healthProfessionalApplicationRequestParamsTo.getRegistrationNumber().isEmpty()) {
-            sb.append("AND rd.registration_no ILIKE '%").append(healthProfessionalApplicationRequestParamsTo.getRegistrationNumber()).append("%' ");
+            sb.append("AND rd.registration_no ILIKE :registrationNumber ");
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getSmcId()) && !healthProfessionalApplicationRequestParamsTo.getSmcId().isEmpty()) {
-            sb.append("AND rd.state_medical_council_id = '").append(healthProfessionalApplicationRequestParamsTo.getSmcId()).append("' ");
+            sb.append("AND rd.state_medical_council_id = :smcId ");
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId()) && !healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId().isEmpty()) {
-            sb.append("AND work_flow_status_id = '").append(healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId()).append("' ");
+            sb.append("AND work_flow_status_id = :workFlowStatusId ");
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getApplicantFullName()) && !healthProfessionalApplicationRequestParamsTo.getApplicantFullName().isEmpty()) {
-            sb.append("AND hp.full_name ILIKE '%").append(healthProfessionalApplicationRequestParamsTo.getApplicantFullName()).append("%' ");
+            sb.append("AND hp.full_name ILIKE :applicantFullName ");
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getGender()) && !healthProfessionalApplicationRequestParamsTo.getGender().isEmpty()) {
             String gender = "";
-            if(healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase(NMRConstants.GENDER_MALE)|| healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase("m")){
-                gender="m";
+            if (healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase(NMRConstants.GENDER_MALE) || healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase("m")) {
+                gender = "m";
+            } else if (healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase(NMRConstants.GENDER_FEMALE) || healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase("f")) {
+                gender = "f";
             }
-            else if(healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase(NMRConstants.GENDER_FEMALE)|| healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase("f")){
-                gender="f";
-            }
-            sb.append("AND hp.gender ILIKE '%").append(gender).append("%' ");
+            sb.append("AND hp.gender ILIKE :gender ");
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getEmailId()) && !healthProfessionalApplicationRequestParamsTo.getEmailId().isEmpty()) {
-            sb.append("AND hp.email_id ILIKE '%").append(healthProfessionalApplicationRequestParamsTo.getEmailId()).append("%' ");
+            sb.append("AND hp.email_id ILIKE :emailId ");
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getMobileNumber()) && !healthProfessionalApplicationRequestParamsTo.getMobileNumber().isEmpty()) {
-            sb.append("AND hp.mobile_number ILIKE '%").append(healthProfessionalApplicationRequestParamsTo.getMobileNumber()).append("%' ");
+            sb.append("AND hp.mobile_number ILIKE :mobileNumber ");
         }
 
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getYearOfRegistration()) && !healthProfessionalApplicationRequestParamsTo.getYearOfRegistration().isEmpty()) {
-            sb.append("AND EXTRACT(YEAR FROM rd.registration_date) = ").append(healthProfessionalApplicationRequestParamsTo.getYearOfRegistration()).append(" ");
+            sb.append(" AND EXTRACT(YEAR FROM rd.registration_date) = :yearOfRegistration");
         }
 
         return sb.toString();
@@ -107,10 +106,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      */
     private static final Function<HealthProfessionalApplicationRequestParamsTo, String> SORT_RECORDS = healthProfessionalApplicationRequestParamsTo -> {
         StringBuilder sb = new StringBuilder();
-        sb.append("ORDER BY ");
-        sb.append(healthProfessionalApplicationRequestParamsTo.getSortBy());
-        sb.append(" ");
-        sb.append(healthProfessionalApplicationRequestParamsTo.getSortOrder());
+        sb.append(" ORDER BY  :sort");
         return sb.toString();
     };
 
@@ -126,18 +122,9 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
 
         sb.append(FETCH_TRACK_DETAILS_QUERY);
 
-        sb.append(" where D.hp_profile_id IS NOT NULL and d.application_type_id !="+ ApplicationType.HP_MODIFICATION.getId());
-
+        sb.append(" where D.hp_profile_id IS NOT NULL and d.application_type_id !=").append(ApplicationType.HP_MODIFICATION.getId());
         if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
-            StringBuilder hpIds = new StringBuilder();
-            hpProfiles.forEach(hpProfile -> {
-                if (hpProfiles.indexOf(hpProfile) == hpProfiles.size() - 1) {
-                    hpIds.append(hpProfile);
-                } else {
-                    hpIds.append(hpProfile).append(",");
-                }
-            });
-            sb.append("AND rd.hp_profile_id IN (").append(hpIds).append(") ");
+            sb.append(" AND rd.hp_profile_id IN (:healthProfessionalIds)");
         }
 
         String parameters = TRACK_APPLICATION_PARAMETERS.apply(healthProfessionalApplicationRequestParamsTo);
@@ -168,8 +155,8 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         List<HealthProfessionalApplicationTo> healthProfessionalApplicationToList = new ArrayList<>();
 
         Query query = entityManager.createNativeQuery(TRACK_APPLICATION.apply(healthProfessionalApplicationRequestParamsTo, hpProfiles));
-
-        query.setFirstResult(pageable.getPageNumber() != 0 ?(pageable.getPageNumber() - 1) * pageable.getPageSize() : 0);
+        setParameters(query, healthProfessionalApplicationRequestParamsTo, hpProfiles);
+        query.setFirstResult(pageable.getPageNumber() != 0 ? (pageable.getPageNumber() - 1) * pageable.getPageSize() : 0);
         query.setMaxResults(pageable.getPageSize());
 
         List<Object[]> results = query.getResultList();
@@ -200,5 +187,46 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         });
         healthProfessionalApplicationResponseTo.setHealthProfessionalApplications(healthProfessionalApplicationToList);
         return healthProfessionalApplicationResponseTo;
+    }
+
+    private Query setParameters(Query query, HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, List<BigInteger> hpProfiles) {
+        query.setParameter("sort", healthProfessionalApplicationRequestParamsTo.getSortBy() + " " + healthProfessionalApplicationRequestParamsTo.getSortOrder());
+        if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
+            query.setParameter("healthProfessionalIds", hpProfiles);
+        }
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId()) && !healthProfessionalApplicationRequestParamsTo.getApplicationTypeId().isEmpty()) {
+            query.setParameter("applicationTypeId", healthProfessionalApplicationRequestParamsTo.getApplicationTypeId());
+        }
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getRegistrationNumber()) && !healthProfessionalApplicationRequestParamsTo.getRegistrationNumber().isEmpty()) {
+            query.setParameter("registrationNumber", "%".concat(healthProfessionalApplicationRequestParamsTo.getRegistrationNumber()).concat("%"));
+        }
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getSmcId()) && !healthProfessionalApplicationRequestParamsTo.getSmcId().isEmpty()) {
+            query.setParameter("smcId", healthProfessionalApplicationRequestParamsTo.getSmcId());
+        }
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId()) && !healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId().isEmpty()) {
+            query.setParameter("workFlowStatusId", healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId());
+        }
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getApplicantFullName()) && !healthProfessionalApplicationRequestParamsTo.getApplicantFullName().isEmpty()) {
+            query.setParameter("applicantFullName", "%".concat(healthProfessionalApplicationRequestParamsTo.getApplicantFullName()).concat("%"));
+        }
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getGender()) && !healthProfessionalApplicationRequestParamsTo.getGender().isEmpty()) {
+            String gender = "";
+            if (healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase(NMRConstants.GENDER_MALE) || healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase("m")) {
+                gender = "m";
+            } else if (healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase(NMRConstants.GENDER_FEMALE) || healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase("f")) {
+                gender = "f";
+            }
+            query.setParameter("gender", "%".concat(gender.concat("%")));
+        }
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getEmailId()) && !healthProfessionalApplicationRequestParamsTo.getEmailId().isEmpty()) {
+            query.setParameter("emailId", "%".concat(healthProfessionalApplicationRequestParamsTo.getEmailId()).concat("%"));
+        }
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getMobileNumber()) && !healthProfessionalApplicationRequestParamsTo.getMobileNumber().isEmpty()) {
+            query.setParameter("mobileNumber", "%".concat(healthProfessionalApplicationRequestParamsTo.getMobileNumber()).concat("%"));
+        }
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getYearOfRegistration()) && !healthProfessionalApplicationRequestParamsTo.getYearOfRegistration().isEmpty()) {
+            query.setParameter("yearOfRegistration", healthProfessionalApplicationRequestParamsTo.getYearOfRegistration());
+        }
+        return query;
     }
 }
