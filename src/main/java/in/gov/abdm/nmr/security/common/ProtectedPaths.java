@@ -53,15 +53,44 @@ public class ProtectedPaths {
     public static final String SUSPENSION_REQUEST_URL = APPLICATION_REQUEST_URL + "/suspend";
     public static final String REACTIVATE_REQUEST_URL = APPLICATION_REQUEST_URL + "/re-activate";
     public static final String CHANGE_PASSWORD = "/user/change-password";
-    
-    public static final String HEALTH_PROFESSIONAL_ACTION = NMRConstants.HEALTH_PROFESSIONAL_ACTION;
+    public static final String HEALTH_PROFESSIONAL_ACTION = APPLICATION_REQUEST_URL + "/status";
     public static final String COLLEGES_ACTION = NMRConstants.COLLEGES_ACTION;
-    
     public static final String USER_NMC_CREATE_USER = "/user";
-
     public static final String USER_UNLOCK_URL = "/user/{userId}/unlock";
     public static final String USER_DEACTIVATE_URL = "/user/{userId}/deactivate";
     public static final String DE_LINK_FACILITY = "/health-professional/work-profile/facility";
+    public static final String SPECIALITIES = "/specialities";
+    public static final String COUNTRIES = "/countries";
+    public static final String STATES = "/countries/{country_id}/states";
+    public static final String DISTRICTS = "/countries/states/{state_id}/districts";
+    public static final String SUB_DISTRICTS = "/countries/states/districts/{district_id}/sub_districts";
+    public static final String CITIES = "/countries/states/districts/sub-districts/{sub_district_id}/cities";
+    public static final String LANGUAGES = "/languages";
+    public static final String COURSES = "/courses";
+    public static final String RENEW_TYPES = "/renewation-types";
+    public static final String FACILITY_TYPES = "/facility-types";
+    public static final String COLLEGE = "/college";
+    public static final String UNIVERSITY = "/university";
+    public static final String QUERY_SUGGESTIONS = "/query-suggestions";
+    public static final String APPLICATION_DETAILS = "/applications/{requestId}";
+    public static final String E_SIGN = "/e-signature";
+    public static final String PATH_FACILITY_SEARCH = "/search";
+    public static final String CREATE_PROFESSIONAL_PERSONAL = "health-professional/personal";
+    public static final String UPDATE_PROFESSIONAL_PERSONAL = "health-professional/{healthProfessionalId}/personal";
+    public static final String GET_PROFESSIONAL_PERSONAL = "health-professional/{healthProfessionalId}/personal";
+    public static final String UPDATE_REGISTRATION = "health-professional/{healthProfessionalId}/registration";
+    public static final String GET_REGISTRATION = "health-professional/{healthProfessionalId}/registration";
+    public static final String UPDATE_WORK_PROFILE = "health-professional/{healthProfessionalId}/work-profile";
+    public static final String GET_WORK_PROFILE = "health-professional/{healthProfessionalId}/work-profile";
+    public static final String ADDITIONAL_QUALIFICATION = "/health-professional/{healthProfessionalId}/qualifications";
+    public static final String PROFILE_PICTURE = "/health-professional/{healthProfessionalId}/profile-picture";
+    public static final String HEALTH_PROFESSIONAL_REGISTER = "health-professional/register";
+    public static final String RAISE_QUERY = "/health-professional/queries";
+    public static final String GET_QUERIES = "health-professional/{healthProfessionalId}/queries";
+    public static final String UPDATE_PERSONAL_EMAIL = "health-professional/{healthProfessionalId}/personal";
+    public static final String GET_EMAIl_LINK = "health-professional/{healthProfessionalId}/email";
+    public static final String GET_USER = "/user";
+    public static final String GET_USER_ACCOUNT = "/user-accounts";
 
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<AntPathRequestMatcher> protectedPaths = new ArrayList<>();
@@ -108,6 +137,39 @@ public class ProtectedPaths {
         protectedPaths.add(new AntPathRequestMatcher(DE_LINK_FACILITY,HttpMethod.DELETE.name()));
         protectedPaths.add(new AntPathRequestMatcher(USER_UNLOCK_URL));
         protectedPaths.add(new AntPathRequestMatcher(USER_DEACTIVATE_URL));
+
+        protectedPaths.add(new AntPathRequestMatcher(SPECIALITIES));
+        protectedPaths.add(new AntPathRequestMatcher(COUNTRIES));
+        protectedPaths.add(new AntPathRequestMatcher(STATES));
+        protectedPaths.add(new AntPathRequestMatcher(DISTRICTS));
+        protectedPaths.add(new AntPathRequestMatcher(SUB_DISTRICTS));
+        protectedPaths.add(new AntPathRequestMatcher(CITIES));
+        protectedPaths.add(new AntPathRequestMatcher(COURSES));
+        protectedPaths.add(new AntPathRequestMatcher(LANGUAGES));
+        protectedPaths.add(new AntPathRequestMatcher(RENEW_TYPES));
+        protectedPaths.add(new AntPathRequestMatcher(FACILITY_TYPES));
+        protectedPaths.add(new AntPathRequestMatcher(COLLEGE));
+        protectedPaths.add(new AntPathRequestMatcher(UNIVERSITY));
+        protectedPaths.add(new AntPathRequestMatcher(QUERY_SUGGESTIONS));
+        protectedPaths.add(new AntPathRequestMatcher(QUERY_SUGGESTIONS));
+        protectedPaths.add(new AntPathRequestMatcher(APPLICATION_REQUEST_URL));
+        protectedPaths.add(new AntPathRequestMatcher(APPLICATION_DETAILS));
+        protectedPaths.add(new AntPathRequestMatcher(E_SIGN));
+        protectedPaths.add(new AntPathRequestMatcher(PATH_FACILITY_SEARCH));
+        protectedPaths.add(new AntPathRequestMatcher(CREATE_PROFESSIONAL_PERSONAL));
+        protectedPaths.add(new AntPathRequestMatcher(UPDATE_PROFESSIONAL_PERSONAL));
+        protectedPaths.add(new AntPathRequestMatcher(GET_PROFESSIONAL_PERSONAL));
+        protectedPaths.add(new AntPathRequestMatcher(UPDATE_REGISTRATION));
+        protectedPaths.add(new AntPathRequestMatcher(GET_REGISTRATION));
+        protectedPaths.add(new AntPathRequestMatcher(UPDATE_WORK_PROFILE));
+        protectedPaths.add(new AntPathRequestMatcher(ADDITIONAL_QUALIFICATION));
+        protectedPaths.add(new AntPathRequestMatcher(PROFILE_PICTURE));
+        protectedPaths.add(new AntPathRequestMatcher(HEALTH_PROFESSIONAL_REGISTER));
+        protectedPaths.add(new AntPathRequestMatcher(RAISE_QUERY));
+        protectedPaths.add(new AntPathRequestMatcher(GET_QUERIES));
+        protectedPaths.add(new AntPathRequestMatcher(UPDATE_PERSONAL_EMAIL));
+        protectedPaths.add(new AntPathRequestMatcher(GET_EMAIl_LINK));
+        protectedPaths.add(new AntPathRequestMatcher(GET_USER));
 
         return protectedPaths.toArray(AntPathRequestMatcher[]::new);
     }

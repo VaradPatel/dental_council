@@ -53,6 +53,7 @@ public class DashboardController {
      * @return a DashboardResponseTO object containing the retrieved data
      * @throws InvalidRequestException if the provided request parameters are invalid
      */
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping(PATH_DASHBOARD_FETCH_DETAILS)
     public DashboardResponseTO fetchCardDetails(
             @RequestParam(required = false, value = "workFlowStatusId") String workFlowStatusId,
