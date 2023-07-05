@@ -138,7 +138,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult)
             throws IOException, ServletException {
         if(authResult.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals(RoleConstants.ROLE_PREFIX + RoleConstants.SYSTEM)) &&
-                !ProtectedPaths.HEALTH_PROFESSIONAL_ACTION.equals(request.getServletPath())) {
+                !NMRConstants.HEALTH_PROFESSIONAL_ACTION.equals(request.getServletPath())) {
             throw new AuthenticationServiceException("Not allowed");
         }
         
