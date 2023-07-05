@@ -19,12 +19,18 @@ public class NMRConstants {
     public static final String NOTIFICATION_SERVICE_SEND_MESSAGE = "/internal/v3/notification/message";
     public static final String NOTIFICATION_DB_SERVICE_GET_TEMPLATE = "/internal/v3/notification/template/id/{id}";
     public static final String RESET_PASSWORD = "/user/reset-password";
+    public static final String RAISE_QUERY = "/health-professional/queries";
     public static final String KYC_FUZZY_MATCH = "/health-professional/{registrationNumber}/kyc";
+    public static final String GET_QUERIES = "health-professional/{healthProfessionalId}/queries";
     public static final String VERIFY_EMAIL = "/user/verify-email";
     public static final String SET_PASSWORD = "/user/set-password";
+    public static final String E_SIGN = "/e-signature";
     public static final String PATH_FACILITY_ROOT = "/facilities";
+    public static final String PATH_FACILITY_SEARCH = "/search";
+    public static final String APPLICATION_REQUEST_URL = "/health-professional/applications";
+    public static final String HEALTH_PROFESSIONAL_ACTION = APPLICATION_REQUEST_URL + "/status";
     public static final String COLLEGES_ACTION = "/college/applications/status";
-    public static final String STATE_MEDICAL_COUNCIL = "/state-medical-councils";
+    public static final String APPLICATION_DETAILS = "/applications/{requestId}";
     public static final String NOTIFICATION_SERVICE = "notification";
     public static final String FACILITY_SERVICE = "facility";
     public static final String NOTIFICATION_DB_SERVICE = "notification-db";
@@ -271,7 +277,7 @@ public class NMRConstants {
     public static final String OPERATOR_MULTIPLICATION = "*";
     public static final List<String> OPERATORS = Arrays.asList(OPERATOR_PLUS, OPERATOR_MINUS, OPERATOR_MULTIPLICATION);
     public static final String RSA_PADDING = "RSA/ECB/PKCS1Padding";
-
+    public static final String STATE_MEDICAL_COUNCIL_URL = "/state-medical-councils";
     public static final String FACILITY_ID = "facilityId";
     public static final String DELINK_FAILED ="Failed to Delink: Invalid Facility Id";
     public static final String  DELINK_WORK_PROFILE_BY_FACILITY_ID ="UPDATE work_profile SET delete_status =true  WHERE facility_id IN (:facilityId) AND user_id =:userId";

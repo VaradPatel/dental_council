@@ -5,7 +5,6 @@ import in.gov.abdm.nmr.dto.FacilitySearchRequestTO;
 import in.gov.abdm.nmr.dto.FacilitySearchResponseTO;
 import in.gov.abdm.nmr.dto.FacilityTO;
 import in.gov.abdm.nmr.exception.NmrExceptionAdvice;
-import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IFacilityService;
 import in.gov.abdm.nmr.util.CommonTestData;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -107,7 +106,7 @@ class FacilityControllerTest {
         facilitySearchResponseTO.setTotalFacilities(1);
         facilitySearchResponseTO.setNumberOfPages(1);
         when(facilityService.findFacility(nullable(FacilitySearchRequestTO.class))).thenReturn(facilitySearchResponseTO);
-        mockMvc.perform(post(PATH_FACILITY_ROOT + ProtectedPaths.PATH_FACILITY_SEARCH).with(user(TEST_USER))
+        mockMvc.perform(post(PATH_FACILITY_ROOT + PATH_FACILITY_SEARCH).with(user(TEST_USER))
                         .with(csrf())
                         .content(objectMapper.writeValueAsBytes(facilitySearchRequestTO))
                         .accept(MediaType.APPLICATION_JSON_VALUE)

@@ -8,7 +8,6 @@ import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IQueriesService;
 import in.gov.abdm.nmr.util.NMRConstants;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -71,8 +70,7 @@ public class HpRegistrationController {
      * @throws InvalidRequestException - Thrown if the request is invalid.
      * @throws WorkFlowException       - Thrown if there is an error in the workflow.
      */
-    @SecurityRequirement(name = "bearerAuth")
-    @PostMapping(path = ProtectedPaths.CREATE_PROFESSIONAL_PERSONAL, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "health-professional/personal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfilePersonalResponseTO addHealthProfessionalPersonalDetail(
             @Valid @RequestBody HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO)
             throws InvalidRequestException, WorkFlowException {
@@ -99,8 +97,7 @@ public class HpRegistrationController {
      * @throws InvalidRequestException when the request is invalid.
      * @throws WorkFlowException       when there's an error with the workflow.
      */
-    @SecurityRequirement(name = "bearerAuth")
-    @PutMapping(path = ProtectedPaths.UPDATE_PROFESSIONAL_PERSONAL, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "health-professional/{healthProfessionalId}/personal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfilePersonalResponseTO updateHealthProfessionalPersonalDetail(
             @Valid @RequestBody HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO,
             @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId)
@@ -125,8 +122,7 @@ public class HpRegistrationController {
      * @param hpProfileId The unique identifier of the health professional.
      * @return An instance of {@link HpProfilePersonalResponseTO} containing the personal details of the health professional.
      */
-    @SecurityRequirement(name = "bearerAuth")
-    @GetMapping(path = ProtectedPaths.GET_PROFESSIONAL_PERSONAL, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "health-professional/{healthProfessionalId}/personal", produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfilePersonalResponseTO getHealthProfessionalPersonalDetail(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) {
         return hpService.getHealthProfessionalPersonalDetail(hpProfileId);
     }
@@ -141,8 +137,7 @@ public class HpRegistrationController {
      * @return The updated health professional registration response in a transfer object.
      * @throws InvalidRequestException If the provided request is invalid.
      */
-    @SecurityRequirement(name = "bearerAuth")
-    @PutMapping(path = ProtectedPaths.UPDATE_REGISTRATION, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "health-professional/{healthProfessionalId}/registration", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam(value = "registrationCertificate", required = false) MultipartFile registrationCertificate,
                                                                                       @RequestParam(value = "degreeCertificate", required = false) MultipartFile degreeCertificate,
                                                                                       @RequestPart("data") HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO,
@@ -167,8 +162,7 @@ public class HpRegistrationController {
      * @param hpProfileId the unique identifier of the health professional profile
      * @return an object containing the registration details of the health professional
      */
-    @SecurityRequirement(name = "bearerAuth")
-    @GetMapping(path = ProtectedPaths.GET_REGISTRATION, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "health-professional/{healthProfessionalId}/registration", produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) {
         return hpService.getHealthProfessionalRegistrationDetail(hpProfileId);
     }
@@ -181,8 +175,7 @@ public class HpRegistrationController {
      * @return A {@link HpProfileWorkDetailsResponseTO} object containing the updated work details.
      * @throws InvalidRequestException If the request is invalid or missing required information.
      */
-    @SecurityRequirement(name = "bearerAuth")
-    @PutMapping(path = ProtectedPaths.UPDATE_WORK_PROFILE, consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "health-professional/{healthProfessionalId}/work-profile", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileWorkDetailsResponseTO updateHealthProfessionalWorkProfileDetail(@RequestBody HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO,
                                                                                     @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId)
             throws InvalidRequestException, NmrException, NotFoundException {
@@ -208,8 +201,7 @@ public class HpRegistrationController {
      * @throws InvalidRequestException If the provided hpProfileId is invalid or not found in the database.
      * @throws WorkFlowException       If an error occurs during the processing of the request.
      */
-    @SecurityRequirement(name = "bearerAuth")
-    @GetMapping(path = ProtectedPaths.GET_WORK_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "health-professional/{healthProfessionalId}/work-profile", produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) {
         return hpService.getHealthProfessionalWorkDetail(hpProfileId);
     }
@@ -222,8 +214,7 @@ public class HpRegistrationController {
      * @return a string indicating the result of the operation
      * @throws WorkFlowException if there is an error during the operation
      */
-    @SecurityRequirement(name = "bearerAuth")
-    @PostMapping(path = ProtectedPaths.ADDITIONAL_QUALIFICATION, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/health-professional/{healthProfessionalId}/qualifications", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String addQualifications(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
                                     @RequestPart("data") QualificationRequestTO qualificationDetailRequestTO,
                                     @RequestParam(value = "degreeCertificates") List<MultipartFile> degreeCertificates
@@ -240,8 +231,7 @@ public class HpRegistrationController {
      * @return A response object containing information about the uploaded profile picture
      * @throws IOException If there is an error reading the file or uploading it to the server
      */
-    @SecurityRequirement(name = "bearerAuth")
-    @PostMapping(path = ProtectedPaths.PROFILE_PICTURE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/health-professional/{healthProfessionalId}/profile-picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfilePictureResponseTO uploadHpProfilePhoto(
             @RequestParam(value = "file", required = true) MultipartFile file,
             @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws IOException, InvalidRequestException {
@@ -256,8 +246,7 @@ public class HpRegistrationController {
      * @throws InvalidRequestException If the request body is invalid.
      * @throws WorkFlowException       If there is an issue with the submission workflow.
      */
-    @SecurityRequirement(name = "bearerAuth")
-    @PostMapping(path = ProtectedPaths.HEALTH_PROFESSIONAL_REGISTER, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "health-professional/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileAddResponseTO submit(@Valid @RequestBody HpSubmitRequestTO hpSubmitRequestTO)
             throws InvalidRequestException, WorkFlowException {
 
@@ -281,8 +270,7 @@ public class HpRegistrationController {
      * @param queryCreateTo coming from user
      * @return returns created list of queries
      */
-    @SecurityRequirement(name = "bearerAuth")
-    @PostMapping(path = ProtectedPaths.RAISE_QUERY, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = NMRConstants.RAISE_QUERY, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseMessageTo raiseQuery(@Valid @RequestBody QueryCreateTo queryCreateTo) throws WorkFlowException, InvalidRequestException {
         return queryService.createQueries(queryCreateTo);
     }
@@ -293,12 +281,10 @@ public class HpRegistrationController {
      * @param healthProfessionalId takes hpProfileId as a input
      * @return returns list of queries associated with hpProfileId
      */
-    @SecurityRequirement(name = "bearerAuth")
-    @GetMapping(path = ProtectedPaths.GET_QUERIES, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = NMRConstants.GET_QUERIES, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<QueryResponseTo> getQueries(@PathVariable("healthProfessionalId") BigInteger healthProfessionalId) {
         return queryService.getQueriesByHpProfileId(healthProfessionalId);
     }
-
 
     @PostMapping(path = NMRConstants.KYC_FUZZY_MATCH, produces = MediaType.APPLICATION_JSON_VALUE)
     public KycResponseMessageTo saveUserKycDetails(@PathVariable("registrationNumber") String registrationNumber,
@@ -312,8 +298,7 @@ public class HpRegistrationController {
         return hpService.addNewHealthProfessional(request);
     }
 
-    @SecurityRequirement(name = "bearerAuth")
-    @PatchMapping(path = ProtectedPaths.UPDATE_PERSONAL_EMAIL, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(path = "health-professional/{healthProfessionalId}/personal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseMessageTo> updateHealthProfessionalEmailMobile(
             @RequestBody HealthProfessionalPersonalRequestTo request,
             @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws OtpException, InvalidRequestException {
@@ -328,13 +313,11 @@ public class HpRegistrationController {
      * @return Success/Fail message
      */
 
-    @SecurityRequirement(name = "bearerAuth")
-    @PatchMapping(path = ProtectedPaths.GET_EMAIl_LINK, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(path = "health-professional/{healthProfessionalId}/email", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseMessageTo getVerifyEmailLink(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId, @RequestBody VerifyEmailLinkTo verifyEmailLinkTo) {
         return hpService.getEmailVerificationLink(hpProfileId,verifyEmailLinkTo);
     }
 
-    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping(path = ProtectedPaths.DE_LINK_FACILITY)
     public ResponseEntity<ResponseMessageTo> delinkCurrentWorkDetails(@RequestBody WorkDetailsDelinkRequest workDetailsDelinkRequest) throws NmrException {
          hpService.delinkCurrentWorkDetails(workDetailsDelinkRequest);
