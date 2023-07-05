@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.dto.CollegeMasterDataTO;
 import in.gov.abdm.nmr.dto.CollegeProfileTo;
 import in.gov.abdm.nmr.dto.CollegeResponseTo;
+import in.gov.abdm.nmr.dto.StateTO;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.exception.NmrExceptionAdvice;
@@ -103,17 +104,17 @@ class CollegeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ID))
                 .andExpect(jsonPath("$.name").value(COLLEGE_NAME))
-                .andExpect(jsonPath("$.state_id").value(STATE_ID))
-                .andExpect(jsonPath("$.course_id").value(COURSE_ID))
+                .andExpect(jsonPath("$.state_to.id").value(STATE_ID))
+                .andExpect(jsonPath("$.course_to.id").value(COURSE_ID))
                 .andExpect(jsonPath("$.college_code").value(COLLEGE_CODE))
                 .andExpect(jsonPath("$.website").value(WEBSITE))
                 .andExpect(jsonPath("$.address_line1").value(ADDRESS_LINE_1))
                 .andExpect(jsonPath("$.address_line2").value(ADDRESS_LINE_2))
-                .andExpect(jsonPath("$.district_id").value(DISTRICT_ID))
-                .andExpect(jsonPath("$.village_id").value(VILLAGE_ID))
+                .andExpect(jsonPath("$.district_to.id").value(DISTRICT_ID))
+                .andExpect(jsonPath("$.villages_to.id").value(VILLAGE_ID))
                 .andExpect(jsonPath("$.pin_code").value(PIN_CODE))
-                .andExpect(jsonPath("$.state_medical_council_id").value(SMC_ID))
-                .andExpect(jsonPath("$.university_id").value(UNIVERSITY_ID))
+                .andExpect(jsonPath("$.state_medical_council_to.id").value(SMC_ID))
+                .andExpect(jsonPath("$.university_to.id").value(UNIVERSITY_ID))
                 .andExpect(jsonPath("$.email_id").value(EMAIL_ID))
                 .andExpect(jsonPath("$.mobile_number").value(MOBILE_NUMBER));
     }
@@ -125,7 +126,7 @@ class CollegeControllerTest {
         CollegeResponseTo response = new CollegeResponseTo();
         response.setId(ID);
         response.setName(COLLEGE_NAME);
-        response.setStateTO(getStateTO());
+        response.setStateTO(new StateTO(STATE_ID, STATE_NAME, ISO_CODE));
         response.setCourseTO(getCourseTo());
         response.setCollegeCode(COLLEGE_CODE);
         response.setWebsite(WEBSITE);
@@ -147,17 +148,17 @@ class CollegeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ID))
                 .andExpect(jsonPath("$.name").value(COLLEGE_NAME))
-                .andExpect(jsonPath("$.state_id").value(STATE_ID))
-                .andExpect(jsonPath("$.course_id").value(COURSE_ID))
+                .andExpect(jsonPath("$.state_to.id").value(STATE_ID))
+                .andExpect(jsonPath("$.course_to.id").value(COURSE_ID))
                 .andExpect(jsonPath("$.college_code").value(COLLEGE_CODE))
                 .andExpect(jsonPath("$.website").value(WEBSITE))
                 .andExpect(jsonPath("$.address_line1").value(ADDRESS_LINE_1))
                 .andExpect(jsonPath("$.address_line2").value(ADDRESS_LINE_2))
-                .andExpect(jsonPath("$.district_id").value(DISTRICT_ID))
-                .andExpect(jsonPath("$.village_id").value(VILLAGE_ID))
+                .andExpect(jsonPath("$.district_to.id").value(DISTRICT_ID))
+                .andExpect(jsonPath("$.villages_to.id").value(VILLAGE_ID))
                 .andExpect(jsonPath("$.pin_code").value(PIN_CODE))
-                .andExpect(jsonPath("$.state_medical_council_id").value(SMC_ID))
-                .andExpect(jsonPath("$.university_id").value(UNIVERSITY_ID))
+                .andExpect(jsonPath("$.state_medical_council_to.id").value(SMC_ID))
+                .andExpect(jsonPath("$.university_to.id").value(UNIVERSITY_ID))
                 .andExpect(jsonPath("$.email_id").value(EMAIL_ID))
                 .andExpect(jsonPath("$.mobile_number").value(MOBILE_NUMBER));
     }
@@ -191,17 +192,17 @@ class CollegeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ID))
                 .andExpect(jsonPath("$.name").value(COLLEGE_NAME))
-                .andExpect(jsonPath("$.state_id").value(STATE_ID))
-                .andExpect(jsonPath("$.course_id").value(COURSE_ID))
+                .andExpect(jsonPath("$.state_to.id").value(STATE_ID))
+                .andExpect(jsonPath("$.course_to.id").value(COURSE_ID))
                 .andExpect(jsonPath("$.college_code").value(COLLEGE_CODE))
                 .andExpect(jsonPath("$.website").value(WEBSITE))
                 .andExpect(jsonPath("$.address_line1").value(ADDRESS_LINE_1))
                 .andExpect(jsonPath("$.address_line2").value(ADDRESS_LINE_2))
-                .andExpect(jsonPath("$.district_id").value(DISTRICT_ID))
-                .andExpect(jsonPath("$.village_id").value(VILLAGE_ID))
+                .andExpect(jsonPath("$.district_to.id").value(DISTRICT_ID))
+                .andExpect(jsonPath("$.villages_to.id").value(VILLAGE_ID))
                 .andExpect(jsonPath("$.pin_code").value(PIN_CODE))
-                .andExpect(jsonPath("$.state_medical_council_id").value(SMC_ID))
-                .andExpect(jsonPath("$.university_id").value(UNIVERSITY_ID))
+                .andExpect(jsonPath("$.state_medical_council_to.id").value(SMC_ID))
+                .andExpect(jsonPath("$.university_to.id").value(UNIVERSITY_ID))
                 .andExpect(jsonPath("$.email_id").value(EMAIL_ID))
                 .andExpect(jsonPath("$.mobile_number").value(MOBILE_NUMBER));
     }
