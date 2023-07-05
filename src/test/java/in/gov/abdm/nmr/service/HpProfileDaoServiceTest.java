@@ -168,7 +168,6 @@ class HpProfileDaoServiceTest {
     void testUpdateHpRegistrationDetails() throws NmrException, InvalidRequestException {
         when(registrationDetailRepository.getRegistrationDetailsByHpProfileId(any(BigInteger.class))).thenReturn(getRegistrationDetail());
         when(iHpProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getHpProfile()));
-        when(hpNbeDetailsRepository.findByUserId(any(BigInteger.class))).thenReturn(getHPNbeDetails());
         when(iStateMedicalCouncilRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getStateMedicalCouncil()));
         when(countryRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getCountry()));
         when(stateRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getState()));
