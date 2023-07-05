@@ -10,6 +10,7 @@ import in.gov.abdm.nmr.service.IApplicationService;
 import in.gov.abdm.nmr.service.IRequestCounterService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.NMRUtil;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -48,6 +49,7 @@ public class ApplicationController {
      *                           POST endpoint for suspension request of a health professional. This method invokes the IActionService#suspendRequest(ActionRequestTo)
      *                           to perform the suspension request and return the result of the process.
      */
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping(ProtectedPaths.SUSPENSION_REQUEST_URL)
     public SuspendRequestResponseTo suspendHealthProfessional(@Valid @RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
         if(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(applicationRequestTo.getHpProfileId())){
@@ -77,6 +79,7 @@ public class ApplicationController {
      *                           POST endpoint for reactivate request of a health professional. This method invokes the IActionService#reactiveRequest(ActionRequestTo)
      *                           to perform the reactivate request and return the result of the process.
      */
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping(path=ProtectedPaths.REACTIVATE_REQUEST_URL,consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ReactivateRequestResponseTo reactivateHealthProfessional(@RequestParam(value = "reactivationFile", required = false) MultipartFile reactivationFile,
                                                                     @RequestPart("data") ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException, IOException {
@@ -107,6 +110,7 @@ public class ApplicationController {
      * which contains all the details related to the health professionals who have
      * raised a request to NMC to reactivate their profiles
      */
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping(ProtectedPaths.REACTIVATE_REQUEST_URL)
     public ReactivateHealthProfessionalResponseTO reactivationRecordsOfHealthProfessionalsToNmc(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
                                                                                                 @RequestParam(required = false, value = "offset", defaultValue = "10") String offset,
@@ -128,6 +132,7 @@ public class ApplicationController {
      * which contains all the details used to track the health professionals who have
      * raised a request
      */
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping(PATH_HEALTH_PROFESSIONAL_APPLICATIONS)
     public HealthProfessionalApplicationResponseTo trackApplicationDetails(@PathVariable("healthProfessionalId") BigInteger healthProfessionalId,
                                                                            @RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
@@ -150,7 +155,8 @@ public class ApplicationController {
      * which contains all the details used to track the health professionals who have
      * raised a request
      */
-    @GetMapping(APPLICATION_REQUEST_URL)
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping(ProtectedPaths.APPLICATION_REQUEST_URL)
     public HealthProfessionalApplicationResponseTo trackStatusDetails(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
                                                                       @RequestParam(required = false, value = "offset", defaultValue = "10") String offset,
                                                                       @RequestParam(required = false, value = "sortBy") String sortBy,
@@ -167,7 +173,8 @@ public class ApplicationController {
      *
      * @return
      */
-    @PatchMapping(HEALTH_PROFESSIONAL_ACTION)
+    @SecurityRequirement(name = "bearerAuth")
+    @PatchMapping(ProtectedPaths.HEALTH_PROFESSIONAL_ACTION)
     public ResponseEntity<ResponseMessageTo> executeActionOnHealthProfessional(@Valid @RequestBody WorkFlowRequestTO requestTO) throws WorkFlowException, InvalidRequestException {
         if (iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(requestTO.getHpProfileId(), requestTO.getApplicationTypeId())) {
             if (requestTO.getRequestId() == null || !iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(requestTO.getHpProfileId())) {
@@ -185,7 +192,8 @@ public class ApplicationController {
      * @param requestId the unique identifier for the application request
      * @return an {@link ApplicationDetailResponseTo} object containing the details of the application
      */
-    @GetMapping(APPLICATION_DETAILS)
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping(ProtectedPaths.APPLICATION_DETAILS)
     public ApplicationDetailResponseTo applicationDetail(@PathVariable(name = "requestId") String requestId) throws InvalidRequestException {
         return applicationService.fetchApplicationDetail(requestId);
     }

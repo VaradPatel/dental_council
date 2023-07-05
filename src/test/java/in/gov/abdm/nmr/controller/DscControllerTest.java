@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.dto.dsc.*;
 import in.gov.abdm.nmr.enums.TemplateEnum;
+import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IDscService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.junit.jupiter.api.BeforeEach;
@@ -95,7 +96,7 @@ class DscControllerTest {
         dscResponseTo.setAspTxnId("TNX_ID");
         dscResponseTo.setContentType("HTML");
         when(dscService.invokeDSCGenEspRequest(dscRequestTo)).thenReturn(dscResponseTo);
-        mockMvc.perform(post(NMRConstants.E_SIGN)
+        mockMvc.perform(post(ProtectedPaths.E_SIGN)
                         .with(user("123"))
                         .with(csrf())
                         .content(objectMapper.writeValueAsBytes(dscRequestTo))

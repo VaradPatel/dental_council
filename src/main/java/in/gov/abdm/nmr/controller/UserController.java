@@ -29,6 +29,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping(path = ProtectedPaths.PATH_USER_NOTIFICATION_ENABLED, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<NotificationToggleResponseTO> toggleNotification(@RequestBody NotificationToggleRequestTO notificationToggleRequestTO) {
         return userService.toggleNotification(notificationToggleRequestTO);
@@ -95,12 +96,14 @@ public class UserController {
     }
 
     @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN})
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping(path = ProtectedPaths.USER_NMC_CREATE_USER, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public UserProfileTO createUser(@Valid @RequestBody UserProfileTO userProfileTO) throws NmrException {
         return userService.createUser(userProfileTO);
     }
 
-    @GetMapping(path = "/user")
+    @GetMapping(path = ProtectedPaths.GET_USER)
+    @SecurityRequirement(name = "bearerAuth")
     public UserResponseTO retrieveUsers(
             @RequestParam(required = false, value = "search") String search,
             @RequestParam(required = false, value = "value") String value,
@@ -114,6 +117,7 @@ public class UserController {
     @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN})
     @DeleteMapping(path = ProtectedPaths.USER_DEACTIVATE_URL)
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseMessageTo deactivateUser(@PathVariable(name = "userId") BigInteger userId) {
         userService.deactivateUser(userId);
         return ResponseMessageTo.builder().message(NMRConstants.SUCCESS_RESPONSE).build();
@@ -122,12 +126,14 @@ public class UserController {
     @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN})
     @PostMapping(path = ProtectedPaths.USER_UNLOCK_URL)
     @ResponseStatus(value = HttpStatus.OK)
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseMessageTo unlockUser(@PathVariable(name = "userId") BigInteger userId) {
         userService.unlockUser(userId);
         return ResponseMessageTo.builder().message(NMRConstants.SUCCESS_RESPONSE).build();
     }
 
-    @GetMapping(path = "/user-accounts")
+    @GetMapping(path = ProtectedPaths.GET_USER_ACCOUNT)
+    @SecurityRequirement(name = "bearerAuth")
     public List<String> getUserNames(
             @RequestParam(value = "mobileNumber") String mobileNumber,
             @RequestParam(value = "userType") BigInteger userType) {

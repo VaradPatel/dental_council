@@ -177,7 +177,7 @@ class ApplicationControllerTest {
     void testTrackStatusDetailsShouldFetchApplicationDetails() throws Exception {
         when(applicationService.fetchApplicationDetails(nullable(NMRPagination.class), nullable(String.class), nullable(String.class), nullable(String.class), nullable(String.class)))
                 .thenReturn(new HealthProfessionalApplicationResponseTo());
-        mockMvc.perform(get(APPLICATION_REQUEST_URL)
+        mockMvc.perform(get(ProtectedPaths.APPLICATION_REQUEST_URL)
                         .with(user(TEST_USER))
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
@@ -196,7 +196,7 @@ class ApplicationControllerTest {
     void testExecuteActionOnHealthProfessionalShouldThrowWorkFlowCreationFailException() throws Exception {
         doNothing().when(iWorkFlowService).initiateSubmissionWorkFlow(getWorkFlowRequestTO());
         when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class), any(BigInteger.class))).thenReturn(false);
-        mockMvc.perform(patch(HEALTH_PROFESSIONAL_ACTION)
+        mockMvc.perform(patch(ProtectedPaths.HEALTH_PROFESSIONAL_ACTION)
                         .with(user(TEST_USER))
                         .with(csrf())
                         .content(objectMapper.writeValueAsBytes(getWorkFlowRequestTO()))
@@ -212,7 +212,7 @@ class ApplicationControllerTest {
         when(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(any(BigInteger.class))).thenReturn(false);
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(getRequestCounter());
         doNothing().when(iWorkFlowService).initiateSubmissionWorkFlow(getWorkFlowRequestTO());
-        mockMvc.perform(patch(HEALTH_PROFESSIONAL_ACTION)
+        mockMvc.perform(patch(ProtectedPaths.HEALTH_PROFESSIONAL_ACTION)
                         .with(user(TEST_USER))
                         .with(csrf())
                         .content(objectMapper.writeValueAsBytes(getWorkFlowRequestTO()))

@@ -4,8 +4,10 @@ import in.gov.abdm.nmr.dto.CollegeMasterResponseTo;
 import in.gov.abdm.nmr.dto.UniversityMasterResponseTo;
 import in.gov.abdm.nmr.mapper.IMasterDataMapper;
 import in.gov.abdm.nmr.mapper.IStateMedicalCouncilMapper;
+import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IMasterDataService;
 import in.gov.abdm.nmr.util.CommonTestData;
+import in.gov.abdm.nmr.util.NMRConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
-import static in.gov.abdm.nmr.util.NMRConstants.STATE_MEDICAL_COUNCIL_URL;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -63,7 +64,7 @@ class MasterDataControllerTest {
     void testGetStateMedicalCouncilsReturnsListOfCouncils() throws Exception {
         when(masterDataService.smcs())
                 .thenReturn(IMasterDataMapper.MASTER_DATA_MAPPER.stateMedicalCouncilsToMasterDataTOs(IStateMedicalCouncilMapper.STATE_MEDICAL_COUNCIL_MAPPER.stateMedicalCouncilsToDtos(List.of(CommonTestData.getStateMedicalCouncil()))));
-        mockMvc.perform(get(STATE_MEDICAL_COUNCIL_URL).with(user("123")).accept(MediaType.APPLICATION_JSON_VALUE))
+        mockMvc.perform(get(NMRConstants.STATE_MEDICAL_COUNCIL).with(user("123")).accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(ID))
                 .andExpect(jsonPath("$[0].name").value(STATE_MEDICAL_COUNCIL));
