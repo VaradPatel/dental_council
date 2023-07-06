@@ -82,43 +82,6 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
         try {
             String requestBody = readRequestBody(request);
             LOGGER.info("Read request body : {}", requestBody);
-            LOGGER.info("Request : {}", request.getAuthType());
-            LOGGER.info("Request : {}", request.getCharacterEncoding());
-            LOGGER.info("Request : {}", request.getContentType());
-            LOGGER.info("Request : {}", request.getContextPath());
-            LOGGER.info("Request : {}", request.getLocalAddr());
-            LOGGER.info("Request : {}", request.getLocalName());
-            LOGGER.info("Request : {}", request.getMethod());
-            LOGGER.info("Request : {}", request.getPathInfo());
-            LOGGER.info("Request : {}", request.getPathTranslated());
-            LOGGER.info("Request : {}", request.getProtocol());
-            LOGGER.info("Request : {}", request.getQueryString());
-            LOGGER.info("Request : {}", request.getRemoteAddr());
-            LOGGER.info("Request : {}", request.getRemoteHost());
-            LOGGER.info("Request : {}", request.getRemoteUser());
-            LOGGER.info("Request : {}", request.getRequestedSessionId());
-            LOGGER.info("Request : {}", request.getRequestURI());
-            LOGGER.info("Request : {}", request.getRequestURL());
-            LOGGER.info("Request : {}", request.getScheme());
-            LOGGER.info("Request : {}", request.getServerName());
-            LOGGER.info("Request : {}", request.getServletPath());
-            LOGGER.info("Request : {}", request.getAttributeNames());
-            LOGGER.info("Request : {}", request.getContentLength());
-            LOGGER.info("Request : {}", request.getContentLengthLong());
-            LOGGER.info("Request : {}", request.getCookies());
-            LOGGER.info("Request : {}", request.getDispatcherType());
-            LOGGER.info("Request : {}", request.getHeaderNames());
-            LOGGER.info("Request : {}", request.getHttpServletMapping());
-            LOGGER.info("Request : {}", request.getLocale());
-            LOGGER.info("Request : {}", request.getLocales());
-            LOGGER.info("Request : {}", request.getParameterMap());
-            LOGGER.info("Request : {}", request.getParameterNames());
-            LOGGER.info("Request : {}", request.getRemotePort());
-            LOGGER.info("Request : {}", request.getServerPort());
-            LOGGER.info("Request : {}", request.getServletContext());
-            LOGGER.info("Request : {}", request.getSession());
-            LOGGER.info("Request : {}", request.getTrailerFields());
-            LOGGER.info("Request : {}", request.getUserPrincipal());
             
             ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).setAttribute(REQUEST_BODY, requestBody, RequestAttributes.SCOPE_REQUEST);
 
