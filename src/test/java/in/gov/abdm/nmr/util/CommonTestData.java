@@ -757,10 +757,9 @@ CommonTestData {
         return resetPasswordRequest;
     }
 
-    public FacilitySearchResponseTO getFacilitySearchResponseTO() {
-        FacilitySearchResponseTO facilitySearchResponseTO = new FacilitySearchResponseTO();
-        facilitySearchResponseTO.setTotalFacilities(1);
-        return facilitySearchResponseTO;
+    public FacilitiesSearchResponseTO getFacilitySearchResponseTO() {
+        FacilitiesSearchResponseTO facilitiesSearchResponseTO = new FacilitiesSearchResponseTO();
+        return facilitiesSearchResponseTO;
     }
 
     public SessionResponseTo getSessionResponse() {

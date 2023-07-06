@@ -15,7 +15,8 @@ public class NMRConstants {
     public static final String SEND_OTP = "/send-otp";
     public static final String VERIFY_OTP = "/verify-otp";
     public static final String RETRIEVE_USER = "/retrieve-user";
-    public static final String FACILITY_SERVICE_SEARCH = "/v1.5/facility/search";
+    public static final String FACILITY_SERVICE_SEARCH = "/v1.0/facility/search-facilities";
+    public static final String FETCH_FACILITY_INFO = "/FacilityManagement/v1.0/facility/fetch-facility-info";
     public static final String NOTIFICATION_SERVICE_SEND_MESSAGE = "/internal/v3/notification/message";
     public static final String NOTIFICATION_DB_SERVICE_GET_TEMPLATE = "/internal/v3/notification/template/id/{id}";
     public static final String RESET_PASSWORD = "/user/reset-password";
@@ -301,6 +302,7 @@ public class NMRConstants {
     public static final String REDIS_PORT = "${spring.redis.port}";
     public static final String REDIS_DATABASE = "${spring.redis.database}";
     public static final String INVALID_FACILITY_DETAILS_MESSAGE = "Invalid facility details provided";
+    public static final String INVALID_FACILITY_PAYLOAD_MESSAGE = "Either id OR state, district and ownership is required";
 
 
 
