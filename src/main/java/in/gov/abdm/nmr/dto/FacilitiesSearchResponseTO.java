@@ -1,13 +1,14 @@
 package in.gov.abdm.nmr.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import java.util.List;
 
 @Data
-public class FacilitySearchResponseTO {
+public class FacilitiesSearchResponseTO {
 
     @JsonProperty("referenceNumber")
     private String referenceNumber;
 
-    @JsonProperty("facility")
-    private FacilityTO facility;
+    @JsonProperty("facilities")
+    private List<FacilityTO> facilities;
 }
