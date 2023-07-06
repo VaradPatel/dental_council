@@ -16,4 +16,7 @@ public class FacilitySearchRequestTO {
 
     @JsonProperty("district")
     private String district;
+
+    @JsonProperty("facilityName")
+    private String facilityName;
 }
