@@ -30,7 +30,7 @@ public class TraceFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         LOGGER.info("Adding trace-id to response");
-        LOGGER.info("Request size {}", request.getContentLength());
+        LOGGER.info("Request size {}", request.getInputStream().available());
         response.addHeader(CustomHeaders.CORRELATION_ID, tracer.currentSpan().context().traceIdString());
         super.doFilter(request, response, filterChain);
     }
