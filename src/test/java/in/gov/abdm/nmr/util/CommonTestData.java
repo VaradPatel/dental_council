@@ -376,8 +376,8 @@ CommonTestData {
 
     public static StateTO getStateTO() {
         StateTO stateTO = new StateTO();
-        stateTO.setId(ID);
-        stateTO.setName(NAME);
+        stateTO.setId(STATE_ID);
+        stateTO.setName(STATE_NAME);
         return stateTO;
     }
 
@@ -757,10 +757,9 @@ CommonTestData {
         return resetPasswordRequest;
     }
 
-    public FacilitySearchResponseTO getFacilitySearchResponseTO() {
-        FacilitySearchResponseTO facilitySearchResponseTO = new FacilitySearchResponseTO();
-        facilitySearchResponseTO.setTotalFacilities(1);
-        return facilitySearchResponseTO;
+    public FacilitiesSearchResponseTO getFacilitySearchResponseTO() {
+        FacilitiesSearchResponseTO facilitiesSearchResponseTO = new FacilitiesSearchResponseTO();
+        return facilitiesSearchResponseTO;
     }
 
     public SessionResponseTo getSessionResponse() {
@@ -832,9 +831,9 @@ CommonTestData {
 
     public static StateMedicalCouncilTO getStateMedicalCouncilTO() {
         StateMedicalCouncilTO stateMedicalCouncil = new StateMedicalCouncilTO();
-        stateMedicalCouncil.setId(ID);
-        stateMedicalCouncil.setCode(ISO_CODE);
-        stateMedicalCouncil.setName(STATE_MEDICAL_COUNCIL);
+        stateMedicalCouncil.setId(SMC_ID);
+        stateMedicalCouncil.setCode(SMC_CODE);
+        stateMedicalCouncil.setName(SMC_NAME);
         return stateMedicalCouncil;
     }
 
@@ -1121,6 +1120,7 @@ CommonTestData {
         HpProfile hpProfile = new HpProfile();
         hpProfile.setNmrId(NMR_ID);
         hpProfile.setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.APPROVED.getId()).build());
+        hpProfile.setUser(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         return hpProfile;
     }
 
@@ -1223,6 +1223,7 @@ CommonTestData {
     public static WorkProfile getWorkProfile() {
         WorkProfile workProfile = new WorkProfile();
         workProfile.setFacilityId(FACILITY_ID);
+        workProfile.setIsUserCurrentlyWorking(1);
         return workProfile;
     }
 }

@@ -1,9 +1,7 @@
 package in.gov.abdm.nmr.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import in.gov.abdm.nmr.dto.FacilitySearchRequestTO;
-import in.gov.abdm.nmr.dto.FacilitySearchResponseTO;
-import in.gov.abdm.nmr.dto.FacilityTO;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.NmrExceptionAdvice;
 import in.gov.abdm.nmr.service.IFacilityService;
 import in.gov.abdm.nmr.util.CommonTestData;
@@ -65,50 +63,32 @@ class FacilityControllerTest {
     @Test
     @WithMockUser
     void testSearchFacility() throws Exception {
-        FacilitySearchRequestTO facilitySearchRequestTO = new FacilitySearchRequestTO();
-        facilitySearchRequestTO.setFacilityId(FACILITY_ID);
-        facilitySearchRequestTO.setFacilityName(FACILITY_NAME);
-        facilitySearchRequestTO.setOwnershipCode(OWNERSHIP_CODE);
-        facilitySearchRequestTO.setStateLgdCode(STATE_CODE);
-        facilitySearchRequestTO.setDistrictLgdCode(SUB_DISTRICT_CODE);
-        facilitySearchRequestTO.setSubDistrictLgdCode(SUB_DISTRICT_CODE);
-        facilitySearchRequestTO.setPincode(CommonTestData.PIN_CODE);
-        facilitySearchRequestTO.setPage(1);
-        facilitySearchRequestTO.setResultsPerPage(1);
+        FacilityRequestTO facilityRequestTO = new FacilityRequestTO();
+        facilityRequestTO.getFacility().setId(FACILITY_ID);
+        facilityRequestTO.getFacility().setOwnership(OWNERSHIP_CODE);
+        facilityRequestTO.getFacility().setState(STATE_CODE);
+        facilityRequestTO.getFacility().setDistrict(SUB_DISTRICT_CODE);
 
-        FacilitySearchResponseTO facilitySearchResponseTO = new FacilitySearchResponseTO();
-        facilitySearchResponseTO.setMessage(SUCCESS_RESPONSE);
+        FacilitiesSearchResponseTO facilitySearchResponseTO = new FacilitiesSearchResponseTO();
+        facilitySearchResponseTO.setReferenceNumber(SUCCESS_RESPONSE);
         List<FacilityTO> facilities = new ArrayList<>();
         FacilityTO facilityTO = new FacilityTO();
-        facilityTO.setFacilityId(FACILITY_ID);
-        facilityTO.setFacilityName(FACILITY_NAME);
-        facilityTO.setOwnership(OWNERSHIP);
-        facilityTO.setOwnershipCode(OWNERSHIP_CODE);
-        facilityTO.setStateName(STATE_NAME);
-        facilityTO.setStateLGDCode(STATE_CODE);
-        facilityTO.setDistrictName(DISTRICT_NAME);
-        facilityTO.setSubDistrictName(SUB_DISTRICT_NAME);
-        facilityTO.setVillageCityTownName(VILLAGE_NAME);
-        facilityTO.setDistrictLGDCode(DISTRICT_CODE);
-        facilityTO.setSubDistrictLGDCode(SUB_DISTRICT_CODE);
-        facilityTO.setVillageCityTownLGDCode(VILLAGE_CODE);
-        facilityTO.setAddress(ADDRESS_LINE_1);
-        facilityTO.setPincode(CommonTestData.PIN_CODE);
+        facilityTO.setId(FACILITY_ID);
+        facilityTO.setName(FACILITY_NAME);
+        facilityTO.setLongitude(STATE_CODE);
+        facilityTO.setLatitude(DISTRICT_NAME);
         facilityTO.setLatitude(LATITUDE);
         facilityTO.setLongitude(LONGITUDE);
-        facilityTO.setSystemOfMedicineCode(SYSTEM_OF_MEDICINE_CODE);
         facilityTO.setSystemOfMedicine(SYSTEM_OF_MEDICINE_CODE);
-        facilityTO.setFacilityTypeCode(FACILITY_CODE);
-        facilityTO.setFacilityStatus(FACILITY_STATUS);
+        facilityTO.setContactNumber(FACILITY_CODE);
+        facilityTO.setFacilityProfileStatus(FACILITY_STATUS);
         facilityTO.setFacilityType(FACILITY_TYPE);
         facilities.add(facilityTO);
         facilitySearchResponseTO.setFacilities(facilities);
-        facilitySearchResponseTO.setTotalFacilities(1);
-        facilitySearchResponseTO.setNumberOfPages(1);
         when(facilityService.findFacility(nullable(FacilitySearchRequestTO.class))).thenReturn(facilitySearchResponseTO);
         mockMvc.perform(post(PATH_FACILITY_ROOT + PATH_FACILITY_SEARCH).with(user(TEST_USER))
                         .with(csrf())
-                        .content(objectMapper.writeValueAsBytes(facilitySearchRequestTO))
+                        .content(objectMapper.writeValueAsBytes(facilityRequestTO))
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())

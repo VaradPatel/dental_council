@@ -2,8 +2,9 @@ package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.client.FacilityFClient;
 import in.gov.abdm.nmr.client.GatewayFClient;
+import in.gov.abdm.nmr.dto.FacilitiesSearchResponseTO;
 import in.gov.abdm.nmr.dto.FacilitySearchRequestTO;
-import in.gov.abdm.nmr.dto.FacilitySearchResponseTO;
+import in.gov.abdm.nmr.dto.FacilityRequestTO;
 import in.gov.abdm.nmr.dto.SessionRequestTo;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.service.impl.FacilityServiceImpl;
@@ -44,24 +45,21 @@ class FacilityServiceTest {
 
     public static FacilitySearchRequestTO getFacilitySearchRequest() {
         FacilitySearchRequestTO facilitySearchRequestTO = new FacilitySearchRequestTO();
-        facilitySearchRequestTO.setFacilityId(FACILITY_ID);
-        facilitySearchRequestTO.setFacilityName(FACILITY_NAME);
-        facilitySearchRequestTO.setPage(1);
+        facilitySearchRequestTO.setId(FACILITY_ID);
         return facilitySearchRequestTO;
     }
 
     @Test
     void testFindFacilityShouldFindFacility() throws InvalidRequestException {
         Mockito.when(gatewayFClient.sessions(any(SessionRequestTo.class))).thenReturn(getSessionResponse());
-        when(facilityFClient.findFacility(anyString(), any(FacilitySearchRequestTO.class))).thenReturn(getFacilitySearchResponseTO());
-        FacilitySearchResponseTO facility = facilityService.findFacility(getFacilitySearchRequest());
-        assertEquals(1, facility.getTotalFacilities());
+        when(facilityFClient.searchFacility(anyString(), any(FacilityRequestTO.class))).thenReturn(getFacilitySearchResponseTO());
+        FacilitiesSearchResponseTO facility = facilityService.findFacility(getFacilitySearchRequest());
     }
 
     @Test
     void testFindFacilityShouldThrowInvalidRequestException() {
         Mockito.when(gatewayFClient.sessions(any(SessionRequestTo.class))).thenReturn(getSessionResponse());
-        when(facilityFClient.findFacility(anyString(), any(FacilitySearchRequestTO.class))).thenReturn(getFacilitySearchResponseTO());
+        when(facilityFClient.searchFacility(anyString(), any(FacilityRequestTO.class))).thenReturn(getFacilitySearchResponseTO());
         assertThrows(InvalidRequestException.class, () -> facilityService.findFacility(any(FacilitySearchRequestTO.class)));
     }
 }

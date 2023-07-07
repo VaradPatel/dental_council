@@ -33,7 +33,7 @@ class KafkaListenerNotificationServiceTest {
     IAddressRepository iAddressRepository;
 
     private static final String MESSAGE = """
-                "transactionId":"FileName.pdf","lastAadharDigit":"1859","name":"John Doe","pincode":"123456","yob":"1990","signed":false
+                {"transactionId":"FileName.pdf","lastAadharDigit":"1859","name":"John Doe","pincode":"123456","yob":"1990","signed":false}
                 """;
 
     @Test
