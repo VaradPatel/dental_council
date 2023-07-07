@@ -80,7 +80,10 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         UserPasswordAuthenticationToken authRequest = UserPasswordAuthenticationToken.unauthenticated(null, null, null, null, null);
         try {
-            ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).setAttribute(REQUEST_BODY, readRequestBody(request), RequestAttributes.SCOPE_REQUEST);
+            String requestBody = readRequestBody(request);
+            LOGGER.info("Read request body : {}", requestBody);
+            
+            ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).setAttribute(REQUEST_BODY, requestBody, RequestAttributes.SCOPE_REQUEST);
 
             LoginRequestTO requestBodyTO = convertRequestToDTO();
             authRequest = UserPasswordAuthenticationToken.unauthenticated(requestBodyTO.getUsername(),

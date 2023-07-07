@@ -2,16 +2,17 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.client.FacilityFClient;
 import in.gov.abdm.nmr.client.GatewayFClient;
-import in.gov.abdm.nmr.dto.FacilitySearchRequestTO;
-import in.gov.abdm.nmr.dto.FacilitySearchResponseTO;
-import in.gov.abdm.nmr.dto.SessionRequestTo;
-import in.gov.abdm.nmr.dto.SessionResponseTo;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.service.IFacilityService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class FacilityServiceImpl implements IFacilityService {
@@ -23,14 +24,34 @@ public class FacilityServiceImpl implements IFacilityService {
     private String clientSecret;
     @Autowired
     GatewayFClient gatewayFClient;
+
     @Override
-    public FacilitySearchResponseTO findFacility(FacilitySearchRequestTO facilitySearchRequestTO) throws InvalidRequestException {
+    public FacilitiesSearchResponseTO findFacility(FacilitySearchRequestTO facilitySearchRequestTo) throws InvalidRequestException {
+
         SessionResponseTo sessionResponseTo = getSessionToken();
         String authorization = "Bearer " + sessionResponseTo.getAccessToken();
-        try {
-            return facilityFClient.findFacility(authorization, facilitySearchRequestTO);
-        }catch (Exception e){
-            throw new InvalidRequestException(NMRConstants.INVALID_FACILITY_DETAILS_MESSAGE);
+
+        FacilityRequestTO facilityRequestTO = new FacilityRequestTO();
+        facilityRequestTO.setFacility(facilitySearchRequestTo);
+        facilityRequestTO.setRequestId(UUID.randomUUID().toString());
+        facilityRequestTO.setTimestamp(new Timestamp(System.currentTimeMillis()).toString());
+
+        if (facilitySearchRequestTo.getId() != null) {
+
+            FacilitySearchResponseTO facilitySearchResponseTO = facilityFClient.fetchFacilityInfo(authorization, facilityRequestTO);
+
+            FacilitiesSearchResponseTO facilitiesSearchResponseTO = new FacilitiesSearchResponseTO();
+            facilitiesSearchResponseTO.setReferenceNumber(facilitySearchResponseTO.getReferenceNumber());
+            facilitiesSearchResponseTO.setFacilities(List.of(facilitySearchResponseTO.getFacility()));
+            return facilitiesSearchResponseTO;
+
+        } else if (facilitySearchRequestTo.getOwnership() != null && facilitySearchRequestTo.getState() != null && facilitySearchRequestTo.getDistrict() != null) {
+
+            return facilityFClient.searchFacility(authorization, facilityRequestTO);
+
+        } else {
+
+            throw new InvalidRequestException(NMRConstants.INVALID_FACILITY_PAYLOAD_MESSAGE);
         }
     }
     private SessionResponseTo getSessionToken() {

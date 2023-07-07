@@ -120,6 +120,8 @@ class HpRegistrationServiceImplTest {
     INotificationService notificationService;
     @Mock
     IUserDaoService userDetailDaoService;
+    @Mock
+    IQualificationDetailRepository iQualificationDetailRepository;
 
     @BeforeEach
     void setup() {
@@ -217,6 +219,7 @@ class HpRegistrationServiceImplTest {
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(getRequestCounter());
         when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class),any(BigInteger.class))).thenReturn(true);
         doNothing().when(iWorkFlowService).initiateSubmissionWorkFlow(any(WorkFlowRequestTO.class));
+        when(iQualificationDetailRepository.getCountOfQualificationDetailsByUserID(any(BigInteger.class))).thenReturn(1);
         String s = hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate));
         assertEquals(SUCCESS_RESPONSE, s);
     }
@@ -250,7 +253,7 @@ class HpRegistrationServiceImplTest {
         when(hpProfileDaoService.updateWorkProfileDetails(CommonTestData.ID, getHpWorkProfileUpdateRequest(), List.of(certificate)))
                 .thenReturn(new HpProfileUpdateResponseTO(1, SUCCESS_RESPONSE, HP_ID));
         when(iHpProfileRepository.findById(CommonTestData.ID)).thenReturn(Optional.of(getHpProfile()));
-        when(workProfileRepository.getWorkProfileDetailsByUserId(any(BigInteger.class))).thenReturn(List.of(new WorkProfile()));
+        when(workProfileRepository.getWorkProfileDetailsByUserId(any(BigInteger.class))).thenReturn(List.of(getWorkProfile()));
         when(languagesKnownRepository.findByUserId(any(BigInteger.class))).thenReturn(List.of(new LanguagesKnown()));
         hpRegistrationService.addOrUpdateWorkProfileDetail(CommonTestData.ID, getHpWorkProfileUpdateRequest(), List.of(certificate));
     }

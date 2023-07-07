@@ -1,7 +1,6 @@
 package in.gov.abdm.nmr.service;
 
-import in.gov.abdm.nmr.dto.CollegeProfileTo;
-import in.gov.abdm.nmr.dto.CollegeResponseTo;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.CollegeMaster;
 import in.gov.abdm.nmr.entity.CollegeProfile;
 import in.gov.abdm.nmr.entity.User;
@@ -122,6 +121,10 @@ class CollegeServiceTest {
         collegeResponseTo.setUniversityTO(getUniversityTo());
         collegeResponseTo.setEmailId(EMAIL_ID);
         collegeResponseTo.setMobileNumber(MOBILE_NUMBER);
+        collegeResponseTo.setStateTO(new StateTO(STATE_ID, STATE_NAME, STATE_CODE));
+        collegeResponseTo.setDistrictTO(new DistrictTO(DISTRICT_ID, DISTRICT_NAME, DISTRICT_CODE));
+        collegeResponseTo.setStateMedicalCouncilTO(new StateMedicalCouncilTO(SMC_ID, SMC_CODE, SMC_NAME));
+
         return collegeResponseTo;
     }
 
