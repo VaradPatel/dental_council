@@ -177,7 +177,7 @@ public class CollegeServiceImpl implements ICollegeService {
         collegeMaster.setStatus(BigInteger.valueOf(1));
         collegeMaster.setVisibleStatus(BigInteger.valueOf(1));
         collegeMaster.setSystemOfMedicineId(BigInteger.valueOf(1));
-        collegeMaster.setCourse(collegeResponseTo.getCourseTO() != null ? new Course(collegeResponseTo.getCourseTO().getId(), collegeResponseTo.getCourseTO().getCourseName()) : collegeMaster.getCourse());
+        collegeMaster.setCourse(collegeResponseTo.getCourseTO() != null ? new Course(collegeResponseTo.getCourseTO().getId(), collegeResponseTo.getCourseTO().getCourseName(), null) : collegeMaster.getCourse());
         collegeMaster.setState(State.builder().id(collegeResponseTo.getStateTO() != null ? collegeResponseTo.getStateTO().getId() : collegeMaster.getState().getId()).build());
         collegeMaster.setDistrict(District.builder().id(collegeResponseTo.getDistrictTO() != null ? collegeResponseTo.getDistrictTO().getId() : collegeMaster.getDistrict().getId()).build());
         collegeMaster.setVillage(collegeResponseTo.getVillagesTO() != null ? Villages.builder().id(collegeResponseTo.getVillagesTO().getId()).build() : collegeMaster.getVillage());
