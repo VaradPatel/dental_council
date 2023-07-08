@@ -280,11 +280,11 @@ public class DashboardServiceImpl implements IDashboardService {
         columnToSortMap.put("hpProfileId", " calculate.hp_profile_id");
         columnToSortMap.put("requestId", " calculate.request_id");
         columnToSortMap.put("registrationNo", " rd.registration_no");
-        columnToSortMap.put("createdAt", " rd.created_at");
+        columnToSortMap.put("createdAt", " d.created_at");
         columnToSortMap.put("councilName", " stmc.name");
         columnToSortMap.put("applicantFullName", " hp.full_name");
         columnToSortMap.put("pendency", " pendency");
-        return columnToSortMap.getOrDefault(columnToSort, " pendency ");
+        return columnToSortMap.getOrDefault(columnToSort, " d.created_at ");
     }
 
     private void setApplicationTypeIdAndUserGroupStatus(String applicationTypeId, String userGroupStatus,
