@@ -156,7 +156,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         if (APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES.contains(workFlow.getWorkFlowStatus().getId())) {
             log.debug("Performing Post Workflow updates since either the Last step of Workflow is reached or work_flow_status is Approved/Suspended/Blacklisted ");
             workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
-        } else if (ApplicationType.QUALIFICATION_ADDITION.getId().equals(workFlow.getApplicationType().getId())
+        } else if (ApplicationType.ADDITIONAL_QUALIFICATION.getId().equals(workFlow.getApplicationType().getId())
                 && WorkflowStatus.REJECTED.getId().equals(workFlow.getWorkFlowStatus().getId())) {
 
             QualificationDetails qualificationDetails = qualificationDetailRepository.findByRequestId(workFlow.getRequestId());
