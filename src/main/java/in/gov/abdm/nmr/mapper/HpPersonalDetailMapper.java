@@ -36,6 +36,7 @@ public final class HpPersonalDetailMapper {
         hpProfilePersonalResponseTO.setEmailVerified(hpProfile.getUser() != null && hpProfile.getUser().isEmailVerified());
         hpProfilePersonalResponseTO.setSmsNotificationEnabled(hpProfile.getUser() != null && hpProfile.getUser().isSmsNotificationEnabled());
         hpProfilePersonalResponseTO.setEmailNotificationEnabled(hpProfile.getUser() != null && hpProfile.getUser().isEmailNotificationEnabled());
+        hpProfilePersonalResponseTO.setEsignStatus(hpProfile.getESignStatus());
 
         return hpProfilePersonalResponseTO;
     }
