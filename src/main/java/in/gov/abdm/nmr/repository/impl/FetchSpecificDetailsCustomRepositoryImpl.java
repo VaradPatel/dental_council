@@ -213,7 +213,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setCouncilName((String) result[8]);
             dashBoardTO.setApplicantFullName((String) result[9]);
             dashBoardTO.setWorkFlowStatusId((BigInteger) result[10]);
-            dashBoardTO.setPendency((int) Math.floor((Double) result[11]));
+            dashBoardTO.setPendency(result[11] != null ? (int) Math.floor((Double) result[11]): 0);
             dashBoardTO.setGender((String) result[12]);
             dashBoardTO.setEmailId((String) result[13]);
             dashBoardTO.setMobileNumber((String) result[14]);
