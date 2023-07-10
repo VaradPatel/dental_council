@@ -14,7 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.security.SecureRandom;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Util class for NMR.
@@ -56,10 +58,10 @@ public final class NMRUtil {
             throw new InvalidRequestException(NMRError.QUALIFICATION_DETAILS_LIMIT_EXCEEDED.getCode(), NMRError.QUALIFICATION_DETAILS_LIMIT_EXCEEDED.getMessage());
         }
         for (QualificationDetailRequestTO qualificationDetailRequestTO : qualificationDetailRequestTOs) {
-            for (String courseName : existingQualifications) {
-                if (courseName.equals(qualificationDetailRequestTO.getCourse().getName())) {
-                    throw new InvalidRequestException(NMRError.DUPLICATE_QUALIFICATION_ERROR.getCode(), NMRError.DUPLICATE_QUALIFICATION_ERROR.getMessage());
-                }
+            existingQualifications.add(qualificationDetailRequestTO.getCourse().getName());
+            Set<String> set = new HashSet<>(existingQualifications);
+            if (set.size() < existingQualifications.size()) {
+                throw new InvalidRequestException(NMRError.DUPLICATE_QUALIFICATION_ERROR.getCode(), NMRError.DUPLICATE_QUALIFICATION_ERROR.getMessage());
             }
         }
     }
