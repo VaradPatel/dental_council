@@ -241,8 +241,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         if(!iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(hpProfileId,ApplicationType.ADDITIONAL_QUALIFICATION.getId())){
             throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
         }
-        Integer existingQualificationCount = iQualificationDetailRepository.getCountOfQualificationDetailsByUserID(hpProfile.getUser().getId());
-        validateQualificationDetailsAndProofs(qualificationDetailRequestTOs, proofs, existingQualificationCount);
+        List<String> existingQualifications = iQualificationDetailRepository.getListOfQualificationByUserID(hpProfile.getUser().getId());
+        validateQualificationDetailsAndProofs(qualificationDetailRequestTOs, proofs, existingQualifications);
 
         for (QualificationDetailRequestTO qualificationDetailRequestTO : qualificationDetailRequestTOs) {
             String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.ADDITIONAL_QUALIFICATION.getId()));

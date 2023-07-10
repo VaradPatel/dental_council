@@ -44,7 +44,8 @@ public enum NMRError {
     NON_REGISTERED_EMAIL_ID("ABDM-NMR-036", "This email ID is not registered in NMR."),
     NON_REGISTERED_NMR_ID("ABDM-NMR-037", "This NMR ID is not registered in NMR."),
     INVALID_OTP_TRANSACTION_ID("ABDM-NMR-038", "Invalid OTP Transaction ID"),
-    TEMPLATE_KEYS_MISSING("ABDM-NMR-039", "Error while retrieving template keys");
+    TEMPLATE_KEYS_MISSING("ABDM-NMR-039", "Error while retrieving template keys"),
+    DUPLICATE_QUALIFICATION_ERROR("ABDM-NMR-040", "Duplicate qualification details detected. Please remove the duplicate entry.");
     private final String code;
     private final String message;
 }
