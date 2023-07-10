@@ -209,7 +209,11 @@ public class ApplicationServiceImpl implements IApplicationService {
                 log.debug("Building Request id.");
                 String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
                 WorkFlow workFlow = iWorkFlowRepository.findLastWorkFlowForHealthProfessional(latestHpProfile.getId());
-                if (Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
+                BigInteger loggedInUserGroupId = getGroupIdForLoggedInUser();
+                if(Group.NMC.getId().equals(loggedInUserGroupId) || Group.SMC.getId().equals(loggedInUserGroupId)){
+                    applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.REACTIVATION_THROUGH_SMC.getId());
+                    reactivateRequestResponseTo.setSelfReactivation(false);
+                } else if (Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
                     log.debug("Proceeding to reactivate through SMC since the profile was suspended by NMC");
                     applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.REACTIVATION_THROUGH_SMC.getId());
                     reactivateRequestResponseTo.setSelfReactivation(false);
@@ -231,6 +235,15 @@ public class ApplicationServiceImpl implements IApplicationService {
         } else {
             throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
         }
+    }
+
+    private BigInteger getGroupIdForLoggedInUser() {
+
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("Processing card-detail service for : {} ", userName);
+        User userDetail = userDaoService.findByUsername(userName);
+        BigInteger groupId = userDetail.getGroup().getId();
+        return groupId;
     }
 
     private void saveReactivationAttachments(MultipartFile reactivationFile, HpProfile hpProfile, String requestId) throws IOException {
