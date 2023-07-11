@@ -8,6 +8,7 @@ import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.repository.IFetchSpecificDetailsCustomRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -22,8 +23,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static in.gov.abdm.nmr.util.NMRConstants.FETCH_CARD_DETAILS_QUERY;
-import static in.gov.abdm.nmr.util.NMRConstants.NOT_YET_RECEIVED;
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 /**
  * A class that implements all the methods of the Custom Repository interface IFetchSpecificDetailsCustomRepository
@@ -263,8 +263,14 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             query.setParameter("councilId", Integer.parseInt(dashboardRequestParamsTO.getCouncilId()));
         }
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getGender()) && !dashboardRequestParamsTO.getGender().isEmpty()) {
-            query.setParameter("gender", "%".concat(dashboardRequestParamsTO.getGender()).concat("%"));
+        String gender = dashboardRequestParamsTO.getGender();
+        if (StringUtils.isNotBlank(gender)) {
+            if (GENDER_MALE.equalsIgnoreCase(gender)) {
+                gender = "m";
+            } else if (GENDER_FEMALE.equalsIgnoreCase(gender)) {
+                gender = "f";
+            }
+            query.setParameter("gender", "%".concat(gender).concat("%"));
         }
 
         if (Objects.nonNull(dashboardRequestParamsTO.getEmailId()) && !dashboardRequestParamsTO.getEmailId().isEmpty()) {
