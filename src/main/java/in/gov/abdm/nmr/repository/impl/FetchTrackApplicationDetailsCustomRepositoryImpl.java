@@ -1,11 +1,10 @@
 package in.gov.abdm.nmr.repository.impl;
 
-import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestParamsTo;
-import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
-import in.gov.abdm.nmr.dto.HealthProfessionalApplicationTo;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.DashboardStatus;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;
 import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +17,7 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -236,5 +236,54 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             query.setParameter("collegeId", healthProfessionalApplicationRequestParamsTo.getCollegeId());
         }
         return query;
+    }
+
+    private static final Function<String, String> GET_APPLICATION_DETAILS = requestId -> {
+        StringBuilder sb = new StringBuilder();
+        sb.append(NMRConstants.GET_APPLICATION_DETAILS);
+        sb.append(" where wfa.request_id = '" + requestId + "' order by wfa.created_at asc");
+        return sb.toString();
+    };
+
+    @Override
+    public ApplicationDetailResponseTo fetchApplicationDetails(String requestId) throws InvalidRequestException {
+        ApplicationDetailResponseTo response = new ApplicationDetailResponseTo();
+        List<ApplicationDetailsTo> applicationDetail = new ArrayList<>();
+        ApplicationDetailsTo detailsTo;
+        Query query = entityManager.createNativeQuery(GET_APPLICATION_DETAILS.apply(requestId));
+        List<Object[]> results = query.getResultList();
+        if (results == null || results.isEmpty()) {
+            log.error("unable to complete fetch application details process due workflow audit records for request ID: {}", requestId);
+            throw new InvalidRequestException("Invalid input request ID: " + requestId + ". Please enter a valid input and try again");
+        }
+        log.debug("Fetched {} workflow audit records for request ID: {}", results.size(), requestId);
+        response.setRequestId((String) results.get(0)[0]);
+        response.setApplicationType((BigInteger) results.get(0)[1]);
+        response.setSubmissionDate(String.valueOf(results.get(0)[2]));
+        if (WorkflowStatus.PENDING.getId().equals(results.get(results.size() - 1)[3])
+                || WorkflowStatus.QUERY_RAISED.getId().equals(results.get(results.size() - 1)[3])) {
+            response.setPendency(Math.abs(((Timestamp) results.get(0)[2]).getTime() - Timestamp.from(Instant.now()).getTime()) / 86400000);
+        } else if (results.size() > 1) {
+            response.setPendency(Math.abs(((Timestamp) results.get(0)[2]).getTime() - ((Timestamp) results.get(results.size() - 1)[2]).getTime()) / 86400000);
+        } else {
+            response.setPendency(0L);
+        }
+        response.setCurrentStatus((BigInteger) results.get(results.size() - 1)[3]);
+        response.setCurrentGroupId(results.get(results.size() - 1)[4] != null ? (BigInteger) results.get(results.size() - 1)[4] : null);
+        if (results.get(0)[1].equals(ApplicationType.ADDITIONAL_QUALIFICATION.getId())) {
+            response.setDegreeName((String) (results.get(0)[8] == null ? results.get(0)[9] : results.get(0)[8]));
+        }
+        for (Object[] result : results) {
+            detailsTo = new ApplicationDetailsTo();
+            detailsTo.setWorkflowStatusId((BigInteger) result[3]);
+            detailsTo.setActionId((BigInteger) result[5]);
+            detailsTo.setGroupId((BigInteger) result[6]);
+            detailsTo.setActionDate(String.valueOf(result[2]));
+            detailsTo.setRemarks((String) result[7]);
+            applicationDetail.add(detailsTo);
+        }
+        response.setApplicationDetails(applicationDetail);
+        log.info("Fetched application detail successfully for request ID: {}", requestId);
+        return response;
     }
 }

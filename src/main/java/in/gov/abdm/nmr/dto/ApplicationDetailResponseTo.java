@@ -40,6 +40,8 @@ public class ApplicationDetailResponseTo {
      */
     private BigInteger currentGroupId;
 
+    private String degreeName;
+
     /**
      * The list of application details.
      */
