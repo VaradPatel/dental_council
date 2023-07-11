@@ -212,13 +212,13 @@ class UserDaoServiceTest {
     void testUpdateSmcProfile() throws InvalidIdException, InvalidRequestException {
         when(smcProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getSmcProfile()));
         when(smcProfileRepository.save(any(SMCProfile.class))).thenReturn(getSmcProfile());
-        SMCProfile smcProfile = userDaoService.updateSmcProfile(ID, getSMCProfile());
+        SMCProfile smcProfile = userDaoService.updateSmcProfile(ID, getSMCProfileTo());
         assertEquals(ID, smcProfile.getId());
     }
 
     @Test
     void testUpdateSmcProfileShouldThrowInvalidIdException() throws InvalidIdException {
-        assertThrows(InvalidIdException.class, () -> userDaoService.updateSmcProfile(ID, getSMCProfile()));
+        assertThrows(InvalidIdException.class, () -> userDaoService.updateSmcProfile(ID, getSMCProfileTo()));
     }
 
 

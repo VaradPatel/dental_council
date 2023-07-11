@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.service;
 import in.gov.abdm.nmr.dto.DashboardRequestParamsTO;
 import in.gov.abdm.nmr.dto.DashboardResponseTO;
 import in.gov.abdm.nmr.dto.FetchCountOnCardResponseTO;
+import in.gov.abdm.nmr.dto.NMRPagination;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.repository.IFetchCountOnCardRepository;
@@ -66,7 +67,6 @@ class DashboardServiceTest {
     void testFetchCountOnCardShouldFetchCountOnCardForStateMedicalCollege() throws AccessDeniedException {
         when(accessControlService.getLoggedInUser()).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(iCollegeProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getCollegeProfile());
-//        when(iFetchCountOnCardRepository.fetchCountForSmc(any(BigInteger.class))).thenReturn(List.of());
         FetchCountOnCardResponseTO fetchCountOnCardResponseTO = dashboardService.fetchCountOnCard();
         assertEquals("1,7", fetchCountOnCardResponseTO.getHpRegistrationRequest().getApplicationTypeIds());
     }
@@ -74,7 +74,6 @@ class DashboardServiceTest {
     @Test
     void testFetchCountOnCardShouldFetchCountOnCardForNationalMedicalCouncil() throws AccessDeniedException {
         when(accessControlService.getLoggedInUser()).thenReturn(getUser(UserTypeEnum.NMC.getId()));
-//        when(iFetchCountOnCardRepository.fetchCountForSmc(any(BigInteger.class))).thenReturn(List.of());
         FetchCountOnCardResponseTO fetchCountOnCardResponseTO = dashboardService.fetchCountOnCard();
         assertEquals("1,7", fetchCountOnCardResponseTO.getHpRegistrationRequest().getApplicationTypeIds());
     }
@@ -82,7 +81,6 @@ class DashboardServiceTest {
     @Test
     void testFetchCountOnCardShouldFetchCountOnCardForNBE() throws AccessDeniedException {
         when(accessControlService.getLoggedInUser()).thenReturn(getUser(UserTypeEnum.NBE.getId()));
-//        when(iFetchCountOnCardRepository.fetchCountForSmc(any(BigInteger.class))).thenReturn(List.of());
         FetchCountOnCardResponseTO fetchCountOnCardResponseTO = dashboardService.fetchCountOnCard();
         assertEquals("1,7", fetchCountOnCardResponseTO.getHpRegistrationRequest().getApplicationTypeIds());
     }
@@ -106,7 +104,7 @@ class DashboardServiceTest {
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.SMC.getId()));
         when(iSmcProfileRepository.findByUserId(any(BigInteger.class))).thenReturn(getSmcProfile());
         when(iFetchSpecificDetailsCustomRepository.fetchDashboardData(any(DashboardRequestParamsTO.class), any(Pageable.class))).thenReturn(getDashboardResponse());
-        DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS, APPLICANT_FULL_NAME_IN_LOWER_CASE, PROFILE_DISPLAY_NAME, 1, 1, "", "");
+        DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS, APPLICANT_FULL_NAME_IN_LOWER_CASE, PROFILE_DISPLAY_NAME, NMRPagination.builder().pageNo(1).offset(1).build());
         assertEquals(BigInteger.ONE, dashboardResponseTO.getTotalNoOfRecords());
     }
 
@@ -116,7 +114,7 @@ class DashboardServiceTest {
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(iFetchSpecificDetailsCustomRepository.fetchDashboardData(any(DashboardRequestParamsTO.class), any(Pageable.class))).thenReturn(getDashboardResponse());
         when(collegeProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getCollegeProfile());
-        DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS, COUNCIL_NAME_IN_LOWER_CASE, STATE_MEDICAL_COUNCIL, 1, 1, "", "");
+        DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS, COUNCIL_NAME_IN_LOWER_CASE, STATE_MEDICAL_COUNCIL, NMRPagination.builder().pageNo(1).offset(1).build());
         assertEquals(BigInteger.ONE, dashboardResponseTO.getTotalNoOfRecords());
     }
 
@@ -126,7 +124,7 @@ class DashboardServiceTest {
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(iFetchSpecificDetailsCustomRepository.fetchDashboardData(any(DashboardRequestParamsTO.class), any(Pageable.class))).thenReturn(getDashboardResponse());
         when(collegeProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getCollegeProfile());
-        DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS, REGISTRATION_NUMBER_IN_LOWER_CASE, REGISTRATION_NUMBER, 1, 1, "", "");
+        DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS, REGISTRATION_NUMBER_IN_LOWER_CASE, REGISTRATION_NUMBER, NMRPagination.builder().pageNo(1).offset(1).build());
         assertEquals(BigInteger.ONE, dashboardResponseTO.getTotalNoOfRecords());
     }
 
@@ -136,7 +134,7 @@ class DashboardServiceTest {
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(iFetchSpecificDetailsCustomRepository.fetchDashboardData(any(DashboardRequestParamsTO.class), any(Pageable.class))).thenReturn(getDashboardResponse());
         when(collegeProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getCollegeProfile());
-        DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS, GENDER_IN_LOWER_CASE, GENDER, 1, 1, "", "");
+        DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS, GENDER_IN_LOWER_CASE, GENDER, NMRPagination.builder().pageNo(1).offset(1).build());
         assertEquals(BigInteger.ONE, dashboardResponseTO.getTotalNoOfRecords());
     }
 
@@ -146,7 +144,7 @@ class DashboardServiceTest {
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(iFetchSpecificDetailsCustomRepository.fetchDashboardData(any(DashboardRequestParamsTO.class), any(Pageable.class))).thenReturn(getDashboardResponse());
         when(collegeProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getCollegeProfile());
-        DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS, EMAIL_ID_IN_LOWER_CASE, CommonTestData.EMAIL_ID, 1, 1, "", "");
+        DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS, EMAIL_ID_IN_LOWER_CASE, CommonTestData.EMAIL_ID, NMRPagination.builder().pageNo(1).offset(1).build());
         assertEquals(BigInteger.ONE, dashboardResponseTO.getTotalNoOfRecords());
     }
 
@@ -156,7 +154,7 @@ class DashboardServiceTest {
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(iFetchSpecificDetailsCustomRepository.fetchDashboardData(any(DashboardRequestParamsTO.class), any(Pageable.class))).thenReturn(getDashboardResponse());
         when(collegeProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getCollegeProfile());
-        DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("", "", TOTAL, MOBILE_NUMBER_IN_LOWER_CASE, MOBILE_NUMBER, 1, 1, "", "");
+        DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("", "", TOTAL, MOBILE_NUMBER_IN_LOWER_CASE, MOBILE_NUMBER, NMRPagination.builder().pageNo(1).offset(1).build());
         assertEquals(BigInteger.ONE, dashboardResponseTO.getTotalNoOfRecords());
     }
 
@@ -166,7 +164,7 @@ class DashboardServiceTest {
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(iFetchSpecificDetailsCustomRepository.fetchDashboardData(any(DashboardRequestParamsTO.class), any(Pageable.class))).thenReturn(getDashboardResponse());
         when(collegeProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getCollegeProfile());
-        DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS, YEAR_OF_REGISTRATION_IN_LOWER_CASE, REGISTRATION_YEAR, 1, 1, "", "");
+        DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS, YEAR_OF_REGISTRATION_IN_LOWER_CASE, REGISTRATION_YEAR, NMRPagination.builder().pageNo(1).offset(1).build());
         assertEquals(BigInteger.ONE, dashboardResponseTO.getTotalNoOfRecords());
     }
 }

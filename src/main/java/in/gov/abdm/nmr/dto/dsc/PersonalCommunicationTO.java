@@ -29,7 +29,6 @@ public class PersonalCommunicationTO {
 	@JsonProperty("subDistrict")
 	private String subDistrict;
 
-	@NotBlank
 	@JsonProperty("district")
 	private String district;
 

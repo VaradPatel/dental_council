@@ -14,10 +14,16 @@ public interface IQualificationDetailRepository extends JpaRepository<Qualificat
     @Query(value = "SELECT * FROM qualification_details where user_id = :userId and is_verified !=" + NMRConstants.QUALIFICATION_STATUS_REJECTED + "", nativeQuery = true)
     List<QualificationDetails> getQualificationDetailsByUserId(BigInteger userId);
 
-    
-    @Query(value = "SELECT qd.name as qualificationName, qd.qualification_year as qualificationYear, u.name as universityName FROM qualification_details qd " + //
+    @Query(value = "SELECT * FROM qualification_details where user_id = :userId and is_verified =" + NMRConstants.QUALIFICATION_STATUS_APPROVED + "", nativeQuery = true)
+    List<QualificationDetails> getApprovedQualificationDetailsByUserId(BigInteger userId);
+
+    @Query(value = "SELECT qd.name as qualificationName, qd.qualification_year as qualificationYear, u.name as universityName FROM qualification_details qd " +
             "left join universities u on qd.university_id = u.id where qd.hp_profile_id =:hpprofileId", nativeQuery = true)
     List<Tuple> findSearchQualificationDetailsByHpProfileId(BigInteger hpprofileId);
 
     QualificationDetails findByRequestId(String requestId);
+
+    @Query(value = "select c.course_name  from qualification_details qd join course c on qd.course_id =c.id where qd.user_id =:userId and is_verified !=" + NMRConstants.QUALIFICATION_STATUS_REJECTED +
+            " union select fqd.course from foreign_qualification_details fqd where fqd.user_id =:userId and is_verified !=" + NMRConstants.QUALIFICATION_STATUS_REJECTED + "", nativeQuery = true)
+    List<String> getListOfQualificationByUserID(BigInteger userId);
 }

@@ -21,4 +21,7 @@ public class ReactivateHealthProfessionalTO {
     private String gender;
     private String emailId;
     private String mobileNumber;
+    private String reactivationFile;
+    private String fileName;
+    private String fileType;
 }

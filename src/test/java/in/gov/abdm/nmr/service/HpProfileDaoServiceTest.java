@@ -92,11 +92,6 @@ class HpProfileDaoServiceTest {
                 ".pdf", "{\"Test\": \"Certificate\"}".getBytes());
     }
 
-    /*   @Test
-        void testUpdateHpRegistrationDetails() throws NmrException, InvalidRequestException {
-            final MultipartFile mockFile = mock(MultipartFile.class);
-            hpProfileDaoService.updateHpRegistrationDetails(ID,getHpRegistrationUpdateRequestTo(),mockFile,mockFile);
-        }*/
     @Test
     void testFindById() {
         when(iHpProfileRepository.findById(ID)).thenReturn(Optional.of(getHpProfile()));
@@ -173,7 +168,6 @@ class HpProfileDaoServiceTest {
     void testUpdateHpRegistrationDetails() throws NmrException, InvalidRequestException {
         when(registrationDetailRepository.getRegistrationDetailsByHpProfileId(any(BigInteger.class))).thenReturn(getRegistrationDetail());
         when(iHpProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getHpProfile()));
-        when(hpNbeDetailsRepository.findByUserId(any(BigInteger.class))).thenReturn(getHPNbeDetails());
         when(iStateMedicalCouncilRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getStateMedicalCouncil()));
         when(countryRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getCountry()));
         when(stateRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getState()));
@@ -204,7 +198,6 @@ class HpProfileDaoServiceTest {
         when(iHpProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getHpProfile()));
         when(workProfileRepository.getWorkProfileDetailsByUserId(any(BigInteger.class))).thenReturn(List.of(getWorkProfile()));
         when(workNatureRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(new WorkNature()));
-        //when(workStatusRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(new WorkStatus()));
         HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateWorkProfileDetails(HP_ID, getHpWorkProfileUpdateRequest(), List.of(certificate, certificate));
         assertEquals(HP_ID, hpProfileUpdateResponseTO.getHpProfileId());
     }

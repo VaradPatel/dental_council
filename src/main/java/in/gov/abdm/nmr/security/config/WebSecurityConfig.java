@@ -33,9 +33,9 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         LOGGER.info("Configuring web security");
-        return http.csrf().disable().cors().and() //
-                .headers().cacheControl().and().and() //
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and() //
+        return http.csrf().disable().cors().and()
+                .headers().xssProtection().and().contentSecurityPolicy("form-action 'self'").and().cacheControl().and().and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeHttpRequests(authRequestConfig -> authRequestConfig.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()).build();
     }
 
@@ -59,7 +59,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authManager(HttpSecurity http, UserPasswordAuthenticationProvider userPasswordAuthenticationProvider, //
+    public AuthenticationManager authManager(HttpSecurity http, UserPasswordAuthenticationProvider userPasswordAuthenticationProvider,
                                              JwtAuthenticationProvider jwtAuthenticationProvider) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.authenticationProvider(userPasswordAuthenticationProvider);

@@ -11,7 +11,7 @@ import java.math.BigInteger;
 @UtilityClass
 public final class HpPersonalDetailMapper {
 
-    public static HpProfilePersonalResponseTO convertEntitiesToPersonalResponseTo(HpProfile hpProfile, Address address, Address kycAddress, BigInteger applicationTypeId, BigInteger workFlowStatusId, String requestId) {
+    public static HpProfilePersonalResponseTO convertEntitiesToPersonalResponseTo(HpProfile hpProfile, Address address, Address kycAddress, BigInteger applicationTypeId, BigInteger workFlowStatusId, String requestId,BigInteger hpProfileStatusId) {
         HpProfilePersonalResponseTO hpProfilePersonalResponseTO = new HpProfilePersonalResponseTO();
         PersonalDetailsTO personalDetailsTO = new PersonalDetailsTO();
         AddressTO addressTO = new AddressTO();
@@ -31,11 +31,12 @@ public final class HpPersonalDetailMapper {
         hpProfilePersonalResponseTO.setRequestId(requestId);
         hpProfilePersonalResponseTO.setApplicationTypeId(applicationTypeId);
         hpProfilePersonalResponseTO.setNmrId(hpProfile.getNmrId());
-        hpProfilePersonalResponseTO.setHpProfileStatusId(hpProfile.getHpProfileStatus() != null ? hpProfile.getHpProfileStatus().getId() : null);
+        hpProfilePersonalResponseTO.setHpProfileStatusId(hpProfileStatusId);
         hpProfilePersonalResponseTO.setWorkFlowStatusId(workFlowStatusId);
         hpProfilePersonalResponseTO.setEmailVerified(hpProfile.getUser() != null && hpProfile.getUser().isEmailVerified());
         hpProfilePersonalResponseTO.setSmsNotificationEnabled(hpProfile.getUser() != null && hpProfile.getUser().isSmsNotificationEnabled());
         hpProfilePersonalResponseTO.setEmailNotificationEnabled(hpProfile.getUser() != null && hpProfile.getUser().isEmailNotificationEnabled());
+        hpProfilePersonalResponseTO.setEsignStatus(hpProfile.getESignStatus());
 
         return hpProfilePersonalResponseTO;
     }

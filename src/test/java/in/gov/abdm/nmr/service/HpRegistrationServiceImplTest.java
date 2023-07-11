@@ -120,6 +120,8 @@ class HpRegistrationServiceImplTest {
     INotificationService notificationService;
     @Mock
     IUserDaoService userDetailDaoService;
+    @Mock
+    IQualificationDetailRepository iQualificationDetailRepository;
 
     @BeforeEach
     void setup() {
@@ -250,7 +252,7 @@ class HpRegistrationServiceImplTest {
         when(hpProfileDaoService.updateWorkProfileDetails(CommonTestData.ID, getHpWorkProfileUpdateRequest(), List.of(certificate)))
                 .thenReturn(new HpProfileUpdateResponseTO(1, SUCCESS_RESPONSE, HP_ID));
         when(iHpProfileRepository.findById(CommonTestData.ID)).thenReturn(Optional.of(getHpProfile()));
-        when(workProfileRepository.getWorkProfileDetailsByUserId(any(BigInteger.class))).thenReturn(List.of(new WorkProfile()));
+        when(workProfileRepository.getWorkProfileDetailsByUserId(any(BigInteger.class))).thenReturn(List.of(getWorkProfile()));
         when(languagesKnownRepository.findByUserId(any(BigInteger.class))).thenReturn(List.of(new LanguagesKnown()));
         hpRegistrationService.addOrUpdateWorkProfileDetail(CommonTestData.ID, getHpWorkProfileUpdateRequest(), List.of(certificate));
     }
@@ -384,21 +386,6 @@ class HpRegistrationServiceImplTest {
         when(resetTokenRepository.findByUserName(anyString())).thenReturn(getResetToken());
         hpRegistrationService.getEmailVerificationLink(CommonTestData.ID, new VerifyEmailLinkTo(CommonTestData.EMAIL_ID));
     }
-
-    private List<WorkProfile> getWorkProfile() {
-        WorkProfile workProfile = new WorkProfile();
-        workProfile.setHpProfileId(HP_ID);
-        workProfile.setFacilityId(CommonTestData.FACILITY_ID);
-        return List.of(workProfile);
-    }
-
-/*    @Test
-    void testDeLinkCurrentWorkDetails() throws NmrException {
-        SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDetailDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
-        when(workProfileRepository.getActiveWorkProfileDetailsByUserId(any(BigInteger.class))).thenReturn(getWorkProfile());
-        hpRegistrationService.delinkCurrentWorkDetails(new WorkDetailsDelinkRequest(List.of(FACILITY_ID)));
-    }*/
 
     @Test
     void testDeLinkCurrentWorkDetailsShouldThrowUserNotFoundException() {

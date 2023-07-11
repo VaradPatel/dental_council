@@ -10,10 +10,13 @@ import in.gov.abdm.nmr.mapper.QuerySuggestionsDtoMapper;
 import in.gov.abdm.nmr.repository.QuerySuggestionsRepository;
 import in.gov.abdm.nmr.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.List;
+
+import static in.gov.abdm.nmr.util.NMRConstants.MASTER_CACHE_NAME;
 
 @Service
 public class MasterDataServiceImpl implements IMasterDataService {
@@ -50,6 +53,7 @@ public class MasterDataServiceImpl implements IMasterDataService {
     private QuerySuggestionsRepository querySuggestionsRepository;
 
     @Override
+    @Cacheable(value = MASTER_CACHE_NAME, key = "'state-medical-council'")
     public List<MasterDataTO> smcs() {
         return IMasterDataMapper.MASTER_DATA_MAPPER.stateMedicalCouncilsToMasterDataTOs(stateMedicalCouncilService.getAllStateMedicalCouncil());
     }
@@ -60,26 +64,31 @@ public class MasterDataServiceImpl implements IMasterDataService {
     }
 
     @Override
+    @Cacheable(value = MASTER_CACHE_NAME, key = "'countries'")
     public List<MasterDataTO> countries() {
         return IMasterDataMapper.MASTER_DATA_MAPPER.countriesToMasterDataTOs(countryService.getCountryData());
     }
 
     @Override
+    @Cacheable(value = MASTER_CACHE_NAME, key = "'state-for-' + #countryId")
     public List<MasterDataTO> states(BigInteger countryId) {
         return IMasterDataMapper.MASTER_DATA_MAPPER.statesToMasterDataTOs(stateService.getStateData(countryId));
     }
 
     @Override
+    @Cacheable(value = MASTER_CACHE_NAME, key = "'districts-for-' + #stateId")
     public List<MasterDataTO> districts(BigInteger stateId) {
         return IMasterDataMapper.MASTER_DATA_MAPPER.districtsToMasterDataTOs(districtService.getDistrictData(stateId));
     }
 
     @Override
+    @Cacheable(value = MASTER_CACHE_NAME, key = "'sub-districts-for-' + #districtId")
     public List<MasterDataTO> subDistricts(BigInteger districtId) {
         return IMasterDataMapper.MASTER_DATA_MAPPER.subDistrictsToMasterDataTOs(subDistrictService.getSubDistrictData(districtId));
     }
 
     @Override
+    @Cacheable(value = MASTER_CACHE_NAME, key = "'cities-for-' + #subDistrictId")
     public List<MasterDataTO> cities(BigInteger subDistrictId) {
         return IMasterDataMapper.MASTER_DATA_MAPPER.citiesToMasterDataTOs(villagesServiceImpl.getCityData(subDistrictId));
     }

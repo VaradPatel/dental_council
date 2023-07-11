@@ -261,7 +261,6 @@ CommonTestData {
         hpProfile.setESignStatus(ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
         hpProfile.setIsNew(0);
         hpProfile.setRequestId(REQUEST_ID);
-        //hpProfile.setNmrId(NMR_ID);
         hpProfile.setCountryNationality(getCountry());
         hpProfile.setEmailId(EMAIL_ID);
         hpProfile.setProfilePhoto(PROFILE_PHOTO);
@@ -283,7 +282,6 @@ CommonTestData {
         hpProfile.setESignStatus(ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
         hpProfile.setIsNew(0);
         hpProfile.setRequestId(REQUEST_ID);
-        //hpProfile.setNmrId(NMR_ID);
         hpProfile.setCountryNationality(getCountry());
         hpProfile.setEmailId(EMAIL_ID);
         hpProfile.setProfilePhoto(PROFILE_PHOTO);
@@ -312,7 +310,7 @@ CommonTestData {
         return broadSpecialityTOList;
     }
 
-    public static List<CountryTO> getCountryTo() {
+    public static List<CountryTO> getCountryToList() {
         List<CountryTO> countryTOS = new ArrayList<>();
         CountryTO countryTO = new CountryTO();
         countryTO.setId(ID);
@@ -378,8 +376,8 @@ CommonTestData {
 
     public static StateTO getStateTO() {
         StateTO stateTO = new StateTO();
-        stateTO.setId(ID);
-        stateTO.setName(NAME);
+        stateTO.setId(STATE_ID);
+        stateTO.setName(STATE_NAME);
         return stateTO;
     }
 
@@ -691,7 +689,7 @@ CommonTestData {
         return foreignQualificationDetailsMaster;
     }
 
-    public SMCProfileTO getSMCProfile() {
+    public SMCProfileTO getSMCProfileTo() {
         SMCProfileTO smcProfile = new SMCProfileTO();
         smcProfile.setId(ID);
         smcProfile.setStateMedicalCouncil(getStateMedicalCouncilTO());
@@ -745,7 +743,6 @@ CommonTestData {
 
     public ResetToken getResetToken() {
         ResetToken resetToken = new ResetToken();
-        // resetToken.setToken(TEMP_TOKN);
         resetToken.setId(CommonTestData.USER_ID);
         resetToken.setExpiryDate(FUTURE_TIMESTAMP);
         resetToken.setUserName(TEST_USER);
@@ -760,10 +757,9 @@ CommonTestData {
         return resetPasswordRequest;
     }
 
-    public FacilitySearchResponseTO getFacilitySearchResponseTO() {
-        FacilitySearchResponseTO facilitySearchResponseTO = new FacilitySearchResponseTO();
-        facilitySearchResponseTO.setTotalFacilities(1);
-        return facilitySearchResponseTO;
+    public FacilitiesSearchResponseTO getFacilitySearchResponseTO() {
+        FacilitiesSearchResponseTO facilitiesSearchResponseTO = new FacilitiesSearchResponseTO();
+        return facilitiesSearchResponseTO;
     }
 
     public SessionResponseTo getSessionResponse() {
@@ -793,7 +789,6 @@ CommonTestData {
         personalDetails.setCountryNationality(NationalityTO.builder().id(COUNTRY_ID).name(COUNTRY_NAME).build());
         personalDetails.setDateOfBirth(DATE_OF_BIRTH);
         personalDetails.setGender(GENDER);
-        personalDetails.setSchedule(ScheduleTO.builder().id(SCHEDULE_ID).name(SCHEDULE_NAME).build());
         personalDetails.setProfilePhoto(PROFILE_PHOTO);
         personalDetails.setFullName(PROFILE_DISPLAY_NAME);
         personalDetails.setIsNew(true);
@@ -836,9 +831,9 @@ CommonTestData {
 
     public static StateMedicalCouncilTO getStateMedicalCouncilTO() {
         StateMedicalCouncilTO stateMedicalCouncil = new StateMedicalCouncilTO();
-        stateMedicalCouncil.setId(ID);
-        stateMedicalCouncil.setCode(ISO_CODE);
-        stateMedicalCouncil.setName(STATE_MEDICAL_COUNCIL);
+        stateMedicalCouncil.setId(SMC_ID);
+        stateMedicalCouncil.setCode(SMC_CODE);
+        stateMedicalCouncil.setName(SMC_NAME);
         return stateMedicalCouncil;
     }
 
@@ -1125,6 +1120,7 @@ CommonTestData {
         HpProfile hpProfile = new HpProfile();
         hpProfile.setNmrId(NMR_ID);
         hpProfile.setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.APPROVED.getId()).build());
+        hpProfile.setUser(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         return hpProfile;
     }
 
@@ -1163,7 +1159,6 @@ CommonTestData {
         hpProfile.setESignStatus(ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
         hpProfile.setIsNew(0);
         hpProfile.setRequestId(REQUEST_ID);
-        //hpProfile.setNmrId(NMR_ID);
         hpProfile.setCountryNationality(getCountry());
         hpProfile.setEmailId(EMAIL_ID);
         hpProfile.setProfilePhoto(PROFILE_PHOTO);
@@ -1228,6 +1223,7 @@ CommonTestData {
     public static WorkProfile getWorkProfile() {
         WorkProfile workProfile = new WorkProfile();
         workProfile.setFacilityId(FACILITY_ID);
+        workProfile.setIsUserCurrentlyWorking(1);
         return workProfile;
     }
 }

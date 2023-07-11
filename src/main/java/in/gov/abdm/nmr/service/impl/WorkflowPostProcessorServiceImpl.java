@@ -114,7 +114,6 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         updateElasticDB(workFlow, masterHpProfileDetails);
 
         WorkFlow workFlowDetailsByHpProfile = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
-        // Note-> Modification and qualification addition application types are not added as there is No update API from HPR
         if ((in.gov.abdm.nmr.enums.HpProfileStatus.APPROVED.getId().equals(workFlowDetailsByHpProfile.getWorkFlowStatus().getId())) &&
                 ((ApplicationType.HP_REGISTRATION.getId().equals((workFlowDetailsByHpProfile.getApplicationType().getId()))) ||
                         (ApplicationType.FOREIGN_HP_REGISTRATION.getId().equals(workFlowDetailsByHpProfile.getApplicationType().getId())))
@@ -133,7 +132,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
     private void updateTransactionHealthProfessionalDetails(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile) throws WorkFlowException {
 
-        if (!ApplicationType.QUALIFICATION_ADDITION.getId().equals(requestTO.getApplicationTypeId())) {
+        if (!ApplicationType.ADDITIONAL_QUALIFICATION.getId().equals(requestTO.getApplicationTypeId())) {
             hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).orElseThrow(WorkFlowException::new));
             if (StringUtils.isEmpty(hpProfile.getNmrId())) {
                 log.info("Generating NMR id as the hp_profile doesn't have an NMR id associated.");
@@ -220,7 +219,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     private List<ForeignQualificationDetailsMaster> updateForeignQualificationToMaster(HpProfile transactionHpProfile, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
         log.debug("Mapping the Foreign Qualification Details to Foreign Qualification Details Master table");
         List<ForeignQualificationDetailsMaster> qualificationDetailsMasters = new ArrayList<>();
-        List<ForeignQualificationDetails> qualificationDetails = customQualificationDetailRepository.getQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
+        List<ForeignQualificationDetails> qualificationDetails = customQualificationDetailRepository.getApprovedQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
         List<String> masterCourseIds = customQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId())
                 .stream().map(ForeignQualificationDetailsMaster::getCourse).toList();
         List<ForeignQualificationDetails> filterQualifications = qualificationDetails.stream().filter(qualificationDetail -> !masterCourseIds.contains(qualificationDetail.getCourse())).toList();
@@ -272,7 +271,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     private List<QualificationDetailsMaster> updateQualificationDetailsToMaster(HpProfile transactionHpProfile, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
         log.debug("Mapping the current Qualification Details to Qualification Details Master table");
         List<QualificationDetailsMaster> qualificationDetailsMasters = new ArrayList<>();
-        List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
+        List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getApprovedQualificationDetailsByUserId(transactionHpProfile.getUser().getId());
         List<BigInteger> masterCourseIds = qualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(masterHpProfile.getId())
                 .stream().map(qualificationDetailsMaster -> qualificationDetailsMaster.getCourse().getId()).toList();
         List<QualificationDetails> filterQualifications = qualificationDetails.stream().filter(qualificationDetail -> !masterCourseIds.contains(qualificationDetail.getCourse().getId())).toList();

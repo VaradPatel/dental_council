@@ -6,6 +6,7 @@ import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.HpProfileMaster;
 import in.gov.abdm.nmr.entity.RegistrationDetailsMaster;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.exception.TemplateException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.*;
 import in.gov.abdm.nmr.repository.*;
@@ -144,13 +145,13 @@ class WorkflowPostProcessorServiceTest {
     }
 
     @Test
-    void testPerformPostWorkflowUpdates() throws WorkFlowException {
+    void testPerformPostWorkflowUpdates() throws WorkFlowException, TemplateException {
         when(iWorkFlowRepository.findByRequestId(anyString())).thenReturn(getWorkFlow());
         when(hpProfileStatusRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getHPProfileStatus()));
         when(hpProfileMasterRepository.findByRegistrationId(anyString())).thenReturn(getMasterHpProfile());
         when(hpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfile());
         when(hpProfileMasterRepository.save(any(HpProfileMaster.class))).thenReturn(getMasterHpProfile());
-        when(customQualificationDetailRepository.getQualificationDetailsByUserId(any(BigInteger.class))).thenReturn(Arrays.asList(getForeignQualificationDetails()));
+        when(customQualificationDetailRepository.getApprovedQualificationDetailsByUserId(any(BigInteger.class))).thenReturn(Arrays.asList(getForeignQualificationDetails()));
         when(customQualificationDetailMasterRepository.getQualificationDetailsByHpProfileId(any(BigInteger.class))).thenReturn(Arrays.asList(getForeignQualificationDetailsMaster()));
         when(notificationService.sendNotificationForNMRCreation(anyString(), anyString())).thenReturn(new ResponseMessageTo());
         when(userRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId())));

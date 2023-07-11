@@ -3,7 +3,6 @@ package in.gov.abdm.nmr.service;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.HpProfileStatus;
-import in.gov.abdm.nmr.entity.RegistrationDetails;
 import in.gov.abdm.nmr.entity.RequestCounter;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
@@ -22,8 +21,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.List;
@@ -44,7 +46,7 @@ class ApplicationServiceTest {
     ApplicationServiceImpl applicationService;
 
     @Mock
-    IHpProfileRepository hpProfileRepository;
+    IHpProfileRepository iHpProfileRepository;
 
     @Mock
     IRequestCounterService requestCounterService;
@@ -65,9 +67,12 @@ class ApplicationServiceTest {
     @Mock
     IWorkFlowAuditRepository iWorkFlowAuditRepository;
 
+    NMRPagination nmrPagination = NMRPagination.builder().pageNo(1).offset(1).sortBy("id").sortType("ASC").build();
+
     @Test
     void testSuspendRequestShouldThrowNmrExceptionWhenHpProfileIsNotApproved() {
-        when(hpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfile());
+        when(iHpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfile());
+        when(iHpProfileRepository.findLatestHpProfileFromWorkFlow(any(String.class))).thenReturn(getHpProfile());
         assertThrows(WorkFlowException.class, () -> applicationService.suspendRequest(getApplicationRequestTo()));
     }
 
@@ -78,7 +83,8 @@ class ApplicationServiceTest {
         RequestCounter requestCounter = RequestCounter.builder().counter(BigInteger.valueOf(1))
                 .applicationType(in.gov.abdm.nmr.entity.ApplicationType.builder().id(ApplicationType.HP_TEMPORARY_SUSPENSION.getId()).requestPrefixId("NMR300").build()).build();
 
-        when(hpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(hpProfile);
+        when(iHpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(hpProfile);
+        when(iHpProfileRepository.findLatestHpProfileFromWorkFlow(any(String.class))).thenReturn(hpProfile);
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(requestCounter);
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
@@ -97,30 +103,37 @@ class ApplicationServiceTest {
         return applicationRequestTo;
     }
 
+    private MultipartFile getMultipartFile(){
+        return new MockMultipartFile("functionTestingFile", "filename.txt", "text/plain",
+                "some xml".getBytes());
+    }
+
     @Test
-    void testReactivateRequest() throws WorkFlowException, NmrException, InvalidRequestException {
+    void testReactivateRequest() throws WorkFlowException, InvalidRequestException, IOException {
         RequestCounter requestCounter = RequestCounter.builder().counter(BigInteger.valueOf(1))
                 .applicationType(in.gov.abdm.nmr.entity.ApplicationType.builder().id(ApplicationType.HP_TEMPORARY_SUSPENSION.getId()).requestPrefixId("NMR300").build()).build();
-        when(hpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfileAsSuspendedStatus());
+        when(iHpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfileAsSuspendedStatus());
+        when(iHpProfileRepository.findLatestHpProfileFromWorkFlow(any(String.class))).thenReturn(getHpProfileAsSuspendedStatus());
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(requestCounter);
         when(iWorkFlowRepository.findLastWorkFlowForHealthProfessional(any(BigInteger.class))).thenReturn(getWorkFlow());
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
-        ReactivateRequestResponseTo reactivateRequestResponseTo = applicationService.reactivateRequest(getApplicationRequestTo());
+        ReactivateRequestResponseTo reactivateRequestResponseTo = applicationService.reactivateRequest(getMultipartFile(),getApplicationRequestTo());
         assertEquals("1", reactivateRequestResponseTo.getProfileId());
         assertEquals(NMRConstants.SUCCESS_RESPONSE, reactivateRequestResponseTo.getMessage());
     }
 
     @Test
-    void testReactivateRequestShouldPreviousGroupIsNmc() throws WorkFlowException, NmrException, InvalidRequestException {
+    void testReactivateRequestShouldPreviousGroupIsNmc() throws WorkFlowException, InvalidRequestException, IOException {
         RequestCounter requestCounter = RequestCounter.builder().counter(BigInteger.valueOf(1))
                 .applicationType(in.gov.abdm.nmr.entity.ApplicationType.builder().id(ApplicationType.HP_TEMPORARY_SUSPENSION.getId()).requestPrefixId("NMR300").build()).build();
-        when(hpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfileAsSuspendedStatus());
+        when(iHpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfileAsSuspendedStatus());
+        when(iHpProfileRepository.findLatestHpProfileFromWorkFlow(any(String.class))).thenReturn(getHpProfileAsSuspendedStatus());
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(requestCounter);
         when(iWorkFlowRepository.findLastWorkFlowForHealthProfessional(any(BigInteger.class))).thenReturn(getWorkFlowWherePreviousGroupNmc());
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
-        ReactivateRequestResponseTo reactivateRequestResponseTo = applicationService.reactivateRequest(getApplicationRequestTo());
+        ReactivateRequestResponseTo reactivateRequestResponseTo = applicationService.reactivateRequest(getMultipartFile(),getApplicationRequestTo());
         assertEquals("1", reactivateRequestResponseTo.getProfileId());
         assertEquals(NMRConstants.SUCCESS_RESPONSE, reactivateRequestResponseTo.getMessage());
     }
@@ -225,7 +238,7 @@ class ApplicationServiceTest {
                 any(HealthProfessionalApplicationRequestParamsTo.class), any(Pageable.class), any(List.class)))
                 .thenReturn(getHealthProfessionalApplicationResponse());
         HealthProfessionalApplicationResponseTo healthProfessionalApplicationResponseTo =
-                applicationService.fetchApplicationDetails("1", "1", "", "", "", "", "", "");
+                applicationService.fetchApplicationDetails(nmrPagination, WORK_FLOW_STATUS_ID_IN_LOWER_CASE, "1", "", "");
         assertEquals(BigInteger.ONE, healthProfessionalApplicationResponseTo.getTotalNoOfRecords());
         assertEquals(PROFILE_DISPLAY_NAME, healthProfessionalApplicationResponseTo.getHealthProfessionalApplications().get(0).getApplicantFullName());
     }
@@ -239,7 +252,7 @@ class ApplicationServiceTest {
                 .thenReturn(getHealthProfessionalApplicationResponse());
         HealthProfessionalApplicationResponseTo healthProfessionalApplicationResponseTo = applicationService.
                 fetchApplicationDetailsForHealthProfessional(
-                        BigInteger.ONE, "1", "1", "", "", "", "");
+                        BigInteger.ONE, "1", "1", "", "", WORK_FLOW_STATUS_ID_IN_LOWER_CASE, "1");
         assertEquals(BigInteger.ONE, healthProfessionalApplicationResponseTo.getTotalNoOfRecords());
         assertEquals(PROFILE_DISPLAY_NAME, healthProfessionalApplicationResponseTo.getHealthProfessionalApplications().get(0).getApplicantFullName());
     }

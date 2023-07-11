@@ -63,7 +63,7 @@ public class NotificationServiceImpl implements INotificationService {
      * @return success/failure
      */
     @Override
-    public ResponseMessageTo sendNotificationForOTP(String type, String otp, String receiver) {
+    public ResponseMessageTo sendNotificationForOTP(String type, String otp, String receiver) throws TemplateException {
 
         if (NotificationType.EMAIL.getNotificationType().equals(type)) {
 
@@ -100,10 +100,9 @@ public class NotificationServiceImpl implements INotificationService {
      * @return success/failure
      */
     @Override
-    public ResponseMessageTo sendNotificationForVerifiedOTP(String type, String receiver) {
+    public ResponseMessageTo sendNotificationForVerifiedOTP(String type, String receiver) throws TemplateException {
 
         if (NotificationType.EMAIL.getNotificationType().equals(type)) {
-
 
             Template template = getMessageTemplate(NMRConstants.EMAIL_VERIFIED_MESSAGE_PROPERTIES_KEY);
 
@@ -112,7 +111,7 @@ public class NotificationServiceImpl implements INotificationService {
                     .replace(NMRConstants.TEMPLATE_VAR2, NMRConstants.MESSAGE_SENDER)
                     .finish();
 
-            return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_VERIFICATION_SUCCESSFUL_SUBJECT, message, receiver, receiver, NMRConstants.EMAIL_VERIFIED_MESSAGE_PROPERTIES_KEY);
+            return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_VERIFICATION_SUCCESSFUL_SUBJECT, message, null, receiver, NMRConstants.EMAIL_VERIFIED_MESSAGE_PROPERTIES_KEY);
 
         } else if (NotificationType.SMS.getNotificationType().equals(type)) {
             Template template = getMessageTemplate(NMRConstants.SMS_VERIFIED_MESSAGE_PROPERTIES_KEY);
@@ -122,7 +121,7 @@ public class NotificationServiceImpl implements INotificationService {
                     .replace(NMRConstants.TEMPLATE_VAR2, NMRConstants.MESSAGE_SENDER)
                     .finish();
 
-            return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SUBJECT, message, receiver, receiver, NMRConstants.SMS_VERIFIED_MESSAGE_PROPERTIES_KEY);
+            return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SUBJECT, message, receiver, null, NMRConstants.SMS_VERIFIED_MESSAGE_PROPERTIES_KEY);
         }
         return new ResponseMessageTo(NMRConstants.NO_SUCH_OTP_TYPE);
     }
@@ -137,7 +136,7 @@ public class NotificationServiceImpl implements INotificationService {
      * @return success/failure
      */
     @Override
-    public ResponseMessageTo sendNotificationOnStatusChangeForHP(String applicationType, String action, String mobile, String email) {
+    public ResponseMessageTo sendNotificationOnStatusChangeForHP(String applicationType, String action, String mobile, String email) throws TemplateException {
 
         Template template = getMessageTemplate(NMRConstants.STATUS_CHANGED_MESSAGE_PROPERTIES_KEY);
 
@@ -159,7 +158,7 @@ public class NotificationServiceImpl implements INotificationService {
      * @return success/failure
      */
     @Override
-    public ResponseMessageTo sendNotificationForResetPasswordLink(String email, String link) {
+    public ResponseMessageTo sendNotificationForResetPasswordLink(String email, String link) throws TemplateException {
 
         Template template = getMessageTemplate(NMRConstants.SMS_AND_EMAIL_RESET_MESSAGE_PROPERTIES_KEY);
         String message = new TemplatedStringBuilder(template.getMessage())
@@ -170,7 +169,7 @@ public class NotificationServiceImpl implements INotificationService {
     }
 
     @Override
-    public ResponseMessageTo sendNotificationForAccountCreation(String username, String mobile) {
+    public ResponseMessageTo sendNotificationForAccountCreation(String username, String mobile) throws TemplateException {
 
         Template template = getMessageTemplate(NMRConstants.ACCOUNT_CREATED);
         String message = new TemplatedStringBuilder(template.getMessage())
@@ -182,7 +181,7 @@ public class NotificationServiceImpl implements INotificationService {
     }
 
     @Override
-    public ResponseMessageTo sendNotificationForNMRCreation(String nmrId, String mobile) {
+    public ResponseMessageTo sendNotificationForNMRCreation(String nmrId, String mobile) throws TemplateException {
 
         Template template = getMessageTemplate(NMRConstants.NMR_ID_CREATED);
         String message = new TemplatedStringBuilder(template.getMessage())
@@ -194,7 +193,7 @@ public class NotificationServiceImpl implements INotificationService {
     }
 
     @Override
-    public ResponseMessageTo sendNotificationForEmailVerificationLink(String email,String link) {
+    public ResponseMessageTo sendNotificationForEmailVerificationLink(String email,String link) throws TemplateException {
 
         Template template = getMessageTemplate(NMRConstants.EMAIL_VERIFICATION_TEMPLATE);
         String message = new TemplatedStringBuilder(template.getMessage())
@@ -205,7 +204,7 @@ public class NotificationServiceImpl implements INotificationService {
     }
 
     @Override
-    public ResponseMessageTo sendNotificationForHprAccountCreation(String username,String hprId, String mobile) {
+    public ResponseMessageTo sendNotificationForHprAccountCreation(String username,String hprId, String mobile) throws TemplateException {
 
         Template template = getMessageTemplate(NMRConstants.HPR_ACCOUNT_CREATED);
         String message = new TemplatedStringBuilder(template.getMessage())

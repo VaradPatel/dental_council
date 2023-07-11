@@ -21,4 +21,6 @@ public class Course {
     private BigInteger id;
 
     private String courseName;
+
+    private BigInteger hprCourseId;
 }

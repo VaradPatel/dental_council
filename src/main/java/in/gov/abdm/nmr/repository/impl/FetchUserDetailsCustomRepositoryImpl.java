@@ -32,57 +32,46 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
 
     private static final Function<UserRequestParamsTO, String> SORT_RECORDS = userRequestParamsTO -> {
         StringBuilder sb = new StringBuilder();
-        sb.append(" ORDER BY  ");
-        sb.append(userRequestParamsTO.getSortBy());
-        sb.append("  ");
-        sb.append(userRequestParamsTO.getSortOrder());
+        sb.append(" ORDER BY  :sort");
         return sb.toString();
     };
+
 
     private static final Function<UserRequestParamsTO, String> USER_PARAMETERS_FOR_CLG = userRequestParamsTO -> {
         StringBuilder stringBuilder = new StringBuilder();
 
         if (Objects.nonNull(userRequestParamsTO.getFirstName()) && !userRequestParamsTO.getFirstName().isEmpty()) {
-            stringBuilder.append(" AND name ILIKE '%").append(userRequestParamsTO.getFirstName()).append("%' ");
+            stringBuilder.append(" AND a.name ILIKE :firstName ");
         }
 
         if (Objects.nonNull(userRequestParamsTO.getLastName()) && !userRequestParamsTO.getLastName().isEmpty()) {
-            stringBuilder.append(" AND name ILIKE '%").append(userRequestParamsTO.getLastName()).append("%' ");
+            stringBuilder.append(" AND a.name ILIKE :lastName ");
         }
 
         if (Objects.nonNull(userRequestParamsTO.getEmailId()) && !userRequestParamsTO.getEmailId().isEmpty()) {
-            stringBuilder.append(" AND u.email ILIKE '%").append(userRequestParamsTO.getEmailId()).append("%' ");
+            stringBuilder.append(" AND u.email ILIKE :emailId ");
         }
 
         if (Objects.nonNull(userRequestParamsTO.getMobileNumber()) && !userRequestParamsTO.getMobileNumber().isEmpty()) {
-            stringBuilder.append(" AND u.mobile_number ILIKE '%").append(userRequestParamsTO.getMobileNumber()).append("%' ");
+            stringBuilder.append(" AND u.mobile_number ILIKE :mobileNumber ");
         }
         if (Objects.nonNull(userRequestParamsTO.getUserTypeId()) && !userRequestParamsTO.getUserTypeId().isEmpty()) {
-            stringBuilder.append(" AND u.user_type_id = '").append(userRequestParamsTO.getUserTypeId()).append("' ");
+            stringBuilder.append(" AND u.user_type_id = :userTypeId ");
         }
         if (Objects.nonNull(userRequestParamsTO.getName()) && !userRequestParamsTO.getName().isEmpty()) {
-            stringBuilder.append(" and a.name ILIKE '%").append(userRequestParamsTO.getName()).append("%' ");
+            stringBuilder.append(" and a.name ILIKE :name ");
         }
         if (Objects.nonNull(userRequestParamsTO.getUserSubTypeID()) && !userRequestParamsTO.getUserSubTypeID().isEmpty()) {
 
             if (UserSubTypeEnum.NMC_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
-                stringBuilder.append(" AND u.user_sub_type_id IN(").append(
-                        UserSubTypeEnum.NMC_ADMIN.getId() + "," +
-                                UserSubTypeEnum.NMC_VERIFIER.getId() + "," +
-                                UserSubTypeEnum.NBE_ADMIN.getId() + "," +
-                                UserSubTypeEnum.COLLEGE_ADMIN.getId()).append(") ");
+                stringBuilder.append(" AND u.user_sub_type_id IN(:userSubType) ");
+
             }
-            if (UserSubTypeEnum.SMC_ADMIN.getId().equals(userRequestParamsTO.getUserSubTypeID())) {
-                stringBuilder.append(" AND u.user_sub_type_id IN(").append(
-                        UserSubTypeEnum.SMC_ADMIN.getId() + "," +
-                                UserSubTypeEnum.SMC_ADMIN.getId() + "," +
-                                UserSubTypeEnum.SMC_VERIFIER.getId()).append(") ");
+            if (UserSubTypeEnum.SMC_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
+                stringBuilder.append(" AND u.user_sub_type_id IN(:userSubType) ");
             }
-            if (UserSubTypeEnum.NBE_ADMIN.getId().equals(userRequestParamsTO.getUserSubTypeID())) {
-                stringBuilder.append(" AND u.user_sub_type_id IN(").append(
-                        UserSubTypeEnum.SMC_ADMIN.getId() + "," +
-                                UserSubTypeEnum.NBE_ADMIN.getId() + "," +
-                                UserSubTypeEnum.NBE_VERIFIER.getId()).append(") ");
+            if (UserSubTypeEnum.NBE_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
+                stringBuilder.append(" AND u.user_sub_type_id IN(:userSubType) ");
             }
         }
         return stringBuilder.toString();
@@ -92,49 +81,33 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
         StringBuilder builder = new StringBuilder();
 
         if (Objects.nonNull(userRequestParamsTO.getFirstName()) && !userRequestParamsTO.getFirstName().isEmpty()) {
-            builder.append(" AND first_name ILIKE '%").append(userRequestParamsTO.getFirstName()).append("%' ");
+            builder.append(" AND p.first_name ILIKE :firstName");
         }
-
         if (Objects.nonNull(userRequestParamsTO.getLastName()) && !userRequestParamsTO.getLastName().isEmpty()) {
-            builder.append(" AND last_name ILIKE '%").append(userRequestParamsTO.getLastName()).append("%' ");
+            builder.append(" AND p.last_name ILIKE :lastName ");
         }
-
         if (Objects.nonNull(userRequestParamsTO.getEmailId()) && !userRequestParamsTO.getEmailId().isEmpty()) {
-            builder.append(" AND u.email ILIKE '%").append(userRequestParamsTO.getEmailId()).append("%' ");
+            builder.append(" AND u.email ILIKE :emailId ");
         }
-
         if (Objects.nonNull(userRequestParamsTO.getMobileNumber()) && !userRequestParamsTO.getMobileNumber().isEmpty()) {
-            builder.append(" AND u.mobile_number ILIKE '%").append(userRequestParamsTO.getMobileNumber()).append("%' ");
+            builder.append(" AND u.mobile_number ILIKE :mobileNumber ");
         }
         if (Objects.nonNull(userRequestParamsTO.getUserTypeId()) && !userRequestParamsTO.getUserTypeId().isEmpty()) {
-            builder.append(" AND u.user_type_id = '").append(userRequestParamsTO.getUserTypeId()).append("' ");
-        }
-        if (Objects.nonNull(userRequestParamsTO.getUserTypeId()) && !userRequestParamsTO.getUserTypeId().isEmpty()) {
-            builder.append(" AND u.user_type_id = '").append(userRequestParamsTO.getUserTypeId()).append("' ");
+            builder.append(" AND u.user_type_id = :userTypeId ");
         }
         if (Objects.nonNull(userRequestParamsTO.getName()) && !userRequestParamsTO.getName().isEmpty()) {
-            builder.append(" and a.first_name ILIKE '%").append(userRequestParamsTO.getName()).append("%' ");
+            builder.append(" and p.first_name ILIKE :name ");
         }
         if (Objects.nonNull(userRequestParamsTO.getUserSubTypeID()) && !userRequestParamsTO.getUserSubTypeID().isEmpty()) {
 
             if (UserSubTypeEnum.NMC_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
-                builder.append(" AND u.user_sub_type_id IN(").append(
-                        UserSubTypeEnum.NMC_ADMIN.getId() + "," +
-                                UserSubTypeEnum.NMC_VERIFIER.getId() + "," +
-                                UserSubTypeEnum.NBE_ADMIN.getId() + "," +
-                                UserSubTypeEnum.COLLEGE_ADMIN.getId()).append(") ");
+                builder.append(" AND u.user_sub_type_id IN(:userSubType) ");
             }
-            if (UserSubTypeEnum.SMC_ADMIN.getId().equals(userRequestParamsTO.getUserSubTypeID())) {
-                builder.append(" AND u.user_sub_type_id IN(").append(
-                        UserSubTypeEnum.SMC_ADMIN.getId() + "," +
-                                UserSubTypeEnum.SMC_ADMIN.getId() + "," +
-                                UserSubTypeEnum.SMC_VERIFIER.getId()).append(") ");
+            if (UserSubTypeEnum.SMC_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
+                builder.append(" AND u.user_sub_type_id IN(:userSubType)");
             }
-            if (UserSubTypeEnum.NBE_ADMIN.getId().equals(userRequestParamsTO.getUserSubTypeID())) {
-                builder.append(" AND u.user_sub_type_id IN(").append(
-                        UserSubTypeEnum.SMC_ADMIN.getId() + "," +
-                                UserSubTypeEnum.NBE_ADMIN.getId() + "," +
-                                UserSubTypeEnum.NBE_VERIFIER.getId()).append(") ");
+            if (UserSubTypeEnum.NBE_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
+                builder.append(" AND u.user_sub_type_id IN(:userSubType)");
             }
         }
         return builder.toString();
@@ -144,49 +117,38 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
         StringBuilder builder = new StringBuilder();
 
         if (Objects.nonNull(userRequestParamsTO.getFirstName()) && !userRequestParamsTO.getFirstName().isEmpty()) {
-            builder.append(" AND first_name ILIKE '%").append(userRequestParamsTO.getFirstName()).append("%' ");
+            builder.append(" AND p.first_name ILIKE :firstName");
         }
-
         if (Objects.nonNull(userRequestParamsTO.getLastName()) && !userRequestParamsTO.getLastName().isEmpty()) {
-            builder.append(" AND last_name ILIKE '%").append(userRequestParamsTO.getLastName()).append("%' ");
+            builder.append(" AND p.last_name ILIKE :lastName");
         }
 
         if (Objects.nonNull(userRequestParamsTO.getEmailId()) && !userRequestParamsTO.getEmailId().isEmpty()) {
-            builder.append(" AND u.email ILIKE '%").append(userRequestParamsTO.getEmailId()).append("%' ");
+            builder.append(" AND u.email ILIKE :emailId");
         }
 
         if (Objects.nonNull(userRequestParamsTO.getMobileNumber()) && !userRequestParamsTO.getMobileNumber().isEmpty()) {
-            builder.append(" AND u.mobile_number ILIKE '%").append(userRequestParamsTO.getMobileNumber()).append("%' ");
+            builder.append(" AND u.mobile_number ILIKE :mobileNumber");
         }
         if (Objects.nonNull(userRequestParamsTO.getUserTypeId()) && !userRequestParamsTO.getUserTypeId().isEmpty()) {
-            builder.append(" AND u.user_type_id = '").append(userRequestParamsTO.getUserTypeId()).append("' ");
+            builder.append(" AND u.user_type_id = :userTypeId");
         }
         if (Objects.nonNull(userRequestParamsTO.getUserTypeId()) && !userRequestParamsTO.getUserTypeId().isEmpty()) {
-            builder.append(" AND u.user_type_id = '").append(userRequestParamsTO.getUserTypeId()).append("' ");
+            builder.append(" AND u.user_type_id = :userTypeId");
         }
         if (Objects.nonNull(userRequestParamsTO.getName()) && !userRequestParamsTO.getName().isEmpty()) {
-            builder.append(" and a.name ILIKE '%").append(userRequestParamsTO.getName()).append("%' ");
+            builder.append(" and a.name ILIKE :name ");
         }
         if (Objects.nonNull(userRequestParamsTO.getUserSubTypeID()) && !userRequestParamsTO.getUserSubTypeID().isEmpty()) {
 
             if (UserSubTypeEnum.NMC_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
-                builder.append(" AND u.user_sub_type_id IN(").append(
-                        UserSubTypeEnum.NMC_ADMIN.getId() + "," +
-                                UserSubTypeEnum.NMC_VERIFIER.getId() + "," +
-                                UserSubTypeEnum.NBE_ADMIN.getId() + "," +
-                                UserSubTypeEnum.COLLEGE_ADMIN.getId()).append(") ");
+                builder.append(" AND u.user_sub_type_id IN(:userSubType) ");
             }
-            if (UserSubTypeEnum.SMC_ADMIN.getId().equals(userRequestParamsTO.getUserSubTypeID())) {
-                builder.append(" AND u.user_sub_type_id IN(").append(
-                        UserSubTypeEnum.SMC_ADMIN.getId() + "," +
-                                UserSubTypeEnum.SMC_ADMIN.getId() + "," +
-                                UserSubTypeEnum.SMC_VERIFIER.getId()).append(") ");
+            if (UserSubTypeEnum.SMC_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
+                builder.append(" AND u.user_sub_type_id IN(:userSubType) ");
             }
-            if (UserSubTypeEnum.NBE_ADMIN.getId().equals(userRequestParamsTO.getUserSubTypeID())) {
-                builder.append(" AND u.user_sub_type_id IN(").append(
-                        UserSubTypeEnum.SMC_ADMIN.getId() + "," +
-                                UserSubTypeEnum.NBE_ADMIN.getId() + "," +
-                                UserSubTypeEnum.NBE_VERIFIER.getId()).append(") ");
+            if (UserSubTypeEnum.NBE_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
+                builder.append(" AND u.user_sub_type_id IN(:userSubType) ");
             }
         }
         return builder.toString();
@@ -211,8 +173,9 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
         userResponseTO.setTotalNoOfRecords(BigInteger.ZERO);
         List<UserTO> userTOList = new ArrayList<>();
         Query query = entityManager.createNativeQuery(GET_ALL_USER.apply(userRequestParamsTO));
+        setParameters(query, userRequestParamsTO);
         log.debug("Fetched user detail successfully.");
-        query.setFirstResult(pageable.getPageNumber() != 0 ?(pageable.getPageNumber() - 1) * pageable.getPageSize() : 0);
+        query.setFirstResult(pageable.getPageNumber() != 0 ? (pageable.getPageNumber() - 1) * pageable.getPageSize() : 0);
         query.setMaxResults(pageable.getPageSize());
         List<Object[]> results = query.getResultList();
         results.forEach(result -> {
@@ -237,5 +200,51 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
         userResponseTO.setTotalNoOfRecords(BigInteger.valueOf(results.size()));
         userResponseTO.setUsers(userTOList);
         return userResponseTO;
+    }
+
+    private Query setParameters(Query query, UserRequestParamsTO userRequestParamsTO) {
+        if (Objects.nonNull(userRequestParamsTO.getSortBy()) && !userRequestParamsTO.getSortBy().isEmpty()) {
+            query.setParameter("sort", userRequestParamsTO.getSortBy() + " " + userRequestParamsTO.getSortOrder());
+        }
+        if (Objects.nonNull(userRequestParamsTO.getFirstName()) && !userRequestParamsTO.getFirstName().isEmpty()) {
+            query.setParameter("firstName", "%".concat(userRequestParamsTO.getFirstName()).concat("%"));
+        }
+        if (Objects.nonNull(userRequestParamsTO.getLastName()) && !userRequestParamsTO.getLastName().isEmpty()) {
+            query.setParameter("lastName", "%".concat(userRequestParamsTO.getLastName()).concat("%"));
+        }
+        if (Objects.nonNull(userRequestParamsTO.getEmailId()) && !userRequestParamsTO.getEmailId().isEmpty()) {
+            query.setParameter("emailId", "%".concat(userRequestParamsTO.getEmailId()).concat("%"));
+        }
+        if (Objects.nonNull(userRequestParamsTO.getMobileNumber()) && !userRequestParamsTO.getMobileNumber().isEmpty()) {
+            query.setParameter("mobileNumber", "%".concat(userRequestParamsTO.getMobileNumber()).concat("%"));
+        }
+        if (Objects.nonNull(userRequestParamsTO.getUserTypeId()) && !userRequestParamsTO.getUserTypeId().isEmpty()) {
+            query.setParameter("userTypeId", userRequestParamsTO.getUserTypeId());
+        }
+        if (Objects.nonNull(userRequestParamsTO.getName()) && !userRequestParamsTO.getName().isEmpty()) {
+            query.setParameter("name", "%".concat(userRequestParamsTO.getName()).concat("%"));
+        }
+        if (Objects.nonNull(userRequestParamsTO.getUserSubTypeID()) && !userRequestParamsTO.getUserSubTypeID().isEmpty()) {
+
+            if (UserSubTypeEnum.NMC_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
+                query.setParameter("userSubType",
+                        List.of(UserSubTypeEnum.NMC_ADMIN.getId(),
+                                UserSubTypeEnum.NMC_VERIFIER.getId(),
+                                UserSubTypeEnum.NBE_ADMIN.getId(),
+                                UserSubTypeEnum.COLLEGE_ADMIN.getId()));
+            }
+            if (UserSubTypeEnum.SMC_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
+                query.setParameter("userSubType",
+                        List.of(UserSubTypeEnum.SMC_ADMIN.getId(),
+                                UserSubTypeEnum.SMC_VERIFIER.getId()));
+            }
+            if (UserSubTypeEnum.NBE_ADMIN.getId().toString().equals(userRequestParamsTO.getUserSubTypeID())) {
+                query.setParameter("userSubType",
+                        List.of(UserSubTypeEnum.SMC_ADMIN.getId(),
+                                UserSubTypeEnum.NBE_ADMIN.getId(),
+                                UserSubTypeEnum.NBE_VERIFIER.getId()));
+            }
+        }
+        return query;
     }
 }

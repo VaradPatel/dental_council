@@ -43,7 +43,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static in.gov.abdm.nmr.util.NMRUtil.validateQualificationDetailsAndProofs;
-import static in.gov.abdm.nmr.util.NMRUtil.validateWorkProfileDetails;
 
 @Service
 @Slf4j
@@ -229,22 +228,29 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Override
     @Transactional
     public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws NmrException, InvalidRequestException, WorkFlowException {
-        HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
+
+        HpProfile hpProfile=hpProfileDaoService.findById(hpProfileId);
+        HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
+        if(latestHpProfile!=null){
+            hpProfile=latestHpProfile;
+        }
         if (hpProfile.getNmrId() == null || !HpProfileStatus.APPROVED.getId().equals(hpProfile.getHpProfileStatus().getId())) {
             throw new WorkFlowException(NMRError.WORK_FLOW_EXCEPTION.getCode(), NMRError.WORK_FLOW_EXCEPTION.getMessage());
         }
 
-        if(!iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(hpProfileId,ApplicationType.QUALIFICATION_ADDITION.getId())){
+        if(!iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(hpProfileId,ApplicationType.ADDITIONAL_QUALIFICATION.getId())){
             throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
         }
-        validateQualificationDetailsAndProofs(qualificationDetailRequestTOs, proofs);
+        List<String> existingQualifications = iQualificationDetailRepository.getListOfQualificationByUserID(hpProfile.getUser().getId());
+        validateQualificationDetailsAndProofs(qualificationDetailRequestTOs, proofs, existingQualifications);
+
         for (QualificationDetailRequestTO qualificationDetailRequestTO : qualificationDetailRequestTOs) {
-            String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.QUALIFICATION_ADDITION.getId()));
+            String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(ApplicationType.ADDITIONAL_QUALIFICATION.getId()));
             WorkFlowRequestTO workFlowRequestTO = new WorkFlowRequestTO();
             workFlowRequestTO.setRequestId(requestId);
             workFlowRequestTO.setActionId(Action.SUBMIT.getId());
             workFlowRequestTO.setActorId(Group.HEALTH_PROFESSIONAL.getId());
-            workFlowRequestTO.setApplicationTypeId(ApplicationType.QUALIFICATION_ADDITION.getId());
+            workFlowRequestTO.setApplicationTypeId(ApplicationType.ADDITIONAL_QUALIFICATION.getId());
             workFlowRequestTO.setHpProfileId(hpProfileId);
             qualificationDetailRequestTO.setRequestId(requestId);
             iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
@@ -334,7 +340,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             hpProfileById.setESignStatus(hpSubmitRequestTO.getESignStatus() != null ? hpSubmitRequestTO.getESignStatus() : ESignStatus.PROFILE_NOT_ESIGNED.getId());
             hpProfileById.setRequestId(requestId);
             hpProfileById.setConsent(hpSubmitRequestTO.getHprShareAcknowledgement() != null ? hpSubmitRequestTO.getHprShareAcknowledgement() : NO);
-
+            if(ApplicationType.HP_REGISTRATION.getId().equals(hpSubmitRequestTO.getApplicationTypeId())) {
+                hpProfileById.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
+            }
             log.debug("Updating the request_id in registration_details table");
             RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpSubmitRequestTO.getHpProfileId());
             registrationDetails.setRequestId(requestId);
@@ -378,14 +386,25 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         BigInteger applicationTypeId = null;
         BigInteger workFlowStatusId = null;
         String requestId = null;
+        BigInteger hpProfileStatusId = null;
+        HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
+        if (latestHpProfile != null) {
+            WorkFlow workFlow = workFlowRepository.findLastWorkFlowForHealthProfessional(hpProfileId);
+            hpProfileStatusId = latestHpProfile.getHpProfileStatus().getId();
+            if (workFlow != null) {
+                applicationTypeId = workFlow.getApplicationType().getId();
+                workFlowStatusId = workFlow.getWorkFlowStatus().getId();
+                requestId = workFlow.getRequestId();
+            }
+        } else {
+            hpProfileStatusId = hpProfile.getHpProfileStatus().getId();
         WorkFlow workFlow = workFlowRepository.findLastWorkFlowForHealthProfessional(hpProfileId);
         if (workFlow != null) {
             applicationTypeId = workFlow.getApplicationType().getId();
             workFlowStatusId = workFlow.getWorkFlowStatus().getId();
             requestId = workFlow.getRequestId();
-
-        }
-        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId, workFlowStatusId, requestId);
+        }}
+        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId, workFlowStatusId, requestId, hpProfileStatusId);
     }
 
     @Override
@@ -489,7 +508,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
 
         String hashedPassword = bCryptPasswordEncoder.encode(rsaUtil.decrypt(request.getPassword()));
-        User userDetail = new User(null, request.getEmail(), request.getMobileNumber(), null, hashedPassword, null, true, false, //
+        User userDetail = new User(null, request.getEmail(), request.getMobileNumber(), null, hashedPassword, null, true, false,
 
                 entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getId()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_ADMIN.getId()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null, request.getUsername(), request.getHprId(), request.getHprIdNumber(), request.isNew(), false, false, null);
         userDaoService.save(userDetail);
@@ -708,7 +727,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         BigInteger masterHpProfileId = iHpProfileRepository.findMasterHpProfileByHpProfileId(hpProfileId);
         if (masterHpProfileId != null) {
-            if (request.getMobileNumber() != null) {// update mobile_number hp_profile_master by hp_profile_master.id
+            if (request.getMobileNumber() != null) {
                 iHpProfileMasterRepository.updateMasterHpProfileMobile(masterHpProfileId, request.getMobileNumber());
             }
             if (eSignTransactionId != null && !eSignTransactionId.isBlank()) {
@@ -775,9 +794,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
         resetTokenRepository.save(resetToken);
 
-        String resetPasswordLink = emailVerifyUrl + "/" + token;
+        return emailVerifyUrl + "/" + token;
 
-        return resetPasswordLink;
+
     }
 
     @Override
@@ -832,7 +851,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     private int similar(String first, String second) {
-        int p, q, l, sum;
+        int p;
+        int q;
+        int l;
+        int sum;
         int pos1 = 0;
         int pos2 = 0;
         int max = 0;
@@ -854,7 +876,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
         sum = max;
         if (sum > 0) {
-            if (pos1 > 0 && pos2 > 0) {
+            if (pos1 > 0) {
                 sum += this.similar(first.substring(0, pos1 > firstLength ? firstLength : pos1), second.substring(0, pos2 > secondLength ? secondLength : pos2));
             }
 

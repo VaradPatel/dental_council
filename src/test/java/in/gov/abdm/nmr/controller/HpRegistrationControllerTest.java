@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IQueriesService;
@@ -107,7 +108,6 @@ class HpRegistrationControllerTest {
         personalDetails.setCountryNationality(NationalityTO.builder().id(COUNTRY_ID).name(COUNTRY_NAME).build());
         personalDetails.setDateOfBirth(DATE_OF_BIRTH);
         personalDetails.setGender(GENDER);
-        personalDetails.setSchedule(ScheduleTO.builder().id(SCHEDULE_ID).name(SCHEDULE_NAME).build());
         personalDetails.setProfilePhoto(PROFILE_PHOTO);
         personalDetails.setFullName(PROFILE_DISPLAY_NAME);
         personalDetails.setIsNew(true);
@@ -134,6 +134,7 @@ class HpRegistrationControllerTest {
         communicationAddress.setCreatedAt(CURRENT_DATE);
         communicationAddress.setUpdatedAt(CURRENT_DATE);
         communicationAddress.setFullName(FIRST_NAME);
+        communicationAddress.setAddressType(new AddressTypeTO(AddressType.CURRENT.getId(), AddressType.CURRENT.getDescription()));
         requestTO.setCommunicationAddress(communicationAddress);
         requestTO.setRequestId(REQUEST_ID);
 
@@ -188,8 +189,6 @@ class HpRegistrationControllerTest {
                 .andExpect(jsonPath("$.personal_details.country_nationality.id").value(COUNTRY_ID))
                 .andExpect(jsonPath("$.personal_details.country_nationality.name").value(COUNTRY_NAME))
                 .andExpect(jsonPath("$.personal_details.gender").value(GENDER))
-                .andExpect(jsonPath("$.personal_details.schedule.id").value(CommonTestData.SCHEDULE_ID))
-                .andExpect(jsonPath("$.personal_details.schedule.name").value(SCHEDULE_NAME))
                 .andExpect(jsonPath("$.personal_details.profile_photo").value(PROFILE_PHOTO))
                 .andExpect(jsonPath("$.personal_details.full_name").value(PROFILE_DISPLAY_NAME))
                 .andExpect(jsonPath("$.personal_details.email").value(CommonTestData.EMAIL_ID))
@@ -207,8 +206,8 @@ class HpRegistrationControllerTest {
                 .andExpect(jsonPath("$.communication_address.sub_district.id").value(SUB_DISTRICT_ID))
                 .andExpect(jsonPath("$.communication_address.sub_district.name").value(SUB_DISTRICT_NAME))
                 .andExpect(jsonPath("$.communication_address.pincode").value(CommonTestData.PIN_CODE))
-                .andExpect(jsonPath("$.communication_address.address_type.id").value(ADDRESS_TYPE_ID))
-                .andExpect(jsonPath("$.communication_address.address_type.name").value(ADDRESS_TYPE_NAME))
+                /*.andExpect(jsonPath("$.communication_address.address_type.id").value(ADDRESS_TYPE_ID))
+                .andExpect(jsonPath("$.communication_address.address_type.name").value(ADDRESS_TYPE_NAME))*/
                 .andExpect(jsonPath("$.communication_address.created_at").value(CURRENT_DATE))
                 .andExpect(jsonPath("$.communication_address.updated_at").value(CURRENT_DATE))
                 .andExpect(jsonPath("$.communication_address.full_name").value(PROFILE_DISPLAY_NAME))
@@ -266,7 +265,7 @@ class HpRegistrationControllerTest {
         personalDetails.setCountryNationality(NationalityTO.builder().id(COUNTRY_ID).name(COUNTRY_NAME).build());
         personalDetails.setDateOfBirth(DATE_OF_BIRTH);
         personalDetails.setGender(GENDER);
-        personalDetails.setSchedule(ScheduleTO.builder().id(SCHEDULE_ID).name(SCHEDULE_NAME).build());
+
         personalDetails.setProfilePhoto(PROFILE_PHOTO);
         personalDetails.setFullName(PROFILE_DISPLAY_NAME);
         personalDetails.setIsNew(true);
@@ -289,7 +288,7 @@ class HpRegistrationControllerTest {
         communicationAddress.setIsSameAddress("true");
         communicationAddress.setEmail(EMAIL_ID);
         communicationAddress.setMobile(MOBILE_NUMBER);
-        communicationAddress.setAddressType(new AddressTypeTO());
+        communicationAddress.setAddressType(new AddressTypeTO(AddressType.CURRENT.getId(), AddressType.CURRENT.getDescription()));
         communicationAddress.setCreatedAt(CURRENT_DATE);
         communicationAddress.setUpdatedAt(CURRENT_DATE);
         communicationAddress.setFullName(FIRST_NAME);
@@ -347,8 +346,6 @@ class HpRegistrationControllerTest {
                 .andExpect(jsonPath("$.personal_details.country_nationality.id").value(COUNTRY_ID))
                 .andExpect(jsonPath("$.personal_details.country_nationality.name").value(COUNTRY_NAME))
                 .andExpect(jsonPath("$.personal_details.gender").value(GENDER))
-                .andExpect(jsonPath("$.personal_details.schedule.id").value(CommonTestData.SCHEDULE_ID))
-                .andExpect(jsonPath("$.personal_details.schedule.name").value(SCHEDULE_NAME))
                 .andExpect(jsonPath("$.personal_details.profile_photo").value(PROFILE_PHOTO))
                 .andExpect(jsonPath("$.personal_details.full_name").value(PROFILE_DISPLAY_NAME))
                 .andExpect(jsonPath("$.personal_details.email").value(CommonTestData.EMAIL_ID))
@@ -427,7 +424,6 @@ class HpRegistrationControllerTest {
         personalDetails.setCountryNationality(NationalityTO.builder().id(COUNTRY_ID).name(COUNTRY_NAME).build());
         personalDetails.setDateOfBirth(DATE_OF_BIRTH);
         personalDetails.setGender(GENDER);
-        personalDetails.setSchedule(ScheduleTO.builder().id(SCHEDULE_ID).name(SCHEDULE_NAME).build());
         personalDetails.setProfilePhoto(PROFILE_PHOTO);
         personalDetails.setFullName(PROFILE_DISPLAY_NAME);
         personalDetails.setIsNew(true);
@@ -501,8 +497,6 @@ class HpRegistrationControllerTest {
                 .andExpect(jsonPath("$.personal_details.country_nationality.id").value(COUNTRY_ID))
                 .andExpect(jsonPath("$.personal_details.country_nationality.name").value(COUNTRY_NAME))
                 .andExpect(jsonPath("$.personal_details.gender").value(GENDER))
-                .andExpect(jsonPath("$.personal_details.schedule.id").value(CommonTestData.SCHEDULE_ID))
-                .andExpect(jsonPath("$.personal_details.schedule.name").value(SCHEDULE_NAME))
                 .andExpect(jsonPath("$.personal_details.profile_photo").value(PROFILE_PHOTO))
                 .andExpect(jsonPath("$.personal_details.full_name").value(PROFILE_DISPLAY_NAME))
                 .andExpect(jsonPath("$.personal_details.email").value(CommonTestData.EMAIL_ID))

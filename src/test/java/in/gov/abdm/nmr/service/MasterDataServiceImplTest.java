@@ -70,7 +70,7 @@ class MasterDataServiceImplTest {
 
     @Test
     void testCountries() {
-        when(countryService.getCountryData()).thenReturn(getCountryTo());
+        when(countryService.getCountryData()).thenReturn(getCountryToList());
         List<MasterDataTO> result = masterDataService.countries();
         assertEquals(ID.longValue(), result.get(0).getId());
         assertEquals(1, result.size());
@@ -80,7 +80,7 @@ class MasterDataServiceImplTest {
     void testStates() {
         when(stateService.getStateData(ID)).thenReturn(getStates());
         List<MasterDataTO> result = masterDataService.states(ID);
-        assertEquals(ID.longValue(), result.get(0).getId());
+        assertEquals(STATE_ID.longValue(), result.get(0).getId());
         assertEquals(1, result.size());
     }
 

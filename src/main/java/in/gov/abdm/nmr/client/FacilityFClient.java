@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.client;
 
-import in.gov.abdm.nmr.dto.FacilitySearchRequestTO;
+import in.gov.abdm.nmr.dto.FacilitiesSearchResponseTO;
+import in.gov.abdm.nmr.dto.FacilityRequestTO;
 import in.gov.abdm.nmr.dto.FacilitySearchResponseTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -19,9 +20,13 @@ public interface FacilityFClient {
      * Endpoint for searching facilities in facility service.
      *
      * @param authorization           the authorization header value
-     * @param facilitySearchRequestTO the facility search request payload
+     * @param facilityRequestTO the facility search request payload
      * @return the FacilitySearchResponseTO search response Object
      */
     @PostMapping(value = FACILITY_SERVICE_SEARCH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    FacilitySearchResponseTO findFacility(@RequestHeader(value = "Authorization") String authorization, @RequestBody FacilitySearchRequestTO facilitySearchRequestTO);
+    FacilitiesSearchResponseTO searchFacility(@RequestHeader(value = "Authorization") String authorization, @RequestBody FacilityRequestTO facilityRequestTO);
+
+    @PostMapping(value = FETCH_FACILITY_INFO, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    FacilitySearchResponseTO fetchFacilityInfo(@RequestHeader(value = "Authorization") String authorization, @RequestBody FacilityRequestTO facilityRequestTO);
+
 }

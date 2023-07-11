@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface IForeignQualificationDetailMasterRepository extends JpaRepository<ForeignQualificationDetailsMaster, BigInteger> {
 
-    @Query(value = "SELECT * FROM foreign_qualification_details_master where hp_profile_id = :hpProfileId", nativeQuery = true)
+    @Query(value = "SELECT * FROM foreign_qualification_details_master where hp_profile_id = :hpProfileId and is_verified=1", nativeQuery = true)
     List<ForeignQualificationDetailsMaster> getQualificationDetailsByHpProfileId(BigInteger hpProfileId);
 }
