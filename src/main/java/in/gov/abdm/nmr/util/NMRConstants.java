@@ -349,13 +349,13 @@ public class NMRConstants {
     public static final String VERIFIED =  "Verified";
 
 
-
-
-
-
-
-
-
-
-
+    public static final String APPLICATION_REQUEST_DETAILS = """
+            Select wfa.request_id, wfa.application_type_id,wfa.created_at ,wfa.work_flow_status_id ,wfa.current_group_id ,
+            wfa.action_id ,wfa.previous_group_id ,wfa.remarks ,c.course_name indian_qualification ,
+            fqd.course international_qualification
+            from work_flow_audit wfa left join qualification_details qd on qd.request_id = wfa.request_id 
+            left join course c on c.id =qd.course_id 
+            left join foreign_qualification_details fqd on fqd.request_id =wfa.request_id 
+            where wfa.request_id = :requestId order by wfa.created_at asc
+            """;
 }
