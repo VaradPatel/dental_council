@@ -14,7 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.security.SecureRandom;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Util class for NMR.
@@ -39,7 +41,7 @@ public final class NMRUtil {
      * @param qualificationDetailRequestTOs
      * @param proofs
      */
-    public static void validateQualificationDetailsAndProofs(List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs, Integer existingQualificationCount) throws InvalidRequestException {
+    public static void validateQualificationDetailsAndProofs(List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs, List<String> existingQualifications) throws InvalidRequestException {
         if (CollectionUtils.isEmpty(qualificationDetailRequestTOs)) {
             throw new InvalidRequestException(NMRError.MISSING_MANDATORY_FIELD.getCode(), NMRError.MISSING_MANDATORY_FIELD.getMessage());
         }
@@ -52,12 +54,17 @@ public final class NMRUtil {
         if (qualificationDetailRequestTOs.size() < proofs.size()) {
             throw new InvalidRequestException(NMRError.EXCESS_PROOFS_ERROR.getCode(), NMRError.EXCESS_PROOFS_ERROR.getMessage());
         }
-        if (NMRConstants.MAX_QUALIFICATION_SIZE <= qualificationDetailRequestTOs.size() + existingQualificationCount) {
+        if (NMRConstants.MAX_QUALIFICATION_SIZE <= qualificationDetailRequestTOs.size() + existingQualifications.size()) {
             throw new InvalidRequestException(NMRError.QUALIFICATION_DETAILS_LIMIT_EXCEEDED.getCode(), NMRError.QUALIFICATION_DETAILS_LIMIT_EXCEEDED.getMessage());
         }
-
+        for (QualificationDetailRequestTO qualificationDetailRequestTO : qualificationDetailRequestTOs) {
+            existingQualifications.add(qualificationDetailRequestTO.getCourse().getName());
+            Set<String> set = new HashSet<>(existingQualifications);
+            if (set.size() < existingQualifications.size()) {
+                throw new InvalidRequestException(NMRError.DUPLICATE_QUALIFICATION_ERROR.getCode(), NMRError.DUPLICATE_QUALIFICATION_ERROR.getMessage());
+            }
+        }
     }
-
     /**
      * Return value if it is not null otherwise fallBackValue.
      * @param value the main value to be returned when not null.

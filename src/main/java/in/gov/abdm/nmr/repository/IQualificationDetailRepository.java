@@ -23,6 +23,7 @@ public interface IQualificationDetailRepository extends JpaRepository<Qualificat
 
     QualificationDetails findByRequestId(String requestId);
 
-    @Query(value = "SELECT  COUNT(*) FROM (SELECT name FROM qualification_details qd where qd.user_id =:userID  UNION ALL  SELECT name FROM foreign_qualification_details fqd where fqd.user_id =:userID)", nativeQuery = true)
-    Integer getCountOfQualificationDetailsByUserID(BigInteger userID);
+    @Query(value = "select c.course_name  from qualification_details qd join course c on qd.course_id =c.id where qd.user_id =:userId and is_verified !=" + NMRConstants.QUALIFICATION_STATUS_REJECTED +
+            " union select fqd.course from foreign_qualification_details fqd where fqd.user_id =:userId and is_verified !=" + NMRConstants.QUALIFICATION_STATUS_REJECTED + "", nativeQuery = true)
+    List<String> getListOfQualificationByUserID(BigInteger userId);
 }

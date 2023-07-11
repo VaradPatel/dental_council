@@ -87,7 +87,7 @@ public class DashboardServiceImpl implements IDashboardService {
 
     private static final Map<String, List<BigInteger>> applicationIds =
             Map.of(HP_REGISTRATION_REQUEST, List.of(ApplicationType.HP_REGISTRATION.getId(), ApplicationType.FOREIGN_HP_REGISTRATION.getId()),
-                    HP_MODIFICATION_REQUEST, List.of(ApplicationType.QUALIFICATION_ADDITION.getId()),
+                    HP_MODIFICATION_REQUEST, List.of(ApplicationType.ADDITIONAL_QUALIFICATION.getId()),
                     TEMPORARY_SUSPENSION_REQUEST, List.of(ApplicationType.HP_TEMPORARY_SUSPENSION.getId()),
                     PERMANENT_SUSPENSION_REQUEST, List.of(ApplicationType.HP_PERMANENT_SUSPENSION.getId()),
                     CONSOLIDATED_SUSPENSION_REQUEST, List.of(ApplicationType.HP_TEMPORARY_SUSPENSION.getId(), ApplicationType.HP_PERMANENT_SUSPENSION.getId()));
@@ -280,11 +280,11 @@ public class DashboardServiceImpl implements IDashboardService {
         columnToSortMap.put("hpProfileId", " calculate.hp_profile_id");
         columnToSortMap.put("requestId", " calculate.request_id");
         columnToSortMap.put("registrationNo", " rd.registration_no");
-        columnToSortMap.put("createdAt", " rd.created_at");
+        columnToSortMap.put("createdAt", " d.created_at");
         columnToSortMap.put("councilName", " stmc.name");
         columnToSortMap.put("applicantFullName", " hp.full_name");
         columnToSortMap.put("pendency", " pendency");
-        return columnToSortMap.getOrDefault(columnToSort, " pendency ");
+        return columnToSortMap.getOrDefault(columnToSort, " d.created_at ");
     }
 
     private void setApplicationTypeIdAndUserGroupStatus(String applicationTypeId, String userGroupStatus,

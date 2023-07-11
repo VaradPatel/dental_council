@@ -20,4 +20,5 @@ public class HealthProfessionalApplicationRequestParamsTo {
     private String sortBy;
     private String sortOrder;
     private BigInteger hpProfileId;
+    private String collegeId;
 }

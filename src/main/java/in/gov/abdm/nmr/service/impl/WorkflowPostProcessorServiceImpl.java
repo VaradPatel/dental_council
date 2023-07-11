@@ -132,7 +132,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
     private void updateTransactionHealthProfessionalDetails(WorkFlowRequestTO requestTO, INextGroup iNextGroup, HpProfile hpProfile) throws WorkFlowException {
 
-        if (!ApplicationType.QUALIFICATION_ADDITION.getId().equals(requestTO.getApplicationTypeId())) {
+        if (!ApplicationType.ADDITIONAL_QUALIFICATION.getId().equals(requestTO.getApplicationTypeId())) {
             hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).orElseThrow(WorkFlowException::new));
             if (StringUtils.isEmpty(hpProfile.getNmrId())) {
                 log.info("Generating NMR id as the hp_profile doesn't have an NMR id associated.");

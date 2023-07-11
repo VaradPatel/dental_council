@@ -18,4 +18,5 @@ public class HpProfilePersonalResponseTO {
     private boolean isEmailVerified;
     private boolean isSmsNotificationEnabled;
     private boolean isEmailNotificationEnabled;
+    private Integer esignStatus;
 }

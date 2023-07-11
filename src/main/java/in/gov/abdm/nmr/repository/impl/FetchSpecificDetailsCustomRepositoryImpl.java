@@ -1,23 +1,5 @@
 package in.gov.abdm.nmr.repository.impl;
 
-import static in.gov.abdm.nmr.util.NMRConstants.FETCH_CARD_DETAILS_QUERY;
-import static in.gov.abdm.nmr.util.NMRConstants.NOT_YET_RECEIVED;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Stream;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.transaction.Transactional;
-
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
-
 import in.gov.abdm.nmr.dto.DashboardRequestParamsTO;
 import in.gov.abdm.nmr.dto.DashboardResponseTO;
 import in.gov.abdm.nmr.dto.DashboardTO;
@@ -26,6 +8,22 @@ import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
 import in.gov.abdm.nmr.repository.IFetchSpecificDetailsCustomRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.transaction.Transactional;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 /**
  * A class that implements all the methods of the Custom Repository interface IFetchSpecificDetailsCustomRepository
@@ -139,7 +137,8 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
      */
     private static final Function<DashboardRequestParamsTO, String> SORT_RECORDS = dashboardRequestParamsTO -> {
         StringBuilder sb = new StringBuilder();
-        sb.append(" ORDER BY  :sort");
+        sb.append(" ORDER BY  " + dashboardRequestParamsTO.getSortBy() + " " + dashboardRequestParamsTO.getSortOrder());
+
         return sb.toString();
     };
 
@@ -210,11 +209,11 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setHpProfileId((BigInteger) result[4]);
             dashBoardTO.setRequestId((String) result[5]);
             dashBoardTO.setRegistrationNo((String) result[6]);
-            dashBoardTO.setCreatedAt((String) result[7]);
+            dashBoardTO.setCreatedAt(result[7].toString());
             dashBoardTO.setCouncilName((String) result[8]);
             dashBoardTO.setApplicantFullName((String) result[9]);
             dashBoardTO.setWorkFlowStatusId((BigInteger) result[10]);
-            dashBoardTO.setPendency((int) Math.floor((Double) result[11]));
+            dashBoardTO.setPendency(result[11] != null ? (int) Math.floor((Double) result[11]): 0);
             dashBoardTO.setGender((String) result[12]);
             dashBoardTO.setEmailId((String) result[13]);
             dashBoardTO.setMobileNumber((String) result[14]);
@@ -231,7 +230,6 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
 
     private Query setParameters(Query query, DashboardRequestParamsTO dashboardRequestParamsTO) {
         query.setParameter("applicationTypeId", Stream.of(dashboardRequestParamsTO.getApplicationTypeId().split(",")).map(Integer::parseInt).toList());
-        query.setParameter("sort", dashboardRequestParamsTO.getSortBy() + " " + dashboardRequestParamsTO.getSortOrder());
 
         if (Objects.nonNull(dashboardRequestParamsTO.getWorkFlowStatusId()) && !dashboardRequestParamsTO.getWorkFlowStatusId().isEmpty()) {
             query.setParameter("workFlowStatusId", Integer.parseInt(dashboardRequestParamsTO.getWorkFlowStatusId()));
@@ -265,8 +263,14 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             query.setParameter("councilId", Integer.parseInt(dashboardRequestParamsTO.getCouncilId()));
         }
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getGender()) && !dashboardRequestParamsTO.getGender().isEmpty()) {
-            query.setParameter("gender", "%".concat(dashboardRequestParamsTO.getGender()).concat("%"));
+        String gender = dashboardRequestParamsTO.getGender();
+        if (StringUtils.isNotBlank(gender)) {
+            if (GENDER_MALE.equalsIgnoreCase(gender)) {
+                gender = "m";
+            } else if (GENDER_FEMALE.equalsIgnoreCase(gender)) {
+                gender = "f";
+            }
+            query.setParameter("gender", "%".concat(gender).concat("%"));
         }
 
         if (Objects.nonNull(dashboardRequestParamsTO.getEmailId()) && !dashboardRequestParamsTO.getEmailId().isEmpty()) {

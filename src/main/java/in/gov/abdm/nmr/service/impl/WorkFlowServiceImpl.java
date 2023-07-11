@@ -5,7 +5,6 @@ import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.*;
-import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.WorkFlowException;
@@ -19,7 +18,6 @@ import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,21 +98,10 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     @Transactional
     public void initiateSubmissionWorkFlow(WorkFlowRequestTO requestTO) throws WorkFlowException, InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = null;
 
-        user = userDetailService.findByUsername(userName);
+        User user = userDetailService.findByUsername(userName);
 
-        if (user != null) {
-            if (UserTypeEnum.COLLEGE.getId().equals(user.getUserType().getId())) {
-                if (UserSubTypeEnum.COLLEGE_ADMIN.getId().equals(user.getUserSubType().getId())) {
-                    throw new InvalidRequestException();
-                }
-            } else if (UserTypeEnum.NMC.getId().equals(user.getUserType().getId())) {
-                if (!UserSubTypeEnum.NMC_VERIFIER.getId().equals(user.getUserSubType().getId())) {
-                    throw new InvalidRequestException();
-                }
-            }
-        }
+        validateAndThrowExceptionForNonVerifierUsers(user);
 
         WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
         HpProfile hpProfile = iHpProfileRepository.findById(requestTO.getHpProfileId()).orElse(new HpProfile());
@@ -122,19 +109,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         Dashboard dashboard = null;
         if (workFlow == null) {
             log.debug("Proceeding to create a new Workflow entry since there are no existing entries with the given request_id");
-            if (Group.HEALTH_PROFESSIONAL.getId().equals(requestTO.getActorId())) {
-                if (!ApplicationType.getAllHpApplicationTypeIds().contains(requestTO.getApplicationTypeId()) ||
-                        !Action.SUBMIT.getId().equals(requestTO.getActionId())) {
-                    log.debug("Health Professional is the Actor but either Action is not Submit or Application type is invalid");
-                    throw new InvalidRequestException();
-                }
-            } else if (Group.SMC.getId().equals(requestTO.getActorId()) || Group.NMC.getId().equals(requestTO.getActorId())) {
-                if (!Action.PERMANENT_SUSPEND.getId().equals(requestTO.getActionId()) &&
-                        !Action.TEMPORARY_SUSPEND.getId().equals(requestTO.getActionId())) {
-                    log.debug("SMC or NMC is the Actor but Action is not Temporary Suspend or Permanent Suspend");
-                    throw new InvalidRequestException();
-                }
-            }
+            validateRequestPayloadForApplicationCreation(requestTO);
 
             log.debug("Fetching the Next Group to assign this request to and the work_flow_status using Application type, Application sub type, Actor and Action");
             iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(requestTO.getApplicationTypeId(), requestTO.getActorId(), requestTO.getActionId(), requestTO.getApplicationSubTypeId());
@@ -145,12 +120,12 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         } else {
             dashboard = iDashboardRepository.findByRequestId(workFlow.getRequestId());
             log.debug("Proceeding to update the existing Workflow entry since there is an existing entry with the given request_id");
-            if (!workFlow.getApplicationType().getId().equals(requestTO.getApplicationTypeId()) || workFlow.getCurrentGroup() == null || !workFlow.getCurrentGroup().getId().equals(requestTO.getActorId())) {
+            if (!workFlow.getApplicationType().getId().equals(requestTO.getApplicationTypeId()) || workFlow.getCurrentGroup() == null || (!Group.SMC.getId().equals(requestTO.getActorId()) && !workFlow.getCurrentGroup().getId().equals(requestTO.getActorId()))) {
                 log.debug("Invalid Request since either the given application type matches the fetched application type from the workflow or current group fetched from the workflow is null or current group id fetched from the workflow matches the given actor id");
                 throw new InvalidRequestException();
             }
             log.debug("Fetching the Next Group to assign this request to and the work_flow_status using Application type, Application sub type, Actor and Action");
-            iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(workFlow.getApplicationType().getId(), workFlow.getCurrentGroup().getId(), requestTO.getActionId(), requestTO.getApplicationSubTypeId());
+            iNextGroup = inmrWorkFlowConfigurationRepository.getNextGroup(requestTO.getApplicationTypeId(), requestTO.getActorId(), requestTO.getActionId(), requestTO.getApplicationSubTypeId());
             if (iNextGroup != null) {
                 workFlow.setUpdatedAt(null);
                 workFlow.setAction(iActionRepository.findById(requestTO.getActionId()).orElseThrow(WorkFlowException::new));
@@ -172,36 +147,72 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         updateDashboardDetail(requestTO, workFlow, iNextGroup, dashboard);
 
         if (isLastStepOfWorkFlow(iNextGroup)) {
-            if (APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES.contains(workFlow.getWorkFlowStatus().getId())) {
-                log.debug("Performing Post Workflow updates since either the Last step of Workflow is reached or work_flow_status is Approved/Suspended/Blacklisted ");
-                workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
-            } else if (ApplicationType.QUALIFICATION_ADDITION.getId().equals(workFlow.getApplicationType().getId())
-                    && WorkflowStatus.REJECTED.getId().equals(workFlow.getWorkFlowStatus().getId())) {
+            performPostWorkFlowTask(requestTO, workFlow, hpProfile, iNextGroup);
+        }
+        sendNotificationsOnStatusChanges(user, workFlow, hpProfile);
+    }
 
-                QualificationDetails qualificationDetails = qualificationDetailRepository.findByRequestId(workFlow.getRequestId());
-                if(qualificationDetails!=null) {
-                    qualificationDetails.setIsVerified(NMRConstants.QUALIFICATION_STATUS_REJECTED);
-                }
+    private void performPostWorkFlowTask(WorkFlowRequestTO requestTO, WorkFlow workFlow, HpProfile hpProfile, INextGroup iNextGroup) throws WorkFlowException {
+        if (APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES.contains(workFlow.getWorkFlowStatus().getId())) {
+            log.debug("Performing Post Workflow updates since either the Last step of Workflow is reached or work_flow_status is Approved/Suspended/Blacklisted ");
+            workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
+        } else if (ApplicationType.ADDITIONAL_QUALIFICATION.getId().equals(workFlow.getApplicationType().getId())
+                && WorkflowStatus.REJECTED.getId().equals(workFlow.getWorkFlowStatus().getId())) {
 
-                ForeignQualificationDetails foreignQualificationDetails = foreignQualificationDetailRepository.findByRequestId(requestTO.getRequestId());
-                if(foreignQualificationDetails!=null) {
-                    foreignQualificationDetails.setIsVerified(QUALIFICATION_STATUS_REJECTED);
-                }
+            QualificationDetails qualificationDetails = qualificationDetailRepository.findByRequestId(workFlow.getRequestId());
+            if(qualificationDetails!=null) {
+                qualificationDetails.setIsVerified(NMRConstants.QUALIFICATION_STATUS_REJECTED);
+            }
+
+            ForeignQualificationDetails foreignQualificationDetails = foreignQualificationDetailRepository.findByRequestId(requestTO.getRequestId());
+            if(foreignQualificationDetails!=null) {
+                foreignQualificationDetails.setIsVerified(QUALIFICATION_STATUS_REJECTED);
             }
         }
+    }
+
+    private void sendNotificationsOnStatusChanges(User user, WorkFlow workFlow, HpProfile hpProfile) {
         try {
             if(!ApplicationType.HP_MODIFICATION.getId().equals(workFlow.getApplicationType().getId())) {
                 if (hpProfile.getUser().isSmsNotificationEnabled() && hpProfile.getUser().isEmailNotificationEnabled()) {
                     notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), hpProfile.getUser().getEmail());
                 } else if (hpProfile.getUser().isSmsNotificationEnabled()) {
                     notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), null);
-
                 } else if (hpProfile.getUser().isEmailNotificationEnabled()) {
                     notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), null, hpProfile.getUser().getEmail());
                 }
             }
         } catch (Exception exception) {
             log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
+        }
+    }
+
+    private static void validateRequestPayloadForApplicationCreation(WorkFlowRequestTO requestTO) throws InvalidRequestException {
+        if (Group.HEALTH_PROFESSIONAL.getId().equals(requestTO.getActorId())) {
+            if (!ApplicationType.getAllHpApplicationTypeIds().contains(requestTO.getApplicationTypeId()) ||
+                    !Action.SUBMIT.getId().equals(requestTO.getActionId())) {
+                log.debug("Health Professional is the Actor but either Action is not Submit or Application type is invalid");
+                throw new InvalidRequestException();
+            }
+        } else if ((Group.SMC.getId().equals(requestTO.getActorId()) || Group.NMC.getId().equals(requestTO.getActorId())) && !Action.PERMANENT_SUSPEND.getId().equals(requestTO.getActionId()) &&
+                !Action.TEMPORARY_SUSPEND.getId().equals(requestTO.getActionId()) && !Action.SUBMIT.getId().equals(requestTO.getActionId())) {
+            log.debug("SMC or NMC is the Actor but Action is not Temporary Suspend or Permanent Suspend");
+            throw new InvalidRequestException();
+        }
+    }
+
+    /**
+     * Admin users cannot take any actions on any workflow related applications.
+     * @param user the user.
+     * @throws InvalidRequestException
+     */
+    private static void validateAndThrowExceptionForNonVerifierUsers(User user) throws InvalidRequestException {
+        if (user != null) {
+            BigInteger userTypeId = user.getUserType().getId();
+            if ((UserTypeEnum.COLLEGE.getId().equals(userTypeId) && UserSubTypeEnum.COLLEGE_ADMIN.getId().equals(userTypeId))
+                    || (UserTypeEnum.NMC.getId().equals(userTypeId) && UserSubTypeEnum.NMC_ADMIN.getId().equals(userTypeId))) {
+                throw new InvalidRequestException();
+            }
         }
     }
 
@@ -223,7 +234,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         return verifier;
     }
 
-    private void updateDashboardDetail(WorkFlowRequestTO requestTO, WorkFlow workFlow, INextGroup iNextGroup, Dashboard dashboard) throws InvalidRequestException {
+    private void updateDashboardDetail(WorkFlowRequestTO requestTO, WorkFlow workFlow, INextGroup iNextGroup, Dashboard dashboard) {
         dashboard.setApplicationTypeId(requestTO.getApplicationTypeId());
         dashboard.setRequestId(requestTO.getRequestId());
         dashboard.setHpProfileId(requestTO.getHpProfileId());
@@ -247,15 +258,25 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
     }
 
+    /**
+     * Updates the dashboard status. In case SMC decides to override the college application, then application will be revoked from college and application status will be set to null and smc status will be updated as per action performed by smc.
+     *
+     * @param actionPerformedId the action peformed
+     * @param userGroup the user group of user
+     * @param dashboard the dashboard entity.
+     */
     private static void setDashboardStatus(BigInteger actionPerformedId, BigInteger userGroup, Dashboard dashboard){
         BigInteger dashboardStatusId = DashboardStatus.getDashboardStatus(Action.getAction(actionPerformedId).getStatus()).getId();
-        if (userGroup.equals(Group.SMC.getId())) {
+        if (Group.SMC.getId().equals(userGroup)) {
             dashboard.setSmcStatus(dashboardStatusId);
-        } else if (userGroup.equals(Group.NMC.getId())) {
+            if(DashboardStatus.PENDING.getId().equals(dashboard.getCollegeStatus())){
+                dashboard.setCollegeStatus(null);
+            }
+        } else if (Group.NMC.getId().equals(userGroup)) {
             dashboard.setNmcStatus(dashboardStatusId);
-        } else if (userGroup.equals(Group.COLLEGE.getId())) {
+        } else if (Group.COLLEGE.getId().equals(userGroup)) {
             dashboard.setCollegeStatus(dashboardStatusId);
-        } else if (userGroup.equals(Group.NBE.getId())) {
+        } else if (Group.NBE.getId().equals(userGroup)) {
             dashboard.setNbeStatus(dashboardStatusId);
         }
     }

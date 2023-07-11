@@ -94,6 +94,9 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getYearOfRegistration()) && !healthProfessionalApplicationRequestParamsTo.getYearOfRegistration().isEmpty()) {
             sb.append(" AND EXTRACT(YEAR FROM rd.registration_date) = :yearOfRegistration");
         }
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getCollegeId()) && !healthProfessionalApplicationRequestParamsTo.getCollegeId().isEmpty()) {
+            sb.append(" AND qd.college_id = :collegeId");
+        }
 
         return sb.toString();
     };
@@ -106,7 +109,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      */
     private static final Function<HealthProfessionalApplicationRequestParamsTo, String> SORT_RECORDS = healthProfessionalApplicationRequestParamsTo -> {
         StringBuilder sb = new StringBuilder();
-        sb.append(" ORDER BY  :sort");
+        sb.append(" ORDER BY  " + healthProfessionalApplicationRequestParamsTo.getSortBy()  + " " +healthProfessionalApplicationRequestParamsTo.getSortOrder());
         return sb.toString();
     };
 
@@ -121,6 +124,9 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         StringBuilder sb = new StringBuilder();
 
         sb.append(FETCH_TRACK_DETAILS_QUERY);
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getCollegeId()) && !healthProfessionalApplicationRequestParamsTo.getCollegeId().isEmpty()) {
+            sb.append("INNER JOIN main.qualification_details as qd on qd.hp_profile_id = rd.hp_profile_id AND qd.request_id = d.request_id ");
+        }
 
         sb.append(" where D.hp_profile_id IS NOT NULL and d.application_type_id !=").append(ApplicationType.HP_MODIFICATION.getId());
         if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
@@ -190,7 +196,6 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
     }
 
     private Query setParameters(Query query, HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, List<BigInteger> hpProfiles) {
-        query.setParameter("sort", healthProfessionalApplicationRequestParamsTo.getSortBy() + " " + healthProfessionalApplicationRequestParamsTo.getSortOrder());
         if (Objects.nonNull(hpProfiles) && !hpProfiles.isEmpty()) {
             query.setParameter("healthProfessionalIds", hpProfiles);
         }
@@ -226,6 +231,9 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         }
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getYearOfRegistration()) && !healthProfessionalApplicationRequestParamsTo.getYearOfRegistration().isEmpty()) {
             query.setParameter("yearOfRegistration", healthProfessionalApplicationRequestParamsTo.getYearOfRegistration());
+        }
+        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getCollegeId()) && !healthProfessionalApplicationRequestParamsTo.getCollegeId().isEmpty()) {
+            query.setParameter("collegeId", healthProfessionalApplicationRequestParamsTo.getCollegeId());
         }
         return query;
     }

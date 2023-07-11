@@ -219,7 +219,6 @@ class HpRegistrationServiceImplTest {
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(getRequestCounter());
         when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class),any(BigInteger.class))).thenReturn(true);
         doNothing().when(iWorkFlowService).initiateSubmissionWorkFlow(any(WorkFlowRequestTO.class));
-        when(iQualificationDetailRepository.getCountOfQualificationDetailsByUserID(any(BigInteger.class))).thenReturn(1);
         String s = hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate));
         assertEquals(SUCCESS_RESPONSE, s);
     }

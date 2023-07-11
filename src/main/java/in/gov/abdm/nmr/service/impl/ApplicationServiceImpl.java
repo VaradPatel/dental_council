@@ -4,6 +4,7 @@ import in.gov.abdm.minio.connector.service.S3ServiceImpl;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.ApplicationSubType;
+import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
@@ -11,10 +12,7 @@ import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.repository.*;
-import in.gov.abdm.nmr.service.IApplicationService;
-import in.gov.abdm.nmr.service.IRequestCounterService;
-import in.gov.abdm.nmr.service.IUserDaoService;
-import in.gov.abdm.nmr.service.IWorkFlowService;
+import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -148,6 +146,11 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Autowired
     S3ServiceImpl s3Service;
 
+    @Autowired
+    ISmcProfileRepository iSmcProfileRepository;
+    @Autowired
+    ICollegeProfileDaoService collegeProfileDaoService;
+
     private static final Map<String, String> REACTIVATION_SORT_MAPPINGS = Map.of("id", " hp.id", "name", " hp.full_name", "createdAt", " wf.created_at", "reactivationDate", " wf.start_date", "suspensionType", " hp.hp_profile_status_id", "remarks", " wf.remarks");
 
     /**
@@ -206,7 +209,11 @@ public class ApplicationServiceImpl implements IApplicationService {
                 log.debug("Building Request id.");
                 String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
                 WorkFlow workFlow = iWorkFlowRepository.findLastWorkFlowForHealthProfessional(latestHpProfile.getId());
-                if (Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
+                BigInteger loggedInUserGroupId = getGroupIdForLoggedInUser();
+                if(Group.NMC.getId().equals(loggedInUserGroupId) || Group.SMC.getId().equals(loggedInUserGroupId)){
+                    applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.REACTIVATION_THROUGH_SMC.getId());
+                    reactivateRequestResponseTo.setSelfReactivation(false);
+                } else if (Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
                     log.debug("Proceeding to reactivate through SMC since the profile was suspended by NMC");
                     applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.REACTIVATION_THROUGH_SMC.getId());
                     reactivateRequestResponseTo.setSelfReactivation(false);
@@ -228,6 +235,15 @@ public class ApplicationServiceImpl implements IApplicationService {
         } else {
             throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
         }
+    }
+
+    private BigInteger getGroupIdForLoggedInUser() {
+
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("Processing card-detail service for : {} ", userName);
+        User userDetail = userDaoService.findByUsername(userName);
+        BigInteger groupId = userDetail.getGroup().getId();
+        return groupId;
     }
 
     private void saveReactivationAttachments(MultipartFile reactivationFile, HpProfile hpProfile, String requestId) throws IOException {
@@ -364,14 +380,24 @@ public class ApplicationServiceImpl implements IApplicationService {
      */
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetails(NMRPagination nmrPagination, String search, String value, String smcId, String registrationNo) throws InvalidRequestException {
-        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(nmrPagination, search, value, smcId, registrationNo, null);
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userDetail = userDaoService.findByUsername(userName);
+        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = new HealthProfessionalApplicationRequestParamsTo();
+        BigInteger groupId = userDetail.getGroup().getId();
+        BigInteger userId = userDetail.getId();
+        if(Group.SMC.getId().equals(groupId)){
+            smcId =  iSmcProfileRepository.findByUserId(userId).getStateMedicalCouncil().getId().toString();
+        }else if(Group.NBE.getId().equals(groupId)){
+            applicationRequestParamsTo.setApplicationTypeId(ApplicationType.FOREIGN_HP_REGISTRATION.getId().toString());
+        }else if(Group.COLLEGE.getId().equals(groupId)){
+            applicationRequestParamsTo.setCollegeId(collegeProfileDaoService.findByUserId(userId).getCollege().getId().toString());
+        }
+        setHPRequestParamInToObject(applicationRequestParamsTo,nmrPagination, search, value, smcId, registrationNo, null);
         Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getOffset());
         return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable, Collections.emptyList());
     }
 
-    private HealthProfessionalApplicationRequestParamsTo setHPRequestParamInToObject(NMRPagination nmrPagination, String search, String value, String smcId, String registrationNo, BigInteger hpProfileId) throws InvalidRequestException {
-        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = new HealthProfessionalApplicationRequestParamsTo();
-
+    private void setHPRequestParamInToObject(HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo, NMRPagination nmrPagination, String search, String value, String smcId, String registrationNo, BigInteger hpProfileId) throws InvalidRequestException {
         if (StringUtils.isNotBlank(search)) {
             if (value != null && !value.isBlank()) {
                 switch (search.toLowerCase()) {
@@ -423,7 +449,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         applicationRequestParamsTo.setSortBy(column);
         applicationRequestParamsTo.setSortOrder(sortingOrder);
         applicationRequestParamsTo.setHpProfileId(hpProfileId);
-        return applicationRequestParamsTo;
+
     }
 
     /**
@@ -442,7 +468,8 @@ public class ApplicationServiceImpl implements IApplicationService {
     public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String search, String value) throws InvalidRequestException {
         RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(healthProfessionalId);
         List<BigInteger> hpProfileIds = iRegistrationDetailRepository.fetchHpProfileIdByRegistrationNumber(registrationDetails.getRegistrationNo());
-        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = setHPRequestParamInToObject(NMRPagination.builder().pageNo(Integer.valueOf(pageNo)).offset(Integer.valueOf(offset)).sortBy(sortBy).sortType(sortType).build(), search, value, null, null, healthProfessionalId);
+        HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = new HealthProfessionalApplicationRequestParamsTo();
+        setHPRequestParamInToObject(applicationRequestParamsTo,NMRPagination.builder().pageNo(Integer.valueOf(pageNo)).offset(Integer.valueOf(offset)).sortBy(sortBy).sortType(sortType).build(), search, value, null, null, healthProfessionalId);
         Pageable pageable = PageRequest.of(applicationRequestParamsTo.getPageNo(), applicationRequestParamsTo.getOffset());
         return iFetchTrackApplicationDetailsCustomRepository.fetchTrackApplicationDetails(applicationRequestParamsTo, pageable, hpProfileIds);
     }
@@ -515,6 +542,6 @@ public class ApplicationServiceImpl implements IApplicationService {
         columnToSortMap.put("applicantFullName", " hp.full_name");
         columnToSortMap.put("applicationTypeId", " application_type_id");
         columnToSortMap.put("pendency", " pendency");
-        return columnToSortMap.getOrDefault(columnToSort, " pendency ");
+        return columnToSortMap.getOrDefault(columnToSort, " d.created_at ");
     }
 }
