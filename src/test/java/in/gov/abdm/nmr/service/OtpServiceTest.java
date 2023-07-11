@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
@@ -52,7 +53,7 @@ class OtpServiceTest {
 
     @Test
     void testGenerateOtpShouldGenerateOtpAndSendToMobileNumberForNMRId() throws OtpException, InvalidRequestException, TemplateException {
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString(),any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
         when(notificationService.sendNotificationForOTP(anyString(), anyString(), anyString())).thenReturn(getResponseMessage());
@@ -66,7 +67,7 @@ class OtpServiceTest {
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
         when(notificationService.sendNotificationForOTP(anyString(), anyString(), anyString())).thenReturn(getResponseMessage());
-        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(MOBILE_NUMBER, NotificationType.SMS.getNotificationType(), true));
+        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(MOBILE_NUMBER,UserTypeEnum.HEALTH_PROFESSIONAL.getId() ,NotificationType.SMS.getNotificationType(), true));
         assertEquals(SUCCESS_RESPONSE, otpResponseMessageTo.getMessage());
     }
 
@@ -75,7 +76,7 @@ class OtpServiceTest {
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
         when(notificationService.sendNotificationForOTP(anyString(), anyString(), anyString())).thenReturn(getResponseMessage());
-        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(EMAIL_ID, NotificationType.EMAIL.getNotificationType(), true));
+        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(EMAIL_ID,UserTypeEnum.HEALTH_PROFESSIONAL.getId(),NotificationType.EMAIL.getNotificationType(), true));
         assertEquals(SUCCESS_RESPONSE, otpResponseMessageTo.getMessage());
     }
 
@@ -84,20 +85,20 @@ class OtpServiceTest {
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
         when(notificationService.sendNotificationForOTP(anyString(), anyString(), anyString())).thenReturn(new ResponseMessageTo(NMRConstants.NO_SUCH_OTP_TYPE));
-        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(EMAIL_ID, NotificationType.EMAIL.getNotificationType(), true));
+        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(EMAIL_ID,UserTypeEnum.HEALTH_PROFESSIONAL.getId(),NotificationType.EMAIL.getNotificationType(), true));
         assertEquals(FAILURE_RESPONSE, otpResponseMessageTo.getMessage());
     }
 
     @Test
     void testGenerateOtpShouldThrowOtpAttemptsExceededWhenPreviousOtpAreMoreThanFiveTimes() {
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(otpDaoService.findAllByContact(anyString())).thenReturn(List.of(getOtp(), getOtp(), getOtp(), getOtp(), getOtp()));
         assertThrows(OtpException.class, () -> otpService.generateOtp(otpGenerateRequest()));
     }
 
     @Test
     void testGenerateOtpShouldThrowOtpAttemptsExceededForOtpMaxAttempts() {
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(otpDaoService.findAllByContact(anyString())).thenReturn(List.of(getOtpMaxAttempts()));
         assertThrows(OtpException.class, () -> otpService.generateOtp(otpGenerateRequest()));
     }

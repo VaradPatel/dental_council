@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.security.username_password;
 
+import java.math.BigInteger;
 import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
@@ -7,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,7 +37,9 @@ public class UserPasswordDetailsService implements UserDetailsService {
         UserSearchTO userDetailSearchTO = new UserSearchTO();
         userDetailSearchTO.setUsername(username);
 
-        User user = userDaoService.findByUsername(username);
+        BigInteger userType=((UserPasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication()).getUserType();
+
+        User user = userDaoService.findByUsername(username, userType);
         if (user == null) {
             LOGGER.error("Invalid username");
             throw new UsernameNotFoundException("Invalid username");
@@ -46,7 +50,7 @@ public class UserPasswordDetailsService implements UserDetailsService {
             throw new AuthenticationServiceException("Not allowed");
         }
 
-        boolean isAccountNonLocked = authenticationHandler.checkAndUpdateLockStatus(username);
+        boolean isAccountNonLocked = authenticationHandler.checkAndUpdateLockStatus(username, userType);
         return new UserPassDetail(username, user.getMobileNumber(), user.getPassword(), Collections.emptyList(), user.getUserType().getId(), isAccountNonLocked);
     }
 }

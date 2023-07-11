@@ -9,6 +9,7 @@ import in.gov.abdm.nmr.repository.INbeProfileRepository;
 import in.gov.abdm.nmr.repository.INmcProfileRepository;
 import in.gov.abdm.nmr.repository.ISmcProfileRepository;
 import in.gov.abdm.nmr.repository.IUserRepository;
+import in.gov.abdm.nmr.security.username_password.UserPasswordAuthenticationToken;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -78,8 +79,8 @@ public class UserDaoServiceImpl implements IUserDaoService {
     }
 
     @Override
-    public User findByUsername(String username) {
-        return userDetailRepository.findByUsername(username);
+    public User findByUsername(String username, BigInteger userType) {
+        return userDetailRepository.findByUsername(username, userType);
     }
 
     @Override
@@ -88,18 +89,18 @@ public class UserDaoServiceImpl implements IUserDaoService {
     }
 
     @Override
-    public boolean existsByUserName(String userName) {
-        return userDetailRepository.existsByUserName(userName);
+    public boolean existsByUserNameAndUserTypeId(String userName, BigInteger userType) {
+        return userDetailRepository.existsByUserNameAndUserTypeId(userName, userType);
     }
 
     @Override
-    public boolean existsByMobileNumber(String mobileNumber) {
-        return userDetailRepository.existsByMobileNumber(mobileNumber);
+    public boolean existsByMobileNumberAndUserTypeId(String mobileNumber, BigInteger userType) {
+        return userDetailRepository.existsByMobileNumberAndUserTypeId(mobileNumber, userType);
     }
 
     @Override
-    public boolean existsByEmail(String email) {
-        return userDetailRepository.existsByEmail(email);
+    public boolean existsByEmailAndUserTypeId(String email, BigInteger userType) {
+        return userDetailRepository.existsByEmailAndUserTypeId(email, userType);
     }
 
 
@@ -107,7 +108,8 @@ public class UserDaoServiceImpl implements IUserDaoService {
     @Override
     public User toggleSmsNotification(boolean isSmsNotificationEnabled) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userDetailRepository.findByUsername(userName);
+        BigInteger userType=((UserPasswordAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType();
+        User userDetail = userDetailRepository.findByUsername(userName, userType);
         userDetail.setSmsNotificationEnabled(isSmsNotificationEnabled);
         return userDetailRepository.saveAndFlush(userDetail);
     }
@@ -115,7 +117,8 @@ public class UserDaoServiceImpl implements IUserDaoService {
     @Override
     public User toggleEmailNotification(boolean isEmailNotificationEnabled) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userDetailRepository.findByUsername(userName);
+        BigInteger userType=((UserPasswordAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType();
+        User userDetail = userDetailRepository.findByUsername(userName, userType);
         userDetail.setEmailNotificationEnabled(isEmailNotificationEnabled);
         return userDetailRepository.saveAndFlush(userDetail);
     }
@@ -123,7 +126,8 @@ public class UserDaoServiceImpl implements IUserDaoService {
     @Override
     public User toggleNotification(NotificationToggleRequestTO notificationToggleRequestTO) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userDetailRepository.findByUsername(userName);
+        BigInteger userType=((UserPasswordAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType();
+        User userDetail = userDetailRepository.findByUsername(userName, userType);
         notificationToggleRequestTO.getNotificationToggles().forEach(notificationToggleTO -> {
             if (NMRConstants.SMS.equalsIgnoreCase(notificationToggleTO.getMode())) {
                 userDetail.setSmsNotificationEnabled(notificationToggleTO.getIsEnabled());
@@ -186,11 +190,11 @@ public class UserDaoServiceImpl implements IUserDaoService {
         User user = smcProfile.getUser();
 
         if (user != null) {
-            if (userDetailRepository.checkEmailUsedByOtherUser(user.getId(), smcProfile.getEmailId())) {
+            if (userDetailRepository.checkEmailUsedByOtherUser(user.getId(), smcProfile.getEmailId(),user.getUserType().getId())) {
                 throw new InvalidRequestException(NMRConstants.EMAIL_USED_BY_OTHER_USER);
             }
 
-            if (userDetailRepository.checkMobileUsedByOtherUser(user.getId(), smcProfileTO.getMobileNo())) {
+            if (userDetailRepository.checkMobileUsedByOtherUser(user.getId(), smcProfileTO.getMobileNo(), user.getUserType().getId())) {
                 throw new InvalidRequestException(NMRConstants.MOBILE_USED_BY_OTHER_USER);
             }
         } else {
@@ -220,11 +224,11 @@ public class UserDaoServiceImpl implements IUserDaoService {
         User user = nmcProfile.getUser();
 
         if (user != null) {
-            if (userDetailRepository.checkEmailUsedByOtherUser(user.getId(), nmcProfile.getEmailId())) {
+            if (userDetailRepository.checkEmailUsedByOtherUser(user.getId(), nmcProfile.getEmailId(), user.getUserType().getId())) {
                 throw new InvalidRequestException(NMRConstants.EMAIL_USED_BY_OTHER_USER);
             }
 
-            if (userDetailRepository.checkMobileUsedByOtherUser(user.getId(), nmcProfile.getMobileNo())) {
+            if (userDetailRepository.checkMobileUsedByOtherUser(user.getId(), nmcProfile.getMobileNo(), user.getUserType().getId())) {
                 throw new InvalidRequestException(NMRConstants.MOBILE_USED_BY_OTHER_USER);
             }
         } else {
@@ -249,11 +253,11 @@ public class UserDaoServiceImpl implements IUserDaoService {
         User user = nbeProfile.getUser();
 
         if (user != null) {
-            if (userDetailRepository.checkEmailUsedByOtherUser(user.getId(), nbeProfile.getEmailId())) {
+            if (userDetailRepository.checkEmailUsedByOtherUser(user.getId(), nbeProfile.getEmailId(), user.getUserType().getId())) {
                 throw new InvalidRequestException(NMRConstants.EMAIL_USED_BY_OTHER_USER);
             }
 
-            if (userDetailRepository.checkMobileUsedByOtherUser(user.getId(), nbeProfile.getMobileNo())) {
+            if (userDetailRepository.checkMobileUsedByOtherUser(user.getId(), nbeProfile.getMobileNo(), user.getUserType().getId())) {
                 throw new InvalidRequestException(NMRConstants.MOBILE_USED_BY_OTHER_USER);
             }
         } else {
@@ -266,8 +270,8 @@ public class UserDaoServiceImpl implements IUserDaoService {
         return nbeProfileRepository.saveAndFlush(nbeProfile);
     }
 
-    public boolean checkEmailUsedByOtherUser(BigInteger id, String email){
-        return userDetailRepository.checkEmailUsedByOtherUser(id,email);
+    public boolean checkEmailUsedByOtherUser(BigInteger id, String email, BigInteger userType){
+        return userDetailRepository.checkEmailUsedByOtherUser(id,email,userType);
     }
 
     @Override

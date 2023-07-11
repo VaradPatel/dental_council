@@ -16,6 +16,7 @@ import in.gov.abdm.nmr.nosql.entity.QualificationsDetails;
 import in.gov.abdm.nmr.nosql.entity.RegistrationsDetails;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.security.common.RsaUtil;
+import in.gov.abdm.nmr.security.jwt.JwtAuthenticationToken;
 import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
@@ -495,15 +496,15 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Override
     public ResponseMessageTo addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException, ParseException, GeneralSecurityException, InvalidRequestException, NmrException {
 
-        if (request.getUsername()!=null && userDaoService.existsByUserName(request.getUsername())) {
+        if (request.getUsername()!=null && userDaoService.existsByUserNameAndUserTypeId(request.getUsername(), UserTypeEnum.HEALTH_PROFESSIONAL.getId())) {
             throw new InvalidRequestException(NMRError.USERNAME_ALREADY_REGISTERED.getCode(),NMRError.USERNAME_ALREADY_REGISTERED.getMessage());
         }
 
-        if (request.getMobileNumber()!=null && userDaoService.existsByMobileNumber(request.getMobileNumber())) {
+        if (request.getMobileNumber()!=null && userDaoService.existsByMobileNumberAndUserTypeId(request.getMobileNumber(), UserTypeEnum.HEALTH_PROFESSIONAL.getId())) {
             throw new InvalidRequestException(NMRError.MOBILE_NUM_ALREADY_REGISTERED.getCode(),NMRError.MOBILE_NUM_ALREADY_REGISTERED.getMessage());
         }
 
-        if (request.getEmail() != null && userDaoService.existsByEmail(request.getEmail())) {
+        if (request.getEmail() != null && userDaoService.existsByEmailAndUserTypeId(request.getEmail(), UserTypeEnum.HEALTH_PROFESSIONAL.getId())) {
             throw new InvalidRequestException(NMRError.EMAIL_ID_ALREADY_REGISTERED.getCode(),NMRError.EMAIL_ID_ALREADY_REGISTERED.getMessage());
         }
 
@@ -758,7 +759,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
                 if (!(hpProfile.getUser().isEmailVerified() && hpProfile.getUser().getEmail().equals(verifyEmailLinkTo.getEmail()))) {
 
-                    if (!userDaoService.checkEmailUsedByOtherUser(hpProfile.getUser().getId(), verifyEmailLinkTo.getEmail())) {
+                    if (!userDaoService.checkEmailUsedByOtherUser(hpProfile.getUser().getId(), verifyEmailLinkTo.getEmail(), hpProfile.getUser().getUserType().getId())) {
 
                         hpProfile.setEmailId(verifyEmailLinkTo.getEmail());
                         User user = userDaoService.findById(hpProfile.getUser().getId());
@@ -766,7 +767,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                         user.setEmailVerified(false);
                         userDaoService.save(user);
                         iHpProfileRepository.save(hpProfile);
-                        return notificationService.sendNotificationForEmailVerificationLink(verifyEmailLinkTo.getEmail(), generateLink(new SendLinkOnMailTo(verifyEmailLinkTo.getEmail())));
+                        return notificationService.sendNotificationForEmailVerificationLink(verifyEmailLinkTo.getEmail(), generateLink(new SendLinkOnMailTo(verifyEmailLinkTo.getEmail(), hpProfile.getUser().getUserType().getId())));
                     } else {
 
                         return new ResponseMessageTo(NMRConstants.EMAIL_USED_BY_OTHER_USER);
@@ -785,12 +786,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public String generateLink(SendLinkOnMailTo sendLinkOnMailTo) {
 
         String token = RandomString.make(30);
-        ResetToken resetToken = resetTokenRepository.findByUserName(sendLinkOnMailTo.getEmail());
+        ResetToken resetToken = resetTokenRepository.findByUserNameAndUserType(sendLinkOnMailTo.getEmail(),sendLinkOnMailTo.getUserType());
 
         if (resetToken != null) {
             resetToken.setToken(token);
         } else {
-            resetToken = new ResetToken(token, sendLinkOnMailTo.getEmail());
+            resetToken = new ResetToken(token, sendLinkOnMailTo.getEmail(),sendLinkOnMailTo.getUserType());
         }
         resetTokenRepository.save(resetToken);
 
@@ -801,7 +802,11 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Override
     public void  delinkCurrentWorkDetails(WorkDetailsDelinkRequest workDetailsDelinkRequest) throws NmrException {
-        User user = userDetailDaoService.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
+
+        User user = userDetailDaoService.findByUsername(userName, userType);
         if (Objects.isNull(user)) {
             throw new NmrException(USER_NOT_FOUND);
         } else {

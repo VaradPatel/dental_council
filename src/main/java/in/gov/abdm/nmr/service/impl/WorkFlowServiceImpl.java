@@ -10,6 +10,7 @@ import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.mapper.INextGroup;
 import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.security.jwt.JwtAuthenticationToken;
 import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.service.IWorkFlowService;
@@ -98,8 +99,9 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     @Transactional
     public void initiateSubmissionWorkFlow(WorkFlowRequestTO requestTO) throws WorkFlowException, InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
 
-        User user = userDetailService.findByUsername(userName);
+        User user = userDetailService.findByUsername(userName, userType);
 
         validateAndThrowExceptionForNonVerifierUsers(user);
 
@@ -298,9 +300,11 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     @Override
     public void assignQueriesBackToQueryCreator(String requestId) throws WorkFlowException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
+
         User user = null;
         if (userName != null) {
-            user = userDetailService.findByUsername(userName);
+            user = userDetailService.findByUsername(userName, userType);
         }
         WorkFlow workflow = iWorkFlowRepository.findByRequestId(requestId);
         UserGroup previousGroup = workflow.getPreviousGroup();

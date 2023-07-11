@@ -11,6 +11,7 @@ import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.mapper.IStatusCount;
 import in.gov.abdm.nmr.mapper.IStatusWiseCountMapper;
 import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.security.jwt.JwtAuthenticationToken;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.ICollegeProfileDaoService;
 import in.gov.abdm.nmr.service.IDashboardService;
@@ -372,8 +373,10 @@ public class DashboardServiceImpl implements IDashboardService {
     public DashboardResponseTO fetchCardDetails(String workFlowStatusId, String applicationTypeId, String userGroupStatus,
                                                 String search, String value, NMRPagination nmrPagination) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
+
         log.info("Processing card-detail service for : {} ", userName);
-        User userDetail = userDaoService.findByUsername(userName);
+        User userDetail = userDaoService.findByUsername(userName, userType);
         BigInteger groupId = userDetail.getGroup().getId();
         BigInteger userId = userDetail.getId();
         DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();

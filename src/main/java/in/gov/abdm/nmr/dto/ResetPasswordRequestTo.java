@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.math.BigInteger;
 
 /**
  * Request TO for reset password
@@ -19,6 +21,9 @@ public class ResetPasswordRequestTo {
 
     @NotBlank(message = NMRConstants.PASSWORD_NOT_NULL)
     String password;
+
+    @NotNull(message = NMRConstants.USER_TYPE_NOT_NULL)
+    BigInteger userType;
 
     @NotBlank(message = "transactionId cannot be NULL or Blank")
     private String transactionId;

@@ -12,6 +12,7 @@ import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.security.jwt.JwtAuthenticationToken;
 import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -240,8 +241,9 @@ public class ApplicationServiceImpl implements IApplicationService {
     private BigInteger getGroupIdForLoggedInUser() {
 
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
         log.info("Processing card-detail service for : {} ", userName);
-        User userDetail = userDaoService.findByUsername(userName);
+        User userDetail = userDaoService.findByUsername(userName, userType);
         BigInteger groupId = userDetail.getGroup().getId();
         return groupId;
     }
@@ -282,7 +284,9 @@ public class ApplicationServiceImpl implements IApplicationService {
     public ReactivateHealthProfessionalResponseTO getReactivationRecordsOfHealthProfessionalsToNmc(String pageNo, String offset, String search, String value, String sortBy, String sortType) throws InvalidRequestException {
         ReactivateHealthProfessionalResponseTO reactivateHealthProfessionalResponseTO = null;
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userDaoService.findByUsername(userName);
+        BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
+
+        User userDetail = userDaoService.findByUsername(userName, userType);
         BigInteger groupId = userDetail.getGroup().getId();
         ReactivateHealthProfessionalRequestParam reactivateHealthProfessionalQueryParam = new ReactivateHealthProfessionalRequestParam();
         reactivateHealthProfessionalQueryParam.setGroupId(groupId.toString());
@@ -353,7 +357,9 @@ public class ApplicationServiceImpl implements IApplicationService {
      */
     private void initiateWorkFlow(ApplicationRequestTo applicationRequestTo, String requestId, HpProfile newHpProfile) throws WorkFlowException, InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userDaoService.findByUsername(userName);
+        BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
+
+        User userDetail = userDaoService.findByUsername(userName, userType);
         WorkFlowRequestTO workFlowRequestTO = new WorkFlowRequestTO();
         workFlowRequestTO.setRequestId(requestId);
         workFlowRequestTO.setApplicationTypeId(applicationRequestTo.getApplicationTypeId());
@@ -381,7 +387,8 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetails(NMRPagination nmrPagination, String search, String value, String smcId, String registrationNo) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userDaoService.findByUsername(userName);
+        BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
+        User userDetail = userDaoService.findByUsername(userName, userType);
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = new HealthProfessionalApplicationRequestParamsTo();
         BigInteger groupId = userDetail.getGroup().getId();
         BigInteger userId = userDetail.getId();
