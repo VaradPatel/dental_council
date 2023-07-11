@@ -238,19 +238,13 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         return query;
     }
 
-    private static final Function<String, String> GET_APPLICATION_DETAILS = requestId -> {
-        StringBuilder sb = new StringBuilder();
-        sb.append(NMRConstants.GET_APPLICATION_DETAILS);
-        sb.append(" where wfa.request_id = '" + requestId + "' order by wfa.created_at asc");
-        return sb.toString();
-    };
-
     @Override
     public ApplicationDetailResponseTo fetchApplicationDetails(String requestId) throws InvalidRequestException {
         ApplicationDetailResponseTo response = new ApplicationDetailResponseTo();
         List<ApplicationDetailsTo> applicationDetail = new ArrayList<>();
         ApplicationDetailsTo detailsTo;
-        Query query = entityManager.createNativeQuery(GET_APPLICATION_DETAILS.apply(requestId));
+        Query query = entityManager.createNativeQuery(NMRConstants.APPLICATION_REQUEST_DETAILS);
+        query.setParameter("requestId", requestId);
         List<Object[]> results = query.getResultList();
         if (results == null || results.isEmpty()) {
             log.error("unable to complete fetch application details process due workflow audit records for request ID: {}", requestId);
@@ -270,7 +264,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         }
         response.setCurrentStatus((BigInteger) results.get(results.size() - 1)[3]);
         response.setCurrentGroupId(results.get(results.size() - 1)[4] != null ? (BigInteger) results.get(results.size() - 1)[4] : null);
-        if (results.get(0)[1].equals(ApplicationType.ADDITIONAL_QUALIFICATION.getId())) {
+        if (ApplicationType.ADDITIONAL_QUALIFICATION.getId().equals(results.get(0)[1])) {
             response.setDegreeName((String) (results.get(0)[8] == null ? results.get(0)[9] : results.get(0)[8]));
         }
         for (Object[] result : results) {
