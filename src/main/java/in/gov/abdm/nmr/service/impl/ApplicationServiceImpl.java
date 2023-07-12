@@ -27,8 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.*;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
@@ -428,6 +426,9 @@ public class ApplicationServiceImpl implements IApplicationService {
                     case YEAR_OF_REGISTRATION_IN_LOWER_CASE:
                         applicationRequestParamsTo.setYearOfRegistration(value);
                         break;
+                    case REQUEST_ID_IN_LOWER_CASE:
+                        applicationRequestParamsTo.setRequestId(value);
+                        break;
                     default:
                         throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA.getCode(), NMRError.INVALID_SEARCH_CRITERIA.getMessage());
                 }
@@ -483,41 +484,7 @@ public class ApplicationServiceImpl implements IApplicationService {
      */
     @Override
     public ApplicationDetailResponseTo fetchApplicationDetail(String requestId) throws InvalidRequestException {
-        log.info("Fetching application detail for request ID:", requestId);
-        ApplicationDetailResponseTo response = new ApplicationDetailResponseTo();
-        List<ApplicationDetailsTo> applicationDetail = new ArrayList<>();
-        ApplicationDetailsTo detailsTo;
-        List<WorkFlowAudit> workFlowAudit = iWorkFlowAuditRepository.fetchApplicationDetails(requestId);
-        if (workFlowAudit == null || workFlowAudit.isEmpty()) {
-            log.error("unable to complete fetch application details process due workflow audit records for request ID: {}", requestId);
-            throw new InvalidRequestException("Invalid input request ID: " + requestId + ". Please enter a valid input and try again");
-        }
-        log.debug("Fetched {} workflow audit records for request ID: {}", workFlowAudit.size(), requestId);
-        response.setRequestId(workFlowAudit.get(0).getRequestId());
-        response.setApplicationType(workFlowAudit.get(0).getApplicationType().getId());
-        response.setSubmissionDate(String.valueOf(workFlowAudit.get(0).getCreatedAt()));
-        if (Status.PENDING.getName().equalsIgnoreCase(workFlowAudit.get(workFlowAudit.size() - 1).getWorkFlowStatus().getName())
-                || Status.QUERY_RAISED.getName().equalsIgnoreCase(workFlowAudit.get(workFlowAudit.size() - 1).getWorkFlowStatus().getName())) {
-            response.setPendency(Math.abs(workFlowAudit.get(0).getCreatedAt().getTime() - Timestamp.from(Instant.now()).getTime()) / 86400000);
-        } else if (workFlowAudit.size() > 1) {
-            response.setPendency(Math.abs(workFlowAudit.get(0).getCreatedAt().getTime() - workFlowAudit.get(workFlowAudit.size() - 1).getCreatedAt().getTime()) / 86400000);
-        } else {
-            response.setPendency(0L);
-        }
-        response.setCurrentStatus(workFlowAudit.get(workFlowAudit.size() - 1).getWorkFlowStatus().getId());
-        response.setCurrentGroupId(workFlowAudit.get(workFlowAudit.size() - 1).getCurrentGroup() != null ? workFlowAudit.get(workFlowAudit.size() - 1).getCurrentGroup().getId() : null);
-        for (WorkFlowAudit list : workFlowAudit) {
-            detailsTo = new ApplicationDetailsTo();
-            detailsTo.setWorkflowStatusId(list.getWorkFlowStatus().getId());
-            detailsTo.setActionId(list.getAction().getId());
-            detailsTo.setGroupId(list.getPreviousGroup().getId());
-            detailsTo.setActionDate(String.valueOf(list.getCreatedAt()));
-            detailsTo.setRemarks(list.getRemarks());
-            applicationDetail.add(detailsTo);
-        }
-        response.setApplicationDetails(applicationDetail);
-        log.info("Fetched application detail successfully for request ID: {}", requestId);
-        return response;
+        return iFetchTrackApplicationDetailsCustomRepository.fetchApplicationDetails(requestId);
     }
 
     /**

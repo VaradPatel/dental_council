@@ -51,52 +51,56 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
     private static final Function<DashboardRequestParamsTO, String> DASHBOARD_PARAMETERS = dashboardRequestParamsTO -> {
         StringBuilder sb = new StringBuilder();
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getWorkFlowStatusId()) && !dashboardRequestParamsTO.getWorkFlowStatusId().isEmpty()) {
+        if (StringUtils.isNotBlank(dashboardRequestParamsTO.getWorkFlowStatusId())) {
             sb.append(" AND  work_flow_status_id = :workFlowStatusId");
         }
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getCollegeId()) && !dashboardRequestParamsTO.getCollegeId().isEmpty()) {
+        if (StringUtils.isNotBlank(dashboardRequestParamsTO.getCollegeId())) {
             sb.append(" AND qd.college_id = :collegeId");
         }
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getSearch()) && !dashboardRequestParamsTO.getSearch().isEmpty()) {
+        if (StringUtils.isNotBlank(dashboardRequestParamsTO.getSearch())) {
             sb.append(" AND (rd.registration_no ILIKE :search OR stmc.name ILIKE :search OR hp.full_name ILIKE :search)");
         }
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getCouncilName()) && !dashboardRequestParamsTO.getCouncilName().isEmpty()) {
+        if (StringUtils.isNotBlank(dashboardRequestParamsTO.getCouncilName())) {
             sb.append(" AND stmc.name ILIKE :councilName");
         }
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getSmcId()) && !dashboardRequestParamsTO.getSmcId().isEmpty()) {
+        if (StringUtils.isNotBlank(dashboardRequestParamsTO.getSmcId())) {
             sb.append(" AND rd.state_medical_council_id = :smcId");
         }
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getRegistrationNumber()) && !dashboardRequestParamsTO.getRegistrationNumber().isEmpty()) {
+        if (StringUtils.isNotBlank(dashboardRequestParamsTO.getRegistrationNumber())) {
             sb.append(" AND rd.registration_no ILIKE :registrationNumber");
         }
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getApplicantFullName()) && !dashboardRequestParamsTO.getApplicantFullName().isEmpty()) {
+        if (StringUtils.isNotBlank(dashboardRequestParamsTO.getApplicantFullName())) {
             sb.append(" AND hp.full_name ILIKE :applicantFullName");
         }
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getCouncilId()) && !dashboardRequestParamsTO.getCouncilId().isEmpty()) {
+        if (StringUtils.isNotBlank(dashboardRequestParamsTO.getCouncilId())) {
             sb.append(" AND rd.state_medical_council_id = :councilId");
         }
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getGender()) && !dashboardRequestParamsTO.getGender().isEmpty()) {
+        if (StringUtils.isNotBlank(dashboardRequestParamsTO.getGender())) {
             sb.append(" AND hp.gender ILIKE :gender");
         }
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getEmailId()) && !dashboardRequestParamsTO.getEmailId().isEmpty()) {
+        if (StringUtils.isNotBlank(dashboardRequestParamsTO.getEmailId())) {
             sb.append(" AND hp.email_id ILIKE :emailId");
         }
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getMobileNumber()) && !dashboardRequestParamsTO.getMobileNumber().isEmpty()) {
+        if (StringUtils.isNotBlank(dashboardRequestParamsTO.getMobileNumber())) {
             sb.append(" AND hp.mobile_number ILIKE :mobileNumber");
         }
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getYearOfRegistration()) && !dashboardRequestParamsTO.getYearOfRegistration().isEmpty()) {
+        if (StringUtils.isNotBlank(dashboardRequestParamsTO.getYearOfRegistration())) {
             sb.append(" AND EXTRACT(YEAR FROM rd.registration_date) = :yearOfRegistration");
+        }
+
+        if (StringUtils.isNotBlank(dashboardRequestParamsTO.getRequestId())) {
+            sb.append(" AND d.request_id ILIKE :requestId");
         }
 
         if (Objects.nonNull(dashboardRequestParamsTO.getUserGroupId())) {
@@ -155,7 +159,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
 
         sb.append(FETCH_CARD_DETAILS_QUERY);
 
-        if (Objects.nonNull(dashboardRequestParamsTO.getCollegeId()) && !dashboardRequestParamsTO.getCollegeId().isEmpty()) {
+        if (StringUtils.isNotBlank(dashboardRequestParamsTO.getCollegeId())) {
             sb.append("INNER JOIN main.qualification_details as qd on qd.hp_profile_id = rd.hp_profile_id AND qd.request_id = d.request_id ");
         }
 
@@ -170,7 +174,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         if (Objects.nonNull(parameters) && !parameters.isEmpty()) {
             sb.append(parameters);
         }
-        if (Objects.nonNull(dashboardRequestParamsTO.getSortBy()) && !dashboardRequestParamsTO.getSortBy().isEmpty()) {
+        if (StringUtils.isNotBlank(dashboardRequestParamsTO.getSortBy())) {
             String sortRecords = SORT_RECORDS.apply(dashboardRequestParamsTO);
             sb.append(sortRecords);
         }
@@ -291,6 +295,10 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
                 List<Integer> userGroupStatus = Stream.of(dashboardRequestParamsTO.getUserGroupStatus().split(",")).map(Integer::parseInt).toList();
                 query.setParameter("userGroupStatus", userGroupStatus);
             }
+        }
+
+        if (StringUtils.isNotBlank(dashboardRequestParamsTO.getRequestId())) {
+            query.setParameter("requestId", "%".concat(dashboardRequestParamsTO.getRequestId()).concat("%"));
         }
         
         return query;
