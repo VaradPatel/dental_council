@@ -345,7 +345,7 @@ public class NMRConstants {
     public static final String REJECTED = "Rejected";
     public static final String BLACKLISTED = "Blacklisted";
     public static final String SUSPENDED = "Suspended";
-    public static final String COLLEGE_VERIFIED = "College Verified";
+    public static final String COLLEGE_NBE_VERIFIED = "College/NBE Verified";
     public static final String SUBMITTED = "Submitted";
     public static final String VERIFIED =  "Verified";
 

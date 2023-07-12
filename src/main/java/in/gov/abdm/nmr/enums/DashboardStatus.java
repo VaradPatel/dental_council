@@ -17,7 +17,7 @@ public enum DashboardStatus {
     REJECT(BigInteger.valueOf(5), NMRConstants.REJECTED, NMRConstants.REJECTED, NMRConstants.REJECTED),
     TEMPORARY_SUSPEND(BigInteger.valueOf(6), NMRConstants.BLACKLISTED, NMRConstants.BLACKLISTED, NMRConstants.SUBMITTED),
     PERMANENT_SUSPEND(BigInteger.valueOf(7), NMRConstants.SUSPENDED, NMRConstants.SUSPENDED, NMRConstants.SUBMITTED),
-    COLLEGE_VERIFIED(BigInteger.valueOf(8), NMRConstants.COLLEGE_VERIFIED, NMRConstants.COLLEGE_VERIFIED, NMRConstants.COLLEGE_VERIFIED);
+    COLLEGE_NBE_VERIFIED(BigInteger.valueOf(8), NMRConstants.COLLEGE_NBE_VERIFIED, NMRConstants.COLLEGE_NBE_VERIFIED, NMRConstants.COLLEGE_NBE_VERIFIED);
 
     private final BigInteger id;
     private final String description;
