@@ -251,7 +251,7 @@ public class DashboardServiceImpl implements IDashboardService {
         List<StatusWiseCountTO> response = new ArrayList<>();
         response.add(StatusWiseCountTO.builder().name(totalCardLabel).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.PENDING.getId()).name(DashboardStatus.PENDING.getDescription()).count(BigInteger.ZERO).build());
-        response.add(StatusWiseCountTO.builder().id(DashboardStatus.COLLEGE_VERIFIED.getId()).name(DashboardStatus.COLLEGE_VERIFIED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(DashboardStatus.COLLEGE_NBE_VERIFIED.getId()).name(DashboardStatus.COLLEGE_NBE_VERIFIED.getDescription()).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.FORWARD.getId()).name(DashboardStatus.FORWARD.getDescription()).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.APPROVED.getId()).name(DashboardStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.QUERY_RAISE.getId()).name(DashboardStatus.QUERY_RAISE.getDescription()).count(BigInteger.ZERO).build());
