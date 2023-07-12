@@ -346,6 +346,9 @@ public class DashboardServiceImpl implements IDashboardService {
                         }
                     }
                     break;
+                    case REQUEST_ID_IN_LOWER_CASE:
+                        dashboardRequestParamsTO.setRequestId(value);
+                        break;
                     case SEARCH_IN_LOWER_CASE:
                         dashboardRequestParamsTO.setSearch(value);
                         break;

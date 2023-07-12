@@ -200,6 +200,7 @@ public class NMRConstants {
     public static final String NAME_IN_LOWER_CASE = "name";
     public static final String YEAR_OF_REGISTRATION_IN_LOWER_CASE = "yearofregistration";
     public static final String SMC_ID_IN_LOWER_CASE = "smcid";
+    public static final String REQUEST_ID_IN_LOWER_CASE = "requestid";
     public static final String WORK_FLOW_STATUS_IN_LOWER_CASE = "workflowstatus";
     public static final String WORK_FLOW_STATUS_ID_IN_LOWER_CASE = "workflowstatusid";
     public static final String APPLICANT_FULL_NAME_IN_LOWER_CASE = "applicantfullname";
@@ -327,7 +328,7 @@ public class NMRConstants {
     public static final long MASTER_CACHE_CRON_TIME = 6 * 60 * 60 * 1000;
 
     public static final String REGEX_FOR_BIRTH_DATE = "^(((0[13-9]|1[012])[-/]?(0[1-9]|[12][0-9]|30)|(0[13578]|1[02])[-/]?31|02[-/]?(0[1-9]|1[0-9]|2[0-8]))[-/]?[0-9]{4}|02[-/]?29[-/]?([0-9]{2}(([2468][048]|[02468][48])|[13579][26])|([13579][26]|[02468][048]|0[0-9]|1[0-6])00))$";
-    public static final String REGEX_FOR_NAME = "\\b([a-zA-ZÀ-ÿ][-,a-zA-Z0-9. ']+[ ]*)+";
+    public static final String REGEX_FOR_NAME = "\\b([a-zA-ZÀ-ÿ]|[-,a-zA-Z0-9. ']+[ ]*)+";
     public static final String REGEX_FOR_REGISTRATION_NUMBER = "^[a-zA-Z0-9 !-@#:_)(]{1,100}$";
     public static final String REGEX_FOR_ADDRESS = "^[#.0-9a-zA-Z\s,-/:()]+$";
     public static final String REGEX_FOR_SUB_DISTRICT = "^[A-Z a-z]+[A-Z a-z //' ']*$";
