@@ -8,6 +8,7 @@ import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;
 import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -53,27 +54,27 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
     private static final Function<HealthProfessionalApplicationRequestParamsTo, String> TRACK_APPLICATION_PARAMETERS = healthProfessionalApplicationRequestParamsTo -> {
         StringBuilder sb = new StringBuilder();
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId()) && !healthProfessionalApplicationRequestParamsTo.getApplicationTypeId().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId())) {
             sb.append("AND d.application_type_id IN (:applicationTypeId) ");
         }
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getRegistrationNumber()) && !healthProfessionalApplicationRequestParamsTo.getRegistrationNumber().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getRegistrationNumber())) {
             sb.append("AND rd.registration_no ILIKE :registrationNumber ");
         }
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getSmcId()) && !healthProfessionalApplicationRequestParamsTo.getSmcId().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getSmcId())) {
             sb.append("AND rd.state_medical_council_id = :smcId ");
         }
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId()) && !healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId())) {
             sb.append("AND work_flow_status_id = :workFlowStatusId ");
         }
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getApplicantFullName()) && !healthProfessionalApplicationRequestParamsTo.getApplicantFullName().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getApplicantFullName())) {
             sb.append("AND hp.full_name ILIKE :applicantFullName ");
         }
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getGender()) && !healthProfessionalApplicationRequestParamsTo.getGender().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getGender())) {
             String gender = "";
             if (healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase(NMRConstants.GENDER_MALE) || healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase("m")) {
                 gender = "m";
@@ -83,19 +84,22 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             sb.append("AND hp.gender ILIKE :gender ");
         }
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getEmailId()) && !healthProfessionalApplicationRequestParamsTo.getEmailId().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getEmailId())) {
             sb.append("AND hp.email_id ILIKE :emailId ");
         }
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getMobileNumber()) && !healthProfessionalApplicationRequestParamsTo.getMobileNumber().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getMobileNumber())) {
             sb.append("AND hp.mobile_number ILIKE :mobileNumber ");
         }
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getYearOfRegistration()) && !healthProfessionalApplicationRequestParamsTo.getYearOfRegistration().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getYearOfRegistration())) {
             sb.append(" AND EXTRACT(YEAR FROM rd.registration_date) = :yearOfRegistration");
         }
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getCollegeId()) && !healthProfessionalApplicationRequestParamsTo.getCollegeId().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getCollegeId())) {
             sb.append(" AND qd.college_id = :collegeId");
+        }
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getRequestId())) {
+            sb.append(" AND d.request_id ILIKE :requestId");
         }
 
         return sb.toString();
@@ -124,7 +128,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         StringBuilder sb = new StringBuilder();
 
         sb.append(FETCH_TRACK_DETAILS_QUERY);
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getCollegeId()) && !healthProfessionalApplicationRequestParamsTo.getCollegeId().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getCollegeId())) {
             sb.append("INNER JOIN main.qualification_details as qd on qd.hp_profile_id = rd.hp_profile_id AND qd.request_id = d.request_id ");
         }
 
@@ -135,10 +139,10 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
 
         String parameters = TRACK_APPLICATION_PARAMETERS.apply(healthProfessionalApplicationRequestParamsTo);
 
-        if (Objects.nonNull(parameters) && !parameters.isEmpty()) {
+        if (StringUtils.isNotBlank(parameters)) {
             sb.append(parameters);
         }
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getSortBy()) && !healthProfessionalApplicationRequestParamsTo.getSortBy().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getSortBy())) {
             String sortRecords = SORT_RECORDS.apply(healthProfessionalApplicationRequestParamsTo);
             sb.append(sortRecords);
         }
@@ -234,6 +238,9 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         }
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getCollegeId()) && !healthProfessionalApplicationRequestParamsTo.getCollegeId().isEmpty()) {
             query.setParameter("collegeId", healthProfessionalApplicationRequestParamsTo.getCollegeId());
+        }
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getRequestId())) {
+            query.setParameter("requestId", "%".concat(healthProfessionalApplicationRequestParamsTo.getRequestId()).concat("%"));
         }
         return query;
     }

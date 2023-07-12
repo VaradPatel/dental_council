@@ -200,6 +200,7 @@ public class NMRConstants {
     public static final String NAME_IN_LOWER_CASE = "name";
     public static final String YEAR_OF_REGISTRATION_IN_LOWER_CASE = "yearofregistration";
     public static final String SMC_ID_IN_LOWER_CASE = "smcid";
+    public static final String REQUEST_ID_IN_LOWER_CASE = "requestid";
     public static final String WORK_FLOW_STATUS_IN_LOWER_CASE = "workflowstatus";
     public static final String WORK_FLOW_STATUS_ID_IN_LOWER_CASE = "workflowstatusid";
     public static final String APPLICANT_FULL_NAME_IN_LOWER_CASE = "applicantfullname";

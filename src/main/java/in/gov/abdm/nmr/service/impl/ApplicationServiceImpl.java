@@ -426,6 +426,9 @@ public class ApplicationServiceImpl implements IApplicationService {
                     case YEAR_OF_REGISTRATION_IN_LOWER_CASE:
                         applicationRequestParamsTo.setYearOfRegistration(value);
                         break;
+                    case REQUEST_ID_IN_LOWER_CASE:
+                        applicationRequestParamsTo.setRequestId(value);
+                        break;
                     default:
                         throw new InvalidRequestException(NMRError.INVALID_SEARCH_CRITERIA.getCode(), NMRError.INVALID_SEARCH_CRITERIA.getMessage());
                 }
