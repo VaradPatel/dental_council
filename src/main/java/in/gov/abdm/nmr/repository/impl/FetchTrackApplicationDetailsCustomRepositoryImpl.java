@@ -1,14 +1,14 @@
 package in.gov.abdm.nmr.repository.impl;
 
-import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestParamsTo;
-import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
-import in.gov.abdm.nmr.dto.HealthProfessionalApplicationTo;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.DashboardStatus;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.repository.IFetchTrackApplicationDetailsCustomRepository;
 import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -18,6 +18,7 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -53,27 +54,27 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
     private static final Function<HealthProfessionalApplicationRequestParamsTo, String> TRACK_APPLICATION_PARAMETERS = healthProfessionalApplicationRequestParamsTo -> {
         StringBuilder sb = new StringBuilder();
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId()) && !healthProfessionalApplicationRequestParamsTo.getApplicationTypeId().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getApplicationTypeId())) {
             sb.append("AND d.application_type_id IN (:applicationTypeId) ");
         }
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getRegistrationNumber()) && !healthProfessionalApplicationRequestParamsTo.getRegistrationNumber().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getRegistrationNumber())) {
             sb.append("AND rd.registration_no ILIKE :registrationNumber ");
         }
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getSmcId()) && !healthProfessionalApplicationRequestParamsTo.getSmcId().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getSmcId())) {
             sb.append("AND rd.state_medical_council_id = :smcId ");
         }
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId()) && !healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getWorkFlowStatusId())) {
             sb.append("AND work_flow_status_id = :workFlowStatusId ");
         }
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getApplicantFullName()) && !healthProfessionalApplicationRequestParamsTo.getApplicantFullName().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getApplicantFullName())) {
             sb.append("AND hp.full_name ILIKE :applicantFullName ");
         }
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getGender()) && !healthProfessionalApplicationRequestParamsTo.getGender().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getGender())) {
             String gender = "";
             if (healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase(NMRConstants.GENDER_MALE) || healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase("m")) {
                 gender = "m";
@@ -83,19 +84,22 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             sb.append("AND hp.gender ILIKE :gender ");
         }
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getEmailId()) && !healthProfessionalApplicationRequestParamsTo.getEmailId().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getEmailId())) {
             sb.append("AND hp.email_id ILIKE :emailId ");
         }
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getMobileNumber()) && !healthProfessionalApplicationRequestParamsTo.getMobileNumber().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getMobileNumber())) {
             sb.append("AND hp.mobile_number ILIKE :mobileNumber ");
         }
 
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getYearOfRegistration()) && !healthProfessionalApplicationRequestParamsTo.getYearOfRegistration().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getYearOfRegistration())) {
             sb.append(" AND EXTRACT(YEAR FROM rd.registration_date) = :yearOfRegistration");
         }
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getCollegeId()) && !healthProfessionalApplicationRequestParamsTo.getCollegeId().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getCollegeId())) {
             sb.append(" AND qd.college_id = :collegeId");
+        }
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getRequestId())) {
+            sb.append(" AND d.request_id ILIKE :requestId");
         }
 
         return sb.toString();
@@ -124,7 +128,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         StringBuilder sb = new StringBuilder();
 
         sb.append(FETCH_TRACK_DETAILS_QUERY);
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getCollegeId()) && !healthProfessionalApplicationRequestParamsTo.getCollegeId().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getCollegeId())) {
             sb.append("INNER JOIN main.qualification_details as qd on qd.hp_profile_id = rd.hp_profile_id AND qd.request_id = d.request_id ");
         }
 
@@ -135,10 +139,10 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
 
         String parameters = TRACK_APPLICATION_PARAMETERS.apply(healthProfessionalApplicationRequestParamsTo);
 
-        if (Objects.nonNull(parameters) && !parameters.isEmpty()) {
+        if (StringUtils.isNotBlank(parameters)) {
             sb.append(parameters);
         }
-        if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getSortBy()) && !healthProfessionalApplicationRequestParamsTo.getSortBy().isEmpty()) {
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getSortBy())) {
             String sortRecords = SORT_RECORDS.apply(healthProfessionalApplicationRequestParamsTo);
             sb.append(sortRecords);
         }
@@ -235,6 +239,52 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getCollegeId()) && !healthProfessionalApplicationRequestParamsTo.getCollegeId().isEmpty()) {
             query.setParameter("collegeId", healthProfessionalApplicationRequestParamsTo.getCollegeId());
         }
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getRequestId())) {
+            query.setParameter("requestId", "%".concat(healthProfessionalApplicationRequestParamsTo.getRequestId()).concat("%"));
+        }
         return query;
+    }
+
+    @Override
+    public ApplicationDetailResponseTo fetchApplicationDetails(String requestId) throws InvalidRequestException {
+        ApplicationDetailResponseTo response = new ApplicationDetailResponseTo();
+        List<ApplicationDetailsTo> applicationDetail = new ArrayList<>();
+        ApplicationDetailsTo detailsTo;
+        Query query = entityManager.createNativeQuery(NMRConstants.APPLICATION_REQUEST_DETAILS);
+        query.setParameter("requestId", requestId);
+        List<Object[]> results = query.getResultList();
+        if (results == null || results.isEmpty()) {
+            log.error("unable to complete fetch application details process due workflow audit records for request ID: {}", requestId);
+            throw new InvalidRequestException("Invalid input request ID: " + requestId + ". Please enter a valid input and try again");
+        }
+        log.debug("Fetched {} workflow audit records for request ID: {}", results.size(), requestId);
+        response.setRequestId((String) results.get(0)[0]);
+        response.setApplicationType((BigInteger) results.get(0)[1]);
+        response.setSubmissionDate(String.valueOf(results.get(0)[2]));
+        if (WorkflowStatus.PENDING.getId().equals(results.get(results.size() - 1)[3])
+                || WorkflowStatus.QUERY_RAISED.getId().equals(results.get(results.size() - 1)[3])) {
+            response.setPendency(Math.abs(((Timestamp) results.get(0)[2]).getTime() - Timestamp.from(Instant.now()).getTime()) / 86400000);
+        } else if (results.size() > 1) {
+            response.setPendency(Math.abs(((Timestamp) results.get(0)[2]).getTime() - ((Timestamp) results.get(results.size() - 1)[2]).getTime()) / 86400000);
+        } else {
+            response.setPendency(0L);
+        }
+        response.setCurrentStatus((BigInteger) results.get(results.size() - 1)[3]);
+        response.setCurrentGroupId(results.get(results.size() - 1)[4] != null ? (BigInteger) results.get(results.size() - 1)[4] : null);
+        if (ApplicationType.ADDITIONAL_QUALIFICATION.getId().equals(results.get(0)[1])) {
+            response.setDegreeName((String) (results.get(0)[8] == null ? results.get(0)[9] : results.get(0)[8]));
+        }
+        for (Object[] result : results) {
+            detailsTo = new ApplicationDetailsTo();
+            detailsTo.setWorkflowStatusId((BigInteger) result[3]);
+            detailsTo.setActionId((BigInteger) result[5]);
+            detailsTo.setGroupId((BigInteger) result[6]);
+            detailsTo.setActionDate(String.valueOf(result[2]));
+            detailsTo.setRemarks((String) result[7]);
+            applicationDetail.add(detailsTo);
+        }
+        response.setApplicationDetails(applicationDetail);
+        log.info("Fetched application detail successfully for request ID: {}", requestId);
+        return response;
     }
 }
