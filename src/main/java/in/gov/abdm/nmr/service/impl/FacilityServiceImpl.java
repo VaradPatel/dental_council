@@ -3,9 +3,14 @@ package in.gov.abdm.nmr.service.impl;
 import in.gov.abdm.nmr.client.FacilityFClient;
 import in.gov.abdm.nmr.client.GatewayFClient;
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.entity.District;
+import in.gov.abdm.nmr.entity.State;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.repository.DistrictRepository;
+import in.gov.abdm.nmr.repository.IStateRepository;
 import in.gov.abdm.nmr.service.IFacilityService;
 import in.gov.abdm.nmr.util.NMRConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,6 +29,10 @@ public class FacilityServiceImpl implements IFacilityService {
     private String clientSecret;
     @Autowired
     GatewayFClient gatewayFClient;
+    @Autowired
+    private DistrictRepository districtRepository;
+    @Autowired
+    private IStateRepository stateRepository;
 
     @Override
     public FacilitiesSearchResponseTO findFacility(FacilitySearchRequestTO facilitySearchRequestTo) throws InvalidRequestException {
@@ -43,6 +52,22 @@ public class FacilityServiceImpl implements IFacilityService {
             FacilitiesSearchResponseTO facilitiesSearchResponseTO = new FacilitiesSearchResponseTO();
             facilitiesSearchResponseTO.setReferenceNumber(facilitySearchResponseTO.getReferenceNumber());
             facilitiesSearchResponseTO.setFacilities(List.of(facilitySearchResponseTO.getFacility()));
+
+            if (StringUtils.isNotBlank(facilitySearchResponseTO.getFacility().getFacilityAddressTo().getDistrict())) {
+                District districtByIsoCode = districtRepository.getDistrictByIsoCode(
+                        facilitySearchResponseTO.getFacility().getFacilityAddressTo().getDistrict());
+
+                facilitySearchResponseTO.getFacility().getFacilityAddressTo().setDistrictTO(DistrictTO.builder()
+                        .id(districtByIsoCode.getId()).name(districtByIsoCode.getName()).build());
+            }
+
+            if (StringUtils.isNotBlank(facilitySearchResponseTO.getFacility().getFacilityAddressTo().getState())) {
+                State stateByIsoCode = stateRepository.getStateByIsoCode(
+                        facilitySearchResponseTO.getFacility().getFacilityAddressTo().getState());
+
+                facilitySearchResponseTO.getFacility().getFacilityAddressTo().setStateTO(
+                        StateTO.builder().id(stateByIsoCode.getId()).name(stateByIsoCode.getName()).build());
+            }
             return facilitiesSearchResponseTO;
 
         } else if (facilitySearchRequestTo.getOwnership() != null && facilitySearchRequestTo.getState() != null && facilitySearchRequestTo.getDistrict() != null) {
@@ -54,6 +79,7 @@ public class FacilityServiceImpl implements IFacilityService {
             throw new InvalidRequestException(NMRConstants.INVALID_FACILITY_PAYLOAD_MESSAGE);
         }
     }
+
     private SessionResponseTo getSessionToken() {
         SessionRequestTo sessionRequestTo = SessionRequestTo.builder()
                 .clientId(clientId)

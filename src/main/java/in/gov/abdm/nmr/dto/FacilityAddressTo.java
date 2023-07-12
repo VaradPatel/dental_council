@@ -1,6 +1,9 @@
 package in.gov.abdm.nmr.dto;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+
+@Data
 public class FacilityAddressTo {
 
     @JsonProperty("use")
@@ -26,4 +29,8 @@ public class FacilityAddressTo {
 
     @JsonProperty("pincode")
     private String pincode;
+
+    private DistrictTO districtTO;
+
+    private StateTO stateTO;
 }
