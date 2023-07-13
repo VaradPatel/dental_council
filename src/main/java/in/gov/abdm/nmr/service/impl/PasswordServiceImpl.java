@@ -192,7 +192,7 @@ public class PasswordServiceImpl implements IPasswordService {
             if (loggedInUser.getId().equals(user.getId())) {
                 return changePassword(changePasswordRequestTo, user);
             } else {
-                throw new AccessDeniedException(NMRError.ACCESS_FORBIDDEN.getMessage());
+                throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
             }
         } else {
             throw new InvalidRequestException(NMRConstants.USER_NOT_FOUND);

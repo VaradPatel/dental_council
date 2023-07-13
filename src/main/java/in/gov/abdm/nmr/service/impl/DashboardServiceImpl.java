@@ -98,7 +98,7 @@ public class DashboardServiceImpl implements IDashboardService {
         User loggedInUser = accessControlService.getLoggedInUser();
         if (loggedInUser == null) {
             log.error("User don't have permission to access on dashboard card details");
-            throw new AccessDeniedException(NMRError.ACCESS_FORBIDDEN.getMessage());
+            throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
         }
         String groupName = loggedInUser.getGroup().getName();
         FetchCountOnCardResponseTO responseTO = new FetchCountOnCardResponseTO();
