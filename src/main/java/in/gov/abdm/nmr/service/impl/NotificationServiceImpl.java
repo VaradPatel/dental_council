@@ -158,11 +158,12 @@ public class NotificationServiceImpl implements INotificationService {
      * @return success/failure
      */
     @Override
-    public ResponseMessageTo sendNotificationForResetPasswordLink(String email, String link) throws TemplateException {
+    public ResponseMessageTo sendNotificationForResetPasswordLink(String email, String link, String username) throws TemplateException {
 
         Template template = getMessageTemplate(NMRConstants.SMS_AND_EMAIL_RESET_MESSAGE_PROPERTIES_KEY);
         String message = new TemplatedStringBuilder(template.getMessage())
-                .replace(NMRConstants.TEMPLATE_VAR1, link)
+                .replace(NMRConstants.TEMPLATE_VAR1, username)
+                .replace(NMRConstants.TEMPLATE_VAR2, link)
                 .finish();
         return sendNotification(NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SET_PASSWORD_SUBJECT, message, null, email, NMRConstants.SMS_AND_EMAIL_RESET_MESSAGE_PROPERTIES_KEY);
 

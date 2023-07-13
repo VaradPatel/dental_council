@@ -244,7 +244,7 @@ public class UserServiceImpl implements IUserService {
             nbeDaoService.save(nbeProfile);
         }
 
-        passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail(), user.getUserType().getId()));
+        passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail(), user.getUserType().getId(), user.getUserName()));
         return userProfileTO;
     }
 

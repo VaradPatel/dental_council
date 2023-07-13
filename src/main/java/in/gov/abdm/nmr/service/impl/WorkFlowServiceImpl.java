@@ -247,8 +247,8 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         } else {
             setDashboardStatus(requestTO.getActionId(), requestTO.getActorId(), dashboard);
             if (!isLastStepOfWorkFlow(iNextGroup)) {
-                if (Group.COLLEGE.getId().equals(requestTO.getActorId()) && Action.APPROVED.getId().equals(requestTO.getActionId())) {
-                    dashboard.setSmcStatus(DashboardStatus.COLLEGE_VERIFIED.getId());
+                if ((Group.COLLEGE.getId().equals(requestTO.getActorId()) || Group.NBE.getId().equals(requestTO.getActorId()))  && Action.APPROVED.getId().equals(requestTO.getActionId())) {
+                    dashboard.setSmcStatus(DashboardStatus.COLLEGE_NBE_VERIFIED.getId());
                 } else {
                     setDashboardStatus(DashboardStatus.PENDING.getId(), iNextGroup.getAssignTo(), dashboard);
                 }
