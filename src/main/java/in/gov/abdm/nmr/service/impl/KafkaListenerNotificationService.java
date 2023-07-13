@@ -62,7 +62,7 @@ public class KafkaListenerNotificationService {
                     } else {
                         iHpProfileRepository.updateEsignStatus(hpProfile.getId(), ESignStatus.PROFILE_ESIGNED_WITH_DIFFERENT_AADHAR.getId());
                         try {
-                            notificationService.sendNotificationForIncorrectESign(eSignedEvent.getName(), hpProfile.getUser().getMobileNumber(), hpProfile.getUser().getEmail());
+                            notificationService.sendNotificationForIncorrectESign(hpProfile.getFullName(), hpProfile.getUser().getMobileNumber(), hpProfile.getUser().getEmail());
                         }
                         catch(Exception exception){
                             log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
