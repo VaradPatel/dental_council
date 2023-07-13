@@ -359,4 +359,6 @@ public class NMRConstants {
             left join foreign_qualification_details fqd on fqd.request_id =wfa.request_id 
             where wfa.request_id = :requestId order by wfa.created_at asc
             """;
+
+    public static final String DATE_FORMAT = "dd-MM-yyyy";
 }

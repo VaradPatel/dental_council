@@ -533,7 +533,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         HpProfile hpProfile = new HpProfile();
         hpProfile.setAadhaarToken(request.getAadhaarToken() != null ? request.getAadhaarToken() : null);
-        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT);
         try {
             java.util.Date dt = df.parse(request.getBirthdate());
             hpProfile.setDateOfBirth(new java.sql.Date(dt.getTime()));
