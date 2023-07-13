@@ -54,6 +54,7 @@ public class NMRConstants {
     public static final String INFO_EMAIL_VERIFICATION_SUCCESSFUL_SUBJECT = "NMR : Verification Successful";
     public static final String INFO_EMAIL_SET_PASSWORD_SUBJECT = "NMR : Set New Password";
     public static final String ACCOUNT_CREATED_SUBJECT = "Account Created";
+    public static final String INCORRECT_E_SIGNED_SUBJECT = "Incorrectly E-signed";
     public static final String VERIFY_EMAIL_SUBJECT = "NMR: Verify Email";
     public static final String OTP_CONTENT_TYPE = "otp";
     public static final String SMS_OTP_MESSAGE_PROPERTIES_KEY = "sms-otp";
@@ -247,6 +248,7 @@ public class NMRConstants {
     public static final String ACCOUNT_CREATED = "account-created";
     public static final String NMR_ID_CREATED = "nmr-id-created";
     public static final String HPR_ACCOUNT_CREATED = "hpr-account-created";
+    public static final String INCORRECT_E_SIGNED = "incorrect-e-sign";
     public static final String TYPE_NOT_NULL = "Type cannot be null";
     public static final double FUZZY_MATCH_LIMIT = 75;
     public static final String FUZZY_PARAMETER_NAME = "Name";
