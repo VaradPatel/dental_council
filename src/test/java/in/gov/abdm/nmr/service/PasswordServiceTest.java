@@ -72,16 +72,16 @@ class PasswordServiceTest {
 
     @Test
     void testGetResetPasswordLinkShouldValidateUserAndSendNotificationForResetPassword() throws TemplateException {
-        when(userDaoService.existsByEmailAndUserTypeId(anyString(),any(BigInteger.class), anyString())).thenReturn(true);
-        when(notificationService.sendNotificationForResetPasswordLink(anyString(), anyString())).thenReturn(CommonTestData.getResponseMessage());
-        ResponseMessageTo resetPasswordLink = passwordService.getResetPasswordLink(getSendLinkOnMail());
+        when(userDaoService.existsByEmailAndUserTypeId(anyString(),any(BigInteger.class))).thenReturn(true);
+        when(notificationService.sendNotificationForResetPasswordLink(anyString(), anyString(), anyString())).thenReturn(CommonTestData.getResponseMessage());
+        ResponseMessageTo resetPasswordLink = passwordService.getResetPasswordLink(getSendLinkOnMail(),anyString());
         assertEquals(SUCCESS_RESPONSE, resetPasswordLink.getMessage());
     }
 
     @Test
     void testGetResetPasswordLinkShouldValidateUserAndReturnUserNotFound() {
-        when(userDaoService.existsByEmailAndUserTypeId(anyString(), any(BigInteger.class),anyString())).thenReturn(false);
-        ResponseMessageTo resetPasswordLink = passwordService.getResetPasswordLink(getSendLinkOnMail());
+        when(userDaoService.existsByEmailAndUserTypeId(anyString(), any(BigInteger.class))).thenReturn(false);
+        ResponseMessageTo resetPasswordLink = passwordService.getResetPasswordLink(getSendLinkOnMail(), anyString());
         assertEquals(USER_NOT_FOUND, resetPasswordLink.getMessage());
     }
 
