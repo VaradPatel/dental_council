@@ -31,6 +31,7 @@ public class Queries extends CommonAuditEntity {
     private String commonComment;
     private String queryBy;
     private String queryStatus;
+    private String requestId;
 
     @CreatedDate
     private Timestamp createdAt;
