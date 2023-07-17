@@ -54,6 +54,7 @@ public class NMRConstants {
     public static final String INFO_EMAIL_VERIFICATION_SUCCESSFUL_SUBJECT = "NMR : Verification Successful";
     public static final String INFO_EMAIL_SET_PASSWORD_SUBJECT = "NMR : Set New Password";
     public static final String ACCOUNT_CREATED_SUBJECT = "Account Created";
+    public static final String INCORRECT_E_SIGNED_SUBJECT = "Incorrectly E-signed";
     public static final String VERIFY_EMAIL_SUBJECT = "NMR: Verify Email";
     public static final String OTP_CONTENT_TYPE = "otp";
     public static final String SMS_OTP_MESSAGE_PROPERTIES_KEY = "sms-otp";
@@ -248,6 +249,7 @@ public class NMRConstants {
     public static final String ACCOUNT_CREATED = "account-created";
     public static final String NMR_ID_CREATED = "nmr-id-created";
     public static final String HPR_ACCOUNT_CREATED = "hpr-account-created";
+    public static final String INCORRECT_E_SIGNED = "incorrect-e-sign";
     public static final String TYPE_NOT_NULL = "Type cannot be null";
     public static final double FUZZY_MATCH_LIMIT = 75;
     public static final String FUZZY_PARAMETER_NAME = "Name";
@@ -334,6 +336,7 @@ public class NMRConstants {
     public static final String REGEX_FOR_ADDRESS = "^[#.0-9a-zA-Z\s,-/:()]+$";
     public static final String REGEX_FOR_SUB_DISTRICT = "^[A-Z a-z]+[A-Z a-z //' ']*$";
     public static final String REGEX_FOR_VILLAGE = "^[A-Z a-z]+[A-Z a-z //' ']*$";
+    public static final String REGEX_FOR_EMAIL = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
     public static final Integer MAX_QUALIFICATION_SIZE = 8;
     public static final String GENDER_MALE = "Male";
     public static final String GENDER_FEMALE = "Female";
@@ -360,4 +363,6 @@ public class NMRConstants {
             left join foreign_qualification_details fqd on fqd.request_id =wfa.request_id 
             where wfa.request_id = :requestId order by wfa.created_at asc
             """;
+
+    public static final String DATE_FORMAT = "dd-MM-yyyy";
 }

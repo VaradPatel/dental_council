@@ -137,7 +137,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 log.debug("There was an existing HP Profile with the given hp_profile_id which has been Approved. ");
                 HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileByRegistrationId(existingHpProfile.getRegistrationId());
                 if (HpProfileStatus.PENDING.getId().equals(latestHpProfile.getHpProfileStatus().getId())) {
-                    throw new InvalidRequestException(NMRError.USE_LATEST_HP_ID.getCode(), NMRError.USE_LATEST_HP_ID.getMessage());
+                    throw new InvalidRequestException(NMRError.INVALID_REQUEST.getCode(), NMRError.INVALID_REQUEST.getMessage());
                 }
             }
 

@@ -26,7 +26,7 @@ public class AccessControlServiceImpl implements IAccessControlService {
         BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
         User loggedInUser = userRepository.findByUsername(userName, userType);
         if (loggedInUser == null || !loggedInUser.getId().equals(userId)) {
-            throw new AccessDeniedException(NMRError.INVALID_USER.getMessage());
+            throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
         }
     }
 

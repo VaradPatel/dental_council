@@ -257,7 +257,7 @@ public class UserServiceImpl implements IUserService {
 
         if (userDetail == null) {
             log.error("User don't have permission to access get users");
-            throw new AccessDeniedException(NMRError.ACCESS_FORBIDDEN.getMessage());
+            throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
         }
         applyFilters(search, value, userRequestParamsTO);
         userRequestParamsTO.setUserSubTypeID(userDetail.getUserSubType() != null ? userDetail.getUserSubType().getId().toString() : null);

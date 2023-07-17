@@ -216,6 +216,17 @@ public class NotificationServiceImpl implements INotificationService {
 
     }
 
+    @Override
+    public ResponseMessageTo sendNotificationForIncorrectESign(String name, String mobile, String email) throws TemplateException {
+
+        Template template = getMessageTemplate(NMRConstants.INCORRECT_E_SIGNED);
+        String message = new TemplatedStringBuilder(template.getMessage())
+                .replace(NMRConstants.TEMPLATE_VAR1, name)
+                .finish();
+        return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INCORRECT_E_SIGNED_SUBJECT, message, mobile, email,NMRConstants.INCORRECT_E_SIGNED);
+
+    }
+
     @SneakyThrows
     Template getMessageTemplate(String propertiesKey) {
         Template template;
