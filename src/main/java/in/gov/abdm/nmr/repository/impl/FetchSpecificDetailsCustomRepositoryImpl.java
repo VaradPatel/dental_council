@@ -141,8 +141,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
      */
     private static final Function<DashboardRequestParamsTO, String> SORT_RECORDS = dashboardRequestParamsTO -> {
         StringBuilder sb = new StringBuilder();
-        sb.append(" ORDER BY  " + dashboardRequestParamsTO.getSortBy() + " " + dashboardRequestParamsTO.getSortOrder());
-
+        sb.append(" ORDER BY  :sort");
         return sb.toString();
     };
 
@@ -300,7 +299,10 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         if (StringUtils.isNotBlank(dashboardRequestParamsTO.getRequestId())) {
             query.setParameter("requestId", "%".concat(dashboardRequestParamsTO.getRequestId()).concat("%"));
         }
-        
+
+        if (StringUtils.isNotBlank(dashboardRequestParamsTO.getSortBy())) {
+            query.setParameter("sort", dashboardRequestParamsTO.getSortBy() + " " + dashboardRequestParamsTO.getSortOrder());
+        }
         return query;
 
     }
