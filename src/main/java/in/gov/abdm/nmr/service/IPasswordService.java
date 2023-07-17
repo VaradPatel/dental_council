@@ -14,7 +14,7 @@ public interface IPasswordService {
 
     ResponseMessageTo changePassword(ChangePasswordRequestTo changePasswordRequestTo) throws InvalidRequestException, GeneralSecurityException;
 
-    ResponseMessageTo getResetPasswordLink(SendLinkOnMailTo sendLinkOnMailTo);
+    ResponseMessageTo getResetPasswordLink(SendLinkOnMailTo sendLinkOnMailTo, String username);
 
     ResponseMessageTo setNewPassword(SetNewPasswordTo newPasswordTo);
 

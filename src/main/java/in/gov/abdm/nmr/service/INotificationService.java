@@ -10,7 +10,7 @@ public interface INotificationService {
 
     ResponseMessageTo sendNotificationOnStatusChangeForHP(String applicationType, String action, String mobile, String email) throws TemplateException;
 
-    ResponseMessageTo sendNotificationForResetPasswordLink(String email, String link) throws TemplateException;
+    ResponseMessageTo sendNotificationForResetPasswordLink(String email, String link, String username) throws TemplateException;
 
     ResponseMessageTo sendNotificationForOTP(String type, String otp, String receiver) throws TemplateException;
 
@@ -24,4 +24,5 @@ public interface INotificationService {
 
     ResponseMessageTo sendNotificationForHprAccountCreation(String username,String hprId, String mobile) throws TemplateException;
 
+    ResponseMessageTo sendNotificationForIncorrectESign(String name, String mobile, String email) throws TemplateException;
 }

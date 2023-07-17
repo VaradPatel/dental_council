@@ -54,6 +54,7 @@ public class NMRConstants {
     public static final String INFO_EMAIL_VERIFICATION_SUCCESSFUL_SUBJECT = "NMR : Verification Successful";
     public static final String INFO_EMAIL_SET_PASSWORD_SUBJECT = "NMR : Set New Password";
     public static final String ACCOUNT_CREATED_SUBJECT = "Account Created";
+    public static final String INCORRECT_E_SIGNED_SUBJECT = "Incorrectly E-signed";
     public static final String VERIFY_EMAIL_SUBJECT = "NMR: Verify Email";
     public static final String OTP_CONTENT_TYPE = "otp";
     public static final String SMS_OTP_MESSAGE_PROPERTIES_KEY = "sms-otp";
@@ -200,6 +201,7 @@ public class NMRConstants {
     public static final String NAME_IN_LOWER_CASE = "name";
     public static final String YEAR_OF_REGISTRATION_IN_LOWER_CASE = "yearofregistration";
     public static final String SMC_ID_IN_LOWER_CASE = "smcid";
+    public static final String REQUEST_ID_IN_LOWER_CASE = "requestid";
     public static final String WORK_FLOW_STATUS_IN_LOWER_CASE = "workflowstatus";
     public static final String WORK_FLOW_STATUS_ID_IN_LOWER_CASE = "workflowstatusid";
     public static final String APPLICANT_FULL_NAME_IN_LOWER_CASE = "applicantfullname";
@@ -246,6 +248,7 @@ public class NMRConstants {
     public static final String ACCOUNT_CREATED = "account-created";
     public static final String NMR_ID_CREATED = "nmr-id-created";
     public static final String HPR_ACCOUNT_CREATED = "hpr-account-created";
+    public static final String INCORRECT_E_SIGNED = "incorrect-e-sign";
     public static final String TYPE_NOT_NULL = "Type cannot be null";
     public static final double FUZZY_MATCH_LIMIT = 75;
     public static final String FUZZY_PARAMETER_NAME = "Name";
@@ -327,11 +330,12 @@ public class NMRConstants {
     public static final long MASTER_CACHE_CRON_TIME = 6 * 60 * 60 * 1000;
 
     public static final String REGEX_FOR_BIRTH_DATE = "^(((0[13-9]|1[012])[-/]?(0[1-9]|[12][0-9]|30)|(0[13578]|1[02])[-/]?31|02[-/]?(0[1-9]|1[0-9]|2[0-8]))[-/]?[0-9]{4}|02[-/]?29[-/]?([0-9]{2}(([2468][048]|[02468][48])|[13579][26])|([13579][26]|[02468][048]|0[0-9]|1[0-6])00))$";
-    public static final String REGEX_FOR_NAME = "\\b([a-zA-ZÀ-ÿ][-,a-zA-Z0-9. ']+[ ]*)+";
+    public static final String REGEX_FOR_NAME = "\\b([a-zA-ZÀ-ÿ]|[-,a-zA-Z0-9. ']+[ ]*)+";
     public static final String REGEX_FOR_REGISTRATION_NUMBER = "^[a-zA-Z0-9 !-@#:_)(]{1,100}$";
     public static final String REGEX_FOR_ADDRESS = "^[#.0-9a-zA-Z\s,-/:()]+$";
     public static final String REGEX_FOR_SUB_DISTRICT = "^[A-Z a-z]+[A-Z a-z //' ']*$";
     public static final String REGEX_FOR_VILLAGE = "^[A-Z a-z]+[A-Z a-z //' ']*$";
+    public static final String REGEX_FOR_EMAIL = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
     public static final Integer MAX_QUALIFICATION_SIZE = 8;
     public static final String GENDER_MALE = "Male";
     public static final String GENDER_FEMALE = "Female";
@@ -344,18 +348,20 @@ public class NMRConstants {
     public static final String REJECTED = "Rejected";
     public static final String BLACKLISTED = "Blacklisted";
     public static final String SUSPENDED = "Suspended";
-    public static final String COLLEGE_VERIFIED = "College Verified";
+    public static final String COLLEGE_NBE_VERIFIED = "College/NBE Verified";
     public static final String SUBMITTED = "Submitted";
     public static final String VERIFIED =  "Verified";
 
 
+    public static final String APPLICATION_REQUEST_DETAILS = """
+            Select wfa.request_id, wfa.application_type_id,wfa.created_at ,wfa.work_flow_status_id ,wfa.current_group_id ,
+            wfa.action_id ,wfa.previous_group_id ,wfa.remarks ,c.course_name indian_qualification ,
+            fqd.course international_qualification
+            from work_flow_audit wfa left join qualification_details qd on qd.request_id = wfa.request_id 
+            left join course c on c.id =qd.course_id 
+            left join foreign_qualification_details fqd on fqd.request_id =wfa.request_id 
+            where wfa.request_id = :requestId order by wfa.created_at asc
+            """;
 
-
-
-
-
-
-
-
-
+    public static final String DATE_FORMAT = "dd-MM-yyyy";
 }

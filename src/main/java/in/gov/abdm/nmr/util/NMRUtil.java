@@ -57,13 +57,6 @@ public final class NMRUtil {
         if (NMRConstants.MAX_QUALIFICATION_SIZE <= qualificationDetailRequestTOs.size() + existingQualifications.size()) {
             throw new InvalidRequestException(NMRError.QUALIFICATION_DETAILS_LIMIT_EXCEEDED.getCode(), NMRError.QUALIFICATION_DETAILS_LIMIT_EXCEEDED.getMessage());
         }
-        for (QualificationDetailRequestTO qualificationDetailRequestTO : qualificationDetailRequestTOs) {
-            existingQualifications.add(qualificationDetailRequestTO.getCourse().getName());
-            Set<String> set = new HashSet<>(existingQualifications);
-            if (set.size() < existingQualifications.size()) {
-                throw new InvalidRequestException(NMRError.DUPLICATE_QUALIFICATION_ERROR.getCode(), NMRError.DUPLICATE_QUALIFICATION_ERROR.getMessage());
-            }
-        }
     }
     /**
      * Return value if it is not null otherwise fallBackValue.

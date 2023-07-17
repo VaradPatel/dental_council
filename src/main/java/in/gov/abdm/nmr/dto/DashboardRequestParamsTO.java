@@ -23,4 +23,5 @@ public class DashboardRequestParamsTO {
     private String yearOfRegistration;
     private String sortBy;
     private String sortOrder;
+    private String requestId;
 }

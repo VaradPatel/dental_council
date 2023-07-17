@@ -56,7 +56,8 @@ public class QueriesServiceImpl implements IQueriesService {
                     .fieldLabel(queryTo.getFieldLabel())
                     .sectionName(queryTo.getSectionName())
                     .queryComment(queryTo.getQueryComment())
-                    .queryStatus(NMRConstants.QUERY_OPEN_STATUS).build();
+                    .queryStatus(NMRConstants.QUERY_OPEN_STATUS)
+                    .requestId(queryCreateTo.getRequestId()).build();
             queries.add(query);
         });
 

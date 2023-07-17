@@ -1,8 +1,10 @@
 package in.gov.abdm.nmr.repository;
 
+import in.gov.abdm.nmr.dto.ApplicationDetailResponseTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationRequestParamsTo;
 import in.gov.abdm.nmr.dto.HealthProfessionalApplicationResponseTo;
 
+import in.gov.abdm.nmr.exception.InvalidRequestException;
 import org.springframework.data.domain.Pageable;
 
 import java.math.BigInteger;
@@ -23,4 +25,7 @@ public interface IFetchTrackApplicationDetailsCustomRepository {
      * raised a request
      */
     HealthProfessionalApplicationResponseTo fetchTrackApplicationDetails(HealthProfessionalApplicationRequestParamsTo healthProfessionalApplicationRequestParamsTo, Pageable pagination, List<BigInteger> hpProfiles);
+
+    ApplicationDetailResponseTo fetchApplicationDetails(String requestId) throws InvalidRequestException;
+
 }

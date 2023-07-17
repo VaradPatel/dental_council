@@ -9,6 +9,7 @@ import in.gov.abdm.nmr.enums.ESignStatus;
 import in.gov.abdm.nmr.exception.DateException;
 import in.gov.abdm.nmr.repository.IAddressRepository;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.service.INotificationService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class KafkaListenerNotificationService {
     IHpProfileRepository iHpProfileRepository;
     @Autowired
     IAddressRepository iAddressRepository;
+
+    @Autowired
+    INotificationService notificationService;
 
     /**
      * This method consumes a message from Kafka topic and updates the e-sign status of a health profile if the message contains valid details.
@@ -57,6 +61,12 @@ public class KafkaListenerNotificationService {
                         log.info("updated e sign status:{} for Transaction ID: {}", ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getStatus(), transactionId);
                     } else {
                         iHpProfileRepository.updateEsignStatus(hpProfile.getId(), ESignStatus.PROFILE_ESIGNED_WITH_DIFFERENT_AADHAR.getId());
+                        try {
+                            notificationService.sendNotificationForIncorrectESign(hpProfile.getFullName(), hpProfile.getUser().getMobileNumber(), hpProfile.getUser().getEmail());
+                        }
+                        catch(Exception exception){
+                            log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
+                        }
                         log.info("updated e sign status:{} for Transaction ID: {}", ESignStatus.PROFILE_ESIGNED_WITH_DIFFERENT_AADHAR.getStatus(), transactionId);
                     }
                 } else {

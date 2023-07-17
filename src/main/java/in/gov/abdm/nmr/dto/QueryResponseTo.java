@@ -17,6 +17,7 @@ public class QueryResponseTo {
     private String commonComment;
     private String queryBy;
     private String queryStatus;
+    private String requestId;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 

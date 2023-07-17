@@ -1,13 +1,14 @@
 package in.gov.abdm.nmr.dto;
 
+import in.gov.abdm.nmr.annotation.Email;
 import in.gov.abdm.nmr.annotation.Name;
 import in.gov.abdm.nmr.annotation.OptionalName;
 import in.gov.abdm.nmr.annotation.Salutation;
-import in.gov.abdm.validator.*;
+import in.gov.abdm.validator.Gender;
+import in.gov.abdm.validator.MobileNumber;
 import lombok.Data;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
 

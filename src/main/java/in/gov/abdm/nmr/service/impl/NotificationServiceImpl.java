@@ -158,11 +158,12 @@ public class NotificationServiceImpl implements INotificationService {
      * @return success/failure
      */
     @Override
-    public ResponseMessageTo sendNotificationForResetPasswordLink(String email, String link) throws TemplateException {
+    public ResponseMessageTo sendNotificationForResetPasswordLink(String email, String link, String username) throws TemplateException {
 
         Template template = getMessageTemplate(NMRConstants.SMS_AND_EMAIL_RESET_MESSAGE_PROPERTIES_KEY);
         String message = new TemplatedStringBuilder(template.getMessage())
-                .replace(NMRConstants.TEMPLATE_VAR1, link)
+                .replace(NMRConstants.TEMPLATE_VAR1, username)
+                .replace(NMRConstants.TEMPLATE_VAR2, link)
                 .finish();
         return sendNotification(NMRConstants.OTP_CONTENT_TYPE, template.getId().toString(), NMRConstants.INFO_EMAIL_SET_PASSWORD_SUBJECT, message, null, email, NMRConstants.SMS_AND_EMAIL_RESET_MESSAGE_PROPERTIES_KEY);
 
@@ -212,6 +213,17 @@ public class NotificationServiceImpl implements INotificationService {
                 .replace(NMRConstants.TEMPLATE_VAR2, hprId)
                 .finish();
         return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.ACCOUNT_CREATED_SUBJECT, message, mobile, null,NMRConstants.HPR_ACCOUNT_CREATED);
+
+    }
+
+    @Override
+    public ResponseMessageTo sendNotificationForIncorrectESign(String name, String mobile, String email) throws TemplateException {
+
+        Template template = getMessageTemplate(NMRConstants.INCORRECT_E_SIGNED);
+        String message = new TemplatedStringBuilder(template.getMessage())
+                .replace(NMRConstants.TEMPLATE_VAR1, name)
+                .finish();
+        return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.INCORRECT_E_SIGNED_SUBJECT, message, mobile, email,NMRConstants.INCORRECT_E_SIGNED);
 
     }
 
