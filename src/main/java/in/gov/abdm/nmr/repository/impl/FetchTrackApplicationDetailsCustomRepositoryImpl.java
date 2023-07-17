@@ -113,7 +113,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
      */
     private static final Function<HealthProfessionalApplicationRequestParamsTo, String> SORT_RECORDS = healthProfessionalApplicationRequestParamsTo -> {
         StringBuilder sb = new StringBuilder();
-        sb.append(" ORDER BY  " + healthProfessionalApplicationRequestParamsTo.getSortBy()  + " " +healthProfessionalApplicationRequestParamsTo.getSortOrder());
+        sb.append(" ORDER BY  :sort");
         return sb.toString();
     };
 
@@ -241,6 +241,9 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         }
         if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getRequestId())) {
             query.setParameter("requestId", "%".concat(healthProfessionalApplicationRequestParamsTo.getRequestId()).concat("%"));
+        }
+        if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getSortBy())) {
+            query.setParameter("sort", healthProfessionalApplicationRequestParamsTo.getSortBy() + " " + healthProfessionalApplicationRequestParamsTo.getSortOrder());
         }
         return query;
     }
