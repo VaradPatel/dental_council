@@ -71,14 +71,14 @@ public class PasswordServiceImpl implements IPasswordService {
      * @return ResponseMessageTo with message
      */
     @Override
-    public ResponseMessageTo getResetPasswordLink(SendLinkOnMailTo sendLinkOnMailTo) {
+    public ResponseMessageTo getResetPasswordLink(SendLinkOnMailTo sendLinkOnMailTo, String username) {
         try {
 
 
             resetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
 
             if (userDaoService.existsByEmail(sendLinkOnMailTo.getEmail())) {
-                return notificationService.sendNotificationForResetPasswordLink(sendLinkOnMailTo.getEmail(), generateLink(sendLinkOnMailTo));
+                return notificationService.sendNotificationForResetPasswordLink(sendLinkOnMailTo.getEmail(), generateLink(sendLinkOnMailTo),username);
             } else {
                 return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
             }
@@ -192,7 +192,7 @@ public class PasswordServiceImpl implements IPasswordService {
             if (loggedInUser.getId().equals(user.getId())) {
                 return changePassword(changePasswordRequestTo, user);
             } else {
-                throw new AccessDeniedException(NMRError.ACCESS_FORBIDDEN.getMessage());
+                throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
             }
         } else {
             throw new InvalidRequestException(NMRConstants.USER_NOT_FOUND);

@@ -15,4 +15,7 @@ public interface DistrictRepository extends JpaRepository<District, BigInteger> 
     @Query(value = "SELECT id, name, iso_code, state_id, created_at, updated_at FROM district where name=:districtName AND state_id=:stateId", nativeQuery = true)
     District findByDistrictNameAndStateId(String districtName, BigInteger stateId);
 
+    @Query(value = "SELECT * FROM district where iso_code=:isoCode order by name asc", nativeQuery = true)
+    District getDistrictByIsoCode(String isoCode);
+
 }

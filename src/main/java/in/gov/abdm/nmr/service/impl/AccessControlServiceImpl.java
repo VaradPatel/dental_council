@@ -24,7 +24,7 @@ public class AccessControlServiceImpl implements IAccessControlService {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedInUser = userRepository.findByUsername(userName);
         if (loggedInUser == null || !loggedInUser.getId().equals(userId)) {
-            throw new AccessDeniedException(NMRError.INVALID_USER.getMessage());
+            throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
         }
     }
 

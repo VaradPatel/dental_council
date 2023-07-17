@@ -98,7 +98,7 @@ public class DashboardServiceImpl implements IDashboardService {
         User loggedInUser = accessControlService.getLoggedInUser();
         if (loggedInUser == null) {
             log.error("User don't have permission to access on dashboard card details");
-            throw new AccessDeniedException(NMRError.ACCESS_FORBIDDEN.getMessage());
+            throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
         }
         String groupName = loggedInUser.getGroup().getName();
         FetchCountOnCardResponseTO responseTO = new FetchCountOnCardResponseTO();
@@ -251,7 +251,7 @@ public class DashboardServiceImpl implements IDashboardService {
         List<StatusWiseCountTO> response = new ArrayList<>();
         response.add(StatusWiseCountTO.builder().name(totalCardLabel).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.PENDING.getId()).name(DashboardStatus.PENDING.getDescription()).count(BigInteger.ZERO).build());
-        response.add(StatusWiseCountTO.builder().id(DashboardStatus.COLLEGE_VERIFIED.getId()).name(DashboardStatus.COLLEGE_VERIFIED.getDescription()).count(BigInteger.ZERO).build());
+        response.add(StatusWiseCountTO.builder().id(DashboardStatus.COLLEGE_NBE_VERIFIED.getId()).name(DashboardStatus.COLLEGE_NBE_VERIFIED.getDescription()).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.FORWARD.getId()).name(DashboardStatus.FORWARD.getDescription()).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.APPROVED.getId()).name(DashboardStatus.APPROVED.getDescription()).count(BigInteger.ZERO).build());
         response.add(StatusWiseCountTO.builder().id(DashboardStatus.QUERY_RAISE.getId()).name(DashboardStatus.QUERY_RAISE.getDescription()).count(BigInteger.ZERO).build());
