@@ -351,6 +351,7 @@ public class NMRConstants {
     public static final String COLLEGE_NBE_VERIFIED = "College/NBE Verified";
     public static final String SUBMITTED = "Submitted";
     public static final String VERIFIED =  "Verified";
+    public static final String SYSTEM_REJECTION_REMARK =  "Rejected by system due to profile suspension";
 
 
     public static final String APPLICATION_REQUEST_DETAILS = """

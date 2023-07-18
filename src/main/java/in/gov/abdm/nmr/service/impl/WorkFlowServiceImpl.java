@@ -92,7 +92,9 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     @Autowired
     IDashboardRepository iDashboardRepository;
 
-    private static final List<BigInteger> APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES = List.of(WorkflowStatus.APPROVED.getId(), WorkflowStatus.BLACKLISTED.getId(), WorkflowStatus.SUSPENDED.getId());
+    private static final List<BigInteger> PRIVILEGED_VERIFIERS =List.of(Group.SMC.getId(),Group.SYSTEM.getId());
+    private static final List<BigInteger> APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES = List.of(WorkflowStatus.APPROVED.getId());
+    private static final List<BigInteger> APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES_FOR_SUSPEND_REQUEST = List.of(WorkflowStatus.BLACKLISTED.getId(), WorkflowStatus.SUSPENDED.getId());
 
     @Override
     @Transactional
@@ -120,7 +122,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         } else {
             dashboard = iDashboardRepository.findByRequestId(workFlow.getRequestId());
             log.debug("Proceeding to update the existing Workflow entry since there is an existing entry with the given request_id");
-            if (!workFlow.getApplicationType().getId().equals(requestTO.getApplicationTypeId()) || workFlow.getCurrentGroup() == null || (!Group.SMC.getId().equals(requestTO.getActorId()) && !workFlow.getCurrentGroup().getId().equals(requestTO.getActorId()))) {
+            if (!workFlow.getApplicationType().getId().equals(requestTO.getApplicationTypeId()) || workFlow.getCurrentGroup() == null || (!PRIVILEGED_VERIFIERS.contains(requestTO.getActorId()) && !workFlow.getCurrentGroup().getId().equals(requestTO.getActorId()))) {
                 log.debug("Invalid Request since either the given application type matches the fetched application type from the workflow or current group fetched from the workflow is null or current group id fetched from the workflow matches the given actor id");
                 throw new InvalidRequestException();
             }
@@ -152,7 +154,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         sendNotificationsOnStatusChanges(user, workFlow, hpProfile);
     }
 
-    private void performPostWorkFlowTask(WorkFlowRequestTO requestTO, WorkFlow workFlow, HpProfile hpProfile, INextGroup iNextGroup) throws WorkFlowException {
+    private void performPostWorkFlowTask(WorkFlowRequestTO requestTO, WorkFlow workFlow, HpProfile hpProfile, INextGroup iNextGroup) throws WorkFlowException, InvalidRequestException {
         if (APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES.contains(workFlow.getWorkFlowStatus().getId())) {
             log.debug("Performing Post Workflow updates since either the Last step of Workflow is reached or work_flow_status is Approved/Suspended/Blacklisted ");
             workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
@@ -168,6 +170,24 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             if(foreignQualificationDetails!=null) {
                 foreignQualificationDetails.setIsVerified(QUALIFICATION_STATUS_REJECTED);
             }
+        } else if (APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES_FOR_SUSPEND_REQUEST.contains(workFlow.getWorkFlowStatus().getId())) {
+            workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
+
+            List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getPendingQualificationsByUserId(hpProfile.getUser().getId());
+
+            for (QualificationDetails qualification : qualificationDetails) {
+
+                WorkFlowRequestTO workFlowRequestTO = new WorkFlowRequestTO();
+
+                workFlowRequestTO.setRequestId(qualification.getRequestId());
+                workFlowRequestTO.setApplicationTypeId(ApplicationType.ADDITIONAL_QUALIFICATION.getId());
+                workFlowRequestTO.setActorId(Group.SYSTEM.getId());
+                workFlowRequestTO.setActionId(Action.REJECT.getId());
+                workFlowRequestTO.setHpProfileId(hpProfile.getId());
+                workFlowRequestTO.setRemarks(NMRConstants.SYSTEM_REJECTION_REMARK);
+
+                initiateSubmissionWorkFlow(workFlowRequestTO);
+               }
         }
     }
 
@@ -278,6 +298,8 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             dashboard.setCollegeStatus(dashboardStatusId);
         } else if (Group.NBE.getId().equals(userGroup)) {
             dashboard.setNbeStatus(dashboardStatusId);
+        } else if (Group.SYSTEM.getId().equals(userGroup) && Action.REJECT.getId().equals(actionPerformedId)){
+            markApprovedAndPendingQualificationsAsRejected(dashboard);
         }
     }
 
@@ -379,5 +401,23 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
     public boolean isAnyApprovedWorkflowForHealthProfessional(BigInteger hpProfileId) {
         return iWorkFlowRepository.findApprovedWorkflow(hpProfileId) != null;
+    }
+
+    public boolean isAnyActiveWorkflowExceptAdditionalQualification(BigInteger hpProfileId) {
+        return !CollectionUtils.isEmpty(iWorkFlowRepository.findPendingWorkflowExceptAdditionalQualification(hpProfileId));
+    }
+
+    private static void markApprovedAndPendingQualificationsAsRejected(Dashboard dashboard) {
+        if (DashboardStatus.APPROVED.getId().equals(dashboard.getCollegeStatus()) || DashboardStatus.PENDING.getId().equals(dashboard.getCollegeStatus())) {
+            dashboard.setCollegeStatus(DashboardStatus.REJECT.getId());
+        }
+
+        if (DashboardStatus.APPROVED.getId().equals(dashboard.getSmcStatus()) || DashboardStatus.PENDING.getId().equals(dashboard.getSmcStatus())) {
+            dashboard.setSmcStatus(DashboardStatus.REJECT.getId());
+        }
+
+        if (DashboardStatus.APPROVED.getId().equals(dashboard.getNmcStatus()) || DashboardStatus.PENDING.getId().equals(dashboard.getNmcStatus())) {
+            dashboard.setNmcStatus(DashboardStatus.REJECT.getId());
+        }
     }
 }
