@@ -50,7 +50,7 @@ public class ApplicationController {
      */
     @PostMapping(ProtectedPaths.SUSPENSION_REQUEST_URL)
     public SuspendRequestResponseTo suspendHealthProfessional(@Valid @RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
-        if(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(applicationRequestTo.getHpProfileId())){
+        if(iWorkFlowService.isAnyActiveWorkflowExceptAdditionalQualification(applicationRequestTo.getHpProfileId())){
             throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
         }
         log.info("In Application Controller: suspensionHealthProfessional method ");

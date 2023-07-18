@@ -20,4 +20,6 @@ public interface IWorkFlowService {
     void assignQueriesBackToQueryCreator(String requestId) throws WorkFlowException;
 
     boolean isAnyActiveWorkflowWithOtherApplicationType(BigInteger hpProfileId, BigInteger applicationTypeId);
+
+    boolean isAnyActiveWorkflowExceptAdditionalQualification(BigInteger hpProfileId);
 }
