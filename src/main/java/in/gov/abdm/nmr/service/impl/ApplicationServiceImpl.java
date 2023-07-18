@@ -502,7 +502,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         columnToSortMap.put("nmcStatus", " nmc_status");
         columnToSortMap.put("nbeStatus", " nbe_status");
         columnToSortMap.put("hpProfileId", " calculate.hp_profile_id");
-        columnToSortMap.put("requestId", " calculate.request_id");
+        columnToSortMap.put("requestId", " d.request_id");
         columnToSortMap.put("registrationNo", " rd.registration_no");
         columnToSortMap.put("createdAt", " d.created_at");
         columnToSortMap.put("councilName", " stmc.name");
