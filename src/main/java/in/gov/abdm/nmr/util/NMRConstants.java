@@ -65,6 +65,7 @@ public class NMRConstants {
     public static final String INFO_CONTENT_TYPE = "info";
     public static final String CONTACT_NOT_NULL = "Contact cannot be null or empty";
     public static final String OTP_NOT_NULL = "OTP cannot be null or empty";
+    public static final String USER_TYPE_NOT_NULL = "User type cannot be null";
 
     public static final String SUCCESS_RESPONSE = "Success";
     public static final String FAILURE_RESPONSE = "Fail";

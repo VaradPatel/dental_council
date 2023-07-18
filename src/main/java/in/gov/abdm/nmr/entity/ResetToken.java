@@ -23,6 +23,7 @@ public class ResetToken {
     private BigInteger id;
 
     private String userName;
+    private BigInteger userType;
     private String token;
     private Timestamp expiryDate;
 
@@ -37,12 +38,13 @@ public class ResetToken {
         this.expiryDate = calculateExpiryDate(EXPIRATION);
     }
 
-    public ResetToken(final String token, final String userName) {
+    public ResetToken(final String token, final String userName, BigInteger userType) {
         super();
 
         this.token = token;
         this.userName = userName;
         this.expiryDate = calculateExpiryDate(EXPIRATION);
+        this.userType=userType;
     }
     private Timestamp calculateExpiryDate(final int expiryTimeInMinutes) {
 

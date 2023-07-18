@@ -169,7 +169,9 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
         
         String requestBodyString = getRequestBody();
         if (requestBodyString != null && !requestBodyString.isBlank()) {
-            authenticationHandler.updateFailedAttemptsAndLockStatus(objectMapper.readValue(requestBodyString, LoginRequestTO.class).getUsername());
+            LoginRequestTO loginRequestTO=objectMapper.readValue(requestBodyString, LoginRequestTO.class);
+            authenticationHandler.updateFailedAttemptsAndLockStatus(loginRequestTO.getUsername(),loginRequestTO.getUserType());
+
         }
     }
     

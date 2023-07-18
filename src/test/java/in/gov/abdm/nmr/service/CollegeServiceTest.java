@@ -64,7 +64,7 @@ class CollegeServiceTest {
     @Test
     void testGetCollege() throws NotFoundException, NmrException, InvalidIdException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(collegeMasterDaoService.findById(any(BigInteger.class))).thenReturn(getCollegeMaster());
         when(collegeProfileDaoService.findAdminByCollegeId(any(BigInteger.class))).thenReturn(getCollegeProfile());
         when(userDaoService.findById(any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
@@ -91,7 +91,7 @@ class CollegeServiceTest {
     @Test
     void testCreateOrUpdateCollege() throws ResourceExistsException, NotFoundException, NmrException, InvalidRequestException, InvalidIdException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getNmcUser());
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getNmcUser());
         when(collegeMasterDaoService.findById(any(BigInteger.class))).thenReturn(getCollegeMaster());
         when(collegeProfileDaoService.findAdminByCollegeId(any(BigInteger.class))).thenReturn(getCollegeProfile());
         when(collegeMasterDaoService.save(any(CollegeMaster.class))).thenReturn(getCollegeMaster());
@@ -104,14 +104,14 @@ class CollegeServiceTest {
     @Test
     void testCreateOrUpdateCollegeShouldThrowInvalidRequestException() {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         assertThrows(InvalidRequestException.class, () -> collegeService.createOrUpdateCollege(getCollegeResponse()));
     }
 
     @Test
     void testCreateOrUpdateCollegeShouldThrowNotFoundExceptionForCollege() {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getNmcUser());
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getNmcUser());
         when(collegeMasterDaoService.findById(any(BigInteger.class))).thenReturn(null);
         assertThrows(NotFoundException.class, () -> collegeService.createOrUpdateCollege(getCollegeResponse()));
     }
@@ -131,11 +131,11 @@ class CollegeServiceTest {
     @Test
     void testCreateOrUpdateCollegeShouldCreateCollegeAndCheckDuplicateContactsCheck() {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getNmcUser());
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getNmcUser());
         when(collegeMasterDaoService.save(any(CollegeMaster.class))).thenReturn(getCollegeMaster());
         when(universityMasterService.findById(any(BigInteger.class))).thenReturn(getUniversityMaster());
         when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
-        when(userDaoService.existsByEmail(anyString())).thenReturn(false);
+        when(userDaoService.existsByEmailAndUserTypeId(anyString(), any(BigInteger.class))).thenReturn(false);
         assertThrows(Exception.class, () -> collegeService.createOrUpdateCollege(getCollege()));
     }
 
@@ -153,7 +153,7 @@ class CollegeServiceTest {
     @Test
     void testCreateOrUpdateCollegeVerifier() throws NmrException, ResourceExistsException, GeneralSecurityException, InvalidRequestException, InvalidIdException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(collegeProfileDaoService.findById(any(BigInteger.class))).thenReturn(getCollegeProfile());
         when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(collegeProfileDaoService.save(any(CollegeProfile.class))).thenReturn(getCollegeProfile());
@@ -165,7 +165,7 @@ class CollegeServiceTest {
     @Test
     void testGetCollegeVerifier() throws NmrException, InvalidIdException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(collegeProfileDaoService.findById(any(BigInteger.class))).thenReturn(getCollegeProfile());
         CollegeProfileTo collegeVerifier = collegeService.getCollegeVerifier(COLLEGE_ID, ID);
         assertEquals(COLLEGE_ID, collegeVerifier.getCollegeId());

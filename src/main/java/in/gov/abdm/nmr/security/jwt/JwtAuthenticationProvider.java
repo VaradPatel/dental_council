@@ -1,7 +1,9 @@
 package in.gov.abdm.nmr.security.jwt;
 
+import java.math.BigInteger;
 import java.util.List;
 
+import in.gov.abdm.nmr.enums.UserTypeEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,7 +43,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             if (JwtTypeEnum.ACCESS_TOKEN.equals(jwtAuthtoken.getType())) {
                 DecodedJWT verifiedToken = jwtUtil.verifyToken(jwtAuthtoken.getCredentials(), JwtTypeEnum.ACCESS_TOKEN);
                 List<? extends GrantedAuthority> authorities = verifiedToken.getClaim(JwtUtil.AUTHORITIES_LABEL).asList(String.class).stream().map(SimpleGrantedAuthority::new).toList();
-                jwtAuthtoken = new JwtAuthenticationToken(verifiedToken.getSubject(), authorities);
+                jwtAuthtoken = new JwtAuthenticationToken(verifiedToken.getSubject(), authorities, UserTypeEnum.getUserType(verifiedToken.getClaim(JwtUtil.USER_TYPE).as(BigInteger.class)));
                 jwtAuthtoken.setAuthenticated(true);
                 return jwtAuthtoken;
             }
@@ -49,12 +51,12 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             if (JwtTypeEnum.REFRESH_TOKEN.equals(jwtAuthtoken.getType())) {
                 DecodedJWT verifiedToken = jwtUtil.verifyToken(jwtAuthtoken.getCredentials(), JwtTypeEnum.REFRESH_TOKEN);
 
-                String refreshTokenId = userDetailService.findByUsername(verifiedToken.getSubject()).getRefreshTokenId();
+                String refreshTokenId = userDetailService.findByUsername(verifiedToken.getSubject(), UserTypeEnum.getUserType(verifiedToken.getClaim(JwtUtil.USER_TYPE).as(BigInteger.class)).getId()).getRefreshTokenId();
                 if (StringUtils.isBlank(verifiedToken.getId()) || StringUtils.isBlank(refreshTokenId) || !refreshTokenId.equals(verifiedToken.getId())) {
                     throw new AuthenticationServiceException("Unable to authenticate token");
                 }
                 List<? extends GrantedAuthority> authorities = verifiedToken.getClaim(JwtUtil.AUTHORITIES_LABEL).asList(String.class).stream().map(SimpleGrantedAuthority::new).toList();
-                jwtAuthtoken = new JwtAuthenticationToken(verifiedToken.getSubject(), authorities);
+                jwtAuthtoken = new JwtAuthenticationToken(verifiedToken.getSubject(), authorities,UserTypeEnum.getUserType(verifiedToken.getClaim(JwtUtil.USER_TYPE).as(BigInteger.class)));
                 jwtAuthtoken.setAuthenticated(true);
                 return jwtAuthtoken;
             }

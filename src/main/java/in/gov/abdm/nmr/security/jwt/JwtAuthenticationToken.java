@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.security.jwt;
 
+import in.gov.abdm.nmr.enums.UserTypeEnum;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -17,18 +18,23 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
     private final JwtTypeEnum type;
 
-    public JwtAuthenticationToken(String token, JwtTypeEnum type) {
+    private final UserTypeEnum userType;
+
+    public JwtAuthenticationToken(String token, JwtTypeEnum type, UserTypeEnum userType) {
+
         super(Collections.emptyList());
         this.principal = null;
         this.token = token;
         this.type = type;
+        this.userType = userType;
     }
 
-    public JwtAuthenticationToken(String principal, Collection<? extends GrantedAuthority> authorities) {
+    public JwtAuthenticationToken(String principal, Collection<? extends GrantedAuthority> authorities, UserTypeEnum userType) {
         super(authorities);
         this.principal = principal;
         this.token = null;
         this.type = null;
+        this.userType = userType;
     }
 
 
@@ -61,5 +67,9 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
         if (getClass() != obj.getClass()) return false;
         JwtAuthenticationToken other = (JwtAuthenticationToken) obj;
         return Objects.equals(principal, other.principal) && Objects.equals(token, other.token) && type == other.type;
+    }
+
+    public UserTypeEnum getUserType() {
+        return userType;
     }
 }
