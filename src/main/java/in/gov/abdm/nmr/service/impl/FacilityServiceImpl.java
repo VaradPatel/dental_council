@@ -58,7 +58,7 @@ public class FacilityServiceImpl implements IFacilityService {
                         facilitySearchResponseTO.getFacility().getFacilityAddressTo().getDistrict());
 
                 facilitySearchResponseTO.getFacility().getFacilityAddressTo().setDistrictTO(DistrictTO.builder()
-                        .id(districtByIsoCode.getId()).name(districtByIsoCode.getName()).build());
+                        .id(districtByIsoCode.getId()).isoCode(districtByIsoCode.getIsoCode()).name(districtByIsoCode.getName()).build());
             }
 
             if (StringUtils.isNotBlank(facilitySearchResponseTO.getFacility().getFacilityAddressTo().getState())) {
@@ -66,7 +66,7 @@ public class FacilityServiceImpl implements IFacilityService {
                         facilitySearchResponseTO.getFacility().getFacilityAddressTo().getState());
 
                 facilitySearchResponseTO.getFacility().getFacilityAddressTo().setStateTO(
-                        StateTO.builder().id(stateByIsoCode.getId()).name(stateByIsoCode.getName()).build());
+                        StateTO.builder().id(stateByIsoCode.getId()).isoCode(stateByIsoCode.getIsoCode()).name(stateByIsoCode.getName()).build());
             }
             return facilitiesSearchResponseTO;
 
