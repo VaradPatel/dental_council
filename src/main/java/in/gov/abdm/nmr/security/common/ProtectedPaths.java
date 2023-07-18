@@ -63,6 +63,7 @@ public class ProtectedPaths {
     public static final String USER_UNLOCK_URL = "/user/{userId}/unlock";
     public static final String USER_DEACTIVATE_URL = "/user/{userId}/deactivate";
     public static final String DE_LINK_FACILITY = "/health-professional/work-profile/facility";
+    public static final String HP_REGISTER = "/health-professional/register";
 
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<AntPathRequestMatcher> protectedPaths = new ArrayList<>();
@@ -111,6 +112,7 @@ public class ProtectedPaths {
         protectedPaths.add(new AntPathRequestMatcher(USER_UNLOCK_URL));
         protectedPaths.add(new AntPathRequestMatcher(USER_DEACTIVATE_URL));
         protectedPaths.add(new AntPathRequestMatcher(APPLICATION_REQUEST_URL));
+        protectedPaths.add(new AntPathRequestMatcher(HP_REGISTER));
 
         return protectedPaths.toArray(AntPathRequestMatcher[]::new);
     }
