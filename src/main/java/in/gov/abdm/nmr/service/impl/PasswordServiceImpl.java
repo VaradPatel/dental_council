@@ -10,6 +10,7 @@ import in.gov.abdm.nmr.exception.OtpException;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.repository.ResetTokenRepository;
 import in.gov.abdm.nmr.security.common.RsaUtil;
+import in.gov.abdm.nmr.security.jwt.JwtAuthenticationToken;
 import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRConstants;
 import net.bytebuddy.utility.RandomString;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -74,10 +76,11 @@ public class PasswordServiceImpl implements IPasswordService {
     public ResponseMessageTo getResetPasswordLink(SendLinkOnMailTo sendLinkOnMailTo, String username) {
         try {
 
+            BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
 
             resetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
 
-            if (userDaoService.existsByEmail(sendLinkOnMailTo.getEmail())) {
+            if (userDaoService.existsByEmailAndUserTypeId(sendLinkOnMailTo.getEmail(), userType)) {
                 return notificationService.sendNotificationForResetPasswordLink(sendLinkOnMailTo.getEmail(), generateLink(sendLinkOnMailTo),username);
             } else {
                 return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
@@ -103,7 +106,7 @@ public class PasswordServiceImpl implements IPasswordService {
 
             ResetToken resetToken = resetTokenRepository.findByToken(newPasswordTo.getToken());
 
-            User user = userDaoService.findByUsername(resetToken.getUserName());
+            User user = userDaoService.findByUsername(resetToken.getUserName(), resetToken.getUserType());
 
             if (null == user) {
                 return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
@@ -147,7 +150,7 @@ public class PasswordServiceImpl implements IPasswordService {
         if (otpService.isOtpVerified(transactionId)) {
             throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());
         }
-        User user = userDaoService.findByUsername(resetPasswordRequestTo.getUsername());
+        User user = userDaoService.findByUsername(resetPasswordRequestTo.getUsername(), resetPasswordRequestTo.getUserType());
 
         if (null != user) {
 
@@ -188,7 +191,8 @@ public class PasswordServiceImpl implements IPasswordService {
         User user = userDaoService.findById(changePasswordRequestTo.getUserId());
         if (user != null) {
             String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-            User loggedInUser = userDaoService.findByUsername(userName);
+            BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
+            User loggedInUser = userDaoService.findByUsername(userName, userType);
             if (loggedInUser.getId().equals(user.getId())) {
                 return changePassword(changePasswordRequestTo, user);
             } else {
@@ -231,12 +235,12 @@ public class PasswordServiceImpl implements IPasswordService {
 
 
         String token = RandomString.make(30);
-        ResetToken resetToken = resetTokenRepository.findByUserName(sendLinkOnMailTo.getEmail());
+        ResetToken resetToken = resetTokenRepository.findByUserNameAndUserType(sendLinkOnMailTo.getEmail(), sendLinkOnMailTo.getUserType());
 
         if (resetToken != null) {
             resetToken.setToken(token);
         } else {
-            resetToken = new ResetToken(token, sendLinkOnMailTo.getEmail());
+            resetToken = new ResetToken(token, sendLinkOnMailTo.getEmail(), sendLinkOnMailTo.getUserType());
         }
         resetTokenRepository.save(resetToken);
 

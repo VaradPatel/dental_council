@@ -66,7 +66,7 @@ public class OtpServiceImpl implements IOtpService {
 
         if(!otpGenerateRequestTo.isRegistration()) {
 
-            User user = userDaoService.findByUsername(otpGenerateRequestTo.getContact());
+            User user = userDaoService.findByUsername(otpGenerateRequestTo.getContact(), otpGenerateRequestTo.getUserType());
             if (user == null) {
                 if (notificationType.equals(NotificationType.SMS.getNotificationType())) {
                     throw new InvalidRequestException(NMRError.NON_REGISTERED_MOBILE_NUMBER.getCode(), NMRError.NON_REGISTERED_MOBILE_NUMBER.getMessage());
@@ -81,7 +81,7 @@ public class OtpServiceImpl implements IOtpService {
         String contact = otpGenerateRequestTo.getContact();
         if (NotificationType.NMR_ID.getNotificationType().equals(otpGenerateRequestTo.getType())) {
             notificationType = NotificationType.SMS.getNotificationType();
-            contact = userDaoService.findByUsername(otpGenerateRequestTo.getContact()).getMobileNumber();
+            contact = userDaoService.findByUsername(otpGenerateRequestTo.getContact(), otpGenerateRequestTo.getUserType()).getMobileNumber();
         }
 
         List<Otp> previousOtps = otpDaoService.findAllByContact(contact);

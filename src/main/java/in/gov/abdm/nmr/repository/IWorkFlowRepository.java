@@ -24,4 +24,6 @@ public interface IWorkFlowRepository extends JpaRepository<WorkFlow, BigInteger>
     WorkFlow findLastWorkFlowForHealthProfessional(BigInteger hpProfileId);
     WorkFlow findWorkflowByHpProfileId(BigInteger hpProfileId);
 
+    @Query(value = "Select * from main.work_flow wf  where wf.work_flow_status_id = 1 and application_type_id!=8 and hp_profile_id =:hpProfileId", nativeQuery = true)
+    List<WorkFlow> findPendingWorkflowExceptAdditionalQualification(BigInteger hpProfileId);
 }

@@ -62,7 +62,7 @@ class AuthServiceTest {
     @Test
     void testSuccessfulAuthSuccessfulAuthForHealthProfessional() {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDetailDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDetailDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(hpProfileService.findLatestEntryByUserid(any(BigInteger.class))).thenReturn(getHpProfile());
         when(ihpProfileRepository.findLatestHpProfileFromWorkFlow(nullable(String.class))).thenReturn(getHpProfile());
         when(workFlowRepository.findLastWorkFlowForHealthProfessional(any(BigInteger.class))).thenReturn(null);
@@ -73,7 +73,7 @@ class AuthServiceTest {
     @Test
     void testSuccessfulAuthSuccessfulAuthForCollege() {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDetailDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
+        when(userDetailDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(collegeProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getCollegeProfile());
         LoginResponseTO loginResponseTO = authService.successfulAuth(response);
         assertEquals(ID, loginResponseTO.getUserId());
@@ -82,7 +82,7 @@ class AuthServiceTest {
     @Test
     void testSuccessfulAuthSuccessfulAuthForSMC() {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDetailDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.SMC.getId()));
+        when(userDetailDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.SMC.getId()));
         when(smcProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getSmcProfile());
         LoginResponseTO loginResponseTO = authService.successfulAuth(response);
         assertEquals(ID, loginResponseTO.getUserId());

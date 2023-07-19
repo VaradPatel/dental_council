@@ -20,7 +20,6 @@ public class NMRConstants {
     public static final String NOTIFICATION_SERVICE_SEND_MESSAGE = "/internal/v3/notification/message";
     public static final String NOTIFICATION_DB_SERVICE_GET_TEMPLATE = "/internal/v3/notification/template/id/{id}";
     public static final String RESET_PASSWORD = "/user/reset-password";
-    public static final String RAISE_QUERY = "/health-professional/queries";
     public static final String KYC_FUZZY_MATCH = "/health-professional/{registrationNumber}/kyc";
     public static final String GET_QUERIES = "health-professional/{healthProfessionalId}/queries";
     public static final String VERIFY_EMAIL = "/user/verify-email";
@@ -65,6 +64,7 @@ public class NMRConstants {
     public static final String INFO_CONTENT_TYPE = "info";
     public static final String CONTACT_NOT_NULL = "Contact cannot be null or empty";
     public static final String OTP_NOT_NULL = "OTP cannot be null or empty";
+    public static final String USER_TYPE_NOT_NULL = "User type cannot be null";
 
     public static final String SUCCESS_RESPONSE = "Success";
     public static final String FAILURE_RESPONSE = "Fail";
@@ -351,6 +351,7 @@ public class NMRConstants {
     public static final String COLLEGE_NBE_VERIFIED = "College/NBE Verified";
     public static final String SUBMITTED = "Submitted";
     public static final String VERIFIED =  "Verified";
+    public static final String SYSTEM_REJECTION_REMARK =  "Rejected by system due to profile suspension";
 
 
     public static final String APPLICATION_REQUEST_DETAILS = """

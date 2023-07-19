@@ -8,6 +8,7 @@ import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IQueriesService;
 import in.gov.abdm.nmr.util.NMRConstants;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -214,7 +215,7 @@ public class HpRegistrationController {
      * @return a string indicating the result of the operation
      * @throws WorkFlowException if there is an error during the operation
      */
-    @PostMapping(path = "/health-professional/{healthProfessionalId}/qualifications", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = ProtectedPaths.ADDITIONAL_QUALIFICATION, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String addQualifications(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
                                     @RequestPart("data") QualificationRequestTO qualificationDetailRequestTO,
                                     @RequestParam(value = "degreeCertificates") List<MultipartFile> degreeCertificates
@@ -246,7 +247,8 @@ public class HpRegistrationController {
      * @throws InvalidRequestException If the request body is invalid.
      * @throws WorkFlowException       If there is an issue with the submission workflow.
      */
-    @PostMapping(path = "health-professional/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @SecurityRequirement(name = "bearerAuth")
+    @PostMapping(path = ProtectedPaths.HP_REGISTER, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileAddResponseTO submit(@Valid @RequestBody HpSubmitRequestTO hpSubmitRequestTO)
             throws InvalidRequestException, WorkFlowException {
 
@@ -270,7 +272,7 @@ public class HpRegistrationController {
      * @param queryCreateTo coming from user
      * @return returns created list of queries
      */
-    @PostMapping(path = NMRConstants.RAISE_QUERY, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = ProtectedPaths.RAISE_QUERY, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseMessageTo raiseQuery(@Valid @RequestBody QueryCreateTo queryCreateTo) throws WorkFlowException, InvalidRequestException {
         return queryService.createQueries(queryCreateTo);
     }

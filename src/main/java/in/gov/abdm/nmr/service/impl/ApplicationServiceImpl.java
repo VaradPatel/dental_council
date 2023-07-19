@@ -12,6 +12,7 @@ import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.security.jwt.JwtAuthenticationToken;
 import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -238,8 +239,9 @@ public class ApplicationServiceImpl implements IApplicationService {
     private BigInteger getGroupIdForLoggedInUser() {
 
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
         log.info("Processing card-detail service for : {} ", userName);
-        User userDetail = userDaoService.findByUsername(userName);
+        User userDetail = userDaoService.findByUsername(userName, userType);
         BigInteger groupId = userDetail.getGroup().getId();
         return groupId;
     }
@@ -280,7 +282,9 @@ public class ApplicationServiceImpl implements IApplicationService {
     public ReactivateHealthProfessionalResponseTO getReactivationRecordsOfHealthProfessionalsToNmc(String pageNo, String offset, String search, String value, String sortBy, String sortType) throws InvalidRequestException {
         ReactivateHealthProfessionalResponseTO reactivateHealthProfessionalResponseTO = null;
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userDaoService.findByUsername(userName);
+        BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
+
+        User userDetail = userDaoService.findByUsername(userName, userType);
         BigInteger groupId = userDetail.getGroup().getId();
         ReactivateHealthProfessionalRequestParam reactivateHealthProfessionalQueryParam = new ReactivateHealthProfessionalRequestParam();
         reactivateHealthProfessionalQueryParam.setGroupId(groupId.toString());
@@ -351,7 +355,9 @@ public class ApplicationServiceImpl implements IApplicationService {
      */
     private void initiateWorkFlow(ApplicationRequestTo applicationRequestTo, String requestId, HpProfile newHpProfile) throws WorkFlowException, InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userDaoService.findByUsername(userName);
+        BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
+
+        User userDetail = userDaoService.findByUsername(userName, userType);
         WorkFlowRequestTO workFlowRequestTO = new WorkFlowRequestTO();
         workFlowRequestTO.setRequestId(requestId);
         workFlowRequestTO.setApplicationTypeId(applicationRequestTo.getApplicationTypeId());
@@ -379,7 +385,8 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetails(NMRPagination nmrPagination, String search, String value, String smcId, String registrationNo) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userDaoService.findByUsername(userName);
+        BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
+        User userDetail = userDaoService.findByUsername(userName, userType);
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = new HealthProfessionalApplicationRequestParamsTo();
         BigInteger groupId = userDetail.getGroup().getId();
         BigInteger userId = userDetail.getId();
@@ -496,17 +503,17 @@ public class ApplicationServiceImpl implements IApplicationService {
     private String mapColumnToTable(String columnToSort) {
         Map<String, String> columnToSortMap = new HashMap<>();
         columnToSortMap.put("doctorStatus", " doctor_status");
-        columnToSortMap.put("smcStatus", " smc_status");
+        columnToSortMap.put("councilVerificationStatus", " smc_status");
         columnToSortMap.put("collegeDeanStatus", " college_dean_status");
-        columnToSortMap.put("collegeRegistrarStatus", " college_registrar_status");
-        columnToSortMap.put("nmcStatus", " nmc_status");
+        columnToSortMap.put("collegeVerificationStatus", " nbe_status");
+        columnToSortMap.put("NMCVerificationStatus", " nmc_status");
         columnToSortMap.put("nbeStatus", " nbe_status");
-        columnToSortMap.put("hpProfileId", " calculate.hp_profile_id");
+        columnToSortMap.put("hpProfileId", " d.hp_profile_id");
         columnToSortMap.put("requestId", " d.request_id");
         columnToSortMap.put("registrationNo", " rd.registration_no");
-        columnToSortMap.put("createdAt", " d.created_at");
-        columnToSortMap.put("councilName", " stmc.name");
-        columnToSortMap.put("applicantFullName", " hp.full_name");
+        columnToSortMap.put("dateofSubmission", " d.created_at");
+        columnToSortMap.put("nameofStateCouncil", " stmc.name");
+        columnToSortMap.put("nameofApplicant", " hp.full_name");
         columnToSortMap.put("applicationTypeId", " application_type_id");
         columnToSortMap.put("pendency", " pendency");
         return columnToSortMap.getOrDefault(columnToSort, " d.created_at ");

@@ -114,7 +114,7 @@ class UserServiceTest {
     @Test
     void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByMobileNumber() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
+        when(userDetailRepository.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
         UserResponseTO user = userService.getAllUser(MOBILE_NUMBER_IN_LOWER_CASE, MOBILE_NUMBER, 1, 1, "", "");
         assertEquals(CommonTestData.ID, user.getTotalNoOfRecords());
@@ -129,7 +129,7 @@ class UserServiceTest {
     @Test
     void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByUserTypeID() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
+        when(userDetailRepository.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
         UserResponseTO user = userService.getAllUser(USER_TYPE_ID_IN_LOWER_CASE, UserTypeEnum.NBE.getId().toString(), 1, 1, "", "");
         assertEquals(CommonTestData.ID, user.getTotalNoOfRecords());
@@ -144,7 +144,7 @@ class UserServiceTest {
     @Test
     void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByFirstName() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
+        when(userDetailRepository.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
         UserResponseTO user = userService.getAllUser(FIRST_NAME_IN_LOWER_CASE, FIRST_NAME, 1, 1, "", "");
         assertEquals(CommonTestData.ID, user.getTotalNoOfRecords());
@@ -160,7 +160,7 @@ class UserServiceTest {
     @Test
     void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByLastName() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
+        when(userDetailRepository.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
         UserResponseTO user = userService.getAllUser(LAST_NAME_IN_LOWER_CASE, FIRST_NAME, 1, 1, "", "");
         assertEquals(CommonTestData.ID, user.getTotalNoOfRecords());
@@ -175,7 +175,7 @@ class UserServiceTest {
     @Test
     void testGetAllUserShouldGetUserDetailsBasedOnLoginUserAuthoritySearchByEmailID() throws AccessDeniedException, InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.NMC.getId()));
+        when(userDetailRepository.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.NMC.getId()));
         when(fetchUserDetailsCustomRepository.fetchUserData(any(UserRequestParamsTO.class), any(Pageable.class))).thenReturn(getUserResponse());
         UserResponseTO user = userService.getAllUser(EMAIL_ID_IN_LOWER_CASE, FIRST_NAME, 1, 1, "", "");
         assertEquals(CommonTestData.ID, user.getTotalNoOfRecords());
@@ -232,7 +232,7 @@ class UserServiceTest {
     @Test
     void testVerifyEmailShouldValidateLinkAndReturnSuccessResponse() throws InvalidRequestException{
         when(resetTokenRepository.findByToken(anyString())).thenReturn(getResetToken());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         ResponseMessageTo responseMessageTo = userService.verifyEmail(new VerifyEmailTo(TEMP_TOKEN));
         assertEquals(SUCCESS_RESPONSE, responseMessageTo.getMessage());
