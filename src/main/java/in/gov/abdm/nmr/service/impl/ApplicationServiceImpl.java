@@ -503,17 +503,17 @@ public class ApplicationServiceImpl implements IApplicationService {
     private String mapColumnToTable(String columnToSort) {
         Map<String, String> columnToSortMap = new HashMap<>();
         columnToSortMap.put("doctorStatus", " doctor_status");
-        columnToSortMap.put("smcStatus", " smc_status");
+        columnToSortMap.put("councilVerificationStatus", " smc_status");
         columnToSortMap.put("collegeDeanStatus", " college_dean_status");
-        columnToSortMap.put("collegeRegistrarStatus", " college_registrar_status");
-        columnToSortMap.put("nmcStatus", " nmc_status");
+        columnToSortMap.put("collegeVerificationStatus", " nbe_status");
+        columnToSortMap.put("NMCVerificationStatus", " nmc_status");
         columnToSortMap.put("nbeStatus", " nbe_status");
-        columnToSortMap.put("hpProfileId", " calculate.hp_profile_id");
+        columnToSortMap.put("hpProfileId", " d.hp_profile_id");
         columnToSortMap.put("requestId", " d.request_id");
         columnToSortMap.put("registrationNo", " rd.registration_no");
-        columnToSortMap.put("createdAt", " d.created_at");
-        columnToSortMap.put("councilName", " stmc.name");
-        columnToSortMap.put("applicantFullName", " hp.full_name");
+        columnToSortMap.put("dateofSubmission", " d.created_at");
+        columnToSortMap.put("nameofStateCouncil", " stmc.name");
+        columnToSortMap.put("nameofApplicant", " hp.full_name");
         columnToSortMap.put("applicationTypeId", " application_type_id");
         columnToSortMap.put("pendency", " pendency");
         return columnToSortMap.getOrDefault(columnToSort, " d.created_at ");
