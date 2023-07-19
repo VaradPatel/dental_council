@@ -161,7 +161,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         if(failed instanceof BadCredentialsException) {
-            failed = new AuthenticationServiceException("Invalid Username or Password! Please enter valid username and password");
+            failed = new AuthenticationServiceException("Incorrect username or password");
         }
         
         super.unsuccessfulAuthentication(request, response, failed);
