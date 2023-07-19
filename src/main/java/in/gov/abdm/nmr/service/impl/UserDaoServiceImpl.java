@@ -9,7 +9,7 @@ import in.gov.abdm.nmr.repository.INbeProfileRepository;
 import in.gov.abdm.nmr.repository.INmcProfileRepository;
 import in.gov.abdm.nmr.repository.ISmcProfileRepository;
 import in.gov.abdm.nmr.repository.IUserRepository;
-import in.gov.abdm.nmr.security.username_password.UserPasswordAuthenticationToken;
+import in.gov.abdm.nmr.security.jwt.JwtAuthenticationToken;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -108,7 +108,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     @Override
     public User toggleSmsNotification(boolean isSmsNotificationEnabled) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        BigInteger userType=((UserPasswordAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType();
+        BigInteger userType=((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
         User userDetail = userDetailRepository.findByUsername(userName, userType);
         userDetail.setSmsNotificationEnabled(isSmsNotificationEnabled);
         return userDetailRepository.saveAndFlush(userDetail);
@@ -117,7 +117,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     @Override
     public User toggleEmailNotification(boolean isEmailNotificationEnabled) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        BigInteger userType=((UserPasswordAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType();
+        BigInteger userType=((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
         User userDetail = userDetailRepository.findByUsername(userName, userType);
         userDetail.setEmailNotificationEnabled(isEmailNotificationEnabled);
         return userDetailRepository.saveAndFlush(userDetail);
@@ -126,7 +126,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
     @Override
     public User toggleNotification(NotificationToggleRequestTO notificationToggleRequestTO) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        BigInteger userType=((UserPasswordAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType();
+        BigInteger userType=((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
         User userDetail = userDetailRepository.findByUsername(userName, userType);
         notificationToggleRequestTO.getNotificationToggles().forEach(notificationToggleTO -> {
             if (NMRConstants.SMS.equalsIgnoreCase(notificationToggleTO.getMode())) {
