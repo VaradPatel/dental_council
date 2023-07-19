@@ -215,7 +215,7 @@ public class HpRegistrationController {
      * @return a string indicating the result of the operation
      * @throws WorkFlowException if there is an error during the operation
      */
-    @PostMapping(path = "/health-professional/{healthProfessionalId}/qualifications", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = ProtectedPaths.ADDITIONAL_QUALIFICATION, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String addQualifications(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
                                     @RequestPart("data") QualificationRequestTO qualificationDetailRequestTO,
                                     @RequestParam(value = "degreeCertificates") List<MultipartFile> degreeCertificates
@@ -272,7 +272,7 @@ public class HpRegistrationController {
      * @param queryCreateTo coming from user
      * @return returns created list of queries
      */
-    @PostMapping(path = NMRConstants.RAISE_QUERY, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = ProtectedPaths.RAISE_QUERY, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseMessageTo raiseQuery(@Valid @RequestBody QueryCreateTo queryCreateTo) throws WorkFlowException, InvalidRequestException {
         return queryService.createQueries(queryCreateTo);
     }
