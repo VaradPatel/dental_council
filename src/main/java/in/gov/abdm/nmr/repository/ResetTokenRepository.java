@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
+import java.math.BigInteger;
 import java.util.Date;
 
 public interface ResetTokenRepository extends JpaRepository<ResetToken, Long> {
@@ -17,5 +18,5 @@ public interface ResetTokenRepository extends JpaRepository<ResetToken, Long> {
     @Query("delete from ResetToken t where t.expiryDate <= ?1")
     void deleteAllExpiredSince(Date now);
 
-    ResetToken findByUserName(String username);
+    ResetToken findByUserNameAndUserType(String username, BigInteger userType);
 }

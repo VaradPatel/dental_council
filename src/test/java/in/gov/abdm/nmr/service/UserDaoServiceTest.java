@@ -78,8 +78,8 @@ class UserDaoServiceTest {
 
     @Test
     void testFindByUsernameShouldFindUserDetailsByUserName() {
-        when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
-        User user = userDaoService.findByUsername(TEST_USER);
+        when(userDetailRepository.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
+        User user = userDaoService.findByUsername(TEST_USER, TEST_USER_TYPE);
         assertEquals(ID, user.getId());
     }
 
@@ -92,29 +92,29 @@ class UserDaoServiceTest {
 
     @Test
     void testExistsByUserNameShouldCheckRecordAreExistForUserName() {
-        when(userDetailRepository.existsByUserName(anyString())).thenReturn(true);
-        boolean isExist = userDaoService.existsByUserName(TEST_USER);
+        when(userDetailRepository.existsByUserNameAndUserTypeId(anyString(), any(BigInteger.class))).thenReturn(true);
+        boolean isExist = userDaoService.existsByUserNameAndUserTypeId(TEST_USER, TEST_USER_TYPE);
         assertTrue(isExist);
     }
 
     @Test
     void testExistsByMobileNumberShouldCheckRecordAreExistForMobileNumber() {
-        when(userDetailRepository.existsByMobileNumber(anyString())).thenReturn(true);
-        boolean isExist = userDaoService.existsByMobileNumber(MOBILE_NUMBER);
+        when(userDetailRepository.existsByMobileNumberAndUserTypeId(anyString(), any(BigInteger.class))).thenReturn(true);
+        boolean isExist = userDaoService.existsByMobileNumberAndUserTypeId(MOBILE_NUMBER, TEST_USER_TYPE);
         assertTrue(isExist);
     }
 
     @Test
     void testExistsByEmailShouldCheckRecordAreExistForEmail() {
-        when(userDetailRepository.existsByEmail(anyString())).thenReturn(true);
-        boolean isExist = userDaoService.existsByEmail(EMAIL_ID);
+        when(userDetailRepository.existsByEmailAndUserTypeId(anyString(), any(BigInteger.class))).thenReturn(true);
+        boolean isExist = userDaoService.existsByEmailAndUserTypeId(EMAIL_ID, TEST_USER_TYPE);
         assertTrue(isExist);
     }
 
     @Test
     void testToggleSmsNotification() {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
+        when(userDetailRepository.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(userDetailRepository.saveAndFlush(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         User user = userDaoService.toggleSmsNotification(true);
         assertEquals(ID, user.getId());
@@ -123,7 +123,7 @@ class UserDaoServiceTest {
     @Test
     void testToggleEmailNotification() {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
+        when(userDetailRepository.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(userDetailRepository.saveAndFlush(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         User user = userDaoService.toggleEmailNotification(true);
         assertEquals(ID, user.getId());
@@ -154,7 +154,7 @@ class UserDaoServiceTest {
     @Test
     void testToggleNotificationShouldToggleNotificationForSMSMode() {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
+        when(userDetailRepository.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(userDetailRepository.saveAndFlush(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         User user = userDaoService.toggleNotification(getNotificationToggleRequestForSMSMode());
         assertEquals(ID, user.getId());
@@ -163,7 +163,7 @@ class UserDaoServiceTest {
     @Test
     void testToggleNotificationShouldToggleNotificationForEmailMode() {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDetailRepository.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
+        when(userDetailRepository.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(userDetailRepository.saveAndFlush(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         User user = userDaoService.toggleNotification(getNotificationToggleRequestForEmailMode());
         assertEquals(ID, user.getId());
@@ -250,8 +250,8 @@ class UserDaoServiceTest {
 
     @Test
     void testCheckEmailUsedByOtherUser() {
-        when(userDetailRepository.checkEmailUsedByOtherUser(any(BigInteger.class), anyString())).thenReturn(true);
-        boolean usedByOtherUser = userDaoService.checkEmailUsedByOtherUser(ID, EMAIL_ID);
+        when(userDetailRepository.checkEmailUsedByOtherUser(any(BigInteger.class), anyString(), any(BigInteger.class))).thenReturn(true);
+        boolean usedByOtherUser = userDaoService.checkEmailUsedByOtherUser(ID, EMAIL_ID, TEST_USER_TYPE);
         assertTrue(usedByOtherUser);
     }
 

@@ -37,6 +37,8 @@ public class JwtUtil {
 
     private static final String AUDIENCE_VALUE = "nmr";
 
+    public static final String USER_TYPE = "user_type";
+
     private KeyUtil keyUtil;
 
     private Long accessTokenExpirySeconds;
@@ -53,7 +55,7 @@ public class JwtUtil {
         this.userDetailService = userDetailService;
     }
 
-    public String generateToken(String username, JwtTypeEnum type, String[] role, BigInteger profileId) {
+    public String generateToken(String username, JwtTypeEnum type, String[] role, BigInteger profileId, BigInteger userType) {
         LOGGER.info("Generating {}", type);
 
         if (Stream.of(role).anyMatch((RoleConstants.ROLE_PREFIX + RoleConstants.SYSTEM)::equals)) {
@@ -72,7 +74,7 @@ public class JwtUtil {
         }
 
         Builder tokenBuilder = JWT.create().withJWTId(jwtId).withIssuer(ISSUER_VALUE).withSubject(username).withAudience(AUDIENCE_VALUE).withIssuedAt(Instant.now())
-                .withExpiresAt(Instant.now().plusSeconds(expiry)).withClaim(TOKEN_TYPE_LABEL, type.getCode()).withClaim(AUTHORITIES_LABEL, Arrays.asList(role));
+                .withExpiresAt(Instant.now().plusSeconds(expiry)).withClaim(TOKEN_TYPE_LABEL, type.getCode()).withClaim(AUTHORITIES_LABEL, Arrays.asList(role)).withClaim(USER_TYPE,userType.longValue());
         if (profileId != null) {
             tokenBuilder.withClaim(USER_PROFILE_ID_LABEL, profileId.longValueExact());
         }

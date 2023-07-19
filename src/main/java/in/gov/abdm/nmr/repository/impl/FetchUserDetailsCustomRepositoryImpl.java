@@ -32,7 +32,10 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
 
     private static final Function<UserRequestParamsTO, String> SORT_RECORDS = userRequestParamsTO -> {
         StringBuilder sb = new StringBuilder();
-        sb.append(" ORDER BY  :sort");
+        sb.append(" ORDER BY  ");
+        sb.append(userRequestParamsTO.getSortBy());
+        sb.append("  ");
+        sb.append(userRequestParamsTO.getSortOrder());
         return sb.toString();
     };
 
@@ -203,9 +206,6 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
     }
 
     private Query setParameters(Query query, UserRequestParamsTO userRequestParamsTO) {
-        if (Objects.nonNull(userRequestParamsTO.getSortBy()) && !userRequestParamsTO.getSortBy().isEmpty()) {
-            query.setParameter("sort", userRequestParamsTO.getSortBy() + " " + userRequestParamsTO.getSortOrder());
-        }
         if (Objects.nonNull(userRequestParamsTO.getFirstName()) && !userRequestParamsTO.getFirstName().isEmpty()) {
             query.setParameter("firstName", "%".concat(userRequestParamsTO.getFirstName()).concat("%"));
         }

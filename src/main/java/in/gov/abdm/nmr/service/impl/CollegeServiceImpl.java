@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.*;
+import in.gov.abdm.nmr.security.jwt.JwtAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -163,7 +164,7 @@ public class CollegeServiceImpl implements ICollegeService {
             collegeProfile = collegeProfileDaoService.findAdminByCollegeId(collegeMaster.getId());
             preCollegeUpdationChecks(collegeResponseTo, collegeMaster, collegeProfile);
         } else {
-            duplicateContactsCheck(collegeResponseTo.getEmailId(), collegeResponseTo.getMobileNumber());
+            duplicateContactsCheck(collegeResponseTo.getEmailId(), collegeResponseTo.getMobileNumber(), collegeProfile.getUser().getUserType().getId());
         }
 
         collegeMaster = collegeMaster != null ? collegeMaster : new CollegeMaster();
@@ -218,7 +219,7 @@ public class CollegeServiceImpl implements ICollegeService {
         collegeProfileDaoService.save(collegeProfile);
         
         if(isNewCollegeProfile) {
-            passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail()),collegeProfile.getName());
+            passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail(), user.getUserType().getId()),collegeProfile.getName());
         }
         return collegeResponseTo;
     }
@@ -237,11 +238,11 @@ public class CollegeServiceImpl implements ICollegeService {
 
             User user = collegeProfile.getUser();
             if (!collegeResponseTo.getEmailId().equals(user.getEmail())) {
-                duplicateEmailCheck(collegeResponseTo.getEmailId());
+                duplicateEmailCheck(collegeResponseTo.getEmailId(), user.getUserType().getId());
             }
 
             if (!collegeResponseTo.getMobileNumber().equals(user.getMobileNumber())) {
-                duplicateMobileNumberCheck(collegeResponseTo.getMobileNumber());
+                duplicateMobileNumberCheck(collegeResponseTo.getMobileNumber(), user.getUserType().getId());
             }
 
             if (!loggedInUser.getId().equals(collegeProfile.getUser().getId())) {
@@ -266,7 +267,7 @@ public class CollegeServiceImpl implements ICollegeService {
             collegeProfile = collegeProfileDaoService.findById(collegeProfileTo.getId());
             preVerifierUpdationChecks(collegeProfileTo, collegeProfile);
         } else {
-            duplicateContactsCheck(collegeProfileTo.getEmailId(), collegeProfileTo.getMobileNumber());
+            duplicateContactsCheck(collegeProfileTo.getEmailId(), collegeProfileTo.getMobileNumber(), collegeProfile.getUser().getUserType().getId());
         }
 
         User user = collegeProfile != null ? collegeProfile.getUser() : null;
@@ -293,24 +294,24 @@ public class CollegeServiceImpl implements ICollegeService {
         collegeProfileTo.setId(collegeProfile.getId());
         
         if (isNewCollegeVerifierProfile) {
-            passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail()),collegeProfile.getName());
+            passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail(), user.getUserType().getId()),collegeProfile.getName());
         }
         return collegeProfileTo;
     }
 
-    private void duplicateContactsCheck(String emailId, String mobileNumber) throws ResourceExistsException {
-        duplicateEmailCheck(emailId);
-        duplicateMobileNumberCheck(mobileNumber);
+    private void duplicateContactsCheck(String emailId, String mobileNumber, BigInteger userType) throws ResourceExistsException {
+        duplicateEmailCheck(emailId, userType);
+        duplicateMobileNumberCheck(mobileNumber, userType);
     }
 
-    private void duplicateMobileNumberCheck(String mobileNumber) throws ResourceExistsException {
-        if (userDaoService.existsByMobileNumber(mobileNumber)) {
+    private void duplicateMobileNumberCheck(String mobileNumber, BigInteger userType) throws ResourceExistsException {
+        if (userDaoService.existsByMobileNumberAndUserTypeId(mobileNumber, userType)) {
             throw new ResourceExistsException(NMRError.MOBILE_NUM_ALREADY_REGISTERED.getMessage());
         }
     }
 
-    private void duplicateEmailCheck(String emailId) throws ResourceExistsException {
-        if (userDaoService.existsByEmail(emailId)) {
+    private void duplicateEmailCheck(String emailId, BigInteger userType) throws ResourceExistsException {
+        if (userDaoService.existsByEmailAndUserTypeId(emailId, userType)) {
             throw new ResourceExistsException(NMRError.EMAIL_ID_ALREADY_REGISTERED.getMessage());
         }
     }
@@ -323,11 +324,11 @@ public class CollegeServiceImpl implements ICollegeService {
 
         User user = collegeProfile.getUser();
         if (!collegeProfileTo.getEmailId().equals(user.getEmail())) {
-            duplicateEmailCheck(collegeProfileTo.getEmailId());
+            duplicateEmailCheck(collegeProfileTo.getEmailId(), user.getUserType().getId());
         }
 
         if (!collegeProfileTo.getMobileNumber().equals(user.getMobileNumber())) {
-            duplicateMobileNumberCheck(collegeProfileTo.getMobileNumber());
+            duplicateMobileNumberCheck(collegeProfileTo.getMobileNumber(), user.getUserType().getId());
         }
 
         if (!loggedInUser.getId().equals(collegeProfile.getUser().getId())) {
@@ -376,6 +377,8 @@ public class CollegeServiceImpl implements ICollegeService {
     @Override
     public User getLoggedInUser() {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userDaoService.findByUsername(userName);
+        BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
+
+        return userDaoService.findByUsername(userName, userType);
     }
 }

@@ -11,6 +11,7 @@ import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.mapper.IStatusCount;
 import in.gov.abdm.nmr.mapper.IStatusWiseCountMapper;
 import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.security.jwt.JwtAuthenticationToken;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.ICollegeProfileDaoService;
 import in.gov.abdm.nmr.service.IDashboardService;
@@ -272,17 +273,17 @@ public class DashboardServiceImpl implements IDashboardService {
     private String mapColumnToTable(String columnToSort) {
         Map<String, String> columnToSortMap = new HashMap<>();
         columnToSortMap.put("doctorStatus", " doctor_status");
-        columnToSortMap.put("smcStatus", " smc_status");
-        columnToSortMap.put("collegeDeanStatus", " college_dean_status");
+        columnToSortMap.put("councilVerificationStatus", " smc_status");
+        columnToSortMap.put("collegeVerificationStatus", " nbe_status");
         columnToSortMap.put("collegeRegistrarStatus", " college_registrar_status");
-        columnToSortMap.put("nmcStatus", " nmc_status");
+        columnToSortMap.put("NMCVerificationStatus", " nmc_status");
         columnToSortMap.put("nbeStatus", " nbe_status");
-        columnToSortMap.put("hpProfileId", " calculate.hp_profile_id");
-        columnToSortMap.put("requestId", " calculate.request_id");
+        columnToSortMap.put("hpProfileId", " d.hp_profile_id");
+        columnToSortMap.put("requestId", " d.request_id");
         columnToSortMap.put("registrationNo", " rd.registration_no");
-        columnToSortMap.put("createdAt", " d.created_at");
-        columnToSortMap.put("councilName", " stmc.name");
-        columnToSortMap.put("applicantFullName", " hp.full_name");
+        columnToSortMap.put("dateofSubmission", " d.created_at");
+        columnToSortMap.put("nameofStateCouncil", " stmc.name");
+        columnToSortMap.put("nameofApplicant", " hp.full_name");
         columnToSortMap.put("pendency", " pendency");
         return columnToSortMap.getOrDefault(columnToSort, " d.created_at ");
     }
@@ -375,8 +376,10 @@ public class DashboardServiceImpl implements IDashboardService {
     public DashboardResponseTO fetchCardDetails(String workFlowStatusId, String applicationTypeId, String userGroupStatus,
                                                 String search, String value, NMRPagination nmrPagination) throws InvalidRequestException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
+
         log.info("Processing card-detail service for : {} ", userName);
-        User userDetail = userDaoService.findByUsername(userName);
+        User userDetail = userDaoService.findByUsername(userName, userType);
         BigInteger groupId = userDetail.getGroup().getId();
         BigInteger userId = userDetail.getId();
         DashboardRequestParamsTO dashboardRequestParamsTO = new DashboardRequestParamsTO();

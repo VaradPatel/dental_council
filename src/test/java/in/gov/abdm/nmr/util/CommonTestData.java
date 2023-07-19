@@ -118,6 +118,8 @@ CommonTestData {
     public static final String STATE_CODE = "1";
     public static final String OTP = "738775";
     public static final String TEST_USER = "user1";
+    public static final BigInteger TEST_USER_TYPE = BigInteger.valueOf(1);
+
     public static final String LAST_FOUR_DIGIT_AADHAAR = "1859";
 
     public static final BigInteger HP_ID = BigInteger.valueOf(1);
@@ -169,7 +171,7 @@ CommonTestData {
     }
 
     public static UserType getUserType(BigInteger userTypeId) {
-        UserTypeEnum userTypeEnum = UserTypeEnum.getUserSubType(userTypeId);
+        UserTypeEnum userTypeEnum = UserTypeEnum.getUserType(userTypeId);
         UserType userType = new UserType();
         userType.setId(userTypeEnum.getId());
         userType.setName(userType.getName());

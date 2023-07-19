@@ -40,7 +40,8 @@ public enum NMRError {
     NON_REGISTERED_EMAIL_ID("ABDM-NMR-031", "The email address provided is not registered in our system. Please ensure that you have entered the correct email address or consider using a registered email address for receiving the OTP."),
     NON_REGISTERED_NMR_ID("ABDM-NMR-032", "The NMR ID provided is not registered in our system. Please ensure that you have entered the correct NMR ID or consider using a registered NMR ID for receiving the OTP."),
     INVALID_OTP_TRANSACTION_ID("ABDM-NMR-033", "An error occurred while processing your request. Please ensure that a correct transaction id is used for validating OTP."),
-    TEMPLATE_KEYS_MISSING("ABDM-NMR-034", "An error occurred while accessing the template keys. Please try again in sometime.");
+    TEMPLATE_KEYS_MISSING("ABDM-NMR-034", "An error occurred while accessing the template keys. Please try again in sometime."),
+    FILE_SIZE_LIMIT("ABDM-NMR-035", "Kindly limit the file size to allowable limit of 5MB");
     private final String code;
     private final String message;
 }

@@ -1,8 +1,10 @@
 package in.gov.abdm.nmr.security.username_password;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.Objects;
 
 public class UserPasswordAuthenticationToken extends UsernamePasswordAuthenticationToken {
@@ -21,6 +23,15 @@ public class UserPasswordAuthenticationToken extends UsernamePasswordAuthenticat
         this.loginType = loginType;
         this.otpTransactionId = otpTransactionId;
     }
+
+    public UserPasswordAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities, BigInteger userType, Object details) {
+        super(principal,credentials,authorities);
+        this.userType = userType;
+        this.loginType = null;
+        this.otpTransactionId = null;
+        super.setDetails(details);
+    }
+
 
     public BigInteger getUserType() {
         return userType;
@@ -54,4 +65,9 @@ public class UserPasswordAuthenticationToken extends UsernamePasswordAuthenticat
     public static UserPasswordAuthenticationToken unauthenticated(Object principal, Object credentials, BigInteger userType, BigInteger loginType, String otpTransactionId) {
         return new UserPasswordAuthenticationToken(principal, credentials, userType, loginType, otpTransactionId);
     }
+
+    public static UserPasswordAuthenticationToken authenticated(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities, BigInteger userType, Object details) {
+        return new UserPasswordAuthenticationToken(principal, credentials, authorities, userType, details);
+    }
+
 }

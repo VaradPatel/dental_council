@@ -15,6 +15,7 @@ import javax.persistence.PersistenceContext;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.security.jwt.JwtAuthenticationToken;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -195,7 +196,7 @@ public class UserServiceImpl implements IUserService {
                     throw new InvalidRequestException(NMRConstants.LINK_EXPIRED);
                 }
 
-                User user = userDaoService.findByUsername(resetToken.getUserName());
+                User user = userDaoService.findByUsername(resetToken.getUserName(), resetToken.getUserType());
                 user.setEmailVerified(true);
                 user.setEmailNotificationEnabled(true);
                 userDaoService.save(user);
@@ -217,7 +218,7 @@ public class UserServiceImpl implements IUserService {
             throw new NmrException(invalidUserType.getCode(), invalidUserType.getMessage(), HttpStatus.BAD_REQUEST.getReasonPhrase());
         }
 
-        validateContactDetails(userProfileTO.getEmailId(), userProfileTO.getMobileNumber());
+        validateContactDetails(userProfileTO.getEmailId(), userProfileTO.getMobileNumber(), userProfileTO.getTypeId());
 
         UserType userType = entityManager.getReference(UserType.class, userProfileTO.getTypeId());
         User user = User.builder().email(userProfileTO.getEmailId()).mobileNumber(userProfileTO.getMobileNumber()).isSmsNotificationEnabled(false).isEmailNotificationEnabled(false)
@@ -243,7 +244,7 @@ public class UserServiceImpl implements IUserService {
             nbeDaoService.save(nbeProfile);
         }
 
-        passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail()),user.getUserName());
+        passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail(), user.getUserType().getId()), user.getUserName());
         return userProfileTO;
     }
 
@@ -251,7 +252,9 @@ public class UserServiceImpl implements IUserService {
     public UserResponseTO getAllUser(String search, String value, int pageNo, int offset, String sortBy, String sortOrder) throws InvalidRequestException, AccessDeniedException {
         UserRequestParamsTO userRequestParamsTO = new UserRequestParamsTO();
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userDetail = userRepository.findByUsername(userName);
+        BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
+        User userDetail = userRepository.findByUsername(userName,userType);
+
         if (userDetail == null) {
             log.error("User don't have permission to access get users");
             throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
@@ -314,20 +317,20 @@ public class UserServiceImpl implements IUserService {
         return userDaoService.getUserNames(mobileNumber, userType);
     }
 
-    private void validateContactDetails(String emailId, String mobileNumber) throws NmrException {
-        duplicateEmailCheck(emailId);
-        duplicateMobileNumberCheck(mobileNumber);
+    private void validateContactDetails(String emailId, String mobileNumber, BigInteger userType) throws NmrException {
+        duplicateEmailCheck(emailId, userType);
+        duplicateMobileNumberCheck(mobileNumber, userType);
     }
 
-    private void duplicateMobileNumberCheck(String mobileNumber) throws NmrException {
-        if (userDaoService.existsByMobileNumber(mobileNumber)) {
+    private void duplicateMobileNumberCheck(String mobileNumber, BigInteger userType) throws NmrException {
+        if (userDaoService.existsByMobileNumberAndUserTypeId(mobileNumber, userType)) {
             NMRError mobileNumAlreadyRegistered = NMRError.MOBILE_NUM_ALREADY_REGISTERED;
             throw new NmrException(mobileNumAlreadyRegistered.getCode(), mobileNumAlreadyRegistered.getMessage(), HttpStatus.BAD_REQUEST.getReasonPhrase());
         }
     }
 
-    private void duplicateEmailCheck(String emailId) throws NmrException {
-        if (userDaoService.existsByEmail(emailId)) {
+    private void duplicateEmailCheck(String emailId, BigInteger userType) throws NmrException {
+        if (userDaoService.existsByEmailAndUserTypeId(emailId, userType)) {
             NMRError emailNumAlreadyRegistered = NMRError.EMAIL_ID_ALREADY_REGISTERED;
             throw new NmrException(emailNumAlreadyRegistered.getCode(), emailNumAlreadyRegistered.getMessage(), HttpStatus.BAD_REQUEST.getReasonPhrase());
         }

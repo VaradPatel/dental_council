@@ -348,19 +348,19 @@ class HpRegistrationServiceImplTest {
 
     @Test
     void testAddNewHealthProfessionalShouldThrowUserNameAlreadyRegistered() {
-        when(userDaoService.existsByUserName(anyString())).thenReturn(true);
+        when(userDaoService.existsByUserNameAndUserTypeId(anyString(), any(BigInteger.class))).thenReturn(true);
         assertThrows(InvalidRequestException.class, () -> hpRegistrationService.addNewHealthProfessional(getHealthPersonalRequest()));
     }
 
     @Test
     void testAddNewHealthProfessionalShouldThrowMobileNumberAlreadyRegistered() {
-        when(userDaoService.existsByMobileNumber(anyString())).thenReturn(true);
+        when(userDaoService.existsByMobileNumberAndUserTypeId(anyString(), any(BigInteger.class))).thenReturn(true);
         assertThrows(InvalidRequestException.class, () -> hpRegistrationService.addNewHealthProfessional(getHealthPersonalRequest()));
     }
 
     @Test
     void testAddNewHealthProfessionalShouldThrowEmailIdAlreadyRegistered() {
-        when(userDaoService.existsByEmail(anyString())).thenReturn(true);
+        when(userDaoService.existsByEmailAndUserTypeId(anyString(), any(BigInteger.class))).thenReturn(true);
         assertThrows(InvalidRequestException.class, () -> hpRegistrationService.addNewHealthProfessional(getHealthPersonalRequest()));
     }
 
@@ -379,18 +379,18 @@ class HpRegistrationServiceImplTest {
     @Test
     void testGetEmailVerificationLink() {
         when(iHpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfile());
-        when(userDaoService.checkEmailUsedByOtherUser(any(BigInteger.class), anyString())).thenReturn(false);
+        when(userDaoService.checkEmailUsedByOtherUser(any(BigInteger.class), anyString(), any(BigInteger.class))).thenReturn(false);
         when(userDaoService.findById(any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(iHpProfileRepository.save(any(HpProfile.class))).thenReturn(getHpProfile());
-        when(resetTokenRepository.findByUserName(anyString())).thenReturn(getResetToken());
+        when(resetTokenRepository.findByUserNameAndUserType(anyString(),TEST_USER_TYPE)).thenReturn(getResetToken());
         hpRegistrationService.getEmailVerificationLink(CommonTestData.ID, new VerifyEmailLinkTo(CommonTestData.EMAIL_ID));
     }
 
     @Test
     void testDeLinkCurrentWorkDetailsShouldThrowUserNotFoundException() {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDetailDaoService.findByUsername(anyString())).thenReturn(null);
+        when(userDetailDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(null);
         assertThrows(NmrException.class, () -> hpRegistrationService.delinkCurrentWorkDetails(
                 new WorkDetailsDelinkRequest(List.of(CommonTestData.FACILITY_ID))));
     }

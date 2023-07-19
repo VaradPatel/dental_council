@@ -101,7 +101,7 @@ class DashboardServiceTest {
     @Test
     void testFetchCardDetailsShouldFetchCardDetailsForStateMedicalCouncilAndSearchWithApplicantFullName() throws InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.SMC.getId()));
+        when(userDaoService.findByUsername(anyString(),any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.SMC.getId()));
         when(iSmcProfileRepository.findByUserId(any(BigInteger.class))).thenReturn(getSmcProfile());
         when(iFetchSpecificDetailsCustomRepository.fetchDashboardData(any(DashboardRequestParamsTO.class), any(Pageable.class))).thenReturn(getDashboardResponse());
         DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.CONSOLIDATED_PENDING_TEMPORARY_SUSPENSION_REQUESTS, APPLICANT_FULL_NAME_IN_LOWER_CASE, PROFILE_DISPLAY_NAME, NMRPagination.builder().pageNo(1).offset(1).build());
@@ -111,7 +111,7 @@ class DashboardServiceTest {
     @Test
     void testFetchCardDetailsShouldFetchCardDetailsForCollegeAndSearchWithStateMedicalCouncil() throws InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
+        when(userDaoService.findByUsername(anyString(),any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(iFetchSpecificDetailsCustomRepository.fetchDashboardData(any(DashboardRequestParamsTO.class), any(Pageable.class))).thenReturn(getDashboardResponse());
         when(collegeProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getCollegeProfile());
         DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.CONSOLIDATED_APPROVED_TEMPORARY_SUSPENSION_REQUESTS, COUNCIL_NAME_IN_LOWER_CASE, STATE_MEDICAL_COUNCIL, NMRPagination.builder().pageNo(1).offset(1).build());
@@ -121,7 +121,7 @@ class DashboardServiceTest {
     @Test
     void testFetchCardDetailsShouldFetchCardDetailsForPermanentSuspensionRequestsReceivedAndSearchWithRegistrationNumber() throws InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
+        when(userDaoService.findByUsername(anyString(),any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(iFetchSpecificDetailsCustomRepository.fetchDashboardData(any(DashboardRequestParamsTO.class), any(Pageable.class))).thenReturn(getDashboardResponse());
         when(collegeProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getCollegeProfile());
         DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.CONSOLIDATED_PENDING_PERMANENT_SUSPENSION_REQUESTS, REGISTRATION_NUMBER_IN_LOWER_CASE, REGISTRATION_NUMBER, NMRPagination.builder().pageNo(1).offset(1).build());
@@ -131,7 +131,7 @@ class DashboardServiceTest {
     @Test
     void testFetchCardDetailsShouldFetchCardDetailsForPermanentSuspensionRequestsApprovedAndSearchWithGender() throws InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
+        when(userDaoService.findByUsername(anyString(),any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(iFetchSpecificDetailsCustomRepository.fetchDashboardData(any(DashboardRequestParamsTO.class), any(Pageable.class))).thenReturn(getDashboardResponse());
         when(collegeProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getCollegeProfile());
         DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.CONSOLIDATED_APPROVED_PERMANENT_SUSPENSION_REQUESTS, GENDER_IN_LOWER_CASE, GENDER, NMRPagination.builder().pageNo(1).offset(1).build());
@@ -141,7 +141,7 @@ class DashboardServiceTest {
     @Test
     void testFetchCardDetailsShouldFetchCardDetailsForTotalSuspensionRequestsSearchWithEmailId() throws InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
+        when(userDaoService.findByUsername(anyString(),any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(iFetchSpecificDetailsCustomRepository.fetchDashboardData(any(DashboardRequestParamsTO.class), any(Pageable.class))).thenReturn(getDashboardResponse());
         when(collegeProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getCollegeProfile());
         DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS, EMAIL_ID_IN_LOWER_CASE, CommonTestData.EMAIL_ID, NMRPagination.builder().pageNo(1).offset(1).build());
@@ -151,7 +151,7 @@ class DashboardServiceTest {
     @Test
     void testFetchCardDetailsShouldFetchCardDetailsForTotalUserGroupsAndSearchWithMobileNumber() throws InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
+        when(userDaoService.findByUsername(anyString(),any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(iFetchSpecificDetailsCustomRepository.fetchDashboardData(any(DashboardRequestParamsTO.class), any(Pageable.class))).thenReturn(getDashboardResponse());
         when(collegeProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getCollegeProfile());
         DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("", "", TOTAL, MOBILE_NUMBER_IN_LOWER_CASE, MOBILE_NUMBER, NMRPagination.builder().pageNo(1).offset(1).build());
@@ -161,7 +161,7 @@ class DashboardServiceTest {
     @Test
     void testFetchCardDetailsShouldFetchCardDetailsForSearchWithYearOfRegistration() throws InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(iFetchSpecificDetailsCustomRepository.fetchDashboardData(any(DashboardRequestParamsTO.class), any(Pageable.class))).thenReturn(getDashboardResponse());
         when(collegeProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getCollegeProfile());
         DashboardResponseTO dashboardResponseTO = dashboardService.fetchCardDetails("1", "3,4", NMRConstants.TOTAL_CONSOLIDATED_SUSPENSION_REQUESTS, YEAR_OF_REGISTRATION_IN_LOWER_CASE, REGISTRATION_YEAR, NMRPagination.builder().pageNo(1).offset(1).build());

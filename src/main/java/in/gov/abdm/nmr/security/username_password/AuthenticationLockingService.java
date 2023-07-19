@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.stereotype.Component;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -25,9 +26,9 @@ public class AuthenticationLockingService {
      * @param username
      * @throws AuthenticationServiceException
      */
-    public void updateFailedAttemptsAndLockStatus(String username) throws AuthenticationServiceException {
+    public void updateFailedAttemptsAndLockStatus(String username, BigInteger userType) throws AuthenticationServiceException {
 
-        User user = userDaoService.findByUsername(username);
+        User user = userDaoService.findByUsername(username, userType);
 
         if (user != null) {
             if (user.isAccountNonLocked()) {
@@ -54,8 +55,8 @@ public class AuthenticationLockingService {
      * @return true/false
      * @throws AuthenticationServiceException
      */
-    public boolean checkAndUpdateLockStatus(String username) throws AuthenticationServiceException {
-        User user = userDaoService.findByUsername(username);
+    public boolean checkAndUpdateLockStatus(String username, BigInteger userType) throws AuthenticationServiceException {
+        User user = userDaoService.findByUsername(username, userType);
 
         if (user.isAccountNonLocked()) {
             return true;

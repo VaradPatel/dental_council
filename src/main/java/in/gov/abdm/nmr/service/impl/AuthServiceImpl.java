@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import in.gov.abdm.nmr.entity.WorkFlow;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.repository.IWorkFlowRepository;
+import in.gov.abdm.nmr.security.username_password.UserPasswordAuthenticationToken;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +71,9 @@ public class AuthServiceImpl implements IAuthService {
     @Override
     public LoginResponseTO successfulAuth(HttpServletResponse response) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userDetailDaoService.findByUsername(username);
+        BigInteger userType= ((UserPasswordAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType();
+
+        User user = userDetailDaoService.findByUsername(username, userType);
 
         LoginResponseTO loginResponse = createLoginResponse(user);
         userDetailDaoService.updateLastLogin(user.getId());
@@ -146,9 +149,9 @@ public class AuthServiceImpl implements IAuthService {
             roles = ArrayUtils.addAll(user.getUserType().getRoles().split(","), user.getUserSubType().getRoles().split(","));
         }
 
-        response.setHeader(ACCESS_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.ACCESS_TOKEN, roles, profileId));
+        response.setHeader(ACCESS_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.ACCESS_TOKEN, roles, profileId, user.getUserType().getId()));
         if (!UserTypeEnum.SYSTEM.getId().equals(user.getUserType().getId())) {
-            response.setHeader(REFRESH_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.REFRESH_TOKEN, roles, profileId));
+            response.setHeader(REFRESH_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.REFRESH_TOKEN, roles, profileId, user.getUserType().getId()));
         }
     }
 }

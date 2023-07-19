@@ -26,4 +26,7 @@ public interface IQualificationDetailRepository extends JpaRepository<Qualificat
     @Query(value = "select c.course_name  from qualification_details qd join course c on qd.course_id =c.id where qd.user_id =:userId and is_verified !=" + NMRConstants.QUALIFICATION_STATUS_REJECTED +
             " union select fqd.course from foreign_qualification_details fqd where fqd.user_id =:userId and is_verified !=" + NMRConstants.QUALIFICATION_STATUS_REJECTED + "", nativeQuery = true)
     List<String> getListOfQualificationByUserID(BigInteger userId);
+
+    @Query(value = "SELECT * FROM qualification_details where user_id = :userId and is_verified =" + NMRConstants.QUALIFICATION_STATUS_PENDING + "", nativeQuery = true)
+    List<QualificationDetails> getPendingQualificationsByUserId(BigInteger userId);
 }

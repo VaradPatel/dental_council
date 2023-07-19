@@ -25,7 +25,7 @@ public enum UserTypeEnum {
 
     private Group group;
 
-    public static UserTypeEnum getUserSubType(BigInteger userTypeId) {
+    public static UserTypeEnum getUserType(BigInteger userTypeId) {
         Optional<UserTypeEnum> optionalUserTypeEnum = Arrays.stream(UserTypeEnum.values()).filter(userType -> userType.getId().equals(userTypeId)).findFirst();
         return optionalUserTypeEnum.isPresent() ? optionalUserTypeEnum.get() : null;
     }

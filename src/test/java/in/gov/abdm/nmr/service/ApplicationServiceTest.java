@@ -86,7 +86,7 @@ class ApplicationServiceTest {
         when(iHpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(hpProfile);
         when(iHpProfileRepository.findLatestHpProfileFromWorkFlow(any(String.class))).thenReturn(hpProfile);
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(requestCounter);
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         doNothing().when(workFlowService).initiateSubmissionWorkFlow(any(WorkFlowRequestTO.class));
         applicationService.suspendRequest(getApplicationRequestTo());
@@ -117,7 +117,7 @@ class ApplicationServiceTest {
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(requestCounter);
         when(iWorkFlowRepository.findLastWorkFlowForHealthProfessional(any(BigInteger.class))).thenReturn(getWorkFlow());
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         ReactivateRequestResponseTo reactivateRequestResponseTo = applicationService.reactivateRequest(getMultipartFile(),getApplicationRequestTo());
         assertEquals("1", reactivateRequestResponseTo.getProfileId());
         assertEquals(NMRConstants.SUCCESS_RESPONSE, reactivateRequestResponseTo.getMessage());
@@ -132,7 +132,7 @@ class ApplicationServiceTest {
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(requestCounter);
         when(iWorkFlowRepository.findLastWorkFlowForHealthProfessional(any(BigInteger.class))).thenReturn(getWorkFlowWherePreviousGroupNmc());
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         ReactivateRequestResponseTo reactivateRequestResponseTo = applicationService.reactivateRequest(getMultipartFile(),getApplicationRequestTo());
         assertEquals("1", reactivateRequestResponseTo.getProfileId());
         assertEquals(NMRConstants.SUCCESS_RESPONSE, reactivateRequestResponseTo.getMessage());
@@ -148,7 +148,7 @@ class ApplicationServiceTest {
     @Test
     void testGetReactivationRecordsOfHealthProfessionalsToNmcShouldSearchByApplicantFullName() throws InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(iWorkFlowCustomRepository.getReactivationRecordsOfHealthProfessionalsToNmc(any(ReactivateHealthProfessionalRequestParam.class), any(org.springframework.data.domain.Pageable.class)))
                 .thenReturn(getReactivateHealthProfessionalResponse());
         ReactivateHealthProfessionalResponseTO reactivationRecordsOfHealthProfessionalsToNmc = applicationService.getReactivationRecordsOfHealthProfessionalsToNmc(
@@ -159,7 +159,7 @@ class ApplicationServiceTest {
     @Test
     void testGetReactivationRecordsOfHealthProfessionalsToNmcShouldSearchByRegistrationNumber() throws InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(iWorkFlowCustomRepository.getReactivationRecordsOfHealthProfessionalsToNmc(any(ReactivateHealthProfessionalRequestParam.class), any(org.springframework.data.domain.Pageable.class)))
                 .thenReturn(getReactivateHealthProfessionalResponse());
         ReactivateHealthProfessionalResponseTO reactivationRecordsOfHealthProfessionalsToNmc = applicationService.getReactivationRecordsOfHealthProfessionalsToNmc(
@@ -170,7 +170,7 @@ class ApplicationServiceTest {
     @Test
     void testGetReactivationRecordsOfHealthProfessionalsToNmcShouldSearchByEmailId() throws InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(iWorkFlowCustomRepository.getReactivationRecordsOfHealthProfessionalsToNmc(any(ReactivateHealthProfessionalRequestParam.class), any(org.springframework.data.domain.Pageable.class)))
                 .thenReturn(getReactivateHealthProfessionalResponse());
         ReactivateHealthProfessionalResponseTO reactivationRecordsOfHealthProfessionalsToNmc = applicationService.getReactivationRecordsOfHealthProfessionalsToNmc(
@@ -181,7 +181,7 @@ class ApplicationServiceTest {
     @Test
     void testGetReactivationRecordsOfHealthProfessionalsToNmcShouldSearchByMobileNumber() throws InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(iWorkFlowCustomRepository.getReactivationRecordsOfHealthProfessionalsToNmc(any(ReactivateHealthProfessionalRequestParam.class), any(org.springframework.data.domain.Pageable.class)))
                 .thenReturn(getReactivateHealthProfessionalResponse());
         ReactivateHealthProfessionalResponseTO reactivationRecordsOfHealthProfessionalsToNmc = applicationService.getReactivationRecordsOfHealthProfessionalsToNmc(
@@ -192,7 +192,7 @@ class ApplicationServiceTest {
     @Test
     void testGetReactivationRecordsOfHealthProfessionalsToNmcShouldSearchByYearOfRegistration() throws InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(iWorkFlowCustomRepository.getReactivationRecordsOfHealthProfessionalsToNmc(any(ReactivateHealthProfessionalRequestParam.class), any(org.springframework.data.domain.Pageable.class)))
                 .thenReturn(getReactivateHealthProfessionalResponse());
         ReactivateHealthProfessionalResponseTO reactivationRecordsOfHealthProfessionalsToNmc = applicationService.getReactivationRecordsOfHealthProfessionalsToNmc(
@@ -203,7 +203,7 @@ class ApplicationServiceTest {
     @Test
     void testGetReactivationRecordsOfHealthProfessionalsToNmcShouldSearch() throws InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(iWorkFlowCustomRepository.getReactivationRecordsOfHealthProfessionalsToNmc(any(ReactivateHealthProfessionalRequestParam.class), any(org.springframework.data.domain.Pageable.class)))
                 .thenReturn(getReactivateHealthProfessionalResponse());
         ReactivateHealthProfessionalResponseTO reactivationRecordsOfHealthProfessionalsToNmc = applicationService.getReactivationRecordsOfHealthProfessionalsToNmc(
@@ -215,7 +215,7 @@ class ApplicationServiceTest {
     @Test
     void testGetReactivationRecordsOfHealthProfessionalsToNmcShouldThrowInvalidSearchCriteria() throws InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
 
         assertThrows(InvalidRequestException.class, () -> applicationService.getReactivationRecordsOfHealthProfessionalsToNmc(
                 "1", "1", GENDER, GENDER, "ID", "DSC"));
@@ -224,7 +224,7 @@ class ApplicationServiceTest {
     @Test
     void testGetReactivationRecordsOfHealthProfessionalsToNmcShouldSearchByGender() throws InvalidRequestException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
-        when(userDaoService.findByUsername(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(iWorkFlowCustomRepository.getReactivationRecordsOfHealthProfessionalsToNmc(any(ReactivateHealthProfessionalRequestParam.class), any(Pageable.class)))
                 .thenReturn(getReactivateHealthProfessionalResponse());
         ReactivateHealthProfessionalResponseTO reactivationRecordsOfHealthProfessionalsToNmc = applicationService.getReactivationRecordsOfHealthProfessionalsToNmc(

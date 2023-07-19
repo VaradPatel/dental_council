@@ -12,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
@@ -143,6 +144,14 @@ public class NmrExceptionAdvice {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, headers, HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @ExceptionHandler({MaxUploadSizeExceededException.class})
+    public ResponseEntity<ErrorDTO> handleMaxUploadSizeExceededException(HttpServletRequest req, Throwable ex) {
+        ErrorDTO error = new ErrorDTO(new Date(), NMRError.FILE_SIZE_LIMIT.getCode(), NMRError.FILE_SIZE_LIMIT.getMessage(), req.getServletPath(), HttpStatus.FORBIDDEN.toString());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(error, headers, HttpStatus.PAYLOAD_TOO_LARGE.value());
     }
 
 }

@@ -20,14 +20,14 @@ public interface IUserDaoService {
 
     User save(User user);
 
-    User findByUsername(String username);
+    User findByUsername(String username, BigInteger userType);
 
     User findFirstByMobileNumber(String mobileNumber);
 
-    boolean existsByUserName(String userName);
+    boolean existsByUserNameAndUserTypeId(String userName, BigInteger userType);
 
-    boolean existsByMobileNumber(String mobileNumber);
-    boolean existsByEmail(String email);
+    boolean existsByMobileNumberAndUserTypeId(String mobileNumber, BigInteger userType);
+    boolean existsByEmailAndUserTypeId(String email, BigInteger userType);
 
     User toggleSmsNotification(boolean isSmsNotificationEnabled);
 
@@ -47,7 +47,7 @@ public interface IUserDaoService {
 
     NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException, InvalidRequestException;
 
-    boolean checkEmailUsedByOtherUser(BigInteger id, String email);
+    boolean checkEmailUsedByOtherUser(BigInteger id, String email, BigInteger userType);
 
     void unlockUser(BigInteger userId);
 
