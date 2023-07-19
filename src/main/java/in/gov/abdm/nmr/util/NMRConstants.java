@@ -20,7 +20,6 @@ public class NMRConstants {
     public static final String NOTIFICATION_SERVICE_SEND_MESSAGE = "/internal/v3/notification/message";
     public static final String NOTIFICATION_DB_SERVICE_GET_TEMPLATE = "/internal/v3/notification/template/id/{id}";
     public static final String RESET_PASSWORD = "/user/reset-password";
-    public static final String RAISE_QUERY = "/health-professional/queries";
     public static final String KYC_FUZZY_MATCH = "/health-professional/{registrationNumber}/kyc";
     public static final String GET_QUERIES = "health-professional/{healthProfessionalId}/queries";
     public static final String VERIFY_EMAIL = "/user/verify-email";

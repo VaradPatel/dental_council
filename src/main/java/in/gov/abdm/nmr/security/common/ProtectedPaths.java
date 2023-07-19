@@ -64,6 +64,8 @@ public class ProtectedPaths {
     public static final String USER_DEACTIVATE_URL = "/user/{userId}/deactivate";
     public static final String DE_LINK_FACILITY = "/health-professional/work-profile/facility";
     public static final String HP_REGISTER = "/health-professional/register";
+    public static final String RAISE_QUERY = "/health-professional/queries";
+    public static final String ADDITIONAL_QUALIFICATION = "/health-professional/{healthProfessionalId}/qualifications";
 
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<AntPathRequestMatcher> protectedPaths = new ArrayList<>();
@@ -113,6 +115,8 @@ public class ProtectedPaths {
         protectedPaths.add(new AntPathRequestMatcher(USER_DEACTIVATE_URL));
         protectedPaths.add(new AntPathRequestMatcher(APPLICATION_REQUEST_URL));
         protectedPaths.add(new AntPathRequestMatcher(HP_REGISTER));
+        protectedPaths.add(new AntPathRequestMatcher(RAISE_QUERY));
+        protectedPaths.add(new AntPathRequestMatcher(ADDITIONAL_QUALIFICATION));
 
         return protectedPaths.toArray(AntPathRequestMatcher[]::new);
     }
