@@ -133,7 +133,7 @@ public class ApplicationController {
                                                                            @RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
                                                                            @RequestParam(required = false, value = "offset", defaultValue = "10") String offset,
                                                                            @RequestParam(required = false, value = "sortBy") String sortBy,
-                                                                           @RequestParam(required = false, value = "sortType") String sortType,
+                                                                           @RequestParam(required = false, value = "sortOrder") String sortType,
                                                                            @RequestParam(required = false, value = "search") String search,
                                                                            @RequestParam(required = false, value = "value") String value) throws InvalidRequestException {
         return applicationService.fetchApplicationDetailsForHealthProfessional(healthProfessionalId, pageNo, offset, sortBy, sortType, search, value);
@@ -154,7 +154,7 @@ public class ApplicationController {
     public HealthProfessionalApplicationResponseTo trackStatusDetails(@RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
                                                                       @RequestParam(required = false, value = "offset", defaultValue = "10") String offset,
                                                                       @RequestParam(required = false, value = "sortBy") String sortBy,
-                                                                      @RequestParam(required = false, value = "sortType") String sortType,
+                                                                      @RequestParam(required = false, value = "sortOrder") String sortType,
                                                                       @RequestParam(required = false, value = "search") String search,
                                                                       @RequestParam(required = false, value = "value") String value,
                                                                       @RequestParam(required = false, value = "smcId") String smcId,
