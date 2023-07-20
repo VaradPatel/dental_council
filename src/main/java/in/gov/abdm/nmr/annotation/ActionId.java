@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ActionId {
-    String message() default "Invalid action id. supportive actions are 1,2,3,4,5,6,7";
+    String message() default "Invalid action id. supported actions are 1, 2, 3, 4, 5, 6, 7.";
 
     Class<?>[] groups() default {};
 

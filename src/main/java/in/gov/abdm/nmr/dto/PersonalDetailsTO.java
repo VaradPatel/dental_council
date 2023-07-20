@@ -21,17 +21,17 @@ public class PersonalDetailsTO {
     private String salutation;
 
     private String aadhaarToken;
-    @OptionalName
+    @OptionalName(message = "Invalid first name")
     private String firstName;
-    @OptionalName
+    @OptionalName(message = "Invalid middle name")
     private String middleName;
-    @OptionalName
+    @OptionalName(message = "Invalid last name")
     private String lastName;
-    @OptionalName
+    @OptionalName(message = "Invalid father name")
     private String fatherName;
-    @OptionalName
+    @OptionalName(message = "Invalid mother name")
     private String motherName;
-    @OptionalName
+    @OptionalName(message = "Invalid spouse name")
     private String spouseName;
     @Valid
     @NotNull(message = NOT_NULL_ERROR_MSG)
@@ -40,7 +40,7 @@ public class PersonalDetailsTO {
     @Gender
     private String gender;
     private String profilePhoto;
-    @Name
+    @Name(message = "Invalid full name")
     private String fullName;
     private Boolean isNew;
     @Email

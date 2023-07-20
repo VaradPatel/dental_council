@@ -17,6 +17,6 @@ public class NationalityTO {
     @NotNull(message = NOT_NULL_ERROR_MSG)
     private BigInteger id;
 
-    @OptionalName
+    @OptionalName(message =  "Invalid country")
     private String name;
 }

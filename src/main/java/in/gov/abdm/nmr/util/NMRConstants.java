@@ -238,7 +238,7 @@ public class NMRConstants {
             """;
     public static final String NOT_NULL_ERROR_MSG = "The {0} is mandatory.";
     public static final String NOT_BLANK_ERROR_MSG = "The {0} should not be blank.";
-    public static final String INVALID_PINCODE = "pincode should be of max 6 digit";
+    public static final String INVALID_PINCODE = "Invalid pincode should be of max 6 digit";
     public static final String FETCH_WORK_PROFILE_RECORDS_BY_USER_ID = """
             SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id, 
             state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at, 

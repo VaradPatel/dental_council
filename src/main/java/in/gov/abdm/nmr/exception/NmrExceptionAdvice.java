@@ -76,66 +76,51 @@ public class NmrExceptionAdvice {
     }
 
     /**
-     * Exception handler for {@link MethodArgumentNotValidException}.
+     * Handles validation exceptions and returns a customized error response for the client.
      *
-     * @param ex the exception to be handled
-     * @return ErrorInfo object containing the error information
+     * @param ex The MethodArgumentNotValidException representing the validation error.
+     * @return A ResponseEntity containing an ErrorDTO object with error information.
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ErrorInfo handleValidationExceptions(MethodArgumentNotValidException ex) {
-        ErrorInfo errorInfo = new ErrorInfo();
-        errorInfo.setCode(NMRError.INVALID_REQUEST.getCode());
-        errorInfo.setMessage(HttpStatus.BAD_REQUEST.toString());
-        List<DetailsTO> details = new ArrayList<>();
+    public ResponseEntity<ErrorDTO> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        ErrorDTO errorDTO = new ErrorDTO();
         ex.getBindingResult().getAllErrors().forEach(error -> {
-            DetailsTO detailsTO = new DetailsTO();
-            detailsTO.setCode(NMRError.INVALID_REQUEST.getCode());
-            detailsTO.setMessage(NMRError.INVALID_REQUEST.getMessage());
-            AttributeTO attributeTO = new AttributeTO();
             String field = ((FieldError) error).getField();
             String defaultMessage = error.getDefaultMessage();
-            attributeTO.setKey(field);
             String formattedMessage = MessageFormat.format(defaultMessage, field);
-            attributeTO.setValue(formattedMessage);
-            detailsTO.setAttribute(attributeTO);
-            details.add(detailsTO);
+            errorDTO.setCode(NMRError.INVALID_REQUEST.getCode());
+            errorDTO.setMessage(formattedMessage);
+            errorDTO.setTimestamp(new Date());
+            errorDTO.setHttpStatus(HttpStatus.BAD_REQUEST.toString());
         });
-        errorInfo.setDetails(details);
-        return errorInfo;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(errorDTO, headers, HttpStatus.BAD_REQUEST);
     }
 
     /**
-     * This class provides a handler for ConstraintViolationException and returns a detailed error response with input validation error codes and messages.
+     * Handles validation exceptions and returns a customized error response for the client.
      *
-     * @param ex This parameter is of type ConstraintViolationException, which represents the exception thrown when input validation fails.
-     * @return ErrorInfo This method returns an ErrorInfo object, which contains a detailed error response with code, message, and attribute details.
-     * @author [Author Name]
-     * @ResponseStatus This method is annotated with the ResponseStatus annotation, which sets the HTTP status code to BAD_REQUEST (400).
-     * @ExceptionHandler This method is annotated with the ExceptionHandler annotation, which specifies that this method will handle ConstraintViolationException.
+     * @param ex The MethodArgumentNotValidException representing the validation error.
+     * @return A ResponseEntity containing an ErrorDTO object with error information.
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
-    public ErrorInfo handleGlobalValidationException(ConstraintViolationException ex) {
-        ErrorInfo errorInfo = new ErrorInfo();
-        errorInfo.setCode(NMRError.INVALID_REQUEST.getCode());
-        errorInfo.setMessage(HttpStatus.BAD_REQUEST.toString());
-        List<DetailsTO> details = new ArrayList<>();
-        ex.getConstraintViolations().forEach(error -> {
-            DetailsTO detailsTO = new DetailsTO();
-            detailsTO.setCode(NMRError.INVALID_REQUEST.getCode());
-            detailsTO.setMessage(NMRError.INVALID_REQUEST.getMessage());
-            AttributeTO attributeTO = new AttributeTO();
-            String field = error.getPropertyPath().toString();
+    public ResponseEntity<ErrorDTO> handleGlobalValidationException(ConstraintViolationException ex) {
+        ErrorDTO errorDTO = new ErrorDTO();
+            ex.getConstraintViolations().forEach(error -> {
+            String field = ((FieldError) error).getField();
             String defaultMessage = error.getMessage();
             String formattedMessage = MessageFormat.format(defaultMessage, field);
-            attributeTO.setValue(formattedMessage);
-            attributeTO.setKey(field);
-            detailsTO.setAttribute(attributeTO);
-            details.add(detailsTO);
+            errorDTO.setCode(NMRError.INVALID_REQUEST.getCode());
+            errorDTO.setMessage(formattedMessage);
+            errorDTO.setTimestamp(new Date());
+            errorDTO.setHttpStatus(HttpStatus.BAD_REQUEST.toString());
         });
-        errorInfo.setDetails(details);
-        return errorInfo;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(errorDTO, headers, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({DateException.class})
