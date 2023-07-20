@@ -20,6 +20,9 @@ public interface IForeignQualificationDetailRepository extends JpaRepository<For
 
     ForeignQualificationDetails findByRequestId(String requestId);
 
+    @Query(value = "SELECT * FROM foreign_qualification_details where user_id = :userId and is_verified =" + NMRConstants.QUALIFICATION_STATUS_PENDING + "", nativeQuery = true)
+    List<ForeignQualificationDetails> getPendingQualificationsByUserId(BigInteger userId);
+
     @Modifying
     @Transactional
     @Query(value = "delete from foreign_qualification_details where user_id = :userId ",nativeQuery = true)    void deleteInternationalQualificationByUserId(BigInteger userId);

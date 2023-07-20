@@ -189,7 +189,23 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 workFlowRequestTO.setRemarks(NMRConstants.SYSTEM_REJECTION_REMARK);
 
                 initiateSubmissionWorkFlow(workFlowRequestTO);
-               }
+            }
+
+            List<ForeignQualificationDetails> foreignQualificationDetails = foreignQualificationDetailRepository.getPendingQualificationsByUserId(hpProfile.getUser().getId());
+
+            for (ForeignQualificationDetails qualification : foreignQualificationDetails) {
+
+                WorkFlowRequestTO workFlowRequestTO = new WorkFlowRequestTO();
+
+                workFlowRequestTO.setRequestId(qualification.getRequestId());
+                workFlowRequestTO.setApplicationTypeId(ApplicationType.ADDITIONAL_QUALIFICATION.getId());
+                workFlowRequestTO.setActorId(Group.SYSTEM.getId());
+                workFlowRequestTO.setActionId(Action.REJECT.getId());
+                workFlowRequestTO.setHpProfileId(hpProfile.getId());
+                workFlowRequestTO.setRemarks(NMRConstants.SYSTEM_REJECTION_REMARK);
+
+                initiateSubmissionWorkFlow(workFlowRequestTO);
+            }
         }
     }
 
@@ -306,7 +322,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     }
 
     @Override
-    public boolean isAnyActiveWorkflowWithOtherApplicationType(BigInteger hpProfileId, BigInteger applicationTypeId) {
+    public boolean isAnyActiveWorkflowWithOtherApplicationType(BigInteger hpProfileId, List<BigInteger> applicationTypeId) {
         return iWorkFlowRepository.findAnyActiveWorkflowWithDifferentApplicationType(hpProfileId, applicationTypeId) == null;
     }
 
