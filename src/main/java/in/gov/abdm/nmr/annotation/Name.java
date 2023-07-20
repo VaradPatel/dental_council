@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Name {
-    String message() default "Invalid input. It should be plain text.";
+    String message() default "Invalid input. it should be plain text.";
 
     Class<?>[] groups() default {};
 
