@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.NmrException;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
 
 import static in.gov.abdm.nmr.security.common.ProtectedPaths.PATH_HEALTH_PROFESSIONAL_APPLICATIONS;
 import static in.gov.abdm.nmr.util.NMRConstants.*;
@@ -169,7 +171,7 @@ public class ApplicationController {
      */
     @PatchMapping(HEALTH_PROFESSIONAL_ACTION)
     public ResponseEntity<ResponseMessageTo> executeActionOnHealthProfessional(@Valid @RequestBody WorkFlowRequestTO requestTO) throws WorkFlowException, InvalidRequestException {
-        if (iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(requestTO.getHpProfileId(), requestTO.getApplicationTypeId())) {
+        if (iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(requestTO.getHpProfileId(), List.of(requestTO.getApplicationTypeId(),ApplicationType.ADDITIONAL_QUALIFICATION.getId()))) {
             if (requestTO.getRequestId() == null || !iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(requestTO.getHpProfileId())) {
                 requestTO.setRequestId(NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(requestTO.getApplicationTypeId())));
             }

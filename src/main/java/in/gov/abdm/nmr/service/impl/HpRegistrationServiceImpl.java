@@ -239,7 +239,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             throw new WorkFlowException(NMRError.WORK_FLOW_EXCEPTION.getCode(), NMRError.WORK_FLOW_EXCEPTION.getMessage());
         }
 
-        if(!iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(hpProfileId,ApplicationType.ADDITIONAL_QUALIFICATION.getId())){
+        if(!iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(hpProfileId,List.of(ApplicationType.ADDITIONAL_QUALIFICATION.getId()))){
             throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
         }
         List<String> existingQualifications = iQualificationDetailRepository.getListOfQualificationByUserID(hpProfile.getUser().getId());
