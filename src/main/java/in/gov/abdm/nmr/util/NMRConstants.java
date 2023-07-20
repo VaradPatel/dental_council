@@ -73,6 +73,7 @@ public class NMRConstants {
     public static final String EMAIL_ALREADY_VERIFIED = "This email is already verified";
     public static final String EMAIL_USED_BY_OTHER_USER = "Email is already used by other user";
     public static final String MOBILE_USED_BY_OTHER_USER = "Mobile number is already used by other user";
+    public static final String UPDATING_SAME_MOBILE_NUMBER = "Updating same mobile number";
     public static final String COLLEGE_CONSTANT = "COLLEGE";
     public static final String USERNAME_ALREADY_EXISTS = "User with this username already exists";
     public static final String MOBILE_NUMBER_ALREADY_EXISTS = "User with this mobile number already exists";

@@ -711,14 +711,26 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 }
             }
         }
+        HpProfile hpProfile=iHpProfileRepository.findHpProfileById(hpProfileId);
+        if (!hpProfile.getUser().getMobileNumber().equals(request.getMobileNumber())) {
 
-        if (request.getMobileNumber() != null) {
-            iHpProfileRepository.updateHpProfileMobile(hpProfileId, request.getMobileNumber());
+            if(!(userDaoService.checkMobileUsedByOtherUser(hpProfile.getUser().getId(),request.getMobileNumber(),UserTypeEnum.HEALTH_PROFESSIONAL.getId()))){
+
+                hpProfile.getUser().setMobileNumber(request.getMobileNumber());
+                hpProfile.setMobileNumber(request.getMobileNumber());
+                iHpProfileRepository.save(hpProfile);
+            }
+            else {
+                throw new InvalidRequestException(NMRConstants.MOBILE_USED_BY_OTHER_USER);
+
+            }
+        }else {
+            throw new InvalidRequestException(UPDATING_SAME_MOBILE_NUMBER);
+
         }
 
         String eSignTransactionId = request.getESignTransactionId();
         if (eSignTransactionId != null && !eSignTransactionId.isBlank()) {
-            HpProfile hpProfile = iHpProfileRepository.findHpProfileById(hpProfileId);
             if (hpProfile != null) {
                 hpProfile.setTransactionId(eSignTransactionId);
                 iHpProfileRepository.save(hpProfile);
