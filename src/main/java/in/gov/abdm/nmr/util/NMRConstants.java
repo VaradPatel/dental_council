@@ -82,6 +82,7 @@ public class NMRConstants {
     public static final String INVALID_COLLEGE_ID = "Invalid college id";
     public static final String INVALID_PROFILE_ID = "Invalid profile id";
     public static final String LINK_EXPIRED = "Link expired";
+    public static final String INVALID_LINK = "Invalid link";
     public static final String OLD_PASSWORD_NOT_MATCHING = "Old password is not correct";
     public static final String PROBLEM_OCCURRED = "Problem Occurred";
     public static final String USERNAME_NOT_NULL = "Username cannot be null or empty";
@@ -335,7 +336,7 @@ public class NMRConstants {
     public static final String REGEX_FOR_REGISTRATION_NUMBER = "^[a-zA-Z0-9 !-@#:_)(]{1,100}$";
     public static final String REGEX_FOR_ADDRESS = "^[#.0-9a-zA-Z\s,-/:()]+$";
     public static final String REGEX_FOR_SUB_DISTRICT = "^[A-Z a-z]+[A-Z a-z //' ']*$";
-    public static final String REGEX_FOR_VILLAGE = "^[A-Z a-z]+[A-Z a-z //' ']*$";
+    public static final String REGEX_FOR_VILLAGE = "^[.A-Z a-z]+[A-Z a-z //' ']*$";
     public static final String REGEX_FOR_EMAIL = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
     public static final Integer MAX_QUALIFICATION_SIZE = 8;
     public static final String GENDER_MALE = "Male";
