@@ -216,6 +216,13 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile, registrationCertificate);
         }
         if (hpRegistrationUpdateRequestTO.getQualificationDetails() != null && !hpRegistrationUpdateRequestTO.getQualificationDetails().isEmpty()) {
+            if (1 == hpRegistrationUpdateRequestTO.getQualificationDetails().size() && hpProfile.getUser() != null) {
+                if (NMRConstants.INDIA.equals(hpRegistrationUpdateRequestTO.getQualificationDetails().get(0).getQualificationFrom())) {
+                    iCustomQualificationDetailRepository.deleteInternationalQualificationByUserId(hpProfile.getUser().getId());
+                } else if (NMRConstants.INTERNATIONAL.equals(hpRegistrationUpdateRequestTO.getQualificationDetails().get(0).getQualificationFrom())) {
+                    qualificationDetailRepository.deleteIndianQualificationByUserId(hpProfile.getUser().getId());
+                }
+            }
             log.debug("Saving Qualification Details");
             saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), degreeCertificate != null ? List.of(degreeCertificate) : Collections.emptyList());
         }

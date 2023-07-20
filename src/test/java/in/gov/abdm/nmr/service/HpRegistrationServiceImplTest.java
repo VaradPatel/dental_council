@@ -217,7 +217,7 @@ class HpRegistrationServiceImplTest {
     void testAddQualificationShouldAddQualificationDetailsAndReturnSuccess() throws WorkFlowException, NmrException, InvalidRequestException {
         when(hpProfileDaoService.findById(any(BigInteger.class))).thenReturn(getHpProfileForNMR());
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(getRequestCounter());
-        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class),any(BigInteger.class))).thenReturn(true);
+        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class),List.of(any(BigInteger.class)))).thenReturn(true);
         doNothing().when(iWorkFlowService).initiateSubmissionWorkFlow(any(WorkFlowRequestTO.class));
         String s = hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate));
         assertEquals(SUCCESS_RESPONSE, s);
@@ -227,7 +227,7 @@ class HpRegistrationServiceImplTest {
     void testAddQualificationShouldAddQualificationDetailsAndReturnSuccess2() throws WorkFlowException, NmrException, InvalidRequestException {
         when(hpProfileDaoService.findById(any(BigInteger.class))).thenReturn(getHpProfileForNMR());
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(getRequestCounter());
-        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class),any(BigInteger.class))).thenReturn(true);
+        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class),List.of(any(BigInteger.class)))).thenReturn(true);
         doNothing().when(iWorkFlowService).initiateSubmissionWorkFlow(any(WorkFlowRequestTO.class));
         String s = hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate));
         assertEquals(SUCCESS_RESPONSE, s);

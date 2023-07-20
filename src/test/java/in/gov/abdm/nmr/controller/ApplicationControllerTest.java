@@ -35,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static in.gov.abdm.nmr.util.NMRConstants.*;
@@ -195,7 +196,7 @@ class ApplicationControllerTest {
     @WithMockUser
     void testExecuteActionOnHealthProfessionalShouldThrowWorkFlowCreationFailException() throws Exception {
         doNothing().when(iWorkFlowService).initiateSubmissionWorkFlow(getWorkFlowRequestTO());
-        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class), any(BigInteger.class))).thenReturn(false);
+        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class), List.of(any(BigInteger.class)))).thenReturn(false);
         mockMvc.perform(patch(HEALTH_PROFESSIONAL_ACTION)
                         .with(user(TEST_USER))
                         .with(csrf())
@@ -208,7 +209,7 @@ class ApplicationControllerTest {
     @Test
     @WithMockUser
     void testExecuteActionOnHealthProfessionalShouldExecuteActionOnHealthProfessionalSuccessfully() throws Exception {
-        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class), any(BigInteger.class))).thenReturn(true);
+        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class), List.of(any(BigInteger.class)))).thenReturn(true);
         when(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(any(BigInteger.class))).thenReturn(false);
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(getRequestCounter());
         doNothing().when(iWorkFlowService).initiateSubmissionWorkFlow(getWorkFlowRequestTO());

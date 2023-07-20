@@ -5,6 +5,7 @@ import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
 
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * Service Layer to implement the actual Business Logic
@@ -19,7 +20,7 @@ public interface IWorkFlowService {
 
     void assignQueriesBackToQueryCreator(String requestId) throws WorkFlowException;
 
-    boolean isAnyActiveWorkflowWithOtherApplicationType(BigInteger hpProfileId, BigInteger applicationTypeId);
+    boolean isAnyActiveWorkflowWithOtherApplicationType(BigInteger hpProfileId, List<BigInteger> applicationTypeId);
 
     boolean isAnyActiveWorkflowExceptAdditionalQualification(BigInteger hpProfileId);
 }
