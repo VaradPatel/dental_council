@@ -17,4 +17,7 @@ public interface IForeignQualificationDetailRepository extends JpaRepository<For
     List<ForeignQualificationDetails> getApprovedQualificationDetailsByUserId(BigInteger userId);
 
     ForeignQualificationDetails findByRequestId(String requestId);
+
+    @Query(value = "SELECT * FROM foreign_qualification_details where user_id = :userId and is_verified =" + NMRConstants.QUALIFICATION_STATUS_PENDING + "", nativeQuery = true)
+    List<ForeignQualificationDetails> getPendingQualificationsByUserId(BigInteger userId);
 }
