@@ -150,8 +150,8 @@ class WorkFlowServiceTest {
 
     @Test
     void testIsAnyActiveWorkflowWithOtherApplicationType() {
-        when(iWorkFlowRepository.findAnyActiveWorkflowWithDifferentApplicationType(any(BigInteger.class), any(BigInteger.class))).thenReturn(new WorkFlow());
-        boolean anyActiveWorkflowWithOtherApplicationType = workFlowService.isAnyActiveWorkflowWithOtherApplicationType(ID, ID);
+        when(iWorkFlowRepository.findAnyActiveWorkflowWithDifferentApplicationType(any(BigInteger.class), List.of(any(BigInteger.class)))).thenReturn(new WorkFlow());
+        boolean anyActiveWorkflowWithOtherApplicationType = workFlowService.isAnyActiveWorkflowWithOtherApplicationType(ID, List.of(ID));
         assertFalse(anyActiveWorkflowWithOtherApplicationType);
     }
 
