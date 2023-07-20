@@ -38,16 +38,16 @@ public class CommunicationAddressTO {
     @AddressLine
     private String addressLine1;
 
-    @OptionalAddress
+    @OptionalAddress(message = "Invalid house")
     private String house;
 
-    @OptionalAddress
+    @OptionalAddress(message = "Invalid street")
     private String street;
 
-    @OptionalAddress
+    @OptionalAddress(message = "Invalid locality")
     private String locality;
 
-    @OptionalAddress
+    @OptionalAddress(message = "Invalid landmark")
     private String landmark;
 
     private String isSameAddress;

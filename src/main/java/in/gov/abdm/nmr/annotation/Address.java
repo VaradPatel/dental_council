@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Address {
-    String message() default "Invalid Address, it must be Alpha numeric with allowed special characters " +
+    String message() default "Invalid Address; it must be alphanumeric with allowed special characters: " +
             "(.,-:/())";
 
     Class<?>[] groups() default {};

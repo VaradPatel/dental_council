@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Salutation {
-    String message() default "Invalid Salutation, it should be Dr.";
+    String message() default "Invalid salutation, it should be Dr.";
 
     Class<?>[] groups() default {};
 
