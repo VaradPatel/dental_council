@@ -73,6 +73,7 @@ public class NMRConstants {
     public static final String EMAIL_ALREADY_VERIFIED = "This email is already verified";
     public static final String EMAIL_USED_BY_OTHER_USER = "Email is already used by other user";
     public static final String MOBILE_USED_BY_OTHER_USER = "Mobile number is already used by other user";
+    public static final String UPDATING_SAME_MOBILE_NUMBER = "Mobile number is already verified";
     public static final String COLLEGE_CONSTANT = "COLLEGE";
     public static final String USERNAME_ALREADY_EXISTS = "User with this username already exists";
     public static final String MOBILE_NUMBER_ALREADY_EXISTS = "User with this mobile number already exists";
@@ -262,11 +263,11 @@ public class NMRConstants {
     public static final String GATEWAY_SERVICE = "gateway";
     public static final String GATEWAY_SERVICE_ENDPOINT = "${gateway.endpoint}";
     public static final String SESSION_URL = "/gateway/v0.5/sessions";
-    public static final String VERIFIER_COLLEGE = " by College";
+    public static final String VERIFIER_COLLEGE = " by college";
     public static final String VERIFIER_SMC = " by SMC";
     public static final String VERIFIER_NMC = " by NMC";
     public static final String VERIFIER_NBE = " by NBE";
-    public static final String VERIFIER_SYSTEM = " by System";
+    public static final String VERIFIER_SYSTEM = " by system";
     public static final String DOCTOR_QUALIFICATION = "MBBS";
     public static final String DOCTOR_QUALIFICATION_PATTERN = "[^A-Za-z]+";
     public static final String EMAIL_VERIFICATION_TEMPLATE = "email-verification-link";
