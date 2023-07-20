@@ -206,7 +206,7 @@ public class UserServiceImpl implements IUserService {
                 throw new InvalidRequestException(NMRConstants.LINK_EXPIRED);
             }
         } catch (Exception e) {
-            throw new InvalidRequestException(e.getLocalizedMessage());
+            throw new InvalidRequestException(INVALID_LINK);
         }
     }
 
