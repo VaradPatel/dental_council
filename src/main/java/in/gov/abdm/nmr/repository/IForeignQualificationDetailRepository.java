@@ -3,8 +3,10 @@ package in.gov.abdm.nmr.repository;
 import in.gov.abdm.nmr.entity.ForeignQualificationDetails;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.transaction.Transactional;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -17,4 +19,8 @@ public interface IForeignQualificationDetailRepository extends JpaRepository<For
     List<ForeignQualificationDetails> getApprovedQualificationDetailsByUserId(BigInteger userId);
 
     ForeignQualificationDetails findByRequestId(String requestId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "delete from foreign_qualification_details where user_id = :userId ",nativeQuery = true)    void deleteInternationalQualificationByUserId(BigInteger userId);
 }
