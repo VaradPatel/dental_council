@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RegistrationNumber {
-    String message() default "Invalid registration number";
+    String message() default "Invalid registration number.";
 
     Class<?>[] groups() default {};
 

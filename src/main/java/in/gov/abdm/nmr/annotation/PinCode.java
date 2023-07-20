@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PinCode {
-    String message() default "Invalid PinCode, it must be only numbers and maximum length of 6";
+    String message() default "Invalid pincode. it must contain only numbers and have a maximum length of 6.";
 
     Class<?>[] groups() default {};
 
