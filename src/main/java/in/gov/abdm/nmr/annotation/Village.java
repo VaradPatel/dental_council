@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Village {
 
-    String message() default "Invalid Village, it must be only Alphabets";
+    String message() default "Invalid village. it must contain only alphabets";
 
     Class<?>[] groups() default {};
 

@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SubDistrict {
 
-    String message() default "Invalid Sub District, it must be only Alphabets";
+    String message() default "Invalid sub district. it must contain only alphabets.";
 
     Class<?>[] groups() default {};
 

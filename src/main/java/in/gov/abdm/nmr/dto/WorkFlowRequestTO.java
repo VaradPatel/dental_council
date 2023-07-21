@@ -23,7 +23,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.NOT_NULL_ERROR_MSG;
 @Builder
 public class WorkFlowRequestTO {
 
-    @NotEmpty(message = NMRConstants.CONTACT_NOT_NULL)
+    @NotEmpty(message = NOT_NULL_ERROR_MSG)
     private String requestId;
     @ApplicationTypeId
     private BigInteger applicationTypeId;
