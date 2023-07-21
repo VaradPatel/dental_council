@@ -72,8 +72,24 @@ public class FacilityServiceImpl implements IFacilityService {
 
         } else if (facilitySearchRequestTo.getOwnership() != null && facilitySearchRequestTo.getState() != null && facilitySearchRequestTo.getDistrict() != null) {
 
-            return facilityFClient.searchFacility(authorization, facilityRequestTO);
+            FacilitiesSearchResponseTO facilitiesSearchResponseTO = facilityFClient.searchFacility(authorization, facilityRequestTO);
 
+            facilitiesSearchResponseTO.getFacilities().stream().forEach(facilityTO -> {
+                if (StringUtils.isNotBlank(facilityTO.getFacilityAddressTo().getDistrict())) {
+                    District districtByIsoCode = districtRepository.getDistrictByIsoCode(
+                            facilityTO.getFacilityAddressTo().getDistrict());
+
+                    facilityTO.getFacilityAddressTo().setDistrictTO(DistrictTO.builder()
+                            .id(districtByIsoCode.getId()).isoCode(districtByIsoCode.getIsoCode()).name(districtByIsoCode.getName()).build());
+                }
+                if (StringUtils.isNotBlank(facilityTO.getFacilityAddressTo().getState())) {
+                    State stateByIsoCode = stateRepository.getStateByIsoCode(facilityTO.getFacilityAddressTo().getState());
+
+                    facilityTO.getFacilityAddressTo().setStateTO(
+                            StateTO.builder().id(stateByIsoCode.getId()).isoCode(stateByIsoCode.getIsoCode()).name(stateByIsoCode.getName()).build());
+                }
+            });
+            return facilitiesSearchResponseTO;
         } else {
 
             throw new InvalidRequestException(NMRConstants.INVALID_FACILITY_PAYLOAD_MESSAGE);

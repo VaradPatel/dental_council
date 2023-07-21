@@ -164,7 +164,7 @@ public class CollegeServiceImpl implements ICollegeService {
             collegeProfile = collegeProfileDaoService.findAdminByCollegeId(collegeMaster.getId());
             preCollegeUpdationChecks(collegeResponseTo, collegeMaster, collegeProfile);
         } else {
-            duplicateContactsCheck(collegeResponseTo.getEmailId(), collegeResponseTo.getMobileNumber(), collegeProfile.getUser().getUserType().getId());
+            duplicateContactsCheck(collegeResponseTo.getEmailId(), collegeResponseTo.getMobileNumber(), UserTypeEnum.COLLEGE.getId());
         }
 
         collegeMaster = collegeMaster != null ? collegeMaster : new CollegeMaster();
@@ -267,7 +267,7 @@ public class CollegeServiceImpl implements ICollegeService {
             collegeProfile = collegeProfileDaoService.findById(collegeProfileTo.getId());
             preVerifierUpdationChecks(collegeProfileTo, collegeProfile);
         } else {
-            duplicateContactsCheck(collegeProfileTo.getEmailId(), collegeProfileTo.getMobileNumber(), collegeProfile.getUser().getUserType().getId());
+            duplicateContactsCheck(collegeProfileTo.getEmailId(), collegeProfileTo.getMobileNumber(), UserTypeEnum.COLLEGE.getId());
         }
 
         User user = collegeProfile != null ? collegeProfile.getUser() : null;
