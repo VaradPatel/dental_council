@@ -10,8 +10,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OptionalAddress {
 
-    String message() default "Invalid Address, it must be Alpha numeric with allowed special characters " +
-            "(.,-:/())";
+    String message() default "Invalid address. it must be alphanumeric with allowed special characters (.,-:/()).";
 
     Class<?>[] groups() default {};
 

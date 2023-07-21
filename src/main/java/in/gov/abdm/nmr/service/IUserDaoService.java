@@ -49,6 +49,8 @@ public interface IUserDaoService {
 
     boolean checkEmailUsedByOtherUser(BigInteger id, String email, BigInteger userType);
 
+    boolean checkMobileUsedByOtherUser(BigInteger id, String mobile, BigInteger userType);
+
     void unlockUser(BigInteger userId);
 
     void updateLastLogin(BigInteger userId);

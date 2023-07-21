@@ -288,4 +288,9 @@ public class UserDaoServiceImpl implements IUserDaoService {
     public List<String> getUserNames(String mobileNumber, BigInteger userType) {
         return userDetailRepository.getUserNamesByMobileNumAnduserType(mobileNumber, userType);
     }
+
+    @Override
+    public boolean checkMobileUsedByOtherUser(BigInteger id, String mobile, BigInteger userType){
+        return userDetailRepository.checkMobileUsedByOtherUser(id,mobile,userType);
+    }
 }

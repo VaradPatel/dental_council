@@ -12,7 +12,7 @@ public @interface AddressType {
 
     Class<?>[] groups() default {};
 
-    String message() default "Invalid address type. supportive address type are- business, current, permanent, communication, KYC";
+    String message() default "Invalid address type. Supported address types are 'business', 'current', 'permanent', 'communication', 'KYC'.";
 
     Class<? extends Payload>[] payload() default {};
 }

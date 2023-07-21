@@ -73,6 +73,7 @@ public class NMRConstants {
     public static final String EMAIL_ALREADY_VERIFIED = "This email is already verified";
     public static final String EMAIL_USED_BY_OTHER_USER = "Email is already used by other user";
     public static final String MOBILE_USED_BY_OTHER_USER = "Mobile number is already used by other user";
+    public static final String UPDATING_SAME_MOBILE_NUMBER = "Mobile number is already verified";
     public static final String COLLEGE_CONSTANT = "COLLEGE";
     public static final String USERNAME_ALREADY_EXISTS = "User with this username already exists";
     public static final String MOBILE_NUMBER_ALREADY_EXISTS = "User with this mobile number already exists";
@@ -81,6 +82,7 @@ public class NMRConstants {
     public static final String INVALID_COLLEGE_ID = "Invalid college id";
     public static final String INVALID_PROFILE_ID = "Invalid profile id";
     public static final String LINK_EXPIRED = "Link expired";
+    public static final String INVALID_LINK = "Invalid link";
     public static final String OLD_PASSWORD_NOT_MATCHING = "Old password is not correct";
     public static final String PROBLEM_OCCURRED = "Problem Occurred";
     public static final String USERNAME_NOT_NULL = "Username cannot be null or empty";
@@ -237,7 +239,7 @@ public class NMRConstants {
             """;
     public static final String NOT_NULL_ERROR_MSG = "The {0} is mandatory.";
     public static final String NOT_BLANK_ERROR_MSG = "The {0} should not be blank.";
-    public static final String INVALID_PINCODE = "pincode should be of max 6 digit";
+    public static final String INVALID_PINCODE = "Invalid pincode should be of max 6 digit";
     public static final String FETCH_WORK_PROFILE_RECORDS_BY_USER_ID = """
             SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id, 
             state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at, 
@@ -262,11 +264,11 @@ public class NMRConstants {
     public static final String GATEWAY_SERVICE = "gateway";
     public static final String GATEWAY_SERVICE_ENDPOINT = "${gateway.endpoint}";
     public static final String SESSION_URL = "/gateway/v0.5/sessions";
-    public static final String VERIFIER_COLLEGE = " by College";
+    public static final String VERIFIER_COLLEGE = " by college";
     public static final String VERIFIER_SMC = " by SMC";
     public static final String VERIFIER_NMC = " by NMC";
     public static final String VERIFIER_NBE = " by NBE";
-    public static final String VERIFIER_SYSTEM = " by System";
+    public static final String VERIFIER_SYSTEM = " by system";
     public static final String DOCTOR_QUALIFICATION = "MBBS";
     public static final String DOCTOR_QUALIFICATION_PATTERN = "[^A-Za-z]+";
     public static final String EMAIL_VERIFICATION_TEMPLATE = "email-verification-link";
@@ -334,7 +336,7 @@ public class NMRConstants {
     public static final String REGEX_FOR_REGISTRATION_NUMBER = "^[a-zA-Z0-9 !-@#:_)(]{1,100}$";
     public static final String REGEX_FOR_ADDRESS = "^[#.0-9a-zA-Z\s,-/:()]+$";
     public static final String REGEX_FOR_SUB_DISTRICT = "^[A-Z a-z]+[A-Z a-z //' ']*$";
-    public static final String REGEX_FOR_VILLAGE = "^[A-Z a-z]+[A-Z a-z //' ']*$";
+    public static final String REGEX_FOR_VILLAGE = "^[.A-Z a-z]+[A-Z a-z //' ']*$";
     public static final String REGEX_FOR_EMAIL = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
     public static final Integer MAX_QUALIFICATION_SIZE = 8;
     public static final String GENDER_MALE = "Male";
