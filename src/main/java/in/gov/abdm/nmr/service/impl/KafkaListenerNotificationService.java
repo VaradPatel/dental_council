@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.dto.FileESignedEventTO;
 import in.gov.abdm.nmr.entity.Address;
 import in.gov.abdm.nmr.entity.HpProfile;
+import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.AddressType;
+import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.ESignStatus;
 import in.gov.abdm.nmr.exception.DateException;
 import in.gov.abdm.nmr.repository.IAddressRepository;
@@ -58,7 +60,22 @@ public class KafkaListenerNotificationService {
                             getBirthYear(hpProfile.getDateOfBirth().toString()) == Integer.parseInt(eSignedEvent.getYob()) &&
                             address.getPincode().equalsIgnoreCase(eSignedEvent.getPincode())) {
                         iHpProfileRepository.updateEsignStatus(hpProfile.getId(), ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
+                        try {
+                            if(hpProfile.getRequestId()!=null && isRegistrationRequest(hpProfile.getRequestId())) {
+
+                                if (hpProfile.getUser().isSmsNotificationEnabled() && hpProfile.getUser().isEmailNotificationEnabled()) {
+                                    notificationService.sendNotificationOnStatusChangeForHP(ApplicationType.HP_REGISTRATION.getDescription(), Action.SUBMIT.getDescription().toLowerCase(), hpProfile.getUser().getMobileNumber(), hpProfile.getUser().getEmail());
+                                } else if (hpProfile.getUser().isSmsNotificationEnabled()) {
+                                    notificationService.sendNotificationOnStatusChangeForHP(ApplicationType.HP_REGISTRATION.getDescription(), Action.SUBMIT.getDescription().toLowerCase(), hpProfile.getUser().getMobileNumber(), null);
+                                } else if (hpProfile.getUser().isEmailNotificationEnabled()) {
+                                    notificationService.sendNotificationOnStatusChangeForHP(ApplicationType.HP_REGISTRATION.getDescription(), Action.SUBMIT.getDescription().toLowerCase(), null, hpProfile.getUser().getEmail());
+                                }
+                            }
+                        } catch (Exception exception) {
+                            log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
+                        }
                         log.info("updated e sign status:{} for Transaction ID: {}", ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getStatus(), transactionId);
+
                     } else {
                         iHpProfileRepository.updateEsignStatus(hpProfile.getId(), ESignStatus.PROFILE_ESIGNED_WITH_DIFFERENT_AADHAR.getId());
                         try {
@@ -99,5 +116,10 @@ public class KafkaListenerNotificationService {
             throw new DateException();
         }
         return dob.getYear();
+    }
+
+    private boolean isRegistrationRequest(String requestId){
+        String registrationRequestIdentifier="1";
+        return registrationRequestIdentifier.equals(String.valueOf(requestId.charAt(3)));
     }
 }
