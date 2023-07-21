@@ -25,8 +25,8 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static in.gov.abdm.nmr.util.NMRConstants.FETCH_TRACK_DETAILS_QUERY;
-import static in.gov.abdm.nmr.util.NMRConstants.NOT_YET_RECEIVED;
+import static in.gov.abdm.nmr.util.NMRConstants.*;
+import static in.gov.abdm.nmr.util.NMRConstants.GENDER_FEMALE;
 
 /**
  * A class that implements all the methods of the Custom Repository interface IFetchTrackApplicationDetailsCustomRepository
@@ -75,13 +75,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         }
 
         if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getGender())) {
-            String gender = "";
-            if (healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase(NMRConstants.GENDER_MALE) || healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase("m")) {
-                gender = "m";
-            } else if (healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase(NMRConstants.GENDER_FEMALE) || healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase("f")) {
-                gender = "f";
-            }
-            sb.append("AND hp.gender ILIKE :gender ");
+            sb.append(" AND hp.gender ILIKE :gender");
         }
 
         if (StringUtils.isNotBlank(healthProfessionalApplicationRequestParamsTo.getEmailId())) {
@@ -219,13 +213,15 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             query.setParameter("applicantFullName", "%".concat(healthProfessionalApplicationRequestParamsTo.getApplicantFullName()).concat("%"));
         }
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getGender()) && !healthProfessionalApplicationRequestParamsTo.getGender().isEmpty()) {
-            String gender = "";
-            if (healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase(NMRConstants.GENDER_MALE) || healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase("m")) {
-                gender = "m";
-            } else if (healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase(NMRConstants.GENDER_FEMALE) || healthProfessionalApplicationRequestParamsTo.getGender().equalsIgnoreCase("f")) {
-                gender = "f";
+            String gender = healthProfessionalApplicationRequestParamsTo.getGender();
+            if (StringUtils.isNotBlank(gender)) {
+                if (GENDER_MALE.equalsIgnoreCase(gender)) {
+                    gender = "m";
+                } else if (GENDER_FEMALE.equalsIgnoreCase(gender)) {
+                    gender = "f";
+                }
+                query.setParameter("gender", "%".concat(gender).concat("%"));
             }
-            query.setParameter("gender", "%".concat(gender.concat("%")));
         }
         if (Objects.nonNull(healthProfessionalApplicationRequestParamsTo.getEmailId()) && !healthProfessionalApplicationRequestParamsTo.getEmailId().isEmpty()) {
             query.setParameter("emailId", "%".concat(healthProfessionalApplicationRequestParamsTo.getEmailId()).concat("%"));
