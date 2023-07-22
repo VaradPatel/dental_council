@@ -367,4 +367,29 @@ public class NMRConstants {
             """;
 
     public static final String DATE_FORMAT = "dd-MM-yyyy";
+
+    public static final String SELECT_COUNTRY = "Please select country";
+    public static final String SELECT_STATE = "Please select state";
+    public static final String SELECT_COLLEGE = "Please select college";
+    public static final String SELECT_UNIVERSITY = "Please select university";
+    public static final String SELECT_COURSE = "Please select a course";
+    public static final String SELECT_QUALIFICATION_YEAR = "Please select a qualification year";
+    public static final String SELECT_QUALIFICATION_MONTH = "Please select a qualification month";
+    public static final String SELECT_QUALIFICATION_FROM = "Please select qualificationFrom";
+    public static final String SELECT_QUALIFICATION_DETAIL_REQUEST = "qualificationDetailRequestTos cannot be empty";
+    public static final String SELECT_REGISTRATION_DATE = "Please select a registrationDate";
+    public static final String SELECT_REGISTRATION_NUMBER = "Please enter a registrationNumber";
+    public static final String INVALID_HOUSE = "Invalid house";
+    public static final String INVALID_STREET = "Invalid street";
+    public static final String INVALID_LOCALITY = "Invalid locality";
+    public static final String INVALID_LANDMARK = "Invalid landmark";
+    public static final String INVALID_COUNTRY = "Invalid country";
+    public static final String INVALID_FIRST_NAME = "Invalid first name";
+    public static final String INVALID_MIDDLE_NAME = "Invalid middle name";
+    public static final String INVALID_LAST_NAME = "Invalid last name";
+    public static final String INVALID_FATHER_NAME = "Invalid father name";
+    public static final String INVALID_MOTHER_NAME = "Invalid mother name";
+    public static final String INVALID_SPOUSE_NAME = "Invalid spouse name";
+    public static final String INVALID_FULL_NAME = "Invalid full name";
+
 }
