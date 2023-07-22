@@ -141,7 +141,7 @@ public class HpRegistrationController {
     @PutMapping(path = "health-professional/{healthProfessionalId}/registration", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam(value = "registrationCertificate", required = false) MultipartFile registrationCertificate,
                                                                                       @RequestParam(value = "degreeCertificate", required = false) MultipartFile degreeCertificate,
-                                                                                      @RequestPart("data") HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO,
+                                                                                      @RequestPart("data") @Valid HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO,
                                                                                       @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, NmrException {
 
         log.info("In HP Registration Controller: updateHealthProfessionalRegistrationDetail method ");
@@ -217,7 +217,7 @@ public class HpRegistrationController {
      */
     @PostMapping(path = ProtectedPaths.ADDITIONAL_QUALIFICATION, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String addQualifications(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
-                                    @RequestPart("data") QualificationRequestTO qualificationDetailRequestTO,
+                                    @RequestPart("data") @Valid QualificationRequestTO qualificationDetailRequestTO,
                                     @RequestParam(value = "degreeCertificates") List<MultipartFile> degreeCertificates
     ) throws WorkFlowException, InvalidRequestException, NmrException {
         log.info(degreeCertificates != null ? String.valueOf(degreeCertificates.size()) : null);

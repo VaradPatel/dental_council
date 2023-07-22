@@ -9,8 +9,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigInteger;
 
-import static in.gov.abdm.nmr.util.NMRConstants.INVALID_PINCODE;
-import static in.gov.abdm.nmr.util.NMRConstants.NOT_NULL_ERROR_MSG;
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @Data
 public class CommunicationAddressTO {
@@ -38,16 +37,16 @@ public class CommunicationAddressTO {
     @AddressLine
     private String addressLine1;
 
-    @OptionalAddress(message = "Invalid house")
+    @OptionalAddress(message = INVALID_HOUSE)
     private String house;
 
-    @OptionalAddress(message = "Invalid street")
+    @OptionalAddress(message = INVALID_STREET)
     private String street;
 
-    @OptionalAddress(message = "Invalid locality")
+    @OptionalAddress(message = INVALID_LOCALITY)
     private String locality;
 
-    @OptionalAddress(message = "Invalid landmark")
+    @OptionalAddress(message = INVALID_LANDMARK)
     private String landmark;
 
     private String isSameAddress;
