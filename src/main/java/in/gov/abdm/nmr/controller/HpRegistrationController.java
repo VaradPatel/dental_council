@@ -158,7 +158,7 @@ public class HpRegistrationController {
     }
 
 
-    @PutMapping(path = "v2/health-professional/{healthProfessionalId}/registration", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/v2/health-professional/{healthProfessionalId}/registration", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam(value = "registrationCertificate", required = false) MultipartFile registrationCertificate,
                                                                                       @RequestParam(value = "degreeCertificate", required = false) List<MultipartFile> degreeCertificate,
                                                                                       @RequestPart("data") @Valid HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO,

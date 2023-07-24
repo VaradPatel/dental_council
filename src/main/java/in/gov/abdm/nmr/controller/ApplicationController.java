@@ -81,7 +81,7 @@ public class ApplicationController {
      */
     @PostMapping(path=ProtectedPaths.REACTIVATE_REQUEST_URL,consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ReactivateRequestResponseTo reactivateHealthProfessional(@RequestParam(value = "reactivationFile", required = false) MultipartFile reactivationFile,
-                                                                    @RequestPart("data") ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException, IOException {
+                                                                    @RequestPart("data") @Valid ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException, IOException {
 
         log.info("In Application Controller: reactivateHealthProfessional method ");
         log.debug("Request Payload: ApplicationRequestTo: ");
