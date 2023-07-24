@@ -173,7 +173,7 @@ class HpRegistrationServiceImplTest {
     @Test
     void testAddOrUpdateHpRegistrationDetail() throws InvalidRequestException, NmrException {
         when(hpProfileDaoService.updateHpRegistrationDetails(any(BigInteger.class), any(HpRegistrationUpdateRequestTO.class),
-                any(MultipartFile.class), any(MultipartFile.class)))
+                any(MultipartFile.class), (any(List.class))))
                 .thenReturn(new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", HP_ID));
         when(registrationDetailRepository.getRegistrationDetailsByHpProfileId(any(BigInteger.class)))
                 .thenReturn(getRegistrationDetails());
@@ -187,7 +187,7 @@ class HpRegistrationServiceImplTest {
                 any(List.class), any(List.class)))
                 .thenReturn(new HpProfileRegistrationResponseTO());
         HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = hpRegistrationService.addOrUpdateHpRegistrationDetail(CommonTestData.ID, new HpRegistrationUpdateRequestTO(),
-                certificate, certificate);
+                certificate, List.of(certificate));
         assertEquals(HP_ID, hpProfileRegistrationResponseTO.getHpProfileId());
     }
 
