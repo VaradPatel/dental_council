@@ -176,7 +176,7 @@ class HpProfileDaoServiceTest {
         when(courseRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getCourse()));
         when(qualificationDetailRepository.saveAll(any(List.class))).thenReturn(new ArrayList());
         when(iCustomQualificationDetailRepository.saveAll(any(List.class))).thenReturn(new ArrayList());
-        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(HP_ID, getHpRegistrationUpdateRequestTo(), certificate, certificate);
+        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(HP_ID, getHpRegistrationUpdateRequestTo(), certificate, List.of(certificate));
         assertEquals(HP_ID, hpProfileUpdateResponseTO.getHpProfileId());
     }
 
@@ -189,7 +189,7 @@ class HpProfileDaoServiceTest {
         when(qualificationDetailRepository.saveAll(any(List.class))).thenReturn(new ArrayList());
         when(iCustomQualificationDetailRepository.saveAll(any(List.class))).thenReturn(new ArrayList());
         when(iCustomQualificationDetailRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getForeignQualificationDetails()));
-        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(HP_ID, getHpRegistrationUpdateRequestForInternationalQualification(), certificate, certificate);
+        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(HP_ID, getHpRegistrationUpdateRequestForInternationalQualification(), certificate, List.of(certificate));
         assertEquals(HP_ID, hpProfileUpdateResponseTO.getHpProfileId());
     }
 
