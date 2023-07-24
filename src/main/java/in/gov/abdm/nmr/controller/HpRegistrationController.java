@@ -148,6 +148,26 @@ public class HpRegistrationController {
         log.debug("Request Payload: HpRegistrationUpdateRequestTO: ");
         log.debug(hpRegistrationUpdateRequestTO.toString());
 
+        HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequestTO, registrationCertificate, List.of(degreeCertificate));
+
+        log.info("HP Registration Controller: updateHealthProfessionalRegistrationDetail method: Execution Successful. ");
+        log.debug("Response Payload: HpProfileRegistrationResponseTO: ");
+        log.debug(hpProfileRegistrationResponseTO.toString());
+
+        return hpProfileRegistrationResponseTO;
+    }
+
+
+    @PutMapping(path = "v2/health-professional/{healthProfessionalId}/registration", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam(value = "registrationCertificate", required = false) MultipartFile registrationCertificate,
+                                                                                      @RequestParam(value = "degreeCertificate", required = false) List<MultipartFile> degreeCertificate,
+                                                                                      @RequestPart("data") @Valid HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO,
+                                                                                      @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, NmrException {
+
+        log.info("In HP Registration Controller: updateHealthProfessionalRegistrationDetail method ");
+        log.debug("Request Payload: HpRegistrationUpdateRequestTO: ");
+        log.debug(hpRegistrationUpdateRequestTO.toString());
+
         HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequestTO, registrationCertificate, degreeCertificate);
 
         log.info("HP Registration Controller: updateHealthProfessionalRegistrationDetail method: Execution Successful. ");
