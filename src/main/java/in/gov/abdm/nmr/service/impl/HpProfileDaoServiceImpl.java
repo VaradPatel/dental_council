@@ -272,7 +272,11 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             User user = hpProfileOptional.get().getUser();
             if (user != null) {
                 userId = user.getId();
-                workProfile = workProfileRepository.getWorkProfileDetailsByUserId(userId);
+                if(hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking().toString().equals(NMRConstants.DOCTOR_CURRENTLY_NOT_WORKING)){
+                    workProfileRepository.markAsDeleteByHpUserId(userId);
+                    languagesKnownRepository.deleteAllByHpUserId(userId);
+                }
+                workProfile = workProfileRepository.getActiveWorkProfileDetailsByUserId(userId);
             } else {
                 throw new NotFoundException(NMRError.NO_SUCH_ELEMENT.getCode(), NMRError.NO_SUCH_ELEMENT.getMessage());
             }
@@ -642,13 +646,24 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     private void saveWorkProfileRecords(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, BigInteger hpProfileId, BigInteger userId) {
+
         List<WorkProfile> workProfileDetailsList = new ArrayList<>();
-        hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> {
-            WorkProfile workProfile = new WorkProfile();
-            workProfileDetailsList.add(workProfileObjectMapping(hpWorkProfileUpdateRequestTO, workProfile, currentWorkDetailsTO, hpProfileId, userId));
-            workProfileRepository.saveAll(workProfileDetailsList);
-        });
+        if(hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking().toString().equals(NMRConstants.DOCTOR_CURRENTLY_NOT_WORKING) && (hpWorkProfileUpdateRequestTO.getCurrentWorkDetails()==null || hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().isEmpty())){
+            WorkProfile workProfile=new WorkProfile();
+            workProfile.setHpProfileId(hpProfileId);
+            workProfile.setUserId(userId);
+            workProfile.setIsUserCurrentlyWorking(Integer.valueOf(NMRConstants.DOCTOR_CURRENTLY_NOT_WORKING));
+            workProfile.setRemark(hpWorkProfileUpdateRequestTO.getWorkDetails().getRemark());
+            workProfile.setReason(hpWorkProfileUpdateRequestTO.getWorkDetails().getReason());
+            workProfileRepository.save(workProfile);
+        }
+        else {
+            workProfileRepository.deleteCurrentlyNotWorkingByHpUserId(userId);
+            hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> {
+                WorkProfile workProfile = new WorkProfile();
+                workProfileDetailsList.add(workProfileObjectMapping(hpWorkProfileUpdateRequestTO, workProfile, currentWorkDetailsTO, hpProfileId, userId));
+                workProfileRepository.saveAll(workProfileDetailsList);
+            });
+        }
     }
-
-
 }

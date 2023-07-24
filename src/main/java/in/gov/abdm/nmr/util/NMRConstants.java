@@ -290,7 +290,7 @@ public class NMRConstants {
     public static final String FETCH_ACTIVE_WORK_PROFILE_RECORDS_BY_USER_ID = """            
             SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id,
             state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at,
-            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status, system_of_medicine, department, designation, reason, remark FROM work_profile WHERE  delete_status=false AND user_id =:userId""";
+            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status, system_of_medicine, department, designation, reason, remark FROM work_profile WHERE  delete_status=false AND is_user_currently_working=0 AND user_id =:userId""";
 
 
     public static final String DEACTIVATE_USER = "update  {h-schema}user SET delete_status =true WHERE id =:userId";
@@ -391,5 +391,7 @@ public class NMRConstants {
     public static final String INVALID_MOTHER_NAME = "Invalid mother name";
     public static final String INVALID_SPOUSE_NAME = "Invalid spouse name";
     public static final String INVALID_FULL_NAME = "Invalid full name";
+    public static final String DOCTOR_CURRENTLY_WORKING = "0";
+    public static final String DOCTOR_CURRENTLY_NOT_WORKING = "1";
 
 }

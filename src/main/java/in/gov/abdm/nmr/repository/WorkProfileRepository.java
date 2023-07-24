@@ -23,4 +23,14 @@ public interface WorkProfileRepository extends JpaRepository<WorkProfile, BigInt
     @Query(value = FETCH_ACTIVE_WORK_PROFILE_RECORDS_BY_USER_ID, nativeQuery = true)
     List<WorkProfile> getActiveWorkProfileDetailsByUserId(@Param(USER_ID) BigInteger userId);
 
+    @Transactional
+    @Modifying
+    @Query(value = "update work_profile set delete_status=true where user_id=:userId",nativeQuery = true)
+    void markAsDeleteByHpUserId(BigInteger userId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "delete from work_profile where user_id=:userId and is_user_currently_working=1",nativeQuery = true)
+    void deleteCurrentlyNotWorkingByHpUserId(BigInteger userId);
+
 }
