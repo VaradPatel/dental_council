@@ -224,7 +224,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 }
             }
             log.debug("Saving Qualification Details");
-                saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), degreeCertificate != null ? degreeCertificate : Collections.emptyList());
+                saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), degreeCertificate);
         }
         if (NMRConstants.INTERNATIONAL.equals(hpRegistrationUpdateRequestTO.getQualificationDetails().get(0).getQualificationFrom())) {
             HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByUserId(hpProfile.getUser().getId());
