@@ -321,6 +321,11 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             log.debug("Calling assignQueriesBackToQueryCreator method since there is an existing workflow with 'Query Raised' work flow status. ");
             iWorkFlowService.assignQueriesBackToQueryCreator(lastWorkFlowForHealthProfessional.getRequestId());
             iQueriesService.markQueryAsClosed(hpSubmitRequestTO.getHpProfileId());
+            if(ApplicationType.HP_REGISTRATION.getId().equals(hpSubmitRequestTO.getApplicationTypeId())) {
+                HpProfile hpProfile = hpProfileDaoService.findById(hpSubmitRequestTO.getHpProfileId());
+                hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
+                iHpProfileRepository.save(hpProfile);
+            }
 
         } else {
             log.debug("Proceeding to submit the profile since request_id is not given as a part of input payload");
