@@ -205,7 +205,7 @@ public class UserServiceImpl implements IUserService {
             } else {
                 throw new InvalidRequestException(NMRConstants.LINK_EXPIRED);
             }
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             throw new InvalidRequestException(INVALID_LINK);
         }
     }

@@ -13,4 +13,5 @@ public class WorkDetailsTO {
     private WorkNatureTO workNature;
     private String reason;
     private String remark;
+    private Integer experienceInYears;
 }

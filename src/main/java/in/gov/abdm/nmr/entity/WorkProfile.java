@@ -14,7 +14,7 @@ import java.math.BigInteger;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class WorkProfile {
+public class WorkProfile extends CommonAuditEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
