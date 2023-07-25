@@ -148,7 +148,7 @@ public class HpRegistrationController {
         log.debug("Request Payload: HpRegistrationUpdateRequestTO: ");
         log.debug(hpRegistrationUpdateRequestTO.toString());
 
-        HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequestTO, registrationCertificate, List.of(degreeCertificate));
+        HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequestTO, registrationCertificate, degreeCertificate != null ? List.of(degreeCertificate) : Collections.emptyList());
 
         log.info("HP Registration Controller: updateHealthProfessionalRegistrationDetail method: Execution Successful. ");
         log.debug("Response Payload: HpProfileRegistrationResponseTO: ");
