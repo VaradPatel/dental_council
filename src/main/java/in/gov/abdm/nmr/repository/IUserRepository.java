@@ -10,7 +10,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
-import static in.gov.abdm.nmr.util.NMRConstants.UPDATE_LAST_LOGIN;
+import static in.gov.abdm.nmr.util.NMRConstants.UPDATE_LAST_LOGIN_AND_RESET_FAILED_ATTEMPT_COUNT;
 
 public interface IUserRepository extends JpaRepository<User, BigInteger> {
 
@@ -45,8 +45,8 @@ public interface IUserRepository extends JpaRepository<User, BigInteger> {
 
     @org.springframework.transaction.annotation.Transactional
     @Modifying
-    @Query(nativeQuery = true, value = UPDATE_LAST_LOGIN)
-    void updateLastLogin(BigInteger userId);
+    @Query(nativeQuery = true, value = UPDATE_LAST_LOGIN_AND_RESET_FAILED_ATTEMPT_COUNT)
+    void updateLastLoginAndResetFailedAttemptCount(BigInteger userId);
 
     @Query(value = """
             select user_name from {h-schema}user where mobile_number =:mobileNumber and user_type_id =:userType """, nativeQuery = true)

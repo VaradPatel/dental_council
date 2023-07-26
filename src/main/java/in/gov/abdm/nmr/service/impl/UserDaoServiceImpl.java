@@ -281,7 +281,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
 
     @Override
     public void updateLastLogin(BigInteger userId) {
-        userDetailRepository.updateLastLogin(userId);
+        userDetailRepository.updateLastLoginAndResetFailedAttemptCount(userId);
     }
 
     @Override
