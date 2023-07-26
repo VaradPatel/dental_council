@@ -296,7 +296,7 @@ public class NMRConstants {
     public static final String DEACTIVATE_USER = "update  {h-schema}user SET delete_status =true WHERE id =:userId";
 
     public static final String UNLOCK_USER ="update {h-schema}user SET failed_attempt =0, account_non_locked = true, lock_time = null WHERE id = :userId";
-    public static final String UPDATE_LAST_LOGIN ="update {h-schema}user SET last_login=current_timestamp WHERE id = :userId";
+    public static final String UPDATE_LAST_LOGIN_AND_RESET_FAILED_ATTEMPT_COUNT ="update {h-schema}user SET last_login=current_timestamp,failed_attempt=0 WHERE id = :userId";
     public static final String FETCH_SMC_DETAILS = "select u.id, user_type_id ,p.first_name, p.last_name ,email,mobile_number,u.user_sub_type_id,u.last_login ,a.name as CouncilName ,'' as collegeName,p.created_at from main.user u join main.smc_profile p on u.id =p.user_id JOIN state_medical_council a on p.state_medical_council_id = a.id where u.delete_status =false  ";
     public static final String FETCH_COLLEGE_DETAILS = " union select u.id ,user_type_id ,p.name, ''as last_name ,email,mobile_number,u.user_sub_type_id,u.last_login ,''as CouncilName ,a.name as collegeName ,p.created_at from user u join college_profile p on u.id =p.user_id JOIN college_master a on p.college_id = a.id where u.delete_status =false ";
     public static final String FETCH_NMC_DETAILS = " union select u.id, user_type_id ,p.first_name, p.last_name,email ,mobile_number,u.user_sub_type_id,u.last_login ,'','',p.created_at from user u join nmc_profile p on u.id =p.user_id where u.delete_status =false ";
