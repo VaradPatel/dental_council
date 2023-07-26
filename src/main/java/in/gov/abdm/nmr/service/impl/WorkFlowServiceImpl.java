@@ -139,7 +139,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).orElseThrow(WorkFlowException::new));
                 workFlow.setRemarks(requestTO.getRemarks());
                 workFlow.setUserId(user);
-                if(ApplicationType.HP_REGISTRATION.getId().equals(requestTO.getApplicationTypeId()) && Action.QUERY_RAISE.getId().equals(requestTO.getActionId())){
+                if((ApplicationType.FOREIGN_HP_REGISTRATION.getId().equals(requestTO.getApplicationTypeId()) || ApplicationType.HP_REGISTRATION.getId().equals(requestTO.getApplicationTypeId())) && Action.QUERY_RAISE.getId().equals(requestTO.getActionId())){
                     workFlow.getHpProfile().setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.QUERY_RAISED.getId()).build());
                 }
                 log.debug("Work Flow Updating Successful");
