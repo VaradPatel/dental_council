@@ -12,6 +12,8 @@ public class PractitionerRegistrationTO {
     private String registeredWithCouncil;
     @JsonProperty("registrationNumber")
     private String registrationNumber;
+    @JsonProperty("registrationDate")
+    private String registrationDate;
     @JsonProperty("registrationCertificate")
     private String registrationCertificate;
     @JsonProperty("categoryId")
