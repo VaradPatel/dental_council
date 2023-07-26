@@ -809,13 +809,13 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         if (resetToken != null) {
             resetToken.setToken(token);
+            resetToken.updateExpiryTime();
         } else {
             resetToken = new ResetToken(token, sendLinkOnMailTo.getEmail(),sendLinkOnMailTo.getUserType());
         }
         resetTokenRepository.save(resetToken);
 
         return emailVerifyUrl + "/" + token;
-
 
     }
 
