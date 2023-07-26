@@ -299,6 +299,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     private void saveKnownLanguages(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, BigInteger userId) {
+        languagesKnownRepository.deleteAllByHpUserId(userId);
         List<BigInteger> languagesKnownIds = hpWorkProfileUpdateRequestTO.getLanguagesKnownIds();
         List<BigInteger> languagesKnownEarlierIds = new ArrayList<>();
         if (languagesKnownIds != null && !languagesKnownIds.isEmpty()) {
