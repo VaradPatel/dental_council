@@ -274,7 +274,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 userId = user.getId();
                 if(hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking().toString().equals(NMRConstants.DOCTOR_CURRENTLY_NOT_WORKING)){
                     workProfileRepository.markAsDeleteByHpUserId(userId);
-                    languagesKnownRepository.deleteAllByHpUserId(userId);
+                    languagesKnownRepository.deleteAllByUserId(userId);
                 }
                 workProfile = workProfileRepository.getActiveWorkProfileDetailsByUserId(userId);
             } else {
@@ -299,7 +299,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     private void saveKnownLanguages(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, BigInteger userId) {
-        languagesKnownRepository.deleteAllByHpUserId(userId);
+        languagesKnownRepository.deleteAllByUserId(userId);
         List<BigInteger> languagesKnownIds = hpWorkProfileUpdateRequestTO.getLanguagesKnownIds();
         List<BigInteger> languagesKnownEarlierIds = new ArrayList<>();
         if (languagesKnownIds != null && !languagesKnownIds.isEmpty()) {
