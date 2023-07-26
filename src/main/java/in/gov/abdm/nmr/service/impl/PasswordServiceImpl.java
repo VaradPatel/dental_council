@@ -126,6 +126,8 @@ public class PasswordServiceImpl implements IPasswordService {
 
             Password password = new Password(null, hashedPassword, user);
             passwordDaoService.save(password);
+            resetToken.setExpiryDate(new Timestamp(System.currentTimeMillis()));
+            resetTokenRepository.save(resetToken);
 
             return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
         } catch (Exception e) {
@@ -236,6 +238,7 @@ public class PasswordServiceImpl implements IPasswordService {
 
         if (resetToken != null) {
             resetToken.setToken(token);
+            resetToken.updateExpiryTime();
         } else {
             resetToken = new ResetToken(token, sendLinkOnMailTo.getEmail(), sendLinkOnMailTo.getUserType());
         }

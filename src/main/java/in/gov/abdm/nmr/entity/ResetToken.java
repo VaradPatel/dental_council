@@ -46,12 +46,15 @@ public class ResetToken {
         this.expiryDate = calculateExpiryDate(EXPIRATION);
         this.userType=userType;
     }
-    private Timestamp calculateExpiryDate(final int expiryTimeInMinutes) {
+    private Timestamp calculateExpiryDate(final int expiryTimeInHours) {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.HOUR, expiryTimeInMinutes);
+        calendar.add(Calendar.HOUR, expiryTimeInHours);
         return new Timestamp(calendar.getTimeInMillis());
+    }
 
+    public void updateExpiryTime(){
+        this.setExpiryDate(calculateExpiryDate(EXPIRATION));
     }
 }
