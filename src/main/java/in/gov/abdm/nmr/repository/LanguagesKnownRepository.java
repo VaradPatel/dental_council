@@ -17,5 +17,5 @@ public interface LanguagesKnownRepository extends JpaRepository<LanguagesKnown, 
 	@Transactional
 	@Modifying
 	@Query(value = "delete from languages_known where user_id=:userId",nativeQuery = true)
-	void deleteAllByHpUserId(BigInteger userId);
+	void deleteAllByUserId(BigInteger userId);
 }
