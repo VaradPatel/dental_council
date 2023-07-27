@@ -6,6 +6,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import java.math.BigInteger;
 import java.sql.Date;
+import java.util.List;
 
 @Getter
 @Setter

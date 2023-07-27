@@ -199,6 +199,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Autowired
     private IUserDaoService userDetailDaoService;
 
+    @Autowired
+    private QueriesRepository queriesRepository;
+
     /**
      * This method fetches the SMC registration details for a given request.
      *
@@ -452,6 +455,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         List<ForeignQualificationDetails> internationalQualifications = customQualificationDetailRepository.getQualificationDetailsByUserId(registrationDetails.getHpProfileId().getUser().getId());
         HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = hpProfileRegistrationMapper.convertEntitiesToRegistrationResponseTo(registrationDetails, nbeDetails, indianQualifications, internationalQualifications);
         hpProfileRegistrationResponseTO.setHpProfileId(hpProfileId);
+        for(QualificationDetailResponseTo qualificationDetails:hpProfileRegistrationResponseTO.getQualificationDetailResponseTos()){
+            qualificationDetails.setQueries(queriesRepository.findOpenQueriesByRequestId(qualificationDetails.getRequestId()));
+        }
         return hpProfileRegistrationResponseTO;
     }
 
