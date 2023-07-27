@@ -231,7 +231,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
      */
     @Override
     @Transactional
-    public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws NmrException, InvalidRequestException, WorkFlowException {
+    public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException, WorkFlowException {
 
         HpProfile hpProfile=hpProfileDaoService.findById(hpProfileId);
         HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
@@ -262,6 +262,23 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs);
 
         return SUCCESS_RESPONSE;
+    }
+
+    @Override
+    public String updateQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException, WorkFlowException {
+
+        WorkFlow lastWorkFlowForHealthProfessional = workFlowRepository.findLastWorkFlowForHealthProfessional(hpProfileId);
+        if (lastWorkFlowForHealthProfessional != null && WorkflowStatus.QUERY_RAISED.getId().equals(lastWorkFlowForHealthProfessional.getWorkFlowStatus().getId())) {
+            hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs);
+            for (QualificationDetailRequestTO requestTO : qualificationDetailRequestTOs) {
+                iWorkFlowService.assignQueriesBackToQueryCreator(requestTO.getRequestId());
+                iQueriesService.markQueryAsClosed(requestTO.getRequestId());
+            }
+            return SUCCESS_RESPONSE;
+        } else {
+            return FAILURE_RESPONSE;
+
+        }
     }
 
     @Override
@@ -323,7 +340,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         if (lastWorkFlowForHealthProfessional != null && WorkflowStatus.QUERY_RAISED.getId().equals(lastWorkFlowForHealthProfessional.getWorkFlowStatus().getId())) {
             log.debug("Calling assignQueriesBackToQueryCreator method since there is an existing workflow with 'Query Raised' work flow status. ");
             iWorkFlowService.assignQueriesBackToQueryCreator(lastWorkFlowForHealthProfessional.getRequestId());
-            iQueriesService.markQueryAsClosed(hpSubmitRequestTO.getHpProfileId());
+            iQueriesService.markQueryAsClosed(hpSubmitRequestTO.getRequestId());
             if(ApplicationType.HP_REGISTRATION.getId().equals(hpSubmitRequestTO.getApplicationTypeId()) || ApplicationType.FOREIGN_HP_REGISTRATION.getId().equals(hpSubmitRequestTO.getApplicationTypeId())) {
                 HpProfile hpProfile = hpProfileDaoService.findById(hpSubmitRequestTO.getHpProfileId());
                 hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());

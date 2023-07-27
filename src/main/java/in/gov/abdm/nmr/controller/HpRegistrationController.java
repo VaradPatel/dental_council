@@ -239,9 +239,26 @@ public class HpRegistrationController {
     public String addQualifications(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
                                     @RequestPart("data") @Valid QualificationRequestTO qualificationDetailRequestTO,
                                     @RequestParam(value = "degreeCertificates") List<MultipartFile> degreeCertificates
-    ) throws WorkFlowException, InvalidRequestException, NmrException {
+    ) throws WorkFlowException, InvalidRequestException {
         log.info(degreeCertificates != null ? String.valueOf(degreeCertificates.size()) : null);
         return hpService.addQualification(hpProfileId, qualificationDetailRequestTO.getQualificationDetailRequestTos(), degreeCertificates);
+    }
+
+    /**
+     * Update qualifications to a healthcare provider's profile.
+     *
+     * @param hpProfileId                  the id of the healthcare provider's profile
+     * @param qualificationDetailRequestTO the list of qualifications to be added
+     * @return a string indicating the result of the operation
+     * @throws WorkFlowException if there is an error during the operation
+     */
+    @PutMapping(path = ProtectedPaths.ADDITIONAL_QUALIFICATION, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String updateQualifications(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
+                                    @RequestPart("data") @Valid QualificationRequestTO qualificationDetailRequestTO,
+                                    @RequestParam(value = "degreeCertificates") List<MultipartFile> degreeCertificates
+    ) throws InvalidRequestException, WorkFlowException {
+        log.info(degreeCertificates != null ? String.valueOf(degreeCertificates.size()) : null);
+        return hpService.updateQualification(hpProfileId, qualificationDetailRequestTO.getQualificationDetailRequestTos(),degreeCertificates);
     }
 
     /**
