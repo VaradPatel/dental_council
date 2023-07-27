@@ -15,5 +15,5 @@ public interface HPRFClient {
 
     @Async
     @PostMapping(value = HPR_SERVICE_REGISTER_HEALTH_PROFESSIONAL)
-    RegisteredPractitionerResponseTO registerHealthProfessional(@RequestHeader(value = "Authorization") String authorization, @RequestBody PractitionerRequestTO practitionerRequestTO);
+    RegisteredPractitionerResponseTO registerHealthProfessional(@RequestHeader(value = AUTHORIZATION) String authorization, @RequestBody PractitionerRequestTO practitionerRequestTO);
 }
