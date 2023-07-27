@@ -22,6 +22,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 import in.gov.abdm.nmr.service.IUserDaoService;
 
+import static in.gov.abdm.nmr.util.NMRConstants.*;
+
 @Component
 public class JwtAuthenticationProvider implements AuthenticationProvider {
 
@@ -53,7 +55,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
                 String refreshTokenId = userDetailService.findByUsername(verifiedToken.getSubject(), UserTypeEnum.getUserType(verifiedToken.getClaim(JwtUtil.USER_TYPE).as(BigInteger.class)).getId()).getRefreshTokenId();
                 if (StringUtils.isBlank(verifiedToken.getId()) || StringUtils.isBlank(refreshTokenId) || !refreshTokenId.equals(verifiedToken.getId())) {
-                    throw new AuthenticationServiceException("Unable to authenticate token");
+                    throw new AuthenticationServiceException(INVALID_BEARER_TOKEN_ERROR_MSG);
                 }
                 List<? extends GrantedAuthority> authorities = verifiedToken.getClaim(JwtUtil.AUTHORITIES_LABEL).asList(String.class).stream().map(SimpleGrantedAuthority::new).toList();
                 jwtAuthtoken = new JwtAuthenticationToken(verifiedToken.getSubject(), authorities,UserTypeEnum.getUserType(verifiedToken.getClaim(JwtUtil.USER_TYPE).as(BigInteger.class)));
@@ -61,18 +63,18 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
                 return jwtAuthtoken;
             }
         } catch (Exception e) {
-            LOGGER.error("Exception occurred while authenticating JWT token", e);
+            LOGGER.error(EXCEPTION_IN_AUTHENTICATING_JWT_TOKEN, e);
 
             if (e instanceof TokenExpiredException) {
-                throw new InvalidBearerTokenException("Token expired");
+                throw new InvalidBearerTokenException(EXPIRED_TOKEN_ERROR_MSG);
             }
 
             if (e instanceof JWTVerificationException) {
-                throw new InvalidBearerTokenException("Invalid token");
+                throw new InvalidBearerTokenException(INVALID_TOKEN_ERROR_MSG);
             }
-            throw new AuthenticationServiceException("Exception occurred while authenticating JWT token");
+            throw new AuthenticationServiceException(EXCEPTION_IN_AUTHENTICATING_JWT_TOKEN);
         }
-        throw new AuthenticationServiceException("Unable to authenticate JWT token");
+        throw new AuthenticationServiceException(UNABLE_TO_AUTHENTICATE_BEARER_TOKEN_ERROR_MSG);
     }
 
     @Override

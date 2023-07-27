@@ -38,6 +38,8 @@ import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.service.ICaptchaService;
 import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 
+import static in.gov.abdm.nmr.util.NMRConstants.*;
+
 @Component
 public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -91,13 +93,13 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
             authRequest.setDetails(createSecurityAuditTrail(request));
 
             if (!captchaService.isCaptchaVerified(requestBodyTO.getCaptchaTransId())) {
-                throw new AuthenticationServiceException("Invalid captcha");
+                throw new AuthenticationServiceException(INVALID_CAPTCHA_ERROR_MSG);
             }
         } catch (AuthenticationException e) {
             throw e;
         } catch (Exception e) {
-            LOGGER.error("Exception occured while parsing username-password login request", e);
-            throw new AuthenticationServiceException("Exception occured while parsing username-password login request");
+            LOGGER.error(EXCEPTION_IN_PARSING_USERNAME_PASSWORD, e);
+            throw new AuthenticationServiceException(EXCEPTION_IN_PARSING_USERNAME_PASSWORD);
         }
         return this.getAuthenticationManager().authenticate(authRequest);
     }
@@ -161,7 +163,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         if(failed instanceof BadCredentialsException) {
-            failed = new AuthenticationServiceException("Incorrect username or password");
+            failed = new AuthenticationServiceException(INCORRECT_USERNAME_OR_PASSWORD_ERROR_MSG);
         }
         
         super.unsuccessfulAuthentication(request, response, failed);

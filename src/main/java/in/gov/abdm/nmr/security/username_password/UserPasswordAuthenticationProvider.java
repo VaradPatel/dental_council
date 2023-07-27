@@ -21,6 +21,8 @@ import in.gov.abdm.nmr.enums.NotificationType;
 import in.gov.abdm.nmr.exception.OtpException;
 import in.gov.abdm.nmr.service.IOtpService;
 
+import static in.gov.abdm.nmr.util.NMRConstants.INVALID_USERNAME_ERROR_MSG;
+
 @Component
 public class UserPasswordAuthenticationProvider extends DaoAuthenticationProvider {
 
@@ -43,7 +45,7 @@ public class UserPasswordAuthenticationProvider extends DaoAuthenticationProvide
         if (userPassAuthToken.getUserType() == null || !userDetail.getUserType().equals(userPassAuthToken.getUserType())) {
             LOGGER.error("Usertype and credentials do not match");
             userPassAuthToken.eraseCredentials();
-            throw new AuthenticationServiceException("Invalid username");
+            throw new AuthenticationServiceException(INVALID_USERNAME_ERROR_MSG);
         }
 
         if (LoginTypeEnum.MOBILE_OTP.getCode().equals(userPassAuthToken.getLoginType()) || LoginTypeEnum.NMR_ID_OTP.getCode().equals(userPassAuthToken.getLoginType())) {

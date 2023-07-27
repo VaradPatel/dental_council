@@ -18,6 +18,9 @@ import in.gov.abdm.nmr.dto.UserSearchTO;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.service.IUserDaoService;
 
+import static in.gov.abdm.nmr.util.NMRConstants.INVALID_USERNAME_ERROR_MSG;
+import static in.gov.abdm.nmr.util.NMRConstants.NOT_ALLOWED_ERROR_MSG;
+
 @Component
 public class UserPasswordDetailsService implements UserDetailsService {
 
@@ -41,13 +44,13 @@ public class UserPasswordDetailsService implements UserDetailsService {
 
         User user = userDaoService.findByUsername(username, userType);
         if (user == null) {
-            LOGGER.error("Invalid username");
-            throw new UsernameNotFoundException("Invalid username");
+            LOGGER.error(INVALID_USERNAME_ERROR_MSG);
+            throw new UsernameNotFoundException(INVALID_USERNAME_ERROR_MSG);
         }
         
         if (StringUtils.isBlank(user.getPassword())) {
-            LOGGER.error("Not allowed");
-            throw new AuthenticationServiceException("Not allowed");
+            LOGGER.error(NOT_ALLOWED_ERROR_MSG);
+            throw new AuthenticationServiceException(NOT_ALLOWED_ERROR_MSG);
         }
 
         boolean isAccountNonLocked = authenticationHandler.checkAndUpdateLockStatus(username, userType);

@@ -30,6 +30,8 @@ import in.gov.abdm.nmr.security.common.RoleConstants;
 import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
 
+import static in.gov.abdm.nmr.util.NMRConstants.*;
+
 @Component
 public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
@@ -63,7 +65,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
                 String accessToken = extractBearerToken(request);
 
                 if (accessToken == null) {
-                    throw new AuthenticationServiceException("Invalid bearer token format");
+                    throw new AuthenticationServiceException(BEARER_TOKEN_ERROR_MSG);
                 }
 
                 JwtTypeEnum tokenType = JwtTypeEnum.ACCESS_TOKEN;
@@ -74,21 +76,21 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
                 authRequest = new JwtAuthenticationToken(accessToken, tokenType,null);
                 authRequest.setDetails(createSecurityAuditTrail(request));
             } else {
-                LOGGER.error("No bearer token was passed");
-                throw new AuthenticationServiceException("No bearer token was passed");
+                LOGGER.error(NO_BEARER_TOKEN_ERROR_MSG);
+                throw new AuthenticationServiceException(NO_BEARER_TOKEN_ERROR_MSG);
             }
             
         } catch (AuthenticationException e) {
             throw e;
         } catch (Exception e) {
-            LOGGER.error("Exception occured while parsing bearer token", e);
-            throw new AuthenticationServiceException("Exception occured while parsing bearer token");
+            LOGGER.error(EXCEPTION_IN_PARSING_BEARER_TOKEN, e);
+            throw new AuthenticationServiceException(EXCEPTION_IN_PARSING_BEARER_TOKEN);
         }
         return this.getAuthenticationManager().authenticate(authRequest);
     }
 
     private String extractBearerToken(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader(AUTHORIZATION);
 
         if (authHeader.startsWith("Bearer ") && authHeader.length() > 7) {
             return authHeader.substring(authHeader.indexOf(" ") + 1, authHeader.length());
@@ -139,7 +141,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
             throws IOException, ServletException {
         if(authResult.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals(RoleConstants.ROLE_PREFIX + RoleConstants.SYSTEM)) &&
                 !NMRConstants.HEALTH_PROFESSIONAL_ACTION.equals(request.getServletPath())) {
-            throw new AuthenticationServiceException("Not allowed");
+            throw new AuthenticationServiceException(NOT_ALLOWED_ERROR_MSG);
         }
         
         super.successfulAuthentication(request, response, chain, authResult);
