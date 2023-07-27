@@ -28,6 +28,9 @@ import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.ISecurityAuditTrailDaoService;
 
+import static in.gov.abdm.nmr.util.NMRConstants.EXCEPTION_IN_PARSING_USERNAME_PASSWORD;
+import static in.gov.abdm.nmr.util.NMRConstants.NOT_ALLOWED_ERROR_MSG;
+
 @Component
 public class UserPasswordAuthenticationFilterInternal extends UserPasswordAuthenticationFilter {
 
@@ -51,11 +54,11 @@ public class UserPasswordAuthenticationFilterInternal extends UserPasswordAuthen
 
             LoginRequestTO requestBodyTO = convertRequestToDTO();
             if(!ALLOWED_LOGIN_TYPES.contains(requestBodyTO.getLoginType())) {
-                throw new AuthenticationServiceException("Not allowed");
+                throw new AuthenticationServiceException(NOT_ALLOWED_ERROR_MSG);
             }
             
             if(!ALLOWED_USER_TYPES.contains(requestBodyTO.getUserType())) {
-                throw new AuthenticationServiceException("Not allowed");
+                throw new AuthenticationServiceException(NOT_ALLOWED_ERROR_MSG);
             }
             
             authRequest = UserPasswordAuthenticationToken.unauthenticated(requestBodyTO.getUsername(), requestBodyTO.getPassword(), requestBodyTO.getUserType(),
@@ -64,8 +67,8 @@ public class UserPasswordAuthenticationFilterInternal extends UserPasswordAuthen
         } catch (AuthenticationException e) {
             throw e;
         } catch (Exception e) {
-            LOGGER.error("Exception occured while parsing username-password login request", e);
-            throw new AuthenticationServiceException("Exception occured while parsing username-password login request");
+            LOGGER.error(EXCEPTION_IN_PARSING_USERNAME_PASSWORD, e);
+            throw new AuthenticationServiceException(EXCEPTION_IN_PARSING_USERNAME_PASSWORD);
         }
         return this.getAuthenticationManager().authenticate(authRequest);
     }

@@ -24,9 +24,9 @@ public interface FacilityFClient {
      * @return the FacilitySearchResponseTO search response Object
      */
     @PostMapping(value = FACILITY_SERVICE_SEARCH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    FacilitiesSearchResponseTO searchFacility(@RequestHeader(value = "Authorization") String authorization, @RequestBody FacilityRequestTO facilityRequestTO);
+    FacilitiesSearchResponseTO searchFacility(@RequestHeader(value = AUTHORIZATION) String authorization, @RequestBody FacilityRequestTO facilityRequestTO);
 
     @PostMapping(value = FETCH_FACILITY_INFO, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    FacilitySearchResponseTO fetchFacilityInfo(@RequestHeader(value = "Authorization") String authorization, @RequestBody FacilityRequestTO facilityRequestTO);
+    FacilitySearchResponseTO fetchFacilityInfo(@RequestHeader(value = AUTHORIZATION) String authorization, @RequestBody FacilityRequestTO facilityRequestTO);
 
 }

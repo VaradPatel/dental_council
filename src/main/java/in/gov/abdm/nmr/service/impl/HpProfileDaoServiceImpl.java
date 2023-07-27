@@ -195,7 +195,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @SneakyThrows
     @Override
     public HpProfileUpdateResponseTO updateHpRegistrationDetails(BigInteger hpProfileId,
-                                                                 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, MultipartFile degreeCertificate) throws NmrException, InvalidRequestException {
+                                                                 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, List<MultipartFile> degreeCertificate) throws NmrException, InvalidRequestException {
 
         log.info("In HpProfileDaoServiceImpl : updateHpRegistrationDetails method");
 
@@ -224,7 +224,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 }
             }
             log.debug("Saving Qualification Details");
-            saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), degreeCertificate != null ? List.of(degreeCertificate) : Collections.emptyList());
+                saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), degreeCertificate);
         }
         if (NMRConstants.INTERNATIONAL.equals(hpRegistrationUpdateRequestTO.getQualificationDetails().get(0).getQualificationFrom())) {
             HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByUserId(hpProfile.getUser().getId());
@@ -272,7 +272,11 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             User user = hpProfileOptional.get().getUser();
             if (user != null) {
                 userId = user.getId();
-                workProfile = workProfileRepository.getWorkProfileDetailsByUserId(userId);
+                if(hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking().toString().equals(NMRConstants.DOCTOR_CURRENTLY_NOT_WORKING)){
+                    workProfileRepository.markAsDeleteByHpUserId(userId);
+                    languagesKnownRepository.deleteAllByUserId(userId);
+                }
+                workProfile = workProfileRepository.getActiveWorkProfileDetailsByUserId(userId);
             } else {
                 throw new NotFoundException(NMRError.NO_SUCH_ELEMENT.getCode(), NMRError.NO_SUCH_ELEMENT.getMessage());
             }
@@ -295,6 +299,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     private void saveKnownLanguages(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, BigInteger userId) {
+        languagesKnownRepository.deleteAllByUserId(userId);
         List<BigInteger> languagesKnownIds = hpWorkProfileUpdateRequestTO.getLanguagesKnownIds();
         List<BigInteger> languagesKnownEarlierIds = new ArrayList<>();
         if (languagesKnownIds != null && !languagesKnownIds.isEmpty()) {
@@ -567,7 +572,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @SneakyThrows
     private void mapWorkRequestToEntity(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> addWorkProfiles, BigInteger hpProfileId, BigInteger userId) {
-        if (!addWorkProfiles.isEmpty()) {
+        if (!addWorkProfiles.isEmpty() && !hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().isEmpty()) {
             List<String> facilityIdList = new ArrayList<>();
             if(hpWorkProfileUpdateRequestTO!=null && hpWorkProfileUpdateRequestTO.getCurrentWorkDetails()!=null) {
                 hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> facilityIdList.add(currentWorkDetailsTO.getFacilityId()));
@@ -590,6 +595,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         if (hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus() != null) {
             addWorkProfile.setWorkStatus(workStatusRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus().getId()).get());
         }
+        addWorkProfile.setExperienceInYears(hpWorkProfileUpdateRequestTO.getWorkDetails().getExperienceInYears());
         addWorkProfile.setIsUserCurrentlyWorking(hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking());
         addWorkProfile.setFacilityId(currentWorkDetailsTO.getFacilityId());
         addWorkProfile.setFacilityTypeId(currentWorkDetailsTO.getFacilityTypeId());
@@ -605,7 +611,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         }
         addWorkProfile.setProofOfWorkAttachment(currentWorkDetailsTO.getProof());
         addWorkProfile.setRegistrationNo(hpWorkProfileUpdateRequestTO.getRegistrationNo());
-        addWorkProfile.setExperienceInYears(currentWorkDetailsTO.getExperienceInYears());
         addWorkProfile.setUserId(userId);
         addWorkProfile.setSystemOfMedicine(currentWorkDetailsTO.getSystemOfMedicine());
         addWorkProfile.setDesignation(currentWorkDetailsTO.getDesignation());
@@ -642,13 +647,38 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     private void saveWorkProfileRecords(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, BigInteger hpProfileId, BigInteger userId) {
+
         List<WorkProfile> workProfileDetailsList = new ArrayList<>();
-        hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> {
-            WorkProfile workProfile = new WorkProfile();
-            workProfileDetailsList.add(workProfileObjectMapping(hpWorkProfileUpdateRequestTO, workProfile, currentWorkDetailsTO, hpProfileId, userId));
-            workProfileRepository.saveAll(workProfileDetailsList);
-        });
+        if(hpWorkProfileUpdateRequestTO.getWorkDetails().getIsUserCurrentlyWorking().toString().equals(NMRConstants.DOCTOR_CURRENTLY_NOT_WORKING) && (hpWorkProfileUpdateRequestTO.getCurrentWorkDetails()==null || hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().isEmpty())){
+            WorkProfile workProfile=new WorkProfile();
+            workProfile.setHpProfileId(hpProfileId);
+            workProfile.setUserId(userId);
+            workProfile.setIsUserCurrentlyWorking(Integer.valueOf(NMRConstants.DOCTOR_CURRENTLY_NOT_WORKING));
+            workProfile.setRemark(hpWorkProfileUpdateRequestTO.getWorkDetails().getRemark());
+            workProfile.setReason(hpWorkProfileUpdateRequestTO.getWorkDetails().getReason());
+            workProfile.setExperienceInYears(hpWorkProfileUpdateRequestTO.getWorkDetails().getExperienceInYears());
+            workProfileRepository.save(workProfile);
+        }
+        else {
+            workProfileRepository.deleteCurrentlyNotWorkingByHpUserId(userId);
+            if(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().isEmpty()){
+
+                WorkProfile workProfile=new WorkProfile();
+                workProfile.setHpProfileId(hpProfileId);
+                workProfile.setUserId(userId);
+                workProfile.setIsUserCurrentlyWorking(Integer.valueOf(NMRConstants.DOCTOR_CURRENTLY_WORKING));
+                workProfile.setWorkNature(workNatureRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkNature().getId()).get());
+                workProfile.setWorkStatus(workStatusRepository.findById(hpWorkProfileUpdateRequestTO.getWorkDetails().getWorkStatus().getId()).get());
+                workProfile.setExperienceInYears(hpWorkProfileUpdateRequestTO.getWorkDetails().getExperienceInYears());
+                workProfileRepository.save(workProfile);
+
+            }else {
+                hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> {
+                    WorkProfile workProfile = new WorkProfile();
+                    workProfileDetailsList.add(workProfileObjectMapping(hpWorkProfileUpdateRequestTO, workProfile, currentWorkDetailsTO, hpProfileId, userId));
+                    workProfileRepository.saveAll(workProfileDetailsList);
+                });
+            }
+        }
     }
-
-
 }

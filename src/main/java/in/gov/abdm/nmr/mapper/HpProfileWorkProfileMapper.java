@@ -32,6 +32,7 @@ public final class HpProfileWorkProfileMapper {
             workDetailsTO.setReason(workProfile.get(0).getReason());
             workDetailsTO.setRemark(workProfile.get(0).getRemark());
         }
+        workDetailsTO.setExperienceInYears(workProfile.get(0).getExperienceInYears());
         workProfile.stream().filter(wp -> wp.getIsUserCurrentlyWorking() != 1).forEach(workProfileObj -> {
             CurrentWorkDetailsTO currentWorkDetailsTO = new CurrentWorkDetailsTO();
             currentWorkDetailsTO.setWorkOrganization(workProfileObj.getWorkOrganization());
@@ -59,7 +60,6 @@ public final class HpProfileWorkProfileMapper {
             }
             currentWorkDetailsTO.setAddress(address);
             currentWorkDetailsTO.setRegistrationNo(workProfileObj.getRegistrationNo());
-            currentWorkDetailsTO.setExperienceInYears(workProfileObj.getExperienceInYears());
             currentWorkDetailsTO.setSystemOfMedicine(workProfileObj.getSystemOfMedicine());
             currentWorkDetailsTO.setDesignation(workProfileObj.getDesignation());
             currentWorkDetailsTO.setDepartment(workProfileObj.getDepartment());

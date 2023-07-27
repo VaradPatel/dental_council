@@ -7,6 +7,7 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
 
+import static in.gov.abdm.nmr.util.NMRConstants.INVALID_COUNTRY;
 import static in.gov.abdm.nmr.util.NMRConstants.NOT_NULL_ERROR_MSG;
 
 @Data
@@ -17,6 +18,6 @@ public class NationalityTO {
     @NotNull(message = NOT_NULL_ERROR_MSG)
     private BigInteger id;
 
-    @OptionalName(message =  "Invalid country")
+    @OptionalName(message =  INVALID_COUNTRY)
     private String name;
 }

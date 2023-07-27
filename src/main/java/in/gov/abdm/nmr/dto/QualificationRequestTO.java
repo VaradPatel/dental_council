@@ -4,7 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
+
+import static in.gov.abdm.nmr.util.NMRConstants.SELECT_QUALIFICATION_DETAIL_REQUEST;
 
 /**
  * This temporary class is used to get the list of QualificationDetailsRequestTO as a single variable
@@ -15,6 +19,8 @@ import java.util.List;
 @NoArgsConstructor
 public class QualificationRequestTO {
 
+    @Valid
+    @NotEmpty(message = SELECT_QUALIFICATION_DETAIL_REQUEST)
     private List<QualificationDetailRequestTO> qualificationDetailRequestTos;
 
 }

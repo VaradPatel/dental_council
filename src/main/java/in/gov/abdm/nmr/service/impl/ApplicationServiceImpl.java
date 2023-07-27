@@ -207,12 +207,12 @@ public class ApplicationServiceImpl implements IApplicationService {
 
                 log.debug("Building Request id.");
                 String requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(applicationRequestTo.getApplicationTypeId()));
-                WorkFlow workFlow = iWorkFlowRepository.findLastWorkFlowForHealthProfessional(latestHpProfile.getId());
+                WorkFlow workFlow = iWorkFlowRepository.findLastWorkFlowForHealthProfessionalForSuspension(latestHpProfile.getId());
                 BigInteger loggedInUserGroupId = getGroupIdForLoggedInUser();
                 if(Group.NMC.getId().equals(loggedInUserGroupId) || Group.SMC.getId().equals(loggedInUserGroupId)){
                     applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.REACTIVATION_THROUGH_SMC.getId());
                     reactivateRequestResponseTo.setSelfReactivation(false);
-                } else if (Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
+                } else if (workFlow!=null && Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
                     log.debug("Proceeding to reactivate through SMC since the profile was suspended by NMC");
                     applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.REACTIVATION_THROUGH_SMC.getId());
                     reactivateRequestResponseTo.setSelfReactivation(false);

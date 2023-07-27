@@ -4,12 +4,14 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
+import static in.gov.abdm.nmr.util.NMRConstants.APPLICATION_TYPE_ID_ERROR_MSG;
+
 @Documented
 @Constraint(validatedBy = ApplicationTypeIdValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApplicationTypeId {
-    String message() default "Invalid application type id. supported action ids are 1, 2, 3, 4, 5, 6, 7, 8.";
+    String message() default APPLICATION_TYPE_ID_ERROR_MSG;
 
     Class<?>[] groups() default {};
 

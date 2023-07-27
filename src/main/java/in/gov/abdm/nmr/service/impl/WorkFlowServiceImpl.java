@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.entity.*;
+import in.gov.abdm.nmr.entity.HpProfileStatus;
 import in.gov.abdm.nmr.enums.Action;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.*;
@@ -138,6 +139,9 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 workFlow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(iNextGroup.getWorkFlowStatusId()).orElseThrow(WorkFlowException::new));
                 workFlow.setRemarks(requestTO.getRemarks());
                 workFlow.setUserId(user);
+                if((ApplicationType.FOREIGN_HP_REGISTRATION.getId().equals(requestTO.getApplicationTypeId()) || ApplicationType.HP_REGISTRATION.getId().equals(requestTO.getApplicationTypeId())) && Action.QUERY_RAISE.getId().equals(requestTO.getActionId())){
+                    workFlow.getHpProfile().setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.QUERY_RAISED.getId()).build());
+                }
                 log.debug("Work Flow Updating Successful");
             } else {
                 throw new WorkFlowException(NMRError.WORK_FLOW_EXCEPTION.getCode(), NMRError.WORK_FLOW_EXCEPTION.getMessage());

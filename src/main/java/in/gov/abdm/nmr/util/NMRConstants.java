@@ -34,18 +34,10 @@ public class NMRConstants {
     public static final String NOTIFICATION_SERVICE = "notification";
     public static final String FACILITY_SERVICE = "facility";
     public static final String NOTIFICATION_DB_SERVICE = "notification-db";
-    public static final String LGD_DB_SERVICE = "lgd-db";
     public static final String QUERY_CLOSED_STATUS = "closed";
     public static final String QUERY_OPEN_STATUS = "open";
     public static final String GLOBAL_NOTIFICATION_ENDPOINT = "${global.notification.endpoint}";
-    public static final String GLOBAL_LGD_ENDPOINT = "${global.lgd.endpoint}";
-    public static final String LGD_API_VERSION = "/internal/v3/abdm";
-    public static final String LGD = "/lgd";
-    public static final String LGD_SEARCH_URL = LGD + "/search";
-    public static final String LGD_FEIGN_SEARCH_URL = LGD_API_VERSION + LGD_SEARCH_URL;
-    public static final String PIN_CODE = "pinCode";
     public static final String RENEWABLE_REGISTRATION_CODE = "1";
-    public static final String VIEW = "view";
     public static final String GLOBAL_FACILITY_ENDPOINT = "${global.facility.endpoint}";
     public static final String NO_SUCH_OTP_TYPE = "No such OTP Type";
     public static final String OTP_EMAIL_SUBJECT = "NMR : Email Verification OTP";
@@ -62,8 +54,8 @@ public class NMRConstants {
     public static final String EMAIL_VERIFIED_MESSAGE_PROPERTIES_KEY = "email-verified";
     public static final String STATUS_CHANGED_MESSAGE_PROPERTIES_KEY = "status-changed";
     public static final String INFO_CONTENT_TYPE = "info";
-    public static final String CONTACT_NOT_NULL = "Contact cannot be null or empty";
-    public static final String OTP_NOT_NULL = "OTP cannot be null or empty";
+    public static final String CONTACT_NOT_NULL = "Please enter contact";
+    public static final String OTP_NOT_NULL = "Please enter otp";
     public static final String USER_TYPE_NOT_NULL = "User type cannot be null";
 
     public static final String SUCCESS_RESPONSE = "Success";
@@ -74,20 +66,13 @@ public class NMRConstants {
     public static final String EMAIL_USED_BY_OTHER_USER = "Email is already used by other user";
     public static final String MOBILE_USED_BY_OTHER_USER = "Mobile number is already used by other user";
     public static final String UPDATING_SAME_MOBILE_NUMBER = "Mobile number is already verified";
-    public static final String COLLEGE_CONSTANT = "COLLEGE";
-    public static final String USERNAME_ALREADY_EXISTS = "User with this username already exists";
-    public static final String MOBILE_NUMBER_ALREADY_EXISTS = "User with this mobile number already exists";
-    public static final String EMAIL_ALREADY_EXISTS = "User with this email already exists";
     public static final String FORBIDDEN = "Forbidden";
-    public static final String INVALID_COLLEGE_ID = "Invalid college id";
-    public static final String INVALID_PROFILE_ID = "Invalid profile id";
     public static final String LINK_EXPIRED = "Link expired";
     public static final String INVALID_LINK = "Invalid link";
     public static final String OLD_PASSWORD_NOT_MATCHING = "Old password is not correct";
     public static final String PROBLEM_OCCURRED = "Problem Occurred";
     public static final String USERNAME_NOT_NULL = "Username cannot be null or empty";
     public static final String PASSWORD_NOT_NULL = "Password cannot be null or empty";
-    public static final String REGISTRATION_NOT_NULL = "Registration number cannot be null or empty";
     public static final String SMC_NOT_NULL = "SMC ID number cannot be null or empty";
     public static final String TOKEN_NOT_NULL = "Token cannot be null or empty";
     public static final int RESET_PASSWORD_LINK_EXPIRY_HOURS = 24;
@@ -122,8 +107,6 @@ public class NMRConstants {
 
     public static final String ID = "id";
     public static final String HP_PROFILE_STATUS_ID = "hp_profile_status_id";
-    public static final String APPLICATION_STATUS_TYPE_ID = "application_status_type_id";
-    public static final String VERIFIED_BY = "verified_by";
     public static final String SCHEDULE_ID = "schedule_id";
     public static final String USER_TYPE_ID = "user_type_id";
     public static final String USER_TYPE = "userType";
@@ -170,11 +153,7 @@ public class NMRConstants {
     public static final String FETCH_CARD_DETAILS_QUERY = "select d.work_flow_status_id doctor_status, smc_status, nmc_status, nbe_status, d.hp_profile_id, d.request_id, rd.registration_no, d.created_at, stmc.name, hp.full_name,  work_flow_status_id,(SELECT CASE WHEN ( wf.work_flow_status_id in(2, 4, 5, 6) ) THEN DATE_PART( 'day', (wf.updated_at - wf.created_at) ) WHEN ( wf.work_flow_status_id in(1, 3) ) THEN DATE_PART( 'day', (now() - wf.created_at) ) END FROM main.work_flow wf where wf.request_id = d.request_id ) as pendency, hp.gender, hp.email_id, hp.mobile_number, hp.nmr_id, rd.registration_date, college_status,d.application_type_id, count(*) OVER() AS total_count from main.dashboard d INNER JOIN main.registration_details as rd on rd.hp_profile_id = d.hp_profile_id INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id and hp.e_sign_status IN (1) ";
     public static final String FETCH_TRACK_DETAILS_QUERY = "select d.work_flow_status_id doctor_status, smc_status, nmc_status, nbe_status, d.hp_profile_id, d.request_id, rd.registration_no, d.created_at, stmc.name, hp.full_name, application_type_id, ( SELECT a.name FROM main.application_type a WHERE a.id = application_type_id ) as application_type_name, ( SELECT CASE WHEN ( wf.work_flow_status_id in(2, 4, 5, 6) ) THEN DATE_PART( 'day', (wf.updated_at - wf.created_at) ) WHEN ( wf.work_flow_status_id in(1, 3) ) THEN DATE_PART( 'day', (now() - wf.created_at) ) END FROM main.work_flow wf where wf.request_id = d.request_id ) as pendency, work_flow_status_id, hp.gender, hp.email_id, hp.mobile_number, hp.nmr_id, rd.registration_date, college_status, count(*) OVER() AS total_count from main.dashboard d INNER JOIN main.registration_details as rd on rd.hp_profile_id = d.hp_profile_id INNER JOIN main.state_medical_council as stmc on rd.state_medical_council_id = stmc.id INNER JOIN main.hp_profile as hp on rd.hp_profile_id = hp.id ";
     public static final String STATE_MEDICAL_COUNCIL_ID = "state_medical_council_id";
-    public static final String REGISTRATION_DETAILS_ID = "registration_details_id";
-    public static final String SUCCESS = "Success";
     public static final String DCS_INTEGRATOR_NAME = "NMR";
-    public static final String E_SIGN_SUCCESS_STATUS = "success";
-    public static final String E_SIGN_FAILURE_STATUS = "failure";
     public static final String DSC_SERVICE = "dsc";
     public static final String DSC_SERVICE_ENDPOINT = "${dsc.endpoint.url}";
     public static final String GEN_ESP_REQUEST_URL = "/digiSign/genEspRequest";
@@ -189,7 +168,6 @@ public class NMRConstants {
     public static final String MESSAGE_SENDER = "National Medical Register.";
     public static final String NMR_ACCOUNT = "NMR Account";
     public static final String DEFAULT_COUNTRY_AADHAR = "India";
-    public static final int DEFAULT_ADDRESS_TYPE_AADHAR = 4;
     public static final String INDIA = "India";
     public static final String INTERNATIONAL = "International";
     public static final String SALUTATION_DR = "Dr.";
@@ -204,10 +182,8 @@ public class NMRConstants {
     public static final String YEAR_OF_REGISTRATION_IN_LOWER_CASE = "yearofregistration";
     public static final String SMC_ID_IN_LOWER_CASE = "smcid";
     public static final String REQUEST_ID_IN_LOWER_CASE = "requestid";
-    public static final String WORK_FLOW_STATUS_IN_LOWER_CASE = "workflowstatus";
     public static final String WORK_FLOW_STATUS_ID_IN_LOWER_CASE = "workflowstatusid";
     public static final String APPLICANT_FULL_NAME_IN_LOWER_CASE = "applicantfullname";
-
     public static final String FIRST_NAME_IN_LOWER_CASE = "firstname";
     public static final String LAST_NAME_IN_LOWER_CASE = "lastname";
     public static final String USER_TYPE_ID_IN_LOWER_CASE = "usertypeid";
@@ -243,7 +219,7 @@ public class NMRConstants {
     public static final String FETCH_WORK_PROFILE_RECORDS_BY_USER_ID = """
             SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id, 
             state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at, 
-            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status, system_of_medicine, department, designation, reason, remark FROM work_profile where delete_status=false AND  user_id =:userId""" ;
+            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status, system_of_medicine, department, designation, reason, remark FROM work_profile where delete_status=false AND  user_id =:userId order by updated_at desc""" ;
      public static final int MAX_DATA_SIZE = 500;
     public static final String DEFAULT_SORT_ORDER = "DESC";
     public static final String SMS_AND_EMAIL_RESET_MESSAGE_PROPERTIES_KEY = "sms-email-reset";
@@ -251,7 +227,7 @@ public class NMRConstants {
     public static final String NMR_ID_CREATED = "nmr-id-created";
     public static final String HPR_ACCOUNT_CREATED = "hpr-account-created";
     public static final String INCORRECT_E_SIGNED = "incorrect-e-sign";
-    public static final String TYPE_NOT_NULL = "Type cannot be null";
+    public static final String TYPE_NOT_NULL = "Please enter type";
     public static final double FUZZY_MATCH_LIMIT = 75;
     public static final String FUZZY_PARAMETER_NAME = "Name";
     public static final String FUZZY_PARAMETER_GENDER = "Gender";
@@ -290,13 +266,13 @@ public class NMRConstants {
     public static final String FETCH_ACTIVE_WORK_PROFILE_RECORDS_BY_USER_ID = """            
             SELECT address, facility_id, is_user_currently_working, pincode, proof_of_work_attachment, url, district_id, user_id,
             state_id, work_nature_id, work_status_id, hp_profile_id, work_organization, id, created_at,
-            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status, system_of_medicine, department, designation, reason, remark FROM work_profile WHERE  delete_status=false AND user_id =:userId""";
+            updated_at, request_id, facility_type_id, organization_type, registration_no, experience_in_years,delete_status, system_of_medicine, department, designation, reason, remark FROM work_profile WHERE  delete_status=false AND is_user_currently_working=0 AND user_id =:userId""";
 
 
     public static final String DEACTIVATE_USER = "update  {h-schema}user SET delete_status =true WHERE id =:userId";
 
     public static final String UNLOCK_USER ="update {h-schema}user SET failed_attempt =0, account_non_locked = true, lock_time = null WHERE id = :userId";
-    public static final String UPDATE_LAST_LOGIN ="update {h-schema}user SET last_login=current_timestamp WHERE id = :userId";
+    public static final String UPDATE_LAST_LOGIN_AND_RESET_FAILED_ATTEMPT_COUNT ="update {h-schema}user SET last_login=current_timestamp,failed_attempt=0 WHERE id = :userId";
     public static final String FETCH_SMC_DETAILS = "select u.id, user_type_id ,p.first_name, p.last_name ,email,mobile_number,u.user_sub_type_id,u.last_login ,a.name as CouncilName ,'' as collegeName,p.created_at from main.user u join main.smc_profile p on u.id =p.user_id JOIN state_medical_council a on p.state_medical_council_id = a.id where u.delete_status =false  ";
     public static final String FETCH_COLLEGE_DETAILS = " union select u.id ,user_type_id ,p.name, ''as last_name ,email,mobile_number,u.user_sub_type_id,u.last_login ,''as CouncilName ,a.name as collegeName ,p.created_at from user u join college_profile p on u.id =p.user_id JOIN college_master a on p.college_id = a.id where u.delete_status =false ";
     public static final String FETCH_NMC_DETAILS = " union select u.id, user_type_id ,p.first_name, p.last_name,email ,mobile_number,u.user_sub_type_id,u.last_login ,'','',p.created_at from user u join nmc_profile p on u.id =p.user_id where u.delete_status =false ";
@@ -305,7 +281,6 @@ public class NMRConstants {
     public static final String REDIS_PASSWORD = "${spring.redis.password}";
     public static final String REDIS_PORT = "${spring.redis.port}";
     public static final String REDIS_DATABASE = "${spring.redis.database}";
-    public static final String INVALID_FACILITY_DETAILS_MESSAGE = "Invalid facility details provided";
     public static final String INVALID_FACILITY_PAYLOAD_MESSAGE = "Either id OR state, district and ownership is required";
 
 
@@ -367,4 +342,59 @@ public class NMRConstants {
             """;
 
     public static final String DATE_FORMAT = "dd-MM-yyyy";
+
+    public static final String SELECT_COUNTRY = "Please select a country.";
+    public static final String SELECT_STATE = "Please select a state.";
+    public static final String SELECT_COLLEGE = "Please select a college.";
+    public static final String SELECT_UNIVERSITY = "Please select a university.";
+    public static final String SELECT_COURSE = "Please select a course.";
+    public static final String SELECT_QUALIFICATION_YEAR = "Please select a qualification year.";
+    public static final String SELECT_QUALIFICATION_MONTH = "Please select a qualification month.";
+    public static final String SELECT_QUALIFICATION_FROM = "Please enter qualification degree completed.";
+    public static final String SELECT_QUALIFICATION_DETAIL_REQUEST = "qualificationDetailRequestTos cannot be empty";
+    public static final String SELECT_REGISTRATION_DATE = "Please select a registration date.";
+    public static final String SELECT_REGISTRATION_NUMBER = "Please enter a registration number";
+    public static final String INVALID_HOUSE = "Please enter a valid house name.";
+    public static final String INVALID_STREET = "Please enter a valid street.";
+    public static final String INVALID_LOCALITY = "Please enter a valid locality.";
+    public static final String INVALID_LANDMARK = "Please enter a valid landmark.";
+    public static final String INVALID_COUNTRY = "Please enter a valid country.";
+    public static final String INVALID_FIRST_NAME = "Please enter a valid first name.";
+    public static final String INVALID_MIDDLE_NAME = "Please enter a valid middle name.";
+    public static final String INVALID_LAST_NAME = "Please enter a valid last name.";
+    public static final String INVALID_FATHER_NAME = "Please enter a valid father's name.";
+    public static final String INVALID_MOTHER_NAME = "Please enter a valid father's name.";
+    public static final String INVALID_SPOUSE_NAME = "Please enter a valid spouse name.";
+    public static final String INVALID_FULL_NAME = "Please enter a valid full name.";
+    public static final String DOCTOR_CURRENTLY_WORKING = "0";
+    public static final String DOCTOR_CURRENTLY_NOT_WORKING = "1";
+    public static final String ACTION_ID_ERROR_MSG = "Please enter a valid action id. supported action ids are 1, 2, 3, 4, 5, 6, 7.";
+    public static final String ACTOR_ID_ERROR_MSG = "Please enter a valid actor id. supported actor ids are 1, 2, 3, 4, 7, 8";
+    public static final String ADDRESS_ERROR_MSG = "Please enter a valid address. it must be alphanumeric with allowed special characters (.,-:/()).";
+    public static final String ADDRESS_TYPE_ERROR_MSG = "Please enter a valid address type. Supported address types are 'business', 'current', 'permanent', 'communication', 'KYC'.";
+    public static final String APPLICATION_TYPE_ID_ERROR_MSG = "Please enter a valid application type id. supported action ids are 1, 2, 3, 4, 5, 6, 7, 8.";
+    public static final String EMAIL_ERROR_MSG = "Please enter a valid email address.";
+    public static final String NAME_ERROR_MSG = "Please enter a valid name. it should be plain text.";
+    public static final String OPTIONAL_ADDRESS_ERROR_MSG = "Please enter a valid address. it must be alphanumeric with allowed special characters (.,-:/()).";
+    public static final String OPTIONAL_NAME_ERROR_MSG = "Please enter a valid input. it should be plain text.";
+    public static final String PIN_CODE_ERROR_MSG = "Please enter a valid pin code. it must contain only numbers and have a maximum length of 6.";
+    public static final String REGISTRATION_NUMBER_ERROR_MSG = "Please enter a valid registration number.";
+    public static final String SALUTATION_ERROR_MSG = "Please enter a valid Salutation. Please use 'Dr.' ";
+    public static final String SUB_DISTRICT_ERROR_MSG = "Please enter a valid sub district. it must contain only alphabets.";
+    public static final String VILLAGE_ERROR_MSG = "Please enter a valid village. it must contain only alphabets";
+    public static final String INVALID_USERNAME_ERROR_MSG = "Invalid username";
+    public static final String NOT_ALLOWED_ERROR_MSG = "Not allowed";
+    public static final String INVALID_CAPTCHA_ERROR_MSG = "Invalid captcha";
+    public static final String BEARER_TOKEN_ERROR_MSG = "Invalid bearer token format";
+    public static final String NO_BEARER_TOKEN_ERROR_MSG = "No bearer token was passed";
+    public static final String INVALID_BEARER_TOKEN_ERROR_MSG = "Unable to authenticate token";
+    public static final String UNABLE_TO_AUTHENTICATE_BEARER_TOKEN_ERROR_MSG = "Unable to authenticate JWT token";
+    public static final String INVALID_TOKEN_ERROR_MSG = "Invalid token";
+    public static final String EXPIRED_TOKEN_ERROR_MSG = "Token expired";
+    public static final String INCORRECT_USERNAME_OR_PASSWORD_ERROR_MSG = "Incorrect username or password";
+    public static final String EXCEPTION_IN_PARSING_BEARER_TOKEN = "Exception occurred while parsing bearer token";
+    public static final String EXCEPTION_IN_AUTHENTICATING_JWT_TOKEN = "Exception occurred while authenticating JWT token";
+    public static final String EXCEPTION_IN_PARSING_USERNAME_PASSWORD = "Exception occurred while parsing username-password login request";
+    public static final String AUTHORIZATION = "Authorization";
+
 }

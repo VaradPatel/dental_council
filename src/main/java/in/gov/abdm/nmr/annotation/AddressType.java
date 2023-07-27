@@ -4,6 +4,8 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
+import static in.gov.abdm.nmr.util.NMRConstants.ADDRESS_TYPE_ERROR_MSG;
+
 @Documented
 @Constraint(validatedBy = AddressTypeValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
@@ -12,7 +14,7 @@ public @interface AddressType {
 
     Class<?>[] groups() default {};
 
-    String message() default "Invalid address type. Supported address types are 'business', 'current', 'permanent', 'communication', 'KYC'.";
+    String message() default ADDRESS_TYPE_ERROR_MSG;
 
     Class<? extends Payload>[] payload() default {};
 }

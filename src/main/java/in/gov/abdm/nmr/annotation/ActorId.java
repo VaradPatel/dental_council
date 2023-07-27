@@ -4,12 +4,14 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
+import static in.gov.abdm.nmr.util.NMRConstants.ACTOR_ID_ERROR_MSG;
+
 @Documented
 @Constraint(validatedBy = ActorIdValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ActorId {
-    String message() default "Invalid actor id. supported actor ids are 1, 2, 3, 4, 7, 8";
+    String message() default ACTOR_ID_ERROR_MSG;
 
     Class<?>[] groups() default {};
 
