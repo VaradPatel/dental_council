@@ -264,13 +264,21 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         return SUCCESS_RESPONSE;
     }
 
+    @Override
     public String updateQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException, WorkFlowException {
-        hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs);
-        for(QualificationDetailRequestTO requestTO:qualificationDetailRequestTOs){
-            iWorkFlowService.assignQueriesBackToQueryCreator(requestTO.getRequestId());
-            iQueriesService.markQueryAsClosed(requestTO.getRequestId());
+
+        WorkFlow lastWorkFlowForHealthProfessional = workFlowRepository.findLastWorkFlowForHealthProfessional(hpProfileId);
+        if (lastWorkFlowForHealthProfessional != null && WorkflowStatus.QUERY_RAISED.getId().equals(lastWorkFlowForHealthProfessional.getWorkFlowStatus().getId())) {
+            hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs);
+            for (QualificationDetailRequestTO requestTO : qualificationDetailRequestTOs) {
+                iWorkFlowService.assignQueriesBackToQueryCreator(requestTO.getRequestId());
+                iQueriesService.markQueryAsClosed(requestTO.getRequestId());
+            }
+            return SUCCESS_RESPONSE;
+        } else {
+            return FAILURE_RESPONSE;
+
         }
-        return SUCCESS_RESPONSE;
     }
 
     @Override
