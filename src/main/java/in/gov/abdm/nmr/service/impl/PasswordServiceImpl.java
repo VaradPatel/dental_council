@@ -75,12 +75,9 @@ public class PasswordServiceImpl implements IPasswordService {
     @Override
     public ResponseMessageTo getResetPasswordLink(SendLinkOnMailTo sendLinkOnMailTo, String username) {
         try {
-
-            BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
-
             resetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
 
-            if (userDaoService.existsByEmailAndUserTypeId(sendLinkOnMailTo.getEmail(), userType)) {
+            if (userDaoService.existsByEmailAndUserTypeId(sendLinkOnMailTo.getEmail(), sendLinkOnMailTo.getUserType())) {
                 return notificationService.sendNotificationForResetPasswordLink(sendLinkOnMailTo.getEmail(), generateLink(sendLinkOnMailTo),username);
             } else {
                 return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
@@ -129,6 +126,8 @@ public class PasswordServiceImpl implements IPasswordService {
 
             Password password = new Password(null, hashedPassword, user);
             passwordDaoService.save(password);
+            resetToken.setExpiryDate(new Timestamp(System.currentTimeMillis()));
+            resetTokenRepository.save(resetToken);
 
             return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
         } catch (Exception e) {
@@ -239,6 +238,7 @@ public class PasswordServiceImpl implements IPasswordService {
 
         if (resetToken != null) {
             resetToken.setToken(token);
+            resetToken.updateExpiryTime();
         } else {
             resetToken = new ResetToken(token, sendLinkOnMailTo.getEmail(), sendLinkOnMailTo.getUserType());
         }

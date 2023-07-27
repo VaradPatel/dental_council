@@ -200,12 +200,14 @@ public class UserServiceImpl implements IUserService {
                 user.setEmailVerified(true);
                 user.setEmailNotificationEnabled(true);
                 userDaoService.save(user);
+                resetToken.setExpiryDate(new Timestamp(System.currentTimeMillis()));
+                resetTokenRepository.save(resetToken);
                 return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
 
             } else {
                 throw new InvalidRequestException(NMRConstants.LINK_EXPIRED);
             }
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             throw new InvalidRequestException(INVALID_LINK);
         }
     }

@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import in.gov.abdm.nmr.client.HPRFClient;
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
@@ -99,6 +100,8 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public void performPostWorkflowUpdates(WorkFlowRequestTO requestTO, HpProfile transactionHpProfile, INextGroup iNextGroup) throws WorkFlowException {
         WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
@@ -120,6 +123,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
                 && (masterHpProfileDetails.getConsent() != null && masterHpProfileDetails.getConsent() == 1)) {
             HPRRequestTo hprRequestTo = ihprRegisterProfessionalService.createRequestPayloadForHPRProfileCreation(transactionHpProfile, masterHpProfileDetails, registrationMaster, addressMaster, qualificationDetailsMasterList, foreignQualificationDetailsMasterList);
             try {
+                log.info("Processing register Health Professional. Request JSON: " + objectMapper.writeValueAsString(hprRequestTo.getPractitionerRequestTO()));
                 hprClient.registerHealthProfessional(hprRequestTo.getAuthorization(), hprRequestTo.getPractitionerRequestTO());
                 log.info(HPR_REGISTER_SUCCESS);
             } catch (FeignException.UnprocessableEntity e) {
@@ -153,11 +157,11 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         }
         log.debug("Marking all the qualification details associated with the current request_id as verified.");
         QualificationDetails qualificationDetails = qualificationDetailRepository.findByRequestId(requestTO.getRequestId());
-        if(qualificationDetails!=null) {
+        if (qualificationDetails != null) {
             qualificationDetails.setIsVerified(QUALIFICATION_STATUS_APPROVED);
         }
         ForeignQualificationDetails foreignQualificationDetails = foreignQualificationDetailRepository.findByRequestId(requestTO.getRequestId());
-        if(foreignQualificationDetails!=null) {
+        if (foreignQualificationDetails != null) {
             foreignQualificationDetails.setIsVerified(QUALIFICATION_STATUS_APPROVED);
         }
     }

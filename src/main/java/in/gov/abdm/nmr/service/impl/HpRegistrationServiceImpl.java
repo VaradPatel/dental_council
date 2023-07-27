@@ -199,6 +199,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Autowired
     private IUserDaoService userDetailDaoService;
 
+    @Autowired
+    private QueriesRepository queriesRepository;
+
     /**
      * This method fetches the SMC registration details for a given request.
      *
@@ -228,7 +231,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
      */
     @Override
     @Transactional
-    public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws NmrException, InvalidRequestException, WorkFlowException {
+    public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException, WorkFlowException {
 
         HpProfile hpProfile=hpProfileDaoService.findById(hpProfileId);
         HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
@@ -262,6 +265,23 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     @Override
+    public String updateQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException, WorkFlowException {
+
+        WorkFlow lastWorkFlowForHealthProfessional = workFlowRepository.findLastWorkFlowForHealthProfessional(hpProfileId);
+        if (lastWorkFlowForHealthProfessional != null && WorkflowStatus.QUERY_RAISED.getId().equals(lastWorkFlowForHealthProfessional.getWorkFlowStatus().getId())) {
+            hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs);
+            for (QualificationDetailRequestTO requestTO : qualificationDetailRequestTOs) {
+                iWorkFlowService.assignQueriesBackToQueryCreator(requestTO.getRequestId());
+                iQueriesService.markQueryAsClosed(requestTO.getRequestId());
+            }
+            return SUCCESS_RESPONSE;
+        } else {
+            return FAILURE_RESPONSE;
+
+        }
+    }
+
+    @Override
     public HpProfilePersonalResponseTO addOrUpdateHpPersonalDetail(BigInteger hpProfileId,
                                                                    HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException {
         log.info("In HpRegistrationServiceImpl : addOrUpdateHpPersonalDetail method");
@@ -277,7 +297,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Override
     public HpProfileRegistrationResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
-                                                                           HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, MultipartFile degreeCertificate) throws InvalidRequestException, NmrException {
+                                                                           HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, List<MultipartFile> degreeCertificate) throws InvalidRequestException, NmrException {
         log.info("In HpRegistrationServiceImpl : addOrUpdateHpRegistrationDetail method");
         HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(hpProfileId, hpRegistrationUpdateRequestTO, registrationCertificate, degreeCertificate);
 
@@ -320,7 +340,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         if (lastWorkFlowForHealthProfessional != null && WorkflowStatus.QUERY_RAISED.getId().equals(lastWorkFlowForHealthProfessional.getWorkFlowStatus().getId())) {
             log.debug("Calling assignQueriesBackToQueryCreator method since there is an existing workflow with 'Query Raised' work flow status. ");
             iWorkFlowService.assignQueriesBackToQueryCreator(lastWorkFlowForHealthProfessional.getRequestId());
-            iQueriesService.markQueryAsClosed(hpSubmitRequestTO.getHpProfileId());
+            iQueriesService.markQueryAsClosed(hpSubmitRequestTO.getRequestId());
+            if(ApplicationType.HP_REGISTRATION.getId().equals(hpSubmitRequestTO.getApplicationTypeId()) || ApplicationType.FOREIGN_HP_REGISTRATION.getId().equals(hpSubmitRequestTO.getApplicationTypeId())) {
+                HpProfile hpProfile = hpProfileDaoService.findById(hpSubmitRequestTO.getHpProfileId());
+                hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
+                iHpProfileRepository.save(hpProfile);
+            }
 
         } else {
             log.debug("Proceeding to submit the profile since request_id is not given as a part of input payload");
@@ -447,6 +472,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         List<ForeignQualificationDetails> internationalQualifications = customQualificationDetailRepository.getQualificationDetailsByUserId(registrationDetails.getHpProfileId().getUser().getId());
         HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = hpProfileRegistrationMapper.convertEntitiesToRegistrationResponseTo(registrationDetails, nbeDetails, indianQualifications, internationalQualifications);
         hpProfileRegistrationResponseTO.setHpProfileId(hpProfileId);
+        for(QualificationDetailResponseTo qualificationDetails:hpProfileRegistrationResponseTO.getQualificationDetailResponseTos()){
+            qualificationDetails.setQueries(queriesRepository.findOpenQueriesByRequestId(qualificationDetails.getRequestId()));
+        }
         return hpProfileRegistrationResponseTO;
     }
 
@@ -804,13 +832,13 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         if (resetToken != null) {
             resetToken.setToken(token);
+            resetToken.updateExpiryTime();
         } else {
             resetToken = new ResetToken(token, sendLinkOnMailTo.getEmail(),sendLinkOnMailTo.getUserType());
         }
         resetTokenRepository.save(resetToken);
 
         return emailVerifyUrl + "/" + token;
-
 
     }
 

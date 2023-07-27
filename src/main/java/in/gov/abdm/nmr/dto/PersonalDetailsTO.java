@@ -12,7 +12,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
 
-import static in.gov.abdm.nmr.util.NMRConstants.NOT_NULL_ERROR_MSG;
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @Data
 public class PersonalDetailsTO {
@@ -21,17 +21,17 @@ public class PersonalDetailsTO {
     private String salutation;
 
     private String aadhaarToken;
-    @OptionalName(message = "Invalid first name")
+    @OptionalName(message = INVALID_FIRST_NAME)
     private String firstName;
-    @OptionalName(message = "Invalid middle name")
+    @OptionalName(message = INVALID_MIDDLE_NAME)
     private String middleName;
-    @OptionalName(message = "Invalid last name")
+    @OptionalName(message = INVALID_LAST_NAME)
     private String lastName;
-    @OptionalName(message = "Invalid father name")
+    @OptionalName(message = INVALID_FATHER_NAME)
     private String fatherName;
-    @OptionalName(message = "Invalid mother name")
+    @OptionalName(message = INVALID_MOTHER_NAME)
     private String motherName;
-    @OptionalName(message = "Invalid spouse name")
+    @OptionalName(message = INVALID_SPOUSE_NAME)
     private String spouseName;
     @Valid
     @NotNull(message = NOT_NULL_ERROR_MSG)
@@ -40,7 +40,7 @@ public class PersonalDetailsTO {
     @Gender
     private String gender;
     private String profilePhoto;
-    @Name(message = "Invalid full name")
+    @Name(message = INVALID_FULL_NAME)
     private String fullName;
     private Boolean isNew;
     @Email

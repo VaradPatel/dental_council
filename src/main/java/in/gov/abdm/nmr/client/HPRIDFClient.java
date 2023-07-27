@@ -13,5 +13,5 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
 @FeignClient(name = HPR_ID_SERVICE, url = HPR_ID_SERVICE_ENDPOINT)
 public interface HPRIDFClient {
     @PostMapping(value = HPR_ID_SERVICE_TOKEN_BY_HPRID, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    HPRIdTokenResponseTO getTokensByHprId(@RequestHeader(value = "Authorization") String authorization, @RequestBody HPRIdTokenRequestTO hprIdTokenRequestTo);
+    HPRIdTokenResponseTO getTokensByHprId(@RequestHeader(value = AUTHORIZATION) String authorization, @RequestBody HPRIdTokenRequestTO hprIdTokenRequestTo);
 }

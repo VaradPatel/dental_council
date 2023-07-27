@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
 
+import static in.gov.abdm.nmr.util.NMRConstants.*;
+
 /**
  * The QualificationDetailRequestTO class is used to store data related to a qualification detail request.
  */
@@ -24,67 +26,64 @@ public class QualificationDetailRequestTO {
     /**
      * Country of the qualification request.
      */
-    @NotNullBlank
+    @NotNullBlank(message = SELECT_COUNTRY)
     private CountryTO country;
 
     /**
      * State of the qualification request.
      */
-    @NotNullBlank
+    @NotNullBlank(message = SELECT_STATE)
     private StateTO state;
 
     /**
      * College of the qualification request.
      */
-    @NotNullBlank
+    @NotNullBlank(message = SELECT_COLLEGE)
     private CollegeTO college;
 
     /**
      * University of the qualification request.
      */
-    @NotNullBlank
+    @NotNullBlank(message = SELECT_UNIVERSITY)
     private UniversityTO university;
 
     /**
      * Course of the qualification request.
      */
-    @NotNullBlank
+    @NotNullBlank(message = SELECT_COURSE)
     private CourseTO course;
 
     /**
      * Year of the qualification request.
      */
-    @NotNullBlank
+    @NotNullBlank(message = SELECT_QUALIFICATION_YEAR)
     private String qualificationYear;
 
     /**
      * Month of the qualification request.
      */
-    @NotNullBlank
+    @NotNullBlank(message = SELECT_QUALIFICATION_MONTH)
     private String qualificationMonth;
 
     /**
      * Flag to indicate if the name has changed in the qualification request.
      */
-    @NotNullBlank
     private Integer isNameChange;
 
     /**
      * Flag to indicate if the qualification has been verified in the qualification request.
      */
-    @NotNullBlank
     private Integer isVerified;
 
     /**
      * Unique identifier of the qualification request.
      */
-    @NotNullBlank
     private String requestId;
 
     /**
      * Source of the qualification request.
      */
-    @NotNullBlank
+    @NotNullBlank(message = SELECT_QUALIFICATION_FROM)
     private String qualificationFrom;
 
     private BigInteger broadSpecialityId;

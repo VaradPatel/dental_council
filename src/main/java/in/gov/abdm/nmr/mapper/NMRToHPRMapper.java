@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,6 +103,8 @@ public class NMRToHPRMapper {
         PractitionerRegistrationTO practitionerRegistrationTO = new PractitionerRegistrationTO();
         practitionerRegistrationTO.setRegisteredWithCouncil(registrationMaster.getStateMedicalCouncil() != null ? registrationMaster.getStateMedicalCouncil().getId().toString() : null);
         practitionerRegistrationTO.setRegistrationNumber(registrationMaster.getRegistrationNo());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        practitionerRegistrationTO.setRegistrationDate(dateFormat.format(registrationMaster.getRegistrationDate()));
         practitionerRegistrationTO.setIsNameDifferentInCertificate(BigInteger.ZERO);
         practitionerRegistrationTO.setCategoryId(CATEGORY_ID_HEALTH_PROFESSIONAL);
         List<PractitionerQualififcationTO> practitionerQualififcationTOList = new ArrayList<>();
@@ -119,7 +122,7 @@ public class NMRToHPRMapper {
             qualificationDetailsMasterList.forEach(qualificationDetailsMaster -> {
                 practitionerQualififcationTO.setNameOfDegreeOrDiplomaObtained(qualificationDetailsMaster.getCourse() != null ? qualificationDetailsMaster.getCourse().getHprCourseId() : null);
                 practitionerQualififcationTO.setCountry(qualificationDetailsMaster.getCountry() != null ? qualificationDetailsMaster.getCountry().getId() : null);
-                practitionerQualififcationTO.setState(qualificationDetailsMaster.getState() != null ? qualificationDetailsMaster.getState().getId() : null);
+                practitionerQualififcationTO.setState(qualificationDetailsMaster.getState() != null ? new BigInteger(qualificationDetailsMaster.getState().getIsoCode()) : null);
                 practitionerQualififcationTO.setUniversity(qualificationDetailsMaster.getUniversity() != null ? qualificationDetailsMaster.getUniversity().getId() : null);
                 practitionerQualififcationTO.setCollege(qualificationDetailsMaster.getCollege() != null ? qualificationDetailsMaster.getCollege().getId() : null);
                 practitionerQualififcationTO.setMonthOfAwardingDegreeDiploma(qualificationDetailsMaster.getQualificationMonth());

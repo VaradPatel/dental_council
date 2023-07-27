@@ -45,7 +45,7 @@ class QueriesServiceTest {
 
     @Test
     void testGetQueriesByHpProfileIdShouldReturnListOfOpenQueries(){
-        when(queriesRepository.findOpenQueriesByHpProfileId(any())).thenReturn(List.of(getQueriesEntity()));
+        when(queriesRepository.findOpenQueriesByHpProfileId(ID)).thenReturn(List.of(getQueriesEntity()));
         List<QueryResponseTo> queryResponse = queriesService.getQueriesByHpProfileId(ID);
         assertEquals(1, queryResponse.size());
         QueryResponseTo queryResponseTo = queryResponse.get(0);
@@ -57,8 +57,8 @@ class QueriesServiceTest {
     @Test
     void testMarkQueriesAsClosedUpdatesQueryStatus(){
         when(queriesRepository.saveAll(any())).thenReturn(Collections.emptyList());
-        when(queriesRepository.findOpenQueriesByHpProfileId(any())).thenReturn(List.of(getQueriesEntity()));
-        ResponseMessageTo responseMessageTo = queriesService.markQueryAsClosed(ID);
+        when(queriesRepository.findOpenQueriesByHpProfileId(ID)).thenReturn(List.of(getQueriesEntity()));
+        ResponseMessageTo responseMessageTo = queriesService.markQueryAsClosed(any(String.class));
         assertEquals(NMRConstants.SUCCESS_RESPONSE, responseMessageTo.getMessage());
 
 

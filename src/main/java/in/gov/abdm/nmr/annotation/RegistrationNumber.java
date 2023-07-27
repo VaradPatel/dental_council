@@ -4,12 +4,14 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
+import static in.gov.abdm.nmr.util.NMRConstants.REGISTRATION_NUMBER_ERROR_MSG;
+
 @Documented
 @Constraint(validatedBy = RegistrationNumberValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RegistrationNumber {
-    String message() default "Invalid registration number.";
+    String message() default REGISTRATION_NUMBER_ERROR_MSG;
 
     Class<?>[] groups() default {};
 
