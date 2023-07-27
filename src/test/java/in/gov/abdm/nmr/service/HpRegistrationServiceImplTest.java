@@ -295,7 +295,7 @@ class HpRegistrationServiceImplTest {
         when(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(any(BigInteger.class))).thenReturn(false);
         when(workFlowRepository.findLastWorkFlowForHealthProfessional(any(BigInteger.class))).thenReturn(getWorkFlowForQueryRaised());
         doNothing().when(iWorkFlowService).assignQueriesBackToQueryCreator(anyString());
-        when(iQueriesService.markQueryAsClosed(any(BigInteger.class))).thenReturn(getResponseMessage());
+        when(iQueriesService.markQueryAsClosed(any(String.class))).thenReturn(getResponseMessage());
         HpProfileAddResponseTO hpProfileAddResponseTO = hpRegistrationService.submitHpProfile(getHpSubmitRequest());
         assertEquals(HP_ID, hpProfileAddResponseTO.getHpProfileId());
     }

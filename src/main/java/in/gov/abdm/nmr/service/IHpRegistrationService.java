@@ -43,8 +43,17 @@ public interface IHpRegistrationService {
      * @return A string indicating the status of the operation.
      * @throws WorkFlowException If an error occurs during the qualification addition process.
      */
-    String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws WorkFlowException, InvalidRequestException, NmrException;
+    String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws WorkFlowException, InvalidRequestException;
 
+    /**
+     * Update qualifications to a HP profile.
+     *
+     * @param hpProfileId                   The ID of the HP profile to which the qualifications will be added.
+     * @param qualificationDetailRequestTOs A list of qualification details to be added to the HP profile.
+     * @return A string indicating the status of the operation.
+     * @throws WorkFlowException If an error occurs during the qualification addition process.
+     */
+    String updateQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws WorkFlowException, InvalidRequestException;
     /**
      * Adds or updates the personal details for a given HP profile.
      *

@@ -29,4 +29,6 @@ public class QualificationDetailResponseTo {
     @JsonIgnore
     private Timestamp createdAt;
     private List<Queries> queries;
+    private BroadSpecialityTO brodSpeciality;
+    private String superSpeciality;
 }
