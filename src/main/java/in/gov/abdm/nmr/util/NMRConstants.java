@@ -363,7 +363,7 @@ public class NMRConstants {
     public static final String INVALID_MIDDLE_NAME = "Please enter a valid middle name.";
     public static final String INVALID_LAST_NAME = "Please enter a valid last name.";
     public static final String INVALID_FATHER_NAME = "Please enter a valid father's name.";
-    public static final String INVALID_MOTHER_NAME = "Please enter a valid father's name.";
+    public static final String INVALID_MOTHER_NAME = "Please enter a valid mother's name.";
     public static final String INVALID_SPOUSE_NAME = "Please enter a valid spouse name.";
     public static final String INVALID_FULL_NAME = "Please enter a valid full name.";
     public static final String DOCTOR_CURRENTLY_WORKING = "0";
