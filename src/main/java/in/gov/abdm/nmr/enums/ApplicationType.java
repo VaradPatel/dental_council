@@ -9,21 +9,23 @@ import java.util.Optional;
  * Enum for different workflow in NMR.
  */
 public enum ApplicationType {
-    HP_REGISTRATION(BigInteger.valueOf(1), "HP Registration"),
-    HP_MODIFICATION(BigInteger.valueOf(2), "HP Modification"),
-    HP_TEMPORARY_SUSPENSION(BigInteger.valueOf(3), "Temporary Suspension"),
-    HP_PERMANENT_SUSPENSION(BigInteger.valueOf(4), "Permanent Suspension"),
-    HP_ACTIVATE_LICENSE(BigInteger.valueOf(5), "Activate License"),
-    COLLEGE_REGISTRATION(BigInteger.valueOf(6), "College Registration"),
-    FOREIGN_HP_REGISTRATION(BigInteger.valueOf(7), "Foreign HP Registration"),
-    ADDITIONAL_QUALIFICATION(BigInteger.valueOf(8), "Additional Qualification");
+    HP_REGISTRATION(BigInteger.valueOf(1), "HP Registration","registration"),
+    HP_MODIFICATION(BigInteger.valueOf(2), "HP Modification","modification"),
+    HP_TEMPORARY_SUSPENSION(BigInteger.valueOf(3), "Temporary Suspension","temporary suspension"),
+    HP_PERMANENT_SUSPENSION(BigInteger.valueOf(4), "Permanent Suspension", "permanent suspension"),
+    HP_ACTIVATE_LICENSE(BigInteger.valueOf(5), "Activate License", "re-activation of licence"),
+    COLLEGE_REGISTRATION(BigInteger.valueOf(6), "College Registration","registration"),
+    FOREIGN_HP_REGISTRATION(BigInteger.valueOf(7), "Foreign HP Registration", "registration"),
+    ADDITIONAL_QUALIFICATION(BigInteger.valueOf(8), "Additional Qualification","additional qualification");
 
     private final BigInteger id;
     private final String description;
+    private final String notifyText;
 
-    ApplicationType(BigInteger id, String description) {
+    ApplicationType(BigInteger id, String description, String notifyText) {
         this.id = id;
         this.description = description;
+        this.notifyText = notifyText;
     }
 
     public BigInteger getId() {
@@ -32,6 +34,10 @@ public enum ApplicationType {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getNotifyText() {
+        return notifyText;
     }
     
     public static List<BigInteger> getAllHpApplicationTypeIds() {

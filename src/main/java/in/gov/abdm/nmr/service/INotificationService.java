@@ -25,4 +25,6 @@ public interface INotificationService {
     ResponseMessageTo sendNotificationForHprAccountCreation(String username,String hprId, String mobile) throws TemplateException;
 
     ResponseMessageTo sendNotificationForIncorrectESign(String name, String mobile, String email) throws TemplateException;
+
+    ResponseMessageTo sendNotificationForLicenceStatus(String status, String mobile, String email) throws TemplateException;
 }
