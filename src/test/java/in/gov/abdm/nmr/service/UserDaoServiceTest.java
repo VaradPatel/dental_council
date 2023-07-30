@@ -85,8 +85,8 @@ class UserDaoServiceTest {
 
     @Test
     void testFindFirstByMobileNumberShouldFindUserDetailsByMobileNumber() {
-        when(userDetailRepository.findFirstByMobileNumber(anyString())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
-        User user = userDaoService.findFirstByMobileNumber(MOBILE_NUMBER);
+        when(userDetailRepository.findByMobileNumberAndUserTypeId(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        User user = userDaoService.findByMobileNumberAndUserTypeId(MOBILE_NUMBER, TEST_USER_TYPE);
         assertEquals(ID, user.getId());
     }
 
