@@ -121,16 +121,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
                 ((ApplicationType.HP_REGISTRATION.getId().equals((workFlowDetailsByHpProfile.getApplicationType().getId()))) ||
                         (ApplicationType.FOREIGN_HP_REGISTRATION.getId().equals(workFlowDetailsByHpProfile.getApplicationType().getId())))
                 && (masterHpProfileDetails.getConsent() != null && masterHpProfileDetails.getConsent() == 1)) {
-            HPRRequestTo hprRequestTo = ihprRegisterProfessionalService.createRequestPayloadForHPRProfileCreation(transactionHpProfile, masterHpProfileDetails, registrationMaster, addressMaster, qualificationDetailsMasterList, foreignQualificationDetailsMasterList);
-            try {
-                log.info("Processing register Health Professional. Request JSON: " + objectMapper.writeValueAsString(hprRequestTo.getPractitionerRequestTO()));
-                hprClient.registerHealthProfessional(hprRequestTo.getAuthorization(), hprRequestTo.getPractitionerRequestTO());
-                log.info(HPR_REGISTER_SUCCESS);
-            } catch (FeignException.UnprocessableEntity e) {
-                log.error(HPR_REGISTER_MISSING_VALUES + e.getMessage());
-            } catch (Exception e) {
-                log.error(HPR_REGISTER_FAILED + e.getMessage());
-            }
+            ihprRegisterProfessionalService.createRequestPayloadForHPRProfileCreation(transactionHpProfile, masterHpProfileDetails, registrationMaster, addressMaster, qualificationDetailsMasterList, foreignQualificationDetailsMasterList);
         }
     }
 
