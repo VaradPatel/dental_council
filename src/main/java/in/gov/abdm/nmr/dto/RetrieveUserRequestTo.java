@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import java.math.BigInteger;
 
 @Data
 @AllArgsConstructor
@@ -17,4 +18,5 @@ public class RetrieveUserRequestTo {
 
     @NotEmpty(message = NMRConstants.CONTACT_NOT_NULL)
     private String contact;
+    private BigInteger userType;
 }
