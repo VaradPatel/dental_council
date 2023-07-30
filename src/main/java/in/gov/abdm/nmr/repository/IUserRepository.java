@@ -25,7 +25,7 @@ public interface IUserRepository extends JpaRepository<User, BigInteger> {
 
     boolean existsByEmailAndUserTypeId(String email, BigInteger userTypeId);
 
-    User findFirstByMobileNumber(String mobileNumber);
+    User findByMobileNumberAndUserTypeId(String mobileNumber, BigInteger userTypeId);
 
     @Query(value = "select count(*)>0 from {h-schema}user where id!=:id and email=:email and user_type_id=:userType", nativeQuery = true)
     boolean checkEmailUsedByOtherUser(BigInteger id,String email, BigInteger userType);
