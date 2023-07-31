@@ -22,7 +22,7 @@ public interface IUserDaoService {
 
     User findByUsername(String username, BigInteger userType);
 
-    User findFirstByMobileNumber(String mobileNumber);
+    User findByMobileNumberAndUserTypeId(String mobileNumber, BigInteger userType);
 
     boolean existsByUserNameAndUserTypeId(String userName, BigInteger userType);
 

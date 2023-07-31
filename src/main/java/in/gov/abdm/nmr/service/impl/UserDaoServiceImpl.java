@@ -84,8 +84,8 @@ public class UserDaoServiceImpl implements IUserDaoService {
     }
 
     @Override
-    public User findFirstByMobileNumber(String mobileNumber) {
-        return userDetailRepository.findFirstByMobileNumber(mobileNumber);
+    public User findByMobileNumberAndUserTypeId(String mobileNumber, BigInteger userType) {
+        return userDetailRepository.findByMobileNumberAndUserTypeId(mobileNumber,userType);
     }
 
     @Override

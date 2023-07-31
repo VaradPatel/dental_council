@@ -4,6 +4,7 @@ import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.entity.HpProfileStatus;
 import in.gov.abdm.nmr.enums.Action;
+import in.gov.abdm.nmr.enums.ApplicationSubType;
 import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
@@ -157,7 +158,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         if (isLastStepOfWorkFlow(iNextGroup)) {
             performPostWorkFlowTask(requestTO, workFlow, hpProfile, iNextGroup);
         }
-        sendNotificationsOnStatusChanges(user, workFlow, hpProfile);
+        sendNotificationsOnStatusChanges(user, requestTO, hpProfile);
     }
 
     private void performPostWorkFlowTask(WorkFlowRequestTO requestTO, WorkFlow workFlow, HpProfile hpProfile, INextGroup iNextGroup) throws WorkFlowException, InvalidRequestException {
@@ -213,16 +214,53 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         }
     }
 
-    private void sendNotificationsOnStatusChanges(User user, WorkFlow workFlow, HpProfile hpProfile) {
+    private void sendNotificationsOnStatusChanges(User user, WorkFlowRequestTO workFlow, HpProfile hpProfile) {
         try {
-            if(!ApplicationType.HP_MODIFICATION.getId().equals(workFlow.getApplicationType().getId())) {
-                if(!(ApplicationType.HP_REGISTRATION.getId().equals(workFlow.getApplicationType().getId()) && Action.SUBMIT.getId().equals(workFlow.getAction().getId()))) {
-                    if (hpProfile.getUser().isSmsNotificationEnabled() && hpProfile.getUser().isEmailNotificationEnabled()) {
-                        notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), hpProfile.getUser().getEmail());
-                    } else if (hpProfile.getUser().isSmsNotificationEnabled()) {
-                        notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), null);
-                    } else if (hpProfile.getUser().isEmailNotificationEnabled()) {
-                        notificationService.sendNotificationOnStatusChangeForHP(workFlow.getApplicationType().getName(), workFlow.getAction().getName() + getVerifierNameForNotification(user), null, hpProfile.getUser().getEmail());
+            if((ApplicationType.HP_PERMANENT_SUSPENSION.getId().equals(workFlow.getApplicationTypeId()) || ApplicationType.HP_TEMPORARY_SUSPENSION.getId().equals(workFlow.getApplicationTypeId())) && (Group.NMC.getId().equals(workFlow.getActorId()) || Group.HEALTH_PROFESSIONAL.getId().equals(workFlow.getActorId())) && (Action.PERMANENT_SUSPEND.getId().equals(workFlow.getActionId()) || Action.TEMPORARY_SUSPEND.getId().equals(workFlow.getActionId()) || Action.SUBMIT.getId().equals(workFlow.getActionId()))){
+                String action="";
+                if(Action.TEMPORARY_SUSPEND.getId().equals(workFlow.getActionId())){
+                    action=Action.TEMPORARY_SUSPEND.getNotifyText();
+                }
+                else if(Action.PERMANENT_SUSPEND.getId().equals(workFlow.getActionId())){
+                    action=Action.PERMANENT_SUSPEND.getNotifyText();
+                }else if((Action.SUBMIT.getId().equals(workFlow.getActionId()))){
+                    if(ApplicationType.HP_TEMPORARY_SUSPENSION.getId().equals(workFlow.getApplicationTypeId())){
+                        action=Action.TEMPORARY_SUSPEND.getNotifyText();
+                    }
+                    else if(ApplicationType.HP_PERMANENT_SUSPENSION.getId().equals(workFlow.getApplicationTypeId())){
+                        action=Action.PERMANENT_SUSPEND.getNotifyText();
+                    }
+                }
+
+                if (hpProfile.getUser().isSmsNotificationEnabled() && hpProfile.getUser().isEmailNotificationEnabled()) {
+                    notificationService.sendNotificationForLicenceStatus(action, hpProfile.getUser().getMobileNumber(),hpProfile.getUser().getEmail());
+                } else if (hpProfile.getUser().isSmsNotificationEnabled()) {
+                    notificationService.sendNotificationForLicenceStatus(action, hpProfile.getUser().getMobileNumber(), null);
+                } else if (hpProfile.getUser().isEmailNotificationEnabled()) {
+                    notificationService.sendNotificationForLicenceStatus(action, null, hpProfile.getUser().getEmail());
+                }
+            }
+            else if(ApplicationType.HP_ACTIVATE_LICENSE.getId().equals(workFlow.getApplicationTypeId()) && ApplicationSubType.SELF_REACTIVATION.getId().equals(workFlow.getApplicationSubTypeId()) && Group.HEALTH_PROFESSIONAL.getId().equals(workFlow.getActorId()) && Action.SUBMIT.getId().equals(workFlow.getActionId())){
+
+                if (hpProfile.getUser().isSmsNotificationEnabled() && hpProfile.getUser().isEmailNotificationEnabled()) {
+                    notificationService.sendNotificationForLicenceStatus(NMRConstants.ACTION_REACTIVATED, hpProfile.getUser().getMobileNumber(),hpProfile.getUser().getEmail());
+                } else if (hpProfile.getUser().isSmsNotificationEnabled()) {
+                    notificationService.sendNotificationForLicenceStatus(NMRConstants.ACTION_REACTIVATED, hpProfile.getUser().getMobileNumber(), null);
+                } else if (hpProfile.getUser().isEmailNotificationEnabled()) {
+                    notificationService.sendNotificationForLicenceStatus(NMRConstants.ACTION_REACTIVATED, null, hpProfile.getUser().getEmail());
+                }
+            }
+            else if(!ApplicationType.HP_MODIFICATION.getId().equals(workFlow.getApplicationTypeId())) {
+                if(!(ApplicationType.HP_REGISTRATION.getId().equals(workFlow.getApplicationTypeId()) && Action.SUBMIT.getId().equals(workFlow.getActionId()))) {
+                    if(!((ApplicationType.HP_TEMPORARY_SUSPENSION.getId().equals(workFlow.getApplicationSubTypeId())|| ApplicationType.HP_PERMANENT_SUSPENSION.getId().equals(workFlow.getApplicationSubTypeId())) && Group.SMC.getId().equals(workFlow.getActorId()) && (Action.TEMPORARY_SUSPEND.getId().equals(workFlow.getActionId()) || Action.PERMANENT_SUSPEND.getId().equals(workFlow.getActionId())))) {
+
+                        if (hpProfile.getUser().isSmsNotificationEnabled() && hpProfile.getUser().isEmailNotificationEnabled()) {
+                            notificationService.sendNotificationOnStatusChangeForHP(ApplicationType.getApplicationType(workFlow.getApplicationTypeId()).getNotifyText(), Action.getAction(workFlow.getActionId()).getNotifyText() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), hpProfile.getUser().getEmail());
+                        } else if (hpProfile.getUser().isSmsNotificationEnabled()) {
+                            notificationService.sendNotificationOnStatusChangeForHP(ApplicationType.getApplicationType(workFlow.getApplicationTypeId()).getNotifyText(), Action.getAction(workFlow.getActionId()).getNotifyText() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), null);
+                        } else if (hpProfile.getUser().isEmailNotificationEnabled()) {
+                            notificationService.sendNotificationOnStatusChangeForHP(ApplicationType.getApplicationType(workFlow.getApplicationTypeId()).getNotifyText(), Action.getAction(workFlow.getActionId()).getNotifyText() + getVerifierNameForNotification(user), null, hpProfile.getUser().getEmail());
+                        }
                     }
                 }
             }
