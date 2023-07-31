@@ -56,17 +56,17 @@ public class HPRRegisterProfessionalServiceImpl implements IHPRRegisterProfessio
                     hprRequestTo.setPractitionerRequestTO(practitionerRequestTO);
 
                     log.info("Processing register Health Professional. Request JSON: " + objectMapper.writeValueAsString(hprRequestTo.getPractitionerRequestTO()));
-                    RegisteredPractitionerResponseTO registeredPractitionerResponse = hprClient.registerHealthProfessional(hprRequestTo.getAuthorization(), hprRequestTo.getPractitionerRequestTO());
-                    if (registeredPractitionerResponse != null && registeredPractitionerResponse.getHprId() != null) {
-                        log.info("fail to create profile hpr system.");
-                        // Need to send Notification
-                    }
+                    hprClient.registerHealthProfessional(hprRequestTo.getAuthorization(), hprRequestTo.getPractitionerRequestTO());
                     log.info(HPR_REGISTER_SUCCESS);
                 }
             }
         } catch (FeignException.UnprocessableEntity e) {
+            log.info("unable to create a profile in the HPR system.");
+            // Need to send Notification
             log.error(HPR_REGISTER_MISSING_VALUES + e.getMessage());
         } catch (Exception e) {
+            log.info("unable to create a profile in the HPR system.");
+            // Need to send Notification
             log.error(HPR_REGISTER_FAILED + e.getMessage());
         }
         return hprRequestTo;
