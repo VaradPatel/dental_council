@@ -1,13 +1,18 @@
 package in.gov.abdm.nmr.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import in.gov.abdm.nmr.client.GatewayFClient;
+import in.gov.abdm.nmr.client.HPRFClient;
 import in.gov.abdm.nmr.client.HPRIDFClient;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.mapper.NMRToHPRMapper;
 import in.gov.abdm.nmr.service.IHPRRegisterProfessionalService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +20,7 @@ import java.util.List;
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @Service
+@Slf4j
 public class HPRRegisterProfessionalServiceImpl implements IHPRRegisterProfessionalService {
     @Value("${session.clientId}")
     private String clientId;
@@ -26,23 +32,44 @@ public class HPRRegisterProfessionalServiceImpl implements IHPRRegisterProfessio
     GatewayFClient gatewayFClient;
     @Autowired
     NMRToHPRMapper nmrToHPRMapper;
-
+    @Autowired
+    HPRFClient hprClient;
+    ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
+    @Async
     public HPRRequestTo createRequestPayloadForHPRProfileCreation(HpProfile transactionHpProfile, HpProfileMaster masterHpProfileDetails,
                                                                   RegistrationDetailsMaster registrationMaster, AddressMaster addressMaster,
                                                                   List<QualificationDetailsMaster> qualificationDetailsMasterList,
                                                                   List<ForeignQualificationDetailsMaster> foreignQualificationDetailsMasterList) {
-        SessionResponseTo sessionResponseTo = getSessionToken();
-        String authorization = BEARER + sessionResponseTo.getAccessToken();
-        HPRIdTokenResponseTO responseTO = getTokensByHprId(authorization, transactionHpProfile);
+        HPRRequestTo hprRequestTo = null;
+        try {
+            SessionResponseTo sessionResponseTo = getSessionToken();
+            String authorization = BEARER + sessionResponseTo.getAccessToken();
+            if (authorization != null) {
+                HPRIdTokenResponseTO responseTO = getTokensByHprId(authorization, transactionHpProfile);
 
-        PractitionerRequestTO practitionerRequestTO = nmrToHPRMapper.convertNmrDataToHprRequestTo(responseTO, masterHpProfileDetails, registrationMaster, addressMaster, qualificationDetailsMasterList, foreignQualificationDetailsMasterList);
-        HPRRequestTo hprRequestTo = new HPRRequestTo();
-        hprRequestTo.setAuthorization(authorization);
-        hprRequestTo.setPractitionerRequestTO(practitionerRequestTO);
+                if (responseTO != null) {
+                    PractitionerRequestTO practitionerRequestTO = nmrToHPRMapper.convertNmrDataToHprRequestTo(responseTO, masterHpProfileDetails, registrationMaster, addressMaster, qualificationDetailsMasterList, foreignQualificationDetailsMasterList);
+                    hprRequestTo = new HPRRequestTo();
+                    hprRequestTo.setAuthorization(authorization);
+                    hprRequestTo.setPractitionerRequestTO(practitionerRequestTO);
+
+                    log.info("Processing register Health Professional. Request JSON: " + objectMapper.writeValueAsString(hprRequestTo.getPractitionerRequestTO()));
+                    hprClient.registerHealthProfessional(hprRequestTo.getAuthorization(), hprRequestTo.getPractitionerRequestTO());
+                    log.info(HPR_REGISTER_SUCCESS);
+                }
+            }
+        } catch (FeignException.UnprocessableEntity e) {
+            log.info("unable to create a profile in the HPR system.");
+            // Need to send Notification
+            log.error(HPR_REGISTER_MISSING_VALUES + e.getMessage());
+        } catch (Exception e) {
+            log.info("unable to create a profile in the HPR system.");
+            // Need to send Notification
+            log.error(HPR_REGISTER_FAILED + e.getMessage());
+        }
         return hprRequestTo;
-
     }
 
     private SessionResponseTo getSessionToken() {

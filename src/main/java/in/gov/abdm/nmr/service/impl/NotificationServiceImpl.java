@@ -227,6 +227,18 @@ public class NotificationServiceImpl implements INotificationService {
 
     }
 
+    @Override
+    public ResponseMessageTo sendNotificationForLicenceStatus(String status, String mobile, String email) throws TemplateException {
+
+        Template template = getMessageTemplate(NMRConstants.LICENCE_STATUS);
+        String message = new TemplatedStringBuilder(template.getMessage())
+                .replace(NMRConstants.TEMPLATE_VAR1, status)
+                .replace(NMRConstants.TEMPLATE_VAR2, NMRConstants.MESSAGE_SENDER)
+                .finish();
+        return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.LICENCE_UPDATE_SUBJECT, message, mobile, email,NMRConstants.LICENCE_STATUS);
+
+    }
+
     @SneakyThrows
     Template getMessageTemplate(String propertiesKey) {
         Template template;
