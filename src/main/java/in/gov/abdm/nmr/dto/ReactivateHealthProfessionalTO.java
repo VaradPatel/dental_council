@@ -14,8 +14,8 @@ public class ReactivateHealthProfessionalTO {
     private String registrationId;
     private String requestId;
     private String healthProfessionalName;
-    private Date submittedDate;
-    private Date reactivation;
+    private String submittedDate;
+    private String reactivation;
     private BigInteger typeOfSuspension;
     private String remarks;
     private String gender;
