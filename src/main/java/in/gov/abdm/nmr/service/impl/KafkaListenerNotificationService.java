@@ -64,11 +64,11 @@ public class KafkaListenerNotificationService {
                             if(hpProfile.getRequestId()!=null && isRegistrationRequest(hpProfile.getRequestId())) {
 
                                 if (hpProfile.getUser().isSmsNotificationEnabled() && hpProfile.getUser().isEmailNotificationEnabled()) {
-                                    notificationService.sendNotificationOnStatusChangeForHP(ApplicationType.HP_REGISTRATION.getDescription(), Action.SUBMIT.getDescription().toLowerCase(), hpProfile.getUser().getMobileNumber(), hpProfile.getUser().getEmail());
+                                    notificationService.sendNotificationOnStatusChangeForHP(ApplicationType.HP_REGISTRATION.getNotifyText(), Action.SUBMIT.getNotifyText(), hpProfile.getUser().getMobileNumber(), hpProfile.getUser().getEmail());
                                 } else if (hpProfile.getUser().isSmsNotificationEnabled()) {
-                                    notificationService.sendNotificationOnStatusChangeForHP(ApplicationType.HP_REGISTRATION.getDescription(), Action.SUBMIT.getDescription().toLowerCase(), hpProfile.getUser().getMobileNumber(), null);
+                                    notificationService.sendNotificationOnStatusChangeForHP(ApplicationType.HP_REGISTRATION.getNotifyText(), Action.SUBMIT.getNotifyText(), hpProfile.getUser().getMobileNumber(), null);
                                 } else if (hpProfile.getUser().isEmailNotificationEnabled()) {
-                                    notificationService.sendNotificationOnStatusChangeForHP(ApplicationType.HP_REGISTRATION.getDescription(), Action.SUBMIT.getDescription().toLowerCase(), null, hpProfile.getUser().getEmail());
+                                    notificationService.sendNotificationOnStatusChangeForHP(ApplicationType.HP_REGISTRATION.getNotifyText(), Action.SUBMIT.getNotifyText(), null, hpProfile.getUser().getEmail());
                                 }
                             }
                         } catch (Exception exception) {
