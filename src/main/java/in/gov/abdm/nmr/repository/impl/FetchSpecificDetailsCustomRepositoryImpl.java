@@ -17,6 +17,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -204,6 +205,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         query.setMaxResults(pageable.getPageSize());
         @SuppressWarnings("unchecked") List<Object[]> results = query.getResultList();
         results.forEach(result -> {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
             DashboardTO dashBoardTO = new DashboardTO();
             dashBoardTO.setDoctorStatus(result[0] != null ? WorkflowStatus.getWorkflowStatus((BigInteger) result[0]).getDescription() : "");
             dashBoardTO.setSmcStatus(result[1] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[1]).getSmcStatus() : NOT_YET_RECEIVED);
@@ -212,7 +214,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setHpProfileId((BigInteger) result[4]);
             dashBoardTO.setRequestId((String) result[5]);
             dashBoardTO.setRegistrationNo((String) result[6]);
-            dashBoardTO.setCreatedAt(result[7].toString());
+            dashBoardTO.setCreatedAt(dateFormat.format(result[7]));
             dashBoardTO.setCouncilName((String) result[8]);
             dashBoardTO.setApplicantFullName((String) result[9]);
             dashBoardTO.setWorkFlowStatusId((BigInteger) result[10]);
@@ -221,7 +223,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setEmailId((String) result[13]);
             dashBoardTO.setMobileNumber((String) result[14]);
             dashBoardTO.setNmrId((String) result[15]);
-            dashBoardTO.setYearOfRegistration(result[16] != null ? result[16].toString() : "");
+            dashBoardTO.setYearOfRegistration(result[16] != null ? dateFormat.format(result[16]) : "");
             dashBoardTO.setCollegeStatus(result[17] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[17]).getStatus() : NOT_YET_RECEIVED);
             dashBoardTO.setApplicationTypeId((BigInteger) result[18]);
             dashBoardResponseTO.setTotalNoOfRecords((BigInteger) result[19]);
