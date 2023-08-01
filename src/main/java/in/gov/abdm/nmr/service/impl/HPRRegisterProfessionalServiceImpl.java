@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 
@@ -35,6 +37,11 @@ public class HPRRegisterProfessionalServiceImpl implements IHPRRegisterProfessio
     @Autowired
     HPRFClient hprClient;
     ObjectMapper objectMapper = new ObjectMapper();
+
+    private static final Map<String, List<String>> statusToColumnMappings =  new HashMap<>();
+    static {
+        statusToColumnMappings.put("pending", List.of("1","2"));
+    }
 
     @Override
     @Async
