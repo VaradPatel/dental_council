@@ -399,5 +399,6 @@ public class NMRConstants {
     public static final String EXCEPTION_IN_AUTHENTICATING_JWT_TOKEN = "Exception occurred while authenticating JWT token";
     public static final String EXCEPTION_IN_PARSING_USERNAME_PASSWORD = "Exception occurred while parsing username-password login request";
     public static final String AUTHORIZATION = "Authorization";
+    public static final String QUERY_RAISED_ERROR = "Please add query against atleast one field";
 
 }
