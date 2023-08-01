@@ -264,21 +264,20 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         return SUCCESS_RESPONSE;
     }
 
+    @Transactional
     @Override
     public String updateQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException, WorkFlowException {
-
-        WorkFlowAudit lastWorkFlowForHealthProfessional = iWorkFlowAuditRepository.findLastWorkFlowForHealthProfessional(hpProfileId);
-        if (lastWorkFlowForHealthProfessional != null && WorkflowStatus.QUERY_RAISED.getId().equals(lastWorkFlowForHealthProfessional.getWorkFlowStatus().getId())) {
-            hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs);
-            for (QualificationDetailRequestTO requestTO : qualificationDetailRequestTOs) {
+        for (QualificationDetailRequestTO requestTO : qualificationDetailRequestTOs) {
+            WorkFlow lastWorkFlowForHealthProfessional = workFlowRepository.findByRequestId(requestTO.getRequestId());
+            if (lastWorkFlowForHealthProfessional != null && WorkflowStatus.QUERY_RAISED.getId().equals(lastWorkFlowForHealthProfessional.getWorkFlowStatus().getId())) {
+                hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs);
                 iWorkFlowService.assignQueriesBackToQueryCreator(requestTO.getRequestId());
                 iQueriesService.markQueryAsClosed(requestTO.getRequestId());
+            } else {
+                return FAILURE_RESPONSE;
             }
-            return SUCCESS_RESPONSE;
-        } else {
-            return FAILURE_RESPONSE;
-
         }
+        return SUCCESS_RESPONSE;
     }
 
     @Override
@@ -336,7 +335,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(hpSubmitRequestTO.getHpProfileId())) {
             throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
         }
-        WorkFlowAudit lastWorkFlowForHealthProfessional = iWorkFlowAuditRepository.findLastWorkFlowForHealthProfessional(hpSubmitRequestTO.getHpProfileId());
+        WorkFlow lastWorkFlowForHealthProfessional = workFlowRepository.findLastWorkFlowForHealthProfessional(hpSubmitRequestTO.getHpProfileId());
         if (lastWorkFlowForHealthProfessional != null && WorkflowStatus.QUERY_RAISED.getId().equals(lastWorkFlowForHealthProfessional.getWorkFlowStatus().getId())) {
             log.debug("Calling assignQueriesBackToQueryCreator method since there is an existing workflow with 'Query Raised' work flow status. ");
             iWorkFlowService.assignQueriesBackToQueryCreator(lastWorkFlowForHealthProfessional.getRequestId());

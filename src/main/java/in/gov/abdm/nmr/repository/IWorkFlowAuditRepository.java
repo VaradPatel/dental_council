@@ -19,7 +19,4 @@ public interface IWorkFlowAuditRepository extends JpaRepository<WorkFlowAudit, B
     @Query(value = "Select * from work_flow_audit where request_id = :requestId order by created_at asc ", nativeQuery = true)
     List<WorkFlowAudit> fetchApplicationDetails(String requestId);
 
-    @Query(value = "Select * from work_flow_audit wf where wf.hp_profile_id = :hpProfileId order by created_at desc limit 1", nativeQuery = true)
-    WorkFlowAudit findLastWorkFlowForHealthProfessional(BigInteger hpProfileId);
-
 }
