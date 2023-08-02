@@ -15,7 +15,7 @@ public class PractitionerRegistrationTO {
     @JsonProperty("registrationDate")
     private String registrationDate;
     @JsonProperty("registrationCertificate")
-    private String registrationCertificate;
+    private CertificateTO registrationCertificate;
     @JsonProperty("categoryId")
     private BigInteger categoryId;
     @JsonProperty("isNameDifferentInCertificate")
