@@ -4,12 +4,18 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.repository.IAddressMasterRepository;
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Component
@@ -96,6 +102,7 @@ public class NMRToHPRMapper {
         return communicationAddressTO;
     }
 
+    @SneakyThrows
     private PractitionerRegistrationDetailsTO populatePractitionerRegistrationDetails(RegistrationDetailsMaster registrationMaster, List<QualificationDetailsMaster> qualificationDetailsMasterList, List<ForeignQualificationDetailsMaster> foreignQualificationDetailsMasterList) {
         PractitionerRegistrationDetailsTO registrationDetailsTO = new PractitionerRegistrationDetailsTO();
         registrationDetailsTO.setCategory(CATEGORY_HEALTH_PROFESSIONAL);
@@ -103,6 +110,12 @@ public class NMRToHPRMapper {
         PractitionerRegistrationTO practitionerRegistrationTO = new PractitionerRegistrationTO();
         practitionerRegistrationTO.setRegisteredWithCouncil(registrationMaster.getStateMedicalCouncil() != null ? registrationMaster.getStateMedicalCouncil().getId().toString() : null);
         practitionerRegistrationTO.setRegistrationNumber(registrationMaster.getRegistrationNo());
+        CertificateTO registrationCertificateTO = new CertificateTO();
+        if (registrationMaster.getCertificate() != null && StringUtils.isNotBlank(registrationMaster.getFileName())) {
+            registrationCertificateTO.setData(Base64.getEncoder().encodeToString(registrationMaster.getCertificate()));
+            registrationCertificateTO.setFileType(Files.probeContentType(Paths.get(registrationMaster.getFileName())));
+            practitionerRegistrationTO.setRegistrationCertificate(registrationCertificateTO);
+        }
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         practitionerRegistrationTO.setRegistrationDate(dateFormat.format(registrationMaster.getRegistrationDate()));
         practitionerRegistrationTO.setIsNameDifferentInCertificate(BigInteger.ZERO);
@@ -128,6 +141,16 @@ public class NMRToHPRMapper {
                 practitionerQualififcationTO.setMonthOfAwardingDegreeDiploma(qualificationDetailsMaster.getQualificationMonth());
                 practitionerQualififcationTO.setYearOfAwardingDegreeDiploma(qualificationDetailsMaster.getQualificationYear());
                 practitionerQualififcationTO.setIsNameDifferentInCertificate(BigInteger.ZERO);
+                CertificateTO registrationCertificateTO = new CertificateTO();
+                if (qualificationDetailsMaster.getCertificate() != null && StringUtils.isNotBlank(qualificationDetailsMaster.getFileName())) {
+                    try {
+                        registrationCertificateTO.setData(Base64.getEncoder().encodeToString(qualificationDetailsMaster.getCertificate()));
+                        registrationCertificateTO.setFileType(Files.probeContentType(Paths.get(qualificationDetailsMaster.getFileName())));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    practitionerQualififcationTO.setDegreeCertificate(registrationCertificateTO);
+                }
             });
         }
         if (foreignQualificationDetailsMasterList != null && !foreignQualificationDetailsMasterList.isEmpty()) {
