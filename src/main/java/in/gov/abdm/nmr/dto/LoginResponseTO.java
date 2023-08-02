@@ -20,4 +20,5 @@ public class LoginResponseTO {
     private Timestamp lastLogin;
     private BigInteger hpProfileStatusId;
     private BigInteger workFlowStatusId;
+    private Boolean isAdmin;
 }

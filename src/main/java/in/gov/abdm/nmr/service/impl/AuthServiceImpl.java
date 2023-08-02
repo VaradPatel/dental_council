@@ -9,6 +9,7 @@ import java.util.Objects;
 import javax.servlet.http.HttpServletResponse;
 
 import in.gov.abdm.nmr.entity.WorkFlow;
+import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.repository.IWorkFlowRepository;
 import in.gov.abdm.nmr.security.username_password.UserPasswordAuthenticationToken;
@@ -92,26 +93,40 @@ public class AuthServiceImpl implements IAuthService {
         loginResponseTO.setUserGroupId(user.getGroup().getId());
         loginResponseTO.setUserId(user.getId());
         loginResponseTO.setLastLogin(user.getLastLogin());
+        loginResponseTO.setIsAdmin(false);
         if (UserTypeEnum.HEALTH_PROFESSIONAL.getId().equals(user.getUserType().getId())) {
             createHealthProfessionalLoginResponse(user, loginResponseTO);
 
         } else if (UserTypeEnum.COLLEGE.getId().equals(user.getUserType().getId())) {
             BigInteger userSubTypeId = user.getUserSubType().getId();
             loginResponseTO.setUserSubType(userSubTypeId);
-
+            if(userSubTypeId != null && UserSubTypeEnum.COLLEGE_ADMIN.getId().equals(userSubTypeId)){
+                loginResponseTO.setIsAdmin(true);
+            }
             CollegeProfile collegeProfile = collegeProfileDaoService.findByUserId(user.getId());
                 loginResponseTO.setProfileId(collegeProfile.getId());
                 loginResponseTO.setCollegeId(collegeProfile.getCollege().getId());
 
         } else if (UserTypeEnum.SMC.getId().equals(user.getUserType().getId())) {
+            BigInteger userSubTypeId = user.getUserSubType().getId();
+            if(userSubTypeId != null && UserSubTypeEnum.SMC_ADMIN.getId().equals(userSubTypeId)){
+                loginResponseTO.setIsAdmin(true);
+            }
             loginResponseTO.setProfileId(smcProfileDaoService.findByUserId(user.getId()).getId());
 
         } else if (UserTypeEnum.NMC.getId().equals(user.getUserType().getId())) {
             loginResponseTO.setProfileId(nmcDaoService.findByUserId(user.getId()).getId());
             BigInteger userSubTypeId = user.getUserSubType().getId();
             loginResponseTO.setUserSubType(userSubTypeId);
+            if(userSubTypeId != null && UserSubTypeEnum.NMC_ADMIN.getId().equals(userSubTypeId)){
+                loginResponseTO.setIsAdmin(true);
+            }
         } else if (UserTypeEnum.NBE.getId().equals(user.getUserType().getId())) {
             loginResponseTO.setProfileId(nbeDaoService.findByUserId(user.getId()).getId());
+            BigInteger userSubTypeId = user.getUserSubType().getId();
+            if(userSubTypeId != null && UserSubTypeEnum.NBE_ADMIN.getId().equals(userSubTypeId)){
+                loginResponseTO.setIsAdmin(true);
+            }
         }
         return loginResponseTO;
     }
