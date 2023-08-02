@@ -108,7 +108,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         User user = userDetailService.findByUsername(userName, userType);
 
         validateAndThrowExceptionForNonVerifierUsers(user);
-        throwExceptionWhenSMCForwardingInternationalAdditionalQualification(user,requestTO);
+        validateForwardActionForInternationalAdditionalQualification(user,requestTO);
 
         WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
         HpProfile hpProfile = iHpProfileRepository.findById(requestTO.getHpProfileId()).orElse(new HpProfile());
@@ -299,7 +299,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         }
     }
 
-    private void throwExceptionWhenSMCForwardingInternationalAdditionalQualification(User user, WorkFlowRequestTO workFlowRequestTO) throws InvalidRequestException {
+    private void validateForwardActionForInternationalAdditionalQualification(User user, WorkFlowRequestTO workFlowRequestTO) throws InvalidRequestException {
         if (UserTypeEnum.SMC.getId().equals(user.getUserType().getId()) && ApplicationType.ADDITIONAL_QUALIFICATION.getId().equals(workFlowRequestTO.getApplicationTypeId()) && Action.FORWARD.getId().equals(workFlowRequestTO.getActionId())) {
             if ((foreignQualificationDetailRepository.findByRequestId(workFlowRequestTO.getRequestId())) != null) {
                 throw new InvalidRequestException(NMRError.FORWARD_ACTION_NOT_ALLOWED.getCode(), NMRError.FORWARD_ACTION_NOT_ALLOWED.getMessage());
