@@ -11,6 +11,7 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Configuration
@@ -18,15 +19,21 @@ import org.springframework.scheduling.annotation.Scheduled;
 @EnableScheduling
 public class CacheConfiguration {
 
-   @Bean
-   public RedisCacheConfiguration searchCacheConfiguration() {
-       return RedisCacheConfiguration.defaultCacheConfig()
-               .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
-   }
-   
-   @Scheduled(fixedRate = NMRConstants.MASTER_CACHE_CRON_TIME)
-   @CacheEvict(value = {NMRConstants.MASTER_CACHE_NAME}, allEntries = true)
-   public void clearCache() {  
-       log.info("Cache '{}' cleared.", NMRConstants.MASTER_CACHE_NAME);
-   }
+    @Bean
+    public RedisCacheConfiguration searchCacheConfiguration() {
+        return RedisCacheConfiguration.defaultCacheConfig()
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+    }
+
+    @Scheduled(fixedRate = NMRConstants.MASTER_CACHE_CRON_TIME)
+    @CacheEvict(value = {NMRConstants.MASTER_CACHE_NAME}, allEntries = true)
+    public void clearMasterCache() {
+        log.info("Cache '{}' cleared.", NMRConstants.MASTER_CACHE_NAME);
+    }
+
+    @Scheduled(fixedRate = NMRConstants.TEMPLATE_CACHE_CRON_TIME, timeUnit = TimeUnit.HOURS)
+    @CacheEvict(value = {NMRConstants.TEMPLATE_CACHE_NAME}, allEntries = true)
+    public void clearTemplateCache() {
+        log.info("Cache '{}' cleared.", NMRConstants.TEMPLATE_CACHE_NAME);
+    }
 }
