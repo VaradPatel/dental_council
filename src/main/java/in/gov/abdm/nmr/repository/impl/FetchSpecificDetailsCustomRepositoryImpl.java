@@ -229,7 +229,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardResponseTO.setTotalNoOfRecords((BigInteger) result[19]);
             dashBoardTO.setStartDate(result[20] != null ? dateFormat.format(result[20]) : null);
             dashBoardTO.setEndDate(result[21] != null ? dateFormat.format(result[21]) : null);
-            dashBoardTO.setRemark((String) result[22]);
+            dashBoardTO.setRemark(result[22] != null ? (String) result[22] : "");
             dashboardTOList.add(dashBoardTO);
         });
         dashBoardResponseTO.setDashboardTOList(dashboardTOList);
