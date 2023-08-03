@@ -255,7 +255,7 @@ public class HpRegistrationController {
     @PutMapping(path = ProtectedPaths.ADDITIONAL_QUALIFICATION, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String updateQualifications(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
                                     @RequestPart("data") @Valid QualificationRequestTO qualificationDetailRequestTO,
-                                    @RequestParam(value = "degreeCertificates") List<MultipartFile> degreeCertificates
+                                    @RequestParam(value = "degreeCertificates", required = false) List<MultipartFile> degreeCertificates
     ) throws InvalidRequestException, WorkFlowException {
         log.info(degreeCertificates != null ? String.valueOf(degreeCertificates.size()) : null);
         return hpService.updateQualification(hpProfileId, qualificationDetailRequestTO.getQualificationDetailRequestTos(),degreeCertificates);

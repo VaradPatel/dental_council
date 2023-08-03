@@ -17,6 +17,7 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
 
@@ -116,13 +117,14 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
 
         List<Object[]> results = query.getResultList();
         results.forEach(result -> {
+            SimpleDateFormat dateFormat =new SimpleDateFormat("dd-MM-yyyy");
             ReactivateHealthProfessionalTO reactivateHealthProfessionalTO = new ReactivateHealthProfessionalTO();
             reactivateHealthProfessionalTO.setHealthProfessionalId((BigInteger) result[0]);
             reactivateHealthProfessionalTO.setRegistrationId((String) result[1]);
             reactivateHealthProfessionalTO.setRequestId((String) result[2]);
             reactivateHealthProfessionalTO.setHealthProfessionalName((String) result[3]);
-            reactivateHealthProfessionalTO.setSubmittedDate((Date) result[4]);
-            reactivateHealthProfessionalTO.setReactivation((Date) result[5]);
+            reactivateHealthProfessionalTO.setSubmittedDate(result[4] != null ? dateFormat.format(result[4]) : "");
+            reactivateHealthProfessionalTO.setReactivation(result[5] != null ? dateFormat.format(result[5]) : "");
             reactivateHealthProfessionalTO.setGender((String) result[6]);
             reactivateHealthProfessionalTO.setEmailId((String) result[7]);
             reactivateHealthProfessionalTO.setMobileNumber((String) result[8]);

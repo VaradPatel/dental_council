@@ -373,9 +373,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             QualificationDetails qualification = new QualificationDetails();
             if (indianQualification.getId() != null) {
                 qualification = qualificationDetailRepository.findById(indianQualification.getId()).orElseThrow(InvalidRequestException::new);
-                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification, !proofs.isEmpty() ? proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)) : null);
+                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification, (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)) : null);
             } else {
-                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification, !proofs.isEmpty() ? proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)) : null);
+                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)) : null);
                 qualificationDetails.add(qualification);
             }
         }
@@ -421,9 +421,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             ForeignQualificationDetails customQualification = new ForeignQualificationDetails();
             if (internationalQualification.getId() != null) {
                 customQualification = iCustomQualificationDetailRepository.findById(internationalQualification.getId()).orElseThrow(InvalidRequestException::new);
-                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification, !proofs.isEmpty() ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null);
+                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null);
             } else {
-                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification, !proofs.isEmpty() ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null);
+                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null);
                 internationQualifications.add(customQualification);
             }
         }
