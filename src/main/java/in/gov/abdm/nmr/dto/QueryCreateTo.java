@@ -1,8 +1,10 @@
 package in.gov.abdm.nmr.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.List;
@@ -17,6 +19,7 @@ public class QueryCreateTo {
     @JsonProperty("hpProfileId")
     private BigInteger hpProfileId;
 
+    @NotEmpty(message = NMRConstants.QUERY_RAISED_ERROR)
     private List<QueryTo> queries;
 
     @JsonProperty("commonComment")

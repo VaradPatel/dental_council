@@ -227,6 +227,9 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setCollegeStatus(result[17] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[17]).getStatus() : NOT_YET_RECEIVED);
             dashBoardTO.setApplicationTypeId((BigInteger) result[18]);
             dashBoardResponseTO.setTotalNoOfRecords((BigInteger) result[19]);
+            dashBoardTO.setStartDate(result[20] != null ? dateFormat.format(result[20]) : null);
+            dashBoardTO.setEndDate(result[21] != null ? dateFormat.format(result[21]) : null);
+            dashBoardTO.setRemark(result[22] != null ? (String) result[22] : "");
             dashboardTOList.add(dashBoardTO);
         });
         dashBoardResponseTO.setDashboardTOList(dashboardTOList);
