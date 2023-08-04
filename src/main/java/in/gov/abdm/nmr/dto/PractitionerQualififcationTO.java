@@ -22,7 +22,7 @@ public class PractitionerQualififcationTO {
     @JsonProperty("yearOfAwardingDegreeDiploma")
     private String yearOfAwardingDegreeDiploma;
     @JsonProperty("degreeCertificate")
-    private String degreeCertificate;
+    private CertificateTO degreeCertificate;
     @JsonProperty("isNameDifferentInCertificate")
     private BigInteger isNameDifferentInCertificate;
 }

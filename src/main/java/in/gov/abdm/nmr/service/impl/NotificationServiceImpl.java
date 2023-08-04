@@ -321,15 +321,9 @@ public class NotificationServiceImpl implements INotificationService {
             response = notificationFClient.sendNotification(notificationRequestTo, Timestamp.valueOf(LocalDateTime.now()), requestId);
             log.info(requestId + " " + response);
 
-            Notification notification = new Notification();
-
-            notification.setTemplateId(templateId);
-            notification.setRequestId(requestId);
-            notification.setTemplateName(templateName);
-            notification.setMessage(content);
-            notification.setStatus(response.status());
-
             for (String notificationType : type) {
+
+                Notification notification = new Notification();
                 if (notificationType.equalsIgnoreCase(NotificationType.SMS.getNotificationType())) {
                     notification.setType(NotificationType.SMS.getNotificationType());
                     notification.setReceiver(mobile);
@@ -337,6 +331,11 @@ public class NotificationServiceImpl implements INotificationService {
                     notification.setType(NotificationType.EMAIL.getNotificationType());
                     notification.setReceiver(email);
                 }
+                notification.setTemplateId(templateId);
+                notification.setRequestId(requestId);
+                notification.setTemplateName(templateName);
+                notification.setMessage(content);
+                notification.setStatus(response.status());
                 iNotificationRepository.save(notification);
             }
 

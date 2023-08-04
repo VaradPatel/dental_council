@@ -27,4 +27,7 @@ public class DashboardTO {
     private String yearOfRegistration;
     private String collegeStatus;
     private BigInteger applicationTypeId;
+    private String startDate;
+    private String endDate;
+    private String remark;
 }
