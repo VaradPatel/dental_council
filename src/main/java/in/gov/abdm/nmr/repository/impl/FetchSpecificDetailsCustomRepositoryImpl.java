@@ -17,6 +17,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -227,8 +228,8 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setCollegeStatus(result[17] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[17]).getStatus() : NOT_YET_RECEIVED);
             dashBoardTO.setApplicationTypeId((BigInteger) result[18]);
             dashBoardResponseTO.setTotalNoOfRecords((BigInteger) result[19]);
-            dashBoardTO.setStartDate(result[20] != null ? dateFormat.format(result[20]) : null);
-            dashBoardTO.setEndDate(result[21] != null ? dateFormat.format(result[21]) : null);
+            dashBoardTO.setStartDate(result[20] != null ? (Timestamp) result[20] : null);
+            dashBoardTO.setEndDate(result[21] != null ? (Timestamp) result[21] : null);
             dashBoardTO.setRemark(result[22] != null ? (String) result[22] : "");
             dashboardTOList.add(dashBoardTO);
         });
