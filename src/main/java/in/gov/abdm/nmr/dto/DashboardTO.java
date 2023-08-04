@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.dto;
 import lombok.Data;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
 
 @Data
 public class DashboardTO {
@@ -27,7 +28,7 @@ public class DashboardTO {
     private String yearOfRegistration;
     private String collegeStatus;
     private BigInteger applicationTypeId;
-    private String startDate;
-    private String endDate;
+    private Timestamp startDate;
+    private Timestamp endDate;
     private String remark;
 }
