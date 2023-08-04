@@ -17,12 +17,12 @@ public enum UserSubTypeEnum {
     COLLEGE_DEAN(BigInteger.valueOf(3), RoleConstants.COLLEGE_DEAN, UserTypeEnum.COLLEGE, Group.COLLEGE,"College Dean"),
     COLLEGE_PRINCIPAL(BigInteger.valueOf(4), RoleConstants.COLLEGE_PRINCIPAL, UserTypeEnum.COLLEGE, Group.COLLEGE,"College Principle"),
     OTHERS(BigInteger.valueOf(5), RoleConstants.COLLEGE_OTHERS, UserTypeEnum.COLLEGE, Group.COLLEGE,"College Other"),
-    NMC_ADMIN(BigInteger.valueOf(6), RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN, UserTypeEnum.NMC, Group.NMC,""),
-    NMC_VERIFIER(BigInteger.valueOf(7), RoleConstants.NATIONAL_MEDICAL_COUNCIL_VERIFIER, UserTypeEnum.NMC, Group.NMC,""),
-    NBE_ADMIN(BigInteger.valueOf(8), RoleConstants.NATIONAL_BOARD_OF_EXAMINATIONS_ADMIN, UserTypeEnum.NBE, Group.NBE,""),
-    NBE_VERIFIER(BigInteger.valueOf(9), RoleConstants.NATIONAL_BOARD_OF_EXAMINATIONS_VERIFIER, UserTypeEnum.NBE, Group.NBE,""),
-    SMC_ADMIN(BigInteger.valueOf(10), RoleConstants.STATE_MEDICAL_COUNCIL_ADMIN, UserTypeEnum.SMC, Group.SMC,""),
-    SMC_VERIFIER(BigInteger.valueOf(11), RoleConstants.STATE_MEDICAL_COUNCIL_VERIFIER, UserTypeEnum.SMC, Group.SMC,"");
+    NMC_ADMIN(BigInteger.valueOf(6), RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN, UserTypeEnum.NMC, Group.NMC,"National Medical Council Admin"),
+    NMC_VERIFIER(BigInteger.valueOf(7), RoleConstants.NATIONAL_MEDICAL_COUNCIL_VERIFIER, UserTypeEnum.NMC, Group.NMC,"National Medical Council Verifier"),
+    NBE_ADMIN(BigInteger.valueOf(8), RoleConstants.NATIONAL_BOARD_OF_EXAMINATIONS_ADMIN, UserTypeEnum.NBE, Group.NBE,"National Board Of Examinations Admin"),
+    NBE_VERIFIER(BigInteger.valueOf(9), RoleConstants.NATIONAL_BOARD_OF_EXAMINATIONS_VERIFIER, UserTypeEnum.NBE, Group.NBE,"National Board Of Examinations Verifier"),
+    SMC_ADMIN(BigInteger.valueOf(10), RoleConstants.STATE_MEDICAL_COUNCIL_ADMIN, UserTypeEnum.SMC, Group.SMC,"State Medical Council Admin"),
+    SMC_VERIFIER(BigInteger.valueOf(11), RoleConstants.STATE_MEDICAL_COUNCIL_VERIFIER, UserTypeEnum.SMC, Group.SMC,"State Medical Council Verifier");
 
     private BigInteger id;
     private String name;
