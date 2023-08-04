@@ -251,18 +251,10 @@ public class CollegeServiceImpl implements ICollegeService {
     }
 
     @Override
-    public List<CollegeMasterDataTO> getAllCollegeVerifiersDesignation() {
-        List<CollegeMasterDataTO> collegeMasterDataTOES = new ArrayList<>();
-        CollegeMasterDataTO collegeMasterDataTO;
-        List<UserSubTypeEnum> userSubTypes = UserSubTypeEnum.getUserSubTypeDisplayName(List.of(UserSubTypeEnum.COLLEGE_REGISTRAR.getId(),
-                UserSubTypeEnum.COLLEGE_DEAN.getId(), UserSubTypeEnum.COLLEGE_PRINCIPAL.getId(), UserSubTypeEnum.OTHERS.getId()));
-        for (UserSubTypeEnum userSubType : userSubTypes) {
-            collegeMasterDataTO = new CollegeMasterDataTO();
-            collegeMasterDataTO.setId(userSubType.getId());
-            collegeMasterDataTO.setName(userSubType.getDisplayName());
-            collegeMasterDataTOES.add(collegeMasterDataTO);
-        }
-        return collegeMasterDataTOES;
+    public List<CollegeMasterDataTO> getAllCollegeVerifiersDesignation() throws NmrException {
+        return entityManager.createQuery("select ust from userSubType ust where ust.id != ?1 and ust.userType.id = ?2 order by ust.id asc", UserSubType.class)
+                .setParameter(1, UserSubTypeEnum.COLLEGE_ADMIN.getId()).setParameter(2, UserTypeEnum.COLLEGE.getId())
+                .getResultList().stream().map(userSubType -> new CollegeMasterDataTO(userSubType.getId(), userSubType.getDisplayName())).toList();
     }
 
     @Override

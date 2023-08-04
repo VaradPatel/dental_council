@@ -31,4 +31,5 @@ public class UserSubType extends CommonAuditEntity {
     private UserGroup group;
     
     private String roles;
+    private String DisplayName;
 }
