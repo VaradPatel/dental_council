@@ -166,18 +166,18 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         if (APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES.contains(workFlow.getWorkFlowStatus().getId())) {
             log.debug("Performing Post Workflow updates since either the Last step of Workflow is reached or work_flow_status is Approved/Suspended/Blacklisted ");
             workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
+
+        } else if ((ApplicationType.HP_REGISTRATION.getId().equals(workFlow.getApplicationType().getId()) ||
+                ApplicationType.FOREIGN_HP_REGISTRATION.getId().equals(workFlow.getApplicationType().getId())) && WorkflowStatus.REJECTED.getId().equals(workFlow.getWorkFlowStatus().getId())) {
+
+            markQualificationsAsRejectedByRequestId(workFlow.getRequestId());
+            workFlow.getHpProfile().setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.REJECTED.getId()).build());
+
         } else if (ApplicationType.ADDITIONAL_QUALIFICATION.getId().equals(workFlow.getApplicationType().getId())
                 && WorkflowStatus.REJECTED.getId().equals(workFlow.getWorkFlowStatus().getId())) {
 
-            QualificationDetails qualificationDetails = qualificationDetailRepository.findByRequestId(workFlow.getRequestId());
-            if(qualificationDetails!=null) {
-                qualificationDetails.setIsVerified(NMRConstants.QUALIFICATION_STATUS_REJECTED);
-            }
+            markQualificationsAsRejectedByRequestId(workFlow.getRequestId());
 
-            ForeignQualificationDetails foreignQualificationDetails = foreignQualificationDetailRepository.findByRequestId(requestTO.getRequestId());
-            if(foreignQualificationDetails!=null) {
-                foreignQualificationDetails.setIsVerified(QUALIFICATION_STATUS_REJECTED);
-            }
         } else if (APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES_FOR_SUSPEND_REQUEST.contains(workFlow.getWorkFlowStatus().getId())) {
             workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
 
@@ -491,6 +491,17 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
         if (DashboardStatus.APPROVED.getId().equals(dashboard.getNmcStatus()) || DashboardStatus.PENDING.getId().equals(dashboard.getNmcStatus())) {
             dashboard.setNmcStatus(DashboardStatus.REJECT.getId());
+        }
+    }
+    private void markQualificationsAsRejectedByRequestId(String requestId){
+        QualificationDetails qualificationDetails = qualificationDetailRepository.findByRequestId(requestId);
+        if (qualificationDetails != null) {
+            qualificationDetails.setIsVerified(NMRConstants.QUALIFICATION_STATUS_REJECTED);
+        }
+
+        ForeignQualificationDetails foreignQualificationDetails = foreignQualificationDetailRepository.findByRequestId(requestId);
+        if (foreignQualificationDetails != null) {
+            foreignQualificationDetails.setIsVerified(QUALIFICATION_STATUS_REJECTED);
         }
     }
 }
