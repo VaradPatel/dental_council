@@ -167,9 +167,9 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
         results.forEach(result -> {
             HealthProfessionalApplicationTo healthProfessionalApplicationTo = new HealthProfessionalApplicationTo();
             healthProfessionalApplicationTo.setDoctorStatus(result[0] != null ? WorkflowStatus.getWorkflowStatus((BigInteger) result[0]).getDescription() : "");
-            healthProfessionalApplicationTo.setSmcStatus(result[1] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[1]).getSmcStatus() : NOT_YET_RECEIVED);
-            healthProfessionalApplicationTo.setNmcStatus(result[2] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[2]).getStatus() : NOT_YET_RECEIVED);
-            healthProfessionalApplicationTo.setNbeStatus(result[3] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[3]).getStatus() : NOT_YET_RECEIVED);
+            healthProfessionalApplicationTo.setSmcStatus(result[1] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[1]).getSmcStatus() : HYPHEN);
+            healthProfessionalApplicationTo.setNmcStatus(result[2] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[2]).getStatus() : HYPHEN);
+            healthProfessionalApplicationTo.setNbeStatus(result[3] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[3]).getStatus() : HYPHEN);
             healthProfessionalApplicationTo.setHpProfileId((BigInteger) result[4]);
             healthProfessionalApplicationTo.setRequestId((String) result[5]);
             healthProfessionalApplicationTo.setRegistrationNo((String) result[6]);
@@ -185,7 +185,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
             healthProfessionalApplicationTo.setMobileNumber((String) result[16]);
             healthProfessionalApplicationTo.setNmrId((String)result[17]);
             healthProfessionalApplicationTo.setYearOfRegistration(result[18] != null ? ((Timestamp) result[18]).toString() : null);
-            healthProfessionalApplicationTo.setCollegeStatus(result[19] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[19]).getStatus() : NOT_YET_RECEIVED);
+            healthProfessionalApplicationTo.setCollegeStatus(result[19] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[19]).getStatus() : HYPHEN);
             healthProfessionalApplicationResponseTo.setTotalNoOfRecords((BigInteger) result[20]);
             healthProfessionalApplicationToList.add(healthProfessionalApplicationTo);
         });

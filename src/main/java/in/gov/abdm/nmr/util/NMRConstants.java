@@ -255,7 +255,7 @@ public class NMRConstants {
     public static final String FETCH_COUNT_QUERY_FOR_COLLEGE = "SELECT application_type_id as applicationTypeId, college_status as profileStatus, count(*) as count FROM main.dashboard d join main.qualification_details qd on qd.hp_profile_id = d.hp_profile_id and qd.request_id = d.request_id where application_type_id in (1,8) and qd.college_id =:" + COLLEGE_ID + " group by application_type_id, college_status";
     public static final String FETCH_COUNT_QUERY_FOR_NMC = "SELECT application_type_id as applicationTypeId, nmc_status as profileStatus, count(*) as count FROM main.dashboard d where application_type_id in (1,3,4,7,8) group by application_type_id , nmc_status ";
     public static final String FETCH_COUNT_QUERY_FOR_NBE = "SELECT application_type_id as applicationTypeId, nbe_status as profileStatus, count(*) as count FROM main.dashboard d where application_type_id in (7) group by application_type_id , nbe_status ";
-    public static final String NOT_YET_RECEIVED = "Not Yet Received";
+    public static final String HYPHEN = "-";
     public static final String OPERATOR_MINUS = "-";
     public static final String OPERATOR_PLUS = "+";
     public static final String OPERATOR_MULTIPLICATION = "*";
