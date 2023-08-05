@@ -23,7 +23,7 @@ public enum NMRError {
     NOT_FOUND_EXCEPTION("ABDM-NMR-014", "The requested resource could not be located. Please verify the input and try again."),
     WORK_FLOW_CREATION_FAIL("ABDM-NMR-015", "We can process only one request at a time"),
     PROFILE_NOT_APPROVED("ABDM-NMR-016", "Only approved profile can be suspended."),
-    PROFILE_NOT_SUSPEND("ABDM-NMR-017", "Only suspended profile can be reactivated."),
+    PROFILE_NOT_SUSPEND("ABDM-NMR-017", "User profile is already activated"),
     INVALID_SEARCH_CRITERIA("ABDM-NMR-018", "An error occurred while processing your request. Please verify the search parameters and try again."),
     MISSING_SEARCH_VALUE("ABDM-NMR-019", "An error occurred while processing your request. Please specify the value to be used for filtering the records."),
     MISSING_MANDATORY_FIELD("ABDM-NMR-020", "Missing mandatory fields. Please ensure all required fields are provided as per API documentation."),
