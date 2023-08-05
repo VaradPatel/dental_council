@@ -95,6 +95,9 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     @Autowired
     IDashboardRepository iDashboardRepository;
 
+    @Autowired
+    ITrackApplicationReadStatusRepository iTrackApplicationReadStatusRepository;
+
     private static final List<BigInteger> PRIVILEGED_VERIFIERS =List.of(Group.SMC.getId(),Group.SYSTEM.getId());
     private static final List<BigInteger> APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES = List.of(WorkflowStatus.APPROVED.getId());
     private static final List<BigInteger> APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES_FOR_SUSPEND_REQUEST = List.of(WorkflowStatus.BLACKLISTED.getId(), WorkflowStatus.SUSPENDED.getId());
@@ -180,7 +183,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
         } else if (APPLICABLE_POST_PROCESSOR_WORK_FLOW_STATUSES_FOR_SUSPEND_REQUEST.contains(workFlow.getWorkFlowStatus().getId())) {
             workflowPostProcessorService.performPostWorkflowUpdates(requestTO, hpProfile, iNextGroup);
-
+            markTrackApplicationReadStatusAsFalse(hpProfile);
             List<QualificationDetails> qualificationDetails = qualificationDetailRepository.getPendingQualificationsByUserId(hpProfile.getUser().getId());
 
             for (QualificationDetails qualification : qualificationDetails) {
@@ -213,6 +216,16 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 initiateSubmissionWorkFlow(workFlowRequestTO);
             }
         }
+    }
+
+    private void markTrackApplicationReadStatusAsFalse(HpProfile hpProfile) {
+        TrackApplicationReadStatus trackApplicationReadStatus = iTrackApplicationReadStatusRepository.findByUserId(hpProfile.getUser().getId());
+        if(trackApplicationReadStatus == null){
+            trackApplicationReadStatus = new TrackApplicationReadStatus();
+        }
+        trackApplicationReadStatus.setReadStatus(false);
+        trackApplicationReadStatus.setUser(hpProfile.getUser());
+        iTrackApplicationReadStatusRepository.save(trackApplicationReadStatus);
     }
 
     private void sendNotificationsOnStatusChanges(User user, WorkFlowRequestTO workFlow, HpProfile hpProfile) {

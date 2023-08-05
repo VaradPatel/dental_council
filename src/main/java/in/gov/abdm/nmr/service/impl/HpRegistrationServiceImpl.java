@@ -202,6 +202,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Autowired
     private QueriesRepository queriesRepository;
 
+    @Autowired
+    private ITrackApplicationReadStatusRepository iTrackApplicationReadStatusRepository;
+
     /**
      * This method fetches the SMC registration details for a given request.
      *
@@ -429,7 +432,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             workFlowStatusId = workFlow.getWorkFlowStatus().getId();
             requestId = workFlow.getRequestId();
         }}
-        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId, workFlowStatusId, requestId, hpProfileStatusId);
+        HpProfilePersonalResponseTO hpProfilePersonalResponseTO = HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId, workFlowStatusId, requestId, hpProfileStatusId);
+        TrackApplicationReadStatus trackApplicationReadStatus = iTrackApplicationReadStatusRepository.findByUserId(hpProfile.getUser().getId());
+        if(trackApplicationReadStatus != null){
+            hpProfilePersonalResponseTO.setIsTrackApplicationReadStatus(trackApplicationReadStatus.isReadStatus());
+        }
+        return  hpProfilePersonalResponseTO;
     }
 
     @Override
@@ -729,6 +737,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException, InvalidRequestException {
 
         String transactionId = request.getTransactionId();
+        HpProfile hpProfile = iHpProfileRepository.findHpProfileById(hpProfileId);
         if (request.getMobileNumber() != null) {
             if (transactionId == null) {
                 throw new InvalidRequestException(NMRError.MISSING_MANDATORY_FIELD.getCode(), NMRError.MISSING_MANDATORY_FIELD.getMessage());
@@ -739,17 +748,14 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             }
         }
         if(request.getMobileNumber()!=null) {
-            HpProfile hpProfile = iHpProfileRepository.findHpProfileById(hpProfileId);
-            if (!hpProfile.getUser().getMobileNumber().equals(request.getMobileNumber())) {
 
+            if (hpProfile != null && !hpProfile.getUser().getMobileNumber().equals(request.getMobileNumber())) {
                 if (!(userDaoService.checkMobileUsedByOtherUser(hpProfile.getUser().getId(), request.getMobileNumber(), UserTypeEnum.HEALTH_PROFESSIONAL.getId()))) {
-
                     hpProfile.getUser().setMobileNumber(request.getMobileNumber());
                     hpProfile.setMobileNumber(request.getMobileNumber());
                     iHpProfileRepository.save(hpProfile);
                 } else {
                     throw new InvalidRequestException(NMRConstants.MOBILE_USED_BY_OTHER_USER);
-
                 }
             } else {
                 throw new InvalidRequestException(UPDATING_SAME_MOBILE_NUMBER);
@@ -759,7 +765,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         String eSignTransactionId = request.getESignTransactionId();
         if (eSignTransactionId != null && !eSignTransactionId.isBlank()) {
-            HpProfile hpProfile = iHpProfileRepository.findHpProfileById(hpProfileId);
             if (hpProfile != null) {
                 hpProfile.setTransactionId(eSignTransactionId);
                 iHpProfileRepository.save(hpProfile);
@@ -780,6 +785,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 }
 
             }
+        }
+
+        if(hpProfile != null && Boolean.TRUE == request.getTrackApplicationReadStatus()){
+            TrackApplicationReadStatus trackApplicationReadStatus = iTrackApplicationReadStatusRepository.findByUserId(hpProfile.getUser().getId());
+            trackApplicationReadStatus.setReadStatus(true);
+            iTrackApplicationReadStatusRepository.save(trackApplicationReadStatus);
         }
     }
 
