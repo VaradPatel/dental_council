@@ -253,7 +253,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             }
             else if(!ApplicationType.HP_MODIFICATION.getId().equals(workFlow.getApplicationTypeId())) {
                 if(!(ApplicationType.HP_REGISTRATION.getId().equals(workFlow.getApplicationTypeId()) && Action.SUBMIT.getId().equals(workFlow.getActionId()))) {
-                    if(!((ApplicationType.HP_TEMPORARY_SUSPENSION.getId().equals(workFlow.getApplicationSubTypeId())|| ApplicationType.HP_PERMANENT_SUSPENSION.getId().equals(workFlow.getApplicationSubTypeId())) && Group.SMC.getId().equals(workFlow.getActorId()) && (Action.TEMPORARY_SUSPEND.getId().equals(workFlow.getActionId()) || Action.PERMANENT_SUSPEND.getId().equals(workFlow.getActionId())))) {
+                    if(!((ApplicationType.HP_TEMPORARY_SUSPENSION.getId().equals(workFlow.getApplicationTypeId())|| ApplicationType.HP_PERMANENT_SUSPENSION.getId().equals(workFlow.getApplicationTypeId())) && Group.SMC.getId().equals(workFlow.getActorId()) && (Action.TEMPORARY_SUSPEND.getId().equals(workFlow.getActionId()) || Action.PERMANENT_SUSPEND.getId().equals(workFlow.getActionId())))) {
 
                         if (hpProfile.getUser().isSmsNotificationEnabled() && hpProfile.getUser().isEmailNotificationEnabled()) {
                             notificationService.sendNotificationOnStatusChangeForHP(ApplicationType.getApplicationType(workFlow.getApplicationTypeId()).getNotifyText(), Action.getAction(workFlow.getActionId()).getNotifyText() + getVerifierNameForNotification(user), hpProfile.getUser().getMobileNumber(), hpProfile.getUser().getEmail());

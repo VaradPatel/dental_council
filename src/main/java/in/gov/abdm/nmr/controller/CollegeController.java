@@ -102,7 +102,8 @@ public class CollegeController {
         collegeProfileTo.setId(verifierId);
         if(iCollegeService.getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.COLLEGE_DEAN.getId())  ||
                 iCollegeService.getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.COLLEGE_REGISTRAR.getId()) ||
-                iCollegeService.getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.COLLEGE_PRINCIPAL.getId())){
+                iCollegeService.getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.COLLEGE_PRINCIPAL.getId()) ||
+                iCollegeService.getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.OTHERS.getId())) {
             return iCollegeService.createOrUpdateCollegeVerifier(collegeProfileTo);
         }
         else {

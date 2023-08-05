@@ -146,7 +146,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 org.springframework.beans.BeanUtils.copyProperties(existingHpProfile, targetedHpProfile);
                 targetedHpProfile.setId(null);
                 targetedHpProfile.setIsNew(NO);
-                targetedHpProfile.setESignStatus(ESignStatus.PROFILE_NOT_ESIGNED.getId());
+                targetedHpProfile.setESignStatus(ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
                 targetedHpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.DRAFT.getId()).build());
             }
             mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, targetedHpProfile);
