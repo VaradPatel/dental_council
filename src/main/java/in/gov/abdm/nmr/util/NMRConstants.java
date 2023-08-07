@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * This class holds all the constants associated with NMR application
@@ -401,5 +402,9 @@ public class NMRConstants {
     public static final String EXCEPTION_IN_PARSING_USERNAME_PASSWORD = "Exception occurred while parsing username-password login request";
     public static final String AUTHORIZATION = "Authorization";
     public static final String QUERY_RAISED_ERROR = "Please add query against atleast one field";
+    private static final String MBBS_REGEX =  "(?i)M[-.]?B[-.]?B[-.]?S";
+    public static final Pattern MBBS_PATTERN_MATCHER =  Pattern.compile(MBBS_REGEX);
+    public static List<String> MBBS_QUALIFICAITON_NAMES = List.of("MBBS - Bachelor of Medicine and Bachelor of Surgery", "BACHELOR OF MEDICINE AND BACHELOR OF SURGERY" );
+
 
 }

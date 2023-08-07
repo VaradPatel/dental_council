@@ -33,6 +33,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -42,6 +43,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static in.gov.abdm.nmr.util.NMRUtil.validateQualificationDetailsAndProofs;
 
@@ -561,7 +563,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         if (imrProfileDetails != null) {
             imrRegistrationsDetails = imrProfileDetails.getRegistrationsDetails().isEmpty() ? null : imrProfileDetails.getRegistrationsDetails().get(0);
             for (QualificationsDetails qualificationsDetails : imrRegistrationsDetails.getQualificationsDetails()) {
-                if (qualificationsDetails.getName().replaceAll(DOCTOR_QUALIFICATION_PATTERN, "").equalsIgnoreCase(DOCTOR_QUALIFICATION)) {
+                if (qualificationsDetails.getName() != null
+                        && (MBBS_PATTERN_MATCHER.matcher(qualificationsDetails.getName()).matches()
+                        || MBBS_QUALIFICAITON_NAMES.stream().anyMatch(qualificationsDetails.getName()::equalsIgnoreCase))) {
                     qualificationDetailsList.add(qualificationsDetails);
                 }
             }
