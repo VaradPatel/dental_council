@@ -643,6 +643,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             }
             qualificationDetails.setRegistrationDetails(registrationDetails);
             qualificationDetails.setUser(userDetail);
+            qualificationDetails.setIsVerified(QUALIFICATION_STATUS_PENDING);
             iQualificationDetailRepository.save(qualificationDetails);
         }
 
