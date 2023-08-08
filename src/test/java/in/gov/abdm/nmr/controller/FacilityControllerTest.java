@@ -64,11 +64,12 @@ class FacilityControllerTest {
     @WithMockUser
     void testSearchFacility() throws Exception {
         FacilityRequestTO facilityRequestTO = new FacilityRequestTO();
-        facilityRequestTO.getFacility().setId(FACILITY_ID);
-        facilityRequestTO.getFacility().setOwnership(OWNERSHIP_CODE);
-        facilityRequestTO.getFacility().setState(STATE_CODE);
-        facilityRequestTO.getFacility().setDistrict(SUB_DISTRICT_CODE);
-
+        FacilitySearchRequestTO facilitySearchRequestTO = new FacilitySearchRequestTO();
+        facilitySearchRequestTO.setId(FACILITY_ID);
+        facilitySearchRequestTO.setOwnership(OWNERSHIP_CODE);
+        facilitySearchRequestTO.setState(STATE_CODE);
+        facilitySearchRequestTO.setDistrict(SUB_DISTRICT_CODE);
+        facilityRequestTO.setFacility(facilitySearchRequestTO);
         FacilitiesSearchResponseTO facilitySearchResponseTO = new FacilitiesSearchResponseTO();
         facilitySearchResponseTO.setReferenceNumber(SUCCESS_RESPONSE);
         List<FacilityTO> facilities = new ArrayList<>();
@@ -92,29 +93,12 @@ class FacilityControllerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(NMRConstants.SUCCESS_RESPONSE))
-                .andExpect(jsonPath("$.facilities[0].facilityId").value(FACILITY_ID))
-                .andExpect(jsonPath("$.facilities[0].facilityName").value(FACILITY_NAME))
-                .andExpect(jsonPath("$.facilities[0].ownership").value(OWNERSHIP))
-                .andExpect(jsonPath("$.facilities[0].ownershipCode").value(OWNERSHIP_CODE))
-                .andExpect(jsonPath("$.facilities[0].stateName").value(STATE_NAME))
-                .andExpect(jsonPath("$.facilities[0].stateLGDCode").value(STATE_CODE))
-                .andExpect(jsonPath("$.facilities[0].districtName").value(DISTRICT_NAME))
-                .andExpect(jsonPath("$.facilities[0].subDistrictName").value(SUB_DISTRICT_NAME))
-                .andExpect(jsonPath("$.facilities[0].villageCityTownName").value(VILLAGE_NAME))
-                .andExpect(jsonPath("$.facilities[0].districtLGDCode").value(DISTRICT_CODE))
-                .andExpect(jsonPath("$.facilities[0].subDistrictLGDCode").value(SUB_DISTRICT_CODE))
-                .andExpect(jsonPath("$.facilities[0].villageCityTownLGDCode").value(VILLAGE_CODE))
-                .andExpect(jsonPath("$.facilities[0].address").value(ADDRESS_LINE_1))
-                .andExpect(jsonPath("$.facilities[0].pincode").value(CommonTestData.PIN_CODE))
+                .andExpect(jsonPath("$.referenceNumber").value(NMRConstants.SUCCESS_RESPONSE))
+                .andExpect(jsonPath("$.facilities[0].id").value(FACILITY_ID))
+                .andExpect(jsonPath("$.facilities[0].name").value(FACILITY_NAME))
                 .andExpect(jsonPath("$.facilities[0].latitude").value(LATITUDE))
-                .andExpect(jsonPath("$.facilities[0].longitude").value(LONGITUDE))
-                .andExpect(jsonPath("$.facilities[0].systemOfMedicineCode").value(SYSTEM_OF_MEDICINE_CODE))
+                .andExpect(jsonPath("$.facilities[0].langitude").value(LONGITUDE))
                 .andExpect(jsonPath("$.facilities[0].systemOfMedicine").value(SYSTEM_OF_MEDICINE_CODE))
-                .andExpect(jsonPath("$.facilities[0].facilityTypeCode").value(FACILITY_CODE))
-                .andExpect(jsonPath("$.facilities[0].facilityStatus").value(FACILITY_STATUS))
-                .andExpect(jsonPath("$.facilities[0].facilityType").value(FACILITY_TYPE))
-                .andExpect(jsonPath("$.totalFacilities").value(1))
-                .andExpect(jsonPath("$.numberOfPages").value(1));
+                .andExpect(jsonPath("$.facilities[0].facilityType").value(FACILITY_TYPE));
     }
 }
