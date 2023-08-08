@@ -53,7 +53,7 @@ public class KafkaListenerNotificationService {
             HpProfile hpProfile = iHpProfileRepository.findByTransactionId(transactionId);
             if (hpProfile != null) {
                 log.debug("Fetched hp profile detail successfully for hp profile ID: {}", hpProfile.getId());
-                Address address = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfile.getId(), AddressType.COMMUNICATION.getId());
+                Address address = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfile.getId(), AddressType.KYC.getId());
                 if (address != null) {
                     log.debug("Fetched address detail successfully for hp profile ID: {}", address.getHpProfileId());
                     if (hpProfile.getFullName().equalsIgnoreCase(eSignedEvent.getName()) &&
