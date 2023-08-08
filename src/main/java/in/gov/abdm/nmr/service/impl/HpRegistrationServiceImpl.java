@@ -637,8 +637,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             qualificationDetails.setState(qualificationsDetails.getState() != null ? stateRepository.findByName(qualificationsDetails.getState()) : null);
             qualificationDetails.setName(qualificationsDetails.getName() != null ? qualificationsDetails.getName() : null);
             String university = qualificationsDetails.getUniversity();
-            if (university != null) {
-                UniversityMaster universityMaster = universityMasterRepository.findUniversityByName(university);
+            if (university != null && qualificationDetails.getCollege().getId()!=null) {
+                UniversityMaster universityMaster = universityMasterRepository.findUniversityByName(university,qualificationDetails.getCollege().getId());
                 qualificationDetails.setUniversity(universityMaster);
             }
             qualificationDetails.setRegistrationDetails(registrationDetails);
@@ -648,7 +648,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
 
         in.gov.abdm.nmr.entity.Address kycAddress = new in.gov.abdm.nmr.entity.Address();
-        kycAddress.setPincode(request.getPincode());
+            kycAddress.setPincode(request.getPincode());
         kycAddress.setMobile(request.getMobileNumber());
         kycAddress.setAddressLine1(request.getAddress());
         kycAddress.setEmail(request.getEmail() != null ? request.getEmail() : null);
