@@ -15,4 +15,5 @@ public class HealthProfessionalPersonalRequestTo {
     private String transactionId;
     @JsonProperty("e_sign_transaction_id")
     private String eSignTransactionId;
+    private Boolean trackApplicationReadStatus;
 }

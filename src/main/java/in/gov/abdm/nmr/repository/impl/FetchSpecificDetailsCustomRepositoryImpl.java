@@ -209,9 +209,9 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
             DashboardTO dashBoardTO = new DashboardTO();
             dashBoardTO.setDoctorStatus(result[0] != null ? WorkflowStatus.getWorkflowStatus((BigInteger) result[0]).getDescription() : "");
-            dashBoardTO.setSmcStatus(result[1] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[1]).getSmcStatus() : NOT_YET_RECEIVED);
-            dashBoardTO.setNmcStatus(result[2] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[2]).getStatus() : NOT_YET_RECEIVED);
-            dashBoardTO.setNbeStatus(result[3] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[3]).getStatus() : NOT_YET_RECEIVED);
+            dashBoardTO.setSmcStatus(result[1] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[1]).getSmcStatus() : HYPHEN);
+            dashBoardTO.setNmcStatus(result[2] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[2]).getStatus() : HYPHEN);
+            dashBoardTO.setNbeStatus(result[3] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[3]).getStatus() : HYPHEN);
             dashBoardTO.setHpProfileId((BigInteger) result[4]);
             dashBoardTO.setRequestId((String) result[5]);
             dashBoardTO.setRegistrationNo((String) result[6]);
@@ -225,7 +225,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
             dashBoardTO.setMobileNumber((String) result[14]);
             dashBoardTO.setNmrId((String) result[15]);
             dashBoardTO.setYearOfRegistration(result[16] != null ? dateFormat.format(result[16]) : "");
-            dashBoardTO.setCollegeStatus(result[17] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[17]).getStatus() : NOT_YET_RECEIVED);
+            dashBoardTO.setCollegeStatus(result[17] != null ? DashboardStatus.getDashboardStatus((BigInteger) result[17]).getStatus() : HYPHEN);
             dashBoardTO.setApplicationTypeId((BigInteger) result[18]);
             dashBoardResponseTO.setTotalNoOfRecords((BigInteger) result[19]);
             dashBoardTO.setStartDate(result[20] != null ? (Timestamp) result[20] : null);
