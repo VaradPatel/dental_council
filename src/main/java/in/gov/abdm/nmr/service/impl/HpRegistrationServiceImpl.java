@@ -33,6 +33,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -42,6 +43,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static in.gov.abdm.nmr.util.NMRUtil.validateQualificationDetailsAndProofs;
 
@@ -201,6 +203,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Autowired
     private QueriesRepository queriesRepository;
+
+    @Autowired
+    private ITrackApplicationReadStatusRepository iTrackApplicationReadStatusRepository;
 
     /**
      * This method fetches the SMC registration details for a given request.
@@ -429,7 +434,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             workFlowStatusId = workFlow.getWorkFlowStatus().getId();
             requestId = workFlow.getRequestId();
         }}
-        return HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId, workFlowStatusId, requestId, hpProfileStatusId);
+        HpProfilePersonalResponseTO hpProfilePersonalResponseTO = HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId, workFlowStatusId, requestId, hpProfileStatusId);
+        TrackApplicationReadStatus trackApplicationReadStatus = iTrackApplicationReadStatusRepository.findByUserId(hpProfile.getUser().getId());
+        if(trackApplicationReadStatus != null){
+            hpProfilePersonalResponseTO.setIsTrackApplicationReadStatus(trackApplicationReadStatus.isReadStatus());
+        }
+        return  hpProfilePersonalResponseTO;
     }
 
     @Override
@@ -553,7 +563,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         if (imrProfileDetails != null) {
             imrRegistrationsDetails = imrProfileDetails.getRegistrationsDetails().isEmpty() ? null : imrProfileDetails.getRegistrationsDetails().get(0);
             for (QualificationsDetails qualificationsDetails : imrRegistrationsDetails.getQualificationsDetails()) {
-                if (qualificationsDetails.getName().replaceAll(DOCTOR_QUALIFICATION_PATTERN, "").equalsIgnoreCase(DOCTOR_QUALIFICATION)) {
+                if (qualificationsDetails.getName() != null
+                        && (MBBS_PATTERN_MATCHER.matcher(qualificationsDetails.getName()).matches()
+                        || MBBS_QUALIFICAITON_NAMES.stream().anyMatch(qualificationsDetails.getName()::equalsIgnoreCase))) {
                     qualificationDetailsList.add(qualificationsDetails);
                 }
             }
@@ -625,17 +637,18 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             qualificationDetails.setState(qualificationsDetails.getState() != null ? stateRepository.findByName(qualificationsDetails.getState()) : null);
             qualificationDetails.setName(qualificationsDetails.getName() != null ? qualificationsDetails.getName() : null);
             String university = qualificationsDetails.getUniversity();
-            if (university != null) {
-                UniversityMaster universityMaster = universityMasterRepository.findUniversityByName(university);
+            if (university != null && qualificationDetails.getCollege().getId()!=null) {
+                UniversityMaster universityMaster = universityMasterRepository.findUniversityByName(university,qualificationDetails.getCollege().getId());
                 qualificationDetails.setUniversity(universityMaster);
             }
             qualificationDetails.setRegistrationDetails(registrationDetails);
             qualificationDetails.setUser(userDetail);
+            qualificationDetails.setIsVerified(QUALIFICATION_STATUS_PENDING);
             iQualificationDetailRepository.save(qualificationDetails);
         }
 
         in.gov.abdm.nmr.entity.Address kycAddress = new in.gov.abdm.nmr.entity.Address();
-        kycAddress.setPincode(request.getPincode());
+            kycAddress.setPincode(request.getPincode());
         kycAddress.setMobile(request.getMobileNumber());
         kycAddress.setAddressLine1(request.getAddress());
         kycAddress.setEmail(request.getEmail() != null ? request.getEmail() : null);
@@ -729,6 +742,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public void updateHealthProfessionalEmailMobile(BigInteger hpProfileId, HealthProfessionalPersonalRequestTo request) throws OtpException, InvalidRequestException {
 
         String transactionId = request.getTransactionId();
+        HpProfile hpProfile = iHpProfileRepository.findHpProfileById(hpProfileId);
         if (request.getMobileNumber() != null) {
             if (transactionId == null) {
                 throw new InvalidRequestException(NMRError.MISSING_MANDATORY_FIELD.getCode(), NMRError.MISSING_MANDATORY_FIELD.getMessage());
@@ -739,17 +753,14 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             }
         }
         if(request.getMobileNumber()!=null) {
-            HpProfile hpProfile = iHpProfileRepository.findHpProfileById(hpProfileId);
-            if (!hpProfile.getUser().getMobileNumber().equals(request.getMobileNumber())) {
 
+            if (hpProfile != null && !hpProfile.getUser().getMobileNumber().equals(request.getMobileNumber())) {
                 if (!(userDaoService.checkMobileUsedByOtherUser(hpProfile.getUser().getId(), request.getMobileNumber(), UserTypeEnum.HEALTH_PROFESSIONAL.getId()))) {
-
                     hpProfile.getUser().setMobileNumber(request.getMobileNumber());
                     hpProfile.setMobileNumber(request.getMobileNumber());
                     iHpProfileRepository.save(hpProfile);
                 } else {
                     throw new InvalidRequestException(NMRConstants.MOBILE_USED_BY_OTHER_USER);
-
                 }
             } else {
                 throw new InvalidRequestException(UPDATING_SAME_MOBILE_NUMBER);
@@ -759,7 +770,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         String eSignTransactionId = request.getESignTransactionId();
         if (eSignTransactionId != null && !eSignTransactionId.isBlank()) {
-            HpProfile hpProfile = iHpProfileRepository.findHpProfileById(hpProfileId);
             if (hpProfile != null) {
                 hpProfile.setTransactionId(eSignTransactionId);
                 iHpProfileRepository.save(hpProfile);
@@ -780,6 +790,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 }
 
             }
+        }
+
+        if(hpProfile != null && Boolean.TRUE == request.getTrackApplicationReadStatus()){
+            TrackApplicationReadStatus trackApplicationReadStatus = iTrackApplicationReadStatusRepository.findByUserId(hpProfile.getUser().getId());
+            trackApplicationReadStatus.setReadStatus(true);
+            iTrackApplicationReadStatusRepository.save(trackApplicationReadStatus);
         }
     }
 

@@ -94,7 +94,7 @@ public class CollegeController {
         }
     }
 
-    @RolesAllowed({RoleConstants.COLLEGE_DEAN, RoleConstants.COLLEGE_REGISTRAR,RoleConstants.COLLEGE_PRINCIPAL})
+    @RolesAllowed({RoleConstants.COLLEGE_DEAN, RoleConstants.COLLEGE_REGISTRAR, RoleConstants.COLLEGE_PRINCIPAL, RoleConstants.COLLEGE_OTHERS})
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping(path = COLLEGES_COLLEGE_ID_VERIFIERS_VERIFIER_ID, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeProfileTo updateCollegeVerifier(@NotNull @PathVariable BigInteger collegeId, @NotNull @PathVariable BigInteger verifierId, @Valid @RequestBody CollegeProfileTo collegeProfileTo) throws GeneralSecurityException, NmrException, InvalidRequestException, InvalidIdException, ResourceExistsException {
@@ -102,7 +102,8 @@ public class CollegeController {
         collegeProfileTo.setId(verifierId);
         if(iCollegeService.getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.COLLEGE_DEAN.getId())  ||
                 iCollegeService.getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.COLLEGE_REGISTRAR.getId()) ||
-                iCollegeService.getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.COLLEGE_PRINCIPAL.getId())){
+                iCollegeService.getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.COLLEGE_PRINCIPAL.getId()) ||
+                iCollegeService.getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.OTHERS.getId())) {
             return iCollegeService.createOrUpdateCollegeVerifier(collegeProfileTo);
         }
         else {
