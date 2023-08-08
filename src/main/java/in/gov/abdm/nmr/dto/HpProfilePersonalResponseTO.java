@@ -20,6 +20,7 @@ public class HpProfilePersonalResponseTO {
     private boolean isEmailNotificationEnabled;
     private Integer esignStatus;
     private Boolean isTrackApplicationReadStatus;
+    private Integer hprConsentStatus;
 
 
 }
