@@ -28,10 +28,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -115,7 +117,7 @@ class ApplicationControllerTest {
         applicationRequestTo.setActionId(Action.SUBMIT.getId());
         applicationRequestTo.setRemarks("Remarks");
 
-        when(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(nullable(BigInteger.class))).thenReturn(true);
+        when(iWorkFlowService.isAnyActiveWorkflowExceptAdditionalQualification(nullable(BigInteger.class))).thenReturn(true);
 
         mockMvc.perform(post(ProtectedPaths.SUSPENSION_REQUEST_URL)
                         .with(user(TEST_USER))
@@ -144,15 +146,18 @@ class ApplicationControllerTest {
                 "some xml".getBytes());
 
         when(applicationService.reactivateRequest(any(MultipartFile.class),any(ApplicationRequestTo.class))).thenReturn(reactivateRequestResponseTo);
-        mockMvc.perform(multipart(ProtectedPaths.REACTIVATE_REQUEST_URL).file(multipartFile).with(user(TEST_USER)).with(csrf())
+        mockMvc.perform(multipart(ProtectedPaths.REACTIVATE_REQUEST_URL)
+                        .file(multipartFile)
+                        .param("date",data).contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .with(user(TEST_USER)).with(csrf())
                         .content(objectMapper.writeValueAsBytes(new ApplicationRequestTo())).accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.profile_id").value("1"))
                 .andExpect(jsonPath("$.self_reactivation").value(true))
                 .andExpect(jsonPath("$.message").value(SUCCESS_RESPONSE));
-
     }
+
 
     @Test
     @WithMockUser
@@ -196,7 +201,7 @@ class ApplicationControllerTest {
     @WithMockUser
     void testExecuteActionOnHealthProfessionalShouldThrowWorkFlowCreationFailException() throws Exception {
         doNothing().when(iWorkFlowService).initiateSubmissionWorkFlow(getWorkFlowRequestTO());
-        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class), List.of(any(BigInteger.class)))).thenReturn(false);
+        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class), (any(List.class)))).thenReturn(false);
         mockMvc.perform(patch(HEALTH_PROFESSIONAL_ACTION)
                         .with(user(TEST_USER))
                         .with(csrf())
@@ -209,7 +214,7 @@ class ApplicationControllerTest {
     @Test
     @WithMockUser
     void testExecuteActionOnHealthProfessionalShouldExecuteActionOnHealthProfessionalSuccessfully() throws Exception {
-        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class), List.of(any(BigInteger.class)))).thenReturn(true);
+        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class), any(List.class))).thenReturn(true);
         when(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(any(BigInteger.class))).thenReturn(false);
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(getRequestCounter());
         doNothing().when(iWorkFlowService).initiateSubmissionWorkFlow(getWorkFlowRequestTO());
