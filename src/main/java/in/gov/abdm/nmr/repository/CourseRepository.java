@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface CourseRepository extends JpaRepository<Course, BigInteger> {
 
-    @Query(value = "SELECT course_name, id, hpr_course_id FROM course", nativeQuery = true)
+    @Query(value = "SELECT course_name, id FROM course", nativeQuery = true)
     List<Course> getCourse();
 
     Course getByCourseName(String courseName);
