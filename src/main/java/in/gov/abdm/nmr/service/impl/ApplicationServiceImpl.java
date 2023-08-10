@@ -326,6 +326,9 @@ public class ApplicationServiceImpl implements IApplicationService {
         reactivateHealthProfessionalQueryParam.setSortType(sortingOrder);
         String column = getReactivationSortColumn(sortBy);
         reactivateHealthProfessionalQueryParam.setSortBy(column);
+        if (StringUtils.isBlank(search) && StringUtils.isNotBlank(value)) {
+            reactivateHealthProfessionalQueryParam.setApplicantFullName(value);
+        }
         try {
             Pageable pageable = PageRequest.of(reactivateHealthProfessionalQueryParam.getPageNo(), reactivateHealthProfessionalQueryParam.getOffset());
             reactivateHealthProfessionalResponseTO = iWorkFlowCustomRepository.getReactivationRecordsOfHealthProfessionalsToNmc(reactivateHealthProfessionalQueryParam, pageable);
@@ -448,6 +451,9 @@ public class ApplicationServiceImpl implements IApplicationService {
         }
         if (Objects.nonNull(registrationNo)) {
             applicationRequestParamsTo.setRegistrationNumber(registrationNo);
+        }
+        if (StringUtils.isBlank(search) && StringUtils.isNotBlank(value)) {
+            applicationRequestParamsTo.setApplicantFullName(value);
         }
         final int dataLimit = Math.min(MAX_DATA_SIZE, nmrPagination.getOffset());
         applicationRequestParamsTo.setOffset(dataLimit);
