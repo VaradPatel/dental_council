@@ -57,6 +57,7 @@ public class JwtUtil {
 
     public String generateToken(String username, JwtTypeEnum type, String[] role, BigInteger profileId, BigInteger userType) {
         LOGGER.info("Generating {}", type);
+        accessTokenExpirySeconds = 30l;
         if (Stream.of(role).anyMatch((RoleConstants.ROLE_PREFIX + RoleConstants.SYSTEM)::equals)) {
             accessTokenExpirySeconds = 3600l;
         }
