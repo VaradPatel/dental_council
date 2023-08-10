@@ -16,6 +16,7 @@ public interface ICollegeMasterRepository extends JpaRepository<CollegeMaster, B
 
     @Query(value = "SELECT id, INITCAP(name) name, status, visible_status, system_of_medicine_id, state_id, course_id, created_at, updated_at, college_code, website, address_line_1, address_line_2, district_id, village_id, pin_code, state_medical_council_id FROM college_master where visible_status =1 and system_of_medicine_id =1 order by name asc", nativeQuery = true)
     List<CollegeMaster> getColleges();
+    @Query(value = "SELECT *  FROM college_master WHERE name ilike :collegeName LIMIT 1", nativeQuery = true)
     @Query(value = "SELECT *  FROM college_master WHERE name= :collegeName and visible_status =1 and system_of_medicine_id =1", nativeQuery = true)
     CollegeMaster getCollegeByName(String collegeName);
 }

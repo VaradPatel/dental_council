@@ -5,6 +5,7 @@ import in.gov.abdm.nmr.dto.ChangePasswordRequestTo;
 import in.gov.abdm.nmr.dto.ResetPasswordRequestTo;
 import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.dto.SetNewPasswordTo;
+import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IPasswordService;
 import in.gov.abdm.nmr.util.NMRConstants;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -82,9 +84,10 @@ class PasswordControllerTest {
         requestTo.setUsername(TEST_USER);
         requestTo.setPassword(TEST_PSWD);
         requestTo.setTransactionId(TRANSACTION_ID);
+        requestTo.setUserType(UserTypeEnum.HEALTH_PROFESSIONAL.getId());
         ResponseMessageTo responseMessageTo = new ResponseMessageTo();
         responseMessageTo.setMessage(NMRConstants.SUCCESS_RESPONSE);
-        when(passwordService.resetPassword(requestTo)).thenReturn(responseMessageTo);
+        when(passwordService.resetPassword(any(ResetPasswordRequestTo.class))).thenReturn(responseMessageTo);
         mockMvc.perform(post(NMRConstants.RESET_PASSWORD).with(user(TEST_USER))
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)

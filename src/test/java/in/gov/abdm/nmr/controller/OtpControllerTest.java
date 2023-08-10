@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.dto.*;
+import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.service.IOtpService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.junit.jupiter.api.AfterEach;
@@ -23,6 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -64,11 +66,13 @@ class OtpControllerTest {
         OtpGenerateRequestTo otpGenerateRequestTo = new OtpGenerateRequestTo();
         otpGenerateRequestTo.setContact(MOBILE_NUMBER);
         otpGenerateRequestTo.setType(TYPE);
+        otpGenerateRequestTo.setUserType(UserTypeEnum.HEALTH_PROFESSIONAL.getId());
+        otpGenerateRequestTo.setRegistration(true);
         OTPResponseMessageTo otpResponseMessageTo = new OTPResponseMessageTo();
         otpResponseMessageTo.setTransactionId(TRANSACTION_ID);
         otpResponseMessageTo.setMessage(NMRConstants.SUCCESS_RESPONSE);
         otpResponseMessageTo.setSentOn(MOBILE_NUMBER);
-        when(otpService.generateOtp(nullable(OtpGenerateRequestTo.class))).thenReturn(otpResponseMessageTo);
+        when(otpService.generateOtp(any(OtpGenerateRequestTo.class))).thenReturn(otpResponseMessageTo);
         mockMvc.perform(post("/notification/send-otp").with(user(TEST_USER))
                         .with(csrf())
                         .content(objectMapper.writeValueAsBytes(otpGenerateRequestTo))

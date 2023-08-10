@@ -12,7 +12,6 @@ public enum AddressType {
     CURRENT(2, "Current"),
     PERMANENT(3, "Permanent"),
     COMMUNICATION(4, "Communication"),
-
     KYC(5, "KYC");
 
     private final Integer id;

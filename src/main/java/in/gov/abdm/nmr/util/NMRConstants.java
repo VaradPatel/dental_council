@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * This class holds all the constants associated with NMR application
@@ -307,7 +308,7 @@ public class NMRConstants {
     public static final int QUALIFICATION_STATUS_REJECTED = 2;
 
     public static final String MASTER_CACHE_NAME ="nmr-master-data";
-    public static final String TEMPLATE_CACHE_NAME = "template-cache";
+    public static final String TEMPLATE_CACHE_NAME = "nmr-template-cache";
     public static final long MASTER_CACHE_CRON_TIME = 6 * 60 * 60 * 1000;
     public static final long TEMPLATE_CACHE_CRON_TIME = 24;
     public static final String REGEX_FOR_BIRTH_DATE = "^(((0[13-9]|1[012])[-/]?(0[1-9]|[12][0-9]|30)|(0[13578]|1[02])[-/]?31|02[-/]?(0[1-9]|1[0-9]|2[0-8]))[-/]?[0-9]{4}|02[-/]?29[-/]?([0-9]{2}(([2468][048]|[02468][48])|[13579][26])|([13579][26]|[02468][048]|0[0-9]|1[0-6])00))$";
@@ -401,5 +402,9 @@ public class NMRConstants {
     public static final String EXCEPTION_IN_PARSING_USERNAME_PASSWORD = "Exception occurred while parsing username-password login request";
     public static final String AUTHORIZATION = "Authorization";
     public static final String QUERY_RAISED_ERROR = "Please add query against atleast one field";
+    private static final String MBBS_REGEX =  "(?i)M[-.]?B[-.]?B[-.]?S";
+    public static final Pattern MBBS_PATTERN_MATCHER =  Pattern.compile(MBBS_REGEX);
+    public static List<String> MBBS_QUALIFICAITON_NAMES = List.of("MBBS - Bachelor of Medicine and Bachelor of Surgery", "BACHELOR OF MEDICINE AND BACHELOR OF SURGERY" );
+
 
 }
