@@ -133,7 +133,7 @@ public class NMRToHPRMapper {
     private static void addQualificationDetails(List<QualificationDetailsMaster> qualificationDetailsMasterList, List<ForeignQualificationDetailsMaster> foreignQualificationDetailsMasterList, PractitionerQualififcationTO practitionerQualififcationTO) {
         if (qualificationDetailsMasterList != null && !qualificationDetailsMasterList.isEmpty()) {
             qualificationDetailsMasterList.forEach(qualificationDetailsMaster -> {
-                practitionerQualififcationTO.setNameOfDegreeOrDiplomaObtained(qualificationDetailsMaster.getCourse() != null ? qualificationDetailsMaster.getCourse().getHprCourseId() : null);
+                practitionerQualififcationTO.setNameOfDegreeOrDiplomaObtained(qualificationDetailsMaster.getCourse() != null ? qualificationDetailsMaster.getCourse().getId() : null);
                 practitionerQualififcationTO.setCountry(qualificationDetailsMaster.getCountry() != null ? qualificationDetailsMaster.getCountry().getId() : null);
                 practitionerQualififcationTO.setState(qualificationDetailsMaster.getState() != null ? new BigInteger(qualificationDetailsMaster.getState().getIsoCode()) : null);
                 practitionerQualififcationTO.setUniversity(qualificationDetailsMaster.getUniversity() != null ? qualificationDetailsMaster.getUniversity().getId() : null);

@@ -12,6 +12,7 @@ import in.gov.abdm.nmr.entity.WorkFlow;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.repository.IWorkFlowRepository;
+import in.gov.abdm.nmr.security.jwt.JwtAuthenticationToken;
 import in.gov.abdm.nmr.security.username_password.UserPasswordAuthenticationToken;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -73,6 +74,19 @@ public class AuthServiceImpl implements IAuthService {
     public LoginResponseTO successfulAuth(HttpServletResponse response) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         BigInteger userType= ((UserPasswordAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType();
+
+        User user = userDetailDaoService.findByUsername(username, userType);
+
+        LoginResponseTO loginResponse = createLoginResponse(user);
+        userDetailDaoService.updateLastLogin(user.getId());
+        generateAccessAndRefreshToken(response, username, user, loginResponse.getProfileId());
+        return loginResponse;
+    }
+
+    @Override
+    public LoginResponseTO successfulAuthRefreshToken(HttpServletResponse response) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
 
         User user = userDetailDaoService.findByUsername(username, userType);
 

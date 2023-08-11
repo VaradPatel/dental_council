@@ -234,14 +234,14 @@ class UserServiceTest {
         when(resetTokenRepository.findByToken(anyString())).thenReturn(getResetToken());
         when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
-        ResponseMessageTo responseMessageTo = userService.verifyEmail(new VerifyEmailTo(TEMP_TOKEN));
-        assertEquals(SUCCESS_RESPONSE, responseMessageTo.getMessage());
+        String response = userService.verifyEmail(TEMP_TOKEN);
+        assertEquals(SUCCESS_RESPONSE, response);
     }
 
     @Test
     void testVerifyEmailShouldTokenValueNullAndReturnLinkExpired() throws InvalidRequestException{
         when(resetTokenRepository.findByToken(anyString())).thenReturn(null);
-        assertThrows(InvalidRequestException.class, () -> userService.verifyEmail(new VerifyEmailTo(TEMP_TOKEN)));
+        assertThrows(InvalidRequestException.class, () -> userService.verifyEmail(TEMP_TOKEN));
 
     }
 
@@ -256,7 +256,7 @@ class UserServiceTest {
     @Test
     void testVerifyEmailShouldReturnLinkExpired() throws InvalidRequestException{
         when(resetTokenRepository.findByToken(anyString())).thenReturn(getExpiredResetToken());
-        assertThrows(InvalidRequestException.class, () -> userService.verifyEmail(new VerifyEmailTo(TEMP_TOKEN)));
+        assertThrows(InvalidRequestException.class, () -> userService.verifyEmail(SUCCESS_RESPONSE));
     }
 
 

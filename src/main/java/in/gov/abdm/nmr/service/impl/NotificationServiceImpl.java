@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import in.gov.abdm.nmr.client.NotificationDBFClient;
 import in.gov.abdm.nmr.client.NotificationFClient;
 import in.gov.abdm.nmr.dto.*;
@@ -20,6 +21,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -339,8 +341,12 @@ public class NotificationServiceImpl implements INotificationService {
                 iNotificationRepository.save(notification);
             }
 
-        } catch (Exception e) {
-            return new ResponseMessageTo(e.getLocalizedMessage());
+        }
+        catch (FeignException.TooManyRequests e) {
+            return new ResponseMessageTo(NMRError.EMAIL_ATTEMPTS_EXCEEDED.getMessage());
+        }
+        catch (Exception e) {
+            return new ResponseMessageTo(NMRError.NMR_EXCEPTION.getMessage());
         }
         return new ResponseMessageTo(response.status().equalsIgnoreCase(NMRConstants.SENT_RESPONSE) ? NMRConstants.SUCCESS_RESPONSE : NMRConstants.FAILURE_RESPONSE);
     }

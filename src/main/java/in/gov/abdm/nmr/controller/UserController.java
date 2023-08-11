@@ -81,19 +81,6 @@ public class UserController {
         return userService.retrieveUser(retrieveUserRequestTo);
     }
 
-
-    /**
-     * mark email id as verified
-     * @param verifyEmailTo receiver email/mobile
-     * @return Success/Fail message
-     */
-    @PostMapping(NMRConstants.VERIFY_EMAIL)
-    public ResponseMessageTo verifyEmail(@RequestBody VerifyEmailTo verifyEmailTo) throws InvalidRequestException{
-
-        return userService.verifyEmail(verifyEmailTo);
-
-    }
-
     @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN})
     @PostMapping(path = ProtectedPaths.USER_NMC_CREATE_USER, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public UserProfileTO createUser(@Valid @RequestBody UserProfileTO userProfileTO) throws NmrException {

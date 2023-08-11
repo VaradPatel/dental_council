@@ -42,7 +42,8 @@ public enum NMRError {
     INVALID_OTP_TRANSACTION_ID("ABDM-NMR-033", "An error occurred while processing your request. Please ensure that a correct transaction id is used for validating OTP."),
     TEMPLATE_KEYS_MISSING("ABDM-NMR-034", "An error occurred while accessing the template keys. Please try again in sometime."),
     FILE_SIZE_LIMIT("ABDM-NMR-035", "Kindly limit the file size to allowable limit of 5MB"),
-    FORWARD_ACTION_NOT_ALLOWED("ABDM-NMR-036", "Forward action is not supported for international qualification verification.");
+    FORWARD_ACTION_NOT_ALLOWED("ABDM-NMR-036", "Forward action is not supported for international qualification verification."),
+    EMAIL_ATTEMPTS_EXCEEDED("ABDM-NMR-037", "You have exceeded the maximum number of attempts to verify email. Please try again after 30 minutes.");
     private final String code;
     private final String message;
 }
