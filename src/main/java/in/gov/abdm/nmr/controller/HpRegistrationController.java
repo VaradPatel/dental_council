@@ -2,7 +2,10 @@ package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
+import in.gov.abdm.nmr.entity.StateMedicalCouncil;
 import in.gov.abdm.nmr.exception.*;
+import in.gov.abdm.nmr.nosql.entity.Council;
+import in.gov.abdm.nmr.repository.IStateMedicalCouncilRepository;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
@@ -48,6 +51,9 @@ public class HpRegistrationController {
 
     @Autowired
     private ICouncilService councilService;
+
+    @Autowired
+    private IStateMedicalCouncilRepository stateMedicalCouncilRepository;
 
     /**
      * This method is used to fetch SMC registration detail information.
@@ -329,7 +335,9 @@ public class HpRegistrationController {
     public KycResponseMessageTo saveUserKycDetails(@PathVariable("registrationNumber") String registrationNumber,
                                                    @RequestParam("councilId") BigInteger councilId,
                                                    @RequestBody UserKycTo userKycTo) throws ParseException {
-        return hpService.userKycFuzzyMatch(registrationNumber, councilId, userKycTo);
+        StateMedicalCouncil stateMedicalCouncil = stateMedicalCouncilRepository.findStateMedicalCouncilById(councilId);
+        List<Council> imrRecords = councilService.getCouncilByRegistrationNumberAndCouncilName(registrationNumber, stateMedicalCouncil.getName());
+        return hpService.userKycFuzzyMatch(imrRecords, registrationNumber, councilId, userKycTo.getName(),userKycTo.getGender(),userKycTo.getBirthDate());
     }
 
     @PostMapping(path = "health-professional", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

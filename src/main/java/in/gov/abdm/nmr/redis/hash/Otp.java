@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.redis.hash;
 
+import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.annotation.Id;
@@ -27,6 +28,7 @@ public class Otp {
     @Indexed
     private String contact;
     private boolean expired;
+    private BigInteger userType;
     
     @TimeToLive(unit = TimeUnit.MINUTES)
     private long timeToLive;
