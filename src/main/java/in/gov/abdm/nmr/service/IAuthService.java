@@ -11,4 +11,6 @@ public interface IAuthService {
     LoginResponseTO successfulAuth(HttpServletResponse response);
 
     SessionResponseTo sessions(SessionRequestTo sessionRequestTo);
+
+    LoginResponseTO successfulAuthRefreshToken(HttpServletResponse response);
 }

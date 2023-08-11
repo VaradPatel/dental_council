@@ -61,7 +61,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
         if (StringUtils.isNotBlank(refreshTokenRequestTO.getUsername())) {
             predicates.add(builder.or(builder.equal(root.get(User_.EMAIL), refreshTokenRequestTO.getUsername()), builder.equal(root.get(User_.MOBILE_NUMBER),
                     refreshTokenRequestTO.getUsername()), builder.equal(root.get(User_.HPR_ID), refreshTokenRequestTO.getUsername()),
-                    builder.equal(root.get(User_.NMR_ID), refreshTokenRequestTO.getUsername())));
+                    builder.equal(root.get(User_.NMR_ID), refreshTokenRequestTO.getUsername()), builder.equal(root.get(User_.USER_NAME),refreshTokenRequestTO.getUsername())));
         }
 
         criteria.set(root.get(User_.REFRESH_TOKEN_ID), refreshTokenRequestTO.getRefreshTokenId()).where(predicates.toArray(new Predicate[0]));

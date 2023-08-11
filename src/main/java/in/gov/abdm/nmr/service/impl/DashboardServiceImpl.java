@@ -360,6 +360,9 @@ public class DashboardServiceImpl implements IDashboardService {
                 throw new InvalidRequestException(NMRError.MISSING_SEARCH_VALUE.getCode(), NMRError.MISSING_SEARCH_VALUE.getMessage());
             }
         }
+        if (StringUtils.isBlank(search) && StringUtils.isNotBlank(value)) {
+            dashboardRequestParamsTO.setApplicantFullName(value);
+        }
     }
 
     /**

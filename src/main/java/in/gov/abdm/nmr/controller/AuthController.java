@@ -41,7 +41,7 @@ public class AuthController {
     @PostMapping(path = PATH_REFRESH_TOKEN, produces = MediaType.APPLICATION_JSON_VALUE)
     @SecurityRequirement(name = "bearerAuth")
     public LoginResponseTO refreshToken(HttpServletResponse response) {
-        return authService.successfulAuth(response);
+        return authService.successfulAuthRefreshToken(response);
     }
 
     @PostMapping(path = "/sessions", produces = MediaType.APPLICATION_JSON_VALUE)
