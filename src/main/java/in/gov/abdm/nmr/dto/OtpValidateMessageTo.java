@@ -1,3 +1,3 @@
 package in.gov.abdm.nmr.dto;
 
-public record OtpValidateMessageTo(String status, String transactionId, String type){}
+public record OtpValidateMessageTo(String status, String transactionId, String type, String displayName){}

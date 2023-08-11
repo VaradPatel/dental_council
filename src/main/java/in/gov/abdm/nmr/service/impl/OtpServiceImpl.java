@@ -7,12 +7,15 @@ import java.util.UUID;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.TemplateException;
+import in.gov.abdm.nmr.service.*;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,10 +24,6 @@ import in.gov.abdm.nmr.enums.NotificationType;
 import in.gov.abdm.nmr.exception.OtpException;
 import in.gov.abdm.nmr.redis.hash.Otp;
 import in.gov.abdm.nmr.security.common.RsaUtil;
-import in.gov.abdm.nmr.service.INotificationService;
-import in.gov.abdm.nmr.service.IOtpDaoService;
-import in.gov.abdm.nmr.service.IOtpService;
-import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
 
 /**
@@ -43,6 +42,21 @@ public class OtpServiceImpl implements IOtpService {
     private RsaUtil rsaUtil;
     
     private boolean otpEnabled;
+
+    @Autowired
+    private IHpProfileDaoService hpProfileDaoService;
+
+    @Autowired
+    private ISmcProfileDaoService smcProfileDaoService;
+
+    @Autowired
+    private INmcDaoService nmcDaoService;
+
+    @Autowired
+    private ICollegeProfileDaoService collegeProfileDaoService;
+
+    @Autowired
+    private INbeDaoService nbeDaoService;
 
     public OtpServiceImpl(IOtpDaoService otpDaoService, IUserDaoService userDaoService, INotificationService notificationService, RsaUtil rsaUtil,
                           @Value("${nmr.otp.enabled}") boolean otpEnabled) {
@@ -99,7 +113,7 @@ public class OtpServiceImpl implements IOtpService {
 
         String otp = String.valueOf(new SecureRandom().nextInt(899999) + 100000);
 
-        Otp otpEntity = new Otp(UUID.randomUUID().toString(), otp, 0, contact, false, 10);
+        Otp otpEntity = new Otp(UUID.randomUUID().toString(), otp, 0, contact, false, otpGenerateRequestTo.getUserType(),10);
         otpDaoService.save(otpEntity);
         return getOtpResponseMessageTo(otpGenerateRequestTo, contact, otpEntity, notificationService.sendNotificationForOTP(notificationType, otp, contact));
     }
@@ -132,7 +146,7 @@ public class OtpServiceImpl implements IOtpService {
     @Override
     public OtpValidateResponseTo validateOtp(OtpValidateRequestTo otpValidateRequestTo, boolean callInternal) throws OtpException, GeneralSecurityException {
         if (!otpEnabled) {
-            return new OtpValidateResponseTo(new OtpValidateMessageTo(NMRConstants.SUCCESS_RESPONSE, null, null));
+            return new OtpValidateResponseTo(new OtpValidateMessageTo(NMRConstants.SUCCESS_RESPONSE, null, null,null));
         }
         
         String transactionId = otpValidateRequestTo.getTransactionId();
@@ -153,12 +167,33 @@ public class OtpServiceImpl implements IOtpService {
         String decryptedOtp = callInternal ? otpValidateRequestTo.getOtp() : rsaUtil.decrypt(otpValidateRequestTo.getOtp());
         if (decryptedOtp.equals(otpDetails.getOtp())) {
             otpDaoService.save(otpDetails);
+            User user=userDaoService.findByUsername(otpDetails.getContact(),otpDetails.getUserType());
+            String displayName = "";
+            if(user!=null && user.getUserType()!=null) {
+
+                if (UserTypeEnum.HEALTH_PROFESSIONAL.getId().equals(user.getUserType().getId())) {
+                    displayName = hpProfileDaoService.findLatestEntryByUserid(user.getId()).getFirstName();
+
+                } else if (UserTypeEnum.COLLEGE.getId().equals(user.getUserType().getId())) {
+                    displayName = collegeProfileDaoService.findByUserId(user.getId()).getName();
+
+                } else if (UserTypeEnum.SMC.getId().equals(user.getUserType().getId())) {
+                    displayName = smcProfileDaoService.findByUserId(user.getId()).getDisplayName();
+
+                } else if (UserTypeEnum.NMC.getId().equals(user.getUserType().getId())) {
+                    displayName = nbeDaoService.findByUserId(user.getId()).getDisplayName();
+
+                } else if (UserTypeEnum.NBE.getId().equals(user.getUserType().getId())) {
+                    displayName = nbeDaoService.findByUserId(user.getId()).getDisplayName();
+                }
+            }
+
             try {
                 notificationService.sendNotificationForVerifiedOTP(otpValidateRequestTo.getType(), otpValidateRequestTo.getContact());
             }catch (Exception exception){
                 log.debug("error occurred while sending notification:" + exception.getLocalizedMessage());
             }
-            return new OtpValidateResponseTo(new OtpValidateMessageTo(NMRConstants.SUCCESS_RESPONSE, otpDetails.getId(), otpValidateRequestTo.getType()));
+            return new OtpValidateResponseTo(new OtpValidateMessageTo(NMRConstants.SUCCESS_RESPONSE, otpDetails.getId(), otpValidateRequestTo.getType(),displayName));
         } else {
             otpDetails.setAttempts(otpDetails.getAttempts() + 1);
             otpDaoService.save(otpDetails);
