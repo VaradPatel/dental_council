@@ -488,24 +488,20 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     }
 
     @Transactional
-    public KycResponseMessageTo userKycFuzzyMatch(String registrationNumber, BigInteger councilId, UserKycTo userKycTo) throws ParseException {
-
-        StateMedicalCouncil stateMedicalCouncil = stateMedicalCouncilRepository.findStateMedicalCouncilById(councilId);
-
-        List<Council> councils = councilService.getCouncilByRegistrationNumberAndCouncilName(registrationNumber, stateMedicalCouncil.getName());
+    public KycResponseMessageTo userKycFuzzyMatch(List<Council> councils ,String registrationNumber, BigInteger councilId, String name, String gender, java.sql.Date dob) throws ParseException {
 
         Council council = councils.isEmpty() ? null : councils.get(0);
 
         if (council != null) {
 
             List<FuzzyParameter> fuzzyParameters = new ArrayList<>();
-            double nameMatch = getFuzzyScore(council.getFullName(), userKycTo.getName());
+            double nameMatch = getFuzzyScore(council.getFullName(), name);
             boolean isNameMatching = nameMatch > NMRConstants.FUZZY_MATCH_LIMIT;
-            fuzzyParameters.add(new FuzzyParameter(NMRConstants.FUZZY_PARAMETER_NAME, council.getFullName(), userKycTo.getName(), isNameMatching ? NMRConstants.SUCCESS_RESPONSE : NMRConstants.FAILURE_RESPONSE));
+            fuzzyParameters.add(new FuzzyParameter(NMRConstants.FUZZY_PARAMETER_NAME, council.getFullName(), name, isNameMatching ? NMRConstants.SUCCESS_RESPONSE : NMRConstants.FAILURE_RESPONSE));
 
-            double genderMatch = getFuzzyScore(council.getGender(), userKycTo.getGender());
+            double genderMatch = getFuzzyScore(council.getGender(), gender);
             boolean isGenderMatching = genderMatch > NMRConstants.FUZZY_MATCH_LIMIT;
-            fuzzyParameters.add(new FuzzyParameter(NMRConstants.FUZZY_PARAMETER_GENDER, council.getGender(), userKycTo.getGender(), isGenderMatching ? NMRConstants.SUCCESS_RESPONSE : NMRConstants.FAILURE_RESPONSE));
+            fuzzyParameters.add(new FuzzyParameter(NMRConstants.FUZZY_PARAMETER_GENDER, council.getGender(), gender, isGenderMatching ? NMRConstants.SUCCESS_RESPONSE : NMRConstants.FAILURE_RESPONSE));
 
             SimpleDateFormat kycDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat imrDateFormat = new SimpleDateFormat("MM/dd/yy");
@@ -513,12 +509,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             boolean isDobMatching;
             try {
                 Date dateOfBirth = imrDateFormat.parse(council.getDateOfBirth());
-                isDobMatching = (kycDateFormat.format(dateOfBirth).compareTo(kycDateFormat.format(userKycTo.getBirthDate()))) == 0;
+                isDobMatching = (kycDateFormat.format(dateOfBirth).compareTo(kycDateFormat.format(dob))) == 0;
             } catch (ParseException e) {
                 log.info("Exception occurred while parsing dob" + e.getMessage());
                 isDobMatching = false;
             }
-            fuzzyParameters.add(new FuzzyParameter(NMRConstants.FUZZY_PARAMETER_DOB, council.getDateOfBirth(), userKycTo.getBirthDate().toString(), isDobMatching ? NMRConstants.SUCCESS_RESPONSE : NMRConstants.FAILURE_RESPONSE));
+            fuzzyParameters.add(new FuzzyParameter(NMRConstants.FUZZY_PARAMETER_DOB, council.getDateOfBirth(), dob.toString(), isDobMatching ? NMRConstants.SUCCESS_RESPONSE : NMRConstants.FAILURE_RESPONSE));
             if (isNameMatching && isDobMatching && isGenderMatching) {
                 return new KycResponseMessageTo(fuzzyParameters, NMRConstants.SUCCESS_RESPONSE);
             } else {
@@ -555,15 +551,15 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         StateMedicalCouncil stateMedicalCouncil = stateMedicalCouncilRepository.findStateMedicalCouncilById(BigInteger.valueOf(Long.parseLong(request.getSmcId())));
 
-        List<Council> imrRecords = new ArrayList<>();
-        if(!request.isNew()) {
-            imrRecords = councilService.getCouncilByRegistrationNumberAndCouncilName(request.getRegistrationNumber(), stateMedicalCouncil.getName());
-        }
+        List<Council> imrRecords = councilService.getCouncilByRegistrationNumberAndCouncilName(request.getRegistrationNumber(), stateMedicalCouncil.getName());
+
+        KycResponseMessageTo kycResponseMessageTo = userKycFuzzyMatch(imrRecords, request.getRegistrationNumber(), new BigInteger(request.getSmcId()), request.getName(), request.getGender(), java.sql.Date.valueOf(request.getBirthdate()));
+
         Council imrProfileDetails = imrRecords.isEmpty() ? null : imrRecords.get(0);
         RegistrationsDetails imrRegistrationsDetails = null;
         List<QualificationsDetails> qualificationDetailsList = new ArrayList<>();
 
-        if (imrProfileDetails != null) {
+        if (imrProfileDetails != null && SUCCESS_RESPONSE.equalsIgnoreCase(kycResponseMessageTo.getKycFuzzyMatchStatus())) {
             imrRegistrationsDetails = imrProfileDetails.getRegistrationsDetails().isEmpty() ? null : imrProfileDetails.getRegistrationsDetails().get(0);
             for (QualificationsDetails qualificationsDetails : imrRegistrationsDetails.getQualificationsDetails()) {
                 if (qualificationsDetails.getName() != null
@@ -598,7 +594,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setIsSameAddress(String.valueOf(false));
         hpProfile.setCountryNationality(countryRepository.findByName(NMRConstants.DEFAULT_COUNTRY_AADHAR));
         hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.DRAFT.getId()).get());
-        hpProfile.setIsNew(imrProfileDetails == null ? YES : NO);
+        hpProfile.setIsNew(SUCCESS_RESPONSE.equalsIgnoreCase(kycResponseMessageTo.getKycFuzzyMatchStatus()) ? NO : YES);
         hpProfile.setUser(userDetail);
         hpProfile.setESignStatus(ESignStatus.PROFILE_NOT_ESIGNED.getId());
         hpProfile = iHpProfileRepository.save(hpProfile);
@@ -610,7 +606,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         registrationDetails.setHpProfileId(hpProfile);
         registrationDetails.setRegistrationNo(request.getRegistrationNumber());
 
-        if (imrRegistrationsDetails != null) {
+        if (imrRegistrationsDetails != null && SUCCESS_RESPONSE.equalsIgnoreCase(kycResponseMessageTo.getKycFuzzyMatchStatus())) {
             boolean isRenewable = imrRegistrationsDetails.isRenewableRegistration();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy");
             if (isRenewable) {
@@ -671,7 +667,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
         kycAddress.setCountry(stateRepository.findByName(request.getState().toUpperCase()).getCountry());
 
-        if (imrProfileDetails != null) {
+        if (imrProfileDetails != null && SUCCESS_RESPONSE.equalsIgnoreCase(kycResponseMessageTo.getKycFuzzyMatchStatus())) {
             in.gov.abdm.nmr.entity.Address communicationAddressEntity = new in.gov.abdm.nmr.entity.Address();
             Address communicationAddress = new Address();
             for (Address address : imrProfileDetails.getAddress()) {
