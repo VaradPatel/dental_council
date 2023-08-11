@@ -554,8 +554,11 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         passwordDaoService.save(password);
 
         StateMedicalCouncil stateMedicalCouncil = stateMedicalCouncilRepository.findStateMedicalCouncilById(BigInteger.valueOf(Long.parseLong(request.getSmcId())));
-        List<Council> imrRecords = councilService.getCouncilByRegistrationNumberAndCouncilName(request.getRegistrationNumber(), stateMedicalCouncil.getName());
 
+        List<Council> imrRecords = new ArrayList<>();
+        if(!request.isNew()) {
+            imrRecords = councilService.getCouncilByRegistrationNumberAndCouncilName(request.getRegistrationNumber(), stateMedicalCouncil.getName());
+        }
         Council imrProfileDetails = imrRecords.isEmpty() ? null : imrRecords.get(0);
         RegistrationsDetails imrRegistrationsDetails = null;
         List<QualificationsDetails> qualificationDetailsList = new ArrayList<>();
