@@ -9,6 +9,7 @@ import in.gov.abdm.nmr.nosql.entity.Council;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpProfileDaoService;
+import in.gov.abdm.nmr.util.KafkaPublisher;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
 import lombok.SneakyThrows;
@@ -78,6 +79,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     IStateMedicalCouncilRepository stateMedicalCouncilRepository;
     @Autowired
     LanguagesKnownRepository languagesKnownRepository;
+    @Autowired
+    KafkaPublisher kafkaPublisher;
 
     private static final List<String> SUPPORTED_FILE_TYPES = List.of(".pdf",".jpg",".jpeg",".png");
 
@@ -188,6 +191,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 iAddressRepository.save(newKycAddress);
             }
         }
+
+        kafkaPublisher.publishHpProfileAuditLog(existingHpProfile);
+
         log.info("HpProfileDaoServiceImpl : updateHpPersonalDetails method : Execution Successful. ");
         return new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", updatedHpProfileId);
     }
