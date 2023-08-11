@@ -4,8 +4,6 @@ import java.math.BigInteger;
 import java.nio.file.AccessDeniedException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -178,22 +176,22 @@ public class UserServiceImpl implements IUserService {
     /**
      * Creates new unique token for reset password transaction
      *
-     * @param verifyEmailTo email/mobile to send link
+     * @param token email/mobile to send link
      * @return ResponseMessageTo with message
      */
     @Override
-    public ResponseMessageTo verifyEmail(VerifyEmailTo verifyEmailTo) throws InvalidRequestException {
+    public String verifyEmail(String token) {
         try {
 
             resetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
 
-            ResetToken resetToken = resetTokenRepository.findByToken(verifyEmailTo.getToken());
+            ResetToken resetToken = resetTokenRepository.findByToken(token);
 
             if (resetToken != null) {
 
                 if (resetToken.getExpiryDate().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0) {
 
-                    throw new InvalidRequestException(NMRConstants.LINK_EXPIRED);
+                    return EMAIL_FAILURE_PAGE;
                 }
 
                 User user = userDaoService.findByUsername(resetToken.getUserName(), resetToken.getUserType());
@@ -202,13 +200,13 @@ public class UserServiceImpl implements IUserService {
                 userDaoService.save(user);
                 resetToken.setExpiryDate(new Timestamp(System.currentTimeMillis()));
                 resetTokenRepository.save(resetToken);
-                return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
+                return EMAIL_SUCCESS_PAGE;
 
             } else {
-                throw new InvalidRequestException(NMRConstants.LINK_EXPIRED);
+                return EMAIL_FAILURE_PAGE;
             }
         } catch (NullPointerException e) {
-            throw new InvalidRequestException(INVALID_LINK);
+            return EMAIL_FAILURE_PAGE;
         }
     }
 

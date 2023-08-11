@@ -853,7 +853,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
         resetTokenRepository.save(resetToken);
 
-        return emailVerifyUrl + "/" + token;
+        return emailVerifyUrl + "/user/verify-email?token=" + token;
 
     }
 
