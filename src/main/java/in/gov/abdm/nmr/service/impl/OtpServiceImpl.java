@@ -181,7 +181,7 @@ public class OtpServiceImpl implements IOtpService {
                     displayName = smcProfileDaoService.findByUserId(user.getId()).getDisplayName();
 
                 } else if (UserTypeEnum.NMC.getId().equals(user.getUserType().getId())) {
-                    displayName = nbeDaoService.findByUserId(user.getId()).getDisplayName();
+                    displayName = nmcDaoService.findByUserId(user.getId()).getDisplayName();
 
                 } else if (UserTypeEnum.NBE.getId().equals(user.getUserType().getId())) {
                     displayName = nbeDaoService.findByUserId(user.getId()).getDisplayName();
