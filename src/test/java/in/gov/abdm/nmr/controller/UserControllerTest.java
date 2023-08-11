@@ -329,7 +329,7 @@ class UserControllerTest {
         verifyEmailTo.setToken(TEMP_TOKEN);
         ResponseMessageTo responseMessageTo = new ResponseMessageTo();
         responseMessageTo.setMessage(NMRConstants.SUCCESS_RESPONSE);
-        when(userService.verifyEmail(any(VerifyEmailTo.class))).thenReturn(responseMessageTo);
+        when(userService.verifyEmail(any(String.class))).thenReturn(TEMP_TOKEN);
         mockMvc.perform(post(NMRConstants.VERIFY_EMAIL).with(user(TEST_USER))
                         .with(csrf())
                         .content(objectMapper.writeValueAsBytes(verifyEmailTo))
