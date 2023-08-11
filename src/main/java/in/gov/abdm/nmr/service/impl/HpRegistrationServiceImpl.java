@@ -553,7 +553,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         List<Council> imrRecords = councilService.getCouncilByRegistrationNumberAndCouncilName(request.getRegistrationNumber(), stateMedicalCouncil.getName());
 
-        KycResponseMessageTo kycResponseMessageTo = userKycFuzzyMatch(imrRecords, request.getRegistrationNumber(), new BigInteger(request.getSmcId()), request.getName(), request.getGender(), java.sql.Date.valueOf(request.getBirthdate()));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+
+        KycResponseMessageTo kycResponseMessageTo = userKycFuzzyMatch(imrRecords, request.getRegistrationNumber(), new BigInteger(request.getSmcId()), request.getName(), request.getGender(), java.sql.Date.valueOf(sdf2.format(sdf.parse(request.getBirthdate()))));
 
         Council imrProfileDetails = imrRecords.isEmpty() ? null : imrRecords.get(0);
         RegistrationsDetails imrRegistrationsDetails = null;
