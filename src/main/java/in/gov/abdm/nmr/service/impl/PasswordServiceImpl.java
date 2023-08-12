@@ -108,7 +108,7 @@ public class PasswordServiceImpl implements IPasswordService {
             if (null == user) {
                 return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
             }
-            if (resetToken.getExpiryDate().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0) {
+            if (resetToken == null || resetToken.getExpiryDate().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0) {
 
                 return new ResponseMessageTo(NMRConstants.LINK_EXPIRED);
             }
