@@ -102,16 +102,15 @@ public class PasswordServiceImpl implements IPasswordService {
             resetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
 
             ResetToken resetToken = resetTokenRepository.findByToken(newPasswordTo.getToken());
-
+            if (resetToken == null || resetToken.getExpiryDate().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0) {
+                return new ResponseMessageTo(NMRConstants.LINK_EXPIRED);
+            }
             User user = userDaoService.findByUsername(resetToken.getUserName(), resetToken.getUserType());
 
             if (null == user) {
                 return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
             }
-            if (resetToken == null || resetToken.getExpiryDate().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0) {
 
-                return new ResponseMessageTo(NMRConstants.LINK_EXPIRED);
-            }
 
             String decryptedNewPassword = rsaUtil.decrypt(newPasswordTo.getPassword());
             for (Password password : passwordDaoService.findLast5(user.getId())) {
