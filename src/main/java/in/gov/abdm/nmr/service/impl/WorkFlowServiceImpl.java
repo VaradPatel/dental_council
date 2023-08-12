@@ -173,7 +173,6 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         } else if ((ApplicationType.HP_REGISTRATION.getId().equals(workFlow.getApplicationType().getId()) ||
                 ApplicationType.FOREIGN_HP_REGISTRATION.getId().equals(workFlow.getApplicationType().getId())) && WorkflowStatus.REJECTED.getId().equals(workFlow.getWorkFlowStatus().getId())) {
 
-            markQualificationsAsRejectedByRequestId(workFlow.getRequestId());
             workFlow.getHpProfile().setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.REJECTED.getId()).build());
 
         } else if (ApplicationType.ADDITIONAL_QUALIFICATION.getId().equals(workFlow.getApplicationType().getId())
