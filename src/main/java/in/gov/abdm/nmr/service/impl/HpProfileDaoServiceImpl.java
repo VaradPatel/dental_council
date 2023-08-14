@@ -265,7 +265,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 try {
                     currentWorkDetailsTO.setProof(file != null ? file.getBytes() : null);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    log.error("Exception occurred while saving attachment.", e);
                 }
             });
             log.debug("Addition of proofs is successful");
@@ -413,7 +413,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             try {
                 qualification.setCertificate(proof.getBytes());
             } catch (IOException e) {
-                throw new InvalidRequestException();
+                log.error("Exception occurred while saving attachment.", e);
             }
         }
     }
@@ -460,7 +460,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             try {
                 customQualification.setCertificate(proof.getBytes());
             } catch (IOException e) {
-                throw new InvalidRequestException();
+                log.error("Exception occurred while saving attachment.", e);
             }
         }
     }
@@ -579,7 +579,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     private void mapWorkRequestToEntity(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> addWorkProfiles, BigInteger hpProfileId, BigInteger userId) {
         if (!addWorkProfiles.isEmpty() && !hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().isEmpty()) {
             List<String> facilityIdList = new ArrayList<>();
-            if(hpWorkProfileUpdateRequestTO!=null && hpWorkProfileUpdateRequestTO.getCurrentWorkDetails()!=null) {
+            if(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails()!=null) {
                 hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> facilityIdList.add(currentWorkDetailsTO.getFacilityId()));
             }
             addWorkProfiles.forEach(workProfile -> facilityIdList.remove(workProfile.getFacilityId()));

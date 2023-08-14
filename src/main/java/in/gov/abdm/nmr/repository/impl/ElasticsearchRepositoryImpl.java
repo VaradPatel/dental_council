@@ -37,7 +37,7 @@ public class ElasticsearchRepositoryImpl implements IElasticsearchRepository {
     @Override
     public SearchResponse<HpSearchResultTO> searchHP(BoolQuery query, int page, int size) throws ElasticsearchException, IOException {
         return elasticsearchClient.search(SearchRequest.of(s -> {
-            Builder searchFunctionBuilder = s.index(hpIndexName).query(q -> q.bool(query)).from(page != 0 ? page * size : page).size(size);
+            Builder searchFunctionBuilder = s.index(hpIndexName).query(q -> q.bool(query)).from(page != 0 ? (page * size) : page).size(size);
             if("sort".equals(query.queryName())) {
                 searchFunctionBuilder.sort(sb -> sb.field(fs -> fs.field("full_name.keyword").order(SortOrder.Asc)));
             }

@@ -178,7 +178,7 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
         Query query = entityManager.createNativeQuery(GET_ALL_USER.apply(userRequestParamsTO));
         setParameters(query, userRequestParamsTO);
         log.debug("Fetched user detail successfully.");
-        query.setFirstResult(pageable.getPageNumber() != 0 ? (pageable.getPageNumber() - 1) * pageable.getPageSize() : 0);
+        query.setFirstResult(pageable.getPageNumber() != 0 ? ((pageable.getPageNumber() - 1) * pageable.getPageSize()) : 0);
         query.setMaxResults(pageable.getPageSize());
         List<Object[]> results = query.getResultList();
         results.forEach(result -> {
@@ -189,8 +189,8 @@ public class FetchUserDetailsCustomRepositoryImpl implements IFetchUserDetailsCu
             user.setLastName((String) result[3]);
             user.setEmailId((String) result[4]);
             user.setMobileNumber((String) result[5]);
-            user.setAdmin(result[6] != null &&
-                    Objects.equals(result[6], UserSubTypeEnum.COLLEGE_ADMIN.getId())
+            user.setAdmin((result[6] != null &&
+                    Objects.equals(result[6], UserSubTypeEnum.COLLEGE_ADMIN.getId()))
                     || Objects.equals(result[6], UserSubTypeEnum.SMC_ADMIN.getId())
                     || Objects.equals(result[6], UserSubTypeEnum.NBE_ADMIN.getId())
                     || Objects.equals(result[6], UserSubTypeEnum.NMC_ADMIN.getId()));

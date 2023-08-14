@@ -202,7 +202,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         setParameters(query, dashboardRequestParamsTO);
 
         log.debug("Fetched dashboard detail successfully.");
-        query.setFirstResult(pageable.getPageNumber() != 0 ? (pageable.getPageNumber() - 1) * pageable.getPageSize() : 0);
+        query.setFirstResult(pageable.getPageNumber() != 0 ? ((pageable.getPageNumber() - 1) * pageable.getPageSize()) : 0);
         query.setMaxResults(pageable.getPageSize());
         @SuppressWarnings("unchecked") List<Object[]> results = query.getResultList();
         results.forEach(result -> {
