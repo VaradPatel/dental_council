@@ -160,7 +160,7 @@ public class FetchTrackApplicationDetailsCustomRepositoryImpl implements IFetchT
 
         Query query = entityManager.createNativeQuery(TRACK_APPLICATION.apply(healthProfessionalApplicationRequestParamsTo, hpProfiles));
         setParameters(query, healthProfessionalApplicationRequestParamsTo, hpProfiles);
-        query.setFirstResult(pageable.getPageNumber() != 0 ? (pageable.getPageNumber() - 1) * pageable.getPageSize() : 0);
+        query.setFirstResult(pageable.getPageNumber() != 0 ? ((pageable.getPageNumber() - 1) * pageable.getPageSize()) : 0);
         query.setMaxResults(pageable.getPageSize());
 
         List<Object[]> results = query.getResultList();
