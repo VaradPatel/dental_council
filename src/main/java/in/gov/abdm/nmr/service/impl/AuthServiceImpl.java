@@ -8,12 +8,16 @@ import java.util.Objects;
 
 import javax.servlet.http.HttpServletResponse;
 
+import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.entity.WorkFlow;
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
+import in.gov.abdm.nmr.redis.hash.BlacklistToken;
+import in.gov.abdm.nmr.redis.repository.IBlacklistTokenRepository;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.repository.IWorkFlowRepository;
 import in.gov.abdm.nmr.security.jwt.JwtAuthenticationToken;
 import in.gov.abdm.nmr.security.username_password.UserPasswordAuthenticationToken;
+import in.gov.abdm.nmr.util.NMRConstants;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +63,9 @@ public class AuthServiceImpl implements IAuthService {
     private IWorkFlowRepository workFlowRepository;
     @Autowired
     private IHpProfileRepository iHpProfileRepository;
+
+    @Autowired
+    private IBlacklistTokenRepository blacklistTokenRepository;
 
     public AuthServiceImpl(JwtUtil jwtUtil, IUserDaoService userDetailDaoService, IHpProfileDaoService hpProfileService, ICollegeProfileDaoService collegeProfileDaoService, ISmcProfileDaoService smcProfileDaoService, INmcDaoService nmcDaoService, INbeDaoService nbeDaoService) {
         this.jwtUtil = jwtUtil;
@@ -182,5 +189,18 @@ public class AuthServiceImpl implements IAuthService {
         if (!UserTypeEnum.SYSTEM.getId().equals(user.getUserType().getId())) {
             response.setHeader(REFRESH_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.REFRESH_TOKEN, roles, profileId, user.getUserType().getId()));
         }
+    }
+
+    @Override
+    public ResponseMessageTo logOut(String token){
+
+        BlacklistToken blacklistToken =new BlacklistToken();
+        String[] tokenParts=token.split("\\.");
+        blacklistToken.setToken(tokenParts[2]);
+        blacklistToken.setExpired(true);
+        blacklistToken.setTimeToLive(15);
+
+        blacklistTokenRepository.save(blacklistToken);
+        return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
     }
 }

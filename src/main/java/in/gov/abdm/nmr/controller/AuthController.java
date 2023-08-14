@@ -1,15 +1,13 @@
 package in.gov.abdm.nmr.controller;
 
-import in.gov.abdm.nmr.dto.LoginRequestTO;
-import in.gov.abdm.nmr.dto.LoginResponseTO;
-import in.gov.abdm.nmr.dto.SessionRequestTo;
-import in.gov.abdm.nmr.dto.SessionResponseTo;
+import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.service.IAuthService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
@@ -47,5 +45,10 @@ public class AuthController {
     @PostMapping(path = "/sessions", produces = MediaType.APPLICATION_JSON_VALUE)
     public SessionResponseTo sessions(@RequestBody SessionRequestTo sessionRequestTo) {
         return authService.sessions(sessionRequestTo);
+    }
+
+    @PostMapping(path = "/user/logout", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseMessageTo logout(@RequestHeader("Authorization") String token) {
+        return authService.logOut(token);
     }
 }
