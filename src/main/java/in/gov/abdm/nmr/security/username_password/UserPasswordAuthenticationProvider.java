@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.security.username_password;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -24,6 +25,7 @@ import in.gov.abdm.nmr.service.IOtpService;
 import static in.gov.abdm.nmr.util.NMRConstants.INVALID_USERNAME_ERROR_MSG;
 
 @Component
+@Slf4j
 public class UserPasswordAuthenticationProvider extends DaoAuthenticationProvider {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -63,8 +65,10 @@ public class UserPasswordAuthenticationProvider extends DaoAuthenticationProvide
                 otpService.validateOtp(otpValidateRequestTo, true);
                 return UserPasswordAuthenticationToken.authenticated(userPassAuthToken.getPrincipal(), userPassAuthToken.getCredentials(), Collections.emptyList(), userPassAuthToken.getUserType(), userPassAuthToken.getDetails());
             } catch (OtpException e) {
+                log.error("Exception occurred while authentication.", e);
                 throw new InternalAuthenticationServiceException(e.getMessage());
             } catch (GeneralSecurityException e) {
+                log.error("Exception occurred while authentication.", e);
             }
         }
 
