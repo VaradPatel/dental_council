@@ -249,6 +249,7 @@ public class NotificationServiceImpl implements INotificationService {
             template = notificationDBFClient.getTemplateById(Timestamp.valueOf(LocalDateTime.now()), UUID.randomUUID().toString(), new BigInteger(templateId));
 
         } catch (NoSuchMessageException noSuchMessageException) {
+            log.error("Exception occurred while sending notification.", noSuchMessageException);
             throw new TemplateException(NMRError.NOT_FOUND_EXCEPTION.getCode(), NMRError.NOT_FOUND_EXCEPTION.getMessage());
         }
 
@@ -343,9 +344,11 @@ public class NotificationServiceImpl implements INotificationService {
 
         }
         catch (FeignException.TooManyRequests e) {
+            log.error("Exception occurred while sending notification.", e);
             return new ResponseMessageTo(NMRError.EMAIL_ATTEMPTS_EXCEEDED.getMessage());
         }
         catch (Exception e) {
+            log.error("Exception occurred while sending notification.", e);
             return new ResponseMessageTo(NMRError.NMR_EXCEPTION.getMessage());
         }
         return new ResponseMessageTo(response.status().equalsIgnoreCase(NMRConstants.SENT_RESPONSE) ? NMRConstants.SUCCESS_RESPONSE : NMRConstants.FAILURE_RESPONSE);

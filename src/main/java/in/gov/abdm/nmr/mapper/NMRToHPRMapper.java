@@ -5,6 +5,7 @@ import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.enums.AddressType;
 import in.gov.abdm.nmr.repository.IAddressMasterRepository;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import java.util.Base64;
 import java.util.List;
 
 @Component
+@Slf4j
 public class NMRToHPRMapper {
     @Autowired
     IAddressMasterRepository addressMasterRepository;
@@ -147,7 +149,7 @@ public class NMRToHPRMapper {
                         registrationCertificateTO.setData(Base64.getEncoder().encodeToString(qualificationDetailsMaster.getCertificate()));
                         registrationCertificateTO.setFileType(Files.probeContentType(Paths.get(qualificationDetailsMaster.getFileName())));
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        log.error("Exception occurred while saving qualification.", e);
                     }
                     practitionerQualififcationTO.setDegreeCertificate(registrationCertificateTO);
                 }

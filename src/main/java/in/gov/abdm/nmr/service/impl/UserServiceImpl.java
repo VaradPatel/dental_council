@@ -181,16 +181,13 @@ public class UserServiceImpl implements IUserService {
      */
     @Override
     public String verifyEmail(String token) {
-        try {
-
-            resetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
+           resetTokenRepository.deleteAllExpiredSince(Timestamp.valueOf(LocalDateTime.now()));
 
             ResetToken resetToken = resetTokenRepository.findByToken(token);
 
             if (resetToken != null) {
 
                 if (resetToken.getExpiryDate().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0) {
-
                     return EMAIL_FAILURE_PAGE;
                 }
 
@@ -205,10 +202,8 @@ public class UserServiceImpl implements IUserService {
             } else {
                 return EMAIL_FAILURE_PAGE;
             }
-        } catch (NullPointerException e) {
-            return EMAIL_FAILURE_PAGE;
         }
-    }
+
 
     @Override
     public UserProfileTO createUser(UserProfileTO userProfileTO) throws NmrException {
