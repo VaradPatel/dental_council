@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigInteger;
@@ -15,6 +16,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Entity(name = "hpProfile")
 public class HpProfile extends CommonAuditEntity {
 
