@@ -3,10 +3,12 @@ package in.gov.abdm.nmr.service;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
 import in.gov.abdm.nmr.exception.*;
+import in.gov.abdm.nmr.nosql.entity.Council;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
+import java.sql.Date;
 import java.text.ParseException;
 import java.util.List;
 
@@ -123,7 +125,7 @@ public interface IHpRegistrationService {
      */
     HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(BigInteger hpProfileId);
 
-    KycResponseMessageTo userKycFuzzyMatch(String registrationNumber,BigInteger councilId, UserKycTo userKycTo) throws ParseException;
+    KycResponseMessageTo userKycFuzzyMatch(List<Council> councils,String registrationNumber, BigInteger councilId, String name, String gender, Date dob) throws ParseException;
 
     ResponseMessageTo addNewHealthProfessional(NewHealthPersonalRequestTO request) throws DateException, ParseException, GeneralSecurityException, InvalidRequestException, NmrException;
 

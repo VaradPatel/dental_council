@@ -36,7 +36,7 @@ public interface IUserService {
 
     String retrieveUser(RetrieveUserRequestTo retrieveUserRequestTo) throws OtpException;
 
-    ResponseMessageTo verifyEmail(VerifyEmailTo verifyEmailTo) throws InvalidRequestException;
+    String verifyEmail(String token);
     
     UserProfileTO createUser(@Valid @RequestBody UserProfileTO userProfileTO) throws NmrException;
     UserResponseTO getAllUser(String search, String value, int pageNo, int offset, String sortBy, String sortOrder) throws InvalidRequestException, AccessDeniedException;

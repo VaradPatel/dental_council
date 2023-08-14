@@ -218,7 +218,7 @@ public class CollegeServiceImpl implements ICollegeService {
         collegeProfile.setUser(user);
         collegeProfileDaoService.save(collegeProfile);
         
-            passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail(), user.getUserType().getId()),collegeProfile.getName());
+        passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail(), user.getUserType().getId()),user.getEmail());
         return collegeResponseTo;
     }
 
@@ -292,7 +292,7 @@ public class CollegeServiceImpl implements ICollegeService {
         collegeProfileTo.setId(collegeProfile.getId());
         
         if (isNewCollegeVerifierProfile) {
-            passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail(), user.getUserType().getId()),collegeProfile.getName());
+            passwordService.getResetPasswordLink(new SendLinkOnMailTo(user.getEmail(), user.getUserType().getId()),user.getEmail());
         }
         return collegeProfileTo;
     }

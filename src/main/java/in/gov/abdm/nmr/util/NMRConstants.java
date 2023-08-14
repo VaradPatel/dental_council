@@ -405,6 +405,6 @@ public class NMRConstants {
     private static final String MBBS_REGEX =  "(?i)M[-.]?B[-.]?B[-.]?S";
     public static final Pattern MBBS_PATTERN_MATCHER =  Pattern.compile(MBBS_REGEX);
     public static List<String> MBBS_QUALIFICAITON_NAMES = List.of("MBBS - Bachelor of Medicine and Bachelor of Surgery", "BACHELOR OF MEDICINE AND BACHELOR OF SURGERY" );
-
-
+    public static final String EMAIL_SUCCESS_PAGE = "email-verification-success";
+    public static final String EMAIL_FAILURE_PAGE = "email-verification-failure";
 }

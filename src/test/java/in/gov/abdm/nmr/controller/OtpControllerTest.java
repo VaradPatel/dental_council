@@ -93,7 +93,7 @@ class OtpControllerTest {
         otpValidateRequestTo.setType(TYPE);
         otpValidateRequestTo.setOtp(OTP);
         OtpValidateResponseTo otpValidateResponseTo = new OtpValidateResponseTo(
-                new OtpValidateMessageTo(NMRConstants.SUCCESS_RESPONSE, TRANSACTION_ID, TYPE));
+                new OtpValidateMessageTo(NMRConstants.SUCCESS_RESPONSE, TRANSACTION_ID, TYPE,NAME));
         when(otpService.validateOtp(nullable(OtpValidateRequestTo.class), nullable(Boolean.class)))
                 .thenReturn(otpValidateResponseTo);
         mockMvc.perform(post("/notification/verify-otp").with(user("123"))

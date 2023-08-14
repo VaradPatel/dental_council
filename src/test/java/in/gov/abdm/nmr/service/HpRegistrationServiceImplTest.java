@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -311,7 +312,7 @@ class HpRegistrationServiceImplTest {
     void testUserKycFuzzyMatchShouldFailFuzzyMatch() throws ParseException {
         when(stateMedicalCouncilRepository.findStateMedicalCouncilById(any(BigInteger.class))).thenReturn(getStateMedicalCouncil());
         when(councilService.getCouncilByRegistrationNumberAndCouncilName(anyString(), anyString())).thenReturn(List.of(getImrCouncilDetails()));
-        KycResponseMessageTo kycResponseMessageTo = hpRegistrationService.userKycFuzzyMatch(REGISTRATION_NUMBER, SMC_ID, getUserKyc());
+        KycResponseMessageTo kycResponseMessageTo = hpRegistrationService.userKycFuzzyMatch(Collections.emptyList(), REGISTRATION_NUMBER, SMC_ID, getUserKyc().getName(), getUserKyc().getGender(), getUserKyc().getBirthDate());
         assertEquals(FAILURE_RESPONSE, kycResponseMessageTo.getKycFuzzyMatchStatus());
     }
 
