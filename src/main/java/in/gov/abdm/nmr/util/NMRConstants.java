@@ -260,7 +260,7 @@ public class NMRConstants {
     public static final String OPERATOR_MINUS = "-";
     public static final String OPERATOR_PLUS = "+";
     public static final String OPERATOR_MULTIPLICATION = "*";
-    public static final List<String> OPERATORS = Arrays.asList(OPERATOR_PLUS, OPERATOR_MINUS, OPERATOR_MULTIPLICATION);
+    public static final List<String> OPERATORS = List.of(OPERATOR_PLUS, OPERATOR_MINUS, OPERATOR_MULTIPLICATION);
     public static final String RSA_PADDING = "RSA/ECB/PKCS1Padding";
     public static final String STATE_MEDICAL_COUNCIL_URL = "/state-medical-councils";
     public static final String FACILITY_ID = "facilityId";
@@ -309,7 +309,7 @@ public class NMRConstants {
 
     public static final String MASTER_CACHE_NAME ="nmr-master-data";
     public static final String TEMPLATE_CACHE_NAME = "nmr-template-cache";
-    public static final long MASTER_CACHE_CRON_TIME = 6 * 60 * 60 * 1000;
+    public static final long MASTER_CACHE_CRON_TIME = 6L * 60 * 60 * 1000;
     public static final long TEMPLATE_CACHE_CRON_TIME = 24;
     public static final String REGEX_FOR_BIRTH_DATE = "^(((0[13-9]|1[012])[-/]?(0[1-9]|[12][0-9]|30)|(0[13578]|1[02])[-/]?31|02[-/]?(0[1-9]|1[0-9]|2[0-8]))[-/]?[0-9]{4}|02[-/]?29[-/]?([0-9]{2}(([2468][048]|[02468][48])|[13579][26])|([13579][26]|[02468][048]|0[0-9]|1[0-6])00))$";
     public static final String REGEX_FOR_NAME = "\\b([a-zA-ZÀ-ÿ]|[-,a-zA-Z0-9. ']+[ ]*)+";
