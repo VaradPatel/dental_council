@@ -112,7 +112,7 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
         List<ReactivateHealthProfessionalTO> reactivateHealthProfessionalTOList = new ArrayList<>();
         Query query = entityManager.createNativeQuery(REACTIVATE_HEALTH_PROFESSIONAL.apply(reactivateHealthProfessionalQueryParam));
 
-       query.setFirstResult(pageable.getPageNumber() != 0 ?(pageable.getPageNumber() - 1) * pageable.getPageSize() : 0);
+       query.setFirstResult(pageable.getPageNumber() != 0 ?((pageable.getPageNumber() - 1) * pageable.getPageSize()) : 0);
        query.setMaxResults(pageable.getPageSize());
 
         List<Object[]> results = query.getResultList();
@@ -137,7 +137,7 @@ public class WorkFlowCustomRepositoryImpl implements IWorkFlowCustomRepository {
                     byte[] file=s3Service.downloadFile((String) result[12]);
                     reactivateHealthProfessionalTO.setReactivationFile(Base64.getEncoder().encodeToString(file));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error("Something went wrong while downloading file from minio", e);
                 }
             }
             else {

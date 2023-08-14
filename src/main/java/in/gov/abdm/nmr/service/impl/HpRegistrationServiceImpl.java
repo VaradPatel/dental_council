@@ -730,7 +730,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                     splitName.setFirstName(firstNameTemp.substring(0, idxF));
                     splitName.setMiddleName(firstNameTemp.substring(idxF + 1));
                 } catch (IndexOutOfBoundsException e) {
-                    log.error("Error splitting fullName: {}", fullName);
+                    log.error("Error splitting fullName: {} Detail exception is {}", fullName, e);
                     throw new NmrException();
                 }
                 splitName.setLastName(fullName.substring(idx + 1));
@@ -838,6 +838,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 return new ResponseMessageTo(NMRConstants.USER_NOT_FOUND);
             }
         } catch (Exception e) {
+            log.error("Something went wrong while sending email verification link.", e);
             return new ResponseMessageTo(e.getLocalizedMessage());
         }
     }

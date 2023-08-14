@@ -259,7 +259,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 try {
                     currentWorkDetailsTO.setProof(file != null ? file.getBytes() : null);
                 } catch (IOException e) {
-                    log.error("Error while saving attachment.");
+                    log.error("Exception occurred while saving attachment.", e);
                 }
             });
             log.debug("Addition of proofs is successful");
@@ -407,7 +407,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             try {
                 qualification.setCertificate(proof.getBytes());
             } catch (IOException e) {
-                throw new InvalidRequestException();
+                log.error("Exception occurred while saving attachment.", e);
             }
         }
     }
@@ -454,7 +454,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             try {
                 customQualification.setCertificate(proof.getBytes());
             } catch (IOException e) {
-                throw new InvalidRequestException();
+                log.error("Exception occurred while saving attachment.", e);
             }
         }
     }

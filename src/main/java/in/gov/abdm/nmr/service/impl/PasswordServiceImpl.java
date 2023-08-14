@@ -13,6 +13,7 @@ import in.gov.abdm.nmr.security.common.RsaUtil;
 import in.gov.abdm.nmr.security.jwt.JwtAuthenticationToken;
 import in.gov.abdm.nmr.service.*;
 import in.gov.abdm.nmr.util.NMRConstants;
+import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +34,7 @@ import java.time.LocalDateTime;
  */
 @Service
 @Transactional
+@Slf4j
 public class PasswordServiceImpl implements IPasswordService {
 
     public static final String CURRENT_PASSWORD_SHOULD_NOT_BE_SAME_AS_LAST_5_PASSWORDS = "Current password should not be same as last 5 passwords";
@@ -84,6 +86,7 @@ public class PasswordServiceImpl implements IPasswordService {
             }
 
         } catch (Exception e) {
+            log.error("Exception occurred while setting password link.", e);
             return new ResponseMessageTo(e.getLocalizedMessage());
         }
     }
@@ -130,6 +133,7 @@ public class PasswordServiceImpl implements IPasswordService {
 
             return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
         } catch (Exception e) {
+            log.error("Exception occurred while setting password.", e);
             return new ResponseMessageTo(e.getLocalizedMessage());
         }
     }
@@ -168,6 +172,7 @@ public class PasswordServiceImpl implements IPasswordService {
                 passwordDaoService.save(password);
                 return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
             } catch (Exception e) {
+                log.error("Exception occurred while setting password.", e);
                 return new ResponseMessageTo(NMRConstants.PROBLEM_OCCURRED);
             }
         } else {
@@ -221,6 +226,7 @@ public class PasswordServiceImpl implements IPasswordService {
 
                 return new ResponseMessageTo(NMRConstants.SUCCESS_RESPONSE);
             } catch (Exception e) {
+                log.error("Exception occurred while setting password.", e);
                 throw new InvalidRequestException();
             }
         } else {
