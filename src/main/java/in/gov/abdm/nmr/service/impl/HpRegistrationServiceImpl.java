@@ -639,7 +639,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             qualificationDetails.setState(qualificationsDetails.getState() != null ? stateRepository.findByName(qualificationsDetails.getState()) : null);
             qualificationDetails.setName(qualificationsDetails.getName() != null ? qualificationsDetails.getName() : null);
             String university = qualificationsDetails.getUniversity();
-            if (university != null && qualificationDetails.getCollege().getId()!=null) {
+            if (university != null && qualificationDetails.getCollege() != null && qualificationDetails.getCollege().getId() != null) {
                 UniversityMaster universityMaster = universityMasterRepository.findUniversityByName(university,qualificationDetails.getCollege().getId());
                 qualificationDetails.setUniversity(universityMaster);
             }
