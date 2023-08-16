@@ -1,9 +1,7 @@
 package in.gov.abdm.nmr.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import in.gov.abdm.nmr.annotation.ActionId;
-import in.gov.abdm.nmr.annotation.ActorId;
-import in.gov.abdm.nmr.annotation.ApplicationTypeId;
+import in.gov.abdm.nmr.annotation.*;
 import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +33,7 @@ public class WorkFlowRequestTO {
     private BigInteger hpProfileId;
     private Timestamp startDate;
     private Timestamp endDate;
+    @Alphanumeric(message = "Please enter a valid remark.")
     private String remarks;
     @JsonIgnore
     private BigInteger applicationSubTypeId;
