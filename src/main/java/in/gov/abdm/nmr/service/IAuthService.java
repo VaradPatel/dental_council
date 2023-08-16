@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.service;
 
 import in.gov.abdm.nmr.dto.LoginResponseTO;
+import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.dto.SessionRequestTo;
 import in.gov.abdm.nmr.dto.SessionResponseTo;
 
@@ -13,4 +14,6 @@ public interface IAuthService {
     SessionResponseTo sessions(SessionRequestTo sessionRequestTo);
 
     LoginResponseTO successfulAuthRefreshToken(HttpServletResponse response);
+
+    ResponseMessageTo logOut(String token);
 }
