@@ -1,15 +1,19 @@
 package in.gov.abdm.nmr.security.jwt;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import in.gov.abdm.nmr.redis.hash.BlacklistToken;
+import in.gov.abdm.nmr.redis.repository.IBlacklistTokenRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
@@ -45,6 +49,9 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
     private Tracer tracer;
 
+    @Autowired
+    private IBlacklistTokenRepository blacklistTokenRepository;
+
     protected JwtAuthenticationFilter(AuthenticationManager authenticationManager, AuthenticationEventPublisher authEventPublisher, JwtUtil jwtUtil,
                                       ISecurityAuditTrailDaoService securityAuditTrailDaoService, Tracer tracer) {
         super(new OrRequestMatcher(ProtectedPaths.getProtectedPathsMatchers()), authenticationManager);
@@ -67,6 +74,8 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
                 if (accessToken == null) {
                     throw new AuthenticationServiceException(BEARER_TOKEN_ERROR_MSG);
                 }
+
+                isTokenBlacklisted(request);
 
                 JwtTypeEnum tokenType = JwtTypeEnum.ACCESS_TOKEN;
                 if (ProtectedPaths.PATH_REFRESH_TOKEN.equals(request.getServletPath())) {
@@ -152,5 +161,22 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         super.unsuccessfulAuthentication(request, response, failed);
         publishAuthenticationFailure(request, failed);
+    }
+
+    private void isTokenBlacklisted(HttpServletRequest request) {
+        String accessToken = extractBearerToken(request);
+        if(accessToken!=null) {
+
+            String[] token = accessToken.split("\\.");
+            BlacklistToken blacklistToken=null;
+            blacklistToken = blacklistTokenRepository.findById(token[2]).orElse(null);
+
+            if (!Objects.isNull(blacklistToken)) {
+                throw new AuthenticationServiceException(EXPIRED_TOKEN_ERROR_MSG);
+            }
+        }
+        else {
+            throw new AuthenticationServiceException(NO_BEARER_TOKEN_ERROR_MSG);
+        }
     }
 }
