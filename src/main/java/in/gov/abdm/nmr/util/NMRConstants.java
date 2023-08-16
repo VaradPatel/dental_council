@@ -407,4 +407,5 @@ public class NMRConstants {
     public static final List<String> MBBS_QUALIFICAITON_NAMES = List.of("MBBS - Bachelor of Medicine and Bachelor of Surgery", "BACHELOR OF MEDICINE AND BACHELOR OF SURGERY" );
     public static final String EMAIL_SUCCESS_PAGE = "email-verification-success";
     public static final String EMAIL_FAILURE_PAGE = "email-verification-failure";
+    public static final String CHECKSUM_HEADER = "is-authorized";
 }
