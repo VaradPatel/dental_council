@@ -10,4 +10,5 @@ public class CustomHeaders {
     public static final String ACCESS_TOKEN = "access-token";
 
     public static final String REFRESH_TOKEN = "refresh-token";
+    public static final String CHECKSUM_HEADER = "is-authorized";
 }
