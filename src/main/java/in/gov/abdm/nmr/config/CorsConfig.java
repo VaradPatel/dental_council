@@ -29,7 +29,7 @@ public class CorsConfig {
                         .allowedOriginPatterns(allowedUrls)
                         .allowedMethods("*")
                         .allowCredentials(true)
-                        .exposedHeaders(ACCESS_TOKEN, REFRESH_TOKEN, CORRELATION_ID);
+                        .exposedHeaders(ACCESS_TOKEN, REFRESH_TOKEN, CORRELATION_ID, CHECKSUM_HEADER);
             }
         };
     }
