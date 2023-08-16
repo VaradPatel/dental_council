@@ -45,9 +45,8 @@ public class TraceFilter extends OncePerRequestFilter {
         byte[] responseBody = responseWrapper.getContentAsByteArray();
 
         String responseString= new String(responseBody, StandardCharsets.UTF_8);
-        System.out.println(responseString);
         if(!responseString.equals("")) {
-            response.setHeader(NMRConstants.CHECKSUM_HEADER, checksumUtil.generateChecksum(responseString));
+            response.addHeader(NMRConstants.CHECKSUM_HEADER, checksumUtil.generateChecksum(responseString));
         }
         responseWrapper.copyBodyToResponse();
     }
