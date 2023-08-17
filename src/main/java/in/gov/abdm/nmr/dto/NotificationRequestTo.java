@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -28,6 +30,13 @@ public class NotificationRequestTo {
     @JsonProperty("notification")
     private List<KeyValue> notification;
 
+    public NotificationRequestTo() {
+    }
+
+    public NotificationRequestTo(List<String> type) {
+        this.type = new ArrayList<>(type);
+    }
+
     public String getOrigin() {
         return origin;
     }
@@ -37,7 +46,7 @@ public class NotificationRequestTo {
     }
 
     public List<String> getType() {
-        return type;
+        return Collections.unmodifiableList(type);
     }
 
     public void setType(List<String> type) {

@@ -24,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -103,6 +104,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
+    @Transactional
     public void performPostWorkflowUpdates(WorkFlowRequestTO requestTO, HpProfile transactionHpProfile, INextGroup iNextGroup) throws WorkFlowException {
         WorkFlow workFlow = iWorkFlowRepository.findByRequestId(requestTO.getRequestId());
         updateTransactionHealthProfessionalDetails(requestTO, iNextGroup, transactionHpProfile);

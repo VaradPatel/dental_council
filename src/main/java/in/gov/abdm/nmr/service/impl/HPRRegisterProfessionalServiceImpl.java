@@ -45,8 +45,8 @@ public class HPRRegisterProfessionalServiceImpl implements IHPRRegisterProfessio
         HPRRequestTo hprRequestTo = null;
         try {
             SessionResponseTo sessionResponseTo = getSessionToken();
-            String authorization = BEARER + sessionResponseTo.getAccessToken();
-            if (authorization != null) {
+            if (sessionResponseTo.getAccessToken() != null) {
+                String authorization = BEARER + sessionResponseTo.getAccessToken();
                 HPRIdTokenResponseTO responseTO = getTokensByHprId(authorization, transactionHpProfile);
 
                 if (responseTO != null) {
@@ -61,12 +61,10 @@ public class HPRRegisterProfessionalServiceImpl implements IHPRRegisterProfessio
                 }
             }
         } catch (FeignException.UnprocessableEntity e) {
-            log.info("unable to create a profile in the HPR system.");
-            // Need to send Notification
+            log.info("An error occurred while trying to create a profile in the HPR system.", e);
             log.error(HPR_REGISTER_MISSING_VALUES + e.getMessage());
         } catch (Exception e) {
-            log.info("unable to create a profile in the HPR system.");
-            // Need to send Notification
+            log.info("An error occurred while trying to create a profile in the HPR system.", e);
             log.error(HPR_REGISTER_FAILED + e.getMessage());
         }
         return hprRequestTo;
