@@ -372,8 +372,11 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         BigInteger dashboardStatusId = DashboardStatus.getDashboardStatus(Action.getAction(actionPerformedId).getStatus()).getId();
         if (Group.SMC.getId().equals(userGroup)) {
             dashboard.setSmcStatus(dashboardStatusId);
-            if(DashboardStatus.PENDING.getId().equals(dashboard.getCollegeStatus())){
+            if (DashboardStatus.PENDING.getId().equals(dashboard.getCollegeStatus()) || DashboardStatus.QUERY_RAISE.getId().equals(dashboard.getCollegeStatus())) {
                 dashboard.setCollegeStatus(null);
+            }
+            if (DashboardStatus.PENDING.getId().equals(dashboard.getNbeStatus()) || DashboardStatus.QUERY_RAISE.getId().equals(dashboard.getNbeStatus())) {
+                dashboard.setNbeStatus(null);
             }
         } else if (Group.NMC.getId().equals(userGroup)) {
             dashboard.setNmcStatus(dashboardStatusId);
