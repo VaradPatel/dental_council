@@ -26,4 +26,10 @@ public class ContentCachingFilter extends OncePerRequestFilter {
         CachedBodyHttpServletRequest cachedBodyHttpServletRequest = new CachedBodyHttpServletRequest(httpServletRequest);
         filterChain.doFilter(cachedBodyHttpServletRequest, httpServletResponse);
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        return !path.startsWith("/user/login");
+    }
 }
