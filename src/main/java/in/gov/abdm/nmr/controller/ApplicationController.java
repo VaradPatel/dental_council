@@ -53,7 +53,7 @@ public class ApplicationController {
     @PostMapping(ProtectedPaths.SUSPENSION_REQUEST_URL)
     public SuspendRequestResponseTo suspendHealthProfessional(@Valid @RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
         if(iWorkFlowService.isAnyActiveWorkflowExceptAdditionalQualification(applicationRequestTo.getHpProfileId())){
-            throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), "A suspension request is already in progress.");
+            throw new WorkFlowException(NMRError.SUSPENSION_REQUEST_ALREADY_EXISTS.getCode(), NMRError.SUSPENSION_REQUEST_ALREADY_EXISTS.getMessage());
         }
         log.info("In Application Controller: suspensionHealthProfessional method ");
         log.debug("Request Payload: ApplicationRequestTo: ");

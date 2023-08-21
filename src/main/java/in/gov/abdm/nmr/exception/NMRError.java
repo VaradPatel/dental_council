@@ -43,7 +43,9 @@ public enum NMRError {
     TEMPLATE_KEYS_MISSING("ABDM-NMR-034", "An error occurred while accessing the template keys. Please try again in sometime."),
     FILE_SIZE_LIMIT("ABDM-NMR-035", "Kindly limit the file size to allowable limit of 5MB"),
     FORWARD_ACTION_NOT_ALLOWED("ABDM-NMR-036", "Forward action is not supported for international qualification verification."),
-    EMAIL_ATTEMPTS_EXCEEDED("ABDM-NMR-037", "You have exceeded the maximum number of attempts to verify email. Please try again after 30 minutes.");
+    EMAIL_ATTEMPTS_EXCEEDED("ABDM-NMR-037", "You have exceeded the maximum number of attempts to verify email. Please try again after 30 minutes."),
+    SUSPENSION_REQUEST_ALREADY_EXISTS("ABDM-NMR-038", "A suspension request is already in progress"),
+    REACTIVATION_REQUEST_ALREADY_EXISTS("ABDM-NMR-039", "A reactivation request is already in progress");
     private final String code;
     private final String message;
 }
