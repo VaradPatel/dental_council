@@ -184,7 +184,9 @@ public class AuthServiceImpl implements IAuthService {
         } else {
             roles = ArrayUtils.addAll(user.getUserType().getRoles().split(","), user.getUserSubType().getRoles().split(","));
         }
-
+        if (user.getUserName() != null && UserTypeEnum.HEALTH_PROFESSIONAL.getId().equals(user.getUserType().getId())) {
+            username = user.getUserName();
+        }
         response.setHeader(ACCESS_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.ACCESS_TOKEN, roles, profileId, user.getUserType().getId()));
         if (!UserTypeEnum.SYSTEM.getId().equals(user.getUserType().getId())) {
             response.setHeader(REFRESH_TOKEN, jwtUtil.generateToken(username, JwtTypeEnum.REFRESH_TOKEN, roles, profileId, user.getUserType().getId()));
