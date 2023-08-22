@@ -446,7 +446,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             hpProfilePersonalResponseTO.setIsTrackApplicationReadStatus(trackApplicationReadStatus.isReadStatus());
         }
         if(latestHpProfile!=null) {
-            hpProfilePersonalResponseTO.setEsignStatus(NMRUtil.getCombinedESignStatus(latestHpProfile.getESignStatus(), latestHpProfile.getModESignStatus()));
+            hpProfilePersonalResponseTO.setEsignStatus(NMRUtil.getDerivedESignStatus(latestHpProfile.getESignStatus(), latestHpProfile.getModESignStatus()));
         }
         return  hpProfilePersonalResponseTO;
     }

@@ -47,7 +47,7 @@ public class KafkaListenerNotificationService {
      * * @param eventMessage the message to be consumed from Kafka topic
      * * @throws JsonProcessingException if an error occurs while processing the JSON message
      */
-    @KafkaListener(topics = "${spring.profiles.active}"  + NMRConstants.UNDERSCORE + NMRConstants.KAFKA_TOPIC, groupId = "${spring.profiles.active}" + "_" +NMRConstants.UNDERSCORE + NMRConstants.KAFKA_GROUP_ID)
+    @KafkaListener(topics = "${spring.profiles.active}"  + NMRConstants.UNDERSCORE + NMRConstants.KAFKA_TOPIC, groupId = "${spring.profiles.active}" + NMRConstants.UNDERSCORE + NMRConstants.KAFKA_GROUP_ID)
     public void consume(String eventMessage) {
         try {
             boolean isModificationESignEvent=false;

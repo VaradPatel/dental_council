@@ -94,7 +94,7 @@ public final class NMRUtil {
                 && Group.HEALTH_PROFESSIONAL.getId().equals(workFlow.getPreviousGroup().getId());
     }
 
-    public static Integer getCombinedESignStatus(Integer eSignStatus, Integer modESignStatus){
+    public static Integer getDerivedESignStatus(Integer eSignStatus, Integer modESignStatus){
         if (ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId().equals(eSignStatus) && (ESignStatus.PROFILE_NOT_ESIGNED.getId().equals(modESignStatus) || ESignStatus.PROFILE_ESIGNED_WITH_DIFFERENT_AADHAR.getId().equals(modESignStatus))) {
             return modESignStatus;
         }

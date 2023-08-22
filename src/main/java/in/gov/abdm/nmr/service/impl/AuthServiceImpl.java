@@ -157,7 +157,7 @@ public class AuthServiceImpl implements IAuthService {
         if (hp != null) {
             loginResponseTO.setProfileId(hp.getId());
             loginResponseTO.setHpRegistered(StringUtils.isBlank(hp.getNmrId()));
-            loginResponseTO.setEsignStatus(NMRUtil.getCombinedESignStatus(hp.getESignStatus(), hp.getModESignStatus()));
+            loginResponseTO.setEsignStatus(NMRUtil.getDerivedESignStatus(hp.getESignStatus(), hp.getModESignStatus()));
             HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hp.getRegistrationId());
             if (latestHpProfile != null) {
                 loginResponseTO.setBlacklisted(Objects.equals(HpProfileStatus.BLACKLISTED.getId(), latestHpProfile.getHpProfileStatus().getId()) || Objects.equals(HpProfileStatus.SUSPENDED.getId(), latestHpProfile.getHpProfileStatus().getId()));
