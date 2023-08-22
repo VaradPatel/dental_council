@@ -404,14 +404,10 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
     }
 
     @Override
-    public void assignQueriesBackToQueryCreator(String requestId) throws WorkFlowException {
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
+    public void assignQueriesBackToQueryCreator(String requestId, BigInteger hpProfileId) throws WorkFlowException {
 
-        User user = null;
-        if (userName != null) {
-            user = userDetailService.findByUsername(userName, userType);
-        }
+        User user = iHpProfileRepository.findHpProfileById(hpProfileId).getUser();
+
         WorkFlow workflow = iWorkFlowRepository.findByRequestId(requestId);
         UserGroup previousGroup = workflow.getPreviousGroup();
         UserGroup currentGroup = workflow.getCurrentGroup();
@@ -420,6 +416,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         workflow.setAction(iActionRepository.findById(Action.SUBMIT.getId()).orElseThrow(WorkFlowException::new));
         workflow.setWorkFlowStatus(iWorkFlowStatusRepository.findById(WorkflowStatus.PENDING.getId()).orElseThrow(WorkFlowException::new));
         workflow.setUserId(user);
+        iWorkFlowRepository.save(workflow);
 
         WorkFlowAudit workFlowAudit = WorkFlowAudit.builder().requestId(requestId)
                 .hpProfile(workflow.getHpProfile())

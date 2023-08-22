@@ -77,6 +77,9 @@ public class HpProfile extends CommonAuditEntity {
 	private String requestId;
 	private String transactionId;
 	private Integer eSignStatus;
+	private String modTransactionId;
+	@Column(name = "mod_e_sign_status")
+	private Integer modESignStatus;
 	private String registrationId;
 	private String isSameAddress;
 	private Integer isNew;

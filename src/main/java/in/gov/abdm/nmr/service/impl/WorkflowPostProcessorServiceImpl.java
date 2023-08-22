@@ -2,7 +2,6 @@ package in.gov.abdm.nmr.service.impl;
 
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import feign.FeignException;
 import in.gov.abdm.nmr.client.HPRFClient;
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.entity.*;
@@ -135,6 +134,7 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
                 log.info("Generating NMR id as the hp_profile doesn't have an NMR id associated.");
                 log.info("Updating NMR id in hp_profile and user table");
                 hpProfile.setNmrId(generateNmrId());
+                hpProfile.setIsNew(NO);
                 User user = userRepository.findById(hpProfile.getUser().getId()).orElseThrow(WorkFlowException::new);
                 user.setNmrId(hpProfile.getNmrId());
                 log.info("Initiating a notification indicating the NMR creation");

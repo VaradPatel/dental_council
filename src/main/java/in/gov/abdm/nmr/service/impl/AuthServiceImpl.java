@@ -18,6 +18,7 @@ import in.gov.abdm.nmr.repository.IWorkFlowRepository;
 import in.gov.abdm.nmr.security.jwt.JwtAuthenticationToken;
 import in.gov.abdm.nmr.security.username_password.UserPasswordAuthenticationToken;
 import in.gov.abdm.nmr.util.NMRConstants;
+import in.gov.abdm.nmr.util.NMRUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,6 @@ import in.gov.abdm.nmr.dto.SessionResponseTo;
 import in.gov.abdm.nmr.entity.CollegeProfile;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.User;
-import in.gov.abdm.nmr.enums.ESignStatus;
 import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.security.jwt.JwtTypeEnum;
@@ -157,7 +157,7 @@ public class AuthServiceImpl implements IAuthService {
         if (hp != null) {
             loginResponseTO.setProfileId(hp.getId());
             loginResponseTO.setHpRegistered(StringUtils.isBlank(hp.getNmrId()));
-            loginResponseTO.setEsignStatus(hp.getESignStatus() != null ? hp.getESignStatus() : ESignStatus.PROFILE_NOT_ESIGNED.getId());
+            loginResponseTO.setEsignStatus(NMRUtil.getDerivedESignStatus(hp.getESignStatus(), hp.getModESignStatus()));
             HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hp.getRegistrationId());
             if (latestHpProfile != null) {
                 loginResponseTO.setBlacklisted(Objects.equals(HpProfileStatus.BLACKLISTED.getId(), latestHpProfile.getHpProfileStatus().getId()) || Objects.equals(HpProfileStatus.SUSPENDED.getId(), latestHpProfile.getHpProfileStatus().getId()));

@@ -32,9 +32,17 @@ public interface IHpProfileRepository extends JpaRepository<HpProfile, BigIntege
     @Query(value = "SELECT * FROM hp_profile where transaction_id =:transactionId ", nativeQuery = true)
     HpProfile findByTransactionId(String transactionId);
 
+    @Query(value = "SELECT * FROM hp_profile where mod_transaction_id =:transactionId ", nativeQuery = true)
+    HpProfile findByModTransactionId(String transactionId);
+
     @Modifying
     @Transactional
     @Query(value = "UPDATE hp_profile SET e_sign_status =:status  WHERE id =:hpProfileId", nativeQuery = true)
     void updateEsignStatus(BigInteger hpProfileId, Integer status);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE hp_profile SET mod_e_sign_status =:status  WHERE id =:hpProfileId", nativeQuery = true)
+    void updateModESignStatus(BigInteger hpProfileId, Integer status);
 
 }

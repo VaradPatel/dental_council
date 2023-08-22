@@ -7,7 +7,8 @@ public enum ESignStatus {
 
     PROFILE_ESIGNED_WITH_SAME_AADHAR(1, "Profile esigned with same Aadhar"),
     PROFILE_ESIGNED_WITH_DIFFERENT_AADHAR(2, "Profile esigned with different aadhar"),
-    PROFILE_NOT_ESIGNED(3, "Profile not esigned");
+    PROFILE_NOT_ESIGNED(3, "Profile not esigned"),
+    QUERY_RESOLVED_PROFILE_NOT_ESIGNED(4, "Query resolved, profile not esigned");
 
     private final Integer id;
     private final String status;

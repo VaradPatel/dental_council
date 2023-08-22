@@ -276,7 +276,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             WorkFlow lastWorkFlowForHealthProfessional = workFlowRepository.findByRequestId(requestTO.getRequestId());
             if (lastWorkFlowForHealthProfessional != null && WorkflowStatus.QUERY_RAISED.getId().equals(lastWorkFlowForHealthProfessional.getWorkFlowStatus().getId())) {
                 hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs);
-                iWorkFlowService.assignQueriesBackToQueryCreator(requestTO.getRequestId());
+                iWorkFlowService.assignQueriesBackToQueryCreator(requestTO.getRequestId(),hpProfileId);
                 iQueriesService.markQueryAsClosed(requestTO.getRequestId());
             } else {
                 return FAILURE_RESPONSE;
@@ -343,14 +343,14 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         WorkFlow lastWorkFlowForHealthProfessional = workFlowRepository.findLastWorkFlowForHealthProfessional(hpSubmitRequestTO.getHpProfileId());
         if (lastWorkFlowForHealthProfessional != null && WorkflowStatus.QUERY_RAISED.getId().equals(lastWorkFlowForHealthProfessional.getWorkFlowStatus().getId())) {
             log.debug("Calling assignQueriesBackToQueryCreator method since there is an existing workflow with 'Query Raised' work flow status. ");
-            iWorkFlowService.assignQueriesBackToQueryCreator(lastWorkFlowForHealthProfessional.getRequestId());
             iQueriesService.markQueryAsClosed(lastWorkFlowForHealthProfessional.getRequestId());
+            HpProfile hpProfile = hpProfileDaoService.findById(hpSubmitRequestTO.getHpProfileId());
+            hpProfile.setTransactionId(hpSubmitRequestTO.getTransactionId());
+            hpProfile.setESignStatus(ESignStatus.QUERY_RESOLVED_PROFILE_NOT_ESIGNED.getId());
             if(ApplicationType.HP_REGISTRATION.getId().equals(hpSubmitRequestTO.getApplicationTypeId()) || ApplicationType.FOREIGN_HP_REGISTRATION.getId().equals(hpSubmitRequestTO.getApplicationTypeId())) {
-                HpProfile hpProfile = hpProfileDaoService.findById(hpSubmitRequestTO.getHpProfileId());
                 hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
-                iHpProfileRepository.save(hpProfile);
             }
-
+            iHpProfileRepository.save(hpProfile);
         } else {
             log.debug("Proceeding to submit the profile since request_id is not given as a part of input payload");
             requestId = NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(hpSubmitRequestTO.getApplicationTypeId()));
@@ -366,8 +366,14 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
             log.debug("Updating the request_id, e-sign status and transaction id in hp_profile table");
             HpProfile hpProfileById = iHpProfileRepository.findHpProfileById(hpSubmitRequestTO.getHpProfileId());
-            hpProfileById.setTransactionId(hpSubmitRequestTO.getTransactionId());
-            hpProfileById.setESignStatus(hpSubmitRequestTO.getESignStatus() != null ? hpSubmitRequestTO.getESignStatus() : ESignStatus.PROFILE_NOT_ESIGNED.getId());
+            if(hpSubmitRequestTO.getApplicationTypeId().equals(ApplicationType.HP_REGISTRATION.getId())) {
+                hpProfileById.setTransactionId(hpSubmitRequestTO.getTransactionId());
+                hpProfileById.setESignStatus(hpSubmitRequestTO.getESignStatus() != null ? hpSubmitRequestTO.getESignStatus() : ESignStatus.PROFILE_NOT_ESIGNED.getId());
+            }
+            if(hpSubmitRequestTO.getApplicationTypeId().equals(ApplicationType.HP_MODIFICATION.getId())){
+                hpProfileById.setModTransactionId(hpSubmitRequestTO.getTransactionId());
+                hpProfileById.setModESignStatus(hpSubmitRequestTO.getESignStatus() != null ? hpSubmitRequestTO.getESignStatus() : ESignStatus.PROFILE_NOT_ESIGNED.getId());
+            }
             hpProfileById.setRequestId(requestId);
             hpProfileById.setConsent(hpSubmitRequestTO.getHprShareAcknowledgement() != null ? hpSubmitRequestTO.getHprShareAcknowledgement() : NO);
             if(ApplicationType.FOREIGN_HP_REGISTRATION.getId() .equals(hpSubmitRequestTO.getApplicationTypeId()) || ApplicationType.HP_REGISTRATION.getId().equals(hpSubmitRequestTO.getApplicationTypeId())) {
@@ -438,6 +444,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         TrackApplicationReadStatus trackApplicationReadStatus = iTrackApplicationReadStatusRepository.findByUserId(hpProfile.getUser().getId());
         if(trackApplicationReadStatus != null){
             hpProfilePersonalResponseTO.setIsTrackApplicationReadStatus(trackApplicationReadStatus.isReadStatus());
+        }
+        if(latestHpProfile!=null) {
+            hpProfilePersonalResponseTO.setEsignStatus(NMRUtil.getDerivedESignStatus(latestHpProfile.getESignStatus(), latestHpProfile.getModESignStatus()));
         }
         return  hpProfilePersonalResponseTO;
     }
@@ -659,10 +668,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         kycAddress.setLocality(request.getLocality() != null ? request.getLocality() : null);
         kycAddress.setHouse(request.getHouse() != null ? request.getHouse() : null);
         kycAddress.setLandmark(request.getLandmark() != null ? request.getLandmark() : null);
-        kycAddress.setLandmark(request.getLandmark() != null ? request.getLandmark() : null);
         kycAddress.setHpProfileId(hpProfile.getId());
         kycAddress.setAddressTypeId(new in.gov.abdm.nmr.entity.AddressType(AddressType.KYC.getId(), AddressType.KYC.name()));
-        kycAddress.setVillage(request.getVillageTownCity() != null ? villagesRepository.getVillageByNameAndDistrictName(request.getLocality(), request.getSubDist()) : null);
+        kycAddress.setVillage((request.getLocality()!=null && request.getSubDist()!=null)  ? villagesRepository.getVillageByNameAndDistrictName(request.getLocality(), request.getSubDist()) : null);
         kycAddress.setSubDistrict(request.getSubDist() != null ? subDistrictRepository.findByName(request.getSubDist()) : null);
         kycAddress.setState(stateRepository.findByName(request.getState().toUpperCase()));
         if (kycAddress.getState() != null) {
