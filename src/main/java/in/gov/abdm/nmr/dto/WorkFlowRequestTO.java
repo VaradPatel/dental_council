@@ -1,8 +1,10 @@
 package in.gov.abdm.nmr.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import in.gov.abdm.nmr.annotation.*;
-import in.gov.abdm.nmr.util.NMRConstants;
+import in.gov.abdm.nmr.annotation.ActionId;
+import in.gov.abdm.nmr.annotation.ActorId;
+import in.gov.abdm.nmr.annotation.Alphanumeric;
+import in.gov.abdm.nmr.annotation.ApplicationTypeId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

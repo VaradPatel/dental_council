@@ -1,9 +1,10 @@
 package in.gov.abdm.nmr.controller;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
+
 import in.gov.abdm.nmr.service.IUserService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class VerifyEmailController {
