@@ -232,7 +232,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                 throw new WorkFlowException(NMRError.PROFILE_NOT_SUSPEND.getCode(), NMRError.PROFILE_NOT_SUSPEND.getMessage());
             }
         } else {
-            throw new WorkFlowException(NMRError.WORK_FLOW_CREATION_FAIL.getCode(), NMRError.WORK_FLOW_CREATION_FAIL.getMessage());
+            throw new WorkFlowException(NMRError.REACTIVATION_REQUEST_ALREADY_EXISTS.getCode(), NMRError.REACTIVATION_REQUEST_ALREADY_EXISTS.getMessage());
         }
     }
 

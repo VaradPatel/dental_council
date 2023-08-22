@@ -19,16 +19,6 @@ public class ChecksumUtil {
         return getSHA256Hash(key);
     }
 
-    public boolean validateChecksum(String jsonString, String expectedChecksum) {
-        try {
-            String generatedChecksum = getSHA256Hash(new String(checksumKey.getInputStream().readAllBytes()) + jsonString);
-            return generatedChecksum.equalsIgnoreCase(expectedChecksum);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
     private static String getSHA256Hash(String data) {
         String result = null;
         try {

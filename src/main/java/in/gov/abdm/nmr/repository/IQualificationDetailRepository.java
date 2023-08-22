@@ -17,6 +17,9 @@ public interface IQualificationDetailRepository extends JpaRepository<Qualificat
     @Query(value = "SELECT * FROM qualification_details where user_id = :userId and is_verified !=" + NMRConstants.QUALIFICATION_STATUS_REJECTED + "", nativeQuery = true)
     List<QualificationDetails> getQualificationDetailsByUserId(BigInteger userId);
 
+    @Query(value = "SELECT * FROM qualification_details where user_id = :userId order by created_at asc limit 1", nativeQuery = true)
+    QualificationDetails getBasicQualificationDetailsByUserId(BigInteger userId);
+
     @Query(value = "SELECT * FROM qualification_details where user_id = :userId and is_verified =" + NMRConstants.QUALIFICATION_STATUS_APPROVED + "", nativeQuery = true)
     List<QualificationDetails> getApprovedQualificationDetailsByUserId(BigInteger userId);
 
