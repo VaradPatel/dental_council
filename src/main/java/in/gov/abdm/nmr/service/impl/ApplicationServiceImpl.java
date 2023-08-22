@@ -242,8 +242,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
         log.info("Processing card-detail service for : {} ", userName);
         User userDetail = userDaoService.findByUsername(userName, userType);
-        BigInteger groupId = userDetail.getGroup().getId();
-        return groupId;
+        return userDetail.getGroup().getId();
     }
 
     private void saveReactivationAttachments(MultipartFile reactivationFile, HpProfile hpProfile, String requestId) throws IOException {

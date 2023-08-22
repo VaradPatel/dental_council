@@ -779,12 +779,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         }
 
         String eSignTransactionId = request.getESignTransactionId();
-        if (eSignTransactionId != null && !eSignTransactionId.isBlank()) {
-            if (hpProfile != null) {
+        if (eSignTransactionId != null && !eSignTransactionId.isBlank() && hpProfile != null) {
                 hpProfile.setTransactionId(eSignTransactionId);
                 iHpProfileRepository.save(hpProfile);
-            }
-
         }
 
         BigInteger masterHpProfileId = iHpProfileRepository.findMasterHpProfileByHpProfileId(hpProfileId);

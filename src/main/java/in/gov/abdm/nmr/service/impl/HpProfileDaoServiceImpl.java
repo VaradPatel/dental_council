@@ -34,6 +34,7 @@ import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
 @Service
 @Slf4j
 public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
+    public static final String EXCEPTION_OCCURRED_WHILE_SAVING_ATTACHMENT = "Exception occurred while saving attachment {}.";
     @Autowired
     IHpProfileRepository iHpProfileRepository;
     @Autowired
@@ -220,7 +221,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 try {
                     currentWorkDetailsTO.setProof(file != null ? file.getBytes() : null);
                 } catch (IOException e) {
-                    log.error("Exception occurred while saving attachment.", e);
+                    log.error(EXCEPTION_OCCURRED_WHILE_SAVING_ATTACHMENT, e);
                 }
             });
             log.debug("Addition of proofs is successful");
@@ -269,7 +270,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         }
         List<LanguagesKnown> languagesKnownLater = new ArrayList<>();
         BigInteger tempUserId = userId;
-        languagesKnownEarlierIds.forEach(languagesKnownEarlierId -> languagesKnownIds.remove(languagesKnownEarlierId));
+        languagesKnownEarlierIds.forEach(languagesKnownIds::remove);
         if (languagesKnownIds != null && !languagesKnownIds.isEmpty()) {
             languagesKnownIds.forEach(languagesKnown -> {
                 LanguagesKnown languagesKnownObject = new LanguagesKnown();
@@ -318,7 +319,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         hpProfile.setProfilePhoto(encodedPhoto);
         hpProfile.setPicName(originalFileName);
         HpProfile insertedData = iHpProfileRepository.save(hpProfile);
-        HpProfilePictureResponseTO hpProfilePictureResponseTO = new HpProfilePictureResponseTO();
+            HpProfilePictureResponseTO hpProfilePictureResponseTO = new HpProfilePictureResponseTO();
         hpProfilePictureResponseTO.setProfilePicture(insertedData.getProfilePhoto());
         hpProfilePictureResponseTO.setPicName(insertedData.getPicName());
         hpProfilePictureResponseTO.setMessage(SUCCESS_RESPONSE);
@@ -392,7 +393,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             try {
                 qualification.setCertificate(proof.getBytes());
             } catch (IOException e) {
-                log.error("Exception occurred while saving attachment.", e);
+                log.error(EXCEPTION_OCCURRED_WHILE_SAVING_ATTACHMENT, e);
             }
         }
     }
@@ -573,7 +574,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @SneakyThrows
     private void mapWorkRequestToEntity(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> existingWorkDetails, BigInteger hpProfileId, BigInteger userId) {
         if (!existingWorkDetails.isEmpty() && !hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().isEmpty()) {
-            Set<String> existingFacilities = existingWorkDetails.stream().map(existingWorkDetail -> existingWorkDetail.getFacilityId()).collect(Collectors.toSet());
             updateWorkProfileRecords(hpWorkProfileUpdateRequestTO, existingWorkDetails, hpProfileId, userId);
         } else {
             saveWorkProfileRecords(hpWorkProfileUpdateRequestTO, hpProfileId, userId);
@@ -616,18 +616,17 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     private void updateWorkProfileRecords(HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<WorkProfile> existingWorkDetails,
                                           BigInteger hpProfileId, BigInteger userId) {
-        Set<String> existingFacilities = existingWorkDetails.stream().map(existingWorkDetail -> existingWorkDetail.getFacilityId()).collect(Collectors.toSet());
+        Set<String> existingFacilities = existingWorkDetails.stream().map(WorkProfile::getFacilityId).collect(Collectors.toSet());
         Set<CurrentWorkDetailsTO> newUniqueCurrentWorkDetails = hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().stream().filter(currentWorkDetailsTO1 -> !existingFacilities.contains(currentWorkDetailsTO1.getFacilityId())).collect(Collectors.toSet());
         List<WorkProfile> workProfileDetailsList = new ArrayList<>();
-        if(hpWorkProfileUpdateRequestTO!=null && hpWorkProfileUpdateRequestTO.getCurrentWorkDetails()!=null) {
-            existingWorkDetails.forEach(addWorkProfile -> {
+        if(hpWorkProfileUpdateRequestTO.getCurrentWorkDetails()!=null) {
+            existingWorkDetails.forEach(addWorkProfile ->
                 hpWorkProfileUpdateRequestTO.getCurrentWorkDetails().forEach(currentWorkDetailsTO -> {
                     if (addWorkProfile.getFacilityId()!=null && addWorkProfile.getFacilityId().equals(currentWorkDetailsTO.getFacilityId())) {
                         workProfileDetailsList.add(workProfileObjectMapping(hpWorkProfileUpdateRequestTO, addWorkProfile, currentWorkDetailsTO, hpProfileId, userId));
                         workProfileRepository.saveAll(workProfileDetailsList);
                     }
-                });
-            });
+                }));
         }
         if (newUniqueCurrentWorkDetails != null && !newUniqueCurrentWorkDetails.isEmpty()) {
             newUniqueCurrentWorkDetails.forEach(currentWorkDetailsTO -> {

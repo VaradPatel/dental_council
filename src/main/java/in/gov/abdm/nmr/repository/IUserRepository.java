@@ -48,7 +48,6 @@ public interface IUserRepository extends JpaRepository<User, BigInteger> {
     @Query(nativeQuery = true, value = UPDATE_LAST_LOGIN_AND_RESET_FAILED_ATTEMPT_COUNT)
     void updateLastLoginAndResetFailedAttemptCount(BigInteger userId);
 
-    @Query(value = """
-            select user_name from {h-schema}user where mobile_number =:mobileNumber and user_type_id =:userType """, nativeQuery = true)
-    List<String> getUserNamesByMobileNumAnduserType(String mobileNumber, BigInteger userType);
+    @Query(value ="select user_name from {h-schema}user where mobile_number =:mobileNumber and user_type_id =:userType ", nativeQuery = true)
+    List<String> getUserNamesByMobileNumAndUserType(String mobileNumber, BigInteger userType);
 }

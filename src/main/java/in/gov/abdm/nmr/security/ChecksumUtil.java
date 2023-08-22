@@ -1,11 +1,16 @@
 package in.gov.abdm.nmr.security;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import javax.xml.bind.DatatypeConverter;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class ChecksumUtil {
 
@@ -25,8 +30,8 @@ public class ChecksumUtil {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(data.getBytes("UTF-8"));
             return bytesToHex(hash); // make it printable
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException exception) {
+            log.error("Exception occurred while generating hash. Exception details are  {}", exception);
         }
         return result;
     }

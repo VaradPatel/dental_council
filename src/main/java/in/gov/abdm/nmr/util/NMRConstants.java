@@ -3,7 +3,6 @@ package in.gov.abdm.nmr.util;
 
 import lombok.experimental.UtilityClass;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 

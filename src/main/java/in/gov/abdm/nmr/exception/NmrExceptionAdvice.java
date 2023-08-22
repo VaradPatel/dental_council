@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.exception;
 
+import feign.FeignException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpHeaders;
@@ -16,10 +17,9 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
+import java.net.SocketTimeoutException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -137,6 +137,14 @@ public class NmrExceptionAdvice {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(error, headers, HttpStatus.PAYLOAD_TOO_LARGE.value());
+    }
+
+    @ExceptionHandler(value = {FeignException.class, SocketTimeoutException.class})
+    public ResponseEntity<ErrorDTO> handleFeignException(HttpServletRequest req, Throwable ex) {
+        ErrorDTO error = new ErrorDTO(new Date(), NMRError.SERVICE_UNAVAILABLE.getCode(), NMRError.SERVICE_UNAVAILABLE.getMessage(), req.getServletPath(), HttpStatus.SERVICE_UNAVAILABLE.toString());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(error, headers, HttpStatus.SERVICE_UNAVAILABLE.value());
     }
 
 }

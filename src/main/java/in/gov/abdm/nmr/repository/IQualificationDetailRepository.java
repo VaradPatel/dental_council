@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import javax.persistence.Tuple;
 import javax.transaction.Transactional;
-import javax.validation.Valid;
 import java.math.BigInteger;
 import java.util.List;
 
