@@ -230,7 +230,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 }
             }
             log.debug("Saving Qualification Details");
-                saveQualificationDetails(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), degreeCertificate);
+            saveQualificationDetailsForRegistration(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), degreeCertificate);
         }
         if (NMRConstants.INTERNATIONAL.equals(hpRegistrationUpdateRequestTO.getQualificationDetails().get(0).getQualificationFrom())) {
             HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByUserId(hpProfile.getUser().getId());
@@ -335,6 +335,13 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         }
     }
 
+    public void saveQualificationDetailsForRegistration(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs) throws InvalidRequestException {
+        if (qualificationDetailRequestTOS != null) {
+            saveIndianQualificationDetailsForRegistration(hpProfile, newRegistrationDetails, qualificationDetailRequestTOS.stream().filter(qualificationDetailRequestTO -> NMRConstants.INDIA.equals(qualificationDetailRequestTO.getQualificationFrom())).toList(), proofs);
+            saveInternationalQualificationDetailsForRegistration(hpProfile, newRegistrationDetails, qualificationDetailRequestTOS.stream().filter(qualificationDetailRequestTO -> NMRConstants.INTERNATIONAL.equals(qualificationDetailRequestTO.getQualificationFrom())).toList(), proofs);
+        }
+    }
+
     @Override
     public HpProfile findLatestEntryByUserid(BigInteger userId) {
         return iHpProfileRepository.findLatestEntryByUserid(userId);
@@ -389,6 +396,23 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     }
 
+    private void saveIndianQualificationDetailsForRegistration(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
+                                                               List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs) throws InvalidRequestException {
+
+        List<QualificationDetails> qualificationDetails = new ArrayList<>();
+        for (QualificationDetailRequestTO indianQualification : qualificationDetailRequestTOS) {
+            QualificationDetails qualification = qualificationDetailRepository.getBasicQualificationDetailsByUserId(hpProfile.getUser().getId());
+            if (qualification!= null) {
+                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification, (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)) : null);
+            } else {
+                qualification=new QualificationDetails();
+                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)) : null);
+                qualificationDetails.add(qualification);
+            }
+        }
+        qualificationDetailRepository.saveAll(qualificationDetails);
+
+    }
     private void mapIndianQualificationRequestToEntity(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, QualificationDetailRequestTO indianQualification, QualificationDetails qualification, MultipartFile proof) throws InvalidRequestException {
 
         qualification.setCountry(countryRepository.findById(indianQualification.getCountry().getId()).orElseThrow(InvalidRequestException::new));
@@ -429,6 +453,22 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 customQualification = iCustomQualificationDetailRepository.findById(internationalQualification.getId()).orElseThrow(InvalidRequestException::new);
                 mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null);
             } else {
+                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null);
+                internationQualifications.add(customQualification);
+            }
+        }
+        iCustomQualificationDetailRepository.saveAll(internationQualifications);
+    }
+
+    private void saveInternationalQualificationDetailsForRegistration(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
+                                                                      List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs) throws InvalidRequestException {
+        List<ForeignQualificationDetails> internationQualifications = new ArrayList<>();
+        for (QualificationDetailRequestTO internationalQualification : qualificationDetailRequestTOS) {
+            ForeignQualificationDetails customQualification = iCustomQualificationDetailRepository.getBasicQualificationDetailsByUserId(hpProfile.getUser().getId());
+            if (customQualification != null) {
+                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null);
+            } else {
+                customQualification = new ForeignQualificationDetails();
                 mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null);
                 internationQualifications.add(customQualification);
             }
