@@ -3,7 +3,6 @@ package in.gov.abdm.nmr.config;
 import brave.Tracer;
 import in.gov.abdm.nmr.common.CustomHeaders;
 import in.gov.abdm.nmr.security.ChecksumUtil;
-import in.gov.abdm.nmr.util.NMRConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +20,13 @@ import java.nio.charset.StandardCharsets;
 
 @Order(Ordered.LOWEST_PRECEDENCE)
 @Component
-public class TraceFilter extends OncePerRequestFilter {
+public class ChecksumFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     private Tracer tracer;
 
-    public TraceFilter(Tracer tracer) {
+    public ChecksumFilter(Tracer tracer) {
         this.tracer = tracer;
     }
 
