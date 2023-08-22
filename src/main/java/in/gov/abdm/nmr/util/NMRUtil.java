@@ -5,6 +5,7 @@ import in.gov.abdm.nmr.dto.QualificationDetailRequestTO;
 import in.gov.abdm.nmr.entity.RequestCounter;
 import in.gov.abdm.nmr.entity.WorkFlow;
 import in.gov.abdm.nmr.enums.ApplicationType;
+import in.gov.abdm.nmr.enums.ESignStatus;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
@@ -14,9 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.security.SecureRandom;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Util class for NMR.
@@ -95,6 +94,12 @@ public final class NMRUtil {
                 && Group.HEALTH_PROFESSIONAL.getId().equals(workFlow.getPreviousGroup().getId());
     }
 
-
-
+    public static Integer getCombinedESignStatus(Integer eSignStatus, Integer modESignStatus){
+        if (ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId().equals(eSignStatus) && (ESignStatus.PROFILE_NOT_ESIGNED.getId().equals(modESignStatus) || ESignStatus.PROFILE_ESIGNED_WITH_DIFFERENT_AADHAR.getId().equals(modESignStatus))) {
+            return modESignStatus;
+        }
+        else {
+            return eSignStatus;
+        }
+    }
 }

@@ -125,76 +125,30 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     @Override
-    public HpProfileUpdateResponseTO updateHpPersonalDetails(BigInteger hpProfileId,
-                                                             HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException {
+    public HpProfileUpdateResponseTO updateHpPersonalDetails(BigInteger hpProfileId, HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException {
 
         log.info("In HpProfileDaoServiceImpl : updateHpPersonalDetails method");
 
-        HpProfile existingHpProfile = iHpProfileRepository.findById(NMRUtil.coalesce(hpProfileId, BigInteger.ZERO)).orElse(null);
-        HpProfile copiedExistingHpProfile = existingHpProfile;
-        HpProfile targetedHpProfile = null;
-        BigInteger updatedHpProfileId = null;
-        if (existingHpProfile == null || HpProfileStatus.APPROVED.getId().equals(existingHpProfile.getHpProfileStatus().getId())) {
+        HpProfile hpProfile = iHpProfileRepository.findById(NMRUtil.coalesce(hpProfileId, BigInteger.ZERO)).orElse(null);
+
+        if (hpProfile == null) {
             log.debug("Initiating HP Profile Insertion flow since there are no existing HP Profiles with this hp_profile_id or The existing HP Profile is now Approved");
-            if (existingHpProfile != null) {
-                log.debug("There was an existing HP Profile with the given hp_profile_id which has been Approved. ");
-                HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileByRegistrationId(existingHpProfile.getRegistrationId());
-                if (HpProfileStatus.PENDING.getId().equals(latestHpProfile.getHpProfileStatus().getId())) {
-                    throw new InvalidRequestException(NMRError.INVALID_REQUEST.getCode(), NMRError.INVALID_REQUEST.getMessage());
-                }
-            }
-
-            targetedHpProfile = new HpProfile();
-            if (existingHpProfile != null) {
-                org.springframework.beans.BeanUtils.copyProperties(existingHpProfile, targetedHpProfile);
-                targetedHpProfile.setId(null);
-                targetedHpProfile.setIsNew(NO);
-                targetedHpProfile.setESignStatus(ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
-            }
-            mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, targetedHpProfile);
-            HpProfile savedHpProfile = iHpProfileRepository.save(targetedHpProfile);
-            updatedHpProfileId = savedHpProfile.getId();
-
-        } else {
-            log.debug("Initiating HP Profile Updation flow since there is an existing HP Profile with this hp_profile_id or The existing HP Profile is not yet Approved");
-            mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, existingHpProfile);
-            updatedHpProfileId = existingHpProfile.getId();
-        }
-        if (hpPersonalUpdateRequestTO.getCommunicationAddress() != null && copiedExistingHpProfile != null) {
-            Address address = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(copiedExistingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId()), new Address());
-            Address newAddress = new Address();
-            org.springframework.beans.BeanUtils.copyProperties(address, newAddress);
-            if (hpPersonalUpdateRequestTO.getCommunicationAddress().getId() != null) {
-                newAddress.setId(address.getId());
-            } else {
-                newAddress.setId(null);
-            }
-            mapAddressRequestToEntity(updatedHpProfileId, hpPersonalUpdateRequestTO, newAddress);
-            iAddressRepository.save(newAddress);
-        }
-        if (copiedExistingHpProfile != null && HpProfileStatus.APPROVED.getId().equals(copiedExistingHpProfile.getHpProfileStatus().getId())) {
-
-            RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(copiedExistingHpProfile.getId());
-            RegistrationDetails newRegistrationDetails = new RegistrationDetails();
-            org.springframework.beans.BeanUtils.copyProperties(registrationDetails, newRegistrationDetails);
-            newRegistrationDetails.setId(null);
-            newRegistrationDetails.setHpProfileId(targetedHpProfile);
-            iRegistrationDetailRepository.save(newRegistrationDetails);
-
-            Address kycAddress = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(copiedExistingHpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.KYC.getId()), new Address());
-            if (kycAddress != null && kycAddress.getId() != null) {
-                Address newKycAddress = new Address();
-                org.springframework.beans.BeanUtils.copyProperties(kycAddress, newKycAddress);
-                newKycAddress.setId(null);
-                newKycAddress.setHpProfileId(updatedHpProfileId);
-                iAddressRepository.save(newKycAddress);
-            }
+            hpProfile = new HpProfile();
         }
 
-        auditLogPublisher.publishHpProfileAuditLog(existingHpProfile);
+        mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, hpProfile);
+        iHpProfileRepository.save(hpProfile);
+
+        if (hpPersonalUpdateRequestTO.getCommunicationAddress() != null) {
+            Address address = NMRUtil.coalesce(iAddressRepository.getCommunicationAddressByHpProfileId(hpProfile.getId(), in.gov.abdm.nmr.enums.AddressType.COMMUNICATION.getId()), new Address());
+            mapAddressRequestToEntity(hpProfileId, hpPersonalUpdateRequestTO, address);
+            iAddressRepository.save(address);
+        }
+
+        auditLogPublisher.publishHpProfileAuditLog(hpProfile);
 
         log.info("HpProfileDaoServiceImpl : updateHpPersonalDetails method : Execution Successful. ");
-        return new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", updatedHpProfileId);
+        return new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", hpProfileId);
     }
 
     @SneakyThrows

@@ -4,18 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.dto.FileESignedEventTO;
 import in.gov.abdm.nmr.entity.Address;
 import in.gov.abdm.nmr.entity.HpProfile;
-import in.gov.abdm.nmr.enums.Action;
-import in.gov.abdm.nmr.enums.AddressType;
-import in.gov.abdm.nmr.enums.ApplicationType;
-import in.gov.abdm.nmr.enums.ESignStatus;
+import in.gov.abdm.nmr.entity.WorkFlow;
+import in.gov.abdm.nmr.enums.*;
 import in.gov.abdm.nmr.exception.DateException;
 import in.gov.abdm.nmr.repository.IAddressRepository;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.IWorkFlowRepository;
 import in.gov.abdm.nmr.service.INotificationService;
+import in.gov.abdm.nmr.service.IWorkFlowService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -38,19 +37,31 @@ public class KafkaListenerNotificationService {
     @Autowired
     INotificationService notificationService;
 
+    @Autowired
+    IWorkFlowRepository workFlowRepository;
+
+    @Autowired
+    IWorkFlowService workFlowService;
     /**
      * This method consumes a message from Kafka topic and updates the e-sign status of a health profile if the message contains valid details.
      * * @param eventMessage the message to be consumed from Kafka topic
      * * @throws JsonProcessingException if an error occurs while processing the JSON message
      */
-    @KafkaListener(topics = "${spring.profiles.active}"  + NMRConstants.UNDERSCORE + NMRConstants.KAFKA_TOPIC, groupId = "${spring.profiles.active}" + NMRConstants.UNDERSCORE + NMRConstants.KAFKA_GROUP_ID)
+    @KafkaListener(topics = "${spring.profiles.active}"  + NMRConstants.UNDERSCORE + NMRConstants.KAFKA_TOPIC, groupId = "${spring.profiles.active}" + "_" +NMRConstants.UNDERSCORE + NMRConstants.KAFKA_GROUP_ID)
     public void consume(String eventMessage) {
         try {
+            boolean isModificationESignEvent=false;
             log.info("council Kafka topic name :{} and group Id :{} Request received : {} ", NMRConstants.KAFKA_TOPIC, NMRConstants.KAFKA_GROUP_ID, eventMessage);
             ObjectMapper objectMapper = new ObjectMapper();
             FileESignedEventTO eSignedEvent = objectMapper.readValue(eventMessage, FileESignedEventTO.class);
             String transactionId = eSignedEvent.getTransactionId().substring(0, eSignedEvent.getTransactionId().lastIndexOf("."));
             HpProfile hpProfile = iHpProfileRepository.findByTransactionId(transactionId);
+            if(hpProfile==null){
+                hpProfile = iHpProfileRepository.findByModTransactionId(transactionId);
+                if(hpProfile!=null){
+                    isModificationESignEvent=true;
+                }
+            }
             if (hpProfile != null) {
                 log.debug("Fetched hp profile detail successfully for hp profile ID: {}", hpProfile.getId());
                 Address address = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfile.getId(), AddressType.KYC.getId());
@@ -59,7 +70,15 @@ public class KafkaListenerNotificationService {
                     if (hpProfile.getFullName().equalsIgnoreCase(eSignedEvent.getName()) &&
                             getBirthYear(hpProfile.getDateOfBirth().toString()) == Integer.parseInt(eSignedEvent.getYob()) &&
                             address.getPincode().equalsIgnoreCase(eSignedEvent.getPincode())) {
-                        iHpProfileRepository.updateEsignStatus(hpProfile.getId(), ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
+                        if(isModificationESignEvent){
+                            iHpProfileRepository.updateModESignStatus(hpProfile.getId(), ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
+                        }
+                        else {
+                            iHpProfileRepository.updateEsignStatus(hpProfile.getId(), ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
+                            if(isESignedForQueryRaise(hpProfile.getRequestId())){
+                                workFlowService.assignQueriesBackToQueryCreator(hpProfile.getRequestId(),hpProfile.getId());
+                            }
+                        }
                         try {
                             if(hpProfile.getRequestId()!=null && isRegistrationRequest(hpProfile.getRequestId())) {
 
@@ -77,7 +96,17 @@ public class KafkaListenerNotificationService {
                         log.info("updated e sign status:{} for Transaction ID: {}", ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getStatus(), transactionId);
 
                     } else {
-                        iHpProfileRepository.updateEsignStatus(hpProfile.getId(), ESignStatus.PROFILE_ESIGNED_WITH_DIFFERENT_AADHAR.getId());
+                        if(isModificationESignEvent) {
+                            iHpProfileRepository.updateModESignStatus(hpProfile.getId(), ESignStatus.PROFILE_ESIGNED_WITH_DIFFERENT_AADHAR.getId());
+                        }
+                        else {
+
+                            if(isESignedForQueryRaise(hpProfile.getRequestId())){
+                                iHpProfileRepository.updateEsignStatus(hpProfile.getId(), ESignStatus.QUERY_RESOLVED_PROFILE_NOT_ESIGNED.getId());
+                            }else {
+                                iHpProfileRepository.updateEsignStatus(hpProfile.getId(), ESignStatus.PROFILE_ESIGNED_WITH_DIFFERENT_AADHAR.getId());
+                            }
+                        }
                         try {
                             notificationService.sendNotificationForIncorrectESign(hpProfile.getFullName(), hpProfile.getUser().getMobileNumber(), hpProfile.getUser().getEmail());
                         }
@@ -121,5 +150,15 @@ public class KafkaListenerNotificationService {
     private boolean isRegistrationRequest(String requestId){
         String registrationRequestIdentifier="1";
         return registrationRequestIdentifier.equals(String.valueOf(requestId.charAt(3)));
+    }
+
+    private boolean isESignedForQueryRaise(String requestId){
+        WorkFlow workFlow = workFlowRepository.findByRequestId(requestId);
+        if(workFlow!=null){
+            return WorkflowStatus.QUERY_RAISED.getId().equals(workFlow.getWorkFlowStatus().getId());
+        }
+        else {
+            return false;
+        }
     }
 }

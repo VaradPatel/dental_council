@@ -170,7 +170,7 @@ class WorkFlowServiceTest {
         when(iWorkFlowStatusRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(new in.gov.abdm.nmr.entity.WorkFlowStatus()));
         when(iDashboardRepository.findByRequestId(anyString())).thenReturn(new Dashboard());
         when(iDashboardRepository.save(any(Dashboard.class))).thenReturn(new Dashboard());
-        workFlowService.assignQueriesBackToQueryCreator(anyString());
+        workFlowService.assignQueriesBackToQueryCreator(anyString(),any(BigInteger.class));
         Mockito.verify(iWorkFlowStatusRepository, Mockito.times(2)).findById(any(BigInteger.class));
     }
 
