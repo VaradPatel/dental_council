@@ -111,7 +111,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
     protected String readRequestBody(HttpServletRequest request) throws IOException {
         ServletInputStream requestInputStream = request.getInputStream();
         objectMapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
-        return new String(requestInputStream.available() > 0 ? requestInputStream.readAllBytes() : new byte[0]);
+        return new String(requestInputStream.readAllBytes());
     }
 
     protected SecurityAuditTrail createSecurityAuditTrail(HttpServletRequest request) {
