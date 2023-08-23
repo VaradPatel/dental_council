@@ -62,7 +62,7 @@ public class NMRConstants {
     public static final String SUCCESS_RESPONSE = "Success";
     public static final String FAILURE_RESPONSE = "Fail";
     public static final String SENT_RESPONSE = "sent";
-    public static final String USER_NOT_FOUND = "User not found";
+    public static final String USER_NOT_FOUND = "Please validate the provided input and try again";
     public static final String EMAIL_ALREADY_VERIFIED = "This email is already verified";
     public static final String EMAIL_USED_BY_OTHER_USER = "Email is already used by other user";
     public static final String MOBILE_USED_BY_OTHER_USER = "Mobile number is already used by other user";
