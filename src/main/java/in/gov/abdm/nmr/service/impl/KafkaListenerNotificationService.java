@@ -102,7 +102,7 @@ public class KafkaListenerNotificationService {
                         else {
 
                             if(isESignedForQueryRaise(hpProfile.getRequestId())){
-                                iHpProfileRepository.updateEsignStatus(hpProfile.getId(), ESignStatus.QUERY_RESOLVED_PROFILE_NOT_ESIGNED.getId());
+                                iHpProfileRepository.updateEsignStatus(hpProfile.getId(), ESignStatus.QUERY_RESOLVED_ESIGNED_WITH_DIFFERENT_AADHAAR.getId());
                             }else {
                                 iHpProfileRepository.updateEsignStatus(hpProfile.getId(), ESignStatus.PROFILE_ESIGNED_WITH_DIFFERENT_AADHAR.getId());
                             }
