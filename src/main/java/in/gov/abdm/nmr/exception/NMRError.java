@@ -36,7 +36,7 @@ public enum NMRError {
     USERNAME_ALREADY_REGISTERED("ABDM-NMR-027", "The username that you entered is already registered"),
     STATE_MEDICAL_ID_NULL("ABDM-NMR-028", "An error occurred while processing your request. Please specify the state medical council and try again."),
     INVALID_USER_TYPE("ABDM-NMR-029", "An error occurred while processing your request. Please validate the user type in request and try again."),
-    NON_REGISTERED_MOBILE_NUMBER("ABDM-NMR-030", "The mobile number provided is not registered in our system"),
+    NON_REGISTERED_MOBILE_NUMBER("ABDM-NMR-030", "Please validate the provided mobile number and try again"),
     NON_REGISTERED_EMAIL_ID("ABDM-NMR-031", "The email address provided is not registered in our system"),
     NON_REGISTERED_NMR_ID("ABDM-NMR-032", "The NMR ID provided is not registered in our system"),
     INVALID_OTP_TRANSACTION_ID("ABDM-NMR-033", "An error occurred while processing your request. Please ensure that a correct transaction id is used for validating OTP."),
