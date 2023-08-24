@@ -31,6 +31,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
+import static in.gov.abdm.nmr.util.NMRUtil.isFileTypeSupported;
 
 /**
  * A class that implements all the methods of the interface  IActionService
@@ -195,7 +196,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     public ReactivateRequestResponseTo reactivateRequest(MultipartFile reactivationFile, ApplicationRequestTo applicationRequestTo) throws WorkFlowException, InvalidRequestException, IOException {
 
         log.info("In ApplicationServiceImpl: reactivateRequest method ");
-
+        isFileTypeSupported(reactivationFile.getOriginalFilename());
         HpProfile hpProfile = iHpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
         HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
         ReactivateRequestResponseTo reactivateRequestResponseTo = new ReactivateRequestResponseTo();

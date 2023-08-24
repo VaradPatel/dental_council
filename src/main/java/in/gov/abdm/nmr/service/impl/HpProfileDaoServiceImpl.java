@@ -2,8 +2,6 @@ package in.gov.abdm.nmr.service.impl;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.enums.ESignStatus;
-import in.gov.abdm.nmr.enums.HpProfileStatus;
 import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.nosql.entity.Council;
 import in.gov.abdm.nmr.repository.*;
@@ -27,9 +25,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static in.gov.abdm.nmr.util.NMRConstants.NO;
 import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
 import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
+import static in.gov.abdm.nmr.util.NMRUtil.isFileTypeSupported;
 
 @Service
 @Slf4j
@@ -83,8 +81,6 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     LanguagesKnownRepository languagesKnownRepository;
     @Autowired
     AuditLogPublisher auditLogPublisher;
-
-    private static final List<String> SUPPORTED_FILE_TYPES = List.of(".pdf",".jpg",".jpeg",".png");
 
     /**
      * Info: this method will fetch health professional registration details from the IMR data source. if details
@@ -159,7 +155,10 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                                                                  HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, List<MultipartFile> degreeCertificate) throws NmrException, InvalidRequestException {
 
         log.info("In HpProfileDaoServiceImpl : updateHpRegistrationDetails method");
-
+        isFileTypeSupported(registrationCertificate.getOriginalFilename());
+        for (MultipartFile file : degreeCertificate) {
+            isFileTypeSupported(file.getOriginalFilename());
+        }
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
             hpRegistrationUpdateRequestTO.getRegistrationDetail().setFileName(registrationCertificate != null ? registrationCertificate.getOriginalFilename() : null);
         }
@@ -311,13 +310,10 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         if (hpProfile == null) {
             throw new InvalidRequestException(NMRError.INVALID_REQUEST.getCode(), NMRError.INVALID_REQUEST.getMessage());
         }
-        String originalFileName = file.getOriginalFilename();
-        if( originalFileName != null && !SUPPORTED_FILE_TYPES.contains(originalFileName.substring(originalFileName.lastIndexOf(".")).toLowerCase())){
-            throw new InvalidRequestException(file.getOriginalFilename() + " is not a allowed file type !!");
-        }
+        isFileTypeSupported(file.getOriginalFilename());
         String encodedPhoto = Base64.getEncoder().encodeToString(file.getBytes());
         hpProfile.setProfilePhoto(encodedPhoto);
-        hpProfile.setPicName(originalFileName);
+        hpProfile.setPicName(file.getOriginalFilename());
         HpProfile insertedData = iHpProfileRepository.save(hpProfile);
             HpProfilePictureResponseTO hpProfilePictureResponseTO = new HpProfilePictureResponseTO();
         hpProfilePictureResponseTO.setProfilePicture(insertedData.getProfilePhoto());
