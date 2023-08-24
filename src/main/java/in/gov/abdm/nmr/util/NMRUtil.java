@@ -24,6 +24,7 @@ import java.util.List;
 public final class NMRUtil {
 
     private static final SecureRandom RANDOM = new SecureRandom();
+    private static final List<String> SUPPORTED_FILE_TYPES = List.of(".pdf", ".jpg", ".jpeg", ".png");
 
     public static String buildRequestIdForWorkflow(RequestCounter requestCounter){
         return requestCounter.getApplicationType().getRequestPrefixId().concat(String.valueOf(requestCounter.getCounter()));
@@ -100,6 +101,15 @@ public final class NMRUtil {
         }
         else {
             return eSignStatus;
+        }
+    }
+
+    public static void isFileTypeSupported(String originalFileName) throws InvalidRequestException {
+        if (originalFileName != null) {
+            String fileExtension = originalFileName.substring(originalFileName.lastIndexOf(".")).toLowerCase();
+            if (!SUPPORTED_FILE_TYPES.contains(fileExtension)) {
+                throw new InvalidRequestException(originalFileName + " is not an allowed file type.");
+            }
         }
     }
 }
