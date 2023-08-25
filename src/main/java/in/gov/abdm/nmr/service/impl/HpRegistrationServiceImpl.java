@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -207,6 +208,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Autowired
     private ITrackApplicationReadStatusRepository iTrackApplicationReadStatusRepository;
+    @Autowired
+    private IAccessControlService accessControlService;
+    @Autowired
+    private ICollegeProfileRepository collegeProfileRepository;
+    @Autowired
+    IForeignQualificationDetailRepository iCustomQualificationDetailRepository;
 
     /**
      * This method fetches the SMC registration details for a given request.
@@ -420,8 +427,38 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         return new HpProfileAddResponseTO(201, "Hp Profile Submitted Successfully!", hpSubmitRequestTO.getHpProfileId(), requestId);
     }
 
+    private void validateUserAccessToResource(BigInteger hpProfileId) {
+        User loggedInUser = accessControlService.getLoggedInUser();
+        if (UserTypeEnum.HEALTH_PROFESSIONAL.getId().equals(loggedInUser.getUserType().getId())) {
+            HpProfile hpProfile = iHpProfileRepository.findLatestEntryByUserid(loggedInUser.getId());
+            if (!hpProfile.getId().equals(hpProfileId)) {
+                log.error("Access denied: You do not have permissions to access this resource.");
+                throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
+            }
+        } else if (UserTypeEnum.SMC.getId().equals(loggedInUser.getUserType().getId())) {
+            RegistrationDetails registrationDetails = iRegistrationDetailRepository.isHPBelongsToLoginSMC(loggedInUser.getId(), hpProfileId);
+            if (registrationDetails == null) {
+                log.error("Access denied: HP does not belong to the login SMC.");
+                throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
+            }
+        } else if (UserTypeEnum.COLLEGE.getId().equals(loggedInUser.getUserType().getId())) {
+            CollegeProfile college = collegeProfileRepository.isHPBelongsToLoginCollege(loggedInUser.getId(), hpProfileId);
+            if (college == null) {
+                log.error("Access denied: HP does not belong to the login College.");
+                throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
+            }
+        } else if (UserTypeEnum.NBE.getId().equals(loggedInUser.getUserType().getId())) {
+            ForeignQualificationDetails foreignQualification = iCustomQualificationDetailRepository.getForeignQualificationByHpProfileId(hpProfileId);
+            if (foreignQualification == null) {
+                log.error("Access denied: HP does not belong to the login NBE.");
+                throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
+            }
+        }
+    }
+
     @Override
     public HpProfilePersonalResponseTO getHealthProfessionalPersonalDetail(BigInteger hpProfileId) {
+        validateUserAccessToResource(hpProfileId);
         HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
         in.gov.abdm.nmr.entity.Address communicationAddressByHpProfileId = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfileId, AddressType.COMMUNICATION.getId());
         in.gov.abdm.nmr.entity.Address kycAddressByHpProfileId = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfileId, AddressType.KYC.getId());

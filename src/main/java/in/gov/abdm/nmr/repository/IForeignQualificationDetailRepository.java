@@ -29,4 +29,7 @@ public interface IForeignQualificationDetailRepository extends JpaRepository<For
     @Modifying
     @Transactional
     @Query(value = "delete from foreign_qualification_details where user_id = :userId ",nativeQuery = true)    void deleteInternationalQualificationByUserId(BigInteger userId);
+
+    @Query(value = "SELECT * FROM foreign_qualification_details where hp_profile_id = :hpProfileId", nativeQuery = true)
+    ForeignQualificationDetails getForeignQualificationByHpProfileId(BigInteger hpProfileId);
 }
