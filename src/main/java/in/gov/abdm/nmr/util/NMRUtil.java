@@ -10,6 +10,7 @@ import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -104,11 +105,12 @@ public final class NMRUtil {
         }
     }
 
-    public static void isFileTypeSupported(String originalFileName) throws InvalidRequestException {
-        if (originalFileName != null) {
-            String fileExtension = originalFileName.substring(originalFileName.lastIndexOf(".")).toLowerCase();
+    public static void isFileTypeSupported(MultipartFile file) throws InvalidRequestException {
+        if (StringUtils.isNotBlank(file.getOriginalFilename())) {
+            String originalFilename = file.getOriginalFilename();
+            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
             if (!SUPPORTED_FILE_TYPES.contains(fileExtension)) {
-                throw new InvalidRequestException(originalFileName + " is not an allowed file type.");
+                throw new InvalidRequestException(originalFilename + " is not an allowed file type.");
             }
         }
     }
