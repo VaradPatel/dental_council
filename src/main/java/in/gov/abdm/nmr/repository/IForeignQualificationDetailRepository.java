@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.repository;
 
 import in.gov.abdm.nmr.entity.ForeignQualificationDetails;
+import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -29,4 +30,7 @@ public interface IForeignQualificationDetailRepository extends JpaRepository<For
     @Modifying
     @Transactional
     @Query(value = "delete from foreign_qualification_details where user_id = :userId ",nativeQuery = true)    void deleteInternationalQualificationByUserId(BigInteger userId);
+
+    @Query(value = "select fqd.* from main.foreign_qualification_details fqd join main.application_type app on fqd.request_id LIKE CONCAT('%', app.request_prefix_id, '%') where fqd.hp_profile_id = :hpProfileId and app.id = 7 ", nativeQuery = true)
+    ForeignQualificationDetails isHPBelongsToLoggedInNBE(BigInteger hpProfileId);
 }

@@ -16,4 +16,8 @@ public interface IRegistrationDetailRepository extends JpaRepository<Registratio
 
     @Query(value = "select * from registration_details rd where rd.registration_no =:registrationNo and rd.state_medical_council_id =:stateMedicalCouncilId order by updated_at desc limit 1  ",nativeQuery = true)
     RegistrationDetails getRegistrationDetailsByRegistrationNoAndStateMedicalCouncilId(String registrationNo,BigInteger stateMedicalCouncilId);
+
+    @Query(value = "select * from main.registration_details rd JOIN main.state_medical_council smc ON rd.state_medical_council_id = smc.id and smc.user_id = :userId and rd.hp_profile_id = :hpProfileId", nativeQuery = true)
+    RegistrationDetails isHPBelongsToLoggedInSMC(BigInteger userId, BigInteger hpProfileId);
+
 }
