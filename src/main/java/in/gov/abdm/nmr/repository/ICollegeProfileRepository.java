@@ -14,5 +14,5 @@ public interface ICollegeProfileRepository extends JpaRepository<CollegeProfile,
     CollegeProfile findByUserId(BigInteger userId);
 
     @Query(value = "select cp.* from college_profile cp join main.qualification_details qd on cp.college_id =qd.college_id where cp.user_id = :userId and qd.hp_profile_id = :hpProfileId", nativeQuery = true)
-    CollegeProfile isHPBelongsToLoginCollege(BigInteger userId, BigInteger hpProfileId);
+    CollegeProfile isHPBelongsToLoggedInCollege(BigInteger userId, BigInteger hpProfileId);
 }

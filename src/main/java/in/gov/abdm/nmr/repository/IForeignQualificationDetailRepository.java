@@ -30,6 +30,6 @@ public interface IForeignQualificationDetailRepository extends JpaRepository<For
     @Transactional
     @Query(value = "delete from foreign_qualification_details where user_id = :userId ",nativeQuery = true)    void deleteInternationalQualificationByUserId(BigInteger userId);
 
-    @Query(value = "SELECT * FROM foreign_qualification_details where hp_profile_id = :hpProfileId", nativeQuery = true)
-    ForeignQualificationDetails getForeignQualificationByHpProfileId(BigInteger hpProfileId);
+    @Query(value = "select fqd.* from main.foreign_qualification_details fqd join main.application_type app on fqd.request_id LIKE CONCAT('%', app.request_prefix_id, '%') where fqd.hp_profile_id = :hpProfileId", nativeQuery = true)
+    ForeignQualificationDetails isHPBelongsToLoggedInNBE(BigInteger hpProfileId);
 }

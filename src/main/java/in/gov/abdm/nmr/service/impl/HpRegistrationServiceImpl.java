@@ -436,19 +436,19 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
             }
         } else if (UserTypeEnum.SMC.getId().equals(loggedInUser.getUserType().getId())) {
-            RegistrationDetails registrationDetails = iRegistrationDetailRepository.isHPBelongsToLoginSMC(loggedInUser.getId(), hpProfileId);
+            RegistrationDetails registrationDetails = iRegistrationDetailRepository.isHPBelongsToLoggedInSMC(loggedInUser.getId(), hpProfileId);
             if (registrationDetails == null) {
                 log.error("Access denied: HP does not belong to the login SMC.");
                 throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
             }
         } else if (UserTypeEnum.COLLEGE.getId().equals(loggedInUser.getUserType().getId())) {
-            CollegeProfile college = collegeProfileRepository.isHPBelongsToLoginCollege(loggedInUser.getId(), hpProfileId);
+            CollegeProfile college = collegeProfileRepository.isHPBelongsToLoggedInCollege(loggedInUser.getId(), hpProfileId);
             if (college == null) {
                 log.error("Access denied: HP does not belong to the login College.");
                 throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
             }
         } else if (UserTypeEnum.NBE.getId().equals(loggedInUser.getUserType().getId())) {
-            ForeignQualificationDetails foreignQualification = iCustomQualificationDetailRepository.getForeignQualificationByHpProfileId(hpProfileId);
+            ForeignQualificationDetails foreignQualification = iCustomQualificationDetailRepository.isHPBelongsToLoggedInNBE(hpProfileId);
             if (foreignQualification == null) {
                 log.error("Access denied: HP does not belong to the login NBE.");
                 throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
