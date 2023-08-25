@@ -238,10 +238,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Override
     @Transactional
     public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException, WorkFlowException {
-        if (Objects.isNull(proofs)) {
-            for (MultipartFile file : proofs) {
-                isFileTypeSupported(file.getOriginalFilename());
-            }
+        for (MultipartFile file : proofs) {
+            isFileTypeSupported(file);
         }
         HpProfile hpProfile=hpProfileDaoService.findById(hpProfileId);
         HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
@@ -277,10 +275,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Transactional
     @Override
     public String updateQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException, WorkFlowException {
-        if (Objects.isNull(proofs)) {
-            for (MultipartFile file : proofs) {
-                isFileTypeSupported(file.getOriginalFilename());
-            }
+        for (MultipartFile file : proofs) {
+            isFileTypeSupported(file);
         }
         for (QualificationDetailRequestTO requestTO : qualificationDetailRequestTOs) {
             WorkFlow lastWorkFlowForHealthProfessional = workFlowRepository.findByRequestId(requestTO.getRequestId());

@@ -196,9 +196,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     public ReactivateRequestResponseTo reactivateRequest(MultipartFile reactivationFile, ApplicationRequestTo applicationRequestTo) throws WorkFlowException, InvalidRequestException, IOException {
 
         log.info("In ApplicationServiceImpl: reactivateRequest method ");
-        if (Objects.isNull(reactivationFile)) {
-            isFileTypeSupported(reactivationFile.getOriginalFilename());
-        }
+        isFileTypeSupported(reactivationFile);
         HpProfile hpProfile = iHpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
         HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
         ReactivateRequestResponseTo reactivateRequestResponseTo = new ReactivateRequestResponseTo();
