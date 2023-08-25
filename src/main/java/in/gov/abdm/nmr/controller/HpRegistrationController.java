@@ -129,7 +129,7 @@ public class HpRegistrationController {
      * @param hpProfileId The unique identifier of the health professional.
      * @return An instance of {@link HpProfilePersonalResponseTO} containing the personal details of the health professional.
      */
-    @GetMapping(path = "health-professional/{healthProfessionalId}/personal", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = ProtectedPaths.HEALTH_PROFESSIONAL_PERSONAL, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfilePersonalResponseTO getHealthProfessionalPersonalDetail(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) {
         return hpService.getHealthProfessionalPersonalDetail(hpProfileId);
     }

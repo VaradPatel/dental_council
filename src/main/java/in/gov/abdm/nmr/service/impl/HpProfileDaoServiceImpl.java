@@ -155,9 +155,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                                                                  HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, List<MultipartFile> degreeCertificate) throws NmrException, InvalidRequestException {
 
         log.info("In HpProfileDaoServiceImpl : updateHpRegistrationDetails method");
-        isFileTypeSupported(registrationCertificate.getOriginalFilename());
+        isFileTypeSupported(registrationCertificate);
         for (MultipartFile file : degreeCertificate) {
-            isFileTypeSupported(file.getOriginalFilename());
+            isFileTypeSupported(file);
         }
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
             hpRegistrationUpdateRequestTO.getRegistrationDetail().setFileName(registrationCertificate != null ? registrationCertificate.getOriginalFilename() : null);
@@ -310,7 +310,8 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         if (hpProfile == null) {
             throw new InvalidRequestException(NMRError.INVALID_REQUEST.getCode(), NMRError.INVALID_REQUEST.getMessage());
         }
-        isFileTypeSupported(file.getOriginalFilename());
+        isFileTypeSupported(file);
+
         String encodedPhoto = Base64.getEncoder().encodeToString(file.getBytes());
         hpProfile.setProfilePhoto(encodedPhoto);
         hpProfile.setPicName(file.getOriginalFilename());

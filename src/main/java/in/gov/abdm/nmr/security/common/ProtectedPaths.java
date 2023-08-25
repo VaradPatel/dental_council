@@ -66,6 +66,7 @@ public class ProtectedPaths {
     public static final String HP_REGISTER = "/health-professional/register";
     public static final String RAISE_QUERY = "/health-professional/queries";
     public static final String ADDITIONAL_QUALIFICATION = "/health-professional/{healthProfessionalId}/qualifications";
+    public static final String HEALTH_PROFESSIONAL_PERSONAL = "/health-professional/{healthProfessionalId}/personal";
 
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
         List<AntPathRequestMatcher> protectedPaths = new ArrayList<>();
@@ -117,6 +118,7 @@ public class ProtectedPaths {
         protectedPaths.add(new AntPathRequestMatcher(HP_REGISTER));
         protectedPaths.add(new AntPathRequestMatcher(RAISE_QUERY));
         protectedPaths.add(new AntPathRequestMatcher(ADDITIONAL_QUALIFICATION));
+        protectedPaths.add(new AntPathRequestMatcher(HEALTH_PROFESSIONAL_PERSONAL, HttpMethod.GET.name()));
 
         return protectedPaths.toArray(AntPathRequestMatcher[]::new);
     }
