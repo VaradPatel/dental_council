@@ -5,6 +5,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import javax.xml.bind.DatatypeConverter;
 
+import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -26,7 +27,7 @@ public class ChecksumUtil {
 
     public boolean validateChecksum(String jsonString, String expectedChecksum) {
         try {
-            jsonString = jsonString.replaceAll("(\\r\\n|\\r|\\n|\\s)","");
+            jsonString = jsonString.replaceAll(NMRConstants.REGEX_FOR_EXTRA_SPACES_AND_NEW_LINES,"");
             String generatedChecksum = getSHA256Hash(new String(checksumKey.getInputStream().readAllBytes()) + jsonString);
             return generatedChecksum.equalsIgnoreCase(expectedChecksum);
         } catch (IOException e) {

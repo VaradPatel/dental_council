@@ -407,4 +407,5 @@ public class NMRConstants {
     public static final String EMAIL_SUCCESS_PAGE = "email-verification-success";
     public static final String EMAIL_FAILURE_PAGE = "email-verification-failure";
     public static final String REGEX_FOR_ALPHANUMERIC = "^[a-zA-Z0-9\s]*$";
+    public static final String REGEX_FOR_EXTRA_SPACES_AND_NEW_LINES = "(\\r\\n|\\r|\\n|\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$))";
 }

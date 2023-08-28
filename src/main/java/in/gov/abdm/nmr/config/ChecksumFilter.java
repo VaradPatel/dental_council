@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.config;
 
 import brave.Tracer;
+import in.gov.abdm.nmr.common.ApplicationProfileEnum;
 import in.gov.abdm.nmr.common.CustomHeaders;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
@@ -9,6 +10,7 @@ import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -37,6 +39,9 @@ public class ChecksumFilter extends OncePerRequestFilter {
     @Autowired
     ChecksumUtil checksumUtil;
 
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
+
     @SneakyThrows
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -50,16 +55,18 @@ public class ChecksumFilter extends OncePerRequestFilter {
         byte[] responseBody = responseWrapper.getContentAsByteArray();
         byte[] requestBody = requestWrapper.getContentAsByteArray();
 
-        String responseString= new String(responseBody, StandardCharsets.UTF_8);
+        String responseString = new String(responseBody, StandardCharsets.UTF_8);
         String requestString = new String(requestBody, StandardCharsets.UTF_8);
 
-        if(!requestString.isEmpty()){
-            if(request.getHeader(CustomHeaders.CHECKSUM_HEADER) != null) {
-                if(!checksumUtil.validateChecksum(requestString, request.getHeader(CustomHeaders.CHECKSUM_HEADER))){
-                    throw new InvalidRequestException(NMRError.DATA_TAMPERED.getMessage());
+        if (!ApplicationProfileEnum.LOCAL.getCode().equals(activeProfile)) {
+            if (!requestString.isEmpty()) {
+                if (request.getHeader(CustomHeaders.CHECKSUM_HEADER) != null) {
+                    if (!checksumUtil.validateChecksum(requestString, request.getHeader(CustomHeaders.CHECKSUM_HEADER))) {
+                        throw new InvalidRequestException(NMRError.DATA_TAMPERED.getMessage());
+                    }
+                } else {
+                    throw new InvalidRequestException(NMRError.CHECKSUM_HEADER_MISSING.getMessage());
                 }
-            }else {
-                throw new InvalidRequestException(NMRError.CHECKSUM_HEADER_MISSING.getMessage());
             }
         }
 
