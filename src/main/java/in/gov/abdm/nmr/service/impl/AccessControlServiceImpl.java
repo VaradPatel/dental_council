@@ -32,7 +32,7 @@ public class AccessControlServiceImpl implements IAccessControlService {
 
     @Override
     public User getLoggedInUser() {
-        String username= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getName();
+        String username= SecurityContextHolder.getContext().getAuthentication().getName();
         BigInteger userType= ((JwtAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType().getId();
         return userRepository.findByUsername(username, userType);
     }

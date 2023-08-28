@@ -28,7 +28,7 @@ public class NotificationRequestTo {
     private List<KeyValue> receiver;
 
     @JsonProperty("notification")
-    private List<KeyValue> notification;
+    private List<KeyValue> notification = Collections.emptyList();
 
     public NotificationRequestTo() {
     }
@@ -50,7 +50,7 @@ public class NotificationRequestTo {
     }
 
     public void setType(List<String> type) {
-        this.type = type;
+        this.type = Collections.unmodifiableList(type);
     }
 
     public String getContentType() {
@@ -74,7 +74,7 @@ public class NotificationRequestTo {
     }
 
     public void setReceiver(List<KeyValue> receiver) {
-        this.receiver = receiver;
+        this.receiver = Collections.unmodifiableList(receiver);
     }
 
     public List<KeyValue> getNotification() {
@@ -82,7 +82,7 @@ public class NotificationRequestTo {
     }
 
     public void setNotification(List<KeyValue> notification) {
-        this.notification = notification;
+        this.notification = Collections.unmodifiableList(notification);
     }
 
 }
