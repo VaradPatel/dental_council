@@ -823,8 +823,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         String eSignTransactionId = request.getESignTransactionId();
         if (eSignTransactionId != null && !eSignTransactionId.isBlank() && hpProfile != null) {
+            if(hpProfile.getModTransactionId()==null) {
                 hpProfile.setTransactionId(eSignTransactionId);
-                iHpProfileRepository.save(hpProfile);
+            }else {
+                hpProfile.setModTransactionId(eSignTransactionId);
+            }
+            iHpProfileRepository.save(hpProfile);
         }
 
         BigInteger masterHpProfileId = iHpProfileRepository.findMasterHpProfileByHpProfileId(hpProfileId);
