@@ -118,7 +118,7 @@ public class ProtectedPaths {
         protectedPaths.add(new AntPathRequestMatcher(HP_REGISTER));
         protectedPaths.add(new AntPathRequestMatcher(RAISE_QUERY));
         protectedPaths.add(new AntPathRequestMatcher(ADDITIONAL_QUALIFICATION));
-        protectedPaths.add(new AntPathRequestMatcher(HEALTH_PROFESSIONAL_PERSONAL, HttpMethod.GET.name()));
+        protectedPaths.add(new AntPathRequestMatcher(HEALTH_PROFESSIONAL_PERSONAL));
 
         return protectedPaths.toArray(AntPathRequestMatcher[]::new);
     }

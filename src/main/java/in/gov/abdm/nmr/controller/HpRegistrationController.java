@@ -104,7 +104,7 @@ public class HpRegistrationController {
      * @throws InvalidRequestException when the request is invalid.
      * @throws WorkFlowException       when there's an error with the workflow.
      */
-    @PutMapping(path = "health-professional/{healthProfessionalId}/personal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = ProtectedPaths.HEALTH_PROFESSIONAL_PERSONAL, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfilePersonalResponseTO updateHealthProfessionalPersonalDetail(
             @Valid @RequestBody HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO,
             @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId)
