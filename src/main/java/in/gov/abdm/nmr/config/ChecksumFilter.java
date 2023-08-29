@@ -42,6 +42,9 @@ public class ChecksumFilter extends OncePerRequestFilter {
     @Value("${spring.profiles.active}")
     private String activeProfile;
 
+    @Value("${feature.toggle.checksum.enable}")
+    private boolean checksumEnable;
+
     @SneakyThrows
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -50,7 +53,7 @@ public class ChecksumFilter extends OncePerRequestFilter {
 
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
-        filterChain.doFilter(requestWrapper, responseWrapper);
+
 
         byte[] responseBody = responseWrapper.getContentAsByteArray();
         byte[] requestBody = requestWrapper.getContentAsByteArray();
@@ -59,13 +62,15 @@ public class ChecksumFilter extends OncePerRequestFilter {
         String requestString = new String(requestBody, StandardCharsets.UTF_8);
 
         if (!ApplicationProfileEnum.LOCAL.getCode().equals(activeProfile)) {
-            if (!requestString.isEmpty()) {
-                if (request.getHeader(CustomHeaders.CHECKSUM_HEADER) != null) {
-                    if (!checksumUtil.validateChecksum(requestString, request.getHeader(CustomHeaders.CHECKSUM_HEADER))) {
-                        throw new InvalidRequestException(NMRError.DATA_TAMPERED.getMessage());
+            if (checksumEnable) {
+                if (!requestString.isEmpty()) {
+                    if (request.getHeader(CustomHeaders.CHECKSUM_HEADER) != null) {
+                        if (!checksumUtil.validateChecksum(requestString, request.getHeader(CustomHeaders.CHECKSUM_HEADER))) {
+                            throw new InvalidRequestException(NMRError.DATA_TAMPERED.getMessage());
+                        }
+                    } else {
+                        throw new InvalidRequestException(NMRError.CHECKSUM_HEADER_MISSING.getMessage());
                     }
-                } else {
-                    throw new InvalidRequestException(NMRError.CHECKSUM_HEADER_MISSING.getMessage());
                 }
             }
         }
@@ -73,6 +78,8 @@ public class ChecksumFilter extends OncePerRequestFilter {
         if(!responseString.isEmpty()) {
             response.addHeader(CustomHeaders.CHECKSUM_HEADER, checksumUtil.generateChecksum(responseString));
         }
+
+        filterChain.doFilter(requestWrapper, responseWrapper);
         responseWrapper.copyBodyToResponse();
     }
 }
