@@ -46,7 +46,9 @@ public enum NMRError {
     EMAIL_ATTEMPTS_EXCEEDED("ABDM-NMR-037", "You have exceeded the maximum number of attempts to verify email. Please try again after 30 minutes."),
     SUSPENSION_REQUEST_ALREADY_EXISTS("ABDM-NMR-038", "A suspension request is already in progress"),
     REACTIVATION_REQUEST_ALREADY_EXISTS("ABDM-NMR-039", "A reactivation request is already in progress"),
-    SERVICE_UNAVAILABLE("ABDM-NMR-040", "we are experiencing problem with downstream service. please try again later");
+    SERVICE_UNAVAILABLE("ABDM-NMR-040", "we are experiencing problem with downstream service. please try again later"),
+    DATA_TAMPERED("ABDM-NMR-041", "Something went wrong while processing your request. Please try again in sometime."),
+    CHECKSUM_HEADER_MISSING("ABDM-NMR-042", "Please make sure you have added all mandatory headers");
 
     private final String code;
     private final String message;

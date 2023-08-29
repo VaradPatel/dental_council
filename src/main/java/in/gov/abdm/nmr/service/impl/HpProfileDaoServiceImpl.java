@@ -155,14 +155,12 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                                                                  HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, List<MultipartFile> degreeCertificate) throws NmrException, InvalidRequestException {
 
         log.info("In HpProfileDaoServiceImpl : updateHpRegistrationDetails method");
-        if(registrationCertificate!=null) {
-            isFileTypeSupported(registrationCertificate);
+        isFileTypeSupported(registrationCertificate);
+
+        for (MultipartFile file : degreeCertificate) {
+            isFileTypeSupported(file);
         }
-        if(degreeCertificate!=null) {
-            for (MultipartFile file : degreeCertificate) {
-                isFileTypeSupported(file);
-            }
-        }
+
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
             hpRegistrationUpdateRequestTO.getRegistrationDetail().setFileName(registrationCertificate != null ? registrationCertificate.getOriginalFilename() : null);
         }

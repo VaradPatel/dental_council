@@ -106,7 +106,7 @@ public final class NMRUtil {
     }
 
     public static void isFileTypeSupported(MultipartFile file) throws InvalidRequestException {
-        if (StringUtils.isNotBlank(file.getOriginalFilename())) {
+        if (file != null && StringUtils.isNotBlank(file.getOriginalFilename())) {
             String originalFilename = file.getOriginalFilename();
             String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
             if (!SUPPORTED_FILE_TYPES.contains(fileExtension)) {
