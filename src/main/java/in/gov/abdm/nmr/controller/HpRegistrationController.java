@@ -189,7 +189,7 @@ public class HpRegistrationController {
      * @param hpProfileId the unique identifier of the health professional profile
      * @return an object containing the registration details of the health professional
      */
-    @GetMapping(path = "health-professional/{healthProfessionalId}/registration", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = ProtectedPaths.HEALTH_PROFESSIONAL_REGISTRATION, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) {
         return hpService.getHealthProfessionalRegistrationDetail(hpProfileId);
     }
@@ -228,7 +228,7 @@ public class HpRegistrationController {
      * @throws InvalidRequestException If the provided hpProfileId is invalid or not found in the database.
      * @throws WorkFlowException       If an error occurs during the processing of the request.
      */
-    @GetMapping(path = "health-professional/{healthProfessionalId}/work-profile", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = ProtectedPaths.HEALTH_PROFESSIONAL_WORK_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) {
         return hpService.getHealthProfessionalWorkDetail(hpProfileId);
     }
