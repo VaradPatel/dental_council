@@ -144,7 +144,7 @@ public class HpRegistrationController {
      * @return The updated health professional registration response in a transfer object.
      * @throws InvalidRequestException If the provided request is invalid.
      */
-    @PutMapping(path = "health-professional/{healthProfessionalId}/registration", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = ProtectedPaths.HEALTH_PROFESSIONAL_REGISTRATION, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam(value = "registrationCertificate", required = false) MultipartFile registrationCertificate,
                                                                                       @RequestParam(value = "degreeCertificate", required = false) MultipartFile degreeCertificate,
                                                                                       @RequestPart("data") @Valid HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO,
@@ -202,7 +202,7 @@ public class HpRegistrationController {
      * @return A {@link HpProfileWorkDetailsResponseTO} object containing the updated work details.
      * @throws InvalidRequestException If the request is invalid or missing required information.
      */
-    @PutMapping(path = "health-professional/{healthProfessionalId}/work-profile", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = ProtectedPaths.HEALTH_PROFESSIONAL_WORK_PROFILE, consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileWorkDetailsResponseTO updateHealthProfessionalWorkProfileDetail(@RequestBody HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO,
                                                                                     @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId)
             throws InvalidRequestException, NmrException, NotFoundException {
