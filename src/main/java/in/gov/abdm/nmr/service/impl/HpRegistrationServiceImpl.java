@@ -496,6 +496,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Override
     public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId){
+        validateUserAccessToResource(hpProfileId);
         HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = null;
         List<WorkProfile> workProfileList = new ArrayList<>();
         List<LanguagesKnown> languagesKnown = new ArrayList<>();
@@ -526,7 +527,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Override
     public HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(BigInteger hpProfileId) {
-
+        validateUserAccessToResource(hpProfileId);
         RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId);
         HpNbeDetails nbeDetails = hpNbeDetailsRepository.findByUserId(registrationDetails.getHpProfileId().getUser().getId());
         List<QualificationDetails> indianQualifications = qualificationDetailRepository.getQualificationDetailsByUserId(registrationDetails.getHpProfileId().getUser().getId());
@@ -823,8 +824,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         String eSignTransactionId = request.getESignTransactionId();
         if (eSignTransactionId != null && !eSignTransactionId.isBlank() && hpProfile != null) {
+            if(hpProfile.getModTransactionId()==null) {
                 hpProfile.setTransactionId(eSignTransactionId);
-                iHpProfileRepository.save(hpProfile);
+            }else {
+                hpProfile.setModTransactionId(eSignTransactionId);
+            }
+            iHpProfileRepository.save(hpProfile);
         }
 
         BigInteger masterHpProfileId = iHpProfileRepository.findMasterHpProfileByHpProfileId(hpProfileId);
