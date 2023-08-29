@@ -54,6 +54,7 @@ public class ChecksumFilter extends OncePerRequestFilter {
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
 
+        filterChain.doFilter(requestWrapper, responseWrapper);
 
         byte[] responseBody = responseWrapper.getContentAsByteArray();
         byte[] requestBody = requestWrapper.getContentAsByteArray();
@@ -79,7 +80,6 @@ public class ChecksumFilter extends OncePerRequestFilter {
             response.addHeader(CustomHeaders.CHECKSUM_HEADER, checksumUtil.generateChecksum(responseString));
         }
 
-        filterChain.doFilter(requestWrapper, responseWrapper);
         responseWrapper.copyBodyToResponse();
     }
 }
