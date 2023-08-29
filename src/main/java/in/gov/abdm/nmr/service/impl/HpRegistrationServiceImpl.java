@@ -496,6 +496,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Override
     public HpProfileWorkDetailsResponseTO getHealthProfessionalWorkDetail(BigInteger hpProfileId){
+        validateUserAccessToResource(hpProfileId);
         HpProfileWorkDetailsResponseTO hpProfileWorkDetailsResponseTO = null;
         List<WorkProfile> workProfileList = new ArrayList<>();
         List<LanguagesKnown> languagesKnown = new ArrayList<>();
@@ -526,7 +527,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Override
     public HpProfileRegistrationResponseTO getHealthProfessionalRegistrationDetail(BigInteger hpProfileId) {
-
+        validateUserAccessToResource(hpProfileId);
         RegistrationDetails registrationDetails = registrationDetailRepository.getRegistrationDetailsByHpProfileId(hpProfileId);
         HpNbeDetails nbeDetails = hpNbeDetailsRepository.findByUserId(registrationDetails.getHpProfileId().getUser().getId());
         List<QualificationDetails> indianQualifications = qualificationDetailRepository.getQualificationDetailsByUserId(registrationDetails.getHpProfileId().getUser().getId());
