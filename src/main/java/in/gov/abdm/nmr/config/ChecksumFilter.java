@@ -54,11 +54,8 @@ public class ChecksumFilter extends OncePerRequestFilter {
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
 
-
-        byte[] responseBody = responseWrapper.getContentAsByteArray();
         byte[] requestBody = requestWrapper.getContentAsByteArray();
 
-        String responseString = new String(responseBody, StandardCharsets.UTF_8);
         String requestString = new String(requestBody, StandardCharsets.UTF_8);
 
         if (!ApplicationProfileEnum.LOCAL.getCode().equals(activeProfile)) {
@@ -75,11 +72,15 @@ public class ChecksumFilter extends OncePerRequestFilter {
             }
         }
 
+        filterChain.doFilter(requestWrapper, responseWrapper);
+
+        byte[] responseBody = responseWrapper.getContentAsByteArray();
+        String responseString = new String(responseBody, StandardCharsets.UTF_8);
+
         if(!responseString.isEmpty()) {
             response.addHeader(CustomHeaders.CHECKSUM_HEADER, checksumUtil.generateChecksum(responseString));
         }
 
-        filterChain.doFilter(requestWrapper, responseWrapper);
         responseWrapper.copyBodyToResponse();
     }
 }
