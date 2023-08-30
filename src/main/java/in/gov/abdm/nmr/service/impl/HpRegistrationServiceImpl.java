@@ -282,8 +282,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Transactional
     @Override
     public String updateQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException, WorkFlowException {
-        for (MultipartFile file : proofs) {
-            isFileTypeSupported(file);
+        if(proofs!=null) {
+            for (MultipartFile file : proofs) {
+                isFileTypeSupported(file);
+            }
         }
         for (QualificationDetailRequestTO requestTO : qualificationDetailRequestTOs) {
             WorkFlow lastWorkFlowForHealthProfessional = workFlowRepository.findByRequestId(requestTO.getRequestId());

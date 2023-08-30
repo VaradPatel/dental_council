@@ -110,7 +110,7 @@ public final class NMRUtil {
             String originalFilename = file.getOriginalFilename();
             String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
             if (!SUPPORTED_FILE_TYPES.contains(fileExtension)) {
-                throw new InvalidRequestException(originalFilename + " is not an allowed file type.");
+                throw new InvalidRequestException(fileExtension + " is not an allowed file type.");
             }
         }
     }
