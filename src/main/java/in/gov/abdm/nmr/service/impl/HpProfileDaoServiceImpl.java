@@ -271,7 +271,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         }
         List<LanguagesKnown> languagesKnownLater = new ArrayList<>();
         BigInteger tempUserId = userId;
-        languagesKnownEarlierIds.forEach(languagesKnownIds::remove);
+        if (languagesKnownIds != null && !languagesKnownEarlierIds.isEmpty()) {
+            languagesKnownEarlierIds.forEach(languagesKnownIds::remove);
+        }
         if (languagesKnownIds != null && !languagesKnownIds.isEmpty()) {
             languagesKnownIds.forEach(languagesKnown -> {
                 LanguagesKnown languagesKnownObject = new LanguagesKnown();
