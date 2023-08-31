@@ -1,44 +1,15 @@
 package in.gov.abdm.nmr.util;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
+import in.gov.abdm.nmr.enums.UserTypeEnum;
+import in.gov.abdm.nmr.security.jwt.JwtAuthenticationToken;
+import in.gov.abdm.nmr.security.jwt.JwtTypeEnum;
 
-import java.util.Collection;
-import java.util.Collections;
+public class TestAuthentication extends JwtAuthenticationToken {
 
-public class TestAuthentication implements Authentication {
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+    public TestAuthentication(){
+        this("",JwtTypeEnum.ACCESS_TOKEN,UserTypeEnum.HEALTH_PROFESSIONAL);
     }
-
-    @Override
-    public Object getCredentials() {
-        return null;
-    }
-
-    @Override
-    public Object getDetails() {
-        return null;
-    }
-
-    @Override
-    public Object getPrincipal() {
-        return null;
-    }
-
-    @Override
-    public boolean isAuthenticated() {
-        return false;
-    }
-
-    @Override
-    public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-
-    }
-
-    @Override
-    public String getName() {
-        return "1";
+    public TestAuthentication(String token, JwtTypeEnum type, UserTypeEnum userType) {
+        super(token, type, userType);
     }
 }

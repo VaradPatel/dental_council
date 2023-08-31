@@ -97,6 +97,7 @@ class CollegeServiceTest {
         when(collegeMasterDaoService.save(any(CollegeMaster.class))).thenReturn(getCollegeMaster());
         when(universityMasterService.findById(any(BigInteger.class))).thenReturn(getUniversityMaster());
         when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(passwordService.getResetPasswordLink(any(SendLinkOnMailTo.class),anyString())).thenReturn(ResponseMessageTo.builder().build());
         CollegeResponseTo collegeResponse = collegeService.createOrUpdateCollege(getCollegeResponse());
         assertEquals(ID, collegeResponse.getId());
     }

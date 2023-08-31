@@ -60,18 +60,18 @@ public class CollegeServiceImpl implements ICollegeService {
 
     private EntityManager entityManager;
 
-    @Autowired
-    IPasswordService passwordService;
+    private IPasswordService passwordService;
 
     public CollegeServiceImpl(ICollegeMasterDaoService collegeMasterDaoService, IUniversityMasterService universityMasterService,
                                 IStateMedicalCouncilDaoService stateMedicalCouncilDaoService, ICollegeProfileDaoService collegeProfileDaoService,
-                                IUserDaoService userDaoService, EntityManager entityManager) {
+                                IUserDaoService userDaoService, EntityManager entityManager,IPasswordService passwordService) {
         this.collegeMasterDaoService = collegeMasterDaoService;
         this.universityMasterService = universityMasterService;
         this.stateMedicalCouncilDaoService = stateMedicalCouncilDaoService;
         this.collegeProfileDaoService = collegeProfileDaoService;
         this.userDaoService = userDaoService;
         this.entityManager = entityManager;
+        this.passwordService = passwordService;
     }
 
     @Override
