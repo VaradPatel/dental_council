@@ -64,11 +64,6 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
     @Autowired
     HpNbeDetailsMasterRepository hpNbeDetailsMasterRepository;
-    @Autowired
-    INmrHprLinkageRepository nmrHprLinkageRepository;
-
-    @Autowired
-    INmrHprLinkageMasterRepository nmrHprLinkageMasterRepository;
 
     @Autowired
     IQualificationDetailRepository qualificationDetailRepository;
@@ -113,7 +108,6 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
         RegistrationDetailsMaster registrationMaster = updateRegistrationDetailsToMaster(transactionHpProfile.getId(), masterHpProfileDetails);
         AddressMaster addressMaster = updateAddressToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
         List<ForeignQualificationDetailsMaster> foreignQualificationDetailsMasterList = updateForeignQualificationToMaster(transactionHpProfile, masterHpProfileDetails, registrationMaster);
-        updateNmrHprLinkageToMaster(transactionHpProfile.getId(), masterHpProfileDetails.getId());
         List<QualificationDetailsMaster> qualificationDetailsMasterList = updateQualificationDetailsToMaster(transactionHpProfile, masterHpProfileDetails, registrationMaster);
         updateElasticDB(workFlow, masterHpProfileDetails);
 
@@ -247,23 +241,6 @@ public class WorkflowPostProcessorServiceImpl implements IWorkflowPostProcessorS
 
         }
     }
-
-    private void updateNmrHprLinkageToMaster(BigInteger transactionHpProfileId, BigInteger masterHpProfileId) {
-        log.debug("Mapping the current NmrHprLinkage to NmrHprLinkage Master table");
-
-        NmrHprLinkage nmrHprLinkage = nmrHprLinkageRepository.findByHpProfileId(transactionHpProfileId);
-
-        if (nmrHprLinkage != null) {
-            NmrHprLinkageMaster nmrHprLinkageToMaster = INmrHprLinkageMasterMapper.HPR_LINKAGE_MASTER_MAPPER.nmrHprLinkageToNmrHprLinkageMaster(nmrHprLinkage);
-            NmrHprLinkageMaster fetchedFromMaster = nmrHprLinkageMasterRepository.findByHpProfileId(masterHpProfileId);
-            if (fetchedFromMaster != null) {
-                nmrHprLinkageToMaster.setId(fetchedFromMaster.getId());
-            }
-            nmrHprLinkage.setHpProfileId(masterHpProfileId);
-            nmrHprLinkageMasterRepository.save(nmrHprLinkageToMaster);
-        }
-    }
-
 
     private List<QualificationDetailsMaster> updateQualificationDetailsToMaster(HpProfile transactionHpProfile, HpProfileMaster masterHpProfile, RegistrationDetailsMaster registrationMaster) {
         log.debug("Mapping the current Qualification Details to Qualification Details Master table");

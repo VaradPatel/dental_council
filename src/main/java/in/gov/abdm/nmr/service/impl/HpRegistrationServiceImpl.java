@@ -60,9 +60,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     private IHpProfileMapper iHpProfileMapper;
 
     @Autowired
-    private UserKycDtoMapper userKycDtoMapper;
-
-    @Autowired
     private CountryDtoMapper countryDtoMapper;
 
     @Autowired
@@ -96,9 +93,6 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     private WorkProfileRepository workProfileRepository;
 
     @Autowired
-    private WorkProfileMasterRepository workProfileAuditRepository;
-
-    @Autowired
     private IHpProfileDaoService hpProfileDaoService;
 
     @Autowired
@@ -123,13 +117,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     private IForeignQualificationDetailRepository customQualificationDetailRepository;
 
     @Autowired
-    private SuperSpecialityRepository superSpecialityRepository;
-
-    @Autowired
     private BroadSpecialityRepository broadSpecialityRepository;
-
-    @Autowired
-    private UserKycRepository userKycRepository;
 
     @Autowired
     private IStateRepository stateRepository;
