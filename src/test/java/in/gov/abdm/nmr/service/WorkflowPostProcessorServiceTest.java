@@ -81,21 +81,6 @@ class WorkflowPostProcessorServiceTest {
     LanguagesKnownRepository languagesKnownRepository;
 
     @Mock
-    LanguagesKnownMasterRepository languagesKnownMasterRepository;
-
-    @Mock
-    ILanguagesKnownMasterMapper languagesKnownMasterMapper;
-
-    @Mock
-    INmrHprLinkageRepository nmrHprLinkageRepository;
-
-    @Mock
-    INmrHprLinkageMasterRepository nmrHprLinkageMasterRepository;
-
-    @Mock
-    INmrHprLinkageMasterMapper nmrHprLinkageMasterMapper;
-
-    @Mock
     IQualificationDetailRepository qualificationDetailRepository;
 
     @Mock
@@ -106,18 +91,6 @@ class WorkflowPostProcessorServiceTest {
 
     @Mock
     IQualificationDetailMasterMapper qualificationDetailMasterMapper;
-
-    @Mock
-    SuperSpecialityRepository superSpecialityRepository;
-
-    @Mock
-    SuperSpecialityMasterRepository superSpecialityMasterRepository;
-
-    @Mock
-    ISuperSpecialityMasterMapper superSpecialityMasterMapper;
-
-    @Mock
-    WorkProfileMasterRepository workProfileAuditRepository;
 
     @Mock
     WorkProfileRepository workProfileRepository;

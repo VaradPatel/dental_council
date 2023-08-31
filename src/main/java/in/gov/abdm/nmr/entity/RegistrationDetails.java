@@ -61,10 +61,6 @@ public class RegistrationDetails extends CommonAuditEntity {
     private String whetherRegisteredWithOthers;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "councilStatus", referencedColumnName = "id")
-    private StateMedicalCouncilStatus councilStatus;
-
-    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "hpProfileId", referencedColumnName = "id")
     private HpProfile hpProfileId;
 

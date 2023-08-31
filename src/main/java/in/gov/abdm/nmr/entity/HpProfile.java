@@ -66,10 +66,6 @@ public class HpProfile extends CommonAuditEntity {
 	@ManyToOne
 	@JoinColumn(name = HP_PROFILE_STATUS_ID,referencedColumnName = ID)
 	private HpProfileStatus hpProfileStatus;
-
-	@OneToOne
-	@JoinColumn(name = SCHEDULE_ID,referencedColumnName = ID)
-	private Schedule schedule;
 	
 	@OneToOne
     @JoinColumn(name = "user_id")

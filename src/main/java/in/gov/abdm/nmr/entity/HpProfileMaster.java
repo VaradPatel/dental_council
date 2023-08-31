@@ -67,10 +67,6 @@ public class HpProfileMaster {
 	private HpProfileStatus hpProfileStatus;
 
 	@OneToOne
-	@JoinColumn(name = SCHEDULE_ID,referencedColumnName = ID)
-	private Schedule schedule;
-
-	@OneToOne
 	@JoinColumn(name = "user_id")
 	private User user;
 	private String requestId;

@@ -214,14 +214,6 @@ CommonTestData {
         return user;
     }
 
-    public static List<SuperSpeciality> getSuperSpeciality() {
-        SuperSpeciality superSpeciality = new SuperSpeciality();
-        superSpeciality.setName(SUPER_SPECIALITY);
-        superSpeciality.setId(ID);
-        superSpeciality.setHpProfileId(ID);
-        return List.of(superSpeciality);
-    }
-
     public static Country getCountry() {
         Country country = new Country();
         country.setId(ID);

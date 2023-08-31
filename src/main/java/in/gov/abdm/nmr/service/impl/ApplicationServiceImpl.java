@@ -84,13 +84,6 @@ public class ApplicationServiceImpl implements IApplicationService {
     private IForeignQualificationDetailRepository iForeignQualificationDetailRepository;
 
     /**
-     * Injecting a SuperSpecialityRepository bean instead of an explicit object creation to achieve
-     * Singleton principle
-     */
-    @Autowired
-    private SuperSpecialityRepository superSpecialityRepository;
-
-    /**
      * Injecting a IRequestCounterService bean instead of an explicit object creation to achieve
      * Singleton principle
      */
