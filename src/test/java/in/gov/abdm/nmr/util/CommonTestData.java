@@ -1010,6 +1010,7 @@ CommonTestData {
         OtpGenerateRequestTo otpGenerateRequestTo = new OtpGenerateRequestTo();
         otpGenerateRequestTo.setType(NotificationType.NMR_ID.getNotificationType());
         otpGenerateRequestTo.setContact(MOBILE_NUMBER);
+        otpGenerateRequestTo.setUserType(UserTypeEnum.HEALTH_PROFESSIONAL.getId());
         return otpGenerateRequestTo;
     }
 
