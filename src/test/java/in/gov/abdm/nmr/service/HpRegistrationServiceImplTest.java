@@ -25,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,14 +42,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
-import static in.gov.abdm.nmr.util.CommonTestData.getHpProfileForNMR;
-import static in.gov.abdm.nmr.util.NMRConstants.*;
+import static in.gov.abdm.nmr.util.NMRConstants.FAILURE_RESPONSE;
+import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class HpRegistrationServiceImplTest {
@@ -124,9 +123,15 @@ class HpRegistrationServiceImplTest {
     @Mock
     IQualificationDetailRepository iQualificationDetailRepository;
 
+    @Mock
+    IAccessControlService accessControlService;
+
+    @Mock
+    ITrackApplicationReadStatusRepository iTrackApplicationReadStatusRepository;
+
     @BeforeEach
     void setup() {
-        certificate = new MockMultipartFile("certificate", "certificate",
+        certificate = new MockMultipartFile("certificate", "certificate.pdf",
                 "application/json", "{\"name\": \"Emp Name\"}".getBytes());
     }
 
@@ -151,12 +156,16 @@ class HpRegistrationServiceImplTest {
 
     @Test
     void testAddOrUpdateHpPersonalDetail() throws WorkFlowException, InvalidRequestException {
+        when(accessControlService.getLoggedInUser()).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(iHpProfileRepository.findLatestEntryByUserid(CommonTestData.ID)).thenReturn(getHpProfile());
         when(hpProfileDaoService.updateHpPersonalDetails(any(BigInteger.class), any(HpPersonalUpdateRequestTO.class)))
                 .thenReturn(new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", HP_ID));
         when(hpProfileDaoService.findById(any(BigInteger.class))).thenReturn(getHpProfile());
         when(iAddressRepository.getCommunicationAddressByHpProfileId(any(BigInteger.class), any(Integer.class))).thenReturn(getCommunicationAddress());
         when(workFlowRepository.findLastWorkFlowForHealthProfessional(any(BigInteger.class))).thenReturn(getWorkFlow());
+        when(iTrackApplicationReadStatusRepository.findByUserId(any(BigInteger.class))).thenReturn(null);
         HpProfilePersonalResponseTO responseTO = hpRegistrationService.addOrUpdateHpPersonalDetail(CommonTestData.ID, new HpPersonalUpdateRequestTO());
+
         assertEquals(CommonTestData.ID, responseTO.getHpProfileId());
     }
 
@@ -173,6 +182,8 @@ class HpRegistrationServiceImplTest {
 
     @Test
     void testAddOrUpdateHpRegistrationDetail() throws InvalidRequestException, NmrException {
+        when(accessControlService.getLoggedInUser()).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(iHpProfileRepository.findLatestEntryByUserid(CommonTestData.ID)).thenReturn(getHpProfile());
         when(hpProfileDaoService.updateHpRegistrationDetails(any(BigInteger.class), any(HpRegistrationUpdateRequestTO.class),
                 any(MultipartFile.class), (any(List.class))))
                 .thenReturn(new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", HP_ID));
@@ -183,10 +194,12 @@ class HpRegistrationServiceImplTest {
                 .thenReturn(List.of(getQualificationDetails()));
         when(customQualificationDetailRepository.getQualificationDetailsByUserId(any(BigInteger.class)))
                 .thenReturn(List.of(getForeignQualificationDetails()));
+        HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO1 = new HpProfileRegistrationResponseTO();
+        hpProfileRegistrationResponseTO1.setQualificationDetailResponseTos(Collections.emptyList());
         when(hpProfileRegistrationMapper.convertEntitiesToRegistrationResponseTo(
                 any(RegistrationDetails.class), any(HpNbeDetails.class),
-                any(List.class), any(List.class)))
-                .thenReturn(new HpProfileRegistrationResponseTO());
+                anyList(), anyList()))
+                .thenReturn(hpProfileRegistrationResponseTO1);
         HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = hpRegistrationService.addOrUpdateHpRegistrationDetail(CommonTestData.ID, new HpRegistrationUpdateRequestTO(),
                 certificate, List.of(certificate));
         assertEquals(HP_ID, hpProfileRegistrationResponseTO.getHpProfileId());
@@ -218,7 +231,7 @@ class HpRegistrationServiceImplTest {
     void testAddQualificationShouldAddQualificationDetailsAndReturnSuccess() throws WorkFlowException, NmrException, InvalidRequestException {
         when(hpProfileDaoService.findById(any(BigInteger.class))).thenReturn(getHpProfileForNMR());
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(getRequestCounter());
-        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class),List.of(any(BigInteger.class)))).thenReturn(true);
+        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class),anyList())).thenReturn(true);
         doNothing().when(iWorkFlowService).initiateSubmissionWorkFlow(any(WorkFlowRequestTO.class));
         String s = hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate));
         assertEquals(SUCCESS_RESPONSE, s);
@@ -228,7 +241,7 @@ class HpRegistrationServiceImplTest {
     void testAddQualificationShouldAddQualificationDetailsAndReturnSuccess2() throws WorkFlowException, NmrException, InvalidRequestException {
         when(hpProfileDaoService.findById(any(BigInteger.class))).thenReturn(getHpProfileForNMR());
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(getRequestCounter());
-        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class),List.of(any(BigInteger.class)))).thenReturn(true);
+        when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class),anyList())).thenReturn(true);
         doNothing().when(iWorkFlowService).initiateSubmissionWorkFlow(any(WorkFlowRequestTO.class));
         String s = hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate));
         assertEquals(SUCCESS_RESPONSE, s);
@@ -252,9 +265,11 @@ class HpRegistrationServiceImplTest {
     void testAddOrUpdateWorkProfileDetail() throws NotFoundException, NmrException, InvalidRequestException {
         when(hpProfileDaoService.updateWorkProfileDetails(CommonTestData.ID, getHpWorkProfileUpdateRequest(), List.of(certificate)))
                 .thenReturn(new HpProfileUpdateResponseTO(1, SUCCESS_RESPONSE, HP_ID));
-        when(iHpProfileRepository.findById(CommonTestData.ID)).thenReturn(Optional.of(getHpProfile()));
+        when(iHpProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getHpProfile()));
+        when(iHpProfileRepository.findLatestEntryByUserid(CommonTestData.ID)).thenReturn(getHpProfile());
         when(workProfileRepository.getWorkProfileDetailsByUserId(any(BigInteger.class))).thenReturn(List.of(getWorkProfile()));
         when(languagesKnownRepository.findByUserId(any(BigInteger.class))).thenReturn(List.of(new LanguagesKnown()));
+        when(accessControlService.getLoggedInUser()).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         hpRegistrationService.addOrUpdateWorkProfileDetail(CommonTestData.ID, getHpWorkProfileUpdateRequest(), List.of(certificate));
     }
 
@@ -294,8 +309,8 @@ class HpRegistrationServiceImplTest {
     @Test
     void testSubmitHpProfileShouldSubmitHealthProfessionalProfileForQueryRaised() throws WorkFlowException, InvalidRequestException {
         when(iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(any(BigInteger.class))).thenReturn(false);
+        when(hpProfileDaoService.findById(any(BigInteger.class))).thenReturn(getHpProfile());
         when(workFlowRepository.findLastWorkFlowForHealthProfessional(any(BigInteger.class))).thenReturn(getWorkFlowForQueryRaised());
-        doNothing().when(iWorkFlowService).assignQueriesBackToQueryCreator(anyString(),any(BigInteger.class));
         when(iQueriesService.markQueryAsClosed(any(String.class))).thenReturn(getResponseMessage());
         HpProfileAddResponseTO hpProfileAddResponseTO = hpRegistrationService.submitHpProfile(getHpSubmitRequest());
         assertEquals(HP_ID, hpProfileAddResponseTO.getHpProfileId());
@@ -310,9 +325,7 @@ class HpRegistrationServiceImplTest {
 
     @Test
     void testUserKycFuzzyMatchShouldFailFuzzyMatch() throws ParseException {
-        when(stateMedicalCouncilRepository.findStateMedicalCouncilById(any(BigInteger.class))).thenReturn(getStateMedicalCouncil());
-        when(councilService.getCouncilByRegistrationNumberAndCouncilName(anyString(), anyString())).thenReturn(List.of(getImrCouncilDetails()));
-        KycResponseMessageTo kycResponseMessageTo = hpRegistrationService.userKycFuzzyMatch(Collections.emptyList(), REGISTRATION_NUMBER, SMC_ID, getUserKyc().getName(), getUserKyc().getGender(), getUserKyc().getBirthDate());
+        KycResponseMessageTo kycResponseMessageTo = hpRegistrationService.userKycFuzzyMatch(List.of(getImrCouncilDetails()), REGISTRATION_NUMBER, SMC_ID, getUserKyc().getName(), getUserKyc().getGender(), getUserKyc().getBirthDate());
         assertEquals(FAILURE_RESPONSE, kycResponseMessageTo.getKycFuzzyMatchStatus());
     }
 
@@ -368,13 +381,15 @@ class HpRegistrationServiceImplTest {
     @Test
     void testUpdateHealthProfessionalEmailMobile() throws OtpException, InvalidRequestException {
         when(otpService.isOtpVerified(anyString())).thenReturn(false);
-        doNothing().when(iHpProfileRepository).updateHpProfileMobile(any(BigInteger.class), anyString());
         when(iHpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfile());
         when(iHpProfileRepository.save(any(HpProfile.class))).thenReturn(getHpProfile());
         when(iHpProfileRepository.findMasterHpProfileByHpProfileId(any(BigInteger.class))).thenReturn(CommonTestData.ID);
         doNothing().when(iHpProfileMasterRepository).updateMasterHpProfileMobile(any(BigInteger.class), anyString());
         when(iHpProfileMasterRepository.findHpProfileMasterById(any(BigInteger.class))).thenReturn(getMasterHpProfile());
-        hpRegistrationService.updateHealthProfessionalEmailMobile(CommonTestData.ID, getHealthProfessionalPersonalRequest());
+        HealthProfessionalPersonalRequestTo healthProfessionalPersonalRequest = getHealthProfessionalPersonalRequest();
+        healthProfessionalPersonalRequest.setMobileNumber("9999911111");
+        hpRegistrationService.updateHealthProfessionalEmailMobile(CommonTestData.ID, healthProfessionalPersonalRequest);
+        Mockito.verify(iHpProfileRepository,times(2)).save(any());
     }
 
     @Test
@@ -384,7 +399,7 @@ class HpRegistrationServiceImplTest {
         when(userDaoService.findById(any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(iHpProfileRepository.save(any(HpProfile.class))).thenReturn(getHpProfile());
-        when(resetTokenRepository.findByUserNameAndUserType(anyString(),TEST_USER_TYPE)).thenReturn(getResetToken());
+        when(resetTokenRepository.findByUserNameAndUserType(anyString(),any(BigInteger.class))).thenReturn(getResetToken());
         hpRegistrationService.getEmailVerificationLink(CommonTestData.ID, new VerifyEmailLinkTo(CommonTestData.EMAIL_ID));
     }
 
