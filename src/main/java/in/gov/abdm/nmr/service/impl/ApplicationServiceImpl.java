@@ -127,9 +127,6 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Autowired
     private IWorkFlowAuditRepository iWorkFlowAuditRepository;
 
-    @Autowired
-    private IWorkFlowService workFlowService;
-
     @Value("${feature.toggle.minio.enable}")
     private boolean minioEnable;
 
@@ -193,7 +190,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         HpProfile hpProfile = iHpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
         HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
         ReactivateRequestResponseTo reactivateRequestResponseTo = new ReactivateRequestResponseTo();
-        if (!workFlowService.isAnyActiveWorkflowForHealthProfessional(latestHpProfile.getId())) {
+        if (!iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(latestHpProfile.getId())) {
             log.debug("Proceeding to Reactivate the profile since the profile is currently in Suspended / Black Listed state");
 
             if (Objects.equals(HpProfileStatus.SUSPENDED.getId(), latestHpProfile.getHpProfileStatus().getId())

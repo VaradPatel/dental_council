@@ -54,6 +54,7 @@ CommonTestData {
     public static final String CAPTCHA_IMAGE = "Base 64";
     public static final Date DATE_OF_BIRTH = Date.valueOf("1990-12-01");
     public static final Date REGISTRATION_DATE = Date.valueOf("1990-12-01");
+    public static final Date SUBMISSION_DATE = Date.valueOf("2023-12-01");
     public static final String REGISTRATION_YEAR = "1990";
     public static final String REGISTRATION_NUM_IN_LOWER_CASE = "registrationNumber";
     public static final String REGISTRATION_NUMBER = "MAH-123";
