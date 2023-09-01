@@ -41,7 +41,7 @@ public class ChecksumUtil {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(data.getBytes("UTF-8"));
-            return bytesToHex(hash); // make it printable
+            return bytesToHex(hash);
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException exception) {
             log.error("Exception occurred while generating hash. Exception details are  {}", exception);
         }
