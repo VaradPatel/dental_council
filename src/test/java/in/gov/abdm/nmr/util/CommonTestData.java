@@ -741,6 +741,7 @@ CommonTestData {
         resetToken.setId(CommonTestData.USER_ID);
         resetToken.setExpiryDate(FUTURE_TIMESTAMP);
         resetToken.setUserName(TEST_USER);
+        resetToken.setUserType(UserTypeEnum.HEALTH_PROFESSIONAL.getId());
         return resetToken;
     }
 
@@ -1009,6 +1010,7 @@ CommonTestData {
         OtpGenerateRequestTo otpGenerateRequestTo = new OtpGenerateRequestTo();
         otpGenerateRequestTo.setType(NotificationType.NMR_ID.getNotificationType());
         otpGenerateRequestTo.setContact(MOBILE_NUMBER);
+        otpGenerateRequestTo.setUserType(UserTypeEnum.HEALTH_PROFESSIONAL.getId());
         return otpGenerateRequestTo;
     }
 
@@ -1112,6 +1114,7 @@ CommonTestData {
     public static WorkDetailsTO getWorkDetails() {
         WorkDetailsTO workDetailsTO = new WorkDetailsTO();
         workDetailsTO.setWorkNature(new WorkNatureTO(ID, ""));
+        workDetailsTO.setIsUserCurrentlyWorking(1);
         return workDetailsTO;
     }
 

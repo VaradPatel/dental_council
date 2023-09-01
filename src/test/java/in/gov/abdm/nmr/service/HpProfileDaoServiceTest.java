@@ -10,6 +10,7 @@ import in.gov.abdm.nmr.entity.WorkNature;
 import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.service.impl.HpProfileDaoServiceImpl;
+import in.gov.abdm.nmr.util.AuditLogPublisher;
 import in.gov.abdm.nmr.util.CommonTestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -85,6 +87,8 @@ class HpProfileDaoServiceTest {
     WorkStatusRepository workStatusRepository;
     @Mock
     LanguagesKnownRepository languagesKnownRepository;
+    @Mock
+    AuditLogPublisher auditLogPublisher;
 
     @BeforeEach
     void setup() {
@@ -120,16 +124,9 @@ class HpProfileDaoServiceTest {
     }
 
     @Test
-    void testUpdateHpPersonalDetailsWithExistingProfileWithPendingHpId() {
-        when(iHpProfileRepository.findById(ID)).thenReturn(Optional.of(getHpProfileInApprovedStatus()));
-        when(iHpProfileRepository.findLatestHpProfileByRegistrationId(REGISTRATION_NUMBER)).thenReturn(getHpProfile());
-        assertThrows(InvalidRequestException.class, () -> hpProfileDaoService.updateHpPersonalDetails(ID, getHpPersonalUpdateRequestTo()));
-    }
-
-    @Test
     void testUpdateHpPersonalDetailsWithExistingProfile() throws InvalidRequestException, WorkFlowException {
         when(iHpProfileRepository.findById(ID)).thenReturn(Optional.of(getHpProfileInApprovedStatus()));
-        when(iHpProfileRepository.findLatestHpProfileByRegistrationId(REGISTRATION_NUMBER)).thenReturn(getHpProfileInApprovedStatus());
+        //when(iHpProfileRepository.findLatestHpProfileByRegistrationId(REGISTRATION_NUMBER)).thenReturn(getHpProfileInApprovedStatus());
         when(countryRepository.findById(ID)).thenReturn(Optional.of(getCountry()));
         when(iHpProfileRepository.save(ArgumentMatchers.any())).thenReturn(getHpProfileInApprovedStatus());
         when(iAddressRepository.getCommunicationAddressByHpProfileId(ID, 4)).thenReturn(getCommunicationAddress());
@@ -140,10 +137,11 @@ class HpProfileDaoServiceTest {
         when(subDistrictRepository.findById(newAddress.getSubDistrict().getId())).thenReturn(Optional.of(getSubDistrict()));
         when(villagesRepository.findById(newAddress.getVillage().getId())).thenReturn(Optional.of(getVillage()));
         when(iAddressRepository.save(ArgumentMatchers.any())).thenReturn(newAddress);
-        when(iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(ID)).thenReturn(new RegistrationDetails());
-        when(iRegistrationDetailRepository.save(ArgumentMatchers.any())).thenReturn(new RegistrationDetails());
-        when(iAddressRepository.getCommunicationAddressByHpProfileId(ID, 5)).thenReturn(getKYCAddress());
+        //when(iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(ID)).thenReturn(new RegistrationDetails());
+        //when(iRegistrationDetailRepository.save(ArgumentMatchers.any())).thenReturn(new RegistrationDetails());
+        //when(iAddressRepository.getCommunicationAddressByHpProfileId(ID, 5)).thenReturn(getKYCAddress());
         when(iAddressRepository.save(ArgumentMatchers.any())).thenReturn(getKYCAddress());
+        doNothing().when(auditLogPublisher).publishHpProfileAuditLog(any(HpProfile.class));
         HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpPersonalDetails(ID, getHpPersonalUpdateRequestTo());
         assertEquals(ID, hpProfileUpdateResponseTO.getHpProfileId());
     }
@@ -188,7 +186,7 @@ class HpProfileDaoServiceTest {
         when(iStateMedicalCouncilRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getStateMedicalCouncil()));
         when(qualificationDetailRepository.saveAll(any(List.class))).thenReturn(new ArrayList());
         when(iCustomQualificationDetailRepository.saveAll(any(List.class))).thenReturn(new ArrayList());
-        when(iCustomQualificationDetailRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getForeignQualificationDetails()));
+        //when(iCustomQualificationDetailRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getForeignQualificationDetails()));
         HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(HP_ID, getHpRegistrationUpdateRequestForInternationalQualification(), certificate, List.of(certificate));
         assertEquals(HP_ID, hpProfileUpdateResponseTO.getHpProfileId());
     }
@@ -196,7 +194,7 @@ class HpProfileDaoServiceTest {
     @Test
     void testUpdateWorkProfileDetails() throws NotFoundException, InvalidRequestException, NmrException {
         when(iHpProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getHpProfile()));
-        when(workProfileRepository.getWorkProfileDetailsByUserId(any(BigInteger.class))).thenReturn(List.of(getWorkProfile()));
+        //when(workProfileRepository.getWorkProfileDetailsByUserId(any(BigInteger.class))).thenReturn(List.of(getWorkProfile()));
         when(workNatureRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(new WorkNature()));
         HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateWorkProfileDetails(HP_ID, getHpWorkProfileUpdateRequest(), List.of(certificate, certificate));
         assertEquals(HP_ID, hpProfileUpdateResponseTO.getHpProfileId());
