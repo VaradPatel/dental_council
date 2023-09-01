@@ -55,7 +55,7 @@ class DscControllerTest {
 
 
     @Test
-    void testInvokeDSCGenEspRequest() throws Exception {
+    void testInvokeDSCGenEspRequestShouldReturnValidResponse() throws Exception {
         DscRequestTo dscRequestTo = new DscRequestTo();
         dscRequestTo.setTemplateId(TemplateEnum.TEMPLATE_1.name());
         dscRequestTo.setSigningPlace(SUB_DISTRICT_NAME);

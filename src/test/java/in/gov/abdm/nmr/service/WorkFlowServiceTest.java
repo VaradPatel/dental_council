@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.service;
 
-import in.gov.abdm.nmr.dto.ResponseMessageTo;
 import in.gov.abdm.nmr.dto.WorkFlowRequestTO;
 import in.gov.abdm.nmr.entity.Dashboard;
 import in.gov.abdm.nmr.entity.WorkFlow;
@@ -29,8 +28,7 @@ import java.util.Optional;
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -87,19 +85,14 @@ class WorkFlowServiceTest {
     void testInitiateSubmissionFlow() throws WorkFlowException, InvalidRequestException, TemplateException {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDetailService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
-        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(iWorkFlowRepository.findByRequestId(anyString())).thenReturn(null);
         when(hpProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getHpProfile()));
         when(inmrWorkFlowConfigurationRepository.getNextGroup(any(BigInteger.class), any(BigInteger.class), any(BigInteger.class), any(BigInteger.class))).thenReturn(getNextGroup());
-        when(actionRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getAction()));
         when(userGroupRepository.findById(Group.SMC.getId())).thenReturn(Optional.of(getUserGroup(Group.SMC.getId())));
         when(userGroupRepository.findById(Group.HEALTH_PROFESSIONAL.getId())).thenReturn(Optional.of(getUserGroup(Group.HEALTH_PROFESSIONAL.getId())));
         when(applicationTypeRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getApplicationType()));
         when(iWorkFlowRepository.save(any())).thenReturn(WorkFlow.builder().workFlowStatus(WorkFlowStatus.builder().id(WorkflowStatus.PENDING.getId()).build()).build());
         when(workFlowAuditRepository.save(any())).thenReturn(new WorkFlowAudit());
-        when(dashboardRepository.save(any())).thenReturn(new Dashboard());
-        when(notificationService.sendNotificationOnStatusChangeForHP(anyString(), anyString(), anyString(), anyString())).thenReturn(new ResponseMessageTo());
-        when(workFlowStatusRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(WorkFlowStatus.builder().id(WorkflowStatus.PENDING.getId()).build()));
         when(iActionRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(new in.gov.abdm.nmr.entity.Action()));
         when(iWorkFlowStatusRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(new in.gov.abdm.nmr.entity.WorkFlowStatus()));
         workFlowService.initiateSubmissionWorkFlow(getWorkFlowRequestTO());
@@ -150,7 +143,7 @@ class WorkFlowServiceTest {
 
     @Test
     void testIsAnyActiveWorkflowWithOtherApplicationType() {
-        when(iWorkFlowRepository.findAnyActiveWorkflowWithDifferentApplicationType(any(BigInteger.class), List.of(any(BigInteger.class)))).thenReturn(new WorkFlow());
+        when(iWorkFlowRepository.findAnyActiveWorkflowWithDifferentApplicationType(any(BigInteger.class), anyList())).thenReturn(new WorkFlow());
         boolean anyActiveWorkflowWithOtherApplicationType = workFlowService.isAnyActiveWorkflowWithOtherApplicationType(ID, List.of(ID));
         assertFalse(anyActiveWorkflowWithOtherApplicationType);
     }
@@ -170,7 +163,8 @@ class WorkFlowServiceTest {
         when(iWorkFlowStatusRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(new in.gov.abdm.nmr.entity.WorkFlowStatus()));
         when(iDashboardRepository.findByRequestId(anyString())).thenReturn(new Dashboard());
         when(iDashboardRepository.save(any(Dashboard.class))).thenReturn(new Dashboard());
-        workFlowService.assignQueriesBackToQueryCreator(anyString(),any(BigInteger.class));
+        when(hpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfile());
+        workFlowService.assignQueriesBackToQueryCreator(REQUEST_ID,ID);
         Mockito.verify(iWorkFlowStatusRepository, Mockito.times(2)).findById(any(BigInteger.class));
     }
 

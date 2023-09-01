@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.enums.AddressType;
+import in.gov.abdm.nmr.repository.IStateMedicalCouncilRepository;
 import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
 import in.gov.abdm.nmr.service.IQueriesService;
@@ -56,6 +57,10 @@ class HpRegistrationControllerTest {
 
     @MockBean
     ICouncilService councilService;
+
+    @MockBean
+    IStateMedicalCouncilRepository stateMedicalCouncilRepository;
+
     @Autowired
     WebApplicationContext context;
     @Autowired

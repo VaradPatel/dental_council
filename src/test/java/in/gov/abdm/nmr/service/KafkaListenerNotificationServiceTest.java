@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import in.gov.abdm.nmr.dto.FileESignedEventTO;
 import in.gov.abdm.nmr.repository.IAddressRepository;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.IWorkFlowRepository;
 import in.gov.abdm.nmr.service.impl.KafkaListenerNotificationService;
 import in.gov.abdm.nmr.util.CommonTestData;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,15 @@ class KafkaListenerNotificationServiceTest {
     IHpProfileRepository iHpProfileRepository;
     @Mock
     IAddressRepository iAddressRepository;
+
+    @Mock
+    INotificationService notificationService;
+
+    @Mock
+    IWorkFlowRepository workFlowRepository;
+
+    @Mock
+    IWorkFlowService workFlowService;
 
     private static final String MESSAGE = """
                 {"transactionId":"FileName.pdf","lastAadharDigit":"1859","name":"John Doe","pincode":"123456","yob":"1990","signed":false}

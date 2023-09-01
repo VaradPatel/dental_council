@@ -130,13 +130,10 @@ class CollegeServiceTest {
     }
 
     @Test
-    void testCreateOrUpdateCollegeShouldCreateCollegeAndCheckDuplicateContactsCheck() {
+    void testCreateOrUpdateCollegeShouldThrowExceptionWhenNMCRegisterCollegeWithExistingContact() {
         SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
         when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getNmcUser());
-        when(collegeMasterDaoService.save(any(CollegeMaster.class))).thenReturn(getCollegeMaster());
-        when(universityMasterService.findById(any(BigInteger.class))).thenReturn(getUniversityMaster());
-        when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
-        when(userDaoService.existsByEmailAndUserTypeId(anyString(), any(BigInteger.class))).thenReturn(false);
+        when(userDaoService.existsByEmailAndUserTypeId(anyString(), any(BigInteger.class))).thenReturn(true);
         assertThrows(Exception.class, () -> collegeService.createOrUpdateCollege(getCollege()));
     }
 

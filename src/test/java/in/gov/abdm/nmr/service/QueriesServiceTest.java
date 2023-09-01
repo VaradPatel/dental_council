@@ -1,4 +1,5 @@
 package in.gov.abdm.nmr.service;
+
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.Queries;
 import in.gov.abdm.nmr.enums.ApplicationType;
@@ -13,14 +14,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
 import java.util.List;
 
 import static in.gov.abdm.nmr.util.CommonTestData.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
@@ -57,8 +58,8 @@ class QueriesServiceTest {
     @Test
     void testMarkQueriesAsClosedUpdatesQueryStatus(){
         when(queriesRepository.saveAll(any())).thenReturn(Collections.emptyList());
-        when(queriesRepository.findOpenQueriesByHpProfileId(ID)).thenReturn(List.of(getQueriesEntity()));
-        ResponseMessageTo responseMessageTo = queriesService.markQueryAsClosed(any(String.class));
+        when(queriesRepository.findOpenQueriesByRequestId(anyString())).thenReturn(List.of(getQueriesEntity()));
+        ResponseMessageTo responseMessageTo = queriesService.markQueryAsClosed(REQUEST_ID);
         assertEquals(NMRConstants.SUCCESS_RESPONSE, responseMessageTo.getMessage());
 
 
