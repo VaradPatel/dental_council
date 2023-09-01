@@ -45,7 +45,9 @@ class FacilityServiceTest {
 
     public static FacilitySearchRequestTO getFacilitySearchRequest() {
         FacilitySearchRequestTO facilitySearchRequestTO = new FacilitySearchRequestTO();
-        facilitySearchRequestTO.setId(FACILITY_ID);
+        facilitySearchRequestTO.setOwnership(OWNERSHIP);
+        facilitySearchRequestTO.setState(STATE_NAME);
+        facilitySearchRequestTO.setDistrict(DISTRICT_NAME);
         return facilitySearchRequestTO;
     }
 
@@ -59,7 +61,6 @@ class FacilityServiceTest {
     @Test
     void testFindFacilityShouldThrowInvalidRequestException() {
         Mockito.when(gatewayFClient.sessions(any(SessionRequestTo.class))).thenReturn(getSessionResponse());
-        when(facilityFClient.searchFacility(anyString(), any(FacilityRequestTO.class))).thenReturn(getFacilitySearchResponseTO());
-        assertThrows(InvalidRequestException.class, () -> facilityService.findFacility(any(FacilitySearchRequestTO.class)));
+        assertThrows(InvalidRequestException.class, () -> facilityService.findFacility(new FacilitySearchRequestTO()));
     }
 }

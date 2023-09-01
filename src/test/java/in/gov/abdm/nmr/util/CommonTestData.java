@@ -754,7 +754,18 @@ CommonTestData {
 
     public FacilitiesSearchResponseTO getFacilitySearchResponseTO() {
         FacilitiesSearchResponseTO facilitiesSearchResponseTO = new FacilitiesSearchResponseTO();
+        facilitiesSearchResponseTO.setFacilities(List.of(getFacility()));
         return facilitiesSearchResponseTO;
+    }
+
+    public FacilityTO getFacility() {
+        FacilityTO facility = new FacilityTO();
+        facility.setId(NMRConstants.ID);
+        facility.setFacilityType(FACILITY_TYPE);
+        FacilityAddressTo address = new FacilityAddressTo();
+        address.setDistrictTO(getDistrictTO());
+        facility.setFacilityAddressTo(address);
+        return facility;
     }
 
     public SessionResponseTo getSessionResponse() {
