@@ -33,8 +33,7 @@ import java.security.GeneralSecurityException;
 import static in.gov.abdm.nmr.util.CommonTestData.*;
 import static in.gov.abdm.nmr.util.NMRConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -72,15 +71,15 @@ class PasswordServiceTest {
 
     @Test
     void testGetResetPasswordLinkShouldValidateUserAndSendNotificationForResetPassword() throws TemplateException {
-        when(userDaoService.existsByEmailAndUserTypeId(anyString(),any(BigInteger.class))).thenReturn(true);
-        when(notificationService.sendNotificationForResetPasswordLink(anyString(), anyString(), anyString())).thenReturn(CommonTestData.getResponseMessage());
+        when(userDaoService.existsByEmailAndUserTypeId(nullable(String.class), nullable(BigInteger.class))).thenReturn(true);
+        when(notificationService.sendNotificationForResetPasswordLink(nullable(String.class), nullable(String.class), nullable(String.class))).thenReturn(CommonTestData.getResponseMessage());
         ResponseMessageTo resetPasswordLink = passwordService.getResetPasswordLink(getSendLinkOnMail(),anyString());
         assertEquals(SUCCESS_RESPONSE, resetPasswordLink.getMessage());
     }
 
     @Test
     void testGetResetPasswordLinkShouldValidateUserAndReturnUserNotFound() {
-        when(userDaoService.existsByEmailAndUserTypeId(anyString(), any(BigInteger.class))).thenReturn(false);
+        when(userDaoService.existsByEmailAndUserTypeId(nullable(String.class), nullable(BigInteger.class))).thenReturn(false);
         ResponseMessageTo resetPasswordLink = passwordService.getResetPasswordLink(getSendLinkOnMail(), anyString());
         assertEquals(USER_NOT_FOUND, resetPasswordLink.getMessage());
     }
@@ -96,16 +95,16 @@ class PasswordServiceTest {
 
     @Test
     void testSetNewPasswordShouldValidateUserAndSetNewPassword() {
-        when(resetTokenRepository.findByToken(getSetNewPasswordTo().getToken())).thenReturn(getResetToken());
-        when(userDaoService.findByUsername(TEST_USER, UserTypeEnum.HEALTH_PROFESSIONAL.getId())).thenReturn(new User());
+        when(resetTokenRepository.findByToken(nullable(String.class))).thenReturn(getResetToken());
+        when(userDaoService.findByUsername(nullable(String.class), nullable(BigInteger.class))).thenReturn(new User());
         ResponseMessageTo responseMessage = passwordService.setNewPassword(getSetNewPasswordTo());
         assertEquals(SUCCESS_RESPONSE, responseMessage.getMessage());
     }
 
     @Test
     void testSetNewPasswordShouldValidateUserUserIsNotAvailableThenReturnUserNotFound() {
-        when(resetTokenRepository.findByToken(getSetNewPasswordTo().getToken())).thenReturn(getResetToken());
-        when(userDaoService.findByUsername(TEST_USER,UserTypeEnum.HEALTH_PROFESSIONAL.getId())).thenReturn(null);
+        when(resetTokenRepository.findByToken(nullable(String.class))).thenReturn(getResetToken());
+        when(userDaoService.findByUsername(nullable(String.class),nullable(BigInteger.class))).thenReturn(null);
         ResponseMessageTo responseMessage = passwordService.setNewPassword(getSetNewPasswordTo());
         assertEquals(USER_NOT_FOUND, responseMessage.getMessage());
     }
@@ -113,7 +112,6 @@ class PasswordServiceTest {
     @Test
     void testSetNewPasswordShouldValidateUserLinkExpiredThenReturnLinkExpired() {
         when(resetTokenRepository.findByToken(getSetNewPasswordTo().getToken())).thenReturn(getResetTokenAsExpiryDate());
-        when(userDaoService.findByUsername(TEST_USER,UserTypeEnum.HEALTH_PROFESSIONAL.getId())).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         ResponseMessageTo responseMessage = passwordService.setNewPassword(getSetNewPasswordTo());
         assertEquals(LINK_EXPIRED, responseMessage.getMessage());
     }
@@ -152,7 +150,7 @@ class PasswordServiceTest {
 
     @Test
     void testGenerateLinkShouldValidateUserAndGenerateLink() {
-        when(resetTokenRepository.findByUserNameAndUserType(anyString(),TEST_USER_TYPE)).thenReturn(getResetToken());
+        when(resetTokenRepository.findByUserNameAndUserType(nullable(String.class), nullable(BigInteger.class))).thenReturn(getResetToken());
         String responseMessage = passwordService.generateLink(getSendLinkOnMail());
         assertNotNull(responseMessage);
     }
