@@ -741,6 +741,7 @@ CommonTestData {
         resetToken.setId(CommonTestData.USER_ID);
         resetToken.setExpiryDate(FUTURE_TIMESTAMP);
         resetToken.setUserName(TEST_USER);
+        resetToken.setUserType(UserTypeEnum.HEALTH_PROFESSIONAL.getId());
         return resetToken;
     }
 
@@ -1112,6 +1113,7 @@ CommonTestData {
     public static WorkDetailsTO getWorkDetails() {
         WorkDetailsTO workDetailsTO = new WorkDetailsTO();
         workDetailsTO.setWorkNature(new WorkNatureTO(ID, ""));
+        workDetailsTO.setIsUserCurrentlyWorking(1);
         return workDetailsTO;
     }
 

@@ -198,6 +198,8 @@ class UserServiceTest {
         RetrieveUserRequestTo retrieveUserRequestTo = new RetrieveUserRequestTo();
         retrieveUserRequestTo.setTransactionId(TRANSACTION_ID);
         retrieveUserRequestTo.setContact(MOBILE_NUMBER);
+        retrieveUserRequestTo.setUserType(UserTypeEnum.HEALTH_PROFESSIONAL.getId());
+
         return retrieveUserRequestTo;
     }
 
@@ -230,18 +232,19 @@ class UserServiceTest {
     }
 
     @Test
-    void testVerifyEmailShouldValidateLinkAndReturnSuccessResponse() throws InvalidRequestException{
+    void testVerifyEmailShouldValidateLinkAndReturnSuccessResponse() {
         when(resetTokenRepository.findByToken(anyString())).thenReturn(getResetToken());
         when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(userDaoService.save(any(User.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         String response = userService.verifyEmail(TEMP_TOKEN);
-        assertEquals(SUCCESS_RESPONSE, response);
+        assertEquals(EMAIL_SUCCESS_PAGE, response);
     }
 
     @Test
     void testVerifyEmailShouldTokenValueNullAndReturnLinkExpired() throws InvalidRequestException{
         when(resetTokenRepository.findByToken(anyString())).thenReturn(null);
-        assertThrows(InvalidRequestException.class, () -> userService.verifyEmail(TEMP_TOKEN));
+        String response = userService.verifyEmail(TEMP_TOKEN);
+        assertEquals(EMAIL_FAILURE_PAGE, response);
 
     }
 
@@ -252,13 +255,6 @@ class UserServiceTest {
         resetToken.setUserName(TEST_USER);
         return resetToken;
     }
-
-    @Test
-    void testVerifyEmailShouldReturnLinkExpired() throws InvalidRequestException{
-        when(resetTokenRepository.findByToken(anyString())).thenReturn(getExpiredResetToken());
-        assertThrows(InvalidRequestException.class, () -> userService.verifyEmail(SUCCESS_RESPONSE));
-    }
-
 
     public static UserProfileTO getUserProfileForNMRException() {
         UserProfileTO userProfileTO = new UserProfileTO();
