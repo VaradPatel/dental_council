@@ -47,35 +47,28 @@ import in.gov.abdm.nmr.service.IUserDaoService;
 @Service
 public class AuthServiceImpl implements IAuthService {
 
-    private JwtUtil jwtUtil;
-
-    private IUserDaoService userDetailDaoService;
-    private IHpProfileDaoService hpProfileService;
-    private ICollegeProfileDaoService collegeProfileDaoService;
-    private ISmcProfileDaoService smcProfileDaoService;
-
-    private INmcDaoService nmcDaoService;
-    private INbeDaoService nbeDaoService;
-
+    @Autowired
+    JwtUtil jwtUtil;
+    @Autowired
+    IUserDaoService userDetailDaoService;
+    @Autowired
+    IHpProfileDaoService hpProfileService;
+    @Autowired
+    ICollegeProfileDaoService collegeProfileDaoService;
+    @Autowired
+    ISmcProfileDaoService smcProfileDaoService;
+    @Autowired
+    INmcDaoService nmcDaoService;
+    @Autowired
+    INbeDaoService nbeDaoService;
     @Autowired
     GatewayFClient gatewayFClient;
     @Autowired
-    private IWorkFlowRepository workFlowRepository;
+    IWorkFlowRepository workFlowRepository;
     @Autowired
-    private IHpProfileRepository iHpProfileRepository;
-
+    IHpProfileRepository iHpProfileRepository;
     @Autowired
-    private IBlacklistTokenRepository blacklistTokenRepository;
-
-    public AuthServiceImpl(JwtUtil jwtUtil, IUserDaoService userDetailDaoService, IHpProfileDaoService hpProfileService, ICollegeProfileDaoService collegeProfileDaoService, ISmcProfileDaoService smcProfileDaoService, INmcDaoService nmcDaoService, INbeDaoService nbeDaoService) {
-        this.jwtUtil = jwtUtil;
-        this.userDetailDaoService = userDetailDaoService;
-        this.hpProfileService = hpProfileService;
-        this.collegeProfileDaoService = collegeProfileDaoService;
-        this.smcProfileDaoService = smcProfileDaoService;
-        this.nmcDaoService = nmcDaoService;
-        this.nbeDaoService = nbeDaoService;
-    }
+    IBlacklistTokenRepository blacklistTokenRepository;
 
     @Override
     public LoginResponseTO successfulAuth(HttpServletResponse response) {

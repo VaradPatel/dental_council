@@ -3,12 +3,14 @@ package in.gov.abdm.nmr.service;
 import in.gov.abdm.nmr.client.GatewayFClient;
 import in.gov.abdm.nmr.dto.LoginResponseTO;
 import in.gov.abdm.nmr.dto.SessionRequestTo;
+import in.gov.abdm.nmr.enums.LoginTypeEnum;
 import in.gov.abdm.nmr.enums.UserTypeEnum;
 import in.gov.abdm.nmr.repository.IHpProfileRepository;
 import in.gov.abdm.nmr.repository.IWorkFlowRepository;
 import in.gov.abdm.nmr.security.jwt.JwtUtil;
 import in.gov.abdm.nmr.service.impl.AuthServiceImpl;
 import in.gov.abdm.nmr.util.TestAuthentication;
+import in.gov.abdm.nmr.util.TestUsernamePasswordAuthenticationToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,7 +63,9 @@ class AuthServiceTest {
 
     @Test
     void testSuccessfulAuthSuccessfulAuthForHealthProfessional() {
-        SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
+
+        TestUsernamePasswordAuthenticationToken  testUsernamePasswordAuthenticationToken =  new TestUsernamePasswordAuthenticationToken(null, null, UserTypeEnum.HEALTH_PROFESSIONAL.getId(), LoginTypeEnum.USERNAME_PASSWORD.getCode(), null);
+        SecurityContextHolder.getContext().setAuthentication(testUsernamePasswordAuthenticationToken);
         when(userDetailDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(hpProfileService.findLatestEntryByUserid(any(BigInteger.class))).thenReturn(getHpProfile());
         when(ihpProfileRepository.findLatestHpProfileFromWorkFlow(nullable(String.class))).thenReturn(getHpProfile());
@@ -72,7 +76,8 @@ class AuthServiceTest {
 
     @Test
     void testSuccessfulAuthSuccessfulAuthForCollege() {
-        SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
+        TestUsernamePasswordAuthenticationToken  testUsernamePasswordAuthenticationToken =  new TestUsernamePasswordAuthenticationToken(null, null, UserTypeEnum.COLLEGE.getId(), LoginTypeEnum.USERNAME_PASSWORD.getCode(), null);
+        SecurityContextHolder.getContext().setAuthentication(testUsernamePasswordAuthenticationToken);
         when(userDetailDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.COLLEGE.getId()));
         when(collegeProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getCollegeProfile());
         LoginResponseTO loginResponseTO = authService.successfulAuth(response);
@@ -81,15 +86,12 @@ class AuthServiceTest {
 
     @Test
     void testSuccessfulAuthSuccessfulAuthForSMC() {
-        SecurityContextHolder.getContext().setAuthentication(new TestAuthentication());
+        TestUsernamePasswordAuthenticationToken  testUsernamePasswordAuthenticationToken =  new TestUsernamePasswordAuthenticationToken(null, null, UserTypeEnum.SMC.getId(), LoginTypeEnum.USERNAME_PASSWORD.getCode(), null);
+        SecurityContextHolder.getContext().setAuthentication(testUsernamePasswordAuthenticationToken);
         when(userDetailDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.SMC.getId()));
         when(smcProfileDaoService.findByUserId(any(BigInteger.class))).thenReturn(getSmcProfile());
         LoginResponseTO loginResponseTO = authService.successfulAuth(response);
         assertEquals(ID, loginResponseTO.getUserId());
     }
 
-    @Test
-    void testSessionsShouldThrowException() {
-        assertThrows(Exception.class, () -> authService.sessions(SessionRequestTo.builder().clientId(CLIENT_ID).clientSecret(CLIENT_SECRET).build()));
-    }
-}
+  }

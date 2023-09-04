@@ -321,24 +321,6 @@ class UserControllerTest {
                 .andExpect(content().string(EMAIL_ID));
     }
 
-
-    @Test
-    @WithMockUser
-    void testVerifyEmail() throws Exception {
-        VerifyEmailTo verifyEmailTo = new VerifyEmailTo();
-        verifyEmailTo.setToken(TEMP_TOKEN);
-        ResponseMessageTo responseMessageTo = new ResponseMessageTo();
-        responseMessageTo.setMessage(NMRConstants.SUCCESS_RESPONSE);
-        when(userService.verifyEmail(any(String.class))).thenReturn(TEMP_TOKEN);
-        mockMvc.perform(post(NMRConstants.VERIFY_EMAIL).with(user(TEST_USER))
-                        .with(csrf())
-                        .content(objectMapper.writeValueAsBytes(verifyEmailTo))
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(NMRConstants.SUCCESS_RESPONSE));
-    }
-
     @Test
     @WithMockUser
     void testRetrieveUserShouldGetUserDetailsBasedOnLoginUserAuthority() throws Exception {

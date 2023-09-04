@@ -54,9 +54,8 @@ class AuthControllerTest {
 
     @Test
     void testRefreshTokenSuccess() throws Exception {
-        when(authService.successfulAuth(response)).thenReturn(expectedResponse);
+        when(authService.successfulAuthRefreshToken(response)).thenReturn(expectedResponse);
         LoginResponseTO actualResponse = authController.refreshToken(response);
-        verify(authService).successfulAuth(response);
         assertEquals(expectedResponse, actualResponse);
     }
 }

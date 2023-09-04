@@ -137,20 +137,22 @@ class ApplicationControllerTest {
         reactivateRequestResponseTo.setMessage(SUCCESS_RESPONSE);
         String data = """
                 {
-                 "hpProfileId": 333,
-                 "applicationTypeId": 30031,
-                 "actionId": "Yes"
+                 "hp_profile_id": 333,
+                 "application_type_id": 5,
+                 "action_id": 1
                 }
                 """;
-        MockMultipartFile multipartFile = new MockMultipartFile("functionTestingFile", "filename.txt", "text/plain",
+        MockMultipartFile multipartFile = new MockMultipartFile("reactivationFile", "filename.pdf", "text/plain",
                 "some xml".getBytes());
+        MockMultipartFile dataRequest = new MockMultipartFile("data", "", MediaType.APPLICATION_JSON_VALUE,
+                data.getBytes());
 
         when(applicationService.reactivateRequest(any(MultipartFile.class),any(ApplicationRequestTo.class))).thenReturn(reactivateRequestResponseTo);
         mockMvc.perform(multipart(ProtectedPaths.REACTIVATE_REQUEST_URL)
                         .file(multipartFile)
-                        .param("date",data).contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .file(dataRequest)
                         .with(user(TEST_USER)).with(csrf())
-                        .content(objectMapper.writeValueAsBytes(new ApplicationRequestTo())).accept(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.profile_id").value("1"))
