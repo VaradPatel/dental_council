@@ -5,6 +5,7 @@ import in.gov.abdm.nmr.entity.*;
 import in.gov.abdm.nmr.exception.InvalidIdException;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
+import in.gov.abdm.nmr.exception.OtpException;
 import in.gov.abdm.nmr.repository.INbeProfileRepository;
 import in.gov.abdm.nmr.repository.INmcProfileRepository;
 import in.gov.abdm.nmr.repository.ISmcProfileRepository;
@@ -14,6 +15,7 @@ import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,7 @@ import javax.transaction.Transactional;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -35,6 +38,16 @@ public class UserDaoServiceImpl implements IUserDaoService {
     private ISmcProfileRepository smcProfileRepository;
     private INmcProfileRepository nmcProfileRepository;
     private INbeProfileRepository nbeProfileRepository;
+
+    @Autowired
+    OtpServiceImpl otpService;
+
+/*
+    @Autowired
+    public UserDaoServiceImpl(@Qualifier("otpService") OtpServiceImpl otpService) {
+        this.otpService = otpService;
+    }
+*/
 
     private EntityManager entityManager;
 
@@ -169,11 +182,20 @@ public class UserDaoServiceImpl implements IUserDaoService {
     }
 
     @Override
-    public SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws InvalidIdException, InvalidRequestException {
+    public SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws InvalidIdException, InvalidRequestException, OtpException {
         SMCProfile smcProfile = smcProfileRepository.findById(id).orElse(null);
         if (smcProfile == null) {
             throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(), NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
+        String transactionId = smcProfileTO.getTransactionId();
+        if (!Objects.equals(smcProfileTO.getMobileNo(), smcProfile.getMobileNo())) {
+            if (transactionId == null) {
+                throw new InvalidRequestException(NMRError.MISSING_MANDATORY_FIELD.getCode(), NMRError.MISSING_MANDATORY_FIELD.getMessage());
+            } else if (otpService.isOtpVerified(transactionId)) {
+                throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());
+            }
+        }
+
         smcProfile.setId(id);
         smcProfile.setFirstName(smcProfileTO.getFirstName());
         smcProfile.setMiddleName(smcProfileTO.getMiddleName());
@@ -207,10 +229,18 @@ public class UserDaoServiceImpl implements IUserDaoService {
     }
 
     @Override
-    public NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws InvalidIdException, InvalidRequestException {
+    public NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws InvalidIdException, InvalidRequestException, OtpException {
         NmcProfile nmcProfile = nmcProfileRepository.findById(id).orElse(null);
         if (nmcProfile == null) {
-            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(),NMRError.INVALID_ID_EXCEPTION.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(), NMRError.INVALID_ID_EXCEPTION.getMessage());
+        }
+        String transactionId = nmcProfileTO.getTransactionId();
+        if (!Objects.equals(nmcProfile.getMobileNo(), nmcProfileTO.getMobileNo())) {
+            if (transactionId == null) {
+                throw new InvalidRequestException(NMRError.MISSING_MANDATORY_FIELD.getCode(), NMRError.MISSING_MANDATORY_FIELD.getMessage());
+            } else if (otpService.isOtpVerified(transactionId)) {
+                throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());
+            }
         }
         nmcProfile.setId(id);
         nmcProfile.setFirstName(nmcProfileTO.getFirstName());
@@ -241,10 +271,18 @@ public class UserDaoServiceImpl implements IUserDaoService {
     }
 
     @Override
-    public NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws InvalidIdException, InvalidRequestException {
+    public NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws InvalidIdException, InvalidRequestException, OtpException {
         NbeProfile nbeProfile = nbeProfileRepository.findById(id).orElse(null);
         if (nbeProfile == null) {
-            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(),NMRError.INVALID_ID_EXCEPTION.getMessage());
+            throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(), NMRError.INVALID_ID_EXCEPTION.getMessage());
+        }
+        String transactionId = nbeProfileTO.getTransactionId();
+        if (!Objects.equals(nbeProfileTO.getMobileNo(), nbeProfile.getMobileNo())) {
+            if (transactionId == null) {
+                throw new InvalidRequestException(NMRError.MISSING_MANDATORY_FIELD.getCode(), NMRError.MISSING_MANDATORY_FIELD.getMessage());
+            } else if (otpService.isOtpVerified(transactionId)) {
+                throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());
+            }
         }
         nbeProfile.setId(id);
         nbeProfile.setDisplayName(nbeProfileTO.getDisplayName());

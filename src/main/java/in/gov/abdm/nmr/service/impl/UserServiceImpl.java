@@ -146,17 +146,17 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public SMCProfileTO updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException {
+    public SMCProfileTO updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException, OtpException {
         return smcMapper.smcProfileToDto(userDaoService.updateSmcProfile(id, smcProfileTO));
     }
 
     @Override
-    public NmcProfileTO updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException {
+    public NmcProfileTO updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException, OtpException {
         return nmcMapper.nmcProfileToDto(userDaoService.updateNmcProfile(id, nmcProfileTO));
     }
 
     @Override
-    public NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException, InvalidRequestException {
+    public NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException, InvalidRequestException, OtpException {
         return nbeMapper.nbeProfileToDto(userDaoService.updateNbeProfile(id, nbeProfileTO));
     }
 

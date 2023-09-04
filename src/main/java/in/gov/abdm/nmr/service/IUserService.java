@@ -28,11 +28,11 @@ public interface IUserService {
 
     NbeProfileTO getNbeProfile(BigInteger id) throws NmrException, InvalidIdException;
 
-    SMCProfileTO updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException;
+    SMCProfileTO updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException, OtpException;
 
-    NmcProfileTO updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException;
+    NmcProfileTO updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException, OtpException;
 
-    NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException, InvalidRequestException;
+    NbeProfileTO updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException, InvalidRequestException, OtpException;
 
     String retrieveUser(RetrieveUserRequestTo retrieveUserRequestTo) throws OtpException;
 
