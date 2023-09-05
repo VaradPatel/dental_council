@@ -14,6 +14,7 @@ import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.repository.*;
 import in.gov.abdm.nmr.security.jwt.JwtAuthenticationToken;
+import in.gov.abdm.nmr.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +40,6 @@ import in.gov.abdm.nmr.mapper.INbeMapper;
 import in.gov.abdm.nmr.mapper.INmcMapper;
 import in.gov.abdm.nmr.mapper.ISmcMapper;
 import in.gov.abdm.nmr.security.common.RsaUtil;
-import in.gov.abdm.nmr.service.INbeDaoService;
-import in.gov.abdm.nmr.service.INmcDaoService;
-import in.gov.abdm.nmr.service.INotificationService;
-import in.gov.abdm.nmr.service.IPasswordService;
-import in.gov.abdm.nmr.service.ISmcProfileDaoService;
-import in.gov.abdm.nmr.service.IUserDaoService;
-import in.gov.abdm.nmr.service.IUserService;
 import in.gov.abdm.nmr.util.NMRConstants;
 
 import static in.gov.abdm.nmr.util.NMRConstants.*;
@@ -77,7 +71,7 @@ public class UserServiceImpl implements IUserService {
     INotificationService notificationService;
 
     @Autowired
-    OtpServiceImpl otpService;
+    IOtpValidationService otpValidationService;
 
     @Autowired
     IRegistrationDetailRepository iRegistrationDetailRepository;
@@ -163,7 +157,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public String retrieveUser(RetrieveUserRequestTo retrieveUserRequestTo) throws OtpException {
         String transactionId = retrieveUserRequestTo.getTransactionId();
-        if (otpService.isOtpVerified(transactionId)) {
+        if (otpValidationService.isOtpVerified(transactionId)) {
             throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());
         }
         User user = userDaoService.findByMobileNumberAndUserTypeId(retrieveUserRequestTo.getContact(), retrieveUserRequestTo.getUserType());

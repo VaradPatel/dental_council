@@ -58,6 +58,8 @@ class PasswordServiceTest {
     private IPasswordDaoService passwordDaoService;
     @Mock
     private IOtpService otpService;
+    @Mock
+    private IOtpValidationService otpValidationService;
 
     @Mock
     private IUserRepository userDetailRepository;
@@ -128,7 +130,7 @@ class PasswordServiceTest {
 
     @Test
     void testResetPasswordShouldValidateUserAndOtpThenResetPassword() throws OtpException, GeneralSecurityException, InvalidRequestException {
-        when(otpService.isOtpVerified(anyString())).thenReturn(false);
+        when(otpValidationService.isOtpVerified(anyString())).thenReturn(false);
         when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         ResponseMessageTo responseMessage = passwordService.resetPassword(new ResetPasswordRequestTo(TEST_USER,TEST_PSWD,TEST_USER_TYPE, TRANSACTION_ID));
     }

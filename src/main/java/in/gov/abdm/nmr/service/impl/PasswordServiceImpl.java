@@ -66,7 +66,7 @@ public class PasswordServiceImpl implements IPasswordService {
     private IPasswordDaoService passwordDaoService;
 
     @Autowired
-    private IOtpService otpService;
+    private IOtpValidationService otpValidationService;
 
     /**
      * Creates new unique token for reset password transaction
@@ -149,7 +149,7 @@ public class PasswordServiceImpl implements IPasswordService {
     @Override
     public ResponseMessageTo resetPassword(ResetPasswordRequestTo resetPasswordRequestTo) throws GeneralSecurityException, InvalidRequestException, OtpException {
         String transactionId = resetPasswordRequestTo.getTransactionId();
-        if (otpService.isOtpVerified(transactionId)) {
+        if (otpValidationService.isOtpVerified(transactionId)) {
             throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());
         }
         User user = userDaoService.findByUsername(resetPasswordRequestTo.getUsername(), resetPasswordRequestTo.getUserType());

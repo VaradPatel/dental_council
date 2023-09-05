@@ -44,6 +44,9 @@ class OtpServiceTest {
     @Mock
     RsaUtil rsaUtil;
 
+    @Mock
+    IOtpValidationService otpValidationService;
+
     @InjectMocks
     OtpServiceImpl otpService = new OtpServiceImpl();
 
@@ -53,7 +56,7 @@ class OtpServiceTest {
 
     @Test
     void testGenerateOtpShouldGenerateOtpAndSendToMobileNumberForNMRId() throws OtpException, InvalidRequestException, TemplateException {
-        when(userDaoService.findByUsername(anyString(),any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
+        when(userDaoService.findByUsername(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
         when(notificationService.sendNotificationForOTP(anyString(), anyString(), anyString())).thenReturn(getResponseMessage());
@@ -67,7 +70,7 @@ class OtpServiceTest {
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
         when(notificationService.sendNotificationForOTP(anyString(), anyString(), anyString())).thenReturn(getResponseMessage());
-        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(MOBILE_NUMBER,UserTypeEnum.HEALTH_PROFESSIONAL.getId() ,NotificationType.SMS.getNotificationType(), true));
+        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(MOBILE_NUMBER, UserTypeEnum.HEALTH_PROFESSIONAL.getId(), NotificationType.SMS.getNotificationType(), true));
         assertEquals(SUCCESS_RESPONSE, otpResponseMessageTo.getMessage());
     }
 
@@ -76,7 +79,7 @@ class OtpServiceTest {
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
         when(notificationService.sendNotificationForOTP(anyString(), anyString(), anyString())).thenReturn(getResponseMessage());
-        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(EMAIL_ID,UserTypeEnum.HEALTH_PROFESSIONAL.getId(),NotificationType.EMAIL.getNotificationType(), true));
+        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(EMAIL_ID, UserTypeEnum.HEALTH_PROFESSIONAL.getId(), NotificationType.EMAIL.getNotificationType(), true));
         assertEquals(SUCCESS_RESPONSE, otpResponseMessageTo.getMessage());
     }
 
@@ -85,7 +88,7 @@ class OtpServiceTest {
         when(otpDaoService.findAllByContact(anyString())).thenReturn(geOtpList());
         when(otpDaoService.save(any(Otp.class))).thenReturn(getOtp());
         when(notificationService.sendNotificationForOTP(anyString(), anyString(), anyString())).thenReturn(new ResponseMessageTo(NMRConstants.NO_SUCH_OTP_TYPE));
-        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(EMAIL_ID,UserTypeEnum.HEALTH_PROFESSIONAL.getId(),NotificationType.EMAIL.getNotificationType(), true));
+        OTPResponseMessageTo otpResponseMessageTo = otpService.generateOtp(new OtpGenerateRequestTo(EMAIL_ID, UserTypeEnum.HEALTH_PROFESSIONAL.getId(), NotificationType.EMAIL.getNotificationType(), true));
         assertEquals(FAILURE_RESPONSE, otpResponseMessageTo.getMessage());
     }
 
@@ -146,20 +149,5 @@ class OtpServiceTest {
         otp.setExpired(true);
         otp.setOtp(OTP);
         return otp;
-    }
-
-    @Test
-    void testIsOtpVerifiedShouldReturnTrue() {
-        when(otpDaoService.findById(anyString())).thenReturn(getOtpForExpired());
-        Mockito.doNothing().when(otpDaoService).deleteById(any(String.class));
-        boolean otpVerified = otpService.isOtpVerified(OTP);
-        assertTrue(otpVerified);
-    }
-
-    @Test
-    void testIsOtpVerifiedShouldReturnFalse() {
-        when(otpDaoService.findById(anyString())).thenReturn(null);
-        boolean otpVerified = otpService.isOtpVerified(OTP);
-        assertFalse(otpVerified);
     }
 }

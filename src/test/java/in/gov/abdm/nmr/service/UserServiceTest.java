@@ -68,6 +68,8 @@ class UserServiceTest {
     INmcDaoService nmcDaoService;
     @Mock
     EntityManager entityManager;
+    @Mock
+    IOtpValidationService otpValidationService;
 
     @Test
     void testToggleSmsNotification() {
@@ -205,7 +207,7 @@ class UserServiceTest {
 
     @Test
     void testRetrieveUserShouldValidateOtpAndReturnEmailID() throws OtpException {
-        when(otpService.isOtpVerified(anyString())).thenReturn(false);
+        when(otpValidationService.isOtpVerified(anyString())).thenReturn(false);
         when(userDaoService.findByMobileNumberAndUserTypeId(anyString(), any(BigInteger.class))).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         String response = userService.retrieveUser(getRetrieveUserRequest());
         assertEquals(CommonTestData.EMAIL_ID, response);
@@ -219,7 +221,7 @@ class UserServiceTest {
 
     @Test
     void testRetrieveUserShouldValidateOtpAndReturnUsername() throws OtpException {
-        when(otpService.isOtpVerified(anyString())).thenReturn(false);
+        when(otpValidationService.isOtpVerified(anyString())).thenReturn(false);
         when(userDaoService.findByMobileNumberAndUserTypeId(anyString(), any(BigInteger.class))).thenReturn(getRetrieveUserName());
         String response = userService.retrieveUser(getRetrieveUserRequest());
         assertEquals(TEST_USER, response);
@@ -227,7 +229,7 @@ class UserServiceTest {
 
     @Test
     void testRetrieveUserShouldThrowInvalidOtpException() {
-        when(otpService.isOtpVerified(anyString())).thenReturn(true);
+        when(otpValidationService.isOtpVerified(anyString())).thenReturn(true);
         assertThrows(OtpException.class, () -> userService.retrieveUser(getRetrieveUserRequest()));
     }
 

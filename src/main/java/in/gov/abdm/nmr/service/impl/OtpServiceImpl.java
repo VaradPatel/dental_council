@@ -187,22 +187,4 @@ public class OtpServiceImpl implements IOtpService {
         }
     }
 
-    @Override
-    public boolean isOtpVerified(String id) {
-        if (!otpEnabled) {
-            return true;
-        }
-        
-        Otp otp = otpDaoService.findById(id);
-        if (otp == null) {
-            return false;
-        }
-        otpDaoService.deleteById(id);
-        return otp.isExpired();
-    }
-    
-    @Override
-    public boolean isOtpEnabled() {
-        return otpEnabled;
-    }
 }
