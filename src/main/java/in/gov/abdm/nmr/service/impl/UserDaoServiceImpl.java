@@ -13,9 +13,9 @@ import in.gov.abdm.nmr.repository.IUserRepository;
 import in.gov.abdm.nmr.security.jwt.JwtAuthenticationToken;
 import in.gov.abdm.nmr.service.IAccessControlService;
 import in.gov.abdm.nmr.service.IUserDaoService;
+import in.gov.abdm.nmr.service.IValidationService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +28,6 @@ import javax.transaction.Transactional;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Transactional
@@ -38,22 +37,14 @@ public class UserDaoServiceImpl implements IUserDaoService {
     private ISmcProfileRepository smcProfileRepository;
     private INmcProfileRepository nmcProfileRepository;
     private INbeProfileRepository nbeProfileRepository;
+    private IValidationService validationService;
 
-    @Autowired
-    OtpServiceImpl otpService;
-
-/*
-    @Autowired
-    public UserDaoServiceImpl(@Qualifier("otpService") OtpServiceImpl otpService) {
-        this.otpService = otpService;
-    }
-*/
 
     private EntityManager entityManager;
 
     private IAccessControlService accessControlService;
     public UserDaoServiceImpl(IUserRepository userDetailRepository, EntityManager entityManager, ISmcProfileRepository smcProfileRepository,
-                              INmcProfileRepository nmcProfileRepository, INbeProfileRepository nbeProfileRepository, IAccessControlService accessControlService) {
+                              INmcProfileRepository nmcProfileRepository, INbeProfileRepository nbeProfileRepository, IAccessControlService accessControlService, IValidationService validationService) {
         super();
         this.userDetailRepository = userDetailRepository;
         this.entityManager = entityManager;
@@ -61,6 +52,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
         this.nmcProfileRepository = nmcProfileRepository;
         this.nbeProfileRepository = nbeProfileRepository;
         this.accessControlService = accessControlService;
+        this.validationService = validationService;
     }
 
     @Override
@@ -188,13 +180,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
             throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(), NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
         String transactionId = smcProfileTO.getTransactionId();
-        if (!Objects.equals(smcProfileTO.getMobileNo(), smcProfile.getMobileNo())) {
-            if (transactionId == null) {
-                throw new InvalidRequestException(NMRError.MISSING_MANDATORY_FIELD.getCode(), NMRError.MISSING_MANDATORY_FIELD.getMessage());
-            } else if (otpService.isOtpVerified(transactionId)) {
-                throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());
-            }
-        }
+        validationService.validateTransactionIdForMobileNumberUpdates(smcProfileTO.getMobileNo(), smcProfile.getMobileNo(), transactionId);
 
         smcProfile.setId(id);
         smcProfile.setFirstName(smcProfileTO.getFirstName());
@@ -235,13 +221,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
             throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(), NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
         String transactionId = nmcProfileTO.getTransactionId();
-        if (!Objects.equals(nmcProfile.getMobileNo(), nmcProfileTO.getMobileNo())) {
-            if (transactionId == null) {
-                throw new InvalidRequestException(NMRError.MISSING_MANDATORY_FIELD.getCode(), NMRError.MISSING_MANDATORY_FIELD.getMessage());
-            } else if (otpService.isOtpVerified(transactionId)) {
-                throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());
-            }
-        }
+        validationService.validateTransactionIdForMobileNumberUpdates(nmcProfile.getMobileNo(), nmcProfileTO.getMobileNo(), transactionId);
         nmcProfile.setId(id);
         nmcProfile.setFirstName(nmcProfileTO.getFirstName());
         nmcProfile.setMiddleName(nmcProfileTO.getMiddleName());
@@ -277,13 +257,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
             throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(), NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
         String transactionId = nbeProfileTO.getTransactionId();
-        if (!Objects.equals(nbeProfileTO.getMobileNo(), nbeProfile.getMobileNo())) {
-            if (transactionId == null) {
-                throw new InvalidRequestException(NMRError.MISSING_MANDATORY_FIELD.getCode(), NMRError.MISSING_MANDATORY_FIELD.getMessage());
-            } else if (otpService.isOtpVerified(transactionId)) {
-                throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());
-            }
-        }
+        validationService.validateTransactionIdForMobileNumberUpdates(nbeProfileTO.getMobileNo(), nbeProfile.getMobileNo(), transactionId);
         nbeProfile.setId(id);
         nbeProfile.setDisplayName(nbeProfileTO.getDisplayName());
         nbeProfile.setEmailId(nbeProfileTO.getEmailId());
