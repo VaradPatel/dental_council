@@ -16,6 +16,7 @@ import in.gov.abdm.nmr.service.IUserDaoService;
 import in.gov.abdm.nmr.service.IValidationService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -32,28 +33,20 @@ import java.util.List;
 @Service
 @Transactional
 public class UserDaoServiceImpl implements IUserDaoService {
-
-    private IUserRepository userDetailRepository;
-    private ISmcProfileRepository smcProfileRepository;
-    private INmcProfileRepository nmcProfileRepository;
-    private INbeProfileRepository nbeProfileRepository;
-    private IValidationService validationService;
-
-
-    private EntityManager entityManager;
-
-    private IAccessControlService accessControlService;
-    public UserDaoServiceImpl(IUserRepository userDetailRepository, EntityManager entityManager, ISmcProfileRepository smcProfileRepository,
-                              INmcProfileRepository nmcProfileRepository, INbeProfileRepository nbeProfileRepository, IAccessControlService accessControlService, IValidationService validationService) {
-        super();
-        this.userDetailRepository = userDetailRepository;
-        this.entityManager = entityManager;
-        this.smcProfileRepository = smcProfileRepository;
-        this.nmcProfileRepository = nmcProfileRepository;
-        this.nbeProfileRepository = nbeProfileRepository;
-        this.accessControlService = accessControlService;
-        this.validationService = validationService;
-    }
+    @Autowired
+    IUserRepository userDetailRepository;
+    @Autowired
+    ISmcProfileRepository smcProfileRepository;
+    @Autowired
+    INmcProfileRepository nmcProfileRepository;
+    @Autowired
+    INbeProfileRepository nbeProfileRepository;
+    @Autowired
+    IValidationService validationService;
+    @Autowired
+    EntityManager entityManager;
+    @Autowired
+    IAccessControlService accessControlService;
 
     @Override
     public Integer updateRefreshTokenId(UpdateRefreshTokenIdRequestTO refreshTokenRequestTO) {

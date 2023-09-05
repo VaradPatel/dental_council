@@ -6,9 +6,11 @@ import in.gov.abdm.nmr.exception.OtpException;
 import in.gov.abdm.nmr.service.IOtpService;
 import in.gov.abdm.nmr.service.IValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
+@Component
 public class ValidationServiceImpl implements IValidationService {
 
     @Autowired

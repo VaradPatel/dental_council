@@ -45,7 +45,7 @@ class OtpServiceTest {
     RsaUtil rsaUtil;
 
     @InjectMocks
-    OtpServiceImpl otpService = new OtpServiceImpl(otpDaoService, userDaoService, notificationService, rsaUtil, true);
+    OtpServiceImpl otpService = new OtpServiceImpl();
 
     @BeforeEach
     void setup() {
