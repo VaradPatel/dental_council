@@ -417,7 +417,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         return new HpProfileAddResponseTO(201, "Hp Profile Submitted Successfully!", hpSubmitRequestTO.getHpProfileId(), requestId);
     }
 
-    private void validateUserAccessToResource(BigInteger hpProfileId) {
+    public void validateUserAccessToResource(BigInteger hpProfileId) {
         User loggedInUser = accessControlService.getLoggedInUser();
         if (UserTypeEnum.HEALTH_PROFESSIONAL.getId().equals(loggedInUser.getUserType().getId())) {
             HpProfile hpProfile = iHpProfileRepository.findLatestEntryByUserid(loggedInUser.getId());
