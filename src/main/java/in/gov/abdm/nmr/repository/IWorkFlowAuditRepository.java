@@ -16,6 +16,6 @@ public interface IWorkFlowAuditRepository extends JpaRepository<WorkFlowAudit, B
      * @param requestId the ID of the request to fetch the application details for
      * @return a list of WorkFlowAudit objects containing the application details for the request
      */
-    @Query(value = "Select * from work_flow_audit where request_id = :requestId order by created_at asc ", nativeQuery = true)
-    List<WorkFlowAudit> fetchApplicationDetails(String requestId);
+    @Query(value = "Select * from work_flow_audit where request_id = :requestId order by created_at asc limit 1", nativeQuery = true)
+    WorkFlowAudit fetchApplicationDetails(String requestId);
 }

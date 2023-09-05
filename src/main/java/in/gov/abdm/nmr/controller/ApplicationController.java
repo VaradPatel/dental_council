@@ -130,7 +130,7 @@ public class ApplicationController {
      * which contains all the details used to track the health professionals who have
      * raised a request
      */
-    @GetMapping(PATH_HEALTH_PROFESSIONAL_APPLICATIONS)
+    @GetMapping(path = ProtectedPaths.GET_HEALTH_PROFESSIONAL_APPLICATIONS)
     public HealthProfessionalApplicationResponseTo trackApplicationDetails(@PathVariable("healthProfessionalId") BigInteger healthProfessionalId,
                                                                            @RequestParam(required = false, value = "pageNo", defaultValue = "1") String pageNo,
                                                                            @RequestParam(required = false, value = "offset", defaultValue = "10") String offset,
@@ -187,7 +187,7 @@ public class ApplicationController {
      * @param requestId the unique identifier for the application request
      * @return an {@link ApplicationDetailResponseTo} object containing the details of the application
      */
-    @GetMapping(APPLICATION_DETAILS)
+    @GetMapping(path = ProtectedPaths.APPLICATION_DETAILS)
     public ApplicationDetailResponseTo applicationDetail(@PathVariable(name = "requestId") String requestId) throws InvalidRequestException {
         return applicationService.fetchApplicationDetail(requestId);
     }
