@@ -108,7 +108,11 @@ public final class NMRUtil {
     public static void isFileTypeSupported(MultipartFile file) throws InvalidRequestException {
         if (file != null && StringUtils.isNotBlank(file.getOriginalFilename())) {
             String originalFilename = file.getOriginalFilename();
+            boolean matches = originalFilename.matches("^[A-Za-z0-9_-]+.[A-Za-z]+$");
             String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+            if (!matches) {
+                throw new InvalidRequestException("Invalid file");
+            }
             if (!SUPPORTED_FILE_TYPES.contains(fileExtension)) {
                 throw new InvalidRequestException(fileExtension + " is not an allowed file type.");
             }
