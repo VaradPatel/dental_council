@@ -8,6 +8,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 
+import in.gov.abdm.nmr.security.ChecksumUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,13 +32,18 @@ public class CaptchaController {
         this.validator = validator;
     }
 
+    @Autowired
+    ChecksumUtil checksumUtil;
+
     @GetMapping("/generate-captcha")
     public GenerateCaptchaResponseTO generateCaptcha() throws NoSuchAlgorithmException, IOException {
+        checksumUtil.validateChecksum();
         return captchaService.generateCaptcha();
     }
 
     @PostMapping("/verify-captcha")
     public ValidateCaptchaResponseTO validateCaptcha(@RequestBody ValidateCaptchaRequestTO validateCaptchaRequestTO) {
+        checksumUtil.validateChecksum();
         if (captchaService.isCaptchaEnabled()) {
             Set<ConstraintViolation<ValidateCaptchaRequestTO>> constraintViolations = validator.validate(validateCaptchaRequestTO);
             if (!constraintViolations.isEmpty()) {

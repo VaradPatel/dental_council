@@ -6,6 +6,7 @@ import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NMRError;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.security.ChecksumUtil;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IApplicationService;
 import in.gov.abdm.nmr.service.IRequestCounterService;
@@ -41,6 +42,9 @@ public class ApplicationController {
     @Autowired
     private IRequestCounterService requestCounterService;
 
+    @Autowired
+    ChecksumUtil checksumUtil;
+
     /**
      * This API endpoint is used to Suspend a health professional.
      *
@@ -52,6 +56,7 @@ public class ApplicationController {
      */
     @PostMapping(ProtectedPaths.SUSPENSION_REQUEST_URL)
     public SuspendRequestResponseTo suspendHealthProfessional(@Valid @RequestBody ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
+        checksumUtil.validateChecksum();
         if(iWorkFlowService.isAnyActiveWorkflowExceptAdditionalQualification(applicationRequestTo.getHpProfileId())){
             throw new WorkFlowException(NMRError.SUSPENSION_REQUEST_ALREADY_EXISTS.getCode(), NMRError.SUSPENSION_REQUEST_ALREADY_EXISTS.getMessage());
         }
@@ -83,6 +88,7 @@ public class ApplicationController {
     public ReactivateRequestResponseTo reactivateHealthProfessional(@RequestParam(value = "reactivationFile", required = false) MultipartFile reactivationFile,
                                                                     @RequestPart("data") @Valid ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException, IOException {
 
+        checksumUtil.validateChecksum();
         log.info("In Application Controller: reactivateHealthProfessional method ");
         log.debug("Request Payload: ApplicationRequestTo: ");
         log.debug(applicationRequestTo.toString());
@@ -171,6 +177,7 @@ public class ApplicationController {
      */
     @PatchMapping(HEALTH_PROFESSIONAL_ACTION)
     public ResponseEntity<ResponseMessageTo> executeActionOnHealthProfessional(@Valid @RequestBody WorkFlowRequestTO requestTO) throws WorkFlowException, InvalidRequestException {
+        checksumUtil.validateChecksum();
         if (iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(requestTO.getHpProfileId(), List.of(requestTO.getApplicationTypeId(),ApplicationType.ADDITIONAL_QUALIFICATION.getId()))) {
             if (requestTO.getRequestId() == null || !iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(requestTO.getHpProfileId())) {
                 requestTO.setRequestId(NMRUtil.buildRequestIdForWorkflow(requestCounterService.incrementAndRetrieveCount(requestTO.getApplicationTypeId())));
