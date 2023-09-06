@@ -9,6 +9,8 @@ import javax.validation.Valid;
 import javax.validation.Validator;
 
 import in.gov.abdm.nmr.exception.TemplateException;
+import in.gov.abdm.nmr.security.ChecksumUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +38,9 @@ public class OtpController {
     
     private Validator validator;
 
+	@Autowired
+	ChecksumUtil checksumUtil;
+
 	public OtpController(IOtpService otpService, Validator validator) {
         this.otpService = otpService;
         this.validator = validator;
@@ -50,6 +55,7 @@ public class OtpController {
 	@PostMapping(path = NMRConstants.SEND_OTP, produces = MediaType.APPLICATION_JSON_VALUE)
 	public OTPResponseMessageTo generateOtp(@Valid @RequestBody OtpGenerateRequestTo otpGenerateRequestTo)
 			throws OtpException, InvalidRequestException, TemplateException {
+		checksumUtil.validateChecksum();
 		return otpService.generateOtp(otpGenerateRequestTo);
 	}
 
@@ -62,6 +68,7 @@ public class OtpController {
 	@PostMapping(path = NMRConstants.VERIFY_OTP, produces = MediaType.APPLICATION_JSON_VALUE)
 	public OtpValidateResponseTo validateOtp(@RequestBody OtpValidateRequestTo otpValidateRequestTo)
 			throws OtpException, GeneralSecurityException {
+		checksumUtil.validateChecksum();
         if (otpService.isOtpEnabled()) {
             Set<ConstraintViolation<OtpValidateRequestTo>> constraintViolations = validator.validate(otpValidateRequestTo);
             if (!constraintViolations.isEmpty()) {

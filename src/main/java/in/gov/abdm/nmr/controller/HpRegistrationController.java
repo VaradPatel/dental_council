@@ -6,6 +6,7 @@ import in.gov.abdm.nmr.entity.StateMedicalCouncil;
 import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.nosql.entity.Council;
 import in.gov.abdm.nmr.repository.IStateMedicalCouncilRepository;
+import in.gov.abdm.nmr.security.ChecksumUtil;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpRegistrationService;
@@ -55,6 +56,9 @@ public class HpRegistrationController {
     @Autowired
     private IStateMedicalCouncilRepository stateMedicalCouncilRepository;
 
+    @Autowired
+    ChecksumUtil checksumUtil;
+
     /**
      * This method is used to fetch SMC registration detail information.
      *
@@ -82,6 +86,7 @@ public class HpRegistrationController {
             @Valid @RequestBody HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO)
             throws InvalidRequestException, WorkFlowException {
 
+        checksumUtil.validateChecksum();
         log.info("In HP Registration Controller: addHealthProfessionalPersonalDetail method ");
         log.debug("Request Payload: HpPersonalUpdateRequestTO: ");
         log.debug(hpPersonalUpdateRequestTO.toString());
@@ -110,6 +115,7 @@ public class HpRegistrationController {
             @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId)
             throws InvalidRequestException, WorkFlowException {
 
+        checksumUtil.validateChecksum();
         log.info("In HP Registration Controller: updateHealthProfessionalPersonalDetail method ");
         log.debug("Request Payload: HpPersonalUpdateRequestTO: ");
         log.debug(hpPersonalUpdateRequestTO.toString());
@@ -150,6 +156,7 @@ public class HpRegistrationController {
                                                                                       @RequestPart("data") @Valid HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO,
                                                                                       @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, NmrException {
 
+        checksumUtil.validateChecksum();
         log.info("In HP Registration Controller: updateHealthProfessionalRegistrationDetail method ");
         log.debug("Request Payload: HpRegistrationUpdateRequestTO: ");
         log.debug(hpRegistrationUpdateRequestTO.toString());
@@ -170,6 +177,7 @@ public class HpRegistrationController {
                                                                                       @RequestPart("data") @Valid HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO,
                                                                                       @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, NmrException {
 
+        checksumUtil.validateChecksum();
         log.info("In HP Registration Controller: updateHealthProfessionalRegistrationDetail method ");
         log.debug("Request Payload: HpRegistrationUpdateRequestTO: ");
         log.debug(hpRegistrationUpdateRequestTO.toString());
@@ -207,6 +215,7 @@ public class HpRegistrationController {
                                                                                     @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId)
             throws InvalidRequestException, NmrException, NotFoundException {
 
+        checksumUtil.validateChecksum();
         log.info("In HP Registration Controller: updateHealthProfessionalWorkProfileDetail method ");
         log.debug("Request Payload: HpWorkProfileUpdateRequestTO: ");
         log.debug(hpWorkProfileUpdateRequestTO.toString());
@@ -246,6 +255,7 @@ public class HpRegistrationController {
                                     @RequestPart("data") @Valid QualificationRequestTO qualificationDetailRequestTO,
                                     @RequestParam(value = "degreeCertificates") List<MultipartFile> degreeCertificates
     ) throws WorkFlowException, InvalidRequestException {
+        checksumUtil.validateChecksum();
         log.info(degreeCertificates != null ? String.valueOf(degreeCertificates.size()) : null);
         return hpService.addQualification(hpProfileId, qualificationDetailRequestTO.getQualificationDetailRequestTos(), degreeCertificates);
     }
@@ -263,6 +273,7 @@ public class HpRegistrationController {
                                     @RequestPart("data") @Valid QualificationRequestTO qualificationDetailRequestTO,
                                     @RequestParam(value = "degreeCertificates", required = false) List<MultipartFile> degreeCertificates
     ) throws InvalidRequestException, WorkFlowException {
+        checksumUtil.validateChecksum();
         log.info(degreeCertificates != null ? String.valueOf(degreeCertificates.size()) : null);
         return hpService.updateQualification(hpProfileId, qualificationDetailRequestTO.getQualificationDetailRequestTos(),degreeCertificates);
     }
@@ -279,6 +290,7 @@ public class HpRegistrationController {
     public HpProfilePictureResponseTO uploadHpProfilePhoto(
             @RequestParam(value = "file", required = true) MultipartFile file,
             @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws IOException, InvalidRequestException {
+        checksumUtil.validateChecksum();
         return hpService.uploadHpProfilePicture(file, hpProfileId);
     }
 
@@ -295,6 +307,7 @@ public class HpRegistrationController {
     public HpProfileAddResponseTO submit(@Valid @RequestBody HpSubmitRequestTO hpSubmitRequestTO)
             throws InvalidRequestException, WorkFlowException {
 
+        checksumUtil.validateChecksum();
         log.info("In HP Registration Controller: submit method ");
         log.debug("Request Payload: HpSubmitRequestTO: ");
         log.debug(hpSubmitRequestTO.toString());
@@ -317,6 +330,7 @@ public class HpRegistrationController {
      */
     @PostMapping(path = ProtectedPaths.RAISE_QUERY, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseMessageTo raiseQuery(@Valid @RequestBody QueryCreateTo queryCreateTo) throws WorkFlowException, InvalidRequestException {
+        checksumUtil.validateChecksum();
         return queryService.createQueries(queryCreateTo);
     }
 
@@ -335,6 +349,7 @@ public class HpRegistrationController {
     public KycResponseMessageTo saveUserKycDetails(@PathVariable("registrationNumber") String registrationNumber,
                                                    @RequestParam("councilId") BigInteger councilId,
                                                    @RequestBody UserKycTo userKycTo) throws ParseException {
+        checksumUtil.validateChecksum();
         StateMedicalCouncil stateMedicalCouncil = stateMedicalCouncilRepository.findStateMedicalCouncilById(councilId);
         List<Council> imrRecords = councilService.getCouncilByRegistrationNumberAndCouncilName(registrationNumber, stateMedicalCouncil.getName());
         return hpService.userKycFuzzyMatch(imrRecords, registrationNumber, councilId, userKycTo.getName(),userKycTo.getGender(),userKycTo.getBirthDate());
@@ -342,6 +357,7 @@ public class HpRegistrationController {
 
     @PostMapping(path = "health-professional", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseMessageTo addNewHealthProfessional(@Valid @RequestBody NewHealthPersonalRequestTO request) throws DateException, ParseException, GeneralSecurityException, InvalidRequestException, NmrException {
+        checksumUtil.validateChecksum();
         return hpService.addNewHealthProfessional(request);
     }
 
@@ -349,6 +365,7 @@ public class HpRegistrationController {
     public ResponseEntity<ResponseMessageTo> updateHealthProfessionalEmailMobile(
             @Valid @RequestBody HealthProfessionalPersonalRequestTo request,
             @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws OtpException, InvalidRequestException {
+        checksumUtil.validateChecksum();
         hpService.updateHealthProfessionalEmailMobile(hpProfileId, request);
         return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
     }
@@ -362,12 +379,14 @@ public class HpRegistrationController {
 
     @PatchMapping(path = "health-professional/{healthProfessionalId}/email", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseMessageTo getVerifyEmailLink(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId, @RequestBody VerifyEmailLinkTo verifyEmailLinkTo) {
+        checksumUtil.validateChecksum();
         return hpService.getEmailVerificationLink(hpProfileId,verifyEmailLinkTo);
     }
 
     @DeleteMapping(path = ProtectedPaths.DE_LINK_FACILITY)
     public ResponseEntity<ResponseMessageTo> delinkCurrentWorkDetails(@RequestBody WorkDetailsDelinkRequest workDetailsDelinkRequest) throws NmrException {
-         hpService.delinkCurrentWorkDetails(workDetailsDelinkRequest);
+        checksumUtil.validateChecksum();
+        hpService.delinkCurrentWorkDetails(workDetailsDelinkRequest);
         return ResponseEntity.ok(ResponseMessageTo.builder().message(SUCCESS_RESPONSE).build());
     }
 }
