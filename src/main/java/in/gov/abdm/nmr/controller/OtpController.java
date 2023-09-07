@@ -10,6 +10,7 @@ import javax.validation.Validator;
 
 import in.gov.abdm.nmr.exception.TemplateException;
 import in.gov.abdm.nmr.security.ChecksumUtil;
+import in.gov.abdm.nmr.service.IOtpValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;

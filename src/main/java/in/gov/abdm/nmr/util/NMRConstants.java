@@ -406,6 +406,10 @@ public class NMRConstants {
     public static final List<String> MBBS_QUALIFICAITON_NAMES = List.of("MBBS - Bachelor of Medicine and Bachelor of Surgery", "BACHELOR OF MEDICINE AND BACHELOR OF SURGERY" );
     public static final String EMAIL_SUCCESS_PAGE = "email-verification-success";
     public static final String EMAIL_FAILURE_PAGE = "email-verification-failure";
-    public static final String REGEX_FOR_ALPHANUMERIC = "^[a-zA-Z0-9\s]*$";
+    public static final String REGEX_FOR_ALPHANUMERIC = "^[a-zA-Z0-9\s.]*$";
     public static final String REGEX_FOR_EXTRA_SPACES_AND_NEW_LINES = "(\\r\\n|\\r|\\n|\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$))";
+    public static final String INVALID_FILE = "Invalid file";
+    public static final String INVALID_FILE_EXTENSION = " is not an allowed file type.";
+    public static final String REGEX_FOR_FILE = "^[A-Za-z0-9()_-]+.[A-Za-z]+$";
+
 }

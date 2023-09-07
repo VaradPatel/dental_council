@@ -18,6 +18,8 @@ import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.List;
 
+import static in.gov.abdm.nmr.util.NMRConstants.*;
+
 /**
  * Util class for NMR.
  */
@@ -108,13 +110,13 @@ public final class NMRUtil {
     public static void isFileTypeSupported(MultipartFile file) throws InvalidRequestException {
         if (file != null && StringUtils.isNotBlank(file.getOriginalFilename())) {
             String originalFilename = file.getOriginalFilename();
-            boolean matches = originalFilename.matches("^[A-Za-z0-9_-]+.[A-Za-z]+$");
+            boolean matches = originalFilename.matches(REGEX_FOR_FILE);
             String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
             if (!matches) {
-                throw new InvalidRequestException("Invalid file");
+                throw new InvalidRequestException(INVALID_FILE);
             }
             if (!SUPPORTED_FILE_TYPES.contains(fileExtension)) {
-                throw new InvalidRequestException(fileExtension + " is not an allowed file type.");
+                throw new InvalidRequestException(fileExtension + INVALID_FILE_EXTENSION);
             }
         }
     }
