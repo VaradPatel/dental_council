@@ -10,6 +10,8 @@ import javax.validation.constraints.NotNull;
 
 import in.gov.abdm.nmr.enums.UserSubTypeEnum;
 import in.gov.abdm.nmr.exception.*;
+import in.gov.abdm.nmr.security.ChecksumUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,6 +46,9 @@ public class CollegeController {
         this.iCollegeService = collegeServiceV2;
     }
 
+    @Autowired
+    ChecksumUtil checksumUtil;
+
     @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN})
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping(path = COLLEGES, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -62,6 +67,7 @@ public class CollegeController {
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping(path = COLLEGES, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeResponseTo createCollege(@Valid @RequestBody CollegeResponseTo collegeResponseTo) throws NmrException, InvalidRequestException, ResourceExistsException, InvalidIdException, NotFoundException {
+        checksumUtil.validateChecksum();
         return iCollegeService.createOrUpdateCollege(collegeResponseTo);
     }
 
@@ -69,6 +75,7 @@ public class CollegeController {
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping(path = COLLEGE_ID, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeResponseTo updateCollege(@NotNull @PathVariable BigInteger id, @Valid @RequestBody CollegeResponseTo collegeResponseTo) throws NmrException, InvalidRequestException, ResourceExistsException, InvalidIdException, NotFoundException {
+        checksumUtil.validateChecksum();
         collegeResponseTo.setId(id);
         return iCollegeService.createOrUpdateCollege(collegeResponseTo);
     }
@@ -84,6 +91,7 @@ public class CollegeController {
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping(path = COLLEGES_COLLEGE_ID_VERIFIERS, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeProfileTo createCollegeVerifier(@NotNull @PathVariable BigInteger collegeId, @Valid @RequestBody CollegeProfileTo collegeProfileTo) throws GeneralSecurityException, NmrException, InvalidRequestException, InvalidIdException, ResourceExistsException {
+        checksumUtil.validateChecksum();
         collegeProfileTo.setCollegeId(collegeId);
 
         if(iCollegeService.getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.COLLEGE_ADMIN.getId())){
@@ -98,6 +106,7 @@ public class CollegeController {
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping(path = COLLEGES_COLLEGE_ID_VERIFIERS_VERIFIER_ID, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public CollegeProfileTo updateCollegeVerifier(@NotNull @PathVariable BigInteger collegeId, @NotNull @PathVariable BigInteger verifierId, @Valid @RequestBody CollegeProfileTo collegeProfileTo) throws GeneralSecurityException, NmrException, InvalidRequestException, InvalidIdException, ResourceExistsException {
+        checksumUtil.validateChecksum();
         collegeProfileTo.setCollegeId(collegeId);
         collegeProfileTo.setId(verifierId);
         if(iCollegeService.getLoggedInUser().getUserSubType().getId().equals(UserSubTypeEnum.COLLEGE_DEAN.getId())  ||

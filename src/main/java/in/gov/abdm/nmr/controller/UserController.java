@@ -5,11 +5,13 @@ import in.gov.abdm.nmr.exception.InvalidIdException;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.OtpException;
+import in.gov.abdm.nmr.security.ChecksumUtil;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.security.common.RoleConstants;
 import in.gov.abdm.nmr.service.IUserService;
 import in.gov.abdm.nmr.util.NMRConstants;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -29,8 +31,12 @@ public class UserController {
         this.userService = userService;
     }
 
+    @Autowired
+    ChecksumUtil checksumUtil;
+
     @PutMapping(path = ProtectedPaths.PATH_USER_NOTIFICATION_ENABLED, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<NotificationToggleResponseTO> toggleNotification(@RequestBody NotificationToggleRequestTO notificationToggleRequestTO) {
+        checksumUtil.validateChecksum();
         return userService.toggleNotification(notificationToggleRequestTO);
     }
 
@@ -59,13 +65,15 @@ public class UserController {
     @RolesAllowed({RoleConstants.STATE_MEDICAL_COUNCIL})
     @SecurityRequirement(name = "bearerAuth")
     public SMCProfileTO updateSMCProfile(@PathVariable(name = "id") BigInteger id, @RequestBody @Valid SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException, OtpException {
+        checksumUtil.validateChecksum();
         return userService.updateSmcProfile(id, smcProfileTO);
     }
 
     @PutMapping(path = ProtectedPaths.PATH_NMC_PROFILE, produces = MediaType.APPLICATION_JSON_VALUE)
     @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL})
     @SecurityRequirement(name = "bearerAuth")
-    public NmcProfileTO updateNmcProfile(@PathVariable(name = "id") BigInteger id, @Valid @RequestBody NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException, OtpException {
+    public NmcProfileTO updateNmcProfile(@PathVariable(name = "id") BigInteger id, @Valid @RequestBody NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException,OtpException {
+        checksumUtil.validateChecksum();
         return userService.updateNmcProfile(id, nmcProfileTO);
     }
 
@@ -73,17 +81,20 @@ public class UserController {
     @RolesAllowed({RoleConstants.NATIONAL_BOARD_OF_EXAMINATIONS})
     @SecurityRequirement(name = "bearerAuth")
     public NbeProfileTO updateNbeProfile(@PathVariable(name = "id") BigInteger id, @Valid @RequestBody NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException, InvalidRequestException, OtpException {
+        checksumUtil.validateChecksum();
         return userService.updateNbeProfile(id, nbeProfileTO);
     }
 
     @PostMapping(path = NMRConstants.RETRIEVE_USER, produces = MediaType.APPLICATION_JSON_VALUE)
     public String retrieveUser(@Valid @RequestBody RetrieveUserRequestTo retrieveUserRequestTo) throws OtpException {
+        checksumUtil.validateChecksum();
         return userService.retrieveUser(retrieveUserRequestTo);
     }
 
     @RolesAllowed({RoleConstants.NATIONAL_MEDICAL_COUNCIL_ADMIN})
     @PostMapping(path = ProtectedPaths.USER_NMC_CREATE_USER, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public UserProfileTO createUser(@Valid @RequestBody UserProfileTO userProfileTO) throws NmrException {
+        checksumUtil.validateChecksum();
         return userService.createUser(userProfileTO);
     }
 
@@ -110,6 +121,7 @@ public class UserController {
     @PostMapping(path = ProtectedPaths.USER_UNLOCK_URL)
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseMessageTo unlockUser(@PathVariable(name = "userId") BigInteger userId) {
+        checksumUtil.validateChecksum();
         userService.unlockUser(userId);
         return ResponseMessageTo.builder().message(NMRConstants.SUCCESS_RESPONSE).build();
     }

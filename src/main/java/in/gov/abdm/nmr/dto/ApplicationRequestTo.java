@@ -2,6 +2,7 @@ package in.gov.abdm.nmr.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import in.gov.abdm.nmr.annotation.ActionId;
+import in.gov.abdm.nmr.annotation.Alphanumeric;
 import in.gov.abdm.nmr.annotation.ApplicationTypeId;
 import lombok.Data;
 
@@ -22,6 +23,7 @@ public class ApplicationRequestTo {
     private BigInteger actionId;
     private Timestamp fromDate;
     private Timestamp toDate;
+    @Alphanumeric(message = "Please enter a valid remark.")
     private String remarks;
     @JsonIgnore
     private BigInteger applicationSubTypeId;

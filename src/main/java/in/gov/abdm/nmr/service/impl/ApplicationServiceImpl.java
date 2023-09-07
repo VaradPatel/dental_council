@@ -141,6 +141,9 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Autowired
     ICollegeProfileDaoService collegeProfileDaoService;
 
+    @Autowired
+    IHpRegistrationService iHpRegistrationService;
+
     private static final Map<String, String> REACTIVATION_SORT_MAPPINGS = Map.of("id", " hp.id", "name", " hp.full_name", "createdAt", " wf.created_at", "reactivationDate", " wf.start_date", "suspensionType", " hp.hp_profile_status_id", "remarks", " wf.remarks");
 
     /**
@@ -470,6 +473,7 @@ public class ApplicationServiceImpl implements IApplicationService {
      */
     @Override
     public HealthProfessionalApplicationResponseTo fetchApplicationDetailsForHealthProfessional(BigInteger healthProfessionalId, String pageNo, String offset, String sortBy, String sortType, String search, String value) throws InvalidRequestException {
+        iHpRegistrationService.validateUserAccessToResource(healthProfessionalId);
         RegistrationDetails registrationDetails = iRegistrationDetailRepository.getRegistrationDetailsByHpProfileId(healthProfessionalId);
         List<BigInteger> hpProfileIds = iRegistrationDetailRepository.fetchHpProfileIdByRegistrationNumber(registrationDetails.getRegistrationNo());
         HealthProfessionalApplicationRequestParamsTo applicationRequestParamsTo = new HealthProfessionalApplicationRequestParamsTo();
@@ -487,6 +491,7 @@ public class ApplicationServiceImpl implements IApplicationService {
      */
     @Override
     public ApplicationDetailResponseTo fetchApplicationDetail(String requestId) throws InvalidRequestException {
+        iHpRegistrationService.validateUserAccessToResource(iWorkFlowAuditRepository.fetchApplicationDetails(requestId).getHpProfile().getId());
         return iFetchTrackApplicationDetailsCustomRepository.fetchApplicationDetails(requestId);
     }
 
