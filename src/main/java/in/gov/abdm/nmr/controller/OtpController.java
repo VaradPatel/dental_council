@@ -10,6 +10,7 @@ import javax.validation.Validator;
 
 import in.gov.abdm.nmr.exception.TemplateException;
 import in.gov.abdm.nmr.security.ChecksumUtil;
+import in.gov.abdm.nmr.service.IOtpValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,8 +35,9 @@ import in.gov.abdm.nmr.util.NMRConstants;
 @RequestMapping(NMRConstants.NOTIFICATION_REQUEST_MAPPING)
 public class OtpController {
 
+	@Autowired
 	private IOtpService otpService;
-    
+    @Autowired
     private Validator validator;
 
 	@Autowired
@@ -45,6 +47,9 @@ public class OtpController {
         this.otpService = otpService;
         this.validator = validator;
     }
+	@Autowired
+	IOtpValidationService otpValidationService;
+
 
     /**
 	 * API Endpoint to generate  OTP
@@ -69,7 +74,7 @@ public class OtpController {
 	public OtpValidateResponseTo validateOtp(@RequestBody OtpValidateRequestTo otpValidateRequestTo)
 			throws OtpException, GeneralSecurityException {
 		checksumUtil.validateChecksum();
-        if (otpService.isOtpEnabled()) {
+        if (otpValidationService.isOtpEnabled()) {
             Set<ConstraintViolation<OtpValidateRequestTo>> constraintViolations = validator.validate(otpValidateRequestTo);
             if (!constraintViolations.isEmpty()) {
                 throw new ConstraintViolationException(constraintViolations);
@@ -80,6 +85,6 @@ public class OtpController {
 	
     @GetMapping("/otp-enabled")
     public boolean isOtpEnabled() {
-        return otpService.isOtpEnabled();
+        return otpValidationService.isOtpEnabled();
     }
 }

@@ -8,6 +8,7 @@ import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.exception.InvalidIdException;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
+import in.gov.abdm.nmr.exception.OtpException;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -41,11 +42,11 @@ public interface IUserDaoService {
 
     NbeProfile findNbeProfile(BigInteger id) throws NmrException, InvalidIdException;
 
-    SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException;
+    SMCProfile updateSmcProfile(BigInteger id, SMCProfileTO smcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException, OtpException;
 
-    NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException;
+    NmcProfile updateNmcProfile(BigInteger id, NmcProfileTO nmcProfileTO) throws NmrException, InvalidIdException, InvalidRequestException, OtpException;
 
-    NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException, InvalidRequestException;
+    NbeProfile updateNbeProfile(BigInteger id, NbeProfileTO nbeProfileTO) throws NmrException, InvalidIdException, InvalidRequestException, OtpException;
 
     boolean checkEmailUsedByOtherUser(BigInteger id, String email, BigInteger userType);
 

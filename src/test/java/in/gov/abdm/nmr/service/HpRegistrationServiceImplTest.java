@@ -129,6 +129,9 @@ class HpRegistrationServiceImplTest {
     @Mock
     ITrackApplicationReadStatusRepository iTrackApplicationReadStatusRepository;
 
+    @Mock
+    IOtpValidationService otpValidationService;
+
     @BeforeEach
     void setup() {
         certificate = new MockMultipartFile("certificate", "certificate.pdf",
@@ -380,7 +383,7 @@ class HpRegistrationServiceImplTest {
 
     @Test
     void testUpdateHealthProfessionalEmailMobile() throws OtpException, InvalidRequestException {
-        when(otpService.isOtpVerified(anyString())).thenReturn(false);
+        when(otpValidationService.isOtpVerified(anyString())).thenReturn(false);
         when(iHpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfile());
         when(iHpProfileRepository.save(any(HpProfile.class))).thenReturn(getHpProfile());
         when(iHpProfileRepository.findMasterHpProfileByHpProfileId(any(BigInteger.class))).thenReturn(CommonTestData.ID);

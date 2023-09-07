@@ -27,4 +27,5 @@ public class SMCProfileTO {
     private String emailId;
     @MobileNumber
     private String mobileNo;
+    private String transactionId;
 }

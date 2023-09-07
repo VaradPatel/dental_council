@@ -32,40 +32,26 @@ import in.gov.abdm.nmr.util.NMRConstants;
 @Slf4j
 @Service
 public class OtpServiceImpl implements IOtpService {
-
+    @Autowired
     private IOtpDaoService otpDaoService;
-
+    @Autowired
     private IUserDaoService userDaoService;
-
+    @Autowired
     private INotificationService notificationService;
-
+    @Autowired
     private RsaUtil rsaUtil;
-    
+    @Value("${nmr.otp.enabled}")
     private boolean otpEnabled;
-
     @Autowired
     private IHpProfileDaoService hpProfileDaoService;
-
     @Autowired
     private ISmcProfileDaoService smcProfileDaoService;
-
     @Autowired
     private INmcDaoService nmcDaoService;
-
     @Autowired
     private ICollegeProfileDaoService collegeProfileDaoService;
-
     @Autowired
     private INbeDaoService nbeDaoService;
-
-    public OtpServiceImpl(IOtpDaoService otpDaoService, IUserDaoService userDaoService, INotificationService notificationService, RsaUtil rsaUtil,
-                          @Value("${nmr.otp.enabled}") boolean otpEnabled) {
-        this.otpDaoService = otpDaoService;
-        this.userDaoService = userDaoService;
-        this.notificationService = notificationService;
-        this.rsaUtil = rsaUtil;
-        this.otpEnabled = otpEnabled;
-    }
 
     /**
      * Generates OTP by validating with repository
@@ -201,22 +187,4 @@ public class OtpServiceImpl implements IOtpService {
         }
     }
 
-    @Override
-    public boolean isOtpVerified(String id) {
-        if (!otpEnabled) {
-            return true;
-        }
-        
-        Otp otp = otpDaoService.findById(id);
-        if (otp == null) {
-            return false;
-        }
-        otpDaoService.deleteById(id);
-        return otp.isExpired();
-    }
-    
-    @Override
-    public boolean isOtpEnabled() {
-        return otpEnabled;
-    }
 }

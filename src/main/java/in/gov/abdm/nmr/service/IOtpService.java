@@ -16,7 +16,4 @@ public interface IOtpService {
 
     OtpValidateResponseTo validateOtp(OtpValidateRequestTo otpValidateRequestTo, boolean callInternal) throws OtpException, GeneralSecurityException;
 
-    boolean isOtpVerified(String id);
-
-    boolean isOtpEnabled();
 }

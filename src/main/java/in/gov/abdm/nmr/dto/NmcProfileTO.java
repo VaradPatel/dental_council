@@ -27,4 +27,5 @@ public class NmcProfileTO {
     private String emailId;
     @MobileNumber
     private String mobileNo;
+    private String transactionId;
 }

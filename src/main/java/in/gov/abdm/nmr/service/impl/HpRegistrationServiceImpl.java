@@ -151,7 +151,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     private IQueriesService iQueriesService;
 
     @Autowired
-    OtpServiceImpl otpService;
+    IOtpValidationService otpValidationService;
 
     @Autowired
     private ICouncilService councilService;
@@ -791,7 +791,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             if (transactionId == null) {
                 throw new InvalidRequestException(NMRError.MISSING_MANDATORY_FIELD.getCode(), NMRError.MISSING_MANDATORY_FIELD.getMessage());
             } else {
-                if (otpService.isOtpVerified(transactionId)) {
+                if (otpValidationService.isOtpVerified(transactionId)) {
                     throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());
                 }
             }

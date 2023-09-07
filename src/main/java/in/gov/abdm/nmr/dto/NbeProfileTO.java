@@ -24,4 +24,5 @@ public class NbeProfileTO {
     private String emailId;
     @MobileNumber
     private String mobileNo;
+    private String transactionId;
 }
