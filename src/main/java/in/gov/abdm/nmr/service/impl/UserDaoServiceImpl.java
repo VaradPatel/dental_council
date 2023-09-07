@@ -214,7 +214,7 @@ public class UserDaoServiceImpl implements IUserDaoService {
             throw new InvalidIdException(NMRError.INVALID_ID_EXCEPTION.getCode(), NMRError.INVALID_ID_EXCEPTION.getMessage());
         }
         String transactionId = nmcProfileTO.getTransactionId();
-        validationService.validateTransactionIdForMobileNumberUpdates(nmcProfile.getMobileNo(), nmcProfileTO.getMobileNo(), transactionId);
+        validationService.validateTransactionIdForMobileNumberUpdates(nmcProfileTO.getMobileNo(), nmcProfile.getMobileNo(), transactionId);
         nmcProfile.setId(id);
         nmcProfile.setFirstName(nmcProfileTO.getFirstName());
         nmcProfile.setMiddleName(nmcProfileTO.getMiddleName());
