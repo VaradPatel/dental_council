@@ -19,7 +19,7 @@ public class ValidationServiceImpl implements IValidationService {
     public void validateTransactionIdForMobileNumberUpdates(String requestMobileNumber, String persistedMobileNumber, String transactionId) throws InvalidRequestException, OtpException {
         if (!Objects.equals(requestMobileNumber, persistedMobileNumber)) {
             if (transactionId == null) {
-                throw new InvalidRequestException(NMRError.MISSING_MANDATORY_FIELD.getCode(), NMRError.MISSING_MANDATORY_FIELD.getMessage());
+                throw new InvalidRequestException(NMRError.VERIFY_MOBILE_NUMER.getCode(), NMRError.VERIFY_MOBILE_NUMER.getMessage());
             } else if (otpValidationService.isOtpVerified(transactionId)) {
                 throw new OtpException(NMRError.OTP_INVALID.getCode(), NMRError.OTP_INVALID.getMessage());
             }
