@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.service;
 
+import in.gov.abdm.exception.ABDMDocumentUploadFailedException;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
 import in.gov.abdm.nmr.exception.*;
@@ -34,8 +35,9 @@ public interface IHpRegistrationService {
      * @param hpProfileId The ID of the HP profile to upload the picture for.
      * @return An instance of {@link HpProfilePictureResponseTO} containing information about the uploaded profile picture.
      * @throws IOException If there is an error reading the file or uploading it to the server.
+     * @throws ABDMDocumentUploadFailedException 
      */
-    HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException, InvalidRequestException;
+    HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException, InvalidRequestException, ABDMDocumentUploadFailedException;
 
     /**
      * Adds qualifications to a HP profile.
@@ -44,8 +46,10 @@ public interface IHpRegistrationService {
      * @param qualificationDetailRequestTOs A list of qualification details to be added to the HP profile.
      * @return A string indicating the status of the operation.
      * @throws WorkFlowException If an error occurs during the qualification addition process.
+     * @throws ABDMDocumentUploadFailedException 
+     * @throws IOException 
      */
-    String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws WorkFlowException, InvalidRequestException;
+    String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws WorkFlowException, InvalidRequestException, ABDMDocumentUploadFailedException, IOException;
 
     /**
      * Update qualifications to a HP profile.
@@ -54,8 +58,10 @@ public interface IHpRegistrationService {
      * @param qualificationDetailRequestTOs A list of qualification details to be added to the HP profile.
      * @return A string indicating the status of the operation.
      * @throws WorkFlowException If an error occurs during the qualification addition process.
+     * @throws IOException 
+     * @throws ABDMDocumentUploadFailedException 
      */
-    String updateQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws WorkFlowException, InvalidRequestException;
+    String updateQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws WorkFlowException, InvalidRequestException, ABDMDocumentUploadFailedException, IOException;
     /**
      * Adds or updates the personal details for a given HP profile.
      *

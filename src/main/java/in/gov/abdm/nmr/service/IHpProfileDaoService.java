@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.service;
 
+import in.gov.abdm.exception.ABDMDocumentUploadFailedException;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.entity.HpProfile;
 import in.gov.abdm.nmr.entity.RegistrationDetails;
@@ -24,7 +25,7 @@ public interface IHpProfileDaoService {
 													   HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws InvalidRequestException, NmrException, NotFoundException;
 
 	HpProfilePictureResponseTO uploadHpProfilePhoto(MultipartFile file, BigInteger hpProfileId)
-            throws IOException, InvalidRequestException;
+            throws IOException, InvalidRequestException, ABDMDocumentUploadFailedException;
 
 	HpProfile findLatestEntryByUserid(BigInteger userId);
 

@@ -1,33 +1,88 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.nmr.dto.*;
-import in.gov.abdm.nmr.entity.*;
-import in.gov.abdm.nmr.exception.*;
+import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
+import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
+import static in.gov.abdm.nmr.util.NMRUtil.isFileTypeSupported;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import in.gov.abdm.exception.ABDMDocumentUploadFailedException;
+import in.gov.abdm.nmr.dto.CurrentWorkDetailsTO;
+import in.gov.abdm.nmr.dto.HpPersonalUpdateRequestTO;
+import in.gov.abdm.nmr.dto.HpProfilePictureResponseTO;
+import in.gov.abdm.nmr.dto.HpProfileUpdateResponseTO;
+import in.gov.abdm.nmr.dto.HpRegistrationUpdateRequestTO;
+import in.gov.abdm.nmr.dto.HpSmcDetailTO;
+import in.gov.abdm.nmr.dto.HpWorkProfileUpdateRequestTO;
+import in.gov.abdm.nmr.dto.QualificationDetailRequestTO;
+import in.gov.abdm.nmr.entity.Address;
+import in.gov.abdm.nmr.entity.AddressType;
+import in.gov.abdm.nmr.entity.BroadSpeciality;
+import in.gov.abdm.nmr.entity.Country;
+import in.gov.abdm.nmr.entity.District;
+import in.gov.abdm.nmr.entity.ForeignQualificationDetails;
+import in.gov.abdm.nmr.entity.HpNbeDetails;
+import in.gov.abdm.nmr.entity.HpProfile;
+import in.gov.abdm.nmr.entity.Language;
+import in.gov.abdm.nmr.entity.LanguagesKnown;
+import in.gov.abdm.nmr.entity.QualificationDetails;
+import in.gov.abdm.nmr.entity.RegistrationDetails;
+import in.gov.abdm.nmr.entity.State;
+import in.gov.abdm.nmr.entity.StateMedicalCouncil;
+import in.gov.abdm.nmr.entity.SubDistrict;
+import in.gov.abdm.nmr.entity.User;
+import in.gov.abdm.nmr.entity.Villages;
+import in.gov.abdm.nmr.entity.WorkProfile;
+import in.gov.abdm.nmr.exception.InvalidRequestException;
+import in.gov.abdm.nmr.exception.NMRError;
+import in.gov.abdm.nmr.exception.NmrException;
+import in.gov.abdm.nmr.exception.NoDataFoundException;
+import in.gov.abdm.nmr.exception.NotFoundException;
+import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.nosql.entity.Council;
-import in.gov.abdm.nmr.repository.*;
+import in.gov.abdm.nmr.repository.CountryRepository;
+import in.gov.abdm.nmr.repository.CourseRepository;
+import in.gov.abdm.nmr.repository.DistrictRepository;
+import in.gov.abdm.nmr.repository.HpNbeDetailsRepository;
+import in.gov.abdm.nmr.repository.IAddressRepository;
+import in.gov.abdm.nmr.repository.ICollegeMasterRepository;
+import in.gov.abdm.nmr.repository.IForeignQualificationDetailRepository;
+import in.gov.abdm.nmr.repository.IHpProfileRepository;
+import in.gov.abdm.nmr.repository.IQualificationDetailRepository;
+import in.gov.abdm.nmr.repository.IRegistrationDetailRepository;
+import in.gov.abdm.nmr.repository.IStateMedicalCouncilRepository;
+import in.gov.abdm.nmr.repository.IStateRepository;
+import in.gov.abdm.nmr.repository.LanguagesKnownRepository;
+import in.gov.abdm.nmr.repository.SubDistrictRepository;
+import in.gov.abdm.nmr.repository.UniversityMasterRepository;
+import in.gov.abdm.nmr.repository.VillagesRepository;
+import in.gov.abdm.nmr.repository.WorkNatureRepository;
+import in.gov.abdm.nmr.repository.WorkProfileRepository;
+import in.gov.abdm.nmr.repository.WorkStatusRepository;
 import in.gov.abdm.nmr.service.ICouncilService;
 import in.gov.abdm.nmr.service.IHpProfileDaoService;
 import in.gov.abdm.nmr.util.AuditLogPublisher;
 import in.gov.abdm.nmr.util.NMRConstants;
 import in.gov.abdm.nmr.util.NMRUtil;
+import in.gov.abdm.nmr.util.XSSFileDetection;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
-import static in.gov.abdm.nmr.util.NMRUtil.coalesce;
-import static in.gov.abdm.nmr.util.NMRUtil.isFileTypeSupported;
 
 @Service
 @Slf4j
@@ -156,10 +211,17 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
         log.info("In HpProfileDaoServiceImpl : updateHpRegistrationDetails method");
         isFileTypeSupported(registrationCertificate);
-
+        if(XSSFileDetection.isMaliciousCodeInFile(registrationCertificate)) {
+			throw new ABDMDocumentUploadFailedException(registrationCertificate.getOriginalFilename() + " is not allowed !!. Please select valid file type");
+        }
+        
         for (MultipartFile file : degreeCertificate) {
             isFileTypeSupported(file);
+            if(XSSFileDetection.isMaliciousCodeInFile(file)) {
+    			throw new ABDMDocumentUploadFailedException(file.getOriginalFilename() + " is not allowed !!. Please select valid file type");
+            }
         }
+       
 
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
             hpRegistrationUpdateRequestTO.getRegistrationDetail().setFileName(registrationCertificate != null ? registrationCertificate.getOriginalFilename() : null);
@@ -308,13 +370,16 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @Override
     public HpProfilePictureResponseTO uploadHpProfilePhoto(MultipartFile file, BigInteger hpProfileId)
-            throws IOException, InvalidRequestException {
+            throws IOException, InvalidRequestException, ABDMDocumentUploadFailedException {
 
         HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
         if (hpProfile == null) {
             throw new InvalidRequestException(NMRError.INVALID_REQUEST.getCode(), NMRError.INVALID_REQUEST.getMessage());
         }
         isFileTypeSupported(file);
+        if(XSSFileDetection.isMaliciousCodeInFile(file)) {
+			throw new ABDMDocumentUploadFailedException(file.getOriginalFilename() + " is not allowed !!. Please select valid file type");
+        }
 
         String encodedPhoto = Base64.getEncoder().encodeToString(file.getBytes());
         hpProfile.setProfilePhoto(encodedPhoto);
