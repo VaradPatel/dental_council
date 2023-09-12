@@ -161,7 +161,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     public SuspendRequestResponseTo suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
 
         log.info("In ApplicationServiceImpl: suspendRequest method ");
-
+        validateUserAccessToResourceForApplication(applicationRequestTo.getHpProfileId());
         HpProfile hpProfile = iHpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
         HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
         if (Objects.equals(HpProfileStatus.APPROVED.getId(), latestHpProfile.getHpProfileStatus().getId())) {
@@ -191,7 +191,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Transactional
     @Override
     public ReactivateRequestResponseTo reactivateRequest(MultipartFile reactivationFile, ApplicationRequestTo applicationRequestTo) throws WorkFlowException, InvalidRequestException, IOException {
-        validateUserAccessToResourceForReactivate(applicationRequestTo.getHpProfileId());
+        validateUserAccessToResourceForApplication(applicationRequestTo.getHpProfileId());
         log.info("In ApplicationServiceImpl: reactivateRequest method ");
         isFileTypeSupported(reactivationFile);
         HpProfile hpProfile = iHpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
@@ -234,7 +234,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         }
     }
 
-    private void validateUserAccessToResourceForReactivate(BigInteger hpProfileId) {
+    private void validateUserAccessToResourceForApplication(BigInteger hpProfileId) {
         User loggedInUser = accessControlService.getLoggedInUser();
         if (UserTypeEnum.HEALTH_PROFESSIONAL.getId().equals(loggedInUser.getUserType().getId())) {
             HpProfile hpProfile = iHpProfileRepository.findLatestEntryByUserid(loggedInUser.getId());
@@ -248,6 +248,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                 log.error("Access denied: HP does not belong to the login SMC.");
                 throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
             }
+        } else if (UserTypeEnum.NMC.getId().equals(loggedInUser.getUserType().getId())) {
         } else {
             log.error("Access denied: You do not have permissions to access this resource.");
             throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
