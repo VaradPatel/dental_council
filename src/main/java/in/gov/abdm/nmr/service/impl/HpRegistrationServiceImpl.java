@@ -219,7 +219,22 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Override
     public HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException, InvalidRequestException {
+        validateUserAccessToResourceForHP(hpProfileId);
         return iHpProfileMapper.hpProfilePictureUploadToDto(hpProfileDaoService.uploadHpProfilePhoto(file, hpProfileId));
+    }
+
+    private void validateUserAccessToResourceForHP(BigInteger hpProfileId) {
+        User loggedInUser = accessControlService.getLoggedInUser();
+        if (UserTypeEnum.HEALTH_PROFESSIONAL.getId().equals(loggedInUser.getUserType().getId())) {
+            HpProfile hpProfile = iHpProfileRepository.findLatestEntryByUserid(loggedInUser.getId());
+            if (!hpProfile.getId().equals(hpProfileId)) {
+                log.error("Access denied: You do not have permissions to access this resource.");
+                throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
+            }
+        } else {
+            log.error("Access denied: You do not have permissions to access this resource.");
+            throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
+        }
     }
 
     /**
@@ -233,6 +248,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     @Override
     @Transactional
     public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException, WorkFlowException {
+        validateUserAccessToResourceForHP(hpProfileId);
         for (MultipartFile file : proofs) {
             isFileTypeSupported(file);
         }
@@ -322,6 +338,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         log.info("In HpRegistrationServiceImpl : addOrUpdateWorkProfileDetail method");
 
         log.debug("WorkProfileDetails Validation Successful. Calling the updateWorkProfileDetails method to update the work profile details. ");
+        validateUserAccessToResourceForHP(hpProfileId);
         HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateWorkProfileDetails(hpProfileId, hpWorkProfileUpdateRequestTO, proofs);
 
         log.debug("Update Successful. Calling the getHealthProfessionalRegistrationDetail method to retrieve the work profile details. ");

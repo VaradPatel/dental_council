@@ -71,6 +71,8 @@ public class ProtectedPaths {
     public static final String HEALTH_PROFESSIONAL_REGISTRATION = "/health-professional/{healthProfessionalId}/registration";
     public static final String GET_HEALTH_PROFESSIONAL_APPLICATIONS = "/health-professional/{healthProfessionalId}/applications";
     public static final String APPLICATION_DETAILS = "/applications/{requestId}";
+    public static final String UPDATE_PROFILE_PICTURE = "/health-professional/{healthProfessionalId}/profile-picture";
+
 
 
     public static AntPathRequestMatcher[] getProtectedPathsMatchers() {
@@ -128,6 +130,7 @@ public class ProtectedPaths {
         protectedPaths.add(new AntPathRequestMatcher(HEALTH_PROFESSIONAL_REGISTRATION));
         protectedPaths.add(new AntPathRequestMatcher(GET_HEALTH_PROFESSIONAL_APPLICATIONS));
         protectedPaths.add(new AntPathRequestMatcher(APPLICATION_DETAILS));
+        protectedPaths.add(new AntPathRequestMatcher(UPDATE_PROFILE_PICTURE));
 
         return protectedPaths.toArray(AntPathRequestMatcher[]::new);
     }
