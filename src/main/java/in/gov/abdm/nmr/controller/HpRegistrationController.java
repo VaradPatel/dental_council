@@ -211,7 +211,7 @@ public class HpRegistrationController {
      * @throws InvalidRequestException If the request is invalid or missing required information.
      */
     @PutMapping(path = ProtectedPaths.HEALTH_PROFESSIONAL_WORK_PROFILE, consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public HpProfileWorkDetailsResponseTO updateHealthProfessionalWorkProfileDetail(@RequestBody HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO,
+    public HpProfileWorkDetailsResponseTO updateHealthProfessionalWorkProfileDetail(@RequestBody @Valid HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO,
                                                                                     @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId)
             throws InvalidRequestException, NmrException, NotFoundException {
 

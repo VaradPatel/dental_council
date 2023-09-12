@@ -1,6 +1,7 @@
 package in.gov.abdm.nmr.dto;
 
 import in.gov.abdm.nmr.annotation.NotNullBlank;
+import in.gov.abdm.nmr.annotation.OptionalName;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -88,6 +89,7 @@ public class QualificationDetailRequestTO {
 
     private BigInteger broadSpecialityId;
 
+    @OptionalName(message = "Please enter a valid Super Speciality")
     private String superSpecialityName;
 
     private String fileName;
