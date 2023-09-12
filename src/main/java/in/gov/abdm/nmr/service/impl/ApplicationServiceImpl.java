@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -144,6 +145,9 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Autowired
     IHpRegistrationService iHpRegistrationService;
 
+    @Autowired
+    private IAccessControlService accessControlService;
+
     private static final Map<String, String> REACTIVATION_SORT_MAPPINGS = Map.of("id", " hp.id", "name", " hp.full_name", "createdAt", " wf.created_at", "reactivationDate", " wf.start_date", "suspensionType", " hp.hp_profile_status_id", "remarks", " wf.remarks");
 
     /**
@@ -157,7 +161,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     public SuspendRequestResponseTo suspendRequest(ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException {
 
         log.info("In ApplicationServiceImpl: suspendRequest method ");
-
+        validateUserAccessToResourceForApplication(applicationRequestTo.getHpProfileId());
         HpProfile hpProfile = iHpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
         HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
         if (Objects.equals(HpProfileStatus.APPROVED.getId(), latestHpProfile.getHpProfileStatus().getId())) {
@@ -187,7 +191,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Transactional
     @Override
     public ReactivateRequestResponseTo reactivateRequest(MultipartFile reactivationFile, ApplicationRequestTo applicationRequestTo) throws WorkFlowException, InvalidRequestException, IOException {
-
+        validateUserAccessToResourceForApplication(applicationRequestTo.getHpProfileId());
         log.info("In ApplicationServiceImpl: reactivateRequest method ");
         isFileTypeSupported(reactivationFile);
         HpProfile hpProfile = iHpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
@@ -227,6 +231,27 @@ public class ApplicationServiceImpl implements IApplicationService {
             }
         } else {
             throw new WorkFlowException(NMRError.REACTIVATION_REQUEST_ALREADY_EXISTS.getCode(), NMRError.REACTIVATION_REQUEST_ALREADY_EXISTS.getMessage());
+        }
+    }
+
+    private void validateUserAccessToResourceForApplication(BigInteger hpProfileId) {
+        User loggedInUser = accessControlService.getLoggedInUser();
+        if (UserTypeEnum.HEALTH_PROFESSIONAL.getId().equals(loggedInUser.getUserType().getId())) {
+            HpProfile hpProfile = iHpProfileRepository.findLatestEntryByUserid(loggedInUser.getId());
+            if (!hpProfile.getId().equals(hpProfileId)) {
+                log.error("Access denied: You do not have permissions to access this resource.");
+                throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
+            }
+        } else if (UserTypeEnum.SMC.getId().equals(loggedInUser.getUserType().getId())) {
+            RegistrationDetails registrationDetails = iRegistrationDetailRepository.isHPBelongsToLoggedInSMC(loggedInUser.getId(), hpProfileId);
+            if (registrationDetails == null) {
+                log.error("Access denied: HP does not belong to the login SMC.");
+                throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
+            }
+        } else if (UserTypeEnum.NMC.getId().equals(loggedInUser.getUserType().getId())) {
+        } else {
+            log.error("Access denied: You do not have permissions to access this resource.");
+            throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
         }
     }
 

@@ -1,11 +1,15 @@
 package in.gov.abdm.nmr.dto;
 
+import in.gov.abdm.nmr.annotation.Address;
+import in.gov.abdm.nmr.annotation.PinCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
+
+import static in.gov.abdm.nmr.util.NMRConstants.*;
 
 @Data
 @AllArgsConstructor
@@ -19,7 +23,9 @@ public class AddressTO {
     private DistrictTO district;
     private VillagesTO village;
     private SubDistrictTO subDistrict;
+    @PinCode
     private String pincode;
+    @Address
     private String addressLine1;
     private String email;
     private String mobile;
@@ -28,8 +34,11 @@ public class AddressTO {
     private String updatedAt;
     private String fullName;
     private String house;
+    @Address(message = INVALID_STREET)
     private String street;
+    @Address(message = INVALID_LANDMARK)
     private String landmark;
+    @Address(message = INVALID_LOCALITY)
     private String locality;
     private String isSameAddress;
 }
