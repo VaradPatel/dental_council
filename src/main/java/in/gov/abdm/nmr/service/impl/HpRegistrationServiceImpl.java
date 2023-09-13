@@ -1,6 +1,5 @@
 package in.gov.abdm.nmr.service.impl;
 
-import in.gov.abdm.exception.ABDMDocumentUploadFailedException;
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.dto.hpprofile.HpSubmitRequestTO;
 import in.gov.abdm.nmr.entity.*;
@@ -220,7 +219,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
 
     @Override
-    public HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException, InvalidRequestException, ABDMDocumentUploadFailedException {
+    public HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException, InvalidRequestException, InvalidFileUploadException {
         validateUserAccessToResourceForHP(hpProfileId);
         return iHpProfileMapper.hpProfilePictureUploadToDto(hpProfileDaoService.uploadHpProfilePhoto(file, hpProfileId));
     }
@@ -246,17 +245,17 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
      * @param qualificationDetailRequestTOs A list of qualification detail requests as a string.
      * @return The string "Success" if the operation is successful.
      * @throws WorkFlowException If an error occurs while initiating the submission workflow.
-     * @throws ABDMDocumentUploadFailedException 
+     * @throws InvalidFileUploadException
      * @throws IOException 
      */
     @Override
     @Transactional
-    public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException, WorkFlowException, ABDMDocumentUploadFailedException, IOException {
+    public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException, WorkFlowException, IOException, InvalidFileUploadException {
         validateUserAccessToResourceForHP(hpProfileId);
         for (MultipartFile file : proofs) {
             isFileTypeSupported(file);
             if(XSSFileDetection.isMaliciousCodeInFile(file)) {
-    			throw new ABDMDocumentUploadFailedException(file.getOriginalFilename() + " is not allowed !!. Please select valid file type");
+    			throw new InvalidFileUploadException();
             }
         }
         HpProfile hpProfile=hpProfileDaoService.findById(hpProfileId);
@@ -292,12 +291,12 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Transactional
     @Override
-    public String updateQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException, WorkFlowException, ABDMDocumentUploadFailedException, IOException {
+    public String updateQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException, WorkFlowException, IOException, InvalidFileUploadException {
         if(proofs!=null) {
             for (MultipartFile file : proofs) {
                 isFileTypeSupported(file);
                 if(XSSFileDetection.isMaliciousCodeInFile(file)) {
-        			throw new ABDMDocumentUploadFailedException(file.getOriginalFilename() + " is not allowed !!. Please select valid file type");
+        			throw new InvalidFileUploadException();
                 }
             }
         }

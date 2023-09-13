@@ -1,7 +1,6 @@
 package in.gov.abdm.nmr.exception;
 
 import feign.FeignException;
-import in.gov.abdm.exception.ABDMDocumentUploadFailedException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,8 +43,8 @@ public class NmrExceptionAdvice {
      * @return a ResponseEntity object containing an ErrorDTO object and HTTP status code 400
      */
     @ExceptionHandler(value = {WorkFlowException.class, InvalidRequestException.class, NmrException.class,
-            OtpException.class, TemplateException.class, NoDataFoundException.class, ResourceExistsException.class, InvalidIdException.class, 
-            ABDMDocumentUploadFailedException.class})
+            OtpException.class, TemplateException.class, NoDataFoundException.class, ResourceExistsException.class, InvalidIdException.class,
+            InvalidFileUploadException.class})
     public ResponseEntity<ErrorDTO> handleBadRequest(ABDMBaseException ex, HttpServletRequest req) {
         ErrorDTO error = new ErrorDTO(new Date(), ex.getCode(), ex.getMessage(), req.getServletPath(), ex.getHttpStatus());
         HttpHeaders headers = new HttpHeaders();

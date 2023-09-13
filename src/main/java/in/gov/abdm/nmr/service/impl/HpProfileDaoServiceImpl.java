@@ -18,11 +18,11 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import in.gov.abdm.nmr.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import in.gov.abdm.exception.ABDMDocumentUploadFailedException;
 import in.gov.abdm.nmr.dto.CurrentWorkDetailsTO;
 import in.gov.abdm.nmr.dto.HpPersonalUpdateRequestTO;
 import in.gov.abdm.nmr.dto.HpProfilePictureResponseTO;
@@ -49,12 +49,6 @@ import in.gov.abdm.nmr.entity.SubDistrict;
 import in.gov.abdm.nmr.entity.User;
 import in.gov.abdm.nmr.entity.Villages;
 import in.gov.abdm.nmr.entity.WorkProfile;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
-import in.gov.abdm.nmr.exception.NMRError;
-import in.gov.abdm.nmr.exception.NmrException;
-import in.gov.abdm.nmr.exception.NoDataFoundException;
-import in.gov.abdm.nmr.exception.NotFoundException;
-import in.gov.abdm.nmr.exception.WorkFlowException;
 import in.gov.abdm.nmr.nosql.entity.Council;
 import in.gov.abdm.nmr.repository.CountryRepository;
 import in.gov.abdm.nmr.repository.CourseRepository;
@@ -212,13 +206,13 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         log.info("In HpProfileDaoServiceImpl : updateHpRegistrationDetails method");
         isFileTypeSupported(registrationCertificate);
         if(XSSFileDetection.isMaliciousCodeInFile(registrationCertificate)) {
-			throw new ABDMDocumentUploadFailedException(registrationCertificate.getOriginalFilename() + " is not allowed !!. Please select valid file type");
+			throw new InvalidFileUploadException();
         }
         
         for (MultipartFile file : degreeCertificate) {
             isFileTypeSupported(file);
             if(XSSFileDetection.isMaliciousCodeInFile(file)) {
-    			throw new ABDMDocumentUploadFailedException(file.getOriginalFilename() + " is not allowed !!. Please select valid file type");
+    			throw new InvalidFileUploadException();
             }
         }
        
@@ -370,7 +364,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
 
     @Override
     public HpProfilePictureResponseTO uploadHpProfilePhoto(MultipartFile file, BigInteger hpProfileId)
-            throws IOException, InvalidRequestException, ABDMDocumentUploadFailedException {
+            throws IOException, InvalidRequestException, InvalidFileUploadException {
 
         HpProfile hpProfile = iHpProfileRepository.findById(hpProfileId).orElse(null);
         if (hpProfile == null) {
@@ -378,7 +372,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         }
         isFileTypeSupported(file);
         if(XSSFileDetection.isMaliciousCodeInFile(file)) {
-			throw new ABDMDocumentUploadFailedException(file.getOriginalFilename() + " is not allowed !!. Please select valid file type");
+			throw new InvalidFileUploadException();
         }
 
         String encodedPhoto = Base64.getEncoder().encodeToString(file.getBytes());
