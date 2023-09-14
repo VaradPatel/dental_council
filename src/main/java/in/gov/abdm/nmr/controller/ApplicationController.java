@@ -2,10 +2,7 @@ package in.gov.abdm.nmr.controller;
 
 import in.gov.abdm.nmr.dto.*;
 import in.gov.abdm.nmr.enums.ApplicationType;
-import in.gov.abdm.nmr.exception.InvalidRequestException;
-import in.gov.abdm.nmr.exception.NMRError;
-import in.gov.abdm.nmr.exception.NmrException;
-import in.gov.abdm.nmr.exception.WorkFlowException;
+import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.security.ChecksumUtil;
 import in.gov.abdm.nmr.security.common.ProtectedPaths;
 import in.gov.abdm.nmr.service.IApplicationService;
@@ -86,7 +83,7 @@ public class ApplicationController {
      */
     @PostMapping(path=ProtectedPaths.REACTIVATE_REQUEST_URL,consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ReactivateRequestResponseTo reactivateHealthProfessional(@RequestParam(value = "reactivationFile", required = false) MultipartFile reactivationFile,
-                                                                    @RequestPart("data") @Valid ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException, IOException {
+                                                                    @RequestPart("data") @Valid ApplicationRequestTo applicationRequestTo) throws WorkFlowException, NmrException, InvalidRequestException, IOException, InvalidFileUploadException {
 
         checksumUtil.validateChecksum();
         log.info("In Application Controller: reactivateHealthProfessional method ");

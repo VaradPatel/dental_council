@@ -201,7 +201,7 @@ class HpProfileDaoServiceTest {
     }
 
     @Test
-    void testUploadHpProfilePhoto() throws InvalidRequestException, IOException {
+    void testUploadHpProfilePhoto() throws InvalidRequestException, IOException, InvalidFileUploadException {
         when(iHpProfileRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getHpProfile()));
         when(iHpProfileRepository.save(any(HpProfile.class))).thenReturn(getHpProfile());
         HpProfilePictureResponseTO hpProfilePictureResponseTO = hpProfileDaoService.uploadHpProfilePhoto(certificate, HP_ID);

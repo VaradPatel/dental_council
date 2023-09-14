@@ -6,6 +6,7 @@ import in.gov.abdm.nmr.entity.HpProfileStatus;
 import in.gov.abdm.nmr.entity.RequestCounter;
 import in.gov.abdm.nmr.entity.UserAttachments;
 import in.gov.abdm.nmr.enums.*;
+import in.gov.abdm.nmr.exception.InvalidFileUploadException;
 import in.gov.abdm.nmr.exception.InvalidRequestException;
 import in.gov.abdm.nmr.exception.NmrException;
 import in.gov.abdm.nmr.exception.WorkFlowException;
@@ -111,7 +112,7 @@ class ApplicationServiceTest {
     }
 
     @Test
-    void testReactivateRequest() throws WorkFlowException, InvalidRequestException, IOException {
+    void testReactivateRequest() throws WorkFlowException, InvalidRequestException, IOException, InvalidFileUploadException {
         RequestCounter requestCounter = RequestCounter.builder().counter(BigInteger.valueOf(1))
                 .applicationType(in.gov.abdm.nmr.entity.ApplicationType.builder().id(ApplicationType.HP_TEMPORARY_SUSPENSION.getId()).requestPrefixId("NMR300").build()).build();
         when(iHpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfileAsSuspendedStatus());
@@ -126,7 +127,7 @@ class ApplicationServiceTest {
     }
 
     @Test
-    void testReactivateRequestShouldPreviousGroupIsNmc() throws WorkFlowException, InvalidRequestException, IOException {
+    void testReactivateRequestShouldPreviousGroupIsNmc() throws WorkFlowException, InvalidRequestException, IOException, InvalidFileUploadException {
         RequestCounter requestCounter = RequestCounter.builder().counter(BigInteger.valueOf(1))
                 .applicationType(in.gov.abdm.nmr.entity.ApplicationType.builder().id(ApplicationType.HP_TEMPORARY_SUSPENSION.getId()).requestPrefixId("NMR300").build()).build();
         when(iHpProfileRepository.findHpProfileById(any(BigInteger.class))).thenReturn(getHpProfileAsSuspendedStatus());

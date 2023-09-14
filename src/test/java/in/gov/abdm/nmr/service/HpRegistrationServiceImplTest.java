@@ -222,7 +222,7 @@ class HpRegistrationServiceImplTest {
     }
 
     @Test
-    void testUploadHpProfilePicture() throws InvalidRequestException, IOException {
+    void testUploadHpProfilePicture() throws InvalidRequestException, IOException, InvalidFileUploadException {
         when(hpProfileDaoService.uploadHpProfilePhoto(any(MultipartFile.class), any(BigInteger.class))).
                 thenReturn(getHpProfilePictureResponse());
         when(iHpProfileMapper.hpProfilePictureUploadToDto(any(HpProfilePictureResponseTO.class))).thenReturn(getHpProfilePictureResponse());
@@ -231,7 +231,7 @@ class HpRegistrationServiceImplTest {
     }
 
     @Test
-    void testAddQualificationShouldAddQualificationDetailsAndReturnSuccess() throws WorkFlowException, NmrException, InvalidRequestException {
+    void testAddQualificationShouldAddQualificationDetailsAndReturnSuccess() throws WorkFlowException, NmrException, InvalidRequestException, IOException, InvalidFileUploadException {
         when(hpProfileDaoService.findById(any(BigInteger.class))).thenReturn(getHpProfileForNMR());
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(getRequestCounter());
         when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class),anyList())).thenReturn(true);
@@ -241,7 +241,7 @@ class HpRegistrationServiceImplTest {
     }
 
     @Test
-    void testAddQualificationShouldAddQualificationDetailsAndReturnSuccess2() throws WorkFlowException, NmrException, InvalidRequestException {
+    void testAddQualificationShouldAddQualificationDetailsAndReturnSuccess2() throws WorkFlowException, NmrException, InvalidRequestException, IOException, InvalidFileUploadException {
         when(hpProfileDaoService.findById(any(BigInteger.class))).thenReturn(getHpProfileForNMR());
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(getRequestCounter());
         when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class),anyList())).thenReturn(true);

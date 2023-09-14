@@ -34,8 +34,9 @@ public interface IHpRegistrationService {
      * @param hpProfileId The ID of the HP profile to upload the picture for.
      * @return An instance of {@link HpProfilePictureResponseTO} containing information about the uploaded profile picture.
      * @throws IOException If there is an error reading the file or uploading it to the server.
+     * @throws InvalidFileUploadException
      */
-    HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException, InvalidRequestException;
+    HpProfilePictureResponseTO uploadHpProfilePicture(MultipartFile file, BigInteger hpProfileId) throws IOException, InvalidRequestException, InvalidFileUploadException;
 
     /**
      * Adds qualifications to a HP profile.
@@ -44,8 +45,10 @@ public interface IHpRegistrationService {
      * @param qualificationDetailRequestTOs A list of qualification details to be added to the HP profile.
      * @return A string indicating the status of the operation.
      * @throws WorkFlowException If an error occurs during the qualification addition process.
+     * @throws InvalidFileUploadException
+     * @throws IOException 
      */
-    String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws WorkFlowException, InvalidRequestException;
+    String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws WorkFlowException, InvalidRequestException, IOException, InvalidFileUploadException;
 
     /**
      * Update qualifications to a HP profile.
@@ -54,8 +57,10 @@ public interface IHpRegistrationService {
      * @param qualificationDetailRequestTOs A list of qualification details to be added to the HP profile.
      * @return A string indicating the status of the operation.
      * @throws WorkFlowException If an error occurs during the qualification addition process.
+     * @throws IOException 
+     * @throws InvalidFileUploadException
      */
-    String updateQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws WorkFlowException, InvalidRequestException;
+    String updateQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws WorkFlowException, InvalidRequestException, IOException, InvalidFileUploadException;
     /**
      * Adds or updates the personal details for a given HP profile.
      *
