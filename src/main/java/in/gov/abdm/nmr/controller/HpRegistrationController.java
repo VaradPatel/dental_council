@@ -249,12 +249,14 @@ public class HpRegistrationController {
      * @param qualificationDetailRequestTO the list of qualifications to be added
      * @return a string indicating the result of the operation
      * @throws WorkFlowException if there is an error during the operation
+     * @throws InvalidFileUploadException
+     * @throws IOException 
      */
     @PostMapping(path = ProtectedPaths.ADDITIONAL_QUALIFICATION, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String addQualifications(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
                                     @RequestPart("data") @Valid QualificationRequestTO qualificationDetailRequestTO,
                                     @RequestParam(value = "degreeCertificates") List<MultipartFile> degreeCertificates
-    ) throws WorkFlowException, InvalidRequestException {
+    ) throws WorkFlowException, InvalidRequestException, IOException, InvalidFileUploadException {
         checksumUtil.validateChecksum();
         log.info(degreeCertificates != null ? String.valueOf(degreeCertificates.size()) : null);
         return hpService.addQualification(hpProfileId, qualificationDetailRequestTO.getQualificationDetailRequestTos(), degreeCertificates);
@@ -267,12 +269,14 @@ public class HpRegistrationController {
      * @param qualificationDetailRequestTO the list of qualifications to be added
      * @return a string indicating the result of the operation
      * @throws WorkFlowException if there is an error during the operation
+     * @throws IOException 
+     * @throws InvalidFileUploadException
      */
     @PutMapping(path = ProtectedPaths.ADDITIONAL_QUALIFICATION, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String updateQualifications(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
                                     @RequestPart("data") @Valid QualificationRequestTO qualificationDetailRequestTO,
                                     @RequestParam(value = "degreeCertificates", required = false) List<MultipartFile> degreeCertificates
-    ) throws InvalidRequestException, WorkFlowException {
+    ) throws InvalidRequestException, WorkFlowException, IOException, InvalidFileUploadException {
         checksumUtil.validateChecksum();
         log.info(degreeCertificates != null ? String.valueOf(degreeCertificates.size()) : null);
         return hpService.updateQualification(hpProfileId, qualificationDetailRequestTO.getQualificationDetailRequestTos(),degreeCertificates);
@@ -285,11 +289,12 @@ public class HpRegistrationController {
      * @param hpProfileId The ID of the HP profile for which the picture is being uploaded
      * @return A response object containing information about the uploaded profile picture
      * @throws IOException If there is an error reading the file or uploading it to the server
+     * @throws InvalidFileUploadException
      */
     @PostMapping(path = ProtectedPaths.UPDATE_PROFILE_PICTURE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfilePictureResponseTO uploadHpProfilePhoto(
             @RequestParam(value = "file", required = true) MultipartFile file,
-            @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws IOException, InvalidRequestException {
+            @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws IOException, InvalidRequestException, InvalidFileUploadException {
         checksumUtil.validateChecksum();
         return hpService.uploadHpProfilePicture(file, hpProfileId);
     }

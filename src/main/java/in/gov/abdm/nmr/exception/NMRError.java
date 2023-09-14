@@ -49,7 +49,8 @@ public enum NMRError {
     SERVICE_UNAVAILABLE("ABDM-NMR-040", "we are experiencing problem with downstream service. please try again later"),
     DATA_TAMPERED("ABDM-NMR-041", "Something went wrong while processing your request. Please try again in sometime."),
     CHECKSUM_HEADER_MISSING("ABDM-NMR-042", "Please make sure you have added all mandatory headers"),
-    VERIFY_MOBILE_NUMBER("ABDM-NMR-043", "Please verify the mobile number.");
+    VERIFY_MOBILE_NUMBER("ABDM-NMR-043", "Please verify the mobile number."),
+    INVALID_FILE_UPLOAD("ABDM-NMR-044", "Please Select Valid File");
 
     private final String code;
     private final String message;
