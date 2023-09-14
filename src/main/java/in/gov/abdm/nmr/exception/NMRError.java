@@ -50,7 +50,7 @@ public enum NMRError {
     DATA_TAMPERED("ABDM-NMR-041", "Something went wrong while processing your request. Please try again in sometime."),
     CHECKSUM_HEADER_MISSING("ABDM-NMR-042", "Please make sure you have added all mandatory headers"),
     VERIFY_MOBILE_NUMBER("ABDM-NMR-043", "Please verify the mobile number."),
-    INVALID_FILE_UPLOAD("ABDM-NMR-044", "Please Select Valid File");
+    INVALID_FILE_UPLOAD("ABDM-NMR-044", "Please select valid file");
 
     private final String code;
     private final String message;
