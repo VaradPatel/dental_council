@@ -154,14 +154,16 @@ public class HpRegistrationController {
     public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam(value = "registrationCertificate", required = false) MultipartFile registrationCertificate,
                                                                                       @RequestParam(value = "degreeCertificate", required = false) MultipartFile degreeCertificate,
                                                                                       @RequestPart("data") @Valid HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO,
-                                                                                      @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId) throws InvalidRequestException, NmrException {
+                                                                                      @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
+                                                                                      @RequestParam(value = "proofOfQualificationNameChange") MultipartFile proofOfQualificationNameChange,
+                                                                                      @RequestParam(value = "proofOfRegistrationNameChange") MultipartFile proofOfRegistrationNameChange) throws InvalidRequestException, NmrException {
 
         checksumUtil.validateChecksum();
         log.info("In HP Registration Controller: updateHealthProfessionalRegistrationDetail method ");
         log.debug("Request Payload: HpRegistrationUpdateRequestTO: ");
         log.debug(hpRegistrationUpdateRequestTO.toString());
 
-        HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequestTO, registrationCertificate, degreeCertificate != null ? List.of(degreeCertificate) : Collections.emptyList());
+        HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = hpService.addOrUpdateHpRegistrationDetail(hpProfileId, hpRegistrationUpdateRequestTO, registrationCertificate, degreeCertificate != null ? List.of(degreeCertificate) : Collections.emptyList(), proofOfQualificationNameChange, proofOfRegistrationNameChange);
 
         log.info("HP Registration Controller: updateHealthProfessionalRegistrationDetail method: Execution Successful. ");
         log.debug("Response Payload: HpProfileRegistrationResponseTO: ");
@@ -171,6 +173,7 @@ public class HpRegistrationController {
     }
 
 
+/*
     @PutMapping(path = "/v2/health-professional/{healthProfessionalId}/registration", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public HpProfileRegistrationResponseTO updateHealthProfessionalRegistrationDetail(@RequestParam(value = "registrationCertificate", required = false) MultipartFile registrationCertificate,
                                                                                       @RequestParam(value = "degreeCertificate", required = false) List<MultipartFile> degreeCertificate,
@@ -190,6 +193,7 @@ public class HpRegistrationController {
 
         return hpProfileRegistrationResponseTO;
     }
+*/
 
     /**
      * Retrieve health professional registration details by profile ID.
@@ -255,11 +259,12 @@ public class HpRegistrationController {
     @PostMapping(path = ProtectedPaths.ADDITIONAL_QUALIFICATION, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String addQualifications(@PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
                                     @RequestPart("data") @Valid QualificationRequestTO qualificationDetailRequestTO,
-                                    @RequestParam(value = "degreeCertificates") List<MultipartFile> degreeCertificates
+                                    @RequestParam(value = "degreeCertificates") List<MultipartFile> degreeCertificates,
+                                    @RequestParam(value = "proofOfQualificationNameChange", required = false) MultipartFile proofOfQualificationNameChange
     ) throws WorkFlowException, InvalidRequestException, IOException, InvalidFileUploadException {
         checksumUtil.validateChecksum();
         log.info(degreeCertificates != null ? String.valueOf(degreeCertificates.size()) : null);
-        return hpService.addQualification(hpProfileId, qualificationDetailRequestTO.getQualificationDetailRequestTos(), degreeCertificates);
+        return hpService.addQualification(hpProfileId, qualificationDetailRequestTO.getQualificationDetailRequestTos(), degreeCertificates, proofOfQualificationNameChange);
     }
 
     /**

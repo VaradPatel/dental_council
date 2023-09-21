@@ -410,7 +410,7 @@ public class NMRConstants {
     public static final String REGEX_FOR_EXTRA_SPACES_AND_NEW_LINES = "(\\r\\n|\\r|\\n|\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$))";
     public static final String INVALID_FILE = "Invalid file";
     public static final String INVALID_FILE_EXTENSION = " is not an allowed file type.";
-    public static final String REGEX_FOR_FILE = "^[A-Za-z0-9()_-]+.[A-Za-z]+$";
+    public static final String REGEX_FOR_FILE = "^[A-Za-z0-9 ()_-]+.[A-Za-z]+$";
     public static final String REGEX_FOR_URL = "^((https?)://|(www\\.)?)?[a-z0-9-]+(\\.[a-z0-9-]+)+(\\/[a-z0-9-]+)*$";
 
 }

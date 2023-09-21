@@ -26,4 +26,7 @@ public class RegistrationDetailTO {
     private String registrationCertificate;
     private String fileName;
     private String fileType;
+    private String nameChangeProofAttach;
+    private String nameChangeProofAttachFileName;
+    private String nameChangeProofAttachFileNameType;
 }

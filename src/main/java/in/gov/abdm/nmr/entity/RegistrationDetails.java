@@ -66,4 +66,5 @@ public class RegistrationDetails extends CommonAuditEntity {
 
     private String requestId;
     private String fileName;
+    private String nameChangeProofAttachFileName;
 }

@@ -18,7 +18,7 @@ public interface IHpProfileDaoService {
 			HpPersonalUpdateRequestTO hpPersonalUpdateRequestTO) throws InvalidRequestException, WorkFlowException;
 
 	HpProfileUpdateResponseTO updateHpRegistrationDetails(BigInteger hpProfileId,
-														  HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, List<MultipartFile> degreeCertificate) throws NmrException, InvalidRequestException;
+														  HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, List<MultipartFile> degreeCertificate, MultipartFile nameChangeCertificate, MultipartFile proofOfRegistrationNameChange) throws NmrException, InvalidRequestException;
 
 	HpProfileUpdateResponseTO updateWorkProfileDetails(BigInteger hpProfileId,
 													   HpWorkProfileUpdateRequestTO hpWorkProfileUpdateRequestTO, List<MultipartFile> proofs) throws InvalidRequestException, NmrException, NotFoundException;
@@ -32,5 +32,5 @@ public interface IHpProfileDaoService {
 
     void saveQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
 								  List<QualificationDetailRequestTO> qualificationDetailRequestTOS,
-								  List<MultipartFile> proofs) throws InvalidRequestException;
+								  List<MultipartFile> proofs, MultipartFile nameChangeCertificate) throws InvalidRequestException;
 }

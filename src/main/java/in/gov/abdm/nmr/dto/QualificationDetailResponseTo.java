@@ -31,4 +31,7 @@ public class QualificationDetailResponseTo {
     private List<Queries> queries;
     private BroadSpecialityTO brodSpeciality;
     private String superSpeciality;
+    private String nameChangeProofAttach;
+    private String nameChangeProofAttachFileName;
+    private String nameChangeProofAttachFileNameType;
 }

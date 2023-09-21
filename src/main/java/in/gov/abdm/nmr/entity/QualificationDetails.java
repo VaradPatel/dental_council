@@ -79,4 +79,5 @@ public class QualificationDetails extends CommonAuditEntity {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+    private String nameChangeProofAttachFileName;
 }

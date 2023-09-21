@@ -43,12 +43,13 @@ public interface IHpRegistrationService {
      *
      * @param hpProfileId                   The ID of the HP profile to which the qualifications will be added.
      * @param qualificationDetailRequestTOs A list of qualification details to be added to the HP profile.
+     * @param nameChangeCertificate
      * @return A string indicating the status of the operation.
-     * @throws WorkFlowException If an error occurs during the qualification addition process.
+     * @throws WorkFlowException          If an error occurs during the qualification addition process.
      * @throws InvalidFileUploadException
-     * @throws IOException 
+     * @throws IOException
      */
-    String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws WorkFlowException, InvalidRequestException, IOException, InvalidFileUploadException;
+    String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs, MultipartFile nameChangeCertificate) throws WorkFlowException, InvalidRequestException, IOException, InvalidFileUploadException;
 
     /**
      * Update qualifications to a HP profile.
@@ -76,12 +77,14 @@ public interface IHpRegistrationService {
     /**
      * Adds or updates the HP profile registration details.
      *
-     * @param hpProfileId           The unique identifier of the HP profile.
+     * @param hpProfileId                   The unique identifier of the HP profile.
+     * @param nameChangeCertificate
+     * @param proofOfRegistrationNameChange
      * @return The response object that contains the status of the operation.
      * @throws Exception If any error occurs during the operation.
      */
     HpProfileRegistrationResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
-                                                                    HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, List<MultipartFile> degreeCertificate) throws InvalidRequestException, NmrException;
+                                                                    HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, List<MultipartFile> degreeCertificate, MultipartFile proofOfQualificationNameChange, MultipartFile proofOfRegistrationNameChange) throws InvalidRequestException, NmrException;
 
     /**
      * Adds or updates work profile details for a given health professional profile.
