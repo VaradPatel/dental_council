@@ -129,7 +129,9 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
                     qualificationDetailResponseTo.setCreatedAt(indianQualification.getCreatedAt());
                     qualificationDetailResponseTo.setBrodSpeciality(indianQualification.getBroadSpeciality()!=null?BroadSpecialityTO.builder().id(indianQualification.getBroadSpeciality().getId()).name(indianQualification.getBroadSpeciality().getName()).build():null);
                     qualificationDetailResponseTo.setSuperSpeciality(indianQualification.getSuperSpecialityName());
-
+                    qualificationDetailResponseTo.setStateMedicalCouncil(indianQualification.getStateMedicalCouncil());
+                    qualificationDetailResponseTo.setRegistrationDate(indianQualification.getRegistrationDate());
+                    qualificationDetailResponseTo.setRegistrationNumber(indianQualification.getRegistrationNumber());
                     return qualificationDetailResponseTo;
                 }).toList());
             }

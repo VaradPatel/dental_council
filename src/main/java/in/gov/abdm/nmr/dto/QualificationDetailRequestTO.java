@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.dto;
 import in.gov.abdm.nmr.annotation.NotNullBlank;
 import in.gov.abdm.nmr.annotation.OptionalName;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
+import in.gov.abdm.nmr.entity.StateMedicalCouncil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -93,5 +94,10 @@ public class QualificationDetailRequestTO {
     private String superSpecialityName;
 
     private String fileName;
+
+    private StateMedicalCouncil stateMedicalCouncil;
+
+    private java.util.Date registrationDate;
+    private String registrationNumber;
 
 }
