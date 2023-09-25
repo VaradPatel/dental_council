@@ -5,7 +5,6 @@ import in.gov.abdm.nmr.dto.HpProfileUpdateResponseTO;
 import in.gov.abdm.nmr.dto.HpSmcDetailTO;
 import in.gov.abdm.nmr.entity.Address;
 import in.gov.abdm.nmr.entity.HpProfile;
-import in.gov.abdm.nmr.entity.RegistrationDetails;
 import in.gov.abdm.nmr.entity.WorkNature;
 import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.repository.*;
@@ -174,7 +173,7 @@ class HpProfileDaoServiceTest {
         when(courseRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getCourse()));
         when(qualificationDetailRepository.saveAll(any(List.class))).thenReturn(new ArrayList());
         when(iCustomQualificationDetailRepository.saveAll(any(List.class))).thenReturn(new ArrayList());
-        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(HP_ID, getHpRegistrationUpdateRequestTo(), certificate, List.of(certificate));
+        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(HP_ID, getHpRegistrationUpdateRequestTo(), certificate, List.of(certificate), certificate, certificate);
         assertEquals(HP_ID, hpProfileUpdateResponseTO.getHpProfileId());
     }
 
@@ -187,7 +186,7 @@ class HpProfileDaoServiceTest {
         when(qualificationDetailRepository.saveAll(any(List.class))).thenReturn(new ArrayList());
         when(iCustomQualificationDetailRepository.saveAll(any(List.class))).thenReturn(new ArrayList());
         //when(iCustomQualificationDetailRepository.findById(any(BigInteger.class))).thenReturn(Optional.of(getForeignQualificationDetails()));
-        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(HP_ID, getHpRegistrationUpdateRequestForInternationalQualification(), certificate, List.of(certificate));
+        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(HP_ID, getHpRegistrationUpdateRequestForInternationalQualification(), certificate, List.of(certificate), certificate, certificate);
         assertEquals(HP_ID, hpProfileUpdateResponseTO.getHpProfileId());
     }
 

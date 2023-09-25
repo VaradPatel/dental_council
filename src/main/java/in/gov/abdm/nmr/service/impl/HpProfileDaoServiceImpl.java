@@ -201,7 +201,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     @SneakyThrows
     @Override
     public HpProfileUpdateResponseTO updateHpRegistrationDetails(BigInteger hpProfileId,
-                                                                 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, List<MultipartFile> degreeCertificate) throws NmrException, InvalidRequestException {
+                                                                 HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, List<MultipartFile> degreeCertificate, MultipartFile proofOfQualificationNameChange, MultipartFile proofOfRegistrationNameChange) throws NmrException, InvalidRequestException {
 
         log.info("In HpProfileDaoServiceImpl : updateHpRegistrationDetails method");
         isFileTypeSupported(registrationCertificate);
@@ -215,7 +215,15 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     			throw new InvalidFileUploadException();
             }
         }
-       
+
+        isFileTypeSupported(proofOfQualificationNameChange);
+        if (XSSFileDetection.isMaliciousCodeInFile(proofOfQualificationNameChange)) {
+            throw new InvalidFileUploadException();
+        }
+        isFileTypeSupported(proofOfRegistrationNameChange);
+        if (XSSFileDetection.isMaliciousCodeInFile(proofOfRegistrationNameChange)) {
+            throw new InvalidFileUploadException();
+        }
 
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
             hpRegistrationUpdateRequestTO.getRegistrationDetail().setFileName(registrationCertificate != null ? registrationCertificate.getOriginalFilename() : null);
@@ -227,11 +235,11 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         if (registrationDetail == null) {
             log.debug("Initiating Registration details Insertion flow since there were no matching Registration details found for the given hp_profile_id. ");
             registrationDetail = new RegistrationDetails();
-            mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile, registrationCertificate);
+            mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile, registrationCertificate, proofOfRegistrationNameChange);
             registrationDetailRepository.save(registrationDetail);
         } else {
             log.debug("Initiating Registration details Updation flow since there was an existing Registration detail for the given hp_profile_id. ");
-            mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile, registrationCertificate);
+            mapRegistrationRequestToEntity(hpRegistrationUpdateRequestTO, registrationDetail, hpProfile, registrationCertificate, proofOfRegistrationNameChange);
         }
         if (hpRegistrationUpdateRequestTO.getQualificationDetails() != null && !hpRegistrationUpdateRequestTO.getQualificationDetails().isEmpty()) {
             if (1 == hpRegistrationUpdateRequestTO.getQualificationDetails().size() && hpProfile.getUser() != null) {
@@ -242,7 +250,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 }
             }
             log.debug("Saving Qualification Details");
-            saveQualificationDetailsForRegistration(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), degreeCertificate);
+            saveQualificationDetailsForRegistration(hpProfile, registrationDetail, hpRegistrationUpdateRequestTO.getQualificationDetails(), degreeCertificate, proofOfQualificationNameChange);
         }
         if (NMRConstants.INTERNATIONAL.equals(hpRegistrationUpdateRequestTO.getQualificationDetails().get(0).getQualificationFrom())) {
             HpNbeDetails hpNbeDetails = hpNbeDetailsRepository.findByUserId(hpProfile.getUser().getId());
@@ -342,17 +350,17 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     @Override
-    public void saveQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs) throws InvalidRequestException {
+    public void saveQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs, MultipartFile proofOfQualificationNameChange) throws InvalidRequestException {
         if (qualificationDetailRequestTOS != null) {
-            saveIndianQualificationDetails(hpProfile, newRegistrationDetails, qualificationDetailRequestTOS.stream().filter(qualificationDetailRequestTO -> NMRConstants.INDIA.equals(qualificationDetailRequestTO.getQualificationFrom())).toList(), proofs);
-            saveInternationalQualificationDetails(hpProfile, newRegistrationDetails, qualificationDetailRequestTOS.stream().filter(qualificationDetailRequestTO -> NMRConstants.INTERNATIONAL.equals(qualificationDetailRequestTO.getQualificationFrom())).toList(), proofs);
+            saveIndianQualificationDetails(hpProfile, newRegistrationDetails, qualificationDetailRequestTOS.stream().filter(qualificationDetailRequestTO -> NMRConstants.INDIA.equals(qualificationDetailRequestTO.getQualificationFrom())).toList(), proofs, proofOfQualificationNameChange);
+            saveInternationalQualificationDetails(hpProfile, newRegistrationDetails, qualificationDetailRequestTOS.stream().filter(qualificationDetailRequestTO -> NMRConstants.INTERNATIONAL.equals(qualificationDetailRequestTO.getQualificationFrom())).toList(), proofs, proofOfQualificationNameChange);
         }
     }
 
-    public void saveQualificationDetailsForRegistration(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs) throws InvalidRequestException {
+    public void saveQualificationDetailsForRegistration(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs, MultipartFile proofOfQualificationNameChange) throws InvalidRequestException {
         if (qualificationDetailRequestTOS != null) {
-            saveIndianQualificationDetailsForRegistration(hpProfile, newRegistrationDetails, qualificationDetailRequestTOS.stream().filter(qualificationDetailRequestTO -> NMRConstants.INDIA.equals(qualificationDetailRequestTO.getQualificationFrom())).toList(), proofs);
-            saveInternationalQualificationDetailsForRegistration(hpProfile, newRegistrationDetails, qualificationDetailRequestTOS.stream().filter(qualificationDetailRequestTO -> NMRConstants.INTERNATIONAL.equals(qualificationDetailRequestTO.getQualificationFrom())).toList(), proofs);
+            saveIndianQualificationDetailsForRegistration(hpProfile, newRegistrationDetails, qualificationDetailRequestTOS.stream().filter(qualificationDetailRequestTO -> NMRConstants.INDIA.equals(qualificationDetailRequestTO.getQualificationFrom())).toList(), proofs,proofOfQualificationNameChange);
+            saveInternationalQualificationDetailsForRegistration(hpProfile, newRegistrationDetails, qualificationDetailRequestTOS.stream().filter(qualificationDetailRequestTO -> NMRConstants.INTERNATIONAL.equals(qualificationDetailRequestTO.getQualificationFrom())).toList(), proofs,proofOfQualificationNameChange);
         }
     }
 
@@ -394,16 +402,16 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     private void saveIndianQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
-                                                List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs) throws InvalidRequestException {
+                                                List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs, MultipartFile proofOfQualificationNameChange) throws InvalidRequestException {
 
         List<QualificationDetails> qualificationDetails = new ArrayList<>();
         for (QualificationDetailRequestTO indianQualification : qualificationDetailRequestTOS) {
             QualificationDetails qualification = new QualificationDetails();
             if (indianQualification.getId() != null) {
                 qualification = qualificationDetailRepository.findById(indianQualification.getId()).orElseThrow(InvalidRequestException::new);
-                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification, (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)) : null);
+                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification, (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)) : null, proofOfQualificationNameChange);
             } else {
-                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)) : null);
+                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)) : null, proofOfQualificationNameChange);
                 qualificationDetails.add(qualification);
             }
         }
@@ -412,23 +420,23 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     private void saveIndianQualificationDetailsForRegistration(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
-                                                               List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs) throws InvalidRequestException {
+                                                               List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs, MultipartFile proofOfQualificationNameChange) throws InvalidRequestException {
 
         List<QualificationDetails> qualificationDetails = new ArrayList<>();
         for (QualificationDetailRequestTO indianQualification : qualificationDetailRequestTOS) {
             QualificationDetails qualification = qualificationDetailRepository.getBasicQualificationDetailsByUserId(hpProfile.getUser().getId());
             if (qualification!= null) {
-                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification, (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)) : null);
+                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification, (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)) : null, proofOfQualificationNameChange);
             } else {
                 qualification=new QualificationDetails();
-                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)) : null);
+                mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)) : null, proofOfQualificationNameChange);
                 qualificationDetails.add(qualification);
             }
         }
         qualificationDetailRepository.saveAll(qualificationDetails);
 
     }
-    private void mapIndianQualificationRequestToEntity(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, QualificationDetailRequestTO indianQualification, QualificationDetails qualification, MultipartFile proof) throws InvalidRequestException {
+    private void mapIndianQualificationRequestToEntity(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, QualificationDetailRequestTO indianQualification, QualificationDetails qualification, MultipartFile proof, MultipartFile proofOfQualificationNameChange) throws InvalidRequestException {
 
         qualification.setCountry(countryRepository.findById(indianQualification.getCountry().getId()).orElseThrow(InvalidRequestException::new));
         qualification.setState(stateRepository.findById(indianQualification.getState().getId()).orElseThrow(InvalidRequestException::new));
@@ -459,19 +467,28 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 log.error(EXCEPTION_OCCURRED_WHILE_SAVING_ATTACHMENT, e);
             }
         }
+        if (proofOfQualificationNameChange != null && !proofOfQualificationNameChange.isEmpty()) {
+            try {
+                qualification.setNameChangeProofAttach(proofOfQualificationNameChange.getBytes());
+                qualification.setIsNameChange(1);
+                qualification.setNameChangeProofAttachFileName(proofOfQualificationNameChange.getOriginalFilename());
+            } catch (IOException e) {
+                log.error(EXCEPTION_OCCURRED_WHILE_SAVING_ATTACHMENT, e);
+            }
+        }
     }
 
 
     private void saveInternationalQualificationDetails(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
-                                                       List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs) throws InvalidRequestException {
+                                                       List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs, MultipartFile proofOfQualificationNameChange) throws InvalidRequestException {
         List<ForeignQualificationDetails> internationQualifications = new ArrayList<>();
         for (QualificationDetailRequestTO internationalQualification : qualificationDetailRequestTOS) {
             ForeignQualificationDetails customQualification = new ForeignQualificationDetails();
             if (internationalQualification.getId() != null) {
                 customQualification = iCustomQualificationDetailRepository.findById(internationalQualification.getId()).orElseThrow(InvalidRequestException::new);
-                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null);
+                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null, proofOfQualificationNameChange);
             } else {
-                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null);
+                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null, proofOfQualificationNameChange);
                 internationQualifications.add(customQualification);
             }
         }
@@ -479,22 +496,22 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     private void saveInternationalQualificationDetailsForRegistration(HpProfile hpProfile, RegistrationDetails newRegistrationDetails,
-                                                                      List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs) throws InvalidRequestException {
+                                                                      List<QualificationDetailRequestTO> qualificationDetailRequestTOS, List<MultipartFile> proofs, MultipartFile proofOfQualificationNameChange) throws InvalidRequestException {
         List<ForeignQualificationDetails> internationQualifications = new ArrayList<>();
         for (QualificationDetailRequestTO internationalQualification : qualificationDetailRequestTOS) {
             ForeignQualificationDetails customQualification = iCustomQualificationDetailRepository.getBasicQualificationDetailsByUserId(hpProfile.getUser().getId());
             if (customQualification != null) {
-                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null);
+                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null,proofOfQualificationNameChange);
             } else {
                 customQualification = new ForeignQualificationDetails();
-                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null);
+                mapQualificationRequestToEntity(hpProfile, newRegistrationDetails, internationalQualification, customQualification,  (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(internationalQualification)) : null,proofOfQualificationNameChange);
                 internationQualifications.add(customQualification);
             }
         }
         iCustomQualificationDetailRepository.saveAll(internationQualifications);
     }
 
-    private void mapQualificationRequestToEntity(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, QualificationDetailRequestTO newCustomQualification, ForeignQualificationDetails customQualification, MultipartFile proof) throws InvalidRequestException {
+    private void mapQualificationRequestToEntity(HpProfile hpProfile, RegistrationDetails newRegistrationDetails, QualificationDetailRequestTO newCustomQualification, ForeignQualificationDetails customQualification, MultipartFile proof, MultipartFile proofOfQualificationNameChange) throws InvalidRequestException {
         customQualification.setCountry(newCustomQualification.getCountry().getName());
         customQualification.setState(newCustomQualification.getState() != null ? newCustomQualification.getState().getName() : null);
         customQualification.setCollege(newCustomQualification.getCollege().getName());
@@ -520,6 +537,15 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
                 customQualification.setCertificate(proof.getBytes());
             } catch (IOException e) {
                 log.error("Exception occurred while saving attachment.", e);
+            }
+        }
+        if (proofOfQualificationNameChange != null && !proofOfQualificationNameChange.isEmpty()) {
+            try {
+                customQualification.setNameChangeProofAttach(proofOfQualificationNameChange.getBytes());
+                customQualification.setIsNameChange(1);
+                customQualification.setNameChangeProofAttachFileName(proofOfQualificationNameChange.getOriginalFilename());
+            } catch (IOException e) {
+                log.error(EXCEPTION_OCCURRED_WHILE_SAVING_ATTACHMENT, e);
             }
         }
     }
@@ -609,7 +635,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
     }
 
     @SneakyThrows
-    private void mapRegistrationRequestToEntity(HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, RegistrationDetails registrationDetail, HpProfile hpProfile, MultipartFile registrationCertificate) {
+    private void mapRegistrationRequestToEntity(HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, RegistrationDetails registrationDetail, HpProfile hpProfile, MultipartFile registrationCertificate, MultipartFile proofOfRegistrationNameChange) {
         log.debug("In HpProfileDaoServiceImpl : mapRegistrationRequestToEntity method");
         if (hpRegistrationUpdateRequestTO.getRegistrationDetail() != null) {
             registrationDetail.setHpProfileId(hpProfile);
@@ -626,6 +652,10 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
             if (registrationCertificate != null && !registrationCertificate.isEmpty()) {
                 registrationDetail.setCertificate(registrationCertificate.getBytes());
                 registrationDetail.setFileName(hpRegistrationUpdateRequestTO.getRegistrationDetail().getFileName());
+            }
+            if (proofOfRegistrationNameChange != null && !proofOfRegistrationNameChange.isEmpty()) {
+                registrationDetail.setNameChangeProofAttachment(proofOfRegistrationNameChange.getBytes());
+                registrationDetail.setNameChangeProofAttachFileName(proofOfRegistrationNameChange.getOriginalFilename());
             }
         }
         registrationDetail.setHpProfileId(hpProfile);

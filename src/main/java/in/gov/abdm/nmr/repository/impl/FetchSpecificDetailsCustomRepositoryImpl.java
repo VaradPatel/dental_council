@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.repository.impl;
 import in.gov.abdm.nmr.dto.DashboardRequestParamsTO;
 import in.gov.abdm.nmr.dto.DashboardResponseTO;
 import in.gov.abdm.nmr.dto.DashboardTO;
+import in.gov.abdm.nmr.enums.ApplicationType;
 import in.gov.abdm.nmr.enums.DashboardStatus;
 import in.gov.abdm.nmr.enums.Group;
 import in.gov.abdm.nmr.enums.WorkflowStatus;
@@ -70,7 +71,11 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         }
 
         if (StringUtils.isNotBlank(dashboardRequestParamsTO.getSmcId())) {
-            sb.append(" AND rd.state_medical_council_id = :smcId");
+            if(ApplicationType.ADDITIONAL_QUALIFICATION.getId().equals(dashboardRequestParamsTO.getApplicationTypeId())) {
+                sb.append(" AND (qd1.state_medical_council_id = :smcId or fqd1.state_medical_council_id = :smcId)");
+            }else {
+                sb.append(" AND rd.state_medical_council_id = :smcId");
+            }
         }
 
         if (StringUtils.isNotBlank(dashboardRequestParamsTO.getRegistrationNumber())) {

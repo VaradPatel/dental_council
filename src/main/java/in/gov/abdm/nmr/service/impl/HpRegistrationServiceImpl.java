@@ -243,14 +243,15 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
      *
      * @param hpProfileId                   The ID of the health professional's profile.
      * @param qualificationDetailRequestTOs A list of qualification detail requests as a string.
+     * @param nameChangeCertificate
      * @return The string "Success" if the operation is successful.
-     * @throws WorkFlowException If an error occurs while initiating the submission workflow.
+     * @throws WorkFlowException          If an error occurs while initiating the submission workflow.
      * @throws InvalidFileUploadException
-     * @throws IOException 
+     * @throws IOException
      */
     @Override
     @Transactional
-    public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs) throws InvalidRequestException, WorkFlowException, IOException, InvalidFileUploadException {
+    public String addQualification(BigInteger hpProfileId, List<QualificationDetailRequestTO> qualificationDetailRequestTOs, List<MultipartFile> proofs, MultipartFile proofOfQualificationNameChange) throws InvalidRequestException, WorkFlowException, IOException, InvalidFileUploadException {
         validateUserAccessToResourceForHP(hpProfileId);
         for (MultipartFile file : proofs) {
             isFileTypeSupported(file);
@@ -258,6 +259,11 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     			throw new InvalidFileUploadException();
             }
         }
+        if (proofOfQualificationNameChange != null && StringUtils.isNotBlank(proofOfQualificationNameChange.getOriginalFilename())) {
+        isFileTypeSupported(proofOfQualificationNameChange);
+        if(XSSFileDetection.isMaliciousCodeInFile(proofOfQualificationNameChange)) {
+            throw new InvalidFileUploadException();
+        }}
         HpProfile hpProfile=hpProfileDaoService.findById(hpProfileId);
         HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
         if(latestHpProfile!=null){
@@ -284,7 +290,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             qualificationDetailRequestTO.setRequestId(requestId);
             iWorkFlowService.initiateSubmissionWorkFlow(workFlowRequestTO);
         }
-        hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs);
+        hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs, proofOfQualificationNameChange);
 
         return SUCCESS_RESPONSE;
     }
@@ -303,7 +309,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         for (QualificationDetailRequestTO requestTO : qualificationDetailRequestTOs) {
             WorkFlow lastWorkFlowForHealthProfessional = workFlowRepository.findByRequestId(requestTO.getRequestId());
             if (lastWorkFlowForHealthProfessional != null && WorkflowStatus.QUERY_RAISED.getId().equals(lastWorkFlowForHealthProfessional.getWorkFlowStatus().getId())) {
-                hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs);
+                hpProfileDaoService.saveQualificationDetails(hpProfileDaoService.findById(hpProfileId), null, qualificationDetailRequestTOs, proofs, null);
                 iWorkFlowService.assignQueriesBackToQueryCreator(requestTO.getRequestId(),hpProfileId);
                 iQueriesService.markQueryAsClosed(requestTO.getRequestId());
             } else {
@@ -329,9 +335,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
     @Override
     public HpProfileRegistrationResponseTO addOrUpdateHpRegistrationDetail(BigInteger hpProfileId,
-                                                                           HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, List<MultipartFile> degreeCertificate) throws InvalidRequestException, NmrException {
+                                                                           HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, MultipartFile registrationCertificate, List<MultipartFile> degreeCertificate, MultipartFile proofOfQualificationNameChange, MultipartFile proofOfRegistrationNameChange) throws InvalidRequestException, NmrException {
         log.info("In HpRegistrationServiceImpl : addOrUpdateHpRegistrationDetail method");
-        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(hpProfileId, hpRegistrationUpdateRequestTO, registrationCertificate, degreeCertificate);
+        HpProfileUpdateResponseTO hpProfileUpdateResponseTO = hpProfileDaoService.updateHpRegistrationDetails(hpProfileId, hpRegistrationUpdateRequestTO, registrationCertificate, degreeCertificate,proofOfQualificationNameChange, proofOfRegistrationNameChange);
 
         log.debug("Update Successful. Calling the getHealthProfessionalRegistrationDetail method to retrieve the Details. ");
         HpProfileRegistrationResponseTO healthProfessionalRegistrationDetail = getHealthProfessionalRegistrationDetail(hpProfileUpdateResponseTO.getHpProfileId());

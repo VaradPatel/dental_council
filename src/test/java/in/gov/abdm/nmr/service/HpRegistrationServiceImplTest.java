@@ -188,7 +188,7 @@ class HpRegistrationServiceImplTest {
         when(accessControlService.getLoggedInUser()).thenReturn(getUser(UserTypeEnum.HEALTH_PROFESSIONAL.getId()));
         when(iHpProfileRepository.findLatestEntryByUserid(CommonTestData.ID)).thenReturn(getHpProfile());
         when(hpProfileDaoService.updateHpRegistrationDetails(any(BigInteger.class), any(HpRegistrationUpdateRequestTO.class),
-                any(MultipartFile.class), (any(List.class))))
+                any(MultipartFile.class), (any(List.class)), certificate, certificate))
                 .thenReturn(new HpProfileUpdateResponseTO(204, "Record Added/Updated Successfully!", HP_ID));
         when(registrationDetailRepository.getRegistrationDetailsByHpProfileId(any(BigInteger.class)))
                 .thenReturn(getRegistrationDetails());
@@ -204,7 +204,7 @@ class HpRegistrationServiceImplTest {
                 anyList(), anyList()))
                 .thenReturn(hpProfileRegistrationResponseTO1);
         HpProfileRegistrationResponseTO hpProfileRegistrationResponseTO = hpRegistrationService.addOrUpdateHpRegistrationDetail(CommonTestData.ID, new HpRegistrationUpdateRequestTO(),
-                certificate, List.of(certificate));
+                certificate, List.of(certificate), certificate, certificate);
         assertEquals(HP_ID, hpProfileRegistrationResponseTO.getHpProfileId());
     }
 
@@ -236,7 +236,7 @@ class HpRegistrationServiceImplTest {
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(getRequestCounter());
         when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class),anyList())).thenReturn(true);
         doNothing().when(iWorkFlowService).initiateSubmissionWorkFlow(any(WorkFlowRequestTO.class));
-        String s = hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate));
+        String s = hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate), certificate);
         assertEquals(SUCCESS_RESPONSE, s);
     }
 
@@ -246,7 +246,7 @@ class HpRegistrationServiceImplTest {
         when(requestCounterService.incrementAndRetrieveCount(any(BigInteger.class))).thenReturn(getRequestCounter());
         when(iWorkFlowService.isAnyActiveWorkflowWithOtherApplicationType(any(BigInteger.class),anyList())).thenReturn(true);
         doNothing().when(iWorkFlowService).initiateSubmissionWorkFlow(any(WorkFlowRequestTO.class));
-        String s = hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate));
+        String s = hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate), certificate);
         assertEquals(SUCCESS_RESPONSE, s);
     }
 
@@ -255,13 +255,13 @@ class HpRegistrationServiceImplTest {
         HpProfile hpProfile=getHpProfileForNMR();
         hpProfile.setHpProfileStatus(HpProfileStatus.builder().id(in.gov.abdm.nmr.enums.HpProfileStatus.SUSPENDED.getId()).build());
         when(hpProfileDaoService.findById(any(BigInteger.class))).thenReturn(hpProfile);
-        assertThrows(WorkFlowException.class, () -> hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate)));
+        assertThrows(WorkFlowException.class, () -> hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate), certificate));
     }
 
     @Test
     void testAddQualificationShouldThrowExceptionQualificationWorkFlowCreationFail() throws WorkFlowException, NmrException, InvalidRequestException {
         when(hpProfileDaoService.findById(any(BigInteger.class))).thenReturn(getHpProfile());
-        assertThrows(WorkFlowException.class, () -> hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate)));
+        assertThrows(WorkFlowException.class, () -> hpRegistrationService.addQualification(CommonTestData.ID, getQualification(), List.of(certificate), certificate));
     }
 
     @Test

@@ -85,8 +85,11 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
                     qualificationDetailResponseTo.setCreatedAt(internationalQualification.getCreatedAt());
                     qualificationDetailResponseTo.setBrodSpeciality(internationalQualification.getBroadSpeciality()!=null?BroadSpecialityTO.builder().id(internationalQualification.getBroadSpeciality().getId()).name(internationalQualification.getBroadSpeciality().getName()).build():null);
                     qualificationDetailResponseTo.setSuperSpeciality(internationalQualification.getSuperSpecialityName());
-
-
+                    if (internationalQualification.getNameChangeProofAttachFileName() != null) {
+                        qualificationDetailResponseTo.setNameChangeProofAttach(Base64.getEncoder().encodeToString(internationalQualification.getNameChangeProofAttach()));
+                        qualificationDetailResponseTo.setNameChangeProofAttachFileName(internationalQualification.getNameChangeProofAttachFileName().substring(0, internationalQualification.getNameChangeProofAttachFileName().lastIndexOf(".")));
+                        qualificationDetailResponseTo.setNameChangeProofAttachFileNameType(internationalQualification.getNameChangeProofAttachFileName().substring(internationalQualification.getNameChangeProofAttachFileName().lastIndexOf(".") + 1));
+                    }
                     return qualificationDetailResponseTo;
                 }).toList());
             }
@@ -122,6 +125,11 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
                     if (indianQualification.getFileName()!=null) {
                         qualificationDetailResponseTo.setFileName(indianQualification.getFileName().substring(0, indianQualification.getFileName().lastIndexOf(".")));
                         qualificationDetailResponseTo.setFileType(indianQualification.getFileName().substring(indianQualification.getFileName().lastIndexOf(".") + 1));
+                    }
+                    if (indianQualification.getNameChangeProofAttachFileName() != null) {
+                        qualificationDetailResponseTo.setNameChangeProofAttach(Base64.getEncoder().encodeToString(indianQualification.getNameChangeProofAttach()));
+                        qualificationDetailResponseTo.setNameChangeProofAttachFileName(indianQualification.getNameChangeProofAttachFileName().substring(0, indianQualification.getNameChangeProofAttachFileName().lastIndexOf(".")));
+                        qualificationDetailResponseTo.setNameChangeProofAttachFileNameType(indianQualification.getNameChangeProofAttachFileName().substring(indianQualification.getNameChangeProofAttachFileName().lastIndexOf(".") + 1));
                     }
 
                     qualificationDetailResponseTo.setRequestId(indianQualification.getRequestId());
@@ -166,6 +174,11 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
                 registrationDetailsTo.setFileName(registrationDetails.getFileName().substring(0, registrationDetails.getFileName().lastIndexOf(".")));
                 registrationDetailsTo.setFileType(registrationDetails.getFileName().substring(registrationDetails.getFileName().lastIndexOf(".")+1));
 
+            }
+            if (registrationDetails.getNameChangeProofAttachFileName() != null && !registrationDetails.getNameChangeProofAttachFileName().isEmpty()) {
+                registrationDetailsTo.setNameChangeProofAttach(Base64.getEncoder().encodeToString(registrationDetails.getNameChangeProofAttachment()));
+                registrationDetailsTo.setNameChangeProofAttachFileName(registrationDetails.getNameChangeProofAttachFileName().substring(0, registrationDetails.getNameChangeProofAttachFileName().lastIndexOf(".")));
+                registrationDetailsTo.setNameChangeProofAttachFileNameType(registrationDetails.getNameChangeProofAttachFileName().substring(registrationDetails.getNameChangeProofAttachFileName().lastIndexOf(".") + 1));
             }
         }
     }
