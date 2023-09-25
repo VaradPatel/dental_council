@@ -456,6 +456,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         qualification.setBroadSpeciality(indianQualification.getBroadSpecialityId() != null ? BroadSpeciality.builder().id(indianQualification.getBroadSpecialityId()).build() : null);
         qualification.setSuperSpecialityName(indianQualification.getSuperSpecialityName());
         qualification.setUser(hpProfile.getUser());
+        qualification.setStateMedicalCouncil(indianQualification.getStateMedicalCouncil());
+        qualification.setRegistrationNumber(indianQualification.getRegistrationNumber());
+        qualification.setRegistrationDate(indianQualification.getRegistrationDate());
         if (proof != null && !proof.isEmpty()) {
             qualification.setFileName(proof.getOriginalFilename());
             try {

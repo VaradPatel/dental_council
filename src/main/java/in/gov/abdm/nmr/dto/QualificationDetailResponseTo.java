@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
 import in.gov.abdm.nmr.entity.Queries;
+import in.gov.abdm.nmr.entity.StateMedicalCouncil;
 import lombok.Data;
 
 import java.math.BigInteger;
@@ -34,4 +35,7 @@ public class QualificationDetailResponseTo {
     private String nameChangeProofAttach;
     private String nameChangeProofAttachFileName;
     private String nameChangeProofAttachFileNameType;
+    private StateMedicalCouncil stateMedicalCouncil;
+    private java.util.Date registrationDate;
+    private String registrationNumber;
 }
