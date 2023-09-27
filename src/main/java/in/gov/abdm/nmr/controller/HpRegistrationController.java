@@ -155,8 +155,8 @@ public class HpRegistrationController {
                                                                                       @RequestParam(value = "degreeCertificate", required = false) MultipartFile degreeCertificate,
                                                                                       @RequestPart("data") @Valid HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO,
                                                                                       @PathVariable(name = "healthProfessionalId") BigInteger hpProfileId,
-                                                                                      @RequestParam(value = "proofOfQualificationNameChange") MultipartFile proofOfQualificationNameChange,
-                                                                                      @RequestParam(value = "proofOfRegistrationNameChange") MultipartFile proofOfRegistrationNameChange) throws InvalidRequestException, NmrException {
+                                                                                      @RequestParam(value = "proofOfQualificationNameChange", required = false) MultipartFile proofOfQualificationNameChange,
+                                                                                      @RequestParam(value = "proofOfRegistrationNameChange", required = false) MultipartFile proofOfRegistrationNameChange) throws InvalidRequestException, NmrException {
 
         checksumUtil.validateChecksum();
         log.info("In HP Registration Controller: updateHealthProfessionalRegistrationDetail method ");
