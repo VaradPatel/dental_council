@@ -11,6 +11,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 public class XSSFileDetection {
@@ -19,17 +20,19 @@ public class XSSFileDetection {
 	private static final Pattern urlPattern = Pattern.compile("(https?|ftp|file):\\/\\/[-a-zA-Z0-9+&@#\\/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#\\/%=~_|]", Pattern.CASE_INSENSITIVE);
 
     public static boolean isMaliciousCodeInFile(MultipartFile multipartFile) throws IOException {
-        InputStream stream = multipartFile.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
-        String contents = "";
-        while((contents = reader.readLine()) != null) {
-        	Matcher matcher = scriptPattern.matcher(contents);
-            if (matcher.find()) {
-            	reader.close();
-                return true;
+        if (multipartFile != null && StringUtils.isNotBlank(multipartFile.getOriginalFilename())) {
+            InputStream stream = multipartFile.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+            String contents = "";
+            while ((contents = reader.readLine()) != null) {
+                Matcher matcher = scriptPattern.matcher(contents);
+                if (matcher.find()) {
+                    reader.close();
+                    return true;
+                }
             }
+            reader.close();
         }
-        reader.close();
         return false;
     }
     public static boolean isUrlInString(String content) {
