@@ -22,7 +22,7 @@ public class RegistrationDetailTO {
     private StateMedicalCouncilTO stateMedicalCouncil;
     private String isRenewable;
     private Date renewableRegistrationDate;
-    private String isNameChange;
+    private Integer isNameChange;
     private String registrationCertificate;
     private String fileName;
     private String fileType;

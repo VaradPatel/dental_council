@@ -58,6 +58,7 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
                     qualificationDetailResponseTo.setQualificationYear(internationalQualification.getQualificationYear());
                     qualificationDetailResponseTo.setQualificationMonth(internationalQualification.getQualificationMonth());
                     qualificationDetailResponseTo.setQualificationFrom(NMRConstants.INTERNATIONAL);
+                    qualificationDetailResponseTo.setIsNameChange(internationalQualification.getIsNameChange() != null ?  internationalQualification.getIsNameChange() : NMRConstants.NO);
 
                     Country country = countryRepository.findByName(internationalQualification.getCountry());
                     qualificationDetailResponseTo.setCountry( country != null
@@ -102,7 +103,7 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
                     qualificationDetailResponseTo.setId(indianQualification.getId());
                     qualificationDetailResponseTo.setQualificationYear(indianQualification.getQualificationYear());
                     qualificationDetailResponseTo.setQualificationMonth(indianQualification.getQualificationMonth());
-                    qualificationDetailResponseTo.setIsNameChange(indianQualification.getIsNameChange());
+                    qualificationDetailResponseTo.setIsNameChange(indianQualification.getIsNameChange() != null ?  indianQualification.getIsNameChange() : NMRConstants.NO);
                     qualificationDetailResponseTo.setQualificationFrom(NMRConstants.INDIA);
                     if(indianQualification.getCountry()!=null) {
                         qualificationDetailResponseTo.setCountry(CountryTO.builder().id(indianQualification.getCountry().getId()).name(indianQualification.getCountry().getName()).nationality(indianQualification.getCountry().getNationality()).build());
@@ -161,7 +162,7 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
         if(registrationDetails != null) {
             registrationDetailsTo.setRegistrationDate(registrationDetails.getRegistrationDate());
             registrationDetailsTo.setRenewableRegistrationDate(registrationDetails.getRenewableRegistrationDate());
-            registrationDetailsTo.setIsNameChange(registrationDetails.getIsNameChange());
+            registrationDetailsTo.setIsNameChange(registrationDetails.getIsNameChange() != null ? registrationDetails.getIsNameChange() : NMRConstants.NO );
             registrationDetailsTo.setRegistrationNumber(registrationDetails.getRegistrationNo());
             if (registrationDetails.getStateMedicalCouncil()!=null) {
                 registrationDetailsTo.setStateMedicalCouncil(StateMedicalCouncilTO.builder().id(registrationDetails.getStateMedicalCouncil().getId()).name(registrationDetails.getStateMedicalCouncil().getName()).build());

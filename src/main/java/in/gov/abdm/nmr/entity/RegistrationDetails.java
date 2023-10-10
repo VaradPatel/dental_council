@@ -33,7 +33,7 @@ public class RegistrationDetails extends CommonAuditEntity {
     private String createdBy;
     private String dueDate;
     private String fromDate;
-    private String isNameChange;
+    private Integer isNameChange;
     private String isNuid;
     private String isRenewable;
     private String isRenewableRegistration;
