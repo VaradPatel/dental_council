@@ -71,8 +71,8 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         }
 
         if (StringUtils.isNotBlank(dashboardRequestParamsTO.getSmcId())) {
-            if(ApplicationType.ADDITIONAL_QUALIFICATION.getId().equals(dashboardRequestParamsTO.getApplicationTypeId())) {
-                sb.append(" AND (qd1.state_medical_council_id = :smcId or fqd1.state_medical_council_id = :smcId)");
+            if(ApplicationType.ADDITIONAL_QUALIFICATION.getId().toString().equals(dashboardRequestParamsTO.getApplicationTypeId())) {
+                sb.append(" AND (qd1.state_medical_council_id = :smcId ) ");
             }else {
                 sb.append(" AND rd.state_medical_council_id = :smcId");
             }
@@ -87,7 +87,11 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         }
 
         if (StringUtils.isNotBlank(dashboardRequestParamsTO.getCouncilId())) {
-            sb.append(" AND rd.state_medical_council_id = :councilId");
+            if(ApplicationType.ADDITIONAL_QUALIFICATION.getId().toString().equals(dashboardRequestParamsTO.getApplicationTypeId())) {
+                sb.append(" AND (qd1.state_medical_council_id = :councilId ) ");
+            }else {
+                sb.append(" AND rd.state_medical_council_id = :councilId");
+            }
         }
 
         if (StringUtils.isNotBlank(dashboardRequestParamsTO.getGender())) {
@@ -163,7 +167,11 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
         StringBuilder sb = new StringBuilder();
         BigInteger groupId = dashboardRequestParamsTO.getUserGroupId();
 
-        sb.append(FETCH_CARD_DETAILS_QUERY);
+        if (dashboardRequestParamsTO.getApplicationTypeId().equalsIgnoreCase(ApplicationType.ADDITIONAL_QUALIFICATION.getId().toString())) {
+            sb.append(FETCH_CARD_DETAILS_QUERY_FOR_ADDITIONAL_QUALIFICATION);
+        } else {
+            sb.append(FETCH_CARD_DETAILS_QUERY);
+        }
 
         if (StringUtils.isNotBlank(dashboardRequestParamsTO.getCollegeId())) {
             sb.append("INNER JOIN main.qualification_details as qd on qd.hp_profile_id = rd.hp_profile_id AND qd.request_id = d.request_id ");
