@@ -7,6 +7,9 @@ import javax.persistence.*;
 import java.math.BigInteger;
 import java.sql.Date;
 
+import static in.gov.abdm.nmr.util.NMRConstants.ID;
+import static in.gov.abdm.nmr.util.NMRConstants.STATE_MEDICAL_COUNCIL_ID;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -59,4 +62,10 @@ public class ForeignQualificationDetails extends CommonAuditEntity {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
     private String NameChangeProofAttachFileName;
+    @OneToOne
+    @JoinColumn(name = STATE_MEDICAL_COUNCIL_ID,referencedColumnName = ID)
+    private StateMedicalCouncil stateMedicalCouncil;
+
+    private java.util.Date registrationDate;
+    private String registrationNumber;
 }

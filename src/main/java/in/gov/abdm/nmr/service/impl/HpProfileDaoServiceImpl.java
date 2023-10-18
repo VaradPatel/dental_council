@@ -525,6 +525,9 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         customQualification.setQualificationMonth(newCustomQualification.getQualificationMonth());
         customQualification.setIsNameChange(newCustomQualification.getIsNameChange());
         customQualification.setRegistrationDetails(newRegistrationDetails);
+        customQualification.setStateMedicalCouncil(newCustomQualification.getStateMedicalCouncil());
+        customQualification.setRegistrationNumber(newCustomQualification.getRegistrationNumber());
+        customQualification.setRegistrationDate(newCustomQualification.getRegistrationDate());
         customQualification.setRequestId(
                 coalesce(newCustomQualification.getRequestId(), hpProfile.getRequestId()));
         customQualification.setHpProfile(hpProfile);

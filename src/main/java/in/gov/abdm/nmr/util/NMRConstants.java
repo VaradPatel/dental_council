@@ -415,4 +415,30 @@ public class NMRConstants {
     public static final String REGEX_FOR_FILE = "^[A-Za-z0-9 ()_-]+.[A-Za-z]+$";
     public static final String REGEX_FOR_URL = "^((https?)://|(www\\.)?)?[a-z0-9-]+(\\.[a-z0-9-]+)+(\\/[a-z0-9-]+)*$";
 
+    public static final String IS_SMC_HAVE_ACCESS_FOR_VIEWING_HP_PROFILE = """
+            SELECT
+                   CASE WHEN EXISTS
+                   (
+                       (select hp_profile_id
+               from
+               	registration_details rd
+                    join smc_profile sp on
+               	rd.state_medical_council_id = sp.state_medical_council_id
+               	where sp.user_id = :userId and rd.hp_profile_id= :hpProfileId)
+               	UNION
+               	(select hp_profile_id from  qualification_details qd 
+               	join smc_profile sp on
+               	qd.state_medical_council_id = sp.state_medical_council_id
+               	where sp.user_id=:userId and qd.hp_profile_id= :hpProfileId)
+               	UNION
+               	(select hp_profile_id from foreign_qualification_details fqd
+               	join smc_profile sp on
+               	fqd.state_medical_council_id = sp.state_medical_council_id
+               	where
+                   sp.user_id = :userId and fqd.hp_profile_id = :hpProfileId)
+                   )
+                   THEN 'TRUE'
+                   ELSE 'FALSE'
+               end
+            """;
 }
