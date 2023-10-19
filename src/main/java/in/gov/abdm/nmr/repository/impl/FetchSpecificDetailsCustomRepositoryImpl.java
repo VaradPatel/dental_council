@@ -72,7 +72,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
 
         if (StringUtils.isNotBlank(dashboardRequestParamsTO.getSmcId())) {
             if(ApplicationType.ADDITIONAL_QUALIFICATION.getId().toString().equals(dashboardRequestParamsTO.getApplicationTypeId())) {
-                sb.append(" AND (qd1.state_medical_council_id = :smcId ) ");
+                sb.append(" AND (qd1.state_medical_council_id = :smcId OR fqd1.state_medical_council_id = :smcId ) ");
             }else {
                 sb.append(" AND rd.state_medical_council_id = :smcId");
             }
@@ -88,7 +88,7 @@ public class FetchSpecificDetailsCustomRepositoryImpl implements IFetchSpecificD
 
         if (StringUtils.isNotBlank(dashboardRequestParamsTO.getCouncilId())) {
             if(ApplicationType.ADDITIONAL_QUALIFICATION.getId().toString().equals(dashboardRequestParamsTO.getApplicationTypeId())) {
-                sb.append(" AND (qd1.state_medical_council_id = :councilId ) ");
+                sb.append(" AND (qd1.state_medical_council_id = :councilId OR fqd1.state_medical_council_id = :smcId ) ");
             }else {
                 sb.append(" AND rd.state_medical_council_id = :councilId");
             }
