@@ -86,6 +86,9 @@ public HpProfileRegistrationResponseTO convertEntitiesToRegistrationResponseTo(R
                     qualificationDetailResponseTo.setCreatedAt(internationalQualification.getCreatedAt());
                     qualificationDetailResponseTo.setBrodSpeciality(internationalQualification.getBroadSpeciality()!=null?BroadSpecialityTO.builder().id(internationalQualification.getBroadSpeciality().getId()).name(internationalQualification.getBroadSpeciality().getName()).build():null);
                     qualificationDetailResponseTo.setSuperSpeciality(internationalQualification.getSuperSpecialityName());
+                    qualificationDetailResponseTo.setStateMedicalCouncil(internationalQualification.getStateMedicalCouncil());
+                    qualificationDetailResponseTo.setRegistrationDate(internationalQualification.getRegistrationDate());
+                    qualificationDetailResponseTo.setRegistrationNumber(internationalQualification.getRegistrationNumber());
                     if (internationalQualification.getNameChangeProofAttachFileName() != null) {
                         qualificationDetailResponseTo.setNameChangeProofAttach(Base64.getEncoder().encodeToString(internationalQualification.getNameChangeProofAttach()));
                         qualificationDetailResponseTo.setNameChangeProofAttachFileName(internationalQualification.getNameChangeProofAttachFileName().substring(0, internationalQualification.getNameChangeProofAttachFileName().lastIndexOf(".")));

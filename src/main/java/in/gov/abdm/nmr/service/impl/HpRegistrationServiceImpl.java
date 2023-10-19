@@ -458,8 +458,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
             }
         } else if (UserTypeEnum.SMC.getId().equals(loggedInUser.getUserType().getId())) {
-            RegistrationDetails registrationDetails = iRegistrationDetailRepository.isHPBelongsToLoggedInSMC(loggedInUser.getId(), hpProfileId);
-            if (registrationDetails == null) {
+             if ("FALSE".equalsIgnoreCase(iRegistrationDetailRepository.isHPBelongsToLoggedInSMC(loggedInUser.getId(), hpProfileId))) {
                 log.error("Access denied: HP does not belong to the login SMC.");
                 throw new AccessDeniedException(NMRError.ACCESS_DENIED_EXCEPTION.getMessage());
             }
