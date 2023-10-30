@@ -66,6 +66,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
+        System.out.println("request is "+ request);
         JwtAuthenticationToken authRequest = new JwtAuthenticationToken(null, JwtTypeEnum.ACCESS_TOKEN, null);
         try {
             if (StringUtils.isNotBlank(request.getHeader(HttpHeaders.AUTHORIZATION))) {

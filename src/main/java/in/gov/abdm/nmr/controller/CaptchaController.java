@@ -10,10 +10,7 @@ import javax.validation.Validator;
 
 import in.gov.abdm.nmr.security.ChecksumUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import in.gov.abdm.nmr.dto.GenerateCaptchaResponseTO;
 import in.gov.abdm.nmr.dto.ValidateCaptchaRequestTO;
@@ -21,6 +18,7 @@ import in.gov.abdm.nmr.dto.ValidateCaptchaResponseTO;
 import in.gov.abdm.nmr.service.ICaptchaService;
 
 @RestController
+@CrossOrigin
 public class CaptchaController {
 
     private ICaptchaService captchaService;
@@ -37,13 +35,13 @@ public class CaptchaController {
 
     @GetMapping("/generate-captcha")
     public GenerateCaptchaResponseTO generateCaptcha() throws NoSuchAlgorithmException, IOException {
-        checksumUtil.validateChecksum();
+//        checksumUtil.validateChecksum();
         return captchaService.generateCaptcha();
     }
 
     @PostMapping("/verify-captcha")
     public ValidateCaptchaResponseTO validateCaptcha(@RequestBody ValidateCaptchaRequestTO validateCaptchaRequestTO) {
-        checksumUtil.validateChecksum();
+//        checksumUtil.validateChecksum();
         if (captchaService.isCaptchaEnabled()) {
             Set<ConstraintViolation<ValidateCaptchaRequestTO>> constraintViolations = validator.validate(validateCaptchaRequestTO);
             if (!constraintViolations.isEmpty()) {
@@ -55,6 +53,7 @@ public class CaptchaController {
     
     @GetMapping("/captcha-enabled")
     public boolean isCaptchaEnabled() {
-        return captchaService.isCaptchaEnabled();
+//        return captchaService.isCaptchaEnabled();
+        return true;
     }
  }

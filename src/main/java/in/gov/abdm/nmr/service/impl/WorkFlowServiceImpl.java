@@ -158,7 +158,9 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         log.debug("Initiating a notification to indicate the change of status.");
 
         updateDashboardDetail(requestTO, workFlow, iNextGroup, dashboard);
-
+//        if (iNextGroup.getAssignTo().equals(BigInteger.valueOf(3))) {
+//            performPostWorkFlowTask(requestTO, workFlow, hpProfile, iNextGroup);
+//        }
         if (isLastStepOfWorkFlow(iNextGroup)) {
             performPostWorkFlowTask(requestTO, workFlow, hpProfile, iNextGroup);
         }

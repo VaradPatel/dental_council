@@ -7,10 +7,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,6 +16,7 @@ import static in.gov.abdm.nmr.security.common.ProtectedPaths.PATH_REFRESH_TOKEN;
 import static in.gov.abdm.nmr.security.common.ProtectedPaths.PATH_LOGIN_INTERNAL;
 
 @RestController
+@CrossOrigin
 public class AuthController {
 
     private IAuthService authService;
@@ -32,10 +30,16 @@ public class AuthController {
 
     @PostMapping(path = PATH_LOGIN, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public LoginResponseTO login(@RequestBody(required = false) LoginRequestTO loginRequestTO, HttpServletResponse response) {
-        checksumUtil.validateChecksum();
+        System.out.println("Test 1");
+      checksumUtil.validateChecksum();
+        System.out.println("will enter successfulAuth service");
         return authService.successfulAuth(response);
     }
-    
+//    @PostMapping(path = PATH_LOGIN, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//    public void login(@RequestBody(required = false) LoginRequestTO loginRequestTO, HttpServletResponse response) {
+//      System.out.println("entered");
+//    }
+
     @Hidden
     @PostMapping(path = PATH_LOGIN_INTERNAL, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public LoginResponseTO loginInternal(@RequestBody(required = false) LoginRequestTO loginRequestTO, HttpServletResponse response) {

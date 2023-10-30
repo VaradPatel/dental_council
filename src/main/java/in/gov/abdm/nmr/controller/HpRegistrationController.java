@@ -39,6 +39,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
 @RestController
 @Validated
 @Slf4j
+@CrossOrigin
 public class HpRegistrationController {
 
     /**

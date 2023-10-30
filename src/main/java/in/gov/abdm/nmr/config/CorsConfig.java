@@ -24,11 +24,17 @@ public class CorsConfig {
         LOGGER.info("Configuring CORS");
         return new WebMvcConfigurer() {
             @Override
+//            public void addCorsMappings(CorsRegistry registry) {
+//                registry.addMapping("/**")
+//
+//                        .allowedMethods("*");
+//
+//            }
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOriginPatterns(allowedUrls)
+                        .allowedOrigins("*")
                         .allowedMethods("*")
-                        .allowCredentials(true)
+//                        .allowCredentials(true)
                         .exposedHeaders(ACCESS_TOKEN, REFRESH_TOKEN, CORRELATION_ID, CHECKSUM_HEADER);
             }
         };
