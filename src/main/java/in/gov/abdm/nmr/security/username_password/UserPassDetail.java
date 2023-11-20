@@ -20,6 +20,7 @@ public class UserPassDetail extends User {
         super(username, password, true, true, true, accountNonLocked, authorities);
         this.userType = userType;
         this.mobileNumber = mobileNumber;
+
     }
 
     public BigInteger getUserType() {

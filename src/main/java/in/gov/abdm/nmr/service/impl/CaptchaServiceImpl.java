@@ -108,7 +108,7 @@ public class CaptchaServiceImpl implements ICaptchaService {
     }
 
     /**
-     * Returns the boolean value set for the property nmr.captcha.enabled.
+     * Returns the booleanvalue set for the property nmr.captcha.enabled.
      *  
      * @return Boolean
      */

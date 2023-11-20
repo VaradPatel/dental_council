@@ -32,9 +32,9 @@ public class RsaUtil {
     }
 
     public String decrypt(String encrypted) throws GeneralSecurityException {
-        if (ApplicationProfileEnum.LOCAL.getCode().equals(activeProfile)) {
-            return encrypted;
-        }
+//        if (ApplicationProfileEnum.LOCAL.getCode().equals(activeProfile)) {
+//            return encrypted;
+//        }
         try {
             Cipher decryptCipher = Cipher.getInstance(NMRConstants.RSA_PADDING);
             decryptCipher.init(Cipher.DECRYPT_MODE, keyUtil.getPrivateKey());
