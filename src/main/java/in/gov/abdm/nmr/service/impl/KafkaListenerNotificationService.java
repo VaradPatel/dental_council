@@ -50,6 +50,7 @@ public class KafkaListenerNotificationService {
     @KafkaListener(topics = "${spring.profiles.active}"  + NMRConstants.UNDERSCORE + NMRConstants.KAFKA_TOPIC, groupId = "${spring.profiles.active}" + NMRConstants.UNDERSCORE + NMRConstants.KAFKA_GROUP_ID)
     public void consume(String eventMessage) {
         try {
+            System.out.println("in kafka");
             boolean isModificationESignEvent=false;
             log.info("council Kafka topic name :{} and group Id :{} Request received : {} ", NMRConstants.KAFKA_TOPIC, NMRConstants.KAFKA_GROUP_ID, eventMessage);
             ObjectMapper objectMapper = new ObjectMapper();
@@ -62,7 +63,8 @@ public class KafkaListenerNotificationService {
                     isModificationESignEvent=true;
                 }
             }
-            if (hpProfile != null) {
+           if (hpProfile != null) {
+                System.out.println("profile found");
                 log.debug("Fetched hp profile detail successfully for hp profile ID: {}", hpProfile.getId());
                 Address address = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfile.getId(), AddressType.KYC.getId());
                 if (address != null) {
@@ -74,6 +76,7 @@ public class KafkaListenerNotificationService {
                             iHpProfileRepository.updateModESignStatus(hpProfile.getId(), ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
                         }
                         else {
+                            System.out.println("e_sign_update");
                             iHpProfileRepository.updateEsignStatus(hpProfile.getId(), ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
                             if(isESignedForQueryRaise(hpProfile.getRequestId())){
                                 workFlowService.assignQueriesBackToQueryCreator(hpProfile.getRequestId(),hpProfile.getId());

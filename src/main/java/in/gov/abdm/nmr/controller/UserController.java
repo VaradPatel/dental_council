@@ -23,6 +23,7 @@ import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 public class UserController {
 
     private IUserService userService;

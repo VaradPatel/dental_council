@@ -184,6 +184,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         }
 
         mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, hpProfile);
+//        hpProfile.setESignStatus(1);
         iHpProfileRepository.save(hpProfile);
 
         if (hpPersonalUpdateRequestTO.getCommunicationAddress() != null) {
@@ -621,6 +622,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         hpProfile.setCountryNationality(countryNationality);
         hpProfile.setFullName(hpPersonalUpdateRequestTO.getPersonalDetails().getFullName());
         hpProfile.setEmailId(hpPersonalUpdateRequestTO.getPersonalDetails().getEmail());
+
     }
 
     private void mapNbeRequestDetailsToEntity(HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, HpNbeDetails hpNbeDetails, HpProfile hpProfile) {

@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class SuspendRequestResponseTo {
     private String profileId;
     private String message;
+   // private boolean selfReactivation=false;
 }

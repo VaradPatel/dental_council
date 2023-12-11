@@ -13,12 +13,7 @@ import in.gov.abdm.nmr.exception.*;
 import in.gov.abdm.nmr.security.ChecksumUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import in.gov.abdm.nmr.dto.CollegeMasterDataTO;
 import in.gov.abdm.nmr.dto.CollegeResponseTo;
@@ -28,6 +23,7 @@ import in.gov.abdm.nmr.service.ICollegeService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
+@CrossOrigin
 public class CollegeController {
 
     public static final String COLLEGES_COLLEGE_ID_VERIFIERS_VERIFIER_ID = "/colleges/{collegeId}/verifiers/{verifierId}";

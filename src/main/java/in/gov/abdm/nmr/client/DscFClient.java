@@ -16,7 +16,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
  */
 @FeignClient(name = DSC_SERVICE, url = DSC_SERVICE_ENDPOINT)
 public interface DscFClient {
-
+    //http://digisign2dev.abdm.gov.internal/digiSign/genEspReques
     @PostMapping(value = GEN_ESP_REQUEST_URL)
     String genEspRequest(@RequestBody DscDocumentTo dscDocumentTo);
 

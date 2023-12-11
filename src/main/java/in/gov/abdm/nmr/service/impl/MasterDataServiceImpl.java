@@ -52,8 +52,8 @@ public class MasterDataServiceImpl implements IMasterDataService {
     @Autowired
     private QuerySuggestionsRepository querySuggestionsRepository;
 
-    @Override
-    @Cacheable(value = MASTER_CACHE_NAME, key = "'state-medical-council'")
+//    @Override
+//    @Cacheable(value = MASTER_CACHE_NAME, key = "'state-medical-council'")
     public List<MasterDataTO> smcs() {
         return IMasterDataMapper.MASTER_DATA_MAPPER.stateMedicalCouncilsToMasterDataTOs(stateMedicalCouncilService.getAllStateMedicalCouncil());
     }

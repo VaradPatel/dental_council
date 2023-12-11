@@ -28,6 +28,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.*;
  * Presentation Layer to expose the endpoints of Health Professional Suspend and Reactivate API
  */
 @RestController
+@CrossOrigin
 @Slf4j
 public class ApplicationController {
 

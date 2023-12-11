@@ -197,6 +197,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         }
         HpProfile hpProfile = iHpProfileRepository.findHpProfileById(applicationRequestTo.getHpProfileId());
         HpProfile latestHpProfile = iHpProfileRepository.findLatestHpProfileFromWorkFlow(hpProfile.getRegistrationId());
+
         ReactivateRequestResponseTo reactivateRequestResponseTo = new ReactivateRequestResponseTo();
         if (!iWorkFlowService.isAnyActiveWorkflowForHealthProfessional(latestHpProfile.getId())) {
             log.debug("Proceeding to Reactivate the profile since the profile is currently in Suspended / Black Listed state");
@@ -211,7 +212,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                 if(Group.NMC.getId().equals(loggedInUserGroupId) || Group.SMC.getId().equals(loggedInUserGroupId)){
                     applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.REACTIVATION_THROUGH_SMC.getId());
                     reactivateRequestResponseTo.setSelfReactivation(false);
-                } else if (workFlow!=null && Group.NMC.getId().equals(workFlow.getPreviousGroup().getId())) {
+                } else if (workFlow!=null && Group.SMC.getId().equals(workFlow.getPreviousGroup().getId())) {
                     log.debug("Proceeding to reactivate through SMC since the profile was suspended by NMC");
                     applicationRequestTo.setApplicationSubTypeId(ApplicationSubType.REACTIVATION_THROUGH_SMC.getId());
                     reactivateRequestResponseTo.setSelfReactivation(false);

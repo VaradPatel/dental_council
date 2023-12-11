@@ -327,6 +327,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
         log.debug("Update Successful. Calling the getHealthProfessionalPersonalDetail method to retrieve the Details. ");
         HpProfilePersonalResponseTO healthProfessionalPersonalDetail = getHealthProfessionalPersonalDetail(hpProfileUpdateResponseTO.getHpProfileId());
+        //iHpProfileRepository.updateEsignStatus(hpProfileUpdateResponseTO.getHpProfileId(), ESignStatus.PROFILE_ESIGNED_WITH_SAME_AADHAR.getId());
 
         log.info("HpRegistrationServiceImpl: addOrUpdateHpPersonalDetail method: Execution Successful. ");
         return healthProfessionalPersonalDetail;
@@ -381,7 +382,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             iQueriesService.markQueryAsClosed(lastWorkFlowForHealthProfessional.getRequestId());
             HpProfile hpProfile = hpProfileDaoService.findById(hpSubmitRequestTO.getHpProfileId());
             hpProfile.setTransactionId(hpSubmitRequestTO.getTransactionId());
-            hpProfile.setESignStatus(ESignStatus.QUERY_RESOLVED_PROFILE_NOT_ESIGNED.getId());
+//            hpProfile.setESignStatus(ESignStatus.QUERY_RESOLVED_PROFILE_NOT_ESIGNED.getId());
+            hpProfile.setESignStatus(1);
             if(ApplicationType.HP_REGISTRATION.getId().equals(hpSubmitRequestTO.getApplicationTypeId()) || ApplicationType.FOREIGN_HP_REGISTRATION.getId().equals(hpSubmitRequestTO.getApplicationTypeId())) {
                 hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
             }
@@ -401,6 +403,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
             log.debug("Updating the request_id, e-sign status and transaction id in hp_profile table");
             HpProfile hpProfileById = iHpProfileRepository.findHpProfileById(hpSubmitRequestTO.getHpProfileId());
+            System.out.println("  "+ hpProfileById.getESignStatus());
             if(hpSubmitRequestTO.getApplicationTypeId().equals(ApplicationType.HP_REGISTRATION.getId())) {
                 hpProfileById.setTransactionId(hpSubmitRequestTO.getTransactionId());
                 hpProfileById.setESignStatus(hpSubmitRequestTO.getESignStatus() != null ? hpSubmitRequestTO.getESignStatus() : ESignStatus.PROFILE_NOT_ESIGNED.getId());
@@ -419,6 +422,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             registrationDetails.setRequestId(requestId);
 
             registrationDetailRepository.save(registrationDetails);
+            // esign by default 1
+            hpProfileById.setESignStatus(1);
             iHpProfileRepository.save(hpProfileById);
 
             List<QualificationDetails> qualificationDetailsList = new ArrayList<>();
@@ -614,8 +619,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         if (request.getEmail() != null && userDaoService.existsByEmailAndUserTypeId(request.getEmail(), UserTypeEnum.HEALTH_PROFESSIONAL.getId())) {
             throw new InvalidRequestException(NMRError.EMAIL_ID_ALREADY_REGISTERED.getCode(),NMRError.EMAIL_ID_ALREADY_REGISTERED.getMessage());
         }
-
         String hashedPassword = bCryptPasswordEncoder.encode(rsaUtil.decrypt(request.getPassword()));
+
+
         User userDetail = new User(null, request.getEmail(), request.getMobileNumber(), null, hashedPassword, null, true, false,
 
                 entityManager.getReference(UserType.class, UserTypeEnum.HEALTH_PROFESSIONAL.getId()), entityManager.getReference(UserSubType.class, UserSubTypeEnum.COLLEGE_ADMIN.getId()), entityManager.getReference(UserGroup.class, Group.HEALTH_PROFESSIONAL.getId()), true, 0, null, request.getUsername(), request.getHprId(), request.getHprIdNumber(), request.isNew(), false, false, null);
@@ -673,7 +679,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         hpProfile.setHpProfileStatus(hpProfileStatusRepository.findById(HpProfileStatus.DRAFT.getId()).get());
         hpProfile.setIsNew(SUCCESS_RESPONSE.equalsIgnoreCase(kycResponseMessageTo.getKycFuzzyMatchStatus()) ? NO : YES);
         hpProfile.setUser(userDetail);
-        hpProfile.setESignStatus(ESignStatus.PROFILE_NOT_ESIGNED.getId());
+//        hpProfile.setESignStatus(ESignStatus.PROFILE_NOT_ESIGNED.getId());
+        hpProfile.setESignStatus(1);
         hpProfile = iHpProfileRepository.save(hpProfile);
 
         RegistrationDetails registrationDetails = new RegistrationDetails();

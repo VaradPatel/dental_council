@@ -154,10 +154,13 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         }
 
         log.debug("Saving an entry in the work_flow_audit table");
-        iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
+       iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
+
         log.debug("Initiating a notification to indicate the change of status.");
 
         updateDashboardDetail(requestTO, workFlow, iNextGroup, dashboard);
+
+
 
         if (isLastStepOfWorkFlow(iNextGroup)) {
             performPostWorkFlowTask(requestTO, workFlow, hpProfile, iNextGroup);
@@ -342,10 +345,12 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         dashboard.setRequestId(requestTO.getRequestId());
         dashboard.setHpProfileId(requestTO.getHpProfileId());
         dashboard.setWorkFlowStatusId(workFlow.getWorkFlowStatus().getId());
+
         if (NMRUtil.isVoluntarySuspension(workFlow)) {
             dashboard.setNmcStatus(Action.APPROVED.getId());
             dashboard.setSmcStatus(Action.APPROVED.getId());
         } else {
+
             setDashboardStatus(requestTO.getActionId(), requestTO.getActorId(), dashboard);
             if (!isLastStepOfWorkFlow(iNextGroup)) {
                 if ((Group.COLLEGE.getId().equals(requestTO.getActorId()) || Group.NBE.getId().equals(requestTO.getActorId()))  && Action.APPROVED.getId().equals(requestTO.getActionId())) {
@@ -355,6 +360,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 }
             }
         }
+
         dashboard.setCreatedAt(Timestamp.from(Instant.now()));
         dashboard.setUpdatedAt(Timestamp.from(Instant.now()));
         iDashboardRepository.save(dashboard);
@@ -372,6 +378,23 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         BigInteger dashboardStatusId = DashboardStatus.getDashboardStatus(Action.getAction(actionPerformedId).getStatus()).getId();
         if (Group.SMC.getId().equals(userGroup)) {
             dashboard.setSmcStatus(dashboardStatusId);
+            if(dashboardStatusId.equals(BigInteger.valueOf(4)) && dashboard.getApplicationTypeId().equals(BigInteger.valueOf(1)))
+            {
+                dashboard.setNmcStatus(dashboardStatusId);
+            }
+            if(dashboardStatusId.equals(BigInteger.valueOf(4)) && dashboard.getApplicationTypeId().equals(BigInteger.valueOf(8)))
+            {
+                dashboard.setNmcStatus(dashboardStatusId);
+            }
+            if(dashboardStatusId.equals(BigInteger.valueOf(1)) && dashboard.getApplicationTypeId().equals(BigInteger.valueOf(1)))
+            {
+                dashboard.setNmcStatus(dashboardStatusId);
+            }
+            if(dashboardStatusId.equals(BigInteger.valueOf(1)) && dashboard.getApplicationTypeId().equals(BigInteger.valueOf(8)))
+            {
+                dashboard.setNmcStatus(dashboardStatusId);
+            }
+
             if (DashboardStatus.PENDING.getId().equals(dashboard.getCollegeStatus()) || DashboardStatus.QUERY_RAISE.getId().equals(dashboard.getCollegeStatus())) {
                 dashboard.setCollegeStatus(null);
             }
@@ -396,6 +419,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
 
 
     private boolean isLastStepOfWorkFlow(INextGroup nextGroup) {
+        System.out.println("in condition " + nextGroup.getAssignTo());
         return nextGroup.getAssignTo() == null;
     }
 

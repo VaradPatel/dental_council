@@ -13,11 +13,7 @@ import in.gov.abdm.nmr.security.ChecksumUtil;
 import in.gov.abdm.nmr.service.IOtpValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import in.gov.abdm.nmr.dto.OTPResponseMessageTo;
 import in.gov.abdm.nmr.dto.OtpGenerateRequestTo;
@@ -32,6 +28,7 @@ import in.gov.abdm.nmr.util.NMRConstants;
  * Controller for sending and verifying one time password notifications.
  */
 @RestController
+@CrossOrigin
 @RequestMapping(NMRConstants.NOTIFICATION_REQUEST_MAPPING)
 public class OtpController {
 
