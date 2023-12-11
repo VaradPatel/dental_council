@@ -159,9 +159,18 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         log.debug("Initiating a notification to indicate the change of status.");
 
         updateDashboardDetail(requestTO, workFlow, iNextGroup, dashboard);
+<<<<<<< HEAD
 
 
 
+<<<<<<< HEAD
+=======
+=======
+//        if (iNextGroup.getAssignTo().equals(BigInteger.valueOf(3))) {
+//            performPostWorkFlowTask(requestTO, workFlow, hpProfile, iNextGroup);
+//        }
+>>>>>>> 5cb79c167339a6f070aa808cc6a6d532a045b6a4
+>>>>>>> 57fe6129c3d510d236ad4cdf0f7439b62716be94
         if (isLastStepOfWorkFlow(iNextGroup)) {
             performPostWorkFlowTask(requestTO, workFlow, hpProfile, iNextGroup);
         }
@@ -382,6 +391,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             {
                 dashboard.setNmcStatus(dashboardStatusId);
             }
+<<<<<<< HEAD
             if(dashboardStatusId.equals(BigInteger.valueOf(4)) && dashboard.getApplicationTypeId().equals(BigInteger.valueOf(8)))
             {
                 dashboard.setNmcStatus(dashboardStatusId);
@@ -394,6 +404,8 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
             {
                 dashboard.setNmcStatus(dashboardStatusId);
             }
+=======
+>>>>>>> 57fe6129c3d510d236ad4cdf0f7439b62716be94
 
             if (DashboardStatus.PENDING.getId().equals(dashboard.getCollegeStatus()) || DashboardStatus.QUERY_RAISE.getId().equals(dashboard.getCollegeStatus())) {
                 dashboard.setCollegeStatus(null);
