@@ -154,7 +154,7 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
         }
 
         log.debug("Saving an entry in the work_flow_audit table");
-       iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
+        iWorkFlowAuditRepository.save(buildNewWorkFlowAudit(requestTO, iNextGroup, hpProfile, user));
 
         log.debug("Initiating a notification to indicate the change of status.");
 

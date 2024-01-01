@@ -31,7 +31,13 @@ public class AuthController {
     @PostMapping(path = PATH_LOGIN, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public LoginResponseTO login(@RequestBody(required = false) LoginRequestTO loginRequestTO, HttpServletResponse response) {
 
+
       checksumUtil.validateChecksum();
+
+
+        System.out.println("Test 1");
+      checksumUtil.validateChecksum();
+        System.out.println("will enter successfulAuth service");
 
         return authService.successfulAuth(response);
     }

@@ -387,6 +387,8 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 //            hpProfile.setESignStatus(ESignStatus.QUERY_RESOLVED_PROFILE_NOT_ESIGNED.getId());
             hpProfile.setESignStatus(1);
 
+
+
             if(ApplicationType.HP_REGISTRATION.getId().equals(hpSubmitRequestTO.getApplicationTypeId()) || ApplicationType.FOREIGN_HP_REGISTRATION.getId().equals(hpSubmitRequestTO.getApplicationTypeId())) {
                 hpProfile.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
             }
@@ -418,6 +420,10 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
 
             log.debug("Updating the request_id, e-sign status and transaction id in hp_profile table");
             HpProfile hpProfileById = iHpProfileRepository.findHpProfileById(hpSubmitRequestTO.getHpProfileId());
+
+
+
+            System.out.println("  "+ hpProfileById.getESignStatus());
 
             if(hpSubmitRequestTO.getApplicationTypeId().equals(ApplicationType.HP_REGISTRATION.getId())) {
                 hpProfileById.setTransactionId(hpSubmitRequestTO.getTransactionId());
