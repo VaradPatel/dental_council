@@ -247,7 +247,7 @@ public class NotificationServiceImpl implements INotificationService {
         try {
             String templateId = messageSource.getMessage(propertiesKey.toLowerCase(), null, Locale.ENGLISH);
             template = notificationDBFClient.getTemplateById(Timestamp.valueOf(LocalDateTime.now()), UUID.randomUUID().toString(), new BigInteger(templateId));
-
+            System.out.println("template  "+template);
         } catch (NoSuchMessageException noSuchMessageException) {
             log.error("Exception occurred while sending notification.", noSuchMessageException);
             throw new TemplateException(NMRError.NOT_FOUND_EXCEPTION.getCode(), NMRError.NOT_FOUND_EXCEPTION.getMessage());

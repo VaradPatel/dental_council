@@ -20,6 +20,7 @@ import javax.validation.Valid;
  * Controller for resetting and changing user password
  */
 @RestController
+@CrossOrigin
 public class PasswordController {
 
     @Autowired

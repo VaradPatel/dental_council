@@ -10,6 +10,7 @@ import java.util.Arrays;
  */
 public enum DashboardStatus {
 
+
     PENDING(BigInteger.valueOf(1), NMRConstants.PENDING, NMRConstants.PENDING, NMRConstants.PENDING),
     FORWARD(BigInteger.valueOf(2), NMRConstants.FORWARDED, NMRConstants.FORWARDED, NMRConstants.FORWARDED),
     QUERY_RAISE(BigInteger.valueOf(3), NMRConstants.QUERY_RAISED, NMRConstants.QUERY_RAISED, NMRConstants.QUERY_RAISED),

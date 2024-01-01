@@ -3,6 +3,7 @@ package in.gov.abdm.nmr.repository.impl;
 import java.io.IOException;
 import java.math.BigInteger;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -31,6 +32,10 @@ public class ElasticsearchRepositoryImpl implements IElasticsearchRepository {
 
     @Override
     public void indexHP(HpElasticDocumentTO hpElasticDocumentTO) throws ElasticsearchException, IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(hpElasticDocumentTO);
+        System.out.println("size of object "+ json.getBytes().length);
+
         elasticsearchClient.index(i -> i.index(hpIndexName).document(hpElasticDocumentTO).id(hpElasticDocumentTO.getProfileId().toString()));
     }
 

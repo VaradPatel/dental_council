@@ -3,9 +3,11 @@ package in.gov.abdm.nmr.security.username_password;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 
+import in.gov.abdm.nmr.security.common.RsaUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,9 +29,10 @@ import static in.gov.abdm.nmr.util.NMRConstants.INVALID_USERNAME_ERROR_MSG;
 @Component
 @Slf4j
 public class UserPasswordAuthenticationProvider extends DaoAuthenticationProvider {
-
+@Autowired
+    RsaUtil rsaUtil;
     private static final Logger LOGGER = LogManager.getLogger();
-    
+
     private IOtpService otpService;
 
     public UserPasswordAuthenticationProvider(UserPasswordDetailsService userPasswordDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder, IOtpService otpService) {
@@ -44,11 +47,20 @@ public class UserPasswordAuthenticationProvider extends DaoAuthenticationProvide
         UserPasswordAuthenticationToken userPassAuthToken = (UserPasswordAuthenticationToken) authentication;
         SecurityContextHolder.getContext().setAuthentication(userPassAuthToken);
         UserPassDetail userDetail = (UserPassDetail) this.getUserDetailsService().loadUserByUsername(userPassAuthToken.getName());
+       BCryptPasswordEncoder bCryptPasswordEncoder=new BCryptPasswordEncoder();
+//        try {
+//String hash= bCryptPasswordEncoder.encode(rsaUtil.decrypt(authentication.getCredentials().toString()));
+//
+//        } catch (GeneralSecurityException e) {
+//            throw new RuntimeException(e);
+//        }
         if (userPassAuthToken.getUserType() == null || !userDetail.getUserType().equals(userPassAuthToken.getUserType())) {
             LOGGER.error("Usertype and credentials do not match");
             userPassAuthToken.eraseCredentials();
             throw new AuthenticationServiceException(INVALID_USERNAME_ERROR_MSG);
         }
+
+
 
         if (LoginTypeEnum.MOBILE_OTP.getCode().equals(userPassAuthToken.getLoginType()) || LoginTypeEnum.NMR_ID_OTP.getCode().equals(userPassAuthToken.getLoginType())) {
             try {
@@ -70,9 +82,11 @@ public class UserPasswordAuthenticationProvider extends DaoAuthenticationProvide
             } catch (GeneralSecurityException e) {
                 log.error("Exception occurred while authentication.", e);
             }
+
         }
 
-        super.authenticate(userPassAuthToken);
+  super.authenticate(userPassAuthToken);
+        System.out.println("userPassAuthToken is " + userPassAuthToken.getCredentials());
         return UserPasswordAuthenticationToken.authenticated(userPassAuthToken.getPrincipal(), userPassAuthToken.getCredentials(), Collections.emptyList(), userPassAuthToken.getUserType(), userPassAuthToken.getDetails());
 
     }

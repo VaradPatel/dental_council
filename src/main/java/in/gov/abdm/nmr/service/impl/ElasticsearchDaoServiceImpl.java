@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class ElasticsearchDaoServiceImpl implements IElasticsearchDaoService {
 
@@ -40,7 +40,7 @@ public class ElasticsearchDaoServiceImpl implements IElasticsearchDaoService {
 
     @Override
     public void indexHP(BigInteger hpProfileId) throws ElasticsearchException, IOException {
-
+         ObjectMapper objectMapper = new ObjectMapper();
         HpProfileMaster hpProfile = iHpProfileMasterDaoService.findHpProfileMasterById(hpProfileId);
 
         HpElasticDocumentTO elasticDocumentTO = new HpElasticDocumentTO();
@@ -55,6 +55,7 @@ public class ElasticsearchDaoServiceImpl implements IElasticsearchDaoService {
         elasticDocumentTO.setRegistrationYear(new SimpleDateFormat("yyyy").format(registrationDetails.getRegistrationDate()));
         elasticDocumentTO.setStateMedicalCouncil(registrationDetails.getStateMedicalCouncil().getName());
         elasticDocumentTO.setStateMedicalCouncilId(registrationDetails.getStateMedicalCouncil().getId());
+
 
         elasticsearchRepository.indexHP(elasticDocumentTO);
     }

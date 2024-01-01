@@ -72,12 +72,14 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public LoginResponseTO successfulAuth(HttpServletResponse response) {
+        System.out.println("Entered in auth service");
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         BigInteger userType= ((UserPasswordAuthenticationToken)SecurityContextHolder.getContext().getAuthentication()).getUserType();
 
         User user = userDetailDaoService.findByUsername(username, userType);
-
+        System.out.println("User is"+ user);
         LoginResponseTO loginResponse = createLoginResponse(user);
+//        loginResponse.setEsignStatus(1);
         userDetailDaoService.updateLastLogin(user.getId());
         generateAccessAndRefreshToken(response, username, user, loginResponse.getProfileId());
         return loginResponse;
@@ -102,6 +104,7 @@ public class AuthServiceImpl implements IAuthService {
     }
 
     private LoginResponseTO createLoginResponse(User user) {
+        System.out.println("entered create login response");
         LoginResponseTO loginResponseTO = new LoginResponseTO();
         loginResponseTO.setUserType(user.getUserType().getId());
         loginResponseTO.setUserGroupId(user.getGroup().getId());
@@ -109,6 +112,7 @@ public class AuthServiceImpl implements IAuthService {
         loginResponseTO.setLastLogin(user.getLastLogin());
         loginResponseTO.setIsAdmin(false);
         if (UserTypeEnum.HEALTH_PROFESSIONAL.getId().equals(user.getUserType().getId())) {
+            System.out.println("in group_id 1");
             createHealthProfessionalLoginResponse(user, loginResponseTO);
 
         } else if (UserTypeEnum.COLLEGE.getId().equals(user.getUserType().getId())) {

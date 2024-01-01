@@ -1,8 +1,10 @@
 package in.gov.abdm.nmr.security.username_password;
 
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.util.Collections;
 
+import in.gov.abdm.nmr.security.common.RsaUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import in.gov.abdm.nmr.dto.UserSearchTO;
@@ -25,7 +28,8 @@ import static in.gov.abdm.nmr.util.NMRConstants.NOT_ALLOWED_ERROR_MSG;
 public class UserPasswordDetailsService implements UserDetailsService {
 
     private static final Logger LOGGER = LogManager.getLogger();
-
+@Autowired
+    RsaUtil rsaUtil;
     @Autowired
     AuthenticationLockingService authenticationHandler;
 
@@ -39,7 +43,7 @@ public class UserPasswordDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserSearchTO userDetailSearchTO = new UserSearchTO();
         userDetailSearchTO.setUsername(username);
-
+        System.out.println("in user password service");
         BigInteger userType=((UserPasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication()).getUserType();
 
         User user = userDaoService.findByUsername(username, userType);
@@ -47,7 +51,10 @@ public class UserPasswordDetailsService implements UserDetailsService {
             LOGGER.error(INVALID_USERNAME_ERROR_MSG);
             throw new UsernameNotFoundException(INVALID_USERNAME_ERROR_MSG);
         }
-        
+
+        System.out.println("User is:" + user.getPassword());
+
+
         if (StringUtils.isBlank(user.getPassword())) {
             LOGGER.error(NOT_ALLOWED_ERROR_MSG);
             throw new AuthenticationServiceException(NOT_ALLOWED_ERROR_MSG);

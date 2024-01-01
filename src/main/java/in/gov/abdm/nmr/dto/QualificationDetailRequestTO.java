@@ -1,5 +1,6 @@
 package in.gov.abdm.nmr.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import in.gov.abdm.nmr.annotation.NotNullBlank;
 import in.gov.abdm.nmr.annotation.OptionalName;
 import in.gov.abdm.nmr.dto.college.CollegeTO;
@@ -96,7 +97,7 @@ public class QualificationDetailRequestTO {
     private String fileName;
 
     private StateMedicalCouncil stateMedicalCouncil;
-
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private java.util.Date registrationDate;
     private String registrationNumber;
 

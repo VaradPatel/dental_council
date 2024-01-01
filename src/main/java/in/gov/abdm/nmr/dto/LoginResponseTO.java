@@ -1,11 +1,15 @@
 package in.gov.abdm.nmr.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoginResponseTO {
 
     private BigInteger profileId;

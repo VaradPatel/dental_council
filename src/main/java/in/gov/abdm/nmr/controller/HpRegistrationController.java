@@ -39,6 +39,7 @@ import static in.gov.abdm.nmr.util.NMRConstants.SUCCESS_RESPONSE;
 @RestController
 @Validated
 @Slf4j
+@CrossOrigin
 public class HpRegistrationController {
 
     /**
@@ -263,6 +264,7 @@ public class HpRegistrationController {
                                     @RequestParam(value = "proofOfQualificationNameChange", required = false) MultipartFile proofOfQualificationNameChange
     ) throws WorkFlowException, InvalidRequestException, IOException, InvalidFileUploadException {
         checksumUtil.validateChecksum();
+
         log.info(degreeCertificates != null ? String.valueOf(degreeCertificates.size()) : null);
         return hpService.addQualification(hpProfileId, qualificationDetailRequestTO.getQualificationDetailRequestTos(), degreeCertificates, proofOfQualificationNameChange);
     }

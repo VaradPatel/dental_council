@@ -52,17 +52,27 @@ public class ChecksumUtil {
         String expectedChecksum = request.getHeader(CustomHeaders.CHECKSUM_HEADER);
 
         String requestString = new String(requestBody, StandardCharsets.UTF_8);
-        if(!ApplicationProfileEnum.LOCAL.getCode().equals(activeProfile)) {
+
+        if(ApplicationProfileEnum.LOCAL.getCode().equals(activeProfile)) {
+
             if (checksumEnable) {
+
+
                 if (!requestString.isEmpty()) {
                     requestString = requestString.replaceAll(NMRConstants.REGEX_FOR_EXTRA_SPACES_AND_NEW_LINES, "");
+
                     String generatedChecksum = getSHA256Hash(new String(checksumKey.getInputStream().readAllBytes()) + requestString);
+
                     if (!generatedChecksum.equalsIgnoreCase(expectedChecksum)) {
                         throw new InvalidRequestException(NMRError.DATA_TAMPERED.getCode(), NMRError.DATA_TAMPERED.getMessage());
                     }
+
+
                 }
             }
         }
+        System.out.println("No error in validate checksum ");
+//        throw new Exception("Test");
     }
 
     private static String getSHA256Hash(String data) {

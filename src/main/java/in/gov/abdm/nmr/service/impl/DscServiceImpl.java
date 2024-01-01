@@ -26,7 +26,6 @@ public class DscServiceImpl implements IDscService {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(dscFClient.genEspRequest(dscInputData(dscRequestTo)), DscResponseTo.class);
     }
-
     private DscDocumentTo dscInputData(DscRequestTo dscRequestTo) {
         DscDocumentTo dscDocumentTo = new DscDocumentTo();
         DscDocument dscDocument = new DscDocument();

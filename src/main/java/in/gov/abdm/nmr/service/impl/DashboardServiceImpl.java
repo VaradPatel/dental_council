@@ -109,6 +109,7 @@ public class DashboardServiceImpl implements IDashboardService {
         if (Group.SMC.getDescription().equals(groupName)) {
             log.info("Processing Cards service for SMC: {} ", loggedInUser.getUserName());
             BigInteger smcProfileId = iSmcProfileRepository.getSmcIdByUserId(loggedInUser.getId()).get(0);
+            System.out.println("smcprofile id is " + smcProfileId);
             List<IStatusCount> statusCounts = iFetchCountOnCardRepository.fetchCountForSmc(smcProfileId);
             log.debug("Fetched statusCounts detail successfully for SMC : {}", loggedInUser.getUserName());
             populateHealthProfessionalRegistrationAndModificationRequestsForSmc(responseTO, totalCount, dashboardStauses, statusCounts);
@@ -126,6 +127,7 @@ public class DashboardServiceImpl implements IDashboardService {
         if (Group.NMC.getDescription().equals(groupName)) {
             List<IStatusCount> statusCounts = iFetchCountOnCardRepository.fetchCountForNmc();
             log.debug("Fetched statusCounts detail successfully for NMC : {}", loggedInUser.getUserName());
+            System.out.println("details "+ statusCounts);
             populateHealthProfessionalRegistrationAndModificationRequests(responseTO, totalCount, dashboardStauses, statusCounts);
             populateHealthProfessionalSuspensionRequests(responseTO, totalCount, dashboardStauses, statusCounts);
         }
@@ -218,16 +220,20 @@ public class DashboardServiceImpl implements IDashboardService {
     private static List<StatusWiseCountTO> getCardResponse(List<StatusWiseCountTO> statusWiseCountResponseTos, BigInteger totalCount,
                                                            List<IStatusCount> statusCounts, List<BigInteger> dashboardStatuses,
                                                            String applicationType) {
+
         for (BigInteger status : dashboardStatuses) {
             for (IStatusCount sc : statusCounts) {
+
                 if (status.equals(sc.getProfileStatus()) && sc.getApplicationTypeId() != null && applicationIds.get(applicationType).contains(sc.getApplicationTypeId())) {
                     Optional<StatusWiseCountTO> first = statusWiseCountResponseTos.stream()
                             .filter(r -> r.getId() != null && r.getId().equals(sc.getProfileStatus())).findFirst();
+
                     if (first.isPresent()) {
                         first.get().setCount(first.get().getCount().add(sc.getCount()));
                         totalCount = totalCount.add(sc.getCount());
 
                     }
+
                 }
             }
         }
@@ -394,6 +400,8 @@ public class DashboardServiceImpl implements IDashboardService {
         dashboardRequestParamsTO.setUserGroupId(groupId);
         if (groupId.equals(Group.SMC.getId())) {
             dashboardRequestParamsTO.setCouncilId(iSmcProfileRepository.findByUserId(userId).getStateMedicalCouncil().getId().toString());
+            dashboardRequestParamsTO.setSmcId(iSmcProfileRepository.findByUserId(userId).getStateMedicalCouncil().getId().toString());
+
         } else if (groupId.equals(Group.COLLEGE.getId())) {
             dashboardRequestParamsTO.setCollegeId(collegeProfileDaoService.findByUserId(userId).getCollege().getId().toString());
         }

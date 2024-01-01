@@ -88,6 +88,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
             ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).setAttribute(REQUEST_BODY, requestBody, RequestAttributes.SCOPE_REQUEST);
 
             LoginRequestTO requestBodyTO = convertRequestToDTO();
+            System.out.println("decrypted password is "+ rsaUtil.decrypt(requestBodyTO.getPassword()));
             authRequest = UserPasswordAuthenticationToken.unauthenticated(requestBodyTO.getUsername(),
                     rsaUtil.decrypt(requestBodyTO.getPassword()), requestBodyTO.getUserType(), requestBodyTO.getLoginType(), requestBodyTO.getOtpTransId());
             authRequest.setDetails(createSecurityAuditTrail(request));
@@ -112,6 +113,7 @@ public class UserPasswordAuthenticationFilter extends UsernamePasswordAuthentica
         ServletInputStream requestInputStream = request.getInputStream();
         objectMapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
         return new String(requestInputStream.readAllBytes());
+
     }
 
     protected SecurityAuditTrail createSecurityAuditTrail(HttpServletRequest request) {

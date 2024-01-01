@@ -184,6 +184,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         }
 
         mapHpPersonalRequestToEntity(hpPersonalUpdateRequestTO, hpProfile);
+//        hpProfile.setESignStatus(1);
         iHpProfileRepository.save(hpProfile);
 
         if (hpPersonalUpdateRequestTO.getCommunicationAddress() != null) {
@@ -407,6 +408,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         List<QualificationDetails> qualificationDetails = new ArrayList<>();
         for (QualificationDetailRequestTO indianQualification : qualificationDetailRequestTOS) {
             QualificationDetails qualification = new QualificationDetails();
+
             if (indianQualification.getId() != null) {
                 qualification = qualificationDetailRepository.findById(indianQualification.getId()).orElseThrow(InvalidRequestException::new);
                 mapIndianQualificationRequestToEntity(hpProfile, newRegistrationDetails, indianQualification, qualification, (proofs != null && !proofs.isEmpty()) ? proofs.get(qualificationDetailRequestTOS.indexOf(indianQualification)) : null, proofOfQualificationNameChange);
@@ -621,6 +623,7 @@ public class HpProfileDaoServiceImpl implements IHpProfileDaoService {
         hpProfile.setCountryNationality(countryNationality);
         hpProfile.setFullName(hpPersonalUpdateRequestTO.getPersonalDetails().getFullName());
         hpProfile.setEmailId(hpPersonalUpdateRequestTO.getPersonalDetails().getEmail());
+
     }
 
     private void mapNbeRequestDetailsToEntity(HpRegistrationUpdateRequestTO hpRegistrationUpdateRequestTO, HpNbeDetails hpNbeDetails, HpProfile hpProfile) {
