@@ -7,6 +7,7 @@ import in.gov.abdm.nmr.util.NMRConstants;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigInteger;
+import java.sql.SQLOutput;
 
 @UtilityClass
 public final class HpPersonalDetailMapper {
@@ -36,7 +37,9 @@ public final class HpPersonalDetailMapper {
         hpProfilePersonalResponseTO.setEmailVerified(hpProfile.getUser() != null && hpProfile.getUser().isEmailVerified());
         hpProfilePersonalResponseTO.setSmsNotificationEnabled(hpProfile.getUser() != null && hpProfile.getUser().isSmsNotificationEnabled());
         hpProfilePersonalResponseTO.setEmailNotificationEnabled(hpProfile.getUser() != null && hpProfile.getUser().isEmailNotificationEnabled());
+
         hpProfilePersonalResponseTO.setEsignStatus(hpProfile.getESignStatus());
+
         hpProfilePersonalResponseTO.setHprConsentStatus(hpProfile.getConsent());
 
         return hpProfilePersonalResponseTO;

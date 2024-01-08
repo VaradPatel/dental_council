@@ -141,7 +141,7 @@ public class NotificationServiceImpl implements INotificationService {
     public ResponseMessageTo sendNotificationOnStatusChangeForHP(String applicationType, String action, String mobile, String email) throws TemplateException {
 
         Template template = getMessageTemplate(NMRConstants.STATUS_CHANGED_MESSAGE_PROPERTIES_KEY);
-
+        System.out.println("action " +action);
         String message = new TemplatedStringBuilder(template.getMessage())
                 .replace(NMRConstants.TEMPLATE_VAR1, applicationType)
                 .replace(NMRConstants.TEMPLATE_VAR2, action)
@@ -191,6 +191,7 @@ public class NotificationServiceImpl implements INotificationService {
                 .replace(NMRConstants.TEMPLATE_VAR1, nmrId)
                 .replace(NMRConstants.TEMPLATE_VAR2, NMRConstants.MESSAGE_SENDER)
                 .finish();
+
         return sendNotification(NMRConstants.INFO_CONTENT_TYPE, template.getId().toString(), NMRConstants.ACCOUNT_CREATED_SUBJECT, message, mobile, null, NMRConstants.NMR_ID_CREATED);
 
     }
@@ -247,7 +248,11 @@ public class NotificationServiceImpl implements INotificationService {
         try {
             String templateId = messageSource.getMessage(propertiesKey.toLowerCase(), null, Locale.ENGLISH);
             template = notificationDBFClient.getTemplateById(Timestamp.valueOf(LocalDateTime.now()), UUID.randomUUID().toString(), new BigInteger(templateId));
+            String footer=template.getMessage();
+            String modifiedString = footer.replaceAll("OTP", "");
+            //template.setMessage(modifiedString);
             System.out.println("template  "+template);
+
         } catch (NoSuchMessageException noSuchMessageException) {
             log.error("Exception occurred while sending notification.", noSuchMessageException);
             throw new TemplateException(NMRError.NOT_FOUND_EXCEPTION.getCode(), NMRError.NOT_FOUND_EXCEPTION.getMessage());
@@ -312,7 +317,7 @@ public class NotificationServiceImpl implements INotificationService {
         KeyValue contentKeyValue = new KeyValue();
         contentKeyValue.setKey(NMRConstants.CONTENT);
         contentKeyValue.setValue(content);
-
+        System.out.println("content is" + content);
         notificationRequestTo.setNotification(List.of(templateKeyValue, subjectKeyValue, contentKeyValue));
 
         NotificationResponseTo response;

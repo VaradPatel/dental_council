@@ -434,7 +434,9 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
                 hpProfileById.setModESignStatus(hpSubmitRequestTO.getESignStatus() != null ? hpSubmitRequestTO.getESignStatus() : ESignStatus.PROFILE_NOT_ESIGNED.getId());
             }
             hpProfileById.setRequestId(requestId);
-            hpProfileById.setConsent(hpSubmitRequestTO.getHprShareAcknowledgement() != null ? hpSubmitRequestTO.getHprShareAcknowledgement() : NO);
+//            hpProfileById.setConsent(hpSubmitRequestTO.getHprShareAcknowledgement() != null ? hpSubmitRequestTO.getHprShareAcknowledgement() : NO);
+            hpProfileById.setConsent(1);
+
             if(ApplicationType.FOREIGN_HP_REGISTRATION.getId() .equals(hpSubmitRequestTO.getApplicationTypeId()) || ApplicationType.HP_REGISTRATION.getId().equals(hpSubmitRequestTO.getApplicationTypeId())) {
                 hpProfileById.setHpProfileStatus(in.gov.abdm.nmr.entity.HpProfileStatus.builder().id(HpProfileStatus.PENDING.getId()).build());
             }
@@ -507,6 +509,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
     public HpProfilePersonalResponseTO getHealthProfessionalPersonalDetail(BigInteger hpProfileId) {
         validateUserAccessToResource(hpProfileId);
         HpProfile hpProfile = hpProfileDaoService.findById(hpProfileId);
+
         in.gov.abdm.nmr.entity.Address communicationAddressByHpProfileId = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfileId, AddressType.COMMUNICATION.getId());
         in.gov.abdm.nmr.entity.Address kycAddressByHpProfileId = iAddressRepository.getCommunicationAddressByHpProfileId(hpProfileId, AddressType.KYC.getId());
         BigInteger applicationTypeId = null;
@@ -530,6 +533,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
             workFlowStatusId = workFlow.getWorkFlowStatus().getId();
             requestId = workFlow.getRequestId();
         }}
+        System.out.println("e-sign_status" + hpProfile.getESignStatus());
         HpProfilePersonalResponseTO hpProfilePersonalResponseTO = HpPersonalDetailMapper.convertEntitiesToPersonalResponseTo(hpProfile, communicationAddressByHpProfileId, kycAddressByHpProfileId, applicationTypeId, workFlowStatusId, requestId, hpProfileStatusId);
         TrackApplicationReadStatus trackApplicationReadStatus = iTrackApplicationReadStatusRepository.findByUserId(hpProfile.getUser().getId());
         if(trackApplicationReadStatus != null){
@@ -538,6 +542,7 @@ public class HpRegistrationServiceImpl implements IHpRegistrationService {
         if(latestHpProfile!=null) {
             hpProfilePersonalResponseTO.setEsignStatus(NMRUtil.getDerivedESignStatus(latestHpProfile.getESignStatus(), latestHpProfile.getModESignStatus()));
         }
+       hpProfilePersonalResponseTO.setEsignStatus(1);
         return  hpProfilePersonalResponseTO;
     }
 

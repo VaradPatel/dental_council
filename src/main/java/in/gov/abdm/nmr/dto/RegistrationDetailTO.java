@@ -20,6 +20,7 @@ public class RegistrationDetailTO {
     private String registrationNumber;
     @NotNullBlank(message = NOT_NULL_ERROR_MSG)
     private StateMedicalCouncilTO stateMedicalCouncil;
+//    private String neetRegistrationNumber;
     private String isRenewable;
     private Date renewableRegistrationDate;
     private Integer isNameChange;

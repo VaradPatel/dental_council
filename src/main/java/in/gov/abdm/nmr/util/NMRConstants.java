@@ -168,8 +168,10 @@ public class NMRConstants {
     public static final String TEMPLATE_VAR1 = "var1";
     public static final String TEMPLATE_VAR2 = "var2";
     public static final String TEMPLATE_VAR3 = "var3";
-    public static final String MESSAGE_SENDER = "Regards,\nNational Medical Register,";
-    public static final String NMR_ACCOUNT = "NMR Account";
+//    public static final String MESSAGE_SENDER = "Regards,\nNational Medical Register,";
+   public static final String MESSAGE_SENDER = "Regards,\nDental Council of India,";
+
+    public static final String NMR_ACCOUNT = "DCI Account";
     public static final String DEFAULT_COUNTRY_AADHAR = "India";
     public static final String INDIA = "India";
     public static final String INTERNATIONAL = "International";

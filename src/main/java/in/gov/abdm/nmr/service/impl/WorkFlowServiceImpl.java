@@ -329,8 +329,10 @@ public class WorkFlowServiceImpl implements IWorkFlowService {
                 verifier = NMRConstants.VERIFIER_COLLEGE;
             } else if (user.getUserType().getId().equals(UserTypeEnum.SMC.getId())) {
                 verifier = NMRConstants.VERIFIER_SMC;
+                verifier=" by SDC";
             } else if (user.getUserType().getId().equals(UserTypeEnum.NMC.getId())) {
-                verifier = NMRConstants.VERIFIER_NMC;
+//                verifier = NMRConstants.VERIFIER_NMC;
+                verifier=" by DCI";
             } else if (user.getUserType().getId().equals(UserTypeEnum.NBE.getId())) {
                 verifier = NMRConstants.VERIFIER_NBE;
             } else if (user.getUserType().getId().equals(UserTypeEnum.SYSTEM.getId())) {

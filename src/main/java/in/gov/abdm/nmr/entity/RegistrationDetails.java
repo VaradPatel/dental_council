@@ -47,6 +47,7 @@ public class RegistrationDetails extends CommonAuditEntity {
     private String registeredAs;
     private Date registrationDate;
     private String registrationNo;
+
     private Date renewableRegistrationDate;
     private Date renewableRegistrationFromDate;
     private Date renewableRegistrationToDate;
